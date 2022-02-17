@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 16435383}
   - component: {fileID: 16435382}
   m_Layer: 0
-  m_Name: Grand (3)
+  m_Name: L wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -212,13 +212,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 16435381}
-  m_LocalRotation: {x: -0, y: -0, z: -0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -39.318504, y: 15.176433, z: 125}
-  m_LocalScale: {x: 2, y: 1, z: 25}
+  m_LocalRotation: {x: 0.7071069, y: 0.70710677, z: -0.00000037252903, w: 0.00000038019343}
+  m_LocalPosition: {x: -23.660275, y: 15.000054, z: 42.50621}
+  m_LocalScale: {x: 2, y: 1, z: 11.499724}
   m_Children: []
   m_Father: {fileID: 1334202027}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 180, y: 0, z: -90}
 --- !u!1 &323190004
 GameObject:
   m_ObjectHideFlags: 0
@@ -265,7 +265,7 @@ GameObject:
   - component: {fileID: 344729147}
   - component: {fileID: 344729146}
   m_Layer: 0
-  m_Name: Grand (2)
+  m_Name: L hell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -361,7 +361,7 @@ GameObject:
   - component: {fileID: 475461870}
   - component: {fileID: 475461869}
   m_Layer: 0
-  m_Name: Grand
+  m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -938,9 +938,9 @@ Transform:
   m_Children:
   - {fileID: 475461872}
   - {fileID: 344729149}
+  - {fileID: 1517606735}
   - {fileID: 16435385}
   - {fileID: 1503663079}
-  - {fileID: 1517606735}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -957,7 +957,7 @@ GameObject:
   - component: {fileID: 1503663077}
   - component: {fileID: 1503663076}
   m_Layer: 0
-  m_Name: Grand (4)
+  m_Name: R wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1034,11 +1034,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1503663075}
   m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 39.31853, y: 15.176331, z: 125}
-  m_LocalScale: {x: 2, y: 1, z: 25}
+  m_LocalPosition: {x: 23.660255, y: 14.99999, z: 42.506424}
+  m_LocalScale: {x: 2, y: 1, z: 11.499644}
   m_Children: []
   m_Father: {fileID: 1334202027}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!1 &1517606734
 GameObject:
@@ -1053,7 +1053,7 @@ GameObject:
   - component: {fileID: 1517606737}
   - component: {fileID: 1517606736}
   m_Layer: 0
-  m_Name: Grand (5)
+  m_Name: R hell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1071,7 +1071,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 11.498707}
   m_Children: []
   m_Father: {fileID: 1334202027}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 30}
 --- !u!64 &1517606736
 MeshCollider:
