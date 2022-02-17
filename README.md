@@ -21,7 +21,7 @@ CyanStars 中文译名暂定为“翠蓝星穹”，是一个非商业同人音�
 
 将来还需要曲师、美术、翻译、谱师、文案
 
-欢迎加入我们的QQ审核群（兼聊天群）765489940 https://jq.qq.com/?_wv=1027&k=R1LqP8jd
+欢迎加入我们的QQ审核群（兼聊天群）[765489940](https://jq.qq.com/?_wv=1027&k=R1LqP8jd)
 
 ---
 
@@ -42,3 +42,5 @@ CyanStars 中文译名暂定为“翠蓝星穹”，是一个非商业同人音�
 遵循GPL-3.0协议
 
 **特别注意：商用会侵犯到其他版权方的利益，任何人在使用时不应当用于商业目的，我们不承担由此带来的法律责任**
+
+更多信息请查阅 [LICENSE](https://github.com/Chen-Luan/CyanStars/blob/main/LICENSE)
