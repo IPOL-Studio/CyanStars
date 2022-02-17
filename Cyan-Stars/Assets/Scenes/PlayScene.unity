@@ -732,8 +732,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c76d5d96f84dff4da1a2b02dd066cc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputProviderSo: {fileID: 11400000, guid: 88ff589b06f246c4795e9f37757cad25, type: 2}
-  PerfabKey: {fileID: 1263456907134877459, guid: 807c038ffaebdf14087868322f9e43d5, type: 3}
+  m_inputProviderSO: {fileID: 11400000, guid: 88ff589b06f246c4795e9f37757cad25, type: 2}
+  m_prefabKey: {fileID: 1263456907134877459, guid: 807c038ffaebdf14087868322f9e43d5, type: 3}
 --- !u!1 &986810041
 GameObject:
   m_ObjectHideFlags: 0

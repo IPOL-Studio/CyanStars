@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class InputKeyControl : MonoBehaviour
 {
-    [SerializeField]private InputProviderSO _inputProviderSo;
+    [SerializeField]private InputProviderSO m_inputProviderSO;
+    [SerializeField]private GameObject m_prefabKey;
 
     private Dictionary<string, GameObject> _keyDict = new Dictionary<string, GameObject>(10);
-
-    public GameObject PerfabKey;
-
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -19,11 +18,11 @@ public class InputKeyControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        foreach (var (keyPos, state, keyTag) in _inputProviderSo.GetInputEnumerator())
+        foreach (var (keyPos, state, keyTag) in m_inputProviderSO.Inputs)
         {
             if (state == InputState.Down && !_keyDict.ContainsKey(keyTag))
             {
-                var key = Instantiate(PerfabKey);
+                var key = Instantiate(m_prefabKey);
                 key.name = keyTag;
                 key.transform.position = new Vector3(28 * keyPos - 14, 0.02f, -50f);
                 _keyDict.Add(keyTag, key);
