@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64a8ea74be7d88e4fae82139521e0f45, type: 3}
+  m_Name: KeyboardInputProviderSO
+  m_EditorClassIdentifier: 
+  m_keyBoardLength: 209
+  m_maps:
+  - m_pos: 0
+    m_key: 113
+  - m_pos: 19
+    m_key: 119
+  - m_pos: 38
+    m_key: 101
+  - m_pos: 57
+    m_key: 114
+  - m_pos: 76
+    m_key: 116
+  - m_pos: 95
+    m_key: 121
+  - m_pos: 114
+    m_key: 117
+  - m_pos: 133
+    m_key: 105
+  - m_pos: 152
+    m_key: 111
+  - m_pos: 171
+    m_key: 112
+  - m_pos: 190
+    m_key: 91
+  - m_pos: 209
+    m_key: 93
+  - m_pos: 5
+    m_key: 97
+  - m_pos: 24
+    m_key: 115
+  - m_pos: 43
+    m_key: 100
+  - m_pos: 62
+    m_key: 102
+  - m_pos: 81
+    m_key: 103
+  - m_pos: 100
+    m_key: 104
+  - m_pos: 119
+    m_key: 106
+  - m_pos: 138
+    m_key: 107
+  - m_pos: 157
+    m_key: 108
+  - m_pos: 176
+    m_key: 59
+  - m_pos: 195
+    m_key: 39
+  - m_pos: 15
+    m_key: 122
+  - m_pos: 34
+    m_key: 120
+  - m_pos: 53
+    m_key: 99
+  - m_pos: 72
+    m_key: 118
+  - m_pos: 91
+    m_key: 98
+  - m_pos: 110
+    m_key: 110
+  - m_pos: 129
+    m_key: 109
+  - m_pos: 148
+    m_key: 44
+  - m_pos: 167
+    m_key: 46
+  - m_pos: 186
+    m_key: 47

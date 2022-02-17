@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Õâ¸ö½Å±¾ÓÃÓÚÊµÏÖkeyµÄÏòÇ°»¬ÈëÌØĞ§
+// è¿™ä¸ªè„šæœ¬ç”¨äºå®ç°keyçš„å‘å‰æ»‘å…¥ç‰¹æ•ˆ
 
 public class KeepKeyGo : MonoBehaviour
 {
