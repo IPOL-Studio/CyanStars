@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace CyanStars.Input
 {
@@ -69,23 +70,72 @@ namespace CyanStars.Input
             new KeyMap(186, KeyCode.Slash),
         };
 
-        private HashSet<KeyCode> _downedKey = new HashSet<KeyCode>();
+        private HashSet<KeyCode> _downedKeySet = new HashSet<KeyCode>();
+        private Enumerator _enumerator;
 
-        protected override IEnumerable<(float, InputState, string)> GetInputIter()
+        protected override IEnumerable<InputData> GetInputIter()
         {
-            foreach (var map in m_maps)
+            _enumerator ??= new Enumerator(this);
+            _enumerator.Reset();
+            return _enumerator;
+        }
+        
+        private class Enumerator : IEnumerable<InputData>, IEnumerator<InputData>
+        {
+            private int _index;
+            private InputData _current;
+            private KeyboardProviderSO _provider;
+
+            public Enumerator(KeyboardProviderSO provider)
             {
-                if (UnityEngine.Input.GetKeyDown(map.m_key))
-                {
-                    _downedKey.Add(map.m_key);
-                    yield return (1f * map.m_pos / m_keyBoardLength, InputState.Down, map.Tag);
-                }
-                else if (_downedKey.Contains(map.m_key) && !UnityEngine.Input.GetKey(map.m_key))
-                {
-                    _downedKey.Remove(map.m_key);
-                    yield return (0, InputState.Up, map.Tag);
-                }
+                _index = 0;
+                _current = default;
+                _provider = provider;
             }
+
+            public bool MoveNext()
+            {
+                var maps = _provider.m_maps;
+                while (_index < maps.Length)
+                {
+                    var key = maps[_index].m_key;
+                    if (UnityEngine.Input.GetKeyDown(key))
+                    {
+                        _provider._downedKeySet.Add(key);
+                        _current = new InputData(1f * maps[_index].m_pos / _provider.m_keyBoardLength, InputState.Down, maps[_index].Tag);
+                        _index++;
+                        return true;
+                    }
+                    
+                    if (_provider._downedKeySet.Contains(key) && !UnityEngine.Input.GetKey(key))
+                    {
+                        _provider._downedKeySet.Remove(maps[_index].m_key);
+                        _current = new InputData(0, InputState.Up, maps[_index].Tag);
+                        _index++;
+                        return true;
+                    }
+                    _index++;
+                }
+
+                _current = default;
+                return false;
+            }
+
+            public void Reset()
+            {
+                _index = 0;
+                _current = default;
+            }
+
+            public InputData Current => _current;
+
+            object IEnumerator.Current => _current;
+
+            public void Dispose() { }
+
+            public IEnumerator<InputData> GetEnumerator() => this;
+
+            IEnumerator IEnumerable.GetEnumerator() => this;
         }
     }
 }
