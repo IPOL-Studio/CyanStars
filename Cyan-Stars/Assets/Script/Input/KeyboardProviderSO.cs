@@ -71,7 +71,7 @@ namespace CyanStars.Input
 
         private HashSet<KeyCode> _downedKey = new HashSet<KeyCode>();
 
-        public override IEnumerable<(float, InputState, string)> GetInputEnumerator()
+        protected override IEnumerable<(float, InputState, string)> GetInputIter()
         {
             foreach (var map in m_maps)
             {
