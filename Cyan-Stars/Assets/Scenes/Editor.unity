@@ -1474,6 +1474,34 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 265017203555466782, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_fontSize
+      value: 40.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017203555466782, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_fontSizeMax
+      value: 255
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017203555466782, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017203555466782, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017203555466782, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017203555466782, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_enableWordWrapping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017203555466782, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 265017203650241238, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
       propertyPath: m_Name
       value: StartUI
@@ -1560,6 +1588,66 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 265017203650241242, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309036, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.58723605
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309036, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.41252792
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309036, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5553079
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309036, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -1.5999985
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309036, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -0.09399998
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309036, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -0.000030517578
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309036, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 1.0488892
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309043, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_fontSize
+      value: 21.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309043, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_fontSizeMax
+      value: 255
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309043, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309043, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_lineSpacingMax
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309043, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_charWidthMaxAdj
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309043, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309043, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 265017204257309043, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_enableWordWrapping
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
