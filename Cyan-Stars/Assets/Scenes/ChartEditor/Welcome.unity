@@ -274,7 +274,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlueNote
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5049075125045872654, guid: 54c329ffc4e1b204fa531c7d901fd9fa, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 54c329ffc4e1b204fa531c7d901fd9fa, type: 3}
 --- !u!1 &323190004
 GameObject:
@@ -928,7 +929,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlueNote (3)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5049075125045872654, guid: 54c329ffc4e1b204fa531c7d901fd9fa, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 54c329ffc4e1b204fa531c7d901fd9fa, type: 3}
 --- !u!1 &1006608215
 GameObject:
@@ -1452,7 +1454,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlueNote (1)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5049075125045872654, guid: 54c329ffc4e1b204fa531c7d901fd9fa, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 54c329ffc4e1b204fa531c7d901fd9fa, type: 3}
 --- !u!1001 &1882671908
 PrefabInstance:
@@ -1549,6 +1552,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7739996912865098051, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8699267157778283136, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_Color.a
+      value: 0.23921569
+      objectReference: {fileID: 0}
+    - target: {fileID: 8699267157778283136, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_Color.b
+      value: 0.5754717
+      objectReference: {fileID: 0}
+    - target: {fileID: 8699267157778283136, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_Color.g
+      value: 0.5754717
+      objectReference: {fileID: 0}
+    - target: {fileID: 8699267157778283136, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
+      propertyPath: m_Color.r
+      value: 0.5754717
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9cb9379882a0114c902569da7eee72f, type: 3}
 --- !u!1001 &2028649397
@@ -1606,5 +1629,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlueNote (2)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5049075125045872654, guid: 54c329ffc4e1b204fa531c7d901fd9fa, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 54c329ffc4e1b204fa531c7d901fd9fa, type: 3}
