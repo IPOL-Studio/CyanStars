@@ -28,6 +28,7 @@ public class InputKeyControl : MonoBehaviour
             {
                 var key = Instantiate(m_prefabKey);
                 key.name = data.Tag;
+                key.tag = "Key";
                 key.transform.position = new Vector3(28 * data.Pos - 14, 0.02f, -50f);
                 _keyDict.Add(data.Tag, key);
             }
