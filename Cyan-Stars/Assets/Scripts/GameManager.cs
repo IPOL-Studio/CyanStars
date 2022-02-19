@@ -19,5 +19,7 @@ public class GameManager : MonoBehaviour
     [Header("-----游戏数据-----")]
     [Header("1.Combo数量")]
     public int combo = 0;//Combo数量
+    [Header("2.分数")]
+    public int score = 0;//分数
 }
 //This code is writed by Ybr.
