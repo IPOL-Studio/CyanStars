@@ -21,5 +21,7 @@ public class GameManager : MonoBehaviour
     public int combo = 0;//Combo数量
     [Header("2.分数")]
     public int score = 0;//分数
+    [Header("3.评分")]
+    public string grade = "";//评分
 }
 //This code is writed by Ybr.
