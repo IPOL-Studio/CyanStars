@@ -67,7 +67,6 @@ public class GreenNote : Note//绿色音符快
                 GameManager.Instance.combo++;
                 GameManager.Instance.score += score * 2;
             }
-            GameManager.Instance.combo += 1;
         }
         if(endPoint.position.z < Gamesetting.Instance.noteDisappearZ)
         {
