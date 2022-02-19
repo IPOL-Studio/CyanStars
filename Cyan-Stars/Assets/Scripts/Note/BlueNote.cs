@@ -17,7 +17,6 @@ public class BlueNote : MonoBehaviour//蓝色音符块
     public void DestoryEffect()//激活音符块的特效
     {
         transform.GetChild(0).gameObject.SetActive(true);
-        transform.GetChild(1).gameObject.SetActive(true);
     }
     void Update()//每帧执行
     {
