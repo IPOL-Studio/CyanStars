@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1154926229905324850}
   - component: {fileID: 1154926229905324851}
   - component: {fileID: 2515257010321808446}
+  - component: {fileID: 1895145979}
   m_Layer: 0
   m_Name: GreenNote
   m_TagString: Untagged
@@ -29,8 +30,9 @@ Transform:
   m_GameObject: {fileID: 1154926229905324848}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -6.1, y: 0.12499994, z: 20.83}
-  m_LocalScale: {x: 5, y: 0.5, z: 5}
-  m_Children: []
+  m_LocalScale: {x: 5, y: 0.5, z: 32.48}
+  m_Children:
+  - {fileID: 7927188390492528236}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -112,3 +114,49 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1895145979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1154926229905324848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bd6c37a6ebf97f4da8fab5903aac56f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 10
+  score: 1
+  startPoint: {fileID: 7927188390492528236}
+  endPoint: {fileID: 0}
+--- !u!1 &8305809279424460243
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7927188390492528236}
+  m_Layer: 0
+  m_Name: StartPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7927188390492528236
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8305809279424460243}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.03, y: 2.83, z: -0.389}
+  m_LocalScale: {x: 0.2, y: 2, z: 0.2}
+  m_Children: []
+  m_Father: {fileID: 1154926229905324852}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
