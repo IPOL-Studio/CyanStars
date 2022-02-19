@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class GreenNote : Note//绿色音符快
 {
-    private float clickTimer;
-    private float timer;
+    public float clickTimer;
+    public float timer;
+    public bool isClick;
     [Header("绿色音符块的开始点")]
     public Transform startPoint;
     [Header("绿色音符块的结束点")]
@@ -22,7 +23,6 @@ public class GreenNote : Note//绿色音符快
             isClicked = true;
             this.other = other;
             isTriggered = true;
-            StartCoroutine(StartTiming());
         }
     }
     void OnTriggerExit(Collider other)
@@ -36,34 +36,42 @@ public class GreenNote : Note//绿色音符快
     }
     new void Update()
     {
+        Debug.Log(clickTimer + " " + timer);
         base.Update();
         if(startPoint.position.z < Gamesetting.Instance.noteDisappearZ
         && !(endPoint.position.z < Gamesetting.Instance.noteDisappearZ))
         {
             timer += Time.deltaTime;
+            if(isTriggered)
+            {
+                clickTimer += Time.deltaTime;
+            }
         }
-        {
-            Destroy(gameObject,2f);
-            GameManager.Instance.combo = 0;
-        }
+        if(isTriggered)DestoryEffect();
+        else transform.GetChild(0).gameObject.SetActive(false);
         if(isTriggered && (!other || !other.gameObject.activeSelf))
         {
             isTriggered = false;
             this.other = null;
-            StopAllCoroutines();    //停止所有协程
-            Debug.Log(clickTimer/timer);
+            if(clickTimer/timer < 0.5f)
+            {
+                GameManager.Instance.combo = 0;
+            }
+            else if(clickTimer/timer < 0.9f)
+            {
+                GameManager.Instance.combo++;
+                GameManager.Instance.score += score;
+            }
+            else
+            {
+                GameManager.Instance.combo++;
+                GameManager.Instance.score += score * 2;
+            }
+            GameManager.Instance.combo += 1;
         }
         if(endPoint.position.z < Gamesetting.Instance.noteDisappearZ)
         {
             Destroy(gameObject,2f);
-        }
-    }
-    IEnumerator StartTiming()
-    {
-        while(true)
-        {
-            clickTimer += 0.1f;
-            yield return new WaitForSeconds(0.1f);
         }
     }
 }
