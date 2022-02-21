@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8113553573037242828
+--- !u!1 &6520518579903130262
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8113553573037242826}
-  - component: {fileID: 8113553573037242827}
+  - component: {fileID: 6520518579903130263}
+  - component: {fileID: 6520518579903130260}
   m_Layer: 0
-  m_Name: GameMgr
+  m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8113553573037242826
+--- !u!4 &6520518579903130263
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8113553573037242828}
+  m_GameObject: {fileID: 6520518579903130262}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -31,23 +31,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8113553573037242827
+--- !u!114 &6520518579903130260
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8113553573037242828}
+  m_GameObject: {fileID: 6520518579903130262}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b749e6677e9081b4d9ca222f9e9fc7c2, type: 3}
+  m_Script: {fileID: 11500000, guid: e7b54ec8002bf1e4b90b5a2e80624be3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SO: {fileID: 11400000, guid: 8397b065501bb6f4694f89a7173cb27e, type: 2}
-  ViewRoot: {fileID: 0}
-  TapPrefab: {fileID: 1894901542986877043, guid: 18db18d69cf86224d9f0fc4f805332c1, type: 3}
-  HoldPrefab: {fileID: 1074129227953934691, guid: 1f2e1801cbba1de49bdd44b113628ce7, type: 3}
-  DragPrefab: {fileID: 1290151494901256786, guid: 864f1ce9aaa5db242b7c1b466b8684e0, type: 3}
-  ClickPrefab: {fileID: 3267974806800607457, guid: a2cb382f9dffd4c4292db245c67bc99c, type: 3}
-  BtnStart: {fileID: 0}
-  TxtTimer: {fileID: 0}
+  combo: 0
+  score: 0
+  grade: 
