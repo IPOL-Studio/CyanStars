@@ -22,24 +22,31 @@ public class TapNote : BaseNote
         {
             //Miss了
             DestorySelf();
-            Debug.LogError($"音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
+            Debug.Log($"音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
+            RefleshPlayingUI(EvaluateType.Miss,false,-1,-1);
         }
     }
 
     public override void OnKeyDown()
     {
         base.OnKeyDown();
+        //Debug.Log($"音符被按下，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
 
         if (timer > EvaluateHelper.CheckInputStartTime)
         {
-            return;;
+            return;
         }
         
         EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(timer);
+        if(evaluateType == EvaluateType.Exact || evaluateType == EvaluateType.Great)
+            RefleshPlayingUI(evaluateType,true,1,1);
+        else if(evaluateType == EvaluateType.Right || evaluateType == EvaluateType.Bad)
+            RefleshPlayingUI(evaluateType,false,-1,-1);
+        else
+            RefleshPlayingUI(evaluateType,false,-1,-1);
+        
         DestorySelf(false);
         
-        Debug.LogError($"Tap音符命中，评价:{evaluateType}，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
+        Debug.Log($"Tap音符命中，评价:{evaluateType}，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
     }
-
-
 }
