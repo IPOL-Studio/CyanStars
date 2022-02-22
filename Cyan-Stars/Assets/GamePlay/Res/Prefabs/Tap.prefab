@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7978201068492761089}
   - component: {fileID: 2475260953885031174}
+  - component: {fileID: 3057493704164284509}
   m_Layer: 0
   m_Name: Tap
   m_TagString: Untagged
@@ -25,9 +26,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1894901542986877043}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 6, y: 2, z: 2}
   m_Children:
   - {fileID: 2129682291747092662}
   m_Father: {fileID: 0}
@@ -45,6 +45,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ffdc24521dc0dd49b1cd432f3a8dc3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isTiggered: 0
+  effectPrefab: {fileID: 479875854288579027, guid: 5e23cbeafdd5a7440969ecc410eb4e86, type: 3}
+--- !u!65 &3057493704164284509
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1894901542986877043}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7600510134996162756
 GameObject:
   m_ObjectHideFlags: 0
@@ -73,8 +88,7 @@ Transform:
   m_GameObject: {fileID: 7600510134996162756}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7978201068492761089}
   m_RootOrder: 0
@@ -98,7 +112,6 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -141,3 +154,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ffdc24521dc0dd49b1cd432f3a8dc3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isTiggered: 0
+  effectPrefab: {fileID: 0}

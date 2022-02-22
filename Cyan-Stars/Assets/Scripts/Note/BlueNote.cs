@@ -7,10 +7,12 @@ public class BlueNote : Note//蓝色音符块
     //碰撞检测
     private void OnTriggerEnter(Collider other)
     {
+
         if(!isClicked && other.tag == "Key" && 
-        Mathf.Abs(transform.position.z - Gamesetting.Instance.noteDisappearZ) <= 10 &&
+        Mathf.Abs(transform.position.z - Gamesetting.Instance.noteDisappearZ) <= 20 &&
          !(transform.position.z < Gamesetting.Instance.noteDisappearZ))//如果音符块在判定区域内
         {
+            Debug.Log("碰撞检测");
             GameManager.Instance.combo += 1;//Combo数量加1
             GameManager.Instance.score += score;//分数加上音符块的分数
             isClicked = true;//音符块被击中
