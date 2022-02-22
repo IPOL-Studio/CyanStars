@@ -10,9 +10,6 @@ namespace CyanStars.Input
         /// <summary>
         /// Get current valid inputs
         /// </summary>
-        /// <returns>float - pos(0-1)  </returns>
-        /// <returns>InputState - state  </returns>
-        /// <returns>string - tag</returns>
         public IEnumerable<InputData> Inputs => GetInputIter();
         
         
@@ -26,6 +23,9 @@ namespace CyanStars.Input
 
     public struct InputData
     {
+        /// <summary>
+        /// range 0-1
+        /// </summary>
         public float Pos;
         public InputState State;
         public string Tag;
