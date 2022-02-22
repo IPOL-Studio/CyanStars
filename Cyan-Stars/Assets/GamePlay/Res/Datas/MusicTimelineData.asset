@@ -13,33 +13,42 @@ MonoBehaviour:
   m_Name: MusicTimelineData
   m_EditorClassIdentifier: 
   TimelineData:
-    Time: 35
+    Time: 50
     SpeedRate: 3
     TrackDatas:
     - NoteDatas:
-      - Type: 0
-        TimePoint: 20
-        SpeedRate: 1
-        HoldLength: 0
-      - Type: 2
-        TimePoint: 32
-        SpeedRate: 1
-        HoldLength: 0
-    - NoteDatas:
       - Type: 1
-        TimePoint: 23
+        TimePoint: 15
         SpeedRate: 1
-        HoldLength: 3
-      - Type: 2
-        TimePoint: 32.2
-        SpeedRate: 1
-        HoldLength: 0
+        HoldLength: 50
+    - NoteDatas: []
+    - NoteDatas: []
+    - NoteDatas: []
+    - NoteDatas: []
     - NoteDatas:
-      - Type: 3
-        TimePoint: 29
-        SpeedRate: 1
-        HoldLength: 0
       - Type: 2
-        TimePoint: 32.4
+        TimePoint: 25
+        SpeedRate: 2
+        HoldLength: 0
+      - Type: 3
+        TimePoint: 35
+        SpeedRate: 2
+        HoldLength: 0
+      - Type: 0
+        TimePoint: 45
+        SpeedRate: 2
+        HoldLength: 0
+    - NoteDatas: []
+    - NoteDatas:
+      - Type: 0
+        TimePoint: 45
+        SpeedRate: 3
+        HoldLength: 0
+    - NoteDatas: []
+    - NoteDatas: []
+    - NoteDatas: []
+    - NoteDatas:
+      - Type: 0
+        TimePoint: 5
         SpeedRate: 1
         HoldLength: 0

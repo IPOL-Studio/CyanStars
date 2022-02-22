@@ -20,8 +20,8 @@ public class GameMgr : MonoBehaviour
     public GameObject DragPrefab;
     public GameObject ClickPrefab;
     
-    public Button BtnStart;
-    public Text TxtTimer;
+    //public Button BtnStart;
+    //public Text TxtTimer;
     
     private MusicTimeline timeline;
 
@@ -32,29 +32,65 @@ public class GameMgr : MonoBehaviour
         Instance = this;
 
         keyMap = new Dictionary<KeyCode, int>();
-        keyMap.Add(KeyCode.Q,1);
-        keyMap.Add(KeyCode.A,2);
-        keyMap.Add(KeyCode.Z,3);
+        /*
+        keyMap.Add(KeyCode.Q, 1);
+        keyMap.Add(KeyCode.A, 1);
+        keyMap.Add(KeyCode.Z, 1);
+        keyMap.Add(KeyCode.W, 2);
+        keyMap.Add(KeyCode.S, 2);
+        keyMap.Add(KeyCode.X, 2);
+        keyMap.Add(KeyCode.E, 3);
+        keyMap.Add(KeyCode.D, 3);
+        keyMap.Add(KeyCode.C, 3);
+        keyMap.Add(KeyCode.R, 4);
+        keyMap.Add(KeyCode.F, 4);
+        keyMap.Add(KeyCode.V, 4);
+        keyMap.Add(KeyCode.T, 5);
+        keyMap.Add(KeyCode.G, 5);
+        keyMap.Add(KeyCode.B, 5);
+        keyMap.Add(KeyCode.Y, 6);
+        keyMap.Add(KeyCode.H, 6);
+        keyMap.Add(KeyCode.N, 6);
+        keyMap.Add(KeyCode.U, 7);
+        keyMap.Add(KeyCode.J, 7);
+        keyMap.Add(KeyCode.M, 7);
+        keyMap.Add(KeyCode.I, 8);
+        keyMap.Add(KeyCode.K, 8);
+        keyMap.Add(KeyCode.Comma, 8);
+        keyMap.Add(KeyCode.O, 9);
+        keyMap.Add(KeyCode.L, 9);
+        keyMap.Add(KeyCode.Period, 9);
+        keyMap.Add(KeyCode.P, 10);
+        keyMap.Add(KeyCode.Semicolon, 10);
+        keyMap.Add(KeyCode.Slash, 10);
+        keyMap.Add(KeyCode.LeftBracket, 11);
+        keyMap.Add(KeyCode.Quote, 11);
+        keyMap.Add(KeyCode.RightBracket, 12);
+        */
     }
 
     private void Start()
     {
-        BtnStart.onClick.AddListener(OnBtnStartClick);
+        //BtnStart.onClick.AddListener(OnBtnStartClick);
+        timeline = new MusicTimeline(SO.TimelineData);
+        Debug.Log("音乐时间轴创建完毕");
     }
 
     private void Update()
-    {
+    { 
         CheckInput();
         
         timeline?.OnUpdate(Time.deltaTime);
  
     }
 
+    /*
     private void OnBtnStartClick()
     {
         timeline = new MusicTimeline(SO.TimelineData);
         Debug.Log("音乐时间轴创建完毕");
     }
+    */
 
     /// <summary>
     /// 检查键盘输入
@@ -79,7 +115,7 @@ public class GameMgr : MonoBehaviour
             }
         }
     }
-    
+    /*
     /// <summary>
     /// 刷新计时器文本
     /// </summary>
@@ -87,6 +123,7 @@ public class GameMgr : MonoBehaviour
     {
         TxtTimer.text = timer.ToString("0.00");
     }
+    */
 
     public float GetCurTimelineTime()
     {
@@ -116,7 +153,8 @@ public class GameMgr : MonoBehaviour
             
             case NoteType.Hold:
                 go = Instantiate(HoldPrefab);
-                go.transform.localScale = new Vector3(data.HoldLength, 1, 1);
+                go.transform.localScale = new Vector3(go.transform.localScale.x, go.transform.localScale.y
+                , data.HoldLength * go.transform.localScale.z);
                 break;
             case NoteType.Drag:
                 go = Instantiate(DragPrefab);
@@ -139,22 +177,23 @@ public class GameMgr : MonoBehaviour
     private Vector3 GetViewStartPos(int trackIndex,float startTime)
     {
         Vector3 pos = default;
-        pos.z = -1;
-        
+        pos.z = 100;
+        pos.x = trackIndex * 2.5f - 16.5f;
+        /*
         switch (trackIndex)
         {
             case 1:
-                pos.y = 0;
+                pos.x = 0;
                 break;
             case 2:
-                pos.y = -1.5f;
+                pos.x = -1.5f;
                 break;
             case 3:
-                pos.y = -3;
+                pos.x = -3;
                 break;
         }
-        
-        pos.x = startTime;
+        */
+        pos.z = (startTime + 5) * 2;
 
         return pos;
     }

@@ -10,4 +10,6 @@ public interface IView
     void OnUpdate(float deltaTime);
 
     void DestorySelf(bool autoMove = true);
+    bool IsTiggered();
+    Transform GetTransform();
 }
