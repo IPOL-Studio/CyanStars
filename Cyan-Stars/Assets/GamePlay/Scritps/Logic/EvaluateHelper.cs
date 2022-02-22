@@ -46,6 +46,25 @@ public static class EvaluateHelper
 
         return EvaluateType.Miss;
     }
+    /// <summary>
+    /// 根据Click音符命中时间获取评价类型
+    /// </summary>
+    public static EvaluateType GetClickEvaluate(float hitTime)
+    {
+        if (hitTime <= 0.12f)
+        {
+            return EvaluateType.Exact;
+        }
+        else if (hitTime <= 0.14f)
+        {
+            return EvaluateType.Great;
+        }
+        else if(hitTime <= 0.16f)
+        {
+            return EvaluateType.Right;
+        }
+        return EvaluateType.Bad;
+    }
 
     /// <summary>
     /// 根据Hold音符命中比例获取评价类型
