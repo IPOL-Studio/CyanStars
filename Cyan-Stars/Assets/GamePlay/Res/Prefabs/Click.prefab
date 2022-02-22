@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6462213246667655315}
   - component: {fileID: 1535661043863395220}
+  - component: {fileID: 3843772124711533988}
   m_Layer: 0
   m_Name: Click
   m_TagString: Untagged
@@ -26,8 +27,7 @@ Transform:
   m_GameObject: {fileID: 3267974806800607457}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 6, y: 2, z: 2}
   m_Children:
   - {fileID: 3069205270322370596}
   m_Father: {fileID: 0}
@@ -45,6 +45,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ffdc24521dc0dd49b1cd432f3a8dc3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isTiggered: 0
+  effectPrefab: {fileID: 479875854288579027, guid: 205c12de98b8e024eac1a8706dd2b61e, type: 3}
+--- !u!65 &3843772124711533988
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3267974806800607457}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6803892982780524630
 GameObject:
   m_ObjectHideFlags: 0
@@ -73,8 +88,7 @@ Transform:
   m_GameObject: {fileID: 6803892982780524630}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6462213246667655315}
   m_RootOrder: 0
@@ -98,7 +112,6 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -141,3 +154,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ffdc24521dc0dd49b1cd432f3a8dc3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isTiggered: 0
+  effectPrefab: {fileID: 0}

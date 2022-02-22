@@ -30,7 +30,8 @@ public abstract class BaseNote
     /// <summary>
     /// 视图层物体
     /// </summary>
-    private IView view;
+    protected IView view;
+    private bool lastIsTiggered;
     
     public BaseNote(int trackIndex, NoteData data)
     {
@@ -50,9 +51,25 @@ public abstract class BaseNote
     {
         //需要考虑音符速率
         deltaTime *= data.SpeedRate;
+        
         timer -= deltaTime;
 
         view.OnUpdate(deltaTime);
+        if(view != null && view.IsTiggered() && !lastIsTiggered)
+        {
+            OnKeyDown();
+            lastIsTiggered = true;
+        }
+        if(view != null && view.IsTiggered())  
+        {
+            OnKeyPress();
+            lastIsTiggered = true;
+        }
+        if(view != null && !view.IsTiggered() && lastIsTiggered)
+        {
+            OnKeyUp();
+            lastIsTiggered = false;
+        }
     }
 
     /// <summary>
@@ -102,5 +119,24 @@ public abstract class BaseNote
         IsDestoryed = true;
         view.DestorySelf(autoMove);
         view = null;
+    }
+    protected void RefleshPlayingUI(EvaluateType type,bool suc,int score,int combo)
+    {
+        string str = "";
+        if(type == EvaluateType.Exact)str = "Exact!!!";
+        else if(type == EvaluateType.Great)str = "Great!!";
+        else if(type == EvaluateType.Right)str = "Right!";
+        else if(type == EvaluateType.Bad)str = "Bad/(-_-)\\";
+        else if(type == EvaluateType.Miss)str = "Miss";
+        GameManager.Instance.grade = str; 
+        if(suc)
+        {
+            GameManager.Instance.score += score;
+            GameManager.Instance.combo += combo;
+        }
+        else
+        {
+            GameManager.Instance.combo = 0;
+        }
     }
 }

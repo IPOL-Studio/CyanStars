@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class DragNote : BaseNote
 {
-    private const float dragTime = 0.03f;
+    private const float dragTime = 0.1f;
     
     public DragNote(int trackIndex, NoteData data) : base(trackIndex, data)
     {
@@ -20,18 +20,19 @@ public class DragNote : BaseNote
         if (timer < -dragTime)
         {
             DestorySelf();
-            Debug.LogError($"Drag音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
+            Debug.Log($"Drag音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
+            RefleshPlayingUI(EvaluateType.Miss, false, -1, -1);
         }
     }
 
     public override void OnKeyPress()
     {
         base.OnKeyPress();
-
         if (timer <= dragTime && timer >= -dragTime)
         {
             DestorySelf(false);
-            Debug.LogError($"Drag音符命中，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
+            Debug.Log($"Drag音符命中，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
+            RefleshPlayingUI(EvaluateType.Exact,true,1,1);
         }
     }
 }

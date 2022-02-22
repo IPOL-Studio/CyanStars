@@ -37,7 +37,7 @@ public class MusicTimeline
         deltaTime *= data.SpeedRate;
         Timer += deltaTime;
 
-        GameMgr.Instance.RefreshTxtTimer(Timer);
+        //GameMgr.Instance.RefreshTxtTimer(Timer);
         
         if (Timer >= data.Time)
         {
