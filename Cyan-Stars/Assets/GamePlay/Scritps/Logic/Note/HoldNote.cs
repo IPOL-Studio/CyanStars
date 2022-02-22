@@ -14,6 +14,14 @@ public class HoldNote : BaseNote
     /// 正确按下时间
     /// </summary>
     private float keyDownTime;
+    /// <summary>
+    /// 经过时间
+    /// </summary>
+    private float time;
+    /// <summary>
+    /// 头部判定
+    /// </summary>
+    private bool isClicked;
     
     public HoldNote(int trackIndex, NoteData data) : base(trackIndex, data)
     {
@@ -22,44 +30,55 @@ public class HoldNote : BaseNote
     public override void OnUpdate(float deltaTime)
     {
         base.OnUpdate(deltaTime);
-        
-        if (timer <= (EvaluateHelper.CheckInputEndTime - data.HoldLength))//因为是一长条 所以要加上长度
+        if(timer - data.HoldLength/4 < EvaluateHelper.CheckInputEndTime && !isClicked)
         {
+            //Miss了
             DestorySelf();
-            Debug.LogError($"音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
+            Debug.Log($"音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
+            RefleshPlayingUI(EvaluateType.Miss,false,-1,-1);
+        }
+        if(timer + data.HoldLength/4 < EvaluateHelper.CheckInputEndTime && isClicked)
+        {
+            float result = keyDownTime/time;
+            EvaluateType evaluateType = EvaluateHelper.GetHoldEvaluate(result);
+            Debug.Log($"Hold音符命中，评价:{evaluateType}，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}，按住时间比例：{result}");
+            if(evaluateType == EvaluateType.Exact || evaluateType == EvaluateType.Great || evaluateType == EvaluateType.Right)
+                RefleshPlayingUI(evaluateType,true,1,1);
+            else
+                RefleshPlayingUI(evaluateType,false,-1,-1);
+            DestorySelf();
+        }
+        if(timer <= data.HoldLength/4 && timer >= (EvaluateHelper.CheckInputEndTime - data.HoldLength/4))
+        {
+            time += Time.deltaTime;
+        }
+    }
+    public override void OnKeyPress()
+    {
+        base.OnKeyPress();
+        if(timer <= data.HoldLength/4 && timer >= (EvaluateHelper.CheckInputEndTime - data.HoldLength/4))
+        {
+            isKeyDown = true;
+            keyDownTime += Time.deltaTime;
+            view.GetTransform().GetChild(0).gameObject.SetActive(true);
+            //Debug.Log("Yes" + (EvaluateHelper.CheckInputEndTime - data.HoldLength/4) + " " + timer + " " + data.HoldLength/4);
+        }
+        else    
+        {
+            isKeyDown = false;
+            view.GetTransform().GetChild(0).gameObject.SetActive(false);
+            //Debug.Log("No" + (EvaluateHelper.CheckInputEndTime - data.HoldLength/4) + " " + timer + " " + data.HoldLength/4);
         }
     }
 
     public override void OnKeyDown()
     {
         base.OnKeyDown();
-
-        if (timer <= EvaluateHelper.CheckInputStartTime)
+        if(timer - data.HoldLength/4 <= EvaluateHelper.CheckInputStartTime && timer - data.HoldLength/4 >= EvaluateHelper.CheckInputEndTime)
         {
-            isKeyDown = true;
-            keyDownTime = timer;
+            isClicked = true;
+            EvaluateType evaluateType = EvaluateHelper.GetHoldEvaluate(timer);
+            RefleshPlayingUI(evaluateType,true,1,1);
         }
-    }
-    
-
-    public override void OnKeyUp()
-    {
-        base.OnKeyUp();
-
-       
-
-        if (isKeyDown)
-        {
-            //总的按住时长
-            float time = Mathf.Abs(keyDownTime - timer);
-
-            //按住时间百分比
-            float result = time / data.HoldLength;
-            EvaluateType evaluateType = EvaluateHelper.GetHoldEvaluate(result);
-            DestorySelf(false);
-            
-            Debug.LogError($"Hold音符命中，按住时长:{time}，百分比:{result}，评价:{evaluateType}，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
-        }
-        
     }
 }

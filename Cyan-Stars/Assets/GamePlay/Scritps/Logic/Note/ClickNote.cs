@@ -22,7 +22,8 @@ public class ClickNote : BaseNote
         {
             //Miss了
             DestorySelf();
-            Debug.LogError($"Click音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
+            Debug.Log($"Click音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
+            RefleshPlayingUI(EvaluateType.Miss,false,-1,-1);
         }
     }
 
@@ -47,8 +48,16 @@ public class ClickNote : BaseNote
             float time = Mathf.Abs(keyDownTime - timer);
             
             DestorySelf(false);
-            
-            Debug.LogError($"Click音符命中，按住时长:{time}，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
+
+            EvaluateType type = EvaluateHelper.GetClickEvaluate(time);
+
+            if(type == EvaluateType.Exact)
+                RefleshPlayingUI(type,true,2,1);
+            else if(type == EvaluateType.Great)
+                RefleshPlayingUI(type,true,1,1);
+            else
+                RefleshPlayingUI(type,false,-1,-1);
+            Debug.Log($"Click音符命中，按住时长:{time}，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}，评分{type}");
         }
     }
 }

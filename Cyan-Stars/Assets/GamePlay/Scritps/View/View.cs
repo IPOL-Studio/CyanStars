@@ -8,14 +8,33 @@ using UnityEngine;
 public class View : MonoBehaviour, IView
 {
     private float deltaTime;
+    private Collider other;
+    public bool isTiggered;
+    public GameObject effectPrefab;
     
     public void OnUpdate(float deltaTime)
     {
         this.deltaTime = deltaTime;
         
         Vector3 pos = transform.position;
-        pos.x -= deltaTime;
+        pos.z -= deltaTime * 2;
         transform.position = pos;
+    }
+    public bool IsTiggered()
+    {
+        return isTiggered;
+    }
+    public Transform GetTransform()
+    {
+        return transform;
+    }
+    void Update()
+    {
+        if(isTiggered && (!other || !other.gameObject.activeSelf))
+        {
+            isTiggered = false;
+            this.other = null;
+        }
     }
 
     /// <summary>
@@ -25,6 +44,7 @@ public class View : MonoBehaviour, IView
     {
         if (!autoMove)
         {
+            GameObject.Instantiate(effectPrefab,transform.position, Quaternion.identity);
             Destroy(gameObject);
             return;
         }
@@ -43,7 +63,7 @@ public class View : MonoBehaviour, IView
             timer += deltaTime;
             
             Vector3 pos = transform.position;
-            pos.x -= deltaTime;
+            pos.z -= deltaTime;
             transform.position = pos;
 
             if (timer >= 2f)
@@ -56,5 +76,12 @@ public class View : MonoBehaviour, IView
         }
     }
 
-
+    void OnTriggerStay(Collider other)
+    {
+        if (other.tag == "Key")
+        {
+            isTiggered = true;
+            this.other = other;
+        }
+    }
 }
