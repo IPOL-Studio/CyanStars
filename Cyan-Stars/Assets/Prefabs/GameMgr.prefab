@@ -49,5 +49,3 @@ MonoBehaviour:
   HoldPrefab: {fileID: 1074129227953934691, guid: 1f2e1801cbba1de49bdd44b113628ce7, type: 3}
   DragPrefab: {fileID: 1290151494901256786, guid: 864f1ce9aaa5db242b7c1b466b8684e0, type: 3}
   ClickPrefab: {fileID: 3267974806800607457, guid: a2cb382f9dffd4c4292db245c67bc99c, type: 3}
-  BtnStart: {fileID: 0}
-  TxtTimer: {fileID: 0}
