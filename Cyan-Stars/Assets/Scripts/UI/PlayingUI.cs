@@ -75,7 +75,7 @@ public class PlayingUI : MonoBehaviour
             {
                 if(GameManager.Instance.missNum + GameManager.Instance.badNum == 0)
                 {
-                    scoreRatioText.color = Color.blue;
+                    scoreRatioText.color = Color.cyan;
                 }
                 else
                 {

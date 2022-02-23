@@ -52,7 +52,7 @@ public class ClickNote : BaseNote
             DestroySelf(false);
 
             EvaluateType type = EvaluateHelper.GetClickEvaluate(time);
-            EvaluateHelper.GetTapEvaluate(timer);
+            EvaluateHelper.ComputeDeviation(timer);
 
             if(type == EvaluateType.Exact)
                 RefreshPlayingUI(type,true,2,1);
