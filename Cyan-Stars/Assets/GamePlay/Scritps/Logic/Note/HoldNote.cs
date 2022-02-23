@@ -89,6 +89,7 @@ public class HoldNote : BaseNote
         {
             isClicked = true;
             EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(timer,data.HoldLength/4);
+            EvaluateHelper.ComputeDeviation(timer,data.HoldLength/4);
             RefreshPlayingUI(evaluateType,true,1,1);
             Debug.Log($"Hold音符命中，评价:{evaluateType}，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
         }

@@ -14,11 +14,7 @@ public static class EvaluateHelper
     /// </summary>
     public const float CheckInputEndTime = -0.231f;
     
-    
-    /// <summary>
-    /// 根据Tap音符命中时间获取评价类型
-    /// </summary>
-    public static EvaluateType GetTapEvaluate(float hitTime,float holdLen = -1)
+    public static void ComputeDeviation(float hitTime,float holdLen = -1)
     {
         if(holdLen == -1)
         {
@@ -31,6 +27,12 @@ public static class EvaluateHelper
             GameManager.Instance.currentDeviation = hitTime;
             GameManager.Instance.deviationList.Add(hitTime);
         }
+    }
+    /// <summary>
+    /// 根据Tap音符命中时间获取评价类型
+    /// </summary>
+    public static EvaluateType GetTapEvaluate(float hitTime,float holdLen = -1)
+    {
         //80
         if (hitTime <= 0.08f && hitTime >= -0.08f)
         {
