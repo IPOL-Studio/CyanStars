@@ -43,6 +43,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7b54ec8002bf1e4b90b5a2e80624be3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playingUIList:
+  - {fileID: 0}
+  - {fileID: 0}
   combo: 0
   score: 0
   grade: 
+  currentDeviation: 0
+  deviationList: []
+  maxScore: 0
+  excatNum: 0
+  greatNum: 0
+  rightNum: 0
+  badNum: 0
+  missNum: 0
