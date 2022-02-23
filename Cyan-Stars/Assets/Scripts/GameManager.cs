@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
             return instance;
         }
     }
+    [Header("-----UI----------")]
+    public PlayingUI playingUI;//游戏UI
     [Header("-----游戏数据-----")]
     [Header("1.Combo数量")]
     public int combo = 0;//Combo数量

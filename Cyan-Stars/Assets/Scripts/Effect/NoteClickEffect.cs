@@ -4,8 +4,15 @@ using UnityEngine;
 
 public class NoteClickEffect : MonoBehaviour
 {
+    public bool willDestroy;
+    public float destroyTime;
     void Start()
     {
-        Destroy(gameObject,5f);
+        //Debug.Log(transform.position);
+        if(willDestroy)Destroy(gameObject,destroyTime);
+    }
+    void Update()
+    {
+        transform.position = new Vector3(transform.position.x,transform.position.y,10);
     }
 }
