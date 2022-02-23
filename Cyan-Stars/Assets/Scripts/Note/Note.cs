@@ -14,7 +14,7 @@ public class Note : MonoBehaviour//音符块基类
     {
         rb = GetComponent<Rigidbody>();//获取音符块的刚体组件
     }
-    public void DestoryEffect()//激活音符块的特效
+    public void DestroyEffect()//激活音符块的特效
     {
         //TODO:修改音符块的特效
         transform.GetChild(0).gameObject.SetActive(true);

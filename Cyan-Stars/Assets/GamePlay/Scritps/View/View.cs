@@ -40,7 +40,7 @@ public class View : MonoBehaviour, IView
     /// <summary>
     /// 销毁自身（可以不马上销毁，而是再自动移动一段后再销毁，通常用于漏掉音符的情况）
     /// </summary>
-    public void DestorySelf(bool autoMove = true,float destroyTime = 2f)
+    public void DestroySelf(bool autoMove = true,float destroyTime = 2f)
     {
         if (!autoMove)
         {
