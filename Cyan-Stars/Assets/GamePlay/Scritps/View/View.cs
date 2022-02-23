@@ -40,7 +40,7 @@ public class View : MonoBehaviour, IView
     /// <summary>
     /// 销毁自身（可以不马上销毁，而是再自动移动一段后再销毁，通常用于漏掉音符的情况）
     /// </summary>
-    public void DestorySelf(bool autoMove = true)
+    public void DestorySelf(bool autoMove = true,float destroyTime = 2f)
     {
         if (!autoMove)
         {
@@ -49,13 +49,13 @@ public class View : MonoBehaviour, IView
             return;
         }
         
-        StartCoroutine(AutoMove());
+        StartCoroutine(AutoMove(destroyTime));
     }
 
     /// <summary>
     /// 自动移动一段时间然后销毁自己
     /// </summary>
-    public IEnumerator AutoMove()
+    public IEnumerator AutoMove(float destroyTime)
     {
         float timer = 0;
         while (true)
@@ -63,10 +63,10 @@ public class View : MonoBehaviour, IView
             timer += deltaTime;
             
             Vector3 pos = transform.position;
-            pos.z -= deltaTime;
+            pos.z -= deltaTime * 2;
             transform.position = pos;
 
-            if (timer >= 2f)
+            if (timer >= destroyTime)
             {
                 Destroy(gameObject);
                 yield break;

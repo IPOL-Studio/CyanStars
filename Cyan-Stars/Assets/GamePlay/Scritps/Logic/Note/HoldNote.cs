@@ -22,6 +22,7 @@ public class HoldNote : BaseNote
     /// 头部判定
     /// </summary>
     private bool isClicked;
+    private bool isMiss;
     
     public HoldNote(int trackIndex, NoteData data) : base(trackIndex, data)
     {
@@ -30,10 +31,19 @@ public class HoldNote : BaseNote
     public override void OnUpdate(float deltaTime)
     {
         base.OnUpdate(deltaTime);
+        if(isKeyDown && timer <= data.HoldLength/4 && timer >= (EvaluateHelper.CheckInputEndTime - data.HoldLength/4) && !isMiss)
+        {
+            view.GetTransform().GetChild(0).gameObject.SetActive(true);
+        }
+        else
+        {
+            view.GetTransform().GetChild(0).gameObject.SetActive(false);
+        }
         if(timer - data.HoldLength/4 < EvaluateHelper.CheckInputEndTime && !isClicked)
         {
             //Miss了
-            DestorySelf();
+            isMiss = true;
+            DestorySelf(true,data.HoldLength);
             Debug.Log($"音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
             RefleshPlayingUI(EvaluateType.Miss,false,-1,-1);
         }
@@ -56,17 +66,15 @@ public class HoldNote : BaseNote
     public override void OnKeyPress()
     {
         base.OnKeyPress();
-        if(timer <= data.HoldLength/4 && timer >= (EvaluateHelper.CheckInputEndTime - data.HoldLength/4))
+        if(timer <= data.HoldLength/4 && timer >= (EvaluateHelper.CheckInputEndTime - data.HoldLength/4) && !isMiss)
         {
             isKeyDown = true;
             keyDownTime += Time.deltaTime;
-            view.GetTransform().GetChild(0).gameObject.SetActive(true);
             //Debug.Log("Yes" + (EvaluateHelper.CheckInputEndTime - data.HoldLength/4) + " " + timer + " " + data.HoldLength/4);
         }
         else    
         {
-            isKeyDown = false;
-            view.GetTransform().GetChild(0).gameObject.SetActive(false);
+            isKeyDown = false;;
             //Debug.Log("No" + (EvaluateHelper.CheckInputEndTime - data.HoldLength/4) + " " + timer + " " + data.HoldLength/4);
         }
     }
@@ -79,6 +87,12 @@ public class HoldNote : BaseNote
             isClicked = true;
             EvaluateType evaluateType = EvaluateHelper.GetHoldEvaluate(timer);
             RefleshPlayingUI(evaluateType,true,1,1);
+            Debug.Log($"Hold音符命中，评价:{evaluateType}，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
         }
+    }
+    public override void OnKeyUp()
+    {
+        base.OnKeyUp();
+        isKeyDown = false;
     }
 }
