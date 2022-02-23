@@ -61,7 +61,7 @@ public class MusicTrack
             return;
         }
 
-        if (Notes[0].IsDestoryed)
+        if (Notes[0].IsDestroyed)
         {
             Notes.RemoveAt(0);
             if (Notes.Count == 0)

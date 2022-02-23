@@ -25,7 +25,7 @@ public abstract class BaseNote
     /// <summary>
     /// 是否已销毁
     /// </summary>
-    public bool IsDestoryed;
+    public bool IsDestroyed;
 
     /// <summary>
     /// 视图层物体
@@ -40,6 +40,12 @@ public abstract class BaseNote
         timer = data.TimePoint;
         
         view = GameMgr.Instance.CreateView(trackIndex,data);
+    }
+
+    public void AddMaxScore(int score)
+    {
+        GameManager.Instance.maxScore += score;
+        Debug.Log($"最大得分：{GameManager.Instance.maxScore}");
     }
     
     public override string ToString()
@@ -77,7 +83,7 @@ public abstract class BaseNote
     /// </summary>
     public virtual void OnKeyDown()
     {
-        if (IsDestoryed)
+        if (IsDestroyed)
         {
             return;
         }
@@ -88,7 +94,7 @@ public abstract class BaseNote
     /// </summary>
     public virtual void OnKeyUp()
     {
-        if (IsDestoryed)
+        if (IsDestroyed)
         {
             return;
         }
@@ -99,7 +105,7 @@ public abstract class BaseNote
     /// </summary>
     public virtual void OnKeyPress()
     {
-        if (IsDestoryed)
+        if (IsDestroyed)
         {
             return;
         }
@@ -109,48 +115,19 @@ public abstract class BaseNote
     /// <summary>
     /// 销毁自身
     /// </summary>
-    protected void DestorySelf(bool autoMove = true,float destroyTime = 2f)
+    protected void DestroySelf(bool autoMove = true,float destroyTime = 2f)
     {
-        if (IsDestoryed)
+        if (IsDestroyed)
         {
             return;
         }
         
-        IsDestoryed = true;
-        view.DestorySelf(autoMove,destroyTime);
+        IsDestroyed = true;
+        view.DestroySelf(autoMove,destroyTime);
         view = null;
     }
-    protected void RefleshPlayingUI(EvaluateType type,bool suc,int score,int combo)
+    protected void RefreshPlayingUI(EvaluateType type,bool suc,int score,int combo)
     {
-        string str = "";
-        Color color;
-        if(type == EvaluateType.Exact)
-        {
-            str = "Exact!!!";
-            color = Color.green;
-        }
-        else if(type == EvaluateType.Great)
-        {
-            str = "Great!!";
-            color = Color.cyan;
-        }
-        else if(type == EvaluateType.Right)
-        {
-            str = "Right!";
-            color = Color.yellow;
-        }
-        else if(type == EvaluateType.Bad)
-        {
-            str = "Bad...";
-            color = Color.red;
-        }
-        else
-        {
-            str = "Miss...";
-            color = Color.white;
-        }
-        GameManager.Instance.grade = str; 
-        GameManager.Instance.playingUI.gradeText.color = color;
         if(suc)
         {
             GameManager.Instance.score += score;
@@ -160,5 +137,6 @@ public abstract class BaseNote
         {
             GameManager.Instance.combo = 0;
         }
+        GameManager.Instance.RefreshPlayingUI(GameManager.Instance.combo,GameManager.Instance.score,type.ToString());
     }
 }

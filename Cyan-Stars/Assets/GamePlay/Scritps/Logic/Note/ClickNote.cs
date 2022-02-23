@@ -21,9 +21,11 @@ public class ClickNote : BaseNote
         if (timer <= EvaluateHelper.CheckInputEndTime * 2) //一次短按click大概要250ms，不乘2的话来不及
         {
             //Miss了
-            DestorySelf();
+            DestroySelf();
+            AddMaxScore(2);
+            GameManager.Instance.missNum ++;
             Debug.Log($"Click音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
-            RefleshPlayingUI(EvaluateType.Miss,false,-1,-1);
+            RefreshPlayingUI(EvaluateType.Miss,false,-1,-1);
         }
     }
 
@@ -47,16 +49,18 @@ public class ClickNote : BaseNote
             //总的按住时长
             float time = Mathf.Abs(keyDownTime - timer);
             
-            DestorySelf(false);
+            DestroySelf(false);
 
             EvaluateType type = EvaluateHelper.GetClickEvaluate(time);
+            EvaluateHelper.GetTapEvaluate(timer);
 
             if(type == EvaluateType.Exact)
-                RefleshPlayingUI(type,true,2,1);
+                RefreshPlayingUI(type,true,2,1);
             else if(type == EvaluateType.Great)
-                RefleshPlayingUI(type,true,1,1);
+                RefreshPlayingUI(type,true,1,1);
             else
-                RefleshPlayingUI(type,false,-1,-1);
+                RefreshPlayingUI(type,false,-1,-1);
+            AddMaxScore(2);
             Debug.Log($"Click音符命中，按住时长:{time}，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}，评分{type}");
         }
     }

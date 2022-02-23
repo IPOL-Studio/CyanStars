@@ -47,7 +47,7 @@ public class GreenNote : Note//绿色音符快
                 clickTimer += Time.deltaTime;
             }
         }
-        if(isTriggered)DestoryEffect();
+        if(isTriggered)DestroyEffect();
         else transform.GetChild(0).gameObject.SetActive(false);
         if(isTriggered && (!other || !other.gameObject.activeSelf))
         {

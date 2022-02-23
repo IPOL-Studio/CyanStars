@@ -129,7 +129,11 @@ public class GameMgr : MonoBehaviour
     {
         return timeline.Timer;
     }
-    
+    public float TimeSchedule()
+    {
+        if(timeline != null && SO != null)return timeline.Timer / SO.TimelineData.Time;
+        return 1;
+    }
     /// <summary>
     /// 时间轴结束
     /// </summary>
