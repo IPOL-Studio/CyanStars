@@ -19,9 +19,11 @@ public class DragNote : BaseNote
 
         if (timer < -dragTime)
         {
-            DestorySelf();
+            DestroySelf();
+            AddMaxScore(1);
+            GameManager.Instance.missNum ++;
             Debug.Log($"Drag音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
-            RefleshPlayingUI(EvaluateType.Miss, false, -1, -1);
+            RefreshPlayingUI(EvaluateType.Miss, false, -1, -1);
         }
     }
 
@@ -30,9 +32,10 @@ public class DragNote : BaseNote
         base.OnKeyPress();
         if (timer <= dragTime && timer >= -dragTime)
         {
-            DestorySelf(false);
+            DestroySelf(false);
+            AddMaxScore(1);
             Debug.Log($"Drag音符命中，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
-            RefleshPlayingUI(EvaluateType.Exact,true,1,1);
+            RefreshPlayingUI(EvaluateType.Exact,true,1,1);
         }
     }
 }

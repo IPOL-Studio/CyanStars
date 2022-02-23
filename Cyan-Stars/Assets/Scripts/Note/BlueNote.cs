@@ -16,7 +16,7 @@ public class BlueNote : Note//蓝色音符块
             GameManager.Instance.combo += 1;//Combo数量加1
             GameManager.Instance.score += score;//分数加上音符块的分数
             isClicked = true;//音符块被击中
-            DestoryEffect();
+            DestroyEffect();
             Destroy(gameObject, 2f);//音符块消失
         }
     }

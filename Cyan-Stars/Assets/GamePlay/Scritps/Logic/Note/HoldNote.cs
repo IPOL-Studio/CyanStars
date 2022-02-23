@@ -31,7 +31,7 @@ public class HoldNote : BaseNote
     public override void OnUpdate(float deltaTime)
     {
         base.OnUpdate(deltaTime);
-        if(isKeyDown && timer <= data.HoldLength/4 && timer >= (EvaluateHelper.CheckInputEndTime - data.HoldLength/4) && !isMiss)
+        if(isKeyDown && timer <= data.HoldLength/4 && timer >= (EvaluateHelper.CheckInputEndTime - data.HoldLength/4) && !isMiss && isClicked)
         {
             view.GetTransform().GetChild(0).gameObject.SetActive(true);
         }
@@ -43,20 +43,23 @@ public class HoldNote : BaseNote
         {
             //Miss了
             isMiss = true;
-            DestorySelf(true,data.HoldLength);
+            DestroySelf(true,data.HoldLength);
+            AddMaxScore(2);
+            GameManager.Instance.missNum ++;
             Debug.Log($"音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
-            RefleshPlayingUI(EvaluateType.Miss,false,-1,-1);
+            RefreshPlayingUI(EvaluateType.Miss,false,-1,-1);
         }
         if(timer + data.HoldLength/4 < EvaluateHelper.CheckInputEndTime && isClicked)
         {
             float result = keyDownTime/time;
             EvaluateType evaluateType = EvaluateHelper.GetHoldEvaluate(result);
+            AddMaxScore(2);
             Debug.Log($"Hold音符命中，评价:{evaluateType}，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}，按住时间比例：{result}");
             if(evaluateType == EvaluateType.Exact || evaluateType == EvaluateType.Great || evaluateType == EvaluateType.Right)
-                RefleshPlayingUI(evaluateType,true,1,1);
+                RefreshPlayingUI(evaluateType,true,1,1);
             else
-                RefleshPlayingUI(evaluateType,false,-1,-1);
-            DestorySelf();
+                RefreshPlayingUI(evaluateType,false,-1,-1);
+            DestroySelf();
         }
         if(timer <= data.HoldLength/4 && timer >= (EvaluateHelper.CheckInputEndTime - data.HoldLength/4))
         {
@@ -85,8 +88,8 @@ public class HoldNote : BaseNote
         if(timer - data.HoldLength/4 <= EvaluateHelper.CheckInputStartTime && timer - data.HoldLength/4 >= EvaluateHelper.CheckInputEndTime)
         {
             isClicked = true;
-            EvaluateType evaluateType = EvaluateHelper.GetHoldEvaluate(timer);
-            RefleshPlayingUI(evaluateType,true,1,1);
+            EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(timer,data.HoldLength/4);
+            RefreshPlayingUI(evaluateType,true,1,1);
             Debug.Log($"Hold音符命中，评价:{evaluateType}，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
         }
     }

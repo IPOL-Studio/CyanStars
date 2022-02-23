@@ -21,9 +21,11 @@ public class TapNote : BaseNote
         if (timer <= EvaluateHelper.CheckInputEndTime)
         {
             //Miss了
-            DestorySelf();
+            DestroySelf();
+            AddMaxScore(1);
+            GameManager.Instance.missNum ++;
             Debug.Log($"音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
-            RefleshPlayingUI(EvaluateType.Miss,false,-1,-1);
+            RefreshPlayingUI(EvaluateType.Miss,false,-1,-1);
         }
     }
 
@@ -39,13 +41,15 @@ public class TapNote : BaseNote
         
         EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(timer);
         if(evaluateType == EvaluateType.Exact || evaluateType == EvaluateType.Great)
-            RefleshPlayingUI(evaluateType,true,1,1);
+            RefreshPlayingUI(evaluateType,true,1,1);
         else if(evaluateType == EvaluateType.Right || evaluateType == EvaluateType.Bad)
-            RefleshPlayingUI(evaluateType,false,-1,-1);
+            RefreshPlayingUI(evaluateType,false,-1,-1);
         else
-            RefleshPlayingUI(evaluateType,false,-1,-1);
+            RefreshPlayingUI(evaluateType,false,-1,-1);
         
-        DestorySelf(false);
+        DestroySelf(false);
+
+        AddMaxScore(1);
         
         Debug.Log($"Tap音符命中，评价:{evaluateType}，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
     }
