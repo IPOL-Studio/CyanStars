@@ -40,6 +40,7 @@ public class TapNote : BaseNote
         }
         
         EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(timer);
+        EvaluateHelper.ComputeDeviation(timer);
         if(evaluateType == EvaluateType.Exact || evaluateType == EvaluateType.Great)
             RefreshPlayingUI(evaluateType,true,1,1);
         else if(evaluateType == EvaluateType.Right || evaluateType == EvaluateType.Bad)
