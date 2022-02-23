@@ -67,6 +67,21 @@ public class PlayingUI : MonoBehaviour
                 scoreRatio = (float)GameManager.Instance.score / (float)GameManager.Instance.maxScore;
             }
             scoreRatioText.text = "得分比:" + string.Format("{0:F}",scoreRatio*100) + "%";
+            if(GameManager.Instance.greatNum + GameManager.Instance.rightNum + GameManager.Instance.badNum + GameManager.Instance.missNum == 0)
+            {
+                scoreRatioText.color = Color.yellow;
+            }
+            else
+            {
+                if(GameManager.Instance.missNum + GameManager.Instance.badNum == 0)
+                {
+                    scoreRatioText.color = Color.blue;
+                }
+                else
+                {
+                    scoreRatioText.color = Color.white;
+                }
+            }
         }
     }
 }
