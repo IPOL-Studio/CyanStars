@@ -1,9 +1,19 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TapNote : BaseNote
+/// <summary>
+/// Break音符
+/// </summary>
+public class BreakNote : BaseNote
 {
+    public override bool IsInRange(float min, float max)
+    {
+        //Break音符的InRange判定有点特殊
+        return Math.Abs(min - data.Pos) < 0.001f;
+    }
+    
     public override void OnUpdate(float deltaTime)
     {
         base.OnUpdate(deltaTime);
@@ -12,7 +22,7 @@ public class TapNote : BaseNote
         {
             //没接住 miss
             DestorySelf();
-            Debug.LogError($"Tap音符miss：{data}");
+            Debug.LogError($"Break音符miss：{data}");
         }
     }
 
@@ -23,7 +33,7 @@ public class TapNote : BaseNote
         if (inputType == InputType.Down)
         {
             DestorySelf(false);
-            Debug.LogError($"Tap音符命中,评价:{EvaluateHelper.GetTapEvaluate(timer)},{data}");
+            Debug.LogError($"Break音符命中,{data}");
         }
     }
 }

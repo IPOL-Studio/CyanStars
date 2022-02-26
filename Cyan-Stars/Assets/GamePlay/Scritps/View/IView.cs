@@ -9,7 +9,5 @@ public interface IView
 {
     void OnUpdate(float deltaTime);
 
-    void DestroySelf(bool autoMove = true,float destroyTime = 2f);
-    bool IsTiggered();
-    Transform GetTransform();
+    void DestorySelf(bool autoMove = true);
 }

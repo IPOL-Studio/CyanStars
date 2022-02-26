@@ -8,14 +8,14 @@ using UnityEngine;
 public abstract class BaseNote
 {
     /// <summary>
-    /// 轨道编号
-    /// </summary>
-    private int trackIndex;
-    
-    /// <summary>
     /// 音符数据
     /// </summary>
     protected NoteData data;
+
+    /// <summary>
+    /// 此音符所属图层
+    /// </summary>
+    protected MusicTimeline.Layer layer;
     
     /// <summary>
     /// 剩余时间的计时器
@@ -23,120 +23,68 @@ public abstract class BaseNote
     protected float timer;
 
     /// <summary>
-    /// 是否已销毁
-    /// </summary>
-    public bool IsDestroyed;
-
-    /// <summary>
     /// 视图层物体
     /// </summary>
-    protected IView view;
-    private bool lastIsTiggered;
+    protected IView viewObject;
     
-    public BaseNote(int trackIndex, NoteData data)
+    
+    
+    /// <summary>
+    /// 设置数据
+    /// </summary>
+    public void SetData(NoteData data,MusicTimeline.Layer layer)
     {
-        this.trackIndex = trackIndex;
         this.data = data;
-        timer = data.TimePoint;
-        
-        view = GameMgr.Instance.CreateView(trackIndex,data);
+        this.layer = layer;
+        timer = data.StartTime;
+        viewObject = GameMgr.Instance.CreateViewObject(data);
     }
 
-    public void AddMaxScore(int score)
+    /// <summary>
+    /// 是否可接收输入
+    /// </summary>
+    public virtual bool CanReceiveInput()
     {
-        GameManager.Instance.maxScore += score;
-        Debug.Log($"最大得分：{GameManager.Instance.maxScore}");
+        return timer <= EvaluateHelper.CheckInputStartTime && timer >= (EvaluateHelper.CheckInputEndTime - data.HoldLength);
     }
-    
-    public override string ToString()
+
+    /// <summary>
+    /// 是否与指定范围有重合
+    /// </summary>
+    public virtual bool IsInRange(float min,float max)
     {
-        return $"类型:{data.Type},轨道:{trackIndex}";
+        //3种情况可能重合 1.最左侧在范围内 2.最右侧在范围内 3.中间部分在范围内
+        bool result = (data.Pos >= min && data.Pos <= max)
+                      || ((data.Pos + data.Width) >= min && (data.Pos + data.Width) <= max)
+                      || (data.Pos <= min && (data.Pos + data.Width) >= max);
+
+        return result;
     }
     
     public virtual void OnUpdate(float deltaTime)
     {
-        //需要考虑音符速率
-        deltaTime *= data.SpeedRate;
-        
         timer -= deltaTime;
-
-        view.OnUpdate(deltaTime);
-        if(view != null && view.IsTiggered() && !lastIsTiggered)
-        {
-            OnKeyDown();
-            lastIsTiggered = true;
-        }
-        if(view != null && view.IsTiggered())  
-        {
-            OnKeyPress();
-            lastIsTiggered = true;
-        }
-        if(view != null && !view.IsTiggered() && lastIsTiggered)
-        {
-            OnKeyUp();
-            lastIsTiggered = false;
-        }
+        
+        viewObject.OnUpdate(deltaTime);
     }
 
     /// <summary>
-    /// 此音符所属轨道按键按下
+    /// 此音符有对应输入时
     /// </summary>
-    public virtual void OnKeyDown()
+    public virtual void OnInput(InputType inputType)
     {
-        if (IsDestroyed)
-        {
-            return;
-        }
+        //Debug.Log($"音符接收输入:输入类型{inputType},倒计时器:{timer},数据{data}");
     }
-    
-    /// <summary>
-    /// 此音符所属轨道按键抬起
-    /// </summary>
-    public virtual void OnKeyUp()
-    {
-        if (IsDestroyed)
-        {
-            return;
-        }
-    }
-    
-    /// <summary>
-    /// 此音符所属轨道按键按压中
-    /// </summary>
-    public virtual void OnKeyPress()
-    {
-        if (IsDestroyed)
-        {
-            return;
-        }
-    }
-
 
     /// <summary>
     /// 销毁自身
     /// </summary>
-    protected void DestroySelf(bool autoMove = true,float destroyTime = 2f)
+    protected void DestorySelf(bool autoMove = true)
     {
-        if (IsDestroyed)
-        {
-            return;
-        }
-        
-        IsDestroyed = true;
-        view.DestroySelf(autoMove,destroyTime);
-        view = null;
+        layer.RemoveNote(this);
+        viewObject.DestorySelf(autoMove);
+        viewObject = null;
     }
-    protected void RefreshPlayingUI(EvaluateType type,bool suc,int score,int combo)
-    {
-        if(suc)
-        {
-            GameManager.Instance.score += score;
-            GameManager.Instance.combo += combo;
-        }
-        else
-        {
-            GameManager.Instance.combo = 0;
-        }
-        GameManager.Instance.RefreshPlayingUI(GameManager.Instance.combo,GameManager.Instance.score,type.ToString());
-    }
+    
+
 }
