@@ -17,10 +17,10 @@ public class ClickNote : BaseNote
     {
         base.OnUpdate(deltaTime,noteSpeedRate);
 
-        if (timer < EvaluateHelper.CheckInputEndTime)
+        if (logicTimer < EvaluateHelper.CheckInputEndTime)
         {
             //没接住 miss
-            DestorySelf();
+            DestroySelf();
             Debug.LogError($"Click音符miss：{data}");
         }
     }
@@ -32,13 +32,13 @@ public class ClickNote : BaseNote
         switch (inputType)
         {
             case InputType.Down:
-                downTimePoint = timer;
+                downTimePoint = logicTimer;
                 break;
 
             
             case InputType.Up:
-                float time = downTimePoint - timer;
-                DestorySelf(false);
+                float time = downTimePoint - logicTimer;
+                DestroySelf(false);
                 Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
                 break;
           

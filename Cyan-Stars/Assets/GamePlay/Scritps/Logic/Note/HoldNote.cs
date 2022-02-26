@@ -8,6 +8,11 @@ public class HoldNote : BaseNote
 {
 
     /// <summary>
+    /// Hold的音符的检查输入结束时间
+    /// </summary>
+    private float holdCheckInputEndTime;
+    
+    /// <summary>
     /// 头判是否成功
     /// </summary>
     private bool headSucess;
@@ -21,13 +26,25 @@ public class HoldNote : BaseNote
     /// 按下的时间点
     /// </summary>
     private float downTimePoint;
-    
-    
+
+    public override void Init(NoteData data, MusicTimeline.Layer layer)
+    {
+        base.Init(data, layer);
+
+        //hold结束时间点要算上hold音符的长度
+        holdCheckInputEndTime = EvaluateHelper.CheckInputEndTime - (data.HoldEndTime - data.StartTime);
+    }
+
+    public override bool CanReceiveInput()
+    {
+        return logicTimer <= EvaluateHelper.CheckInputStartTime && logicTimer >= holdCheckInputEndTime;
+    }
+
     public override void OnUpdate(float deltaTime,float noteSpeedRate)
     {
         base.OnUpdate(deltaTime,noteSpeedRate);
 
-        if (timer < (EvaluateHelper.CheckInputEndTime - data.HoldEndTime))
+        if (logicTimer < holdCheckInputEndTime)
         {
             if (!headSucess)
             {
@@ -39,7 +56,7 @@ public class HoldNote : BaseNote
                 if (downTimePoint != 0)
                 {
                     //按下后一直持续到结尾的话 也要算一下分
-                    float time = downTimePoint - timer;
+                    float time = downTimePoint - logicTimer;
                     value += time / data.HoldEndTime;
                 }
                 
@@ -48,7 +65,7 @@ public class HoldNote : BaseNote
                 Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
             }
             
-            DestorySelf();
+            DestroySelf();
         }
     }
 
@@ -63,23 +80,23 @@ public class HoldNote : BaseNote
                 if (!headSucess)
                 {
                     //判断头判评价
-                    EvaluateType et = EvaluateHelper.GetTapEvaluate(timer);
+                    EvaluateType et = EvaluateHelper.GetTapEvaluate(logicTimer);
                     if (et == EvaluateType.Bad)
                     {
                         //头判失败直接销毁
-                        DestorySelf(false);
+                        DestroySelf(false);
                         Debug.LogError($"Hold音符miss：{data}");
                         return;
                     }
                     else
                     {
-                        Debug.LogError($"Hold头判成功,时间：{timer}，{data}");
+                        Debug.LogError($"Hold头判成功,时间：{logicTimer}，{data}");
                     }
                 }
                 
                 //头判成功 记录按下时间
                 headSucess = true;
-                downTimePoint = timer;
+                downTimePoint = logicTimer;
                 
                 break;
 
@@ -89,7 +106,7 @@ public class HoldNote : BaseNote
                 if (downTimePoint != 0)
                 {
                     //此次有效时长
-                    float time = downTimePoint - timer;
+                    float time = downTimePoint - logicTimer;
                     value += time / data.HoldEndTime;
                     
                     //重置按下时间点

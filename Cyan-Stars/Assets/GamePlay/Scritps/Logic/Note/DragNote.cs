@@ -12,23 +12,23 @@ public class DragNote : BaseNote
     
     public override bool CanReceiveInput()
     {
-        return timer <= EvaluateHelper.DragTimeRange && timer >= -EvaluateHelper.DragTimeRange;
+        return logicTimer <= EvaluateHelper.DragTimeRange && logicTimer >= -EvaluateHelper.DragTimeRange;
     }
 
     public override void OnUpdate(float deltaTime,float noteSpeedRate)
     {
         base.OnUpdate(deltaTime,noteSpeedRate);
 
-        if (isHit && timer <= 0 )
+        if (isHit && logicTimer <= 0 )
         {
-            DestorySelf(false);
+            DestroySelf(false);
             return;
         }
         
-        if (timer < -EvaluateHelper.DragTimeRange)
+        if (logicTimer < -EvaluateHelper.DragTimeRange)
         {
             //没接住 miss
-            DestorySelf();
+            DestroySelf();
             Debug.LogError($"Drag音符miss：{data}");
         }
     }
@@ -48,7 +48,7 @@ public class DragNote : BaseNote
                 }
                 
                 Debug.LogError($"Drag音符命中：{data}");
-                if (timer > 0)
+                if (logicTimer > 0)
                 {
                     //早按准点放
                     isHit = true;
@@ -56,7 +56,7 @@ public class DragNote : BaseNote
                 else
                 {
                     //晚按即刻放
-                    DestorySelf(false);
+                    DestroySelf(false);
                 }
                 break;
         }

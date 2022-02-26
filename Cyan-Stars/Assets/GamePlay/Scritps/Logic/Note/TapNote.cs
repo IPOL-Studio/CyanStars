@@ -8,10 +8,10 @@ public class TapNote : BaseNote
     {
         base.OnUpdate(deltaTime,noteSpeedRate);
 
-        if (timer < EvaluateHelper.CheckInputEndTime)
+        if (logicTimer < EvaluateHelper.CheckInputEndTime)
         {
             //没接住 miss
-            DestorySelf();
+            DestroySelf();
             Debug.LogError($"Tap音符miss：{data}");
         }
     }
@@ -22,8 +22,8 @@ public class TapNote : BaseNote
 
         if (inputType == InputType.Down)
         {
-            DestorySelf(false);
-            Debug.LogError($"Tap音符命中,评价:{EvaluateHelper.GetTapEvaluate(timer)},{data}");
+            DestroySelf(false);
+            Debug.LogError($"Tap音符命中,评价:{EvaluateHelper.GetTapEvaluate(logicTimer)},{data}");
         }
     }
 }
