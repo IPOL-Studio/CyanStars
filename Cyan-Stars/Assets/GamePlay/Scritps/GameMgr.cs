@@ -47,7 +47,7 @@ public class GameMgr : MonoBehaviour
     {
         MusicTimelineData data = TimelineSo.musicTimelineData;
 
-        ViewHelper.CalScaledTime(data);
+        ViewHelper.CalViewTime(data);
         
         timeline = new MusicTimeline(data);
         Debug.Log("音乐时间轴创建完毕");
@@ -58,9 +58,7 @@ public class GameMgr : MonoBehaviour
         CheckKeybordInput();
         timeline?.OnUpdate(Time.deltaTime);
     }
-
-  
-
+    
     /// <summary>
     /// 检查键盘输入
     /// </summary>
@@ -97,8 +95,6 @@ public class GameMgr : MonoBehaviour
         timeline?.OnInput(inputType,item);
     }
 
-
-    
     public void RefreshTimer(float time)
     {
         TxtTimer.text = time.ToString("0.00");

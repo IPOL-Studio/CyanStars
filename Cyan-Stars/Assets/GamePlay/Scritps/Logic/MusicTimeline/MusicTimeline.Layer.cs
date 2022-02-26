@@ -48,8 +48,6 @@ public partial class MusicTimeline
                     BaseNote note = CreateNote(noteData);
                     notes.Add(note);
                 }
-                
-               
             }
         }
 
@@ -77,7 +75,7 @@ public partial class MusicTimeline
                     note = new BreakNote();
                     break;
             }
-            note.SetData(noteData,this);
+            note.Init(noteData,this);
 
             return note;
         }

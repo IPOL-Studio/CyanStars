@@ -19,7 +19,7 @@ public class ViewObject : MonoBehaviour, IView
         transform.position = pos;
     }
 
-    public void DestorySelf(bool autoMove = true)
+    public void DestroySelf(bool autoMove = true)
     {
         if (!autoMove)
         {

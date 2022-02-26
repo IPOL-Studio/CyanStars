@@ -7,7 +7,9 @@ using UnityEngine;
 /// </summary>
 public interface IView
 {
+
+    
     void OnUpdate(float deltaTime);
 
-    void DestorySelf(bool autoMove = true);
+    void DestroySelf(bool autoMove = true);
 }
