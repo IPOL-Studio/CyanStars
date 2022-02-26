@@ -37,7 +37,7 @@ public abstract class BaseNote
         this.data = data;
         this.layer = layer;
         timer = data.StartTime;
-        viewObject = GameMgr.Instance.CreateViewObject(data);
+        viewObject = ViewHelper.CreateViewObject(data);
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ public abstract class BaseNote
     /// </summary>
     public virtual bool CanReceiveInput()
     {
-        return timer <= EvaluateHelper.CheckInputStartTime && timer >= (EvaluateHelper.CheckInputEndTime - data.HoldLength);
+        return timer <= EvaluateHelper.CheckInputStartTime && timer >= (EvaluateHelper.CheckInputEndTime - data.HoldEndTime);
     }
 
     /// <summary>
@@ -61,11 +61,11 @@ public abstract class BaseNote
         return result;
     }
     
-    public virtual void OnUpdate(float deltaTime)
+    public virtual void OnUpdate(float deltaTime,float noteSpeedRate)
     {
         timer -= deltaTime;
         
-        viewObject.OnUpdate(deltaTime);
+        viewObject.OnUpdate(deltaTime * noteSpeedRate);
     }
 
     /// <summary>

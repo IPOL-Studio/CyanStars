@@ -42,9 +42,11 @@ public partial class MusicTimeline
 
     public void OnUpdate(float deltaTime)
     {
-        //考虑基准速度和谱面的基准速率
-        deltaTime *= (data.Speed * data.SpeedRate);
         timer += deltaTime;
+        
+        //计算timeline速率
+        float timelineSpeedRate = data.BaseSpeed * data.SpeedRate;
+        
         
         GameMgr.Instance.RefreshTimer(timer);
 
@@ -57,7 +59,7 @@ public partial class MusicTimeline
         
         for (int i = 0; i < layers.Count; i++)
         {
-            layers[i].OnUpdate(deltaTime,timer);
+            layers[i].OnUpdate(timer,deltaTime,timelineSpeedRate);
         }
     }
     

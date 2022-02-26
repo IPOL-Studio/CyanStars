@@ -23,11 +23,11 @@ public class HoldNote : BaseNote
     private float downTimePoint;
     
     
-    public override void OnUpdate(float deltaTime)
+    public override void OnUpdate(float deltaTime,float noteSpeedRate)
     {
-        base.OnUpdate(deltaTime);
+        base.OnUpdate(deltaTime,noteSpeedRate);
 
-        if (timer < (EvaluateHelper.CheckInputEndTime - data.HoldLength))
+        if (timer < (EvaluateHelper.CheckInputEndTime - data.HoldEndTime))
         {
             if (!headSucess)
             {
@@ -40,7 +40,7 @@ public class HoldNote : BaseNote
                 {
                     //按下后一直持续到结尾的话 也要算一下分
                     float time = downTimePoint - timer;
-                    value += time / data.HoldLength;
+                    value += time / data.HoldEndTime;
                 }
                 
                 
@@ -90,7 +90,7 @@ public class HoldNote : BaseNote
                 {
                     //此次有效时长
                     float time = downTimePoint - timer;
-                    value += time / data.HoldLength;
+                    value += time / data.HoldEndTime;
                     
                     //重置按下时间点
                     downTimePoint = 0;

@@ -15,9 +15,9 @@ public class DragNote : BaseNote
         return timer <= EvaluateHelper.DragTimeRange && timer >= -EvaluateHelper.DragTimeRange;
     }
 
-    public override void OnUpdate(float deltaTime)
+    public override void OnUpdate(float deltaTime,float noteSpeedRate)
     {
-        base.OnUpdate(deltaTime);
+        base.OnUpdate(deltaTime,noteSpeedRate);
 
         if (isHit && timer <= 0 )
         {

@@ -14,10 +14,7 @@ public class LayerData
     /// </summary>
     public List<ClipData> ClipDatas;
 
-    /// <summary>
-    /// 音符数据
-    /// </summary>
-    public List<NoteData> NoteDatas;
+
     
    
 }
