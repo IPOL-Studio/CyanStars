@@ -1,32 +1,30 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 音符数据
+/// 音乐时间轴数据
 /// </summary>
-[Serializable]
-public class NoteData
+[System.Serializable]
+public class MusicTimelineData
 {
     /// <summary>
-    /// 音符类型
+    /// 总时间
     /// </summary>
-    public NoteType Type;
-    
+    public float Time;
+
     /// <summary>
-    /// 时间点
+    /// 速度
     /// </summary>
-    public float TimePoint;
-    
+    public float Speed = 1;
     
     /// <summary>
     /// 速率
     /// </summary>
     public float SpeedRate = 1;
-
+    
     /// <summary>
-    /// Hold音符的长度
+    /// 图层数据
     /// </summary>
-    public float HoldLength = 1;
+    public List<LayerData> LayerDatas;
 }

@@ -3,65 +3,46 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Click音符，短按
+/// Click音符
 /// </summary>
 public class ClickNote : BaseNote
 {
-    private bool isKeyDown;
-    private float keyDownTime;
-    
-    public ClickNote(int trackIndex, NoteData data) : base(trackIndex, data)
-    {
-    }
 
+    /// <summary>
+    /// 按下的时间点
+    /// </summary>
+    private float downTimePoint;
+    
     public override void OnUpdate(float deltaTime)
     {
         base.OnUpdate(deltaTime);
-        
-        if (timer <= EvaluateHelper.CheckInputEndTime * 2) //一次短按click大概要250ms，不乘2的话来不及
+
+        if (timer < EvaluateHelper.CheckInputEndTime)
         {
-            //Miss了
-            DestroySelf();
-            AddMaxScore(2);
-            GameManager.Instance.missNum ++;
-            Debug.Log($"Click音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
-            RefreshPlayingUI(EvaluateType.Miss,false,-1,-1);
+            //没接住 miss
+            DestorySelf();
+            Debug.LogError($"Click音符miss：{data}");
         }
     }
-
-    public override void OnKeyDown()
+    
+    public override void OnInput(InputType inputType)
     {
-        base.OnKeyDown();
-        
-        if (timer <= EvaluateHelper.CheckInputStartTime)
-        {
-            isKeyDown = true;
-            keyDownTime = timer;
-        }
-    }
+        base.OnInput(inputType);
 
-    public override void OnKeyUp()
-    {
-        base.OnKeyUp();
-
-        if (isKeyDown)
+        switch (inputType)
         {
-            //总的按住时长
-            float time = Mathf.Abs(keyDownTime - timer);
+            case InputType.Down:
+                downTimePoint = timer;
+                break;
+
             
-            DestroySelf(false);
-
-            EvaluateType type = EvaluateHelper.GetClickEvaluate(time);
-            EvaluateHelper.ComputeDeviation(timer);
-
-            if(type == EvaluateType.Exact)
-                RefreshPlayingUI(type,true,2,1);
-            else if(type == EvaluateType.Great)
-                RefreshPlayingUI(type,true,1,1);
-            else
-                RefreshPlayingUI(type,false,-1,-1);
-            AddMaxScore(2);
-            Debug.Log($"Click音符命中，按住时长:{time}，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}，评分{type}");
+            case InputType.Up:
+                float time = downTimePoint - timer;
+                DestorySelf(false);
+                Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
+                break;
+          
         }
+        
     }
 }

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 143927c952bbda541a9d655919cd135d, type: 3}
+  m_Name: InputMapData
+  m_EditorClassIdentifier: 
+  InputMapData:
+    Items:
+    - key: 113
+      RangeMin: 0.1
+      RangeMax: 0.2
+    - key: 119
+      RangeMin: 0.45
+      RangeMax: 0.55
+    - key: 101
+      RangeMin: 0.8
+      RangeMax: 0.9
+    - key: 32
+      RangeMin: -1
+      RangeMax: -1
+    - key: 32
+      RangeMin: 2
+      RangeMax: 2
