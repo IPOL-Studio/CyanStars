@@ -14,9 +14,9 @@ public class MusicTimelineData
     public float Time;
 
     /// <summary>
-    /// 速度
+    /// 基础速度
     /// </summary>
-    public float Speed = 1;
+    public float BaseSpeed = 1;
     
     /// <summary>
     /// 速率

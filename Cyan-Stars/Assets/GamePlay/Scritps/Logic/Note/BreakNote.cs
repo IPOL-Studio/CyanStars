@@ -14,9 +14,9 @@ public class BreakNote : BaseNote
         return Math.Abs(min - data.Pos) < 0.001f;
     }
     
-    public override void OnUpdate(float deltaTime)
+    public override void OnUpdate(float deltaTime,float noteSpeedRate)
     {
-        base.OnUpdate(deltaTime);
+        base.OnUpdate(deltaTime,noteSpeedRate);
 
         if (timer < EvaluateHelper.CheckInputEndTime)
         {

@@ -13,9 +13,9 @@ public class ClickNote : BaseNote
     /// </summary>
     private float downTimePoint;
     
-    public override void OnUpdate(float deltaTime)
+    public override void OnUpdate(float deltaTime,float noteSpeedRate)
     {
-        base.OnUpdate(deltaTime);
+        base.OnUpdate(deltaTime,noteSpeedRate);
 
         if (timer < EvaluateHelper.CheckInputEndTime)
         {

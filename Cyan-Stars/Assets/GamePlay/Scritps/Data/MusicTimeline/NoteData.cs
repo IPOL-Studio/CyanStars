@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,12 +34,13 @@ public class NoteData
     public float StartTime;
     
     /// <summary>
-    /// Hold音符的长度
+    /// Hold音符的判定结束时间
     /// </summary>
-    public float HoldLength;
-
+    public float HoldEndTime;
+    
+    
     public override string ToString()
     {
-        return $"音符数据：类型{Type}，位置{Pos}，宽度{Width},开始时间{StartTime},Hold音符长度{HoldLength}";
+        return $"音符数据：类型{Type}，位置{Pos}，宽度{Width},开始时间{StartTime},Hold音符长度{HoldEndTime}";
     }
 }

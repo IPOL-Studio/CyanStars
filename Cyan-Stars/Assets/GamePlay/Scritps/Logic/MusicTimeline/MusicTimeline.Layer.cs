@@ -39,31 +39,47 @@ public partial class MusicTimeline
         /// </summary>
         private void CreateNotes()
         {
-            for (int i = 0; i < data.NoteDatas.Count; i++)
+            for (int i = 0; i < data.ClipDatas.Count; i++)
             {
-                NoteData noteData = data.NoteDatas[i];
-                BaseNote note = null;
-                switch (noteData.Type)
+                ClipData clipData = data.ClipDatas[i];
+                for (int j = 0; j < clipData.NoteDatas.Count; j++)
                 {
-                    case NoteType.Tap:
-                        note = new TapNote();
-                        break;
-                    case NoteType.Hold:
-                        note = new HoldNote();
-                        break;
-                    case NoteType.Drag:
-                        note = new DragNote();
-                        break;
-                    case NoteType.Click:
-                        note = new ClickNote();
-                        break;
-                    case NoteType.Break:
-                        note = new BreakNote();
-                        break;
+                    NoteData noteData = clipData.NoteDatas[j];
+                    BaseNote note = CreateNote(noteData);
+                    notes.Add(note);
                 }
-                note.SetData(noteData,this);
-                notes.Add(note);
+                
+               
             }
+        }
+
+        /// <summary>
+        /// 创建音符
+        /// </summary>
+        private BaseNote CreateNote(NoteData noteData)
+        {
+            BaseNote note = null;
+            switch (noteData.Type)
+            {
+                case NoteType.Tap:
+                    note = new TapNote();
+                    break;
+                case NoteType.Hold:
+                    note = new HoldNote();
+                    break;
+                case NoteType.Drag:
+                    note = new DragNote();
+                    break;
+                case NoteType.Click:
+                    note = new ClickNote();
+                    break;
+                case NoteType.Break:
+                    note = new BreakNote();
+                    break;
+            }
+            note.SetData(noteData,this);
+
+            return note;
         }
 
         /// <summary>
@@ -74,20 +90,23 @@ public partial class MusicTimeline
             notes.Remove(note);
         }
         
-        public void OnUpdate(float deltaTime,float curTime)
+        public void OnUpdate(float curTime,float deltaTime,float timelineSpeedRate)
         {
             if (notes.Count == 0)
             {
                 return;
             }
             
-            //根据当前时间轴时间计算出当前正在运行的Clip，获得其对应速率
+            //根据当前timeline时间计算出当前正在运行的Clip，获得其对应速率
             RefreshCurClipIndex(curTime);
-            deltaTime *= data.ClipDatas[curClipIndex].SpeedRate;
             
+            //使用timeline速率和clip速率计算最终速率
+            float clipSpeedRate = data.ClipDatas[curClipIndex].SpeedRate;
+            float noteSpeedRate = timelineSpeedRate * clipSpeedRate;
+                
             for (int i = notes.Count - 1; i >= 0; i--)
             {
-                notes[i].OnUpdate(deltaTime);
+                notes[i].OnUpdate(deltaTime,noteSpeedRate);
             }
         }
 
