@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>
@@ -9,144 +10,89 @@ using UnityEngine.UI;
 /// </summary>
 public class GameMgr : MonoBehaviour
 {
-        
     public static GameMgr Instance;
-    
-    public TimelineSO SO;
-    public Transform ViewRoot;
-    
+
+    public MusicTimelineSO TimelineSo;
+    public InputMapSO InputMapSO;
+    public Transform viewRoot;
     public GameObject TapPrefab;
     public GameObject HoldPrefab;
     public GameObject DragPrefab;
     public GameObject ClickPrefab;
+    public GameObject BreakPrefab;
     
-    //public Button BtnStart;
-    //public Text TxtTimer;
+    public Button BtnStart;
+    public Text TxtTimer;
     
+    private InputMapData inputMapData;
     private MusicTimeline timeline;
-
-    private Dictionary<KeyCode, int> keyMap;
-
+    
     private void Awake()
     {
         Instance = this;
-
-        keyMap = new Dictionary<KeyCode, int>();
-        /*
-        keyMap.Add(KeyCode.Q, 1);
-        keyMap.Add(KeyCode.A, 1);
-        keyMap.Add(KeyCode.Z, 1);
-        keyMap.Add(KeyCode.W, 2);
-        keyMap.Add(KeyCode.S, 2);
-        keyMap.Add(KeyCode.X, 2);
-        keyMap.Add(KeyCode.E, 3);
-        keyMap.Add(KeyCode.D, 3);
-        keyMap.Add(KeyCode.C, 3);
-        keyMap.Add(KeyCode.R, 4);
-        keyMap.Add(KeyCode.F, 4);
-        keyMap.Add(KeyCode.V, 4);
-        keyMap.Add(KeyCode.T, 5);
-        keyMap.Add(KeyCode.G, 5);
-        keyMap.Add(KeyCode.B, 5);
-        keyMap.Add(KeyCode.Y, 6);
-        keyMap.Add(KeyCode.H, 6);
-        keyMap.Add(KeyCode.N, 6);
-        keyMap.Add(KeyCode.U, 7);
-        keyMap.Add(KeyCode.J, 7);
-        keyMap.Add(KeyCode.M, 7);
-        keyMap.Add(KeyCode.I, 8);
-        keyMap.Add(KeyCode.K, 8);
-        keyMap.Add(KeyCode.Comma, 8);
-        keyMap.Add(KeyCode.O, 9);
-        keyMap.Add(KeyCode.L, 9);
-        keyMap.Add(KeyCode.Period, 9);
-        keyMap.Add(KeyCode.P, 10);
-        keyMap.Add(KeyCode.Semicolon, 10);
-        keyMap.Add(KeyCode.Slash, 10);
-        keyMap.Add(KeyCode.LeftBracket, 11);
-        keyMap.Add(KeyCode.Quote, 11);
-        keyMap.Add(KeyCode.RightBracket, 12);
-        */
+        inputMapData = InputMapSO.InputMapData;
     }
-
+    
     private void Start()
     {
-        //BtnStart.onClick.AddListener(OnBtnStartClick);
-        timeline = new MusicTimeline(SO.TimelineData);
-        Debug.Log("音乐时间轴创建完毕");
+        BtnStart.onClick.AddListener(OnBtnStartClick);
     }
 
-    private void Update()
-    { 
-        CheckInput();
-        
-        timeline?.OnUpdate(Time.deltaTime);
- 
-    }
-
-    /*
+    /// <summary>
+    /// 点击开始按钮
+    /// </summary>
     private void OnBtnStartClick()
     {
-        timeline = new MusicTimeline(SO.TimelineData);
+        timeline = new MusicTimeline(TimelineSo.musicTimelineData);
         Debug.Log("音乐时间轴创建完毕");
     }
-    */
+    
+    private void Update()
+    {
+        CheckKeybordInput();
+        timeline?.OnUpdate(Time.deltaTime);
+    }
 
     /// <summary>
     /// 检查键盘输入
     /// </summary>
-    private void CheckInput()
+    private void CheckKeybordInput()
     {
-        foreach (KeyValuePair<KeyCode,int> pair in keyMap)
+        for (int i = 0; i < inputMapData.Items.Count; i++)
         {
-            if (Input.GetKeyDown(pair.Key))
-            {
-                timeline?.OnKeyDown(pair.Value);
-            }
+            InputMapData.Item item = inputMapData.Items[i];
 
-            if (Input.GetKey(pair.Key))
+            if (Input.GetKeyDown(item.key))
             {
-                timeline?.OnKeyPress(pair.Value);
+                ReciveInput(InputType.Down,item);
+                continue;
             }
-
-            if (Input.GetKeyUp(pair.Key))
+            
+            if (Input.GetKey(item.key))
             {
-                timeline?.OnKeyUp(pair.Value);
+                ReciveInput(InputType.Press,item);
+                continue;
+            }
+            
+            if (Input.GetKeyUp(item.key))
+            {
+                ReciveInput(InputType.Up,item);
             }
         }
     }
-    /*
-    /// <summary>
-    /// 刷新计时器文本
-    /// </summary>
-    public void RefreshTxtTimer(float timer)
-    {
-        TxtTimer.text = timer.ToString("0.00");
-    }
-    */
 
-    public float GetCurTimelineTime()
-    {
-        return timeline.Timer;
-    }
-    public float TimeSchedule()
-    {
-        if(timeline != null && SO != null)return timeline.Timer / SO.TimelineData.Time;
-        return 1;
-    }
     /// <summary>
-    /// 时间轴结束
+    /// 接收输入
     /// </summary>
-    public void TimelineEnd()
+    public void ReciveInput(InputType inputType, InputMapData.Item item)
     {
-        timeline = null;
+        timeline?.OnInput(inputType,item);
     }
 
     /// <summary>
     /// 创建视图层物体
     /// </summary>
-    /// <returns></returns>
-    public IView CreateView(int trackIndex,NoteData data)
+    public IView CreateViewObject(NoteData data)
     {
         GameObject go = null;
         switch (data.Type)
@@ -154,11 +100,8 @@ public class GameMgr : MonoBehaviour
             case NoteType.Tap:
                 go = Instantiate(TapPrefab);
                 break;
-            
             case NoteType.Hold:
                 go = Instantiate(HoldPrefab);
-                go.transform.localScale = new Vector3(go.transform.localScale.x, go.transform.localScale.y
-                , data.HoldLength * go.transform.localScale.z);
                 break;
             case NoteType.Drag:
                 go = Instantiate(DragPrefab);
@@ -166,39 +109,80 @@ public class GameMgr : MonoBehaviour
             case NoteType.Click:
                 go = Instantiate(ClickPrefab);
                 break;
-
+            case NoteType.Break:
+                go = Instantiate(BreakPrefab);
+                break;
         }
         
-        go.transform.SetParent(ViewRoot);
-        go.transform.position = GetViewStartPos(trackIndex, data.TimePoint);
-        go.name = $"Note:{data.Type}-{trackIndex}-{data.TimePoint}";
-        return go.GetComponent<View>();
+        
+        go.transform.SetParent(viewRoot);
+        go.transform.position = GetViewObjectPos(data);
+        go.transform.localScale = GetViewObjectScale(data);
+        
+        return go.GetComponent<ViewObject>();
     }
-    
+
     /// <summary>
-    /// 获取视图层物体的初始位置
+    /// 根据音符数据获取映射后的视图层位置
     /// </summary>
-    private Vector3 GetViewStartPos(int trackIndex,float startTime)
+    private Vector3 GetViewObjectPos(NoteData data)
     {
         Vector3 pos = default;
-        pos.z = 100;
-        pos.x = trackIndex * 2.5f - 16.5f;
-        /*
-        switch (trackIndex)
+        pos.y = data.StartTime;
+        pos.z = -1;
+        if (data.Type == NoteType.Break)
         {
-            case 1:
-                pos.x = 0;
-                break;
-            case 2:
-                pos.x = -1.5f;
-                break;
-            case 3:
-                pos.x = -3;
-                break;
+            if (Math.Abs(data.Pos - (-1)) < 0.01f)
+            {
+                //左侧break
+                pos.x = -2;
+            }
+            else
+            {
+                //右侧break
+                pos.x = 11;
+            }
         }
-        */
-        pos.z = (startTime + 5) * 2;
-
+        else
+        {
+            pos.x = data.Pos * 10;
+        }
+        
+     
+       
+      
+        
         return pos;
+    }
+
+    /// <summary>
+    /// 根据音符数据获取映射后的视图层缩放
+    /// </summary>
+    private Vector3 GetViewObjectScale(NoteData data)
+    {
+        Vector3 scale = Vector3.one;
+        if (data.Type == NoteType.Hold)
+        {
+            //Hold音符需要缩放长度
+            scale.y = data.HoldLength;
+        }
+
+        if (data.Type != NoteType.Break)
+        {
+            //非Break音符需要缩放宽度
+            scale.x = data.Width * 10;
+        }
+        
+        return scale;
+    }
+    
+    public void RefreshTimer(float time)
+    {
+        TxtTimer.text = time.ToString("0.00");
+    }
+
+    public void TimelineEnd()
+    {
+        timeline = null;
     }
 }

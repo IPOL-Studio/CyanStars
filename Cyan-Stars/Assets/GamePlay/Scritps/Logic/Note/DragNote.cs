@@ -1,41 +1,64 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Drag音符，在时间范围内按住按键就算命中
+/// Drag音符
 /// </summary>
 public class DragNote : BaseNote
 {
-    private const float dragTime = 0.1f;
+    private bool isHit;
     
-    public DragNote(int trackIndex, NoteData data) : base(trackIndex, data)
+    public override bool CanReceiveInput()
     {
+        return timer <= EvaluateHelper.DragTimeRange && timer >= -EvaluateHelper.DragTimeRange;
     }
 
     public override void OnUpdate(float deltaTime)
     {
         base.OnUpdate(deltaTime);
 
-        if (timer < -dragTime)
+        if (isHit && timer <= 0 )
         {
-            DestroySelf();
-            AddMaxScore(1);
-            GameManager.Instance.missNum ++;
-            Debug.Log($"Drag音符Miss，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
-            RefreshPlayingUI(EvaluateType.Miss, false, -1, -1);
+            DestorySelf(false);
+            return;
+        }
+        
+        if (timer < -EvaluateHelper.DragTimeRange)
+        {
+            //没接住 miss
+            DestorySelf();
+            Debug.LogError($"Drag音符miss：{data}");
         }
     }
 
-    public override void OnKeyPress()
+    public override void OnInput(InputType inputType)
     {
-        base.OnKeyPress();
-        if (timer <= dragTime && timer >= -dragTime)
+        base.OnInput(inputType);
+
+        switch (inputType)
         {
-            DestroySelf(false);
-            AddMaxScore(1);
-            Debug.Log($"Drag音符命中，时间轴时间：{GameMgr.Instance.GetCurTimelineTime()},{this}");
-            RefreshPlayingUI(EvaluateType.Exact,true,1,1);
+
+            case InputType.Press:
+
+                if (isHit)
+                {
+                    return;
+                }
+                
+                Debug.LogError($"Drag音符命中：{data}");
+                if (timer > 0)
+                {
+                    //早按准点放
+                    isHit = true;
+                }
+                else
+                {
+                    //晚按即刻放
+                    DestorySelf(false);
+                }
+                break;
         }
     }
 }

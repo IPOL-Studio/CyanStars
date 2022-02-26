@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
-/// 音乐时间轴数据SO
+/// 音乐时间轴数据的SO
 /// </summary>
 [CreateAssetMenu(menuName = "音乐时间轴配置")]
-public class TimelineSO : ScriptableObject
+public class MusicTimelineSO : ScriptableObject
 {
-    public TimelineData TimelineData;
+    public MusicTimelineData musicTimelineData;
 }

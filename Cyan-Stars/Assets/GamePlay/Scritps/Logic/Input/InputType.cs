@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 音符类型
+/// 输入类型
 /// </summary>
-public enum NoteType
+public enum InputType
 {
-    Tap,
-    Hold,
-    Drag,
-    Click,
-    Break,
+    Down,
+    Press,
+    Up,
 }

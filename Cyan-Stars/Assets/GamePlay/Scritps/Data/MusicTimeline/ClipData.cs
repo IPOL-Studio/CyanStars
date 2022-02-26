@@ -1,26 +1,20 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 音乐时间轴数据
+/// 音乐时间轴片段数据
 /// </summary>
-[Serializable]
-public class TimelineData
+[System.Serializable]
+public class ClipData
 {
     /// <summary>
-    /// 总时间
+    /// 开始时间
     /// </summary>
-    public float Time;
-
+    public float StartTime;
+    
     /// <summary>
     /// 速率
     /// </summary>
     public float SpeedRate = 1;
-    
-    /// <summary>
-    /// 轨道数据列表
-    /// </summary>
-    public List<TrackData> TrackDatas;
 }

@@ -12,43 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c31f3e55a736ce947951c4473575921f, type: 3}
   m_Name: MusicTimelineData
   m_EditorClassIdentifier: 
-  TimelineData:
-    Time: 30
+  musicTimelineData:
+    Time: 10
+    Speed: 3
     SpeedRate: 1
-    TrackDatas:
-    - NoteDatas:
-      - Type: 0
-        TimePoint: 5
+    LayerDatas:
+    - ClipDatas:
+      - StartTime: 0
         SpeedRate: 1
-        HoldLength: 0
-    - NoteDatas:
+      NoteDatas:
       - Type: 0
-        TimePoint: 10
-        SpeedRate: 1
+        Pos: 0.1
+        Width: 0.1
+        StartTime: 5
         HoldLength: 0
-      - Type: 0
-        TimePoint: 15
-        SpeedRate: 1
+      - Type: 4
+        Pos: -1
+        Width: 0
+        StartTime: 7
         HoldLength: 0
-    - NoteDatas: []
-    - NoteDatas: []
-    - NoteDatas: []
-    - NoteDatas: []
-    - NoteDatas: []
-    - NoteDatas:
-      - Type: 1
-        TimePoint: 20
-        SpeedRate: 2
-        HoldLength: 30
-    - NoteDatas: []
-    - NoteDatas:
-      - Type: 2
-        TimePoint: 40
-        SpeedRate: 2
+      - Type: 4
+        Pos: 2
+        Width: 0
+        StartTime: 7
         HoldLength: 0
-      - Type: 3
-        TimePoint: 45
-        SpeedRate: 2
-        HoldLength: 0
-    - NoteDatas: []
-    - NoteDatas: []
