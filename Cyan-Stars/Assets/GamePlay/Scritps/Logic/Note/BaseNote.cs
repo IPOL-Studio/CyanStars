@@ -18,26 +18,33 @@ public abstract class BaseNote
     protected MusicTimeline.Layer layer;
     
     /// <summary>
-    /// 剩余时间的计时器
+    /// 剩余时间的倒计时（主要用于逻辑层）
     /// </summary>
-    protected float timer;
+    protected float logicTimer;
 
+    /// <summary>
+    /// 受速率缩放影响的剩余时间的倒计时（主要用于视图层）
+    /// </summary>
+    private float viewTimer;
+    
     /// <summary>
     /// 视图层物体
     /// </summary>
     protected IView viewObject;
     
-    
-    
     /// <summary>
     /// 设置数据
     /// </summary>
-    public void SetData(NoteData data,MusicTimeline.Layer layer)
+    public virtual void Init(NoteData data,MusicTimeline.Layer layer)
     {
         this.data = data;
         this.layer = layer;
-        timer = data.StartTime;
-        viewObject = ViewHelper.CreateViewObject(data);
+        logicTimer = data.StartTime;
+        viewTimer = ViewHelper.GetViewStartTime(data);
+        
+        //考虑性能问题 不再会一开始就创建出所有Note的游戏物体
+        //而是需要在viewTimer运行到一个特定时间时再创建
+        //viewObject = ViewHelper.CreateViewObject(data); 
     }
 
     /// <summary>
@@ -45,7 +52,7 @@ public abstract class BaseNote
     /// </summary>
     public virtual bool CanReceiveInput()
     {
-        return timer <= EvaluateHelper.CheckInputStartTime && timer >= (EvaluateHelper.CheckInputEndTime - data.HoldEndTime);
+        return logicTimer <= EvaluateHelper.CheckInputStartTime && logicTimer >= EvaluateHelper.CheckInputEndTime;
     }
 
     /// <summary>
@@ -63,9 +70,16 @@ public abstract class BaseNote
     
     public virtual void OnUpdate(float deltaTime,float noteSpeedRate)
     {
-        timer -= deltaTime;
+        logicTimer -= deltaTime;
+        viewTimer -= deltaTime * noteSpeedRate;
+
+        if (viewObject == null && viewTimer <= ViewHelper.ViewObjectCreateTime)
+        {
+            //到创建视图层物体的时间点了
+            viewObject = ViewHelper.CreateViewObject(data);
+        }
         
-        viewObject.OnUpdate(deltaTime * noteSpeedRate);
+        viewObject?.OnUpdate(deltaTime * noteSpeedRate);
     }
 
     /// <summary>
@@ -79,10 +93,10 @@ public abstract class BaseNote
     /// <summary>
     /// 销毁自身
     /// </summary>
-    protected void DestorySelf(bool autoMove = true)
+    protected void DestroySelf(bool autoMove = true)
     {
         layer.RemoveNote(this);
-        viewObject.DestorySelf(autoMove);
+        viewObject.DestroySelf(autoMove);
         viewObject = null;
     }
     

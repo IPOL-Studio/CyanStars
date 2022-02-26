@@ -7,28 +7,33 @@ using UnityEngine;
 /// </summary>
 public static class ViewHelper
 {
-    private static Dictionary<NoteData, float> scaledStartTimeDict = new Dictionary<NoteData, float>();
-    private static Dictionary<NoteData, float> scaledHoldEndTimeDict = new Dictionary<NoteData, float>();
+    private static Dictionary<NoteData, float> viewStartTimeDict = new Dictionary<NoteData, float>();
+    private static Dictionary<NoteData, float> viewHoldEndTimeDict = new Dictionary<NoteData, float>();
 
-      /// <summary>
-    /// 计算受速率影响的音符开始时间和结束时间，用于视图层物体计算位置和长度
+    /// <summary>
+    /// 视图层物体创建倒计时时间（是受速率影响的时间）
     /// </summary>
-    public static void CalScaledTime(MusicTimelineData data)
+    public const float ViewObjectCreateTime = 11;
+    
+    /// <summary>
+    /// 计算受速率影响的视图层音符开始时间和结束时间，用于视图层物体计算位置和长度
+    /// </summary>
+    public static void CalViewTime(MusicTimelineData data)
     {
-        scaledStartTimeDict.Clear();
-        scaledHoldEndTimeDict.Clear();
-        
+        viewStartTimeDict.Clear();
+        viewHoldEndTimeDict.Clear();
+
         float timelineSpeedRate = data.BaseSpeed * data.SpeedRate;
-        
+
         foreach (LayerData layerData in data.LayerDatas)
-        { 
+        {
             //从第一个clip到当前clip 受流速缩放影响后的总时间值
             float scaledTime = 0;
-            
+
             for (int i = 0; i < layerData.ClipDatas.Count; i++)
             {
                 ClipData curClipData = layerData.ClipDatas[i];
-                
+
                 float curClipStartTime = curClipData.StartTime;
                 float curClipEndTime;
                 if (i < layerData.ClipDatas.Count - 1)
@@ -46,27 +51,35 @@ public static class ViewHelper
 
                 float scaledTimeLength = curClipEndTime - curClipStartTime;
                 float speedRate = curClipData.SpeedRate * timelineSpeedRate;
-                
+
                 //计算受timeline速率和当前clip的速率影响后的时间长度 累加到总时间值上
                 scaledTime += scaledTimeLength * speedRate;
-                
+
                 for (int j = 0; j < curClipData.NoteDatas.Count; j++)
                 {
                     NoteData noteData = curClipData.NoteDatas[j];
 
                     //将当前note在clip中后面的那段时间从scaledTime里减去，就能得出缩放后的note开始时间
                     float scaledNoteStartTime = scaledTime - (curClipEndTime - noteData.StartTime) * speedRate;
-                    scaledStartTimeDict.Add(noteData,scaledNoteStartTime);
+                    viewStartTimeDict.Add(noteData, scaledNoteStartTime);
                     if (noteData.Type == NoteType.Hold)
                     {
                         //holdEndTime同理
                         float scaledHoldNoteEndTime = scaledTime - (curClipEndTime - noteData.HoldEndTime) * speedRate;
-                        scaledHoldEndTimeDict.Add(noteData,scaledHoldNoteEndTime);
+                        viewHoldEndTimeDict.Add(noteData, scaledHoldNoteEndTime);
                     }
 
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// 获取受速率影响的视图层音符开始时间
+    /// </summary>
+    public static float GetViewStartTime(NoteData data)
+    {
+        return viewStartTimeDict[data];
     }
 
     /// <summary>
@@ -108,10 +121,10 @@ public static class ViewHelper
     private static Vector3 GetViewObjectPos(NoteData data)
     {
         Vector3 pos = default;
-        
-        //不能直接用StartTime
-        pos.y = scaledStartTimeDict[data];
-        
+
+        //Y轴位置 一开始就在屏幕内的用scaledStartTimeDict[data]，否则用ViewObjectCreateScaledTime
+        pos.y = Mathf.Min(ViewObjectCreateTime, viewStartTimeDict[data]);
+
         pos.z = -1;
         if (data.Type == NoteType.Break)
         {
@@ -130,7 +143,7 @@ public static class ViewHelper
         {
             pos.x = data.Pos * 10;
         }
-        
+
         return pos;
     }
 
@@ -143,7 +156,7 @@ public static class ViewHelper
         if (data.Type == NoteType.Hold)
         {
             //Hold音符需要缩放长度
-            float holdLength = scaledHoldEndTimeDict[data] - scaledStartTimeDict[data];
+            float holdLength = viewHoldEndTimeDict[data] - viewStartTimeDict[data];
             scale.y = holdLength;
         }
 
@@ -152,7 +165,7 @@ public static class ViewHelper
             //非Break音符需要缩放宽度
             scale.x = data.Width * 10;
         }
-        
+
         return scale;
     }
 }

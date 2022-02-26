@@ -18,10 +18,10 @@ public class BreakNote : BaseNote
     {
         base.OnUpdate(deltaTime,noteSpeedRate);
 
-        if (timer < EvaluateHelper.CheckInputEndTime)
+        if (logicTimer < EvaluateHelper.CheckInputEndTime)
         {
             //没接住 miss
-            DestorySelf();
+            DestroySelf();
             Debug.LogError($"Break音符miss：{data}");
         }
     }
@@ -32,7 +32,7 @@ public class BreakNote : BaseNote
 
         if (inputType == InputType.Down)
         {
-            DestorySelf(false);
+            DestroySelf(false);
             Debug.LogError($"Break音符命中,{data}");
         }
     }
