@@ -17,4 +17,9 @@ public class ClipData
     /// 速率
     /// </summary>
     public float SpeedRate = 1;
+    
+    /// <summary>
+    /// 音符数据
+    /// </summary>
+    public List<NoteData> NoteDatas;
 }
