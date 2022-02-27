@@ -21,13 +21,13 @@ public class GameMgr : MonoBehaviour
     public GameObject ClickPrefab;
     public GameObject BreakPrefab;
     
-    public Button BtnStart;
-    public Text TxtTimer;
+    //public Button BtnStart;
+    //public Text TxtTimer;
     
     private InputMapData inputMapData;
     private MusicTimeline timeline;
 
-   
+    public KeyViewController keyViewController;
 
     private void Awake()
     {
@@ -37,9 +37,15 @@ public class GameMgr : MonoBehaviour
     
     private void Start()
     {
-        BtnStart.onClick.AddListener(OnBtnStartClick);
-    }
+        MusicTimelineData data = TimelineSo.musicTimelineData;
 
+        ViewHelper.CalViewTime(data);
+        
+        timeline = new MusicTimeline(data);
+        Debug.Log("音乐时间轴创建完毕");
+        //BtnStart.onClick.AddListener(OnBtnStartClick);
+    }
+    /*
     /// <summary>
     /// 点击开始按钮
     /// </summary>
@@ -52,6 +58,7 @@ public class GameMgr : MonoBehaviour
         timeline = new MusicTimeline(data);
         Debug.Log("音乐时间轴创建完毕");
     }
+    */
     
     private void Update()
     {
@@ -67,10 +74,10 @@ public class GameMgr : MonoBehaviour
         for (int i = 0; i < inputMapData.Items.Count; i++)
         {
             InputMapData.Item item = inputMapData.Items[i];
-
             if (Input.GetKeyDown(item.key))
             {
                 ReceiveInput(InputType.Down,item);
+                keyViewController.keyDown(item);
                 continue;
             }
             
@@ -83,6 +90,7 @@ public class GameMgr : MonoBehaviour
             if (Input.GetKeyUp(item.key))
             {
                 ReceiveInput(InputType.Up,item);
+                keyViewController.keyUp(item);
             }
         }
     }
@@ -94,11 +102,12 @@ public class GameMgr : MonoBehaviour
     {
         timeline?.OnInput(inputType,item);
     }
-
+    /*
     public void RefreshTimer(float time)
     {
         TxtTimer.text = time.ToString("0.00");
     }
+    */
 
     public void TimelineEnd()
     {
