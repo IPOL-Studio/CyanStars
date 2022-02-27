@@ -461,21 +461,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
-      propertyPath: ViewRoot
-      value: 
-      objectReference: {fileID: 1268099905}
     - target: {fileID: 8182820371254292316, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: m_Name
       value: GameMgr
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
---- !u!4 &1268099905 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1511421166894896259, guid: a454ce911c4fed148bf7854e1f4b5738, type: 3}
-  m_PrefabInstance: {fileID: 1511421167741737512}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1335245775
 GameObject:
   m_ObjectHideFlags: 0
@@ -524,17 +515,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1390207179 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8488523274540830162, guid: b02a5c2882d82a14487db388df829895, type: 3}
-  m_PrefabInstance: {fileID: 1383141806313113235}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1789870787 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 732401922024709692, guid: b02a5c2882d82a14487db388df829895, type: 3}
@@ -553,10 +533,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 732401922024709692, guid: b02a5c2882d82a14487db388df829895, type: 3}
-      propertyPath: img
-      value: 
-      objectReference: {fileID: 1390207179}
     - target: {fileID: 1383141806232530342, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_Name
       value: PlayingUI
@@ -643,22 +619,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1383141806232530346, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8488523274540830162, guid: b02a5c2882d82a14487db388df829895, type: 3}
-      propertyPath: m_Type
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8488523274540830162, guid: b02a5c2882d82a14487db388df829895, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: feb0608dd23256c4c8ef7e007b8e7e3e, type: 3}
-    - target: {fileID: 8488523274540830162, guid: b02a5c2882d82a14487db388df829895, type: 3}
-      propertyPath: m_FillAmount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8488523274540830162, guid: b02a5c2882d82a14487db388df829895, type: 3}
-      propertyPath: m_FillMethod
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
