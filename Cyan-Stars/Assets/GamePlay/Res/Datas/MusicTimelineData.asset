@@ -19,15 +19,15 @@ MonoBehaviour:
     LayerDatas:
     - ClipDatas:
       - StartTime: 0
-        SpeedRate: 10
+        SpeedRate: 5
         NoteDatas:
         - Type: 0
           Pos: 0.1
           Width: 0.1
-          StartTime: 3
+          StartTime: 1
           HoldEndTime: 0
         - Type: 1
           Pos: 0.3
           Width: 0.1
           StartTime: 3
-          HoldEndTime: 6
+          HoldEndTime: 4

@@ -8,9 +8,14 @@ public class HoldNote : BaseNote
 {
 
     /// <summary>
-    /// Hold的音符的检查输入结束时间
+    /// Hold音符的检查输入结束时间
     /// </summary>
     private float holdCheckInputEndTime;
+
+    /// <summary>
+    /// Hold音符长度
+    /// </summary>
+    private float holdLength;
     
     /// <summary>
     /// 头判是否成功
@@ -31,8 +36,9 @@ public class HoldNote : BaseNote
     {
         base.Init(data, layer);
 
+        holdLength = data.HoldEndTime - data.StartTime;
         //hold结束时间点要算上hold音符的长度
-        holdCheckInputEndTime = EvaluateHelper.CheckInputEndTime - (data.HoldEndTime - data.StartTime);
+        holdCheckInputEndTime = EvaluateHelper.CheckInputEndTime - holdLength;
     }
 
     public override bool CanReceiveInput()
@@ -57,7 +63,7 @@ public class HoldNote : BaseNote
                 {
                     //按下后一直持续到结尾的话 也要算一下分
                     float time = downTimePoint - logicTimer;
-                    value += time / data.HoldEndTime;
+                    value += time / holdLength;
                 }
                 
                 
@@ -81,17 +87,15 @@ public class HoldNote : BaseNote
                 {
                     //判断头判评价
                     EvaluateType et = EvaluateHelper.GetTapEvaluate(logicTimer);
-                    if (et == EvaluateType.Bad)
+                    if (et == EvaluateType.Bad || et == EvaluateType.Miss)
                     {
                         //头判失败直接销毁
                         DestroySelf(false);
-                        Debug.LogError($"Hold音符miss：{data}");
+                        Debug.LogError($"Hold头判失败,时间：{logicTimer}，{data}");
                         return;
                     }
-                    else
-                    {
-                        Debug.LogError($"Hold头判成功,时间：{logicTimer}，{data}");
-                    }
+
+                    Debug.LogError($"Hold头判成功,时间：{logicTimer}，{data}");
                 }
                 
                 //头判成功 记录按下时间
@@ -107,7 +111,7 @@ public class HoldNote : BaseNote
                 {
                     //此次有效时长
                     float time = downTimePoint - logicTimer;
-                    value += time / data.HoldEndTime;
+                    value += time / holdLength;
                     
                     //重置按下时间点
                     downTimePoint = 0;
