@@ -62,14 +62,14 @@ public class GameMgr : MonoBehaviour
     
     private void Update()
     {
-        CheckKeybordInput();
+        CheckKeyboardInput();
         timeline?.OnUpdate(Time.deltaTime);
     }
     
     /// <summary>
     /// 检查键盘输入
     /// </summary>
-    private void CheckKeybordInput()
+    private void CheckKeyboardInput()
     {
         for (int i = 0; i < inputMapData.Items.Count; i++)
         {

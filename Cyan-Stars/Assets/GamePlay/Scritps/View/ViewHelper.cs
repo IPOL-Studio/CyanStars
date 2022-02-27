@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 /// <summary>
@@ -106,14 +107,22 @@ public static class ViewHelper
                 go = Object.Instantiate(GameMgr.Instance.BreakPrefab);
                 break;
         }
-
-
+        
         go.transform.SetParent(GameMgr.Instance.viewRoot);
         go.transform.position = GetViewObjectPos(data);
         go.transform.localScale = GetViewObjectScale(data);
         go.transform.localRotation = GetViewObjectRotation(data);
+        
+        var view = go.GetComponent<ViewObject>();
 
-        return go.GetComponent<ViewObject>();
+        if (data.Type == NoteType.Hold)
+        {
+            var startPos = GetViewObjectPosZ(viewStartTimeDict[data]);
+            var endPos = GetViewObjectPosZ(viewHoldEndTimeDict[data]);
+            (view as HoldViewObject).SetMesh(1f, endPos - startPos);
+        }
+
+        return view;
     }
 
     /// <summary>
@@ -124,7 +133,7 @@ public static class ViewHelper
         Vector3 pos = default;
 
         //Y轴位置 一开始就在屏幕内的用scaledStartTimeDict[data]，否则用ViewObjectCreateScaledTime
-        pos.z = Mathf.Min(ViewObjectCreateTime, viewStartTimeDict[data]) * 4;
+        pos.z = GetViewObjectPosZ(viewStartTimeDict[data]);
 
         pos.y = 1;
         if (data.Type == NoteType.Break)
@@ -149,18 +158,15 @@ public static class ViewHelper
         return pos;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static float GetViewObjectPosZ(float time) => Mathf.Min(ViewObjectCreateTime, time) * 4;
+
     /// <summary>
     /// 根据音符数据获取映射后的视图层缩放
     /// </summary>
     private static Vector3 GetViewObjectScale(NoteData data)
     {
         Vector3 scale = Vector3.one;
-        if (data.Type == NoteType.Hold)
-        {
-            //Hold音符需要缩放长度
-            float holdLength = viewHoldEndTimeDict[data] - viewStartTimeDict[data];
-            scale.z = holdLength;
-        }
 
         if (data.Type != NoteType.Break)
         {
