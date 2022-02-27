@@ -43,9 +43,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b749e6677e9081b4d9ca222f9e9fc7c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SO: {fileID: 11400000, guid: 8397b065501bb6f4694f89a7173cb27e, type: 2}
-  ViewRoot: {fileID: 0}
+  TimelineSo: {fileID: 0}
+  InputMapSO: {fileID: 0}
+  viewRoot: {fileID: 0}
   TapPrefab: {fileID: 1894901542986877043, guid: 18db18d69cf86224d9f0fc4f805332c1, type: 3}
   HoldPrefab: {fileID: 1074129227953934691, guid: 1f2e1801cbba1de49bdd44b113628ce7, type: 3}
   DragPrefab: {fileID: 1290151494901256786, guid: 864f1ce9aaa5db242b7c1b466b8684e0, type: 3}
   ClickPrefab: {fileID: 3267974806800607457, guid: a2cb382f9dffd4c4292db245c67bc99c, type: 3}
+  BreakPrefab: {fileID: 0}
+  BtnStart: {fileID: 0}
+  TxtTimer: {fileID: 0}
