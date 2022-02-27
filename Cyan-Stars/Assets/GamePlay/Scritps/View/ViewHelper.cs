@@ -124,7 +124,7 @@ public static class ViewHelper
         Vector3 pos = default;
 
         //Y轴位置 一开始就在屏幕内的用scaledStartTimeDict[data]，否则用ViewObjectCreateScaledTime
-        pos.z = Mathf.Min(ViewObjectCreateTime, viewStartTimeDict[data])*4;
+        pos.z = Mathf.Min(ViewObjectCreateTime, viewStartTimeDict[data]) * 4;
 
         pos.y = 1;
         if (data.Type == NoteType.Break)

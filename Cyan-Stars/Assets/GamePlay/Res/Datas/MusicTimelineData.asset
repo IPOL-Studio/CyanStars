@@ -15,44 +15,19 @@ MonoBehaviour:
   musicTimelineData:
     Time: 10
     BaseSpeed: 1
-    SpeedRate: 0.2
+    SpeedRate: 1
     LayerDatas:
     - ClipDatas:
       - StartTime: 0
-        SpeedRate: 5
+        SpeedRate: 1
         NoteDatas:
-        - Type: 0
+        - Type: 1
           Pos: 0
-          Width: 0.1
-          StartTime: 5
-          HoldEndTime: 0
+          Width: 0.5
+          StartTime: 2
+          HoldEndTime: 10
         - Type: 0
-          Pos: 0.225
-          Width: 0.1
-          StartTime: 5
-          HoldEndTime: 0
-        - Type: 0
-          Pos: 0.45
-          Width: 0.1
-          StartTime: 5
-          HoldEndTime: 0
-        - Type: 0
-          Pos: 0.675
-          Width: 0.1
-          StartTime: 5
-          HoldEndTime: 0
-        - Type: 0
-          Pos: 0.9
-          Width: 0.1
-          StartTime: 5
-          HoldEndTime: 0
-        - Type: 0
-          Pos: 1.125
-          Width: 0.1
-          StartTime: 5
-          HoldEndTime: 0
-        - Type: 0
-          Pos: 2.5
-          Width: 0.1
-          StartTime: 5
+          Pos: 1
+          Width: 0.5
+          StartTime: 10
           HoldEndTime: 0
