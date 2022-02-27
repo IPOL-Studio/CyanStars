@@ -48,7 +48,7 @@ public partial class MusicTimeline
         float timelineSpeedRate = data.BaseSpeed * data.SpeedRate;
         
         
-        GameMgr.Instance.RefreshTimer(timer);
+        //GameMgr.Instance.RefreshTimer(timer);
 
         if (timer >= data.Time)
         {

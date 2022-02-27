@@ -111,6 +111,7 @@ public static class ViewHelper
         go.transform.SetParent(GameMgr.Instance.viewRoot);
         go.transform.position = GetViewObjectPos(data);
         go.transform.localScale = GetViewObjectScale(data);
+        go.transform.localRotation = GetViewObjectRotation(data);
 
         return go.GetComponent<ViewObject>();
     }
@@ -123,25 +124,26 @@ public static class ViewHelper
         Vector3 pos = default;
 
         //Y轴位置 一开始就在屏幕内的用scaledStartTimeDict[data]，否则用ViewObjectCreateScaledTime
-        pos.y = Mathf.Min(ViewObjectCreateTime, viewStartTimeDict[data]);
+        pos.z = Mathf.Min(ViewObjectCreateTime, viewStartTimeDict[data])*4;
 
-        pos.z = -1;
+        pos.y = 1;
         if (data.Type == NoteType.Break)
         {
             if (Mathf.Abs(data.Pos - (-1)) < 0.01f)
             {
                 //左侧break
-                pos.x = -2;
+                pos.x = -20;
             }
             else
             {
                 //右侧break
-                pos.x = 11;
+                pos.x = 20;
             }
+            pos.y = 4;
         }
         else
         {
-            pos.x = data.Pos * 10;
+            pos.x = data.Pos * 10 - 13;
         }
 
         return pos;
@@ -157,7 +159,7 @@ public static class ViewHelper
         {
             //Hold音符需要缩放长度
             float holdLength = viewHoldEndTimeDict[data] - viewStartTimeDict[data];
-            scale.y = holdLength;
+            scale.z = holdLength;
         }
 
         if (data.Type != NoteType.Break)
@@ -167,5 +169,23 @@ public static class ViewHelper
         }
 
         return scale;
+    }
+    private static Quaternion GetViewObjectRotation(NoteData data)
+    {
+        Quaternion rotation = new Quaternion(0,0,0,0);
+        if (data.Type == NoteType.Break)
+        {
+            if(Mathf.Abs(data.Pos - (-1)) < 0.01f)
+            {
+                //左侧break
+                rotation.y = -28;
+            }
+            else
+            {
+                //右侧break
+                rotation.y = 28;
+            }
+        }
+        return rotation;
     }
 }

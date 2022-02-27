@@ -43,13 +43,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b749e6677e9081b4d9ca222f9e9fc7c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TimelineSo: {fileID: 0}
-  InputMapSO: {fileID: 0}
+  TimelineSo: {fileID: 11400000, guid: aa5078e5d93ab22488bc446efa6c9343, type: 2}
+  InputMapSO: {fileID: 11400000, guid: ecf1ec7d01b88d542a1c2b053cd1b987, type: 2}
   viewRoot: {fileID: 0}
-  TapPrefab: {fileID: 1894901542986877043, guid: 18db18d69cf86224d9f0fc4f805332c1, type: 3}
-  HoldPrefab: {fileID: 1074129227953934691, guid: 1f2e1801cbba1de49bdd44b113628ce7, type: 3}
-  DragPrefab: {fileID: 1290151494901256786, guid: 864f1ce9aaa5db242b7c1b466b8684e0, type: 3}
-  ClickPrefab: {fileID: 3267974806800607457, guid: a2cb382f9dffd4c4292db245c67bc99c, type: 3}
-  BreakPrefab: {fileID: 0}
-  BtnStart: {fileID: 0}
-  TxtTimer: {fileID: 0}
+  TapPrefab: {fileID: 2834893591176590126, guid: 18db18d69cf86224d9f0fc4f805332c1, type: 3}
+  HoldPrefab: {fileID: 6698156141441568055, guid: 259be15945cc3694f9c2ef05e9bd55f9, type: 3}
+  DragPrefab: {fileID: 6236107155078963146, guid: 4025f0caeca59634991b40496ca3f86d, type: 3}
+  ClickPrefab: {fileID: 4065793755966527998, guid: e85ae38a16f3ec048a5628b586a5152e, type: 3}
+  BreakPrefab: {fileID: 3149876104535507044, guid: 1ee31a272c4e7ae43acd9b45bfa82a92, type: 3}
