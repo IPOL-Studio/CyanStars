@@ -41,6 +41,6 @@ public class NoteData
     
     public override string ToString()
     {
-        return $"音符数据：类型{Type}，位置{Pos}，宽度{Width},开始时间{StartTime},Hold音符长度{HoldEndTime}";
+        return $"音符数据：类型{Type}，位置{Pos}，宽度{Width},开始时间{StartTime},Hold音符结束时间{HoldEndTime}";
     }
 }
