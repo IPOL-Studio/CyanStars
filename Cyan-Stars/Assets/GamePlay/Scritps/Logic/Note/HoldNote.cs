@@ -55,6 +55,7 @@ public class HoldNote : BaseNote
             {
                 //被漏掉了 miss
                 Debug.LogError($"Hold音符miss：{data}");
+                GameManager.Instance.RefreshData(-1,-1,"Miss",float.MaxValue);
             }
             else
             {
@@ -68,6 +69,14 @@ public class HoldNote : BaseNote
                 
                 EvaluateType et =  EvaluateHelper.GetHoldEvaluate(value);
                 Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
+                if(et != EvaluateType.Miss)
+                {
+                    GameManager.Instance.RefreshData(1,1,et.ToString(),float.MaxValue);
+                }
+                else
+                {
+                    GameManager.Instance.RefreshData(-1,-1,"Miss",float.MaxValue);
+                }
             }
             
             DestroySelf();
@@ -91,10 +100,12 @@ public class HoldNote : BaseNote
                         //头判失败直接销毁
                         DestroySelf(false);
                         Debug.LogError($"Hold头判失败,时间：{logicTimer}，{data}");
+                        GameManager.Instance.RefreshData(-1,-1,et.ToString(),float.MaxValue);
                         return;
                     }
 
                     Debug.LogError($"Hold头判成功,时间：{logicTimer}，{data}");
+                    GameManager.Instance.RefreshData(1,1,et.ToString(),logicTimer);
                 }
                 
                 //头判成功 记录按下时间

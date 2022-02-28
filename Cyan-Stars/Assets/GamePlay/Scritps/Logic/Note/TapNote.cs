@@ -13,6 +13,7 @@ public class TapNote : BaseNote
             //没接住 miss
             DestroySelf();
             Debug.LogError($"Tap音符miss：{data}");
+            GameManager.Instance.RefreshData(-1,-1,"Miss",float.MaxValue);
         }
     }
 
@@ -24,6 +25,7 @@ public class TapNote : BaseNote
         {
             DestroySelf(false);
             Debug.LogError($"Tap音符命中,评价:{EvaluateHelper.GetTapEvaluate(logicTimer)},{data}");
-        }
+            GameManager.Instance.RefreshData(1,1,EvaluateHelper.GetTapEvaluate(logicTimer).ToString(),logicTimer - 0);
+        }   
     }
 }
