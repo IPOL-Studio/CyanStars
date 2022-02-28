@@ -468,13 +468,24 @@ PrefabInstance:
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: keyViewController
       value: 
-      objectReference: {fileID: 1965579750}
+      objectReference: {fileID: 1072862548}
     - target: {fileID: 8182820371254292316, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: m_Name
       value: GameMgr
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+--- !u!114 &1072862548 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1367449846713452514, guid: 474ff31453b15ad46b62c357917d9f67, type: 3}
+  m_PrefabInstance: {fileID: 1367449844887378436}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7f0c51eccccac04f8a4492f28aefafe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1335245775
 GameObject:
   m_ObjectHideFlags: 0
@@ -532,17 +543,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4bd8f7e56ecba7c4c8de87bb39dd7c53, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1965579750 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1367449846713452514, guid: 474ff31453b15ad46b62c357917d9f67, type: 3}
-  m_PrefabInstance: {fileID: 1367449844887378436}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7f0c51eccccac04f8a4492f28aefafe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1367449844887378436
@@ -756,7 +756,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3688711649235346378, guid: a454ce911c4fed148bf7854e1f4b5738, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -12
+      value: -10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a454ce911c4fed148bf7854e1f4b5738, type: 3}

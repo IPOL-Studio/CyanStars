@@ -49,7 +49,6 @@ public class HoldNote : BaseNote
     public override void OnUpdate(float deltaTime,float noteSpeedRate)
     {
         base.OnUpdate(deltaTime,noteSpeedRate);
-        Debug.Log(logicTimer + " " + holdCheckInputEndTime);
         if (logicTimer < holdCheckInputEndTime)
         {
             if (!headSucess)
