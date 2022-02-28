@@ -44,5 +44,45 @@ public class GameManager : MonoBehaviour
             item.Refresh(combo,score,grade,-1);
         }
     }
+    public void RefreshData(int addCombo,int addScore,string grade,float currentDeviation)
+    {
+        if(addCombo < 0)
+        {
+            combo = 0;
+        }
+        else
+        {
+            this.combo += addCombo;
+            this.score += addScore;
+        }
+        
+        this.grade = grade;
+        if(grade == "Excat")
+        {
+            excatNum++;
+        }
+        else if(grade == "Great")
+        {
+            greatNum++;
+        }
+        else if(grade == "Right")
+        {
+            rightNum++;
+        }
+        else if(grade == "Bad")
+        {
+            badNum++;
+        }
+        else if(grade == "Miss")
+        {
+            missNum++;
+        }
+        if(currentDeviation < 10000)
+        {
+            this.currentDeviation = currentDeviation;
+            deviationList.Add(currentDeviation);
+        }    
+        RefreshPlayingUI(combo,score,grade);
+    }
 }
 //This code is writed by Ybr.

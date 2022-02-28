@@ -21,7 +21,7 @@ MonoBehaviour:
       - StartTime: 0
         SpeedRate: 1
         NoteDatas:
-        - Type: 1
+        - Type: 0
           Pos: 0
           Width: 0.5
           StartTime: 4
