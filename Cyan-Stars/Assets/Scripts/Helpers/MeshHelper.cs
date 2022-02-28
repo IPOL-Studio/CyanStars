@@ -23,6 +23,45 @@ public static class MeshHelper
     };
 
     /// <summary>
+    /// 创建一个立方体Mesh
+    /// </summary>
+    /// <param name="width">X length</param>
+    /// <param name="height">Y length</param>
+    /// <param name="length">Z length</param>
+    /// <param name="px">Pivot X</param>
+    /// <param name="py">Pivot Y</param>
+    /// <param name="pz">Pivot Z</param>
+    /// <returns></returns>
+    public static Mesh CreateCubeMesh(float width, float height, float length, float px, float py, float pz)
+    {
+        var leftWidth = Mathf.Clamp(px, 0f, width);
+        var rightWidth = width - leftWidth;
+
+        var downHeight = Mathf.Clamp(py, 0f, height);
+        var upHeight = height - downHeight;
+
+        var rearLength = Mathf.Clamp(pz, 0f, length);
+        var frontLength = length - rearLength;
+        
+        return new Mesh
+        {
+            vertices = new[]
+            {
+                new Vector3(rightWidth, upHeight, -rearLength),
+                new Vector3(rightWidth, -downHeight, -rearLength),
+                new Vector3(-leftWidth, -downHeight, -rearLength),
+                new Vector3(-leftWidth, upHeight, -rearLength),
+
+                new Vector3(rightWidth, upHeight, frontLength),
+                new Vector3(rightWidth, -downHeight, frontLength),
+                new Vector3(-leftWidth, -downHeight, frontLength),
+                new Vector3(-leftWidth, upHeight, frontLength),
+            },
+            triangles = CubeMeshTriangles
+        };
+    }
+
+    /// <summary>
     /// 创建适用于hold的mesh
     /// </summary>
     /// <param name="width">hold的宽度</param>
@@ -31,23 +70,6 @@ public static class MeshHelper
     public static Mesh CreateHoldMesh(float width, float length)
     {
         var halfWidth = width * 0.5f;
-        // 此处可重用，如果有需要的话
-        var mesh = new Mesh
-        {
-            vertices = new[]
-            {
-                new Vector3(halfWidth, halfWidth, 0),
-                new Vector3(halfWidth, -halfWidth, 0),
-                new Vector3(-halfWidth, -halfWidth, 0),
-                new Vector3(-halfWidth, halfWidth, 0),
-
-                new Vector3(halfWidth, halfWidth, length),
-                new Vector3(halfWidth, -halfWidth, length),
-                new Vector3(-halfWidth, -halfWidth, length),
-                new Vector3(-halfWidth, halfWidth, length),
-            },
-            triangles = CubeMeshTriangles
-        };
-        return mesh;
+        return CreateCubeMesh(width, width, length, halfWidth, halfWidth, 0);
     }
 }
