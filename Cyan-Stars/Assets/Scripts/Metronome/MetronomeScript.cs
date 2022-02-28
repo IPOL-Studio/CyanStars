@@ -30,7 +30,7 @@ public class MetronomeScript : MonoBehaviour
                 audioSource.Play();
             }
         }
-        else { sumTime = 0; }
+        else { sumTime = 0; nowBeat = 0; }
     }
 
     public void ReloadBPM()
