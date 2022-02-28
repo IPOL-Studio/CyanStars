@@ -12,16 +12,25 @@ public class KeyViewController : MonoBehaviour
         Transform tf = new GameObject().transform;
         tf.position = new Vector3(item.RangeMin * 10 - 12.3f,0,0);
         tf.localScale = new Vector3((item.RangeMax - item.RangeMin)*10, 1, 1);
-        GameObject key = Instantiate(keyPrefab, tf);
-        key.transform.SetParent(transform);
-        keyList[item.key] = key;
-    }
-    public void keyUp(InputMapData.Item keyCode)
-    {
-        if (keyList.ContainsKey(keyCode.key))
+        if(!keyList.ContainsKey(item.key))
         {
-            Destroy(keyList[keyCode.key]);
-            keyList.Remove(keyCode.key);
+            GameObject key = Instantiate(keyPrefab, tf);
+            key.transform.parent.SetParent(transform);
+            key.name = item.key.ToString();
+            key.transform.parent.gameObject.name = item.key.ToString();
+            keyList[item.key] = key;
+        }
+        else
+        {
+            keyList[item.key].SetActive(true);
+        }
+    }
+    public void keyUp(InputMapData.Item item)
+    {
+        if (keyList.ContainsKey(item.key))
+        {
+            keyList[item.key].SetActive(false);
+            //keyList.Remove(keyCode.key);
         }
     }
 }
