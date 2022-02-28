@@ -11,12 +11,16 @@ public class MetronomeScript : MonoBehaviour
     float bpm = 0, sumTime = 0;
     int beat = 0, nowBeat = 0;
     bool awake = false;
+    public Image image;
+    float alpha;
 
     private void Start()
     { audioSource = this.GetComponent<AudioSource>(); }
 
     void Update()
     {
+        alpha -= 510f * Time.deltaTime;
+        if (alpha < 0) { alpha = 0; }
         if (awake)
         {
             sumTime += Time.deltaTime;
@@ -27,10 +31,12 @@ public class MetronomeScript : MonoBehaviour
                 else { audioSource.clip = clicp2; }
                 nowBeat++;
                 if (nowBeat >= beat) { nowBeat -= beat; }
+                alpha = 255f;
                 audioSource.Play();
             }
         }
         else { sumTime = 0; nowBeat = 0; }
+        image.GetComponent<Image>().color = new Color(102/255f, 204/255f, 255/255f, alpha/255f);
     }
 
     public void ReloadBPM()
@@ -48,7 +54,7 @@ public class MetronomeScript : MonoBehaviour
     public void OnButtonClick()
     {
         if (awake) { awake = false; }
-        else { awake = true; }
+        else { awake = true; sumTime += 60 / bpm; }
     }
 
     public void AddTime()
