@@ -118,7 +118,7 @@ public static class ViewHelper
         if (data.Type == NoteType.Hold)
         {
             var startPos = GetViewObjectPosZ(viewStartTimeDict[data]);
-            var endPos = GetViewObjectPosZ(viewHoldEndTimeDict[data]);
+            var endPos = viewHoldEndTimeDict[data] * 4;
             (view as HoldViewObject).SetMesh(1f, endPos - startPos);
         }
 
