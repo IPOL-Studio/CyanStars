@@ -9,11 +9,6 @@ public class KeyViewController : MonoBehaviour
     public Dictionary<KeyCode,GameObject> keyList = new Dictionary<KeyCode, GameObject>();
     public void keyDown(InputMapData.Item item)
     {
-        /*
-        Transform tf = new GameObject().transform;
-        tf.position = new Vector3(item.RangeMin * 10.2f - 13.66f,0,0);
-        tf.localScale = new Vector3((item.RangeMax - item.RangeMin)*10, 1, 1);
-        */
         if(!keyList.ContainsKey(item.key))
         {
             GameObject key = Instantiate(keyPrefab);
