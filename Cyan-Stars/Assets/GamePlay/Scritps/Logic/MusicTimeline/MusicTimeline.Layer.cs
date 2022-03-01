@@ -24,7 +24,7 @@ public partial class MusicTimeline
         /// <summary>
         /// 音符列表
         /// </summary>
-        public List<BaseNote> notes = new List<BaseNote>();
+        private List<BaseNote> notes = new List<BaseNote>();
         
         private List<BaseNote> cachedList = new List<BaseNote>();
 

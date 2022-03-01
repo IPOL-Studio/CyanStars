@@ -118,7 +118,7 @@ public static class ViewHelper
         if (data.Type == NoteType.Hold)
         {
             var startPos = GetViewObjectPosZ(viewStartTimeDict[data]);
-            var endPos = viewHoldEndTimeDict[data] * 4;
+            var endPos = viewHoldEndTimeDict[data];
             (view as HoldViewObject).SetMesh(1f, endPos - startPos);
         }
 
@@ -159,7 +159,7 @@ public static class ViewHelper
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static float GetViewObjectPosZ(float time) => Mathf.Min(ViewObjectCreateTime, time) * 4;
+    private static float GetViewObjectPosZ(float time) => Mathf.Min(ViewObjectCreateTime, time);
 
     /// <summary>
     /// 根据音符数据获取映射后的视图层缩放

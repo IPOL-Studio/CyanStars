@@ -15,7 +15,7 @@ public class ViewObject : MonoBehaviour, IView
         this.deltaTime = deltaTime;
         
         Vector3 pos = transform.position;
-        pos.z -= deltaTime * 4;
+        pos.z -= deltaTime;
         transform.position = pos;
     }
 
@@ -41,7 +41,7 @@ public class ViewObject : MonoBehaviour, IView
             timer += deltaTime;
             
             Vector3 pos = transform.position;
-            pos.z -= deltaTime * 4;
+            pos.z -= deltaTime;
             transform.position = pos;
 
             if (timer >= 2f)
