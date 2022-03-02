@@ -7,28 +7,28 @@ public class KeyViewController : MonoBehaviour
     [Header("Key预制体")]
     public GameObject keyPrefab;
     public Dictionary<KeyCode,GameObject> keyList = new Dictionary<KeyCode, GameObject>();
-    public void keyDown(InputMapData.Item item)
+    public void KeyDown(InputMapData.Item item)
     {
-        if(!keyList.ContainsKey(item.key))
+        if (keyList.TryGetValue(item.key, out var key))
         {
-            GameObject key = Instantiate(keyPrefab);
-            key.transform.position = new Vector3(item.RangeMin * 10.2f - 13.66f,0,0);
-            key.transform.localScale = new Vector3((item.RangeMax - item.RangeMin)*10, 0.1f, 115);
-            key.transform.SetParent(transform);
-            key.name = item.key.ToString();
-            keyList[item.key] = key;
+            key.SetActive(true);
         }
         else
         {
-            keyList[item.key].SetActive(true);
+            key = Instantiate(keyPrefab);
+            var trans = key.transform;
+            trans.position = new Vector3(item.RangeMin * 10.2f - 13.66f,0,0);
+            trans.localScale = new Vector3((item.RangeMax - item.RangeMin)*10, 0.1f, 115);
+            trans.SetParent(transform);
+            key.name = item.key.ToString();
+            keyList.Add(item.key, key); 
         }
     }
-    public void keyUp(InputMapData.Item item)
+    public void KeyUp(InputMapData.Item item)
     {
-        if (keyList.ContainsKey(item.key))
+        if (keyList.TryGetValue(item.key, out var key))
         {
-            keyList[item.key].SetActive(false);
-            //keyList.Remove(keyCode.key);
+            key.SetActive(false);
         }
     }
 }
