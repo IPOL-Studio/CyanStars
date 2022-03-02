@@ -77,7 +77,7 @@ public class GameMgr : MonoBehaviour
             if (Input.GetKeyDown(item.key))
             {
                 ReceiveInput(InputType.Down,item);
-                keyViewController.keyDown(item);
+                keyViewController.KeyDown(item);
                 continue;
             }
             
@@ -90,7 +90,7 @@ public class GameMgr : MonoBehaviour
             if (Input.GetKeyUp(item.key))
             {
                 ReceiveInput(InputType.Up,item);
-                keyViewController.keyUp(item);
+                keyViewController.KeyUp(item);
             }
         }
     }
