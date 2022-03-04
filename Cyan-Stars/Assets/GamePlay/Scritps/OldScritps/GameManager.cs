@@ -57,23 +57,23 @@ public class GameManager : MonoBehaviour
         }
         
         this.grade = grade;
-        if(grade == "Excat")
+        if(grade == EvaluateType.Exact.ToString())
         {
             excatNum++;
         }
-        else if(grade == "Great")
+        else if(grade == EvaluateType.Great.ToString())
         {
             greatNum++;
         }
-        else if(grade == "Right")
+        else if(grade == EvaluateType.Right.ToString())
         {
             rightNum++;
         }
-        else if(grade == "Bad")
+        else if(grade == EvaluateType.Bad.ToString())
         {
             badNum++;
         }
-        else if(grade == "Miss")
+        else if(grade == EvaluateType.Miss.ToString())
         {
             missNum++;
         }
