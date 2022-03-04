@@ -22,6 +22,7 @@ public class ClickNote : BaseNote
             //没接住 miss
             DestroySelf();
             Debug.LogError($"Click音符miss：{data}");
+            GameManager.Instance.maxScore += 2;
             GameManager.Instance.RefreshData(-1,-1,"Miss",float.MaxValue);
         }
     }
@@ -41,6 +42,7 @@ public class ClickNote : BaseNote
                 float time = downTimePoint - logicTimer;
                 DestroySelf(false);
                 Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
+                GameManager.Instance.maxScore += 2;
                 EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(time);
                 if(evaluateType == EvaluateType.Exact)
                     GameManager.Instance.RefreshData(1,2,EvaluateHelper.GetClickEvaluate(time).ToString(),logicTimer);
