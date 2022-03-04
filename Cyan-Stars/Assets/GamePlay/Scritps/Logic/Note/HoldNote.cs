@@ -30,7 +30,11 @@ public class HoldNote : BaseNote
     /// <summary>
     /// 按下的时间点
     /// </summary>
-    private float downTimePoint;
+    //private float downTimePoint;
+    //此处是Ybr的改动
+
+    private int pressCount;//此处是Ybr的改动
+    private float pressTime;//此处是Ybr的改动
 
     public override void Init(NoteData data, MusicTimeline.Layer layer)
     {
@@ -49,6 +53,10 @@ public class HoldNote : BaseNote
     public override void OnUpdate(float deltaTime,float noteSpeedRate)
     {
         base.OnUpdate(deltaTime,noteSpeedRate);
+        if(pressCount > 0)
+        {
+            pressTime += Time.deltaTime;
+        }//此处是Ybr的改动
         if (logicTimer < holdCheckInputEndTime)
         {
             if (!headSucess)
@@ -59,13 +67,16 @@ public class HoldNote : BaseNote
             }
             else
             {
+                /*
                 if (downTimePoint != 0)
                 {
                     //按下后一直持续到结尾的话 也要算一下分
                     float time = downTimePoint - logicTimer;
                     value += time / holdLength;
+                    //Debug.LogError($"Hold音符分数：{value}");
                 }
-                
+                */
+                value = pressTime / holdLength;//此处是Ybr的改动
                 
                 EvaluateType et =  EvaluateHelper.GetHoldEvaluate(value);
                 Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
@@ -108,15 +119,14 @@ public class HoldNote : BaseNote
                     GameManager.Instance.RefreshData(1,1,et.ToString(),logicTimer);
                 }
                 
-                //头判成功 记录按下时间
+                //头判成功
                 headSucess = true;
-                downTimePoint = logicTimer;
-                
+                //downTimePoint = logicTimer;
+                pressCount ++;//此处是Ybr的改动
                 break;
 
-            
             case InputType.Up:
-
+                /*
                 if (downTimePoint != 0)
                 {
                     //此次有效时长
@@ -125,10 +135,9 @@ public class HoldNote : BaseNote
                     
                     //重置按下时间点
                     downTimePoint = 0;
-                }
-                
+                }*/
+                pressCount --;//此处是Ybr的改动
                 break;
-          
         }
         
     }

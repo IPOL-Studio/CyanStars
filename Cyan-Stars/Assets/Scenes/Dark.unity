@@ -609,6 +609,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 732401922024709692, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: showDeviation
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1383141806232530342, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_Name
       value: PlayingUI
