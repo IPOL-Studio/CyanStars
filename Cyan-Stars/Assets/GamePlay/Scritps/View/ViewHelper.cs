@@ -141,12 +141,12 @@ public static class ViewHelper
             if (Mathf.Abs(data.Pos - (-1)) < 0.01f)
             {
                 //左侧break
-                pos.x = -20;
+                pos.x = -15;
             }
             else
             {
                 //右侧break
-                pos.x = 20;
+                pos.x = 15;
             }
             pos.y = 4;
         }
@@ -172,6 +172,11 @@ public static class ViewHelper
         {
             //非Break音符需要缩放宽度
             scale.x = data.Width * 10;
+        }
+        else
+        {
+            scale.x = 3;
+            scale.z = 4;
         }
 
         return scale;

@@ -113,3 +113,9 @@ MonoBehaviour:
     - key: 47
       RangeMin: 2.4696
       RangeMax: 2.6946
+    - key: 32
+      RangeMin: -1
+      RangeMax: -0.7
+    - key: 32
+      RangeMin: 3.7
+      RangeMax: 4
