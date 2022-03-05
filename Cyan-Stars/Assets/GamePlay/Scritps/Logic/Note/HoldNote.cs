@@ -64,7 +64,7 @@ public class HoldNote : BaseNote
                 //被漏掉了 miss
                 Debug.LogError($"Hold音符miss：{data}");
                 GameManager.Instance.maxScore += 2;
-                GameManager.Instance.RefreshData(-1,-1,"Miss",float.MaxValue);
+                GameManager.Instance.RefreshData(-1,-1,EvaluateType.Miss,float.MaxValue);
             }
             else
             {
@@ -84,11 +84,11 @@ public class HoldNote : BaseNote
                 GameManager.Instance.maxScore ++;
                 if(et != EvaluateType.Miss)
                 {
-                    GameManager.Instance.RefreshData(1,1,et.ToString(),float.MaxValue);
+                    GameManager.Instance.RefreshData(1,1,et,float.MaxValue);
                 }
                 else
                 {
-                    GameManager.Instance.RefreshData(-1,-1,"Miss",float.MaxValue);
+                    GameManager.Instance.RefreshData(-1,-1,EvaluateType.Miss,float.MaxValue);
                 }
             }
             
@@ -114,13 +114,13 @@ public class HoldNote : BaseNote
                         DestroySelf(false);
                         Debug.LogError($"Hold头判失败,时间：{logicTimer}，{data}");
                         GameManager.Instance.maxScore +=2;
-                        GameManager.Instance.RefreshData(-1,-1,et.ToString(),float.MaxValue);
+                        GameManager.Instance.RefreshData(-1,-1,et,float.MaxValue);
                         return;
                     }
 
                     Debug.LogError($"Hold头判成功,时间：{logicTimer}，{data}");
                     GameManager.Instance.maxScore ++;
-                    GameManager.Instance.RefreshData(1,1,et.ToString(),logicTimer);
+                    GameManager.Instance.RefreshData(1,1,et,logicTimer);
                 }
                 
                 //头判成功

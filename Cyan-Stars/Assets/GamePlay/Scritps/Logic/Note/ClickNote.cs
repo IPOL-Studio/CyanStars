@@ -23,7 +23,7 @@ public class ClickNote : BaseNote
             DestroySelf();
             Debug.LogError($"Click音符miss：{data}");
             GameManager.Instance.maxScore += 2;
-            GameManager.Instance.RefreshData(-1,-1,"Miss",float.MaxValue);
+            GameManager.Instance.RefreshData(-1,-1,EvaluateType.Miss,float.MaxValue);
         }
     }
     
@@ -45,9 +45,9 @@ public class ClickNote : BaseNote
                 GameManager.Instance.maxScore += 2;
                 EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(time);
                 if(evaluateType == EvaluateType.Exact)
-                    GameManager.Instance.RefreshData(1,2,EvaluateHelper.GetClickEvaluate(time).ToString(),logicTimer);
+                    GameManager.Instance.RefreshData(1,2,EvaluateHelper.GetClickEvaluate(time),logicTimer);
                 else
-                    GameManager.Instance.RefreshData(1,1,EvaluateHelper.GetClickEvaluate(time).ToString(),logicTimer);
+                    GameManager.Instance.RefreshData(1,1,EvaluateHelper.GetClickEvaluate(time),logicTimer);
                 break;
           
         }
