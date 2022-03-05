@@ -29,7 +29,7 @@ public class PlayingUI : MonoBehaviour
     }
     void Update()
     {
-        //if(img)img.fillAmount = GameMgr.Instance.TimeSchedule();
+        if(img)img.fillAmount = GameMgr.Instance.TimeSchedule();
         if(showDeviation)
         {
             if(currentDeviationText)

@@ -34,6 +34,11 @@ public class GameMgr : MonoBehaviour
         Instance = this;
         inputMapData = InputMapSO.InputMapData;
     }
+
+    public float TimeSchedule()
+    {
+        return timeline.timer/timeline.data.Time;
+    }
     
     private void Start()
     {
