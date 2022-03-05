@@ -83,7 +83,7 @@ public static class EvaluateHelper
     /// </summary>
     public static EvaluateType GetClickEvaluate(float value)
     {
-        if (value <= 0.03f)
+        if (value <= 0.07f)
         {
             return EvaluateType.Exact;
         }

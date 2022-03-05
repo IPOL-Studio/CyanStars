@@ -40,6 +40,7 @@ public class ClickNote : BaseNote
             
             case InputType.Up:
                 float time = downTimePoint - logicTimer;
+                viewObject.CreateEffectObj();
                 DestroySelf(false);
                 Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
                 GameManager.Instance.maxScore += 2;
