@@ -111,7 +111,7 @@ public static class ViewHelper
         go.transform.SetParent(GameMgr.Instance.viewRoot);
         go.transform.position = GetViewObjectPos(data);
         go.transform.localScale = GetViewObjectScale(data);
-        go.transform.localRotation = GetViewObjectRotation(data);
+        go.transform.localEulerAngles = GetViewObjectRotation(data);
         
         var view = go.GetComponent<ViewObject>();
 
@@ -175,26 +175,26 @@ public static class ViewHelper
         }
         else
         {
-            scale.x = 3;
-            scale.z = 4;
+            scale.x = 1;
+            scale.z = 1;
         }
 
         return scale;
     }
-    private static Quaternion GetViewObjectRotation(NoteData data)
+    private static Vector3 GetViewObjectRotation(NoteData data)
     {
-        Quaternion rotation = new Quaternion(0,0,0,0);
+        Vector3 rotation = Vector3.zero;
         if (data.Type == NoteType.Break)
         {
             if(Mathf.Abs(data.Pos - (-1)) < 0.01f)
             {
                 //左侧break
-                rotation.y = -28;
+                rotation.z = -28;
             }
             else
             {
                 //右侧break
-                rotation.y = 28;
+                rotation.z = 28;
             }
         }
         return rotation;

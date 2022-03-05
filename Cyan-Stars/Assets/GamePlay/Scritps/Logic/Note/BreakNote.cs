@@ -38,7 +38,10 @@ public class BreakNote : BaseNote
             Debug.LogError($"Break音符命中,{data}");
             EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(logicTimer);
             GameManager.Instance.maxScore += 2;
-            GameManager.Instance.RefreshData(1,2,evaluateType,logicTimer);
+            if(evaluateType != EvaluateType.Miss && evaluateType != EvaluateType.Bad)
+                GameManager.Instance.RefreshData(1,2,evaluateType,logicTimer - 0);
+            else
+                GameManager.Instance.RefreshData(-1,-1,evaluateType,float.MaxValue);
         }
     }
 }
