@@ -26,9 +26,13 @@ public class TapNote : BaseNote
         {
             viewObject.CreateEffectObj();
             DestroySelf(false);
-            Debug.LogError($"Tap音符命中,评价:{EvaluateHelper.GetTapEvaluate(logicTimer)},{data}");
+            EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(logicTimer);
+            Debug.LogError($"Tap音符命中,评价:{evaluateType},{data}");
             GameManager.Instance.maxScore ++;
-            GameManager.Instance.RefreshData(1,1,EvaluateHelper.GetTapEvaluate(logicTimer),logicTimer - 0);
+            if(evaluateType != EvaluateType.Miss && evaluateType != EvaluateType.Bad)
+                GameManager.Instance.RefreshData(1,1,evaluateType,logicTimer - 0);
+            else
+                GameManager.Instance.RefreshData(-1,-1,evaluateType,float.MaxValue);
         }   
     }
 }
