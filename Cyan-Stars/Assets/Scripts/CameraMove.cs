@@ -16,7 +16,7 @@ public class CameraMove : MonoBehaviour
     private Vector3 oldPos;  //开始变化时的相对位置
     private Vector3 oldRot;  //开始变化时的绝对角度
     private float sumTime = 0;
-    private bool onChange;
+    private bool onChange = true;
     private Vector3 dPos, dRot;
 
     void ChangeCameraPosAndRot()
