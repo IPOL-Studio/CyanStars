@@ -17,12 +17,10 @@ public class CameraController : MonoBehaviour//摄像头控制脚本
     Transform oldTransform;//旧的位置
     private bool onMove = false;//是否在移动
     public Vector3 defaultPosition;//默认位置
-    public Vector3 defaultRotation;//默认旋转
     void Awake()
     {
         Instance = this;//单例模式
         transform.position = defaultPosition;//设置默认位置
-        transform.eulerAngles = defaultRotation;//设置默认旋转
     }
     public void MoveCamera(Vector3 newPos, Vector3 newRot, float dTime,SmoothFuncationType type = SmoothFuncationType.Linear)//移动摄像头
     {
