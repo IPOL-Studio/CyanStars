@@ -1,20 +1,20 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraMove : MonoBehaviour
 {
-    public Camera objectCamera; //ĞèÒª×÷ÓÃµÄCamera
+    public Camera objectCamera; //éœ€è¦ä½œç”¨çš„Camera
 
-    public Vector3 defaultCameraPos;    //ÉãÏñ»úµÄÄ¬ÈÏÎ»ÖÃ
+    public Vector3 defaultCameraPos;    //æ‘„åƒæœºçš„é»˜è®¤ä½ç½®
 
-    public Vector3 newPos;  //±ä»¯ºóµÄÏà¶ÔÎ»ÖÃ£¨Ïà¶ÔÓÚÄ¬ÈÏÎ»ÖÃ£©
-    public Vector3 newRot;  //±ä»¯ºóµÄ¾ø¶Ô½Ç¶È
-    public float dTime;     //±ä»¯³ÖĞøÊ±¼ä£¬µ¥Î»ºÁÃë
-    public bool smooth;     //ÊÇ·ñÊ¹ÓÃÈı½Çº¯Êı»º¶¯
+    public Vector3 newPos;  //å˜åŒ–åçš„ç›¸å¯¹ä½ç½®ï¼ˆç›¸å¯¹äºé»˜è®¤ä½ç½®ï¼‰
+    public Vector3 newRot;  //å˜åŒ–åçš„ç»å¯¹è§’åº¦
+    public float dTime;     //å˜åŒ–æŒç»­æ—¶é—´ï¼Œå•ä½æ¯«ç§’
+    public bool smooth;     //æ˜¯å¦ä½¿ç”¨ä¸‰è§’å‡½æ•°ç¼“åŠ¨
 
-    private Vector3 oldPos;  //¿ªÊ¼±ä»¯Ê±µÄÏà¶ÔÎ»ÖÃ
-    private Vector3 oldRot;  //¿ªÊ¼±ä»¯Ê±µÄ¾ø¶Ô½Ç¶È
+    private Vector3 oldPos;  //å¼€å§‹å˜åŒ–æ—¶çš„ç›¸å¯¹ä½ç½®
+    private Vector3 oldRot;  //å¼€å§‹å˜åŒ–æ—¶çš„ç»å¯¹è§’åº¦
     private float sumTime = 0;
     private bool onChange = true;
     private Vector3 dPos, dRot;
@@ -44,7 +44,7 @@ public class CameraMove : MonoBehaviour
                 objectCamera.transform.position = defaultCameraPos + oldPos + new Vector3(StraigntFormula(dPos.x, dTime, sumTime), StraigntFormula(dPos.y, dTime, sumTime), StraigntFormula(dPos.z, dTime, sumTime));
                 objectCamera.transform.localEulerAngles = oldRot + new Vector3(StraigntFormula(dRot.x, dTime, sumTime), StraigntFormula(dRot.y, dTime, sumTime), StraigntFormula(dRot.z, dTime, sumTime));
             }
-            if (sumTime >= dTime) { onChange = false; } //³¬Ê±ºóÍ£Ö¹
+            if (sumTime >= dTime) { onChange = false; } //è¶…æ—¶ååœæ­¢
         }
     }
 
