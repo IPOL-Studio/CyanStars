@@ -7,7 +7,7 @@ using UnityEngine;
 *  调用一次MoveCamera(Vector3 newPos, Vector3 newRot, float dTime,SmoothFuncationType type = SmoothFuncationType.Linear)
 *  newPos为移动后的位置
 *  newRot为移动后的朝向
-*  dTime为移动，单位毫秒
+*  dTime为移动时间，单位毫秒
 *  type见SmoothFuncationType.cs
 */
 
