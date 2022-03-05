@@ -5,14 +5,24 @@ using UnityEngine;
 public class CameraController : MonoBehaviour//摄像头控制脚本
 {
     public static CameraController Instance;//单例模式
+    public Vector3 startPos;//摄像头初始位置
+    public Vector3 startRot;//摄像头初始旋转
     Transform oldTransform;//旧的位置
     private bool onMove = false;//是否在移动
-    public void moveCamera(Vector3 newPos, Vector3 newRot, float dTime,SmoothFuncationType type = SmoothFuncationType.Linear)//移动摄像头
+    void Start()
+    {
+        Instance = this;
+        transform.position = startPos;
+        transform.eulerAngles = startRot;
+
+    }
+
+    public void MoveCamera(Vector3 newPos, Vector3 newRot, float dTime,SmoothFuncationType type = SmoothFuncationType.Linear)//移动摄像头
     {
         oldTransform = transform;//记录旧的位置
-        StartCoroutine(moveCameraCoroutine(newPos, newRot, dTime, type));//开启协程
+        StartCoroutine(MoveCameraCoroutine(newPos, newRot, dTime, type));//开启协程
     }
-    IEnumerator moveCameraCoroutine(Vector3 newPos,Vector3 newRot,float dtime,SmoothFuncationType type)//移动摄像头协程
+    IEnumerator MoveCameraCoroutine(Vector3 newPos,Vector3 newRot,float dtime,SmoothFuncationType type)//移动摄像头协程
     {
         Vector3 oldPos = oldTransform.position;//记录旧的位置
         Vector3 oldRot = oldTransform.localEulerAngles;//记录旧的角度
