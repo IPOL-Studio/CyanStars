@@ -125,3 +125,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44ce22602c0df954ea3cad4805156314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  effectPrefab: {fileID: 479875854288579027, guid: 5e23cbeafdd5a7440969ecc410eb4e86, type: 3}

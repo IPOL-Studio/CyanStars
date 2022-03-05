@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 479875854288579026}
   - component: {fileID: 6935031611998288630}
   m_Layer: 0
-  m_Name: HoldHitEffect
+  m_Name: BreakHitEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076098103b8a70e409807a8f7103bf8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  willDestroy: 0
-  destroyTime: 0.5
+  willDestroy: 1
+  destroyTime: 5
 --- !u!1 &479875854597958614
 GameObject:
   m_ObjectHideFlags: 0
@@ -912,7 +912,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 100
+      scalar: 0
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -1022,7 +1022,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 0
+        scalar: 100
         minScalar: 30
         maxCurve:
           serializedVersion: 2
@@ -5774,7 +5774,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 100
+      scalar: 0
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -5884,7 +5884,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 0
+        scalar: 100
         minScalar: 30
         maxCurve:
           serializedVersion: 2
@@ -9725,7 +9725,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 23e8d074452484e4d92be0e929f6148f, type: 2}
+  - {fileID: 2100000, guid: 80607cf1a6c281f4e8798909730d3b79, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
