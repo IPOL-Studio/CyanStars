@@ -10,12 +10,12 @@ public partial class MusicTimeline
     /// <summary>
     /// 音乐时间轴数据
     /// </summary>
-    private MusicTimelineData data;
+    public MusicTimelineData data;
 
     /// <summary>
     /// 计时器
     /// </summary>
-    private float timer;
+    public float timer;
     
     /// <summary>
     /// 图层列表
