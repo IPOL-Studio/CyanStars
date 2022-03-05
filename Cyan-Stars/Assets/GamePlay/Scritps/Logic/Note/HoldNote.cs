@@ -77,6 +77,7 @@ public class HoldNote : BaseNote
                     //Debug.LogError($"Hold音符分数：{value}");
                 }
                 */
+                viewObject.DestroyEffectObj();
                 value = pressTime / holdLength;
                 
                 EvaluateType et =  EvaluateHelper.GetHoldEvaluate(value);
