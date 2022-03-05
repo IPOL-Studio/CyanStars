@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64258c7c87c240b49b0c8952440868bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  effectPrefab: {fileID: 479875854288579027, guid: 92fb8d57497b5c0458bb803255a10c45, type: 3}
   meshFilter: {fileID: 1083648823376758024}
 --- !u!1 &7459610689468705249
 GameObject:

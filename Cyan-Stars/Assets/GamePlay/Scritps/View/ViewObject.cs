@@ -9,6 +9,8 @@ using UnityEngine;
 public class ViewObject : MonoBehaviour, IView
 {
     private float deltaTime;
+    public GameObject effectPrefab;
+    private GameObject effectObj;
     
     public void OnUpdate(float deltaTime)
     {
@@ -17,6 +19,14 @@ public class ViewObject : MonoBehaviour, IView
         Vector3 pos = transform.position;
         pos.z -= deltaTime;
         transform.position = pos;
+    }
+    public void CreateEffectObj()
+    {
+        effectObj = GameObject.Instantiate(effectPrefab,transform.position,Quaternion.identity);
+    }
+    public void DestroyEffectObj()
+    {
+        Destroy(effectObj);
     }
 
     public void DestroySelf(bool autoMove = true)

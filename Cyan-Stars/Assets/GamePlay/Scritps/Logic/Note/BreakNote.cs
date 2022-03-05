@@ -33,6 +33,7 @@ public class BreakNote : BaseNote
 
         if (inputType == InputType.Down)
         {
+            viewObject.CreateEffectObj();
             DestroySelf(false);
             Debug.LogError($"Break音符命中,{data}");
             EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(logicTimer);

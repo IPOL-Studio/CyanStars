@@ -31,10 +31,10 @@ public class HoldNote : BaseNote
     /// 按下的时间点
     /// </summary>
     //private float downTimePoint;
-    //此处是Ybr的改动
+    
 
-    private int pressCount;//此处是Ybr的改动
-    private float pressTime;//此处是Ybr的改动
+    private int pressCount;
+    private float pressTime;
 
     public override void Init(NoteData data, MusicTimeline.Layer layer)
     {
@@ -56,7 +56,7 @@ public class HoldNote : BaseNote
         if(pressCount > 0)
         {
             pressTime += Time.deltaTime;
-        }//此处是Ybr的改动
+        }
         if (logicTimer < holdCheckInputEndTime)
         {
             if (!headSucess)
@@ -77,7 +77,7 @@ public class HoldNote : BaseNote
                     //Debug.LogError($"Hold音符分数：{value}");
                 }
                 */
-                value = pressTime / holdLength;//此处是Ybr的改动
+                value = pressTime / holdLength;
                 
                 EvaluateType et =  EvaluateHelper.GetHoldEvaluate(value);
                 Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
@@ -126,7 +126,8 @@ public class HoldNote : BaseNote
                 //头判成功
                 headSucess = true;
                 //downTimePoint = logicTimer;
-                pressCount ++;//此处是Ybr的改动
+                if(pressCount == 0)viewObject.CreateEffectObj();
+                pressCount ++;
                 break;
 
             case InputType.Up:
@@ -140,7 +141,8 @@ public class HoldNote : BaseNote
                     //重置按下时间点
                     downTimePoint = 0;
                 }*/
-                pressCount --;//此处是Ybr的改动
+                pressCount --;
+                if(pressCount == 0)viewObject.DestroyEffectObj();
                 break;
         }
         

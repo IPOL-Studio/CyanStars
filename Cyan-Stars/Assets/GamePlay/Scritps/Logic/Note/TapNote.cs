@@ -24,6 +24,7 @@ public class TapNote : BaseNote
 
         if (inputType == InputType.Down)
         {
+            viewObject.CreateEffectObj();
             DestroySelf(false);
             Debug.LogError($"Tap音符命中,评价:{EvaluateHelper.GetTapEvaluate(logicTimer)},{data}");
             GameManager.Instance.maxScore ++;
