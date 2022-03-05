@@ -23,7 +23,7 @@ public class BreakNote : BaseNote
             DestroySelf();
             Debug.LogError($"Break音符miss：{data}");
             GameManager.Instance.maxScore += 2;
-            GameManager.Instance.RefreshData(-1,-1,"Miss",float.MaxValue);
+            GameManager.Instance.RefreshData(-1,-1,EvaluateType.Miss,float.MaxValue);
         }
     }
 
@@ -37,7 +37,7 @@ public class BreakNote : BaseNote
             Debug.LogError($"Break音符命中,{data}");
             EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(logicTimer);
             GameManager.Instance.maxScore += 2;
-            GameManager.Instance.RefreshData(1,2,evaluateType.ToString(),logicTimer);
+            GameManager.Instance.RefreshData(1,2,evaluateType,logicTimer);
         }
     }
 }

@@ -14,7 +14,7 @@ public class TapNote : BaseNote
             DestroySelf();
             Debug.LogError($"Tap音符miss：{data}");
             GameManager.Instance.maxScore ++;
-            GameManager.Instance.RefreshData(-1,-1,"Miss",float.MaxValue);
+            GameManager.Instance.RefreshData(-1,-1,EvaluateType.Miss,float.MaxValue);
         }
     }
 
@@ -27,7 +27,7 @@ public class TapNote : BaseNote
             DestroySelf(false);
             Debug.LogError($"Tap音符命中,评价:{EvaluateHelper.GetTapEvaluate(logicTimer)},{data}");
             GameManager.Instance.maxScore ++;
-            GameManager.Instance.RefreshData(1,1,EvaluateHelper.GetTapEvaluate(logicTimer).ToString(),logicTimer - 0);
+            GameManager.Instance.RefreshData(1,1,EvaluateHelper.GetTapEvaluate(logicTimer),logicTimer - 0);
         }   
     }
 }

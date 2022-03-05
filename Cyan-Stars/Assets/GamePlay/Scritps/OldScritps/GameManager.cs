@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
     [Header("2.分数")]
     public int score = 0;//分数
     [Header("3.评分")]
-    public string grade = "";//评分
+    public EvaluateType grade;//评分
     [Header("4.当前精准度")]
     public float currentDeviation = 0;//当前精准度
     [Header("5.各个音符的偏移")]
@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
             item.Refresh(combo,score,grade,-1);
         }
     }
-    public void RefreshData(int addCombo,int addScore,string grade,float currentDeviation)
+    public void RefreshData(int addCombo,int addScore,EvaluateType grade,float currentDeviation)
     {
         if(addCombo < 0)
         {
@@ -57,23 +57,23 @@ public class GameManager : MonoBehaviour
         }
         
         this.grade = grade;
-        if(grade == EvaluateType.Exact.ToString())
+        if(grade == EvaluateType.Exact)
         {
             excatNum++;
         }
-        else if(grade == EvaluateType.Great.ToString())
+        else if(grade == EvaluateType.Great)
         {
             greatNum++;
         }
-        else if(grade == EvaluateType.Right.ToString())
+        else if(grade == EvaluateType.Right)
         {
             rightNum++;
         }
-        else if(grade == EvaluateType.Bad.ToString())
+        else if(grade == EvaluateType.Bad)
         {
             badNum++;
         }
-        else if(grade == EvaluateType.Miss.ToString())
+        else if(grade == EvaluateType.Miss)
         {
             missNum++;
         }
@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour
             this.currentDeviation = currentDeviation;
             deviationList.Add(currentDeviation);
         }    
-        RefreshPlayingUI(combo,score,grade);
+        RefreshPlayingUI(combo,score,grade.ToString());
     }
 }
 //This code is writed by Ybr.
