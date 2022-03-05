@@ -213,7 +213,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 552719605}
   m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: 0.55, y: 15, z: -5.47}
+  m_LocalPosition: {x: 0, y: 15, z: -5.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -261,15 +261,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 552719605}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ea7f353cedc4354a827462d20b7c4df, type: 3}
+  m_Script: {fileID: 11500000, guid: 7c19ab76df5a96b43865e99cf62b252c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectCamera: {fileID: 552719607}
-  defaultCameraPos: {x: 0.55, y: 15, z: -5.47}
-  newPos: {x: 0, y: 0, z: 0}
-  newRot: {x: 45, y: 0, z: 0}
-  dTime: 0
-  smooth: 1
+  cameraPositions:
+  - {x: 0, y: 20, z: 15}
+  - {x: 0, y: 15, z: -5.5}
+  cameraRotations:
+  - {x: 60, y: 0, z: 0}
+  - {x: 45, y: 0, z: 0}
+  cameraDTimes:
+  - 3
+  - 3
+  cameraSmoothTypes: 0000000001000000
+  onMove: 0
 --- !u!1 &754579191
 GameObject:
   m_ObjectHideFlags: 0
