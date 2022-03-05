@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: MusicTimelineData
   m_EditorClassIdentifier: 
   musicTimelineData:
-    Time: 1
-    BaseSpeed: 0
-    SpeedRate: 0
-    LayerDatas: []
+    Time: 20
+    BaseSpeed: 1
+    SpeedRate: 4
+    LayerDatas:
+    - ClipDatas:
+      - StartTime: 0
+        SpeedRate: 1
+        NoteDatas: []
