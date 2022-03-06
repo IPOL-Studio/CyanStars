@@ -51,3 +51,4 @@ MonoBehaviour:
   DragPrefab: {fileID: 6236107155078963146, guid: 4025f0caeca59634991b40496ca3f86d, type: 3}
   ClickPrefab: {fileID: 4065793755966527998, guid: e85ae38a16f3ec048a5628b586a5152e, type: 3}
   BreakPrefab: {fileID: 3149876104535507044, guid: 1ee31a272c4e7ae43acd9b45bfa82a92, type: 3}
+  keyViewController: {fileID: 0}
