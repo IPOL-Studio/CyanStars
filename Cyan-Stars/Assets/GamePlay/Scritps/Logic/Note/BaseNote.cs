@@ -16,11 +16,20 @@ public abstract class BaseNote
     /// 此音符所属图层
     /// </summary>
     protected MusicTimeline.Layer layer;
-    
+
     /// <summary>
     /// 剩余时间的倒计时（主要用于逻辑层）
     /// </summary>
-    protected float logicTimer;
+    public float LogicTimer
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// 音符位置值
+    /// </summary>
+    public float Pos => data.Pos;
 
     /// <summary>
     /// 受速率缩放影响的剩余时间的倒计时（主要用于视图层）
@@ -39,7 +48,7 @@ public abstract class BaseNote
     {
         this.data = data;
         this.layer = layer;
-        logicTimer = data.StartTime;
+        LogicTimer = data.StartTime;
         viewTimer = ViewHelper.GetViewStartTime(data);
         
         //考虑性能问题 不再会一开始就创建出所有Note的游戏物体
@@ -52,7 +61,7 @@ public abstract class BaseNote
     /// </summary>
     public virtual bool CanReceiveInput()
     {
-        return logicTimer <= EvaluateHelper.CheckInputStartTime && logicTimer >= EvaluateHelper.CheckInputEndTime;
+        return LogicTimer <= EvaluateHelper.CheckInputStartTime && LogicTimer >= EvaluateHelper.CheckInputEndTime;
     }
 
     /// <summary>
@@ -70,7 +79,7 @@ public abstract class BaseNote
     
     public virtual void OnUpdate(float deltaTime,float noteSpeedRate)
     {
-        logicTimer -= deltaTime;
+        LogicTimer -= deltaTime;
         viewTimer -= deltaTime * noteSpeedRate;
 
         if (viewObject == null && viewTimer <= ViewHelper.ViewObjectCreateTime)

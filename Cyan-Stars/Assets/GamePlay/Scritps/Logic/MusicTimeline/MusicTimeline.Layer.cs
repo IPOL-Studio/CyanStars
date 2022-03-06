@@ -135,33 +135,44 @@ public partial class MusicTimeline
                 return;
             }
             
-            List<BaseNote> list = GetValidNotes();
+            List<BaseNote> list = GetValidNotes(item);
 
-            for (int i = 0; i < list.Count; i++)
+            if (list.Count == 0)
             {
-                BaseNote note = list[i];
-
-                if (note.IsInRange(item.RangeMin,item.RangeMax))
-                {
-                    //可接收输入 并且 与输入映射到的范围有重合
-                    //让音符响应输入
-                    note.OnInput(inputType);
-                }
+                return;;
             }
+            
+            
+            list.Sort((x, y) =>
+            {
+                if (Math.Abs(x.LogicTimer - y.LogicTimer) > float.Epsilon)
+                {
+                    //第一优先级是离玩家的距离
+                    return x.LogicTimer.CompareTo(y.LogicTimer);
+                }
+
+                //第二优先级是离屏幕中间的距离
+                return Mathf.Abs(x.Pos - NoteData.MiddlePos).CompareTo(Mathf.Abs(y.Pos - NoteData.MiddlePos));
+            });
+            
+            //一次输入信号 只发给一个note处理 避免同时有多个note响应
+            list[0].OnInput(inputType);
+            
+            
         }
     
 
         /// <summary>
-        /// 获取可接收输入的音符列表
+        /// 获取可接收输入且在输入映射范围内的音符列表
         /// </summary>
-        private List<BaseNote> GetValidNotes()
+        private List<BaseNote> GetValidNotes(InputMapData.Item item)
         {
             cachedList.Clear();
 
             for (int i = 0; i < notes.Count; i++)
             {
                 BaseNote note = notes[i];
-                if (note.CanReceiveInput())
+                if (note.CanReceiveInput() && note.IsInRange(item.RangeMin,item.RangeMax))
                 {
                     cachedList.Add(note);
                 }

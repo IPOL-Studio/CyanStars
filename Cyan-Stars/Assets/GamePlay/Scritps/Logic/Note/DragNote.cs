@@ -12,20 +12,20 @@ public class DragNote : BaseNote
     
     public override bool CanReceiveInput()
     {
-        return logicTimer <= EvaluateHelper.DragTimeRange && logicTimer >= -EvaluateHelper.DragTimeRange;
+        return LogicTimer <= EvaluateHelper.DragTimeRange && LogicTimer >= -EvaluateHelper.DragTimeRange;
     }
 
     public override void OnUpdate(float deltaTime,float noteSpeedRate)
     {
         base.OnUpdate(deltaTime,noteSpeedRate);
 
-        if (isHit && logicTimer <= 0 )
+        if (isHit && LogicTimer <= 0 )
         {
             DestroySelf(false);
             return;
         }
         
-        if (logicTimer < -EvaluateHelper.DragTimeRange)
+        if (LogicTimer < -EvaluateHelper.DragTimeRange)
         {
             //没接住 miss
             DestroySelf();
@@ -51,8 +51,8 @@ public class DragNote : BaseNote
                 viewObject.CreateEffectObj();
                 Debug.LogError($"Drag音符命中：{data}");
                 GameManager.Instance.maxScore ++;
-                GameManager.Instance.RefreshData(1,1,EvaluateType.Exact,logicTimer);
-                if (logicTimer > 0)
+                GameManager.Instance.RefreshData(1,1,EvaluateType.Exact,LogicTimer);
+                if (LogicTimer > 0)
                 {
                     //早按准点放
                     isHit = true;
