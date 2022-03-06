@@ -34,7 +34,7 @@ public class PlayingUI : MonoBehaviour
         {
             if(currentDeviationText)
             {
-                currentDeviationText.text = "当前杂率:" + string.Format("{0:F}",GameManager.Instance.currentDeviation) + "ms";
+                currentDeviationText.text = "误差:" + string.Format("{0:F3}",GameManager.Instance.currentDeviation*1000) + "ms";
                 if(GameManager.Instance.currentDeviation > 0)currentDeviationText.color = Color.red;
                 if(GameManager.Instance.currentDeviation < 0)currentDeviationText.color = Color.cyan;
             }
@@ -45,13 +45,14 @@ public class PlayingUI : MonoBehaviour
                 {
                     foreach(var item in GameManager.Instance.deviationList)
                     {
-                        sum += item;
+                        sum += Mathf.Abs(item);
                     }
                     accuracy = sum / (float)GameManager.Instance.deviationList.Count;
                 }
-                accuracyText.text = "平均杂率:" + string.Format("{0:F}",accuracy) + "ms";
-                if(accuracy > 0)accuracyText.color = Color.red;
-                if(accuracy < 0)accuracyText.color = Color.cyan;
+                accuracyText.text = "杂率:" + string.Format("{0:F3}",accuracy) + "s";
+                if(accuracy < 0.03)accuracyText.color = Color.yellow;
+                else if(accuracy < 0.05)accuracyText.color = Color.blue;
+                else accuracyText.color = Color.white;
             }
         }
         else
