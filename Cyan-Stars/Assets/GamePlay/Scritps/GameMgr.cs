@@ -29,10 +29,13 @@ public class GameMgr : MonoBehaviour
 
     public KeyViewController keyViewController;
 
+    private HashSet<KeyCode> pressedKeySet;
+
     private void Awake()
     {
         Instance = this;
         inputMapData = InputMapSO.InputMapData;
+        pressedKeySet = new HashSet<KeyCode>();
     }
 
     public float TimeSchedule()
@@ -81,6 +84,7 @@ public class GameMgr : MonoBehaviour
             InputMapData.Item item = inputMapData.Items[i];
             if (Input.GetKeyDown(item.key))
             {
+                pressedKeySet.Add(item.key);
                 ReceiveInput(InputType.Down,item);
                 keyViewController.KeyDown(item);
                 continue;
@@ -91,8 +95,8 @@ public class GameMgr : MonoBehaviour
                 ReceiveInput(InputType.Press,item);
                 continue;
             }
-            
-            if (Input.GetKeyUp(item.key))
+
+            if (pressedKeySet.Remove(item.key))
             {
                 ReceiveInput(InputType.Up,item);
                 keyViewController.KeyUp(item);

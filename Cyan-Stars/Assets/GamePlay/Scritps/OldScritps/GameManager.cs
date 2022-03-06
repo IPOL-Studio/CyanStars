@@ -57,26 +57,17 @@ public class GameManager : MonoBehaviour
         }
         
         this.grade = grade;
-        if(grade == EvaluateType.Exact)
+
+        _ = grade switch
         {
-            excatNum++;
-        }
-        else if(grade == EvaluateType.Great)
-        {
-            greatNum++;
-        }
-        else if(grade == EvaluateType.Right)
-        {
-            rightNum++;
-        }
-        else if(grade == EvaluateType.Bad)
-        {
-            badNum++;
-        }
-        else if(grade == EvaluateType.Miss)
-        {
-            missNum++;
-        }
+            EvaluateType.Exact => excatNum++,
+            EvaluateType.Great => greatNum++,
+            EvaluateType.Right => rightNum++,
+            EvaluateType.Bad   => badNum++,
+            EvaluateType.Miss  => missNum++,
+            _ => throw new System.NotImplementedException()
+        };
+        
         if(currentDeviation < 10000)
         {
             this.currentDeviation = currentDeviation;
