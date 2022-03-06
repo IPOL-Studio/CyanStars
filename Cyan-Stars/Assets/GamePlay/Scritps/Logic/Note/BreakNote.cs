@@ -17,7 +17,7 @@ public class BreakNote : BaseNote
     public override void OnUpdate(float deltaTime,float noteSpeedRate)
     {
         base.OnUpdate(deltaTime,noteSpeedRate);
-        if (logicTimer < EvaluateHelper.CheckInputEndTime)
+        if (LogicTimer < EvaluateHelper.CheckInputEndTime)
         {
             //没接住 miss
             DestroySelf();
@@ -36,10 +36,10 @@ public class BreakNote : BaseNote
             viewObject.CreateEffectObj();
             DestroySelf(false);
             Debug.LogError($"Break音符命中,{data}");
-            EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(logicTimer);
+            EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);
             GameManager.Instance.maxScore += 2;
             if(evaluateType != EvaluateType.Miss && evaluateType != EvaluateType.Bad)
-                GameManager.Instance.RefreshData(1,2,evaluateType,logicTimer - 0);
+                GameManager.Instance.RefreshData(1,2,evaluateType,LogicTimer - 0);
             else
                 GameManager.Instance.RefreshData(-1,-1,evaluateType,float.MaxValue);
         }

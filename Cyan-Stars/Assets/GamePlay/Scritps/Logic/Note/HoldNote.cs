@@ -47,7 +47,7 @@ public class HoldNote : BaseNote
 
     public override bool CanReceiveInput()
     {
-        return logicTimer <= EvaluateHelper.CheckInputStartTime && logicTimer >= holdCheckInputEndTime;
+        return LogicTimer <= EvaluateHelper.CheckInputStartTime && LogicTimer >= holdCheckInputEndTime;
     }
 
     public override void OnUpdate(float deltaTime,float noteSpeedRate)
@@ -57,7 +57,7 @@ public class HoldNote : BaseNote
         {
             pressTime += Time.deltaTime;
         }
-        if (logicTimer < holdCheckInputEndTime)
+        if (LogicTimer < holdCheckInputEndTime)
         {
             if (!headSucess)
             {
@@ -108,20 +108,20 @@ public class HoldNote : BaseNote
                 if (!headSucess)
                 {
                     //判断头判评价
-                    EvaluateType et = EvaluateHelper.GetTapEvaluate(logicTimer);
+                    EvaluateType et = EvaluateHelper.GetTapEvaluate(LogicTimer);
                     if (et == EvaluateType.Bad || et == EvaluateType.Miss)
                     {
                         //头判失败直接销毁
                         DestroySelf(false);
-                        Debug.LogError($"Hold头判失败,时间：{logicTimer}，{data}");
+                        Debug.LogError($"Hold头判失败,时间：{LogicTimer}，{data}");
                         GameManager.Instance.maxScore +=2;
                         GameManager.Instance.RefreshData(-1,-1,et,float.MaxValue);
                         return;
                     }
 
-                    Debug.LogError($"Hold头判成功,时间：{logicTimer}，{data}");
+                    Debug.LogError($"Hold头判成功,时间：{LogicTimer}，{data}");
                     GameManager.Instance.maxScore ++;
-                    GameManager.Instance.RefreshData(1,1,et,logicTimer);
+                    GameManager.Instance.RefreshData(1,1,et,LogicTimer);
                 }
                 
                 //头判成功
