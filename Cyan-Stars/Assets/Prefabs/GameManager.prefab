@@ -48,7 +48,7 @@ MonoBehaviour:
   - {fileID: 0}
   combo: 0
   score: 0
-  grade: 
+  grade: 0
   currentDeviation: 0
   deviationList: []
   maxScore: 0
