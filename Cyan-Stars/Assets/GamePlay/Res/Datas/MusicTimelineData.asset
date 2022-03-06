@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   musicTimelineData:
     Time: 20
-    BaseSpeed: 1
-    SpeedRate: 4
+    BaseSpeed: 4
+    SpeedRate: 1
     LayerDatas:
     - ClipDatas:
       - StartTime: 0
