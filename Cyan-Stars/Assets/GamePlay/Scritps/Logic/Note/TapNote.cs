@@ -8,7 +8,7 @@ public class TapNote : BaseNote
     {
         base.OnUpdate(deltaTime,noteSpeedRate);
 
-        if (logicTimer < EvaluateHelper.CheckInputEndTime)
+        if (LogicTimer < EvaluateHelper.CheckInputEndTime)
         {
             //没接住 miss
             DestroySelf();
@@ -26,11 +26,11 @@ public class TapNote : BaseNote
         {
             viewObject.CreateEffectObj();
             DestroySelf(false);
-            EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(logicTimer);
+            EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);
             Debug.LogError($"Tap音符命中,评价:{evaluateType},{data}");
             GameManager.Instance.maxScore ++;
             if(evaluateType != EvaluateType.Miss && evaluateType != EvaluateType.Bad)
-                GameManager.Instance.RefreshData(1,1,evaluateType,logicTimer - 0);
+                GameManager.Instance.RefreshData(1,1,evaluateType,LogicTimer - 0);
             else
                 GameManager.Instance.RefreshData(-1,-1,evaluateType,float.MaxValue);
         }   
