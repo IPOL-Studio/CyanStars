@@ -17,7 +17,7 @@ public class KeyViewController : MonoBehaviour
         {
             key = Instantiate(keyPrefab);
             var trans = key.transform;
-            trans.position = new Vector3(item.RangeMin * 10.2f - 13.66f,0,0);
+            trans.position = new Vector3(item.RangeMin * 9.8f - 13.66f,0,0);
             trans.localScale = new Vector3((item.RangeMax - item.RangeMin)*10, 0.1f, 115);
             trans.SetParent(transform);
             key.name = item.key.ToString();
