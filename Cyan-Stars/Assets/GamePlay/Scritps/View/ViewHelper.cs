@@ -152,7 +152,7 @@ public static class ViewHelper
         }
         else
         {
-            pos.x = Endpoint.Instance.GetPos(data.Pos);
+            pos.x = Endpoint.Instance.GetPosWithRatio(data.Pos);
         }
 
         return pos;
