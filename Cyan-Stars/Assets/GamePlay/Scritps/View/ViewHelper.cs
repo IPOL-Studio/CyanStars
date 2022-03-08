@@ -135,7 +135,7 @@ public static class ViewHelper
         //Y轴位置 一开始就在屏幕内的用scaledStartTimeDict[data]，否则用ViewObjectCreateScaledTime
         pos.z = GetViewObjectPosZ(viewStartTimeDict[data]);
 
-        pos.y = 1;
+        pos.y = Endpoint.Instance.leftObj.transform.position.y;
         if (data.Type == NoteType.Break)
         {
             if (Mathf.Abs(data.Pos - (-1)) < 0.01f)
@@ -152,7 +152,7 @@ public static class ViewHelper
         }
         else
         {
-            pos.x = data.Pos * 10 - 13;
+            pos.x = Endpoint.Instance.GetPos(data.Pos);
         }
 
         return pos;
@@ -171,7 +171,7 @@ public static class ViewHelper
         if (data.Type != NoteType.Break)
         {
             //非Break音符需要缩放宽度
-            scale.x = data.Width * 10;
+            scale.x = data.Width * Endpoint.Instance.GetLenth();
         }
         else
         {
