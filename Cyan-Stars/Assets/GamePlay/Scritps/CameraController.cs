@@ -24,6 +24,7 @@ public class CameraController : MonoBehaviour//摄像头控制脚本
     }
     public void MoveCamera(Vector3 newPos, Vector3 newRot, float dTime,SmoothFuncationType type = SmoothFuncationType.Linear)//移动摄像头
     {
+        if(onMove)return;
         oldTransform = transform;//记录旧的位置
         StartCoroutine(MoveCameraCoroutine(newPos, newRot, dTime, type));//开启协程
     }
