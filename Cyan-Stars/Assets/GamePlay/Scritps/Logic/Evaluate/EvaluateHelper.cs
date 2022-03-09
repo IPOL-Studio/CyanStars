@@ -42,7 +42,7 @@ public static class EvaluateHelper
         }
 
         //141-200（早）
-        if (hitTime <= 0.2f)
+        if (hitTime <= 0.2f && hitTime >= 0)
         {
             return EvaluateType.Bad;
         }
