@@ -83,21 +83,13 @@ public class HoldNote : BaseNote
                 EvaluateType et =  EvaluateHelper.GetHoldEvaluate(value);
                 Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
                 GameManager.Instance.maxScore ++;
-                if(et == EvaluateType.Exact)
+                if(et != EvaluateType.Miss)
                 {
                     GameManager.Instance.RefreshData(1,1,et,float.MaxValue);
                 }
-                else if(et == EvaluateType.Great)
-                {
-                    GameManager.Instance.RefreshData(1,0.75f,et,float.MaxValue);
-                }
-                else if(et == EvaluateType.Right)
-                {
-                    GameManager.Instance.RefreshData(1,0.5f,et,float.MaxValue);
-                }
                 else
                 {
-                    GameManager.Instance.RefreshData(-1,-1,et,float.MaxValue);
+                    GameManager.Instance.RefreshData(-1,-1,EvaluateType.Miss,float.MaxValue);
                 }
             }
             
@@ -116,31 +108,26 @@ public class HoldNote : BaseNote
                 if (!headSucess)
                 {
                     //判断头判评价
-                    EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);
-                    if (evaluateType == EvaluateType.Bad || evaluateType == EvaluateType.Miss)
+                    EvaluateType et = EvaluateHelper.GetTapEvaluate(LogicTimer);
+                    if (et == EvaluateType.Bad || et == EvaluateType.Miss)
                     {
                         //头判失败直接销毁
                         DestroySelf(false);
                         Debug.LogError($"Hold头判失败,时间：{LogicTimer}，{data}");
                         GameManager.Instance.maxScore +=2;
-                        GameManager.Instance.RefreshData(-1,-1,evaluateType,float.MaxValue);
+                        GameManager.Instance.RefreshData(-1,-1,et,float.MaxValue);
                         return;
                     }
 
                     Debug.LogError($"Hold头判成功,时间：{LogicTimer}，{data}");
                     GameManager.Instance.maxScore ++;
-                    if(evaluateType == EvaluateType.Exact)
-                        GameManager.Instance.RefreshData(1,1,evaluateType,LogicTimer);
-                    else if(evaluateType == EvaluateType.Great)
-                        GameManager.Instance.RefreshData(1,0.75f,evaluateType,LogicTimer);
-                    else if(evaluateType == EvaluateType.Right)
-                        GameManager.Instance.RefreshData(1,0.5f,evaluateType,LogicTimer);
+                    GameManager.Instance.RefreshData(1,1,et,LogicTimer);
                 }
                 
                 //头判成功
                 headSucess = true;
                 //downTimePoint = logicTimer;
-                if(pressCount == 0)viewObject.CreateEffectObj(data.Width);
+                if(pressCount == 0)viewObject.CreateEffectObj();
                 pressCount ++;
                 break;
 

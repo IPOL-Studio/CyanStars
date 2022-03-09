@@ -20,9 +20,9 @@ public class ViewObject : MonoBehaviour, IView
         pos.z -= deltaTime;
         transform.position = pos;
     }
-    public void CreateEffectObj(float w)
+    public void CreateEffectObj()
     {
-        effectObj = GameObject.Instantiate(effectPrefab,transform.position + new Vector3(Endpoint.Instance.GetLenth()*w/2,0,0),Quaternion.identity);
+        effectObj = GameObject.Instantiate(effectPrefab,transform.position,Quaternion.identity);
     }
     public void DestroyEffectObj()
     {
