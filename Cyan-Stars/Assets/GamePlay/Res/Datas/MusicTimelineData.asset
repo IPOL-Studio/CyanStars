@@ -22,62 +22,27 @@ MonoBehaviour:
         SpeedRate: 3
         NoteDatas:
         - Type: 0
-          Pos: 1.7
-          Width: 0.5
-          StartTime: 1.967
+          Pos: 0.2
+          Width: 0.2
+          StartTime: 2
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0.7
-          Width: 0.5
-          StartTime: 2.459
+        - Type: 2
+          Pos: 0.4
+          Width: 0.4
+          StartTime: 3
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0.7
-          Width: 0.5
-          StartTime: 2.828
+        - Type: 3
+          Pos: 0.5
+          Width: 0.4
+          StartTime: 4
           HoldEndTime: 0
-        - Type: 0
-          Pos: 1.7
-          Width: 0.5
-          StartTime: 2.951
-          HoldEndTime: 0
-        - Type: 0
-          Pos: 0.7
-          Width: 0.5
-          StartTime: 3.197
-          HoldEndTime: 0
-        - Type: 0
-          Pos: 0.7
-          Width: 0.5
-          StartTime: 3.443
-          HoldEndTime: 0
-        - Type: 0
-          Pos: 0.7
-          Width: 0.5
-          StartTime: 3.812
-          HoldEndTime: 0
-        - Type: 0
-          Pos: 0.7
-          Width: 0.5
-          StartTime: 3.935
-          HoldEndTime: 0
-        - Type: 0
-          Pos: 0.7
-          Width: 0.5
-          StartTime: 4.181
-          HoldEndTime: 0
-        - Type: 0
-          Pos: 0.7
-          Width: 0.5
-          StartTime: 4.427
-          HoldEndTime: 0
-        - Type: 0
-          Pos: 0.7
-          Width: 0.5
-          StartTime: 4.673
-          HoldEndTime: 0
-        - Type: 0
-          Pos: 0.7
-          Width: 0.5
-          StartTime: 4.919
+        - Type: 1
+          Pos: 0.3
+          Width: 0.2
+          StartTime: 5
+          HoldEndTime: 8
+        - Type: 4
+          Pos: 2
+          Width: 0.4
+          StartTime: 10
           HoldEndTime: 0
