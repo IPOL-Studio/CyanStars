@@ -585,7 +585,15 @@ MonoBehaviour:
   clicp2: {fileID: 8300000, guid: 001a5a9e55633f84ba3b1c644610d0fc, type: 3}
   BPMInputFieldText: {fileID: 4872387957927019181}
   beatInputFieldText: {fileID: 5588401751714649943}
+  starttimeInputFieldText: {fileID: 0}
+  coeInputFieldText: {fileID: 0}
+  timeInputFieldText: {fileID: 0}
   image: {fileID: 4579782236221271775}
+  starttime: {fileID: 0}
+  coefficient: {fileID: 0}
+  loopornot: {fileID: 0}
+  times: {fileID: 0}
+  startstop: {fileID: 0}
 --- !u!1 &3857585702845142559
 GameObject:
   m_ObjectHideFlags: 0
