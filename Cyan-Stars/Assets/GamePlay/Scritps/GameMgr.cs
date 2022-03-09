@@ -40,7 +40,6 @@ public class GameMgr : MonoBehaviour
 
     public float TimeSchedule()
     {
-        if(timeline == null)return 1;
         return timeline.timer/timeline.data.Time;
     }
     
