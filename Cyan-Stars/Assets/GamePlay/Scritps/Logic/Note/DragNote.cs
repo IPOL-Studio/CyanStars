@@ -48,7 +48,7 @@ public class DragNote : BaseNote
                 {
                     return;
                 }
-                viewObject.CreateEffectObj();
+                viewObject.CreateEffectObj(data.Width);
                 Debug.LogError($"Drag音符命中：{data}");
                 GameManager.Instance.maxScore ++;
                 GameManager.Instance.RefreshData(1,1,EvaluateType.Exact,float.MaxValue);
