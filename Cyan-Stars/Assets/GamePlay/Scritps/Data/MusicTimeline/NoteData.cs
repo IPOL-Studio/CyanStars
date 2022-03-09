@@ -19,9 +19,9 @@ public class NoteData
 
     /// <summary>
     /// 位置坐标
-    /// 处于中间的位置范围在[0-1]，Break音符则左-1右2
+    /// 处于中间的位置范围在[0-3]，Break音符则左-1右4
     /// </summary>
-    [Range(-1,2)]
+    [Range(-1,4)]
     public float Pos;
 
     /// <summary>
