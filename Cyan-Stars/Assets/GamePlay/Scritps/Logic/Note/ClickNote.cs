@@ -87,7 +87,7 @@ public class ClickNote : BaseNote
         if (LogicTimer < EvaluateHelper.CheckInputEndTime)
         {
             float time = downTimePoint - LogicTimer;
-            viewObject.CreateEffectObj();
+            viewObject.CreateEffectObj(data.Width);
             DestroySelf(false);
             Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
             GameManager.Instance.maxScore +=1;
@@ -109,7 +109,7 @@ public class ClickNote : BaseNote
                 if(!headSucess)
                 {
                     headSucess = true;
-                    viewObject.CreateEffectObj();
+                    viewObject.CreateEffectObj(data.Width);
                     EvaluateType et = EvaluateHelper.GetClickEvaluate(LogicTimer);
                     GameManager.Instance.maxScore += 1;
                     if(et != EvaluateType.Bad && et != EvaluateType.Miss)
@@ -134,7 +134,7 @@ public class ClickNote : BaseNote
                 break;
             case InputType.Up:
                 float time = downTimePoint - LogicTimer;
-                viewObject.CreateEffectObj();
+                viewObject.CreateEffectObj(data.Width);
                 DestroySelf(false);
                 Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
                 GameManager.Instance.maxScore +=1;
