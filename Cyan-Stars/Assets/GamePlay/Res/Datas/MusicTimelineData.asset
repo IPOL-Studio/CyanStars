@@ -38,7 +38,7 @@ MonoBehaviour:
           HoldEndTime: 0
         - Type: 1
           Pos: 0.3
-          Width: 0.2
+          Width: 0.4
           StartTime: 5
           HoldEndTime: 8
         - Type: 4
