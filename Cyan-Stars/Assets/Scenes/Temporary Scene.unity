@@ -406,10 +406,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1733818000255606848, guid: f2c389f84aa448041a9b19c144617013, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3010907729991842299, guid: f2c389f84aa448041a9b19c144617013, type: 3}
       propertyPath: m_Name
       value: MetronomeUI
@@ -497,6 +493,26 @@ PrefabInstance:
     - target: {fileID: 3010907729991842303, guid: f2c389f84aa448041a9b19c144617013, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3795824147105978602, guid: f2c389f84aa448041a9b19c144617013, type: 3}
+      propertyPath: m_Text
+      value: Start/Stop
+      objectReference: {fileID: 0}
+    - target: {fileID: 3795824147105978602, guid: f2c389f84aa448041a9b19c144617013, type: 3}
+      propertyPath: m_FontData.m_BestFit
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3795824147105978602, guid: f2c389f84aa448041a9b19c144617013, type: 3}
+      propertyPath: m_FontData.m_MaxSize
+      value: 255
+      objectReference: {fileID: 0}
+    - target: {fileID: 3795824147105978602, guid: f2c389f84aa448041a9b19c144617013, type: 3}
+      propertyPath: m_FontData.m_MinSize
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3795824147105978602, guid: f2c389f84aa448041a9b19c144617013, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 14
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f2c389f84aa448041a9b19c144617013, type: 3}
