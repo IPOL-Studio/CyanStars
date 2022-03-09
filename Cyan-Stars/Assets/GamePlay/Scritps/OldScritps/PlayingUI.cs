@@ -13,7 +13,7 @@ public class PlayingUI : MonoBehaviour
     public TMPro.TextMeshProUGUI scoreRatioText;//scoreRatio文本组件
     public bool showDeviation;//是否显示杂率
     public Image img;
-    public void Refresh(int combo,int score,string grade,float currentDeviation)
+    public void Refresh(int combo,float score,string grade,float currentDeviation)
     {
         if(comboText)comboText.text = "COMBO:" + combo;//更新文本
         if(scoreText)scoreText.text = "SCORE:" + score;//更新文本
