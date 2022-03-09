@@ -23,15 +23,15 @@ public class InputMapData
         /// 映射范围的最小值
         /// 对应NoteData中的Pos
         /// </summary>
-        [Range(-1,2)]
+        [Range(-1,4)]
         public float RangeMin;
 
         /// <summary>
-        /// 映射范围的宽度
-        /// 对应NoteData中的Width
+        /// 映射范围的最大值
+        /// 对应NoteData中的Pos
         /// </summary>
-        [Range(-1,2)]
-        public float RangeWidth;
+        [Range(-1,4)]
+        public float RangeMax;
     }
 
     /// <summary>

@@ -172,7 +172,7 @@ public partial class MusicTimeline
             for (int i = 0; i < notes.Count; i++)
             {
                 BaseNote note = notes[i];
-                if (note.CanReceiveInput() && note.IsInRange(item.RangeMin,item.RangeMin + item.RangeWidth))
+                if (note.CanReceiveInput() && note.IsInRange(item.RangeMin,item.RangeMax))
                 {
                     cachedList.Add(note);
                 }
