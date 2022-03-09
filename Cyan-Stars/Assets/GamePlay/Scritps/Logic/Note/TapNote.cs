@@ -24,7 +24,7 @@ public class TapNote : BaseNote
 
         if (inputType == InputType.Down)
         {
-            viewObject.CreateEffectObj();
+            viewObject.CreateEffectObj(data.Width);
             DestroySelf(false);
             EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);
             Debug.LogError($"Tap音符命中,评价:{evaluateType},{data}");
