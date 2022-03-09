@@ -33,14 +33,18 @@ public class BreakNote : BaseNote
 
         if (inputType == InputType.Down)
         {
-            viewObject.CreateEffectObj();
+            viewObject.CreateEffectObj(0);
             DestroySelf(false);
             Debug.LogError($"Break音符命中,{data}");
             EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);
             GameManager.Instance.maxScore += 2;
-            if(evaluateType != EvaluateType.Miss && evaluateType != EvaluateType.Bad)
-                GameManager.Instance.RefreshData(1,2,evaluateType,LogicTimer - 0);
-            else
+            if(evaluateType == EvaluateType.Exact)
+                GameManager.Instance.RefreshData(1,1*2,evaluateType,LogicTimer);
+            else if(evaluateType == EvaluateType.Great)
+                GameManager.Instance.RefreshData(1,0.75f*2,evaluateType,LogicTimer);
+            else if(evaluateType == EvaluateType.Right)
+                GameManager.Instance.RefreshData(1,0.5f*2,evaluateType,LogicTimer);
+            else if(evaluateType == EvaluateType.Bad || evaluateType == EvaluateType.Miss)
                 GameManager.Instance.RefreshData(-1,-1,evaluateType,float.MaxValue);
         }
     }
