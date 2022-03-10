@@ -115,7 +115,7 @@ public class HoldNote : BaseNote
 
                 //头判成功
                 headSucess = true;
-                if (pressCount == 0) viewObject.CreateEffectObj();
+                if (pressCount == 0) viewObject.CreateEffectObj(data.Width);
                 pressCount++;
                 break;
 
