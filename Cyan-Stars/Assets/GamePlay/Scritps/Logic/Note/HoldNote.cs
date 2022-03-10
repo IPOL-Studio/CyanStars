@@ -72,14 +72,12 @@ public class HoldNote : BaseNote
                 EvaluateType et = EvaluateHelper.GetHoldEvaluate(value);
                 Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
                 GameManager.Instance.maxScore++;
-                if (et != EvaluateType.Miss)
-                {
-                    GameManager.Instance.RefreshData(1, 1, et, float.MaxValue);
-                }
-                else
-                {
-                    GameManager.Instance.RefreshData(-1, -1, EvaluateType.Miss, float.MaxValue);
-                }
+                if(et == EvaluateType.Exact)
+                    GameManager.Instance.RefreshData(1,1,et,LogicTimer);
+                else if(et == EvaluateType.Great)
+                    GameManager.Instance.RefreshData(1,0.75f,et,LogicTimer);
+                else if(et == EvaluateType.Right)
+                    GameManager.Instance.RefreshData(1,0.5f,et,LogicTimer);
             }
 
             DestroySelf();
@@ -110,7 +108,12 @@ public class HoldNote : BaseNote
 
                     Debug.LogError($"Hold头判成功,时间：{LogicTimer}，{data}");
                     GameManager.Instance.maxScore++;
-                    GameManager.Instance.RefreshData(1, 1, et, LogicTimer);
+                    if(et == EvaluateType.Exact)
+                        GameManager.Instance.RefreshData(1,1,et,LogicTimer);
+                    else if(et == EvaluateType.Great)
+                        GameManager.Instance.RefreshData(1,0.75f,et,LogicTimer);
+                    else if(et == EvaluateType.Right)
+                        GameManager.Instance.RefreshData(1,0.5f,et,LogicTimer);
                 }
 
                 //头判成功
