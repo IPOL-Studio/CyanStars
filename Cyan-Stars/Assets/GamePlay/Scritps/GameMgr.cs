@@ -31,6 +31,14 @@ public class GameMgr : MonoBehaviour
 
     private HashSet<KeyCode> pressedKeySet;
 
+    public float TimelineTime
+    {
+        get
+        {
+            return timeline.Timer;
+        }
+    }
+    
     private void Awake()
     {
         Instance = this;
@@ -41,20 +49,11 @@ public class GameMgr : MonoBehaviour
     public float TimeSchedule()
     {
         if(timeline == null)return 1;
-        return timeline.timer/timeline.data.Time;
+        return timeline.Timer/timeline.Data.Time;
     }
     private void Start()
     {
-        /*
-        MusicTimelineData data = TimelineSo.musicTimelineData;
-
-        ViewHelper.CalViewTime(data);
-        
-        timeline = new MusicTimeline(data);
-        Debug.Log("音乐时间轴创建完毕");
-        */
         BtnStart.onClick.AddListener(OnBtnStartClick);
-        
     }
     /// <summary>
     /// 点击开始按钮

@@ -41,15 +41,15 @@ public static class ViewHelper
                     NoteData noteData = curClipData.NoteDatas[j];
                     
                     //之前的clip累计下来的受缩放影响的时间值，再加上当前clip到当前note这段时间缩放后的时间值
-                    //就能得到当前note缩放后的开始时间
+                    //就能得到当前note缩放后的开始时间，因为是毫秒所以要/1000转换为秒
                     float scaledNoteStartTime = scaledTime + ((noteData.StartTime - curClipData.StartTime)) * speedRate;
-                    viewStartTimeDict.Add(noteData, scaledNoteStartTime);
+                    viewStartTimeDict.Add(noteData, scaledNoteStartTime / 1000);
                     
                     if (noteData.Type == NoteType.Hold)
                     {
                         //hold结束时间同理
                         float scaledHoldNoteEndTime =  scaledTime + ((noteData.HoldEndTime - curClipData.StartTime)) * speedRate;
-                        viewHoldEndTimeDict.Add(noteData, scaledHoldNoteEndTime);
+                        viewHoldEndTimeDict.Add(noteData, scaledHoldNoteEndTime / 1000);
                     }
                 }
                 

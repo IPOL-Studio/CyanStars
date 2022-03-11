@@ -9,9 +9,9 @@ using UnityEngine;
 public class MusicTimelineData
 {
     /// <summary>
-    /// 总时间
+    /// 总时间（毫秒）
     /// </summary>
-    public float Time;
+    public int Time;
 
     /// <summary>
     /// 基础速度
