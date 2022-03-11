@@ -28,7 +28,7 @@ public static class ViewHelper
 
         foreach (LayerData layerData in data.LayerDatas)
         {
-            //从第一个clip到前一个clip 受流速缩放影响后的总时间值
+            //从第一个clip到前一个clip 受流速缩放影响后的总时间值（毫秒）
             float scaledTime = 0;
 
             for (int i = 0; i < layerData.ClipDatas.Count; i++)
@@ -87,7 +87,7 @@ public static class ViewHelper
     /// <summary>
     /// 创建视图层物体
     /// </summary>
-    public static IView CreateViewObject(NoteData data)
+    public static IView CreateViewObject(NoteData data,float viewCreateTime)
     {
         GameObject go = null;
         switch (data.Type)
@@ -110,7 +110,7 @@ public static class ViewHelper
         }
         
         go.transform.SetParent(GameMgr.Instance.viewRoot);
-        go.transform.position = GetViewObjectPos(data);
+        go.transform.position = GetViewObjectPos(data,viewCreateTime);
         go.transform.localScale = GetViewObjectScale(data);
         go.transform.localEulerAngles = GetViewObjectRotation(data);
         
@@ -129,12 +129,11 @@ public static class ViewHelper
     /// <summary>
     /// 根据音符数据获取映射后的视图层位置
     /// </summary>
-    private static Vector3 GetViewObjectPos(NoteData data)
+    private static Vector3 GetViewObjectPos(NoteData data,float viewCreateTime)
     {
         Vector3 pos = default;
 
-        //Z轴位置 一开始就在屏幕内的用scaledStartTimeDict[data]，否则用ViewObjectCreateScaledTime
-        pos.z = GetViewObjectPosZ(viewStartTimeDict[data]);
+        pos.z = viewCreateTime;
 
         pos.y = Endpoint.Instance.leftObj.transform.position.y;
         if (data.Type == NoteType.Break)
@@ -158,9 +157,6 @@ public static class ViewHelper
 
         return pos;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static float GetViewObjectPosZ(float time) => Mathf.Min(ViewObjectCreateTime, time);
 
     /// <summary>
     /// 根据音符数据获取映射后的视图层缩放

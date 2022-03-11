@@ -35,7 +35,7 @@ public class HoldNote : BaseNote
     {
         base.Init(data, layer);
 
-        holdLength = data.HoldEndTime - data.StartTime;
+        holdLength = (data.HoldEndTime - data.StartTime) / 1000f;
         //hold结束时间点与长度相同
         holdCheckInputEndTime = -holdLength;
     }
