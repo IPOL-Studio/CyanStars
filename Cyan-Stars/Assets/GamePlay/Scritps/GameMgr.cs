@@ -21,7 +21,7 @@ public class GameMgr : MonoBehaviour
     public GameObject ClickPrefab;
     public GameObject BreakPrefab;
     
-    //public Button BtnStart;
+    public Button BtnStart;
     //public Text TxtTimer;
     
     private InputMapData inputMapData;
@@ -43,18 +43,19 @@ public class GameMgr : MonoBehaviour
         if(timeline == null)return 1;
         return timeline.timer/timeline.data.Time;
     }
-    
     private void Start()
     {
+        /*
         MusicTimelineData data = TimelineSo.musicTimelineData;
 
         ViewHelper.CalViewTime(data);
         
         timeline = new MusicTimeline(data);
         Debug.Log("音乐时间轴创建完毕");
-        //BtnStart.onClick.AddListener(OnBtnStartClick);
+        */
+        BtnStart.onClick.AddListener(OnBtnStartClick);
+        
     }
-    /*
     /// <summary>
     /// 点击开始按钮
     /// </summary>
@@ -67,7 +68,6 @@ public class GameMgr : MonoBehaviour
         timeline = new MusicTimeline(data);
         Debug.Log("音乐时间轴创建完毕");
     }
-    */
     
     private void Update()
     {
