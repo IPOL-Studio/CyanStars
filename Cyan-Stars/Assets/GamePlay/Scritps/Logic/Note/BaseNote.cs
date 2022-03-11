@@ -85,7 +85,7 @@ public abstract class BaseNote
         if (viewObject == null && viewTimer <= ViewHelper.ViewObjectCreateTime)
         {
             //到创建视图层物体的时间点了
-            viewObject = ViewHelper.CreateViewObject(data);
+            viewObject = ViewHelper.CreateViewObject(data,viewTimer);
         }
         
         viewObject?.OnUpdate(deltaTime * noteSpeedRate);
