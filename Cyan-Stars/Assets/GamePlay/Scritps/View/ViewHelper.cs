@@ -118,9 +118,9 @@ public static class ViewHelper
 
         if (data.Type == NoteType.Hold)
         {
-            var startPos = GetViewObjectPosZ(viewStartTimeDict[data]);
-            var endPos = viewHoldEndTimeDict[data];
-            (view as HoldViewObject).SetMesh(1f, endPos - startPos);
+            var startTime = viewStartTimeDict[data];
+            var endTime = viewHoldEndTimeDict[data];
+            (view as HoldViewObject).SetMesh(1f, endTime - startTime);
         }
 
         return view;
@@ -133,13 +133,13 @@ public static class ViewHelper
     {
         Vector3 pos = default;
 
-        //Y轴位置 一开始就在屏幕内的用scaledStartTimeDict[data]，否则用ViewObjectCreateScaledTime
+        //Z轴位置 一开始就在屏幕内的用scaledStartTimeDict[data]，否则用ViewObjectCreateScaledTime
         pos.z = GetViewObjectPosZ(viewStartTimeDict[data]);
 
         pos.y = Endpoint.Instance.leftObj.transform.position.y;
         if (data.Type == NoteType.Break)
         {
-            if (Mathf.Abs(data.Pos - (-1)) < 0.01f)
+            if (Mathf.Abs(data.Pos - (-1)) < float.Epsilon)
             {
                 //左侧break
                 pos.x = -15;
@@ -187,7 +187,7 @@ public static class ViewHelper
         Vector3 rotation = Vector3.zero;
         if (data.Type == NoteType.Break)
         {
-            if(Mathf.Abs(data.Pos - (-1)) < 0.01f)
+            if(Mathf.Abs(data.Pos - (-1)) < float.Epsilon)
             {
                 //左侧break
                 rotation.z = -28;
