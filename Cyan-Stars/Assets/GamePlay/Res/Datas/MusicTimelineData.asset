@@ -19,7 +19,7 @@ MonoBehaviour:
     LayerDatas:
     - ClipDatas:
       - StartTime: 0
-        SpeedRate: 10
+        SpeedRate: 3
         NoteDatas:
         - Type: 1
           Pos: 0.6
@@ -76,3 +76,28 @@ MonoBehaviour:
           Width: 0.2
           StartTime: 12.809
           HoldEndTime: 0
+        - Type: 2
+          Pos: 0.5
+          Width: 0.2
+          StartTime: 12.809
+          HoldEndTime: 0
+        - Type: 1
+          Pos: 0.65
+          Width: 0.2
+          StartTime: 16.469
+          HoldEndTime: 17.201
+        - Type: 0
+          Pos: 0.15
+          Width: 0.2
+          StartTime: 17.201
+          HoldEndTime: 0
+        - Type: 1
+          Pos: 0.2
+          Width: 0.2
+          StartTime: 17.567
+          HoldEndTime: 18.665
+        - Type: 0
+          Pos: 0.65
+          Width: 0.2
+          StartTime: 18.665
+          HoldEndTime: 18.665
