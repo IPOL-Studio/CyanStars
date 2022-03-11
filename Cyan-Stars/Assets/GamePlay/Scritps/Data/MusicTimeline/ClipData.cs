@@ -9,9 +9,9 @@ using UnityEngine;
 public class ClipData
 {
     /// <summary>
-    /// 开始时间
+    /// 开始时间（毫秒）
     /// </summary>
-    public float StartTime;
+    public int StartTime;
     
     /// <summary>
     /// 速率

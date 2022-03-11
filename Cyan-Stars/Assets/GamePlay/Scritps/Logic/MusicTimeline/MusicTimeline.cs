@@ -10,12 +10,24 @@ public partial class MusicTimeline
     /// <summary>
     /// 音乐时间轴数据
     /// </summary>
-    public MusicTimelineData data;
+    public MusicTimelineData Data
+    {
+        get;
+    }
 
     /// <summary>
     /// 计时器
     /// </summary>
-    public float timer;
+    public float Timer
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// 时间轴结束时间
+    /// </summary>
+    private float endTime;
     
     /// <summary>
     /// 图层列表
@@ -24,7 +36,8 @@ public partial class MusicTimeline
     
     public MusicTimeline(MusicTimelineData data)
     {
-        this.data = data;
+        Data = data;
+        endTime = data.Time / 1000f;
         CreateLayers();
     }
 
@@ -33,24 +46,21 @@ public partial class MusicTimeline
     /// </summary>
     private void CreateLayers()
     {
-        for (int i = 0; i < data.LayerDatas.Count; i++)
+        for (int i = 0; i < Data.LayerDatas.Count; i++)
         {
-            Layer layer = new Layer(data.LayerDatas[i]);
+            Layer layer = new Layer(Data.LayerDatas[i]);
             layers.Add(layer);
         }
     }
 
     public void OnUpdate(float deltaTime)
     {
-        timer += deltaTime;
+        Timer += deltaTime;
         
         //计算timeline速率
-        float timelineSpeedRate = data.BaseSpeed * data.SpeedRate;
-        
-        
-        //GameMgr.Instance.RefreshTimer(timer);
+        float timelineSpeedRate = Data.BaseSpeed * Data.SpeedRate;
 
-        if (timer >= data.Time)
+        if (Timer >= endTime)
         {
             //运行结束
             GameMgr.Instance.TimelineEnd();
@@ -59,7 +69,7 @@ public partial class MusicTimeline
         
         for (int i = 0; i < layers.Count; i++)
         {
-            layers[i].OnUpdate(timer,deltaTime,timelineSpeedRate);
+            layers[i].OnUpdate(Timer,deltaTime,timelineSpeedRate);
         }
     }
     
