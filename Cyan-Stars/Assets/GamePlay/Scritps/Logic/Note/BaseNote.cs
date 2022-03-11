@@ -15,7 +15,7 @@ public abstract class BaseNote
     /// <summary>
     /// 此音符所属图层
     /// </summary>
-    protected MusicTimeline.Layer layer;
+    private MusicTimeline.Layer layer;
 
     /// <summary>
     /// 剩余时间的倒计时（主要用于逻辑层）
@@ -48,7 +48,7 @@ public abstract class BaseNote
     {
         this.data = data;
         this.layer = layer;
-        LogicTimer = data.StartTime;
+        LogicTimer = data.StartTime / 1000f;
         viewTimer = ViewHelper.GetViewStartTime(data);
         
         //考虑性能问题 不再会一开始就创建出所有Note的游戏物体

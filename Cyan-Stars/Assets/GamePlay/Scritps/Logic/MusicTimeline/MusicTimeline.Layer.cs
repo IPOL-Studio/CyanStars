@@ -28,6 +28,8 @@ public partial class MusicTimeline
         
         private List<BaseNote> cachedList = new List<BaseNote>();
 
+        private List<float> clipStartTimes = new List<float>();
+
         public Layer(LayerData data)
         {
             this.data = data;
@@ -42,6 +44,8 @@ public partial class MusicTimeline
             for (int i = 0; i < data.ClipDatas.Count; i++)
             {
                 ClipData clipData = data.ClipDatas[i];
+                clipStartTimes.Add(clipData.StartTime / 1000f);
+                
                 for (int j = 0; j < clipData.NoteDatas.Count; j++)
                 {
                     NoteData noteData = clipData.NoteDatas[j];
@@ -120,8 +124,8 @@ public partial class MusicTimeline
             }
 
             //是否到达了下一个clip的时间范围？
-            ClipData nextClip = data.ClipDatas[curClipIndex + 1];
-            if (curTime >= nextClip.StartTime)
+            float nextClipStartTime = clipStartTimes[curClipIndex + 1];
+            if (curTime >= nextClipStartTime)
             {
                 curClipIndex++;
             }

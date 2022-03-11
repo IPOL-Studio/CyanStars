@@ -9,7 +9,7 @@ using UnityEngine;
 [System.Serializable]
 public class NoteData
 {
-    public const float MaxPos = 3;
+    public const float MaxPos = 1;
     public const float MiddlePos = MaxPos / 2;
     
     /// <summary>
@@ -33,14 +33,14 @@ public class NoteData
     public float Width;
 
     /// <summary>
-    /// 判定开始时间
+    /// 判定开始时间（毫秒）
     /// </summary>
-    public float StartTime;
+    public int StartTime;
     
     /// <summary>
-    /// Hold音符的判定结束时间
+    /// Hold音符的判定结束时间（毫秒）
     /// </summary>
-    public float HoldEndTime;
+    public int HoldEndTime;
     
     
     public override string ToString()
