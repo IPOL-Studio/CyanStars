@@ -73,11 +73,11 @@ public class HoldNote : BaseNote
                 Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
                 GameManager.Instance.maxScore++;
                 if(et == EvaluateType.Exact)
-                    GameManager.Instance.RefreshData(1,1,et,LogicTimer);
+                    GameManager.Instance.RefreshData(1,1,et,float.MaxValue);
                 else if(et == EvaluateType.Great)
-                    GameManager.Instance.RefreshData(1,0.75f,et,LogicTimer);
+                    GameManager.Instance.RefreshData(1,0.75f,et,float.MaxValue);
                 else if(et == EvaluateType.Right)
-                    GameManager.Instance.RefreshData(1,0.5f,et,LogicTimer);
+                    GameManager.Instance.RefreshData(1,0.5f,et,float.MaxValue);
             }
 
             DestroySelf();
