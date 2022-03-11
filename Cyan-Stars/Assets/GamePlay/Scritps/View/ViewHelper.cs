@@ -28,14 +28,31 @@ public static class ViewHelper
 
         foreach (LayerData layerData in data.LayerDatas)
         {
-            //从第一个clip到当前clip 受流速缩放影响后的总时间值
+            //从第一个clip到前一个clip 受流速缩放影响后的总时间值
             float scaledTime = 0;
 
             for (int i = 0; i < layerData.ClipDatas.Count; i++)
             {
                 ClipData curClipData = layerData.ClipDatas[i];
-
-                float curClipStartTime = curClipData.StartTime;
+                float speedRate = curClipData.SpeedRate * timelineSpeedRate;
+                
+                for (int j = 0; j < curClipData.NoteDatas.Count; j++)
+                {
+                    NoteData noteData = curClipData.NoteDatas[j];
+                    
+                    //之前的clip累计下来的受缩放影响的时间值，再加上当前clip到当前note这段时间缩放后的时间值
+                    //就能得到当前note缩放后的开始时间
+                    float scaledNoteStartTime = scaledTime + ((noteData.StartTime - curClipData.StartTime)) * speedRate;
+                    viewStartTimeDict.Add(noteData, scaledNoteStartTime);
+                    
+                    if (noteData.Type == NoteType.Hold)
+                    {
+                        //hold结束时间同理
+                        float scaledHoldNoteEndTime =  scaledTime + ((noteData.HoldEndTime - curClipData.StartTime)) * speedRate;
+                        viewHoldEndTimeDict.Add(noteData, scaledHoldNoteEndTime);
+                    }
+                }
+                
                 float curClipEndTime;
                 if (i < layerData.ClipDatas.Count - 1)
                 {
@@ -49,28 +66,12 @@ public static class ViewHelper
                     //将timeline结束时间作为最后一个clip的结束时间
                     curClipEndTime = data.Time;
                 }
-
-                float scaledTimeLength = curClipEndTime - curClipStartTime;
-                float speedRate = curClipData.SpeedRate * timelineSpeedRate;
-
-                //计算受timeline速率和当前clip的速率影响后的时间长度 累加到总时间值上
+                
+                float scaledTimeLength = curClipEndTime - curClipData.StartTime;
+               
+                
+                //将此clip缩放后的时间值 累加到总时间值上
                 scaledTime += scaledTimeLength * speedRate;
-
-                for (int j = 0; j < curClipData.NoteDatas.Count; j++)
-                {
-                    NoteData noteData = curClipData.NoteDatas[j];
-
-                    //将当前note在clip中后面的那段时间从scaledTime里减去，就能得出缩放后的note开始时间
-                    float scaledNoteStartTime = scaledTime - (curClipEndTime - noteData.StartTime) * speedRate;
-                    viewStartTimeDict.Add(noteData, scaledNoteStartTime);
-                    if (noteData.Type == NoteType.Hold)
-                    {
-                        //holdEndTime同理
-                        float scaledHoldNoteEndTime = scaledTime - (curClipEndTime - noteData.HoldEndTime) * speedRate;
-                        viewHoldEndTimeDict.Add(noteData, scaledHoldNoteEndTime);
-                    }
-
-                }
             }
         }
     }
