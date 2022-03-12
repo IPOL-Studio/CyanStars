@@ -78,6 +78,8 @@ public class HoldNote : BaseNote
                     GameManager.Instance.RefreshData(0,0.75f,et,float.MaxValue);
                 else if(et == EvaluateType.Right)
                     GameManager.Instance.RefreshData(0,0.5f,et,float.MaxValue);
+                else
+                    GameManager.Instance.RefreshData(-1,-1,et,float.MaxValue);
             }
 
             DestroySelf();
