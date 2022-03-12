@@ -13,21 +13,22 @@ public class PlayingUI : MonoBehaviour
     public TMPro.TextMeshProUGUI scoreRatioText;//scoreRatio文本组件
     public bool showDeviation;//是否显示杂率
     public Image img;
-    public void Refresh(int combo,float score,string grade,float currentDeviation)
+    public void Refresh(int combo, float score, EvaluateType grade, float currentDeviation)
     {
         if(comboText)comboText.text = "COMBO:" + combo;//更新文本
         if(scoreText)scoreText.text = "SCORE:" + score;//更新文本
-        if(gradeText)gradeText.text = grade;//更新文本
         if(gradeText)
         {
-            Color color = Color.white;
-            if(grade == "Exact")color = Color.green;
-            if(grade == "Great")color = Color.cyan;
-            if(grade == "Right" || grade =="Out")color = Color.yellow;
-            if(grade == "Bad")color = Color.red;
-            if(grade == "Miss")color = Color.white;
-            color.a = 1;
-            gradeText.color = color;
+            gradeText.text = grade.ToString();//更新文本
+            gradeText.color = grade switch
+            {
+                EvaluateType.Exact => Color.green,
+                EvaluateType.Great => Color.cyan,
+                EvaluateType.Right => Color.yellow,
+                EvaluateType.Out   => Color.yellow,
+                EvaluateType.Bad   => Color.red,
+                _                  => Color.white
+            };
             gradeText.fontSize = 12;
             StopAllCoroutines();
             StartCoroutine(FadeGradeTMP());
@@ -48,28 +49,31 @@ public class PlayingUI : MonoBehaviour
     void Update()
     {
         if(img)img.fillAmount = GameMgr.Instance.TimeSchedule();
+        
         if(showDeviation)
         {
             if(currentDeviationText)
             {
-                currentDeviationText.text = "误差:" + string.Format("{0:F3}",GameManager.Instance.currentDeviation*1000) + "ms";
-                if(GameManager.Instance.currentDeviation > 0)currentDeviationText.color = Color.red;
-                if(GameManager.Instance.currentDeviation < 0)currentDeviationText.color = Color.cyan;
+                var currentDeviation = GameManager.Instance.currentDeviation;
+                currentDeviationText.text = $"误差:{currentDeviation * 1000:F3}ms";
+                currentDeviationText.color = currentDeviation > 0 ? Color.red : Color.cyan;
             }
+            
             if(accuracyText)
             {
-                float accuracy = 0,sum = 0;
+                float accuracy = 0, sum = 0;
                 if(GameManager.Instance.deviationList.Count > 0)
                 {
                     foreach(var item in GameManager.Instance.deviationList)
                     {
                         sum += Mathf.Abs(item);
                     }
-                    accuracy = sum / (float)GameManager.Instance.deviationList.Count;
+                    accuracy = sum / GameManager.Instance.deviationList.Count;
                 }
-                accuracyText.text = "杂率:" + string.Format("{0:F3}",accuracy) + "s";
-                if(accuracy < 0.03)accuracyText.color = Color.yellow;
-                else if(accuracy < 0.05)accuracyText.color = Color.blue;
+                accuracyText.text = $"杂率:{accuracy:F3}s";
+                
+                if(accuracy < 0.03) accuracyText.color = Color.yellow;
+                else if(accuracy < 0.05) accuracyText.color = Color.blue;
                 else accuracyText.color = Color.white;
             }
         }
@@ -83,23 +87,16 @@ public class PlayingUI : MonoBehaviour
             float scoreRatio = 0;
             if(GameManager.Instance.maxScore > 0)
             {
-                scoreRatio = (float)GameManager.Instance.score / (float)GameManager.Instance.maxScore;
+                scoreRatio = GameManager.Instance.score / GameManager.Instance.maxScore;
             }
-            scoreRatioText.text = "得分率:" + string.Format("{0:F}",scoreRatio*100) + "%";
+            scoreRatioText.text = $"得分率:{scoreRatio * 100:F}%";
             if(GameManager.Instance.greatNum + GameManager.Instance.rightNum + GameManager.Instance.badNum + GameManager.Instance.missNum == 0)
             {
                 scoreRatioText.color = Color.yellow;
             }
             else
             {
-                if(GameManager.Instance.missNum + GameManager.Instance.badNum == 0)
-                {
-                    scoreRatioText.color = Color.cyan;
-                }
-                else
-                {
-                    scoreRatioText.color = Color.white;
-                }
+                scoreRatioText.color = GameManager.Instance.missNum + GameManager.Instance.badNum == 0 ? Color.cyan : Color.white;
             }
         }
     }
