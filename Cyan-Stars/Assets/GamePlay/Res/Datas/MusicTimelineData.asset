@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MusicTimelineData
   m_EditorClassIdentifier: 
   musicTimelineData:
-    Time: 20
+    Time: 20000
     BaseSpeed: 4
     SpeedRate: 1
     LayerDatas:
@@ -24,80 +24,75 @@ MonoBehaviour:
         - Type: 1
           Pos: 0.6
           Width: 0.2
-          StartTime: 5.855
-          HoldEndTime: 6.953
+          StartTime: 5965
+          HoldEndTime: 7063
         - Type: 0
           Pos: 0.25
           Width: 0.2
-          StartTime: 6.953
+          StartTime: 7063
           HoldEndTime: 0
         - Type: 0
           Pos: 0.55
           Width: 0.2
-          StartTime: 8.051
+          StartTime: 8161
           HoldEndTime: 0
         - Type: 0
           Pos: 0.3
           Width: 0.2
-          StartTime: 8.417
+          StartTime: 8527
           HoldEndTime: 0
         - Type: 1
           Pos: 0.55
           Width: 0.2
-          StartTime: 8.783
-          HoldEndTime: 9.881
+          StartTime: 8893
+          HoldEndTime: 9991
         - Type: 1
           Pos: 0.2
           Width: 0.2
-          StartTime: 9.881
-          HoldEndTime: 10.613
+          StartTime: 9991
+          HoldEndTime: 10723
         - Type: 2
           Pos: 0.2
           Width: 0.2
-          StartTime: 10.613
+          StartTime: 10723
           HoldEndTime: 0
         - Type: 2
           Pos: 0.4
           Width: 0.2
-          StartTime: 10.979
+          StartTime: 11089
           HoldEndTime: 0
         - Type: 2
           Pos: 0.6
           Width: 0.2
-          StartTime: 11.345
+          StartTime: 11455
           HoldEndTime: 0
         - Type: 2
           Pos: 0.3
           Width: 0.2
-          StartTime: 11.711
+          StartTime: 11821
           HoldEndTime: 0
         - Type: 2
           Pos: 0.5
           Width: 0.2
-          StartTime: 12.809
-          HoldEndTime: 0
-        - Type: 2
-          Pos: 0.5
-          Width: 0.2
-          StartTime: 12.809
+          StartTime: 12919
           HoldEndTime: 0
         - Type: 1
           Pos: 0.65
           Width: 0.2
-          StartTime: 16.469
-          HoldEndTime: 17.201
+          StartTime: 16579
+          HoldEndTime: 17311
         - Type: 0
           Pos: 0.15
           Width: 0.2
-          StartTime: 17.201
+          StartTime: 17311
           HoldEndTime: 0
         - Type: 1
           Pos: 0.2
           Width: 0.2
-          StartTime: 17.567
-          HoldEndTime: 18.665
+          StartTime: 17677
+          HoldEndTime: 18775
         - Type: 0
           Pos: 0.65
           Width: 0.2
-          StartTime: 18.665
-          HoldEndTime: 18.665
+          StartTime: 18775
+          HoldEndTime: 0
