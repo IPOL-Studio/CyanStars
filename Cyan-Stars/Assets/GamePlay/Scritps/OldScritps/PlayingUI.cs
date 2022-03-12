@@ -22,7 +22,7 @@ public class PlayingUI : MonoBehaviour
         {
             if(grade == "Exact")gradeText.color = Color.green;
             if(grade == "Great")gradeText.color = Color.cyan;
-            if(grade == "Right")gradeText.color = Color.yellow;
+            if(grade == "Right" || grade =="Out")gradeText.color = Color.yellow;
             if(grade == "Bad")gradeText.color = Color.red;
             if(grade == "Miss")gradeText.color = Color.white;
         }

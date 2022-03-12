@@ -13,4 +13,5 @@ public enum EvaluateType
     Great,
     Bad,
     Right,
+    Out,
 }
