@@ -87,6 +87,6 @@ public static class EvaluateHelper
         {
             return EvaluateType.Exact;
         }
-        return EvaluateType.Right;
+        return EvaluateType.Out;
     }
 }
