@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: MusicTimelineData
   m_EditorClassIdentifier: 
   musicTimelineData:
-    Time: 20000
+    Time: 600000
     BaseSpeed: 4
     SpeedRate: 1
     LayerDatas:
     - ClipDatas:
       - StartTime: 0
-        SpeedRate: 3
+        SpeedRate: 20
         NoteDatas:
         - Type: 1
           Pos: 0.6
@@ -96,3 +96,43 @@ MonoBehaviour:
           Width: 0.2
           StartTime: 18775
           HoldEndTime: 0
+        - Type: 0
+          Pos: 0.15
+          Width: 0.2
+          StartTime: 19873
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0.5
+          Width: 0.2
+          StartTime: 20239
+          HoldEndTime: 0
+        - Type: 1
+          Pos: 0.25
+          Width: 0.2
+          StartTime: 20605
+          HoldEndTime: 21703
+        - Type: 1
+          Pos: 0.7
+          Width: 0.2
+          StartTime: 21703
+          HoldEndTime: 22801
+        - Type: 0
+          Pos: 0.45
+          Width: 0.2
+          StartTime: 22801
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0.15
+          Width: 0.2
+          StartTime: 23167
+          HoldEndTime: 0
+        - Type: 1
+          Pos: 0.15
+          Width: 0.2
+          StartTime: 23533
+          HoldEndTime: 24631
+        - Type: 1
+          Pos: 0.55
+          Width: 0.2
+          StartTime: 24631
+          HoldEndTime: 28657
