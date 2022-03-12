@@ -1545,10 +1545,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayingUI
       objectReference: {fileID: 0}
-    - target: {fileID: 1383141806232530342, guid: b02a5c2882d82a14487db388df829895, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1383141806232530346, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1791,6 +1787,14 @@ PrefabInstance:
     - target: {fileID: 4516123656735426896, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}
       propertyPath: m_Name
       value: PlayingUIOnGround
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516123656909618943, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}
+      propertyPath: m_fontSize
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516123656909618943, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}

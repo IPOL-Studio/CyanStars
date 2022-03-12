@@ -20,11 +20,29 @@ public class PlayingUI : MonoBehaviour
         if(gradeText)gradeText.text = grade;//更新文本
         if(gradeText)
         {
-            if(grade == "Exact")gradeText.color = Color.green;
-            if(grade == "Great")gradeText.color = Color.cyan;
-            if(grade == "Right")gradeText.color = Color.yellow;
-            if(grade == "Bad")gradeText.color = Color.red;
-            if(grade == "Miss")gradeText.color = Color.white;
+            Color color = Color.white;
+            if(grade == "Exact")color = Color.green;
+            if(grade == "Great")color = Color.cyan;
+            if(grade == "Right" || grade =="Out")color = Color.yellow;
+            if(grade == "Bad")color = Color.red;
+            if(grade == "Miss")color = Color.white;
+            color.a = 1;
+            gradeText.color = color;
+            gradeText.fontSize = 12;
+            StopAllCoroutines();
+            StartCoroutine(FadeGradeTMP());
+        }
+    }
+    IEnumerator FadeGradeTMP()
+    {
+        Color color = gradeText.color;
+        yield return new WaitForSeconds(0.1f);
+        gradeText.fontSize = 11;
+        for(float i = 1;i >= 0;i -= 0.01f)
+        {
+            color.a = i;
+            gradeText.color = color;
+            yield return new WaitForSeconds(0.01f);
         }
     }
     void Update()

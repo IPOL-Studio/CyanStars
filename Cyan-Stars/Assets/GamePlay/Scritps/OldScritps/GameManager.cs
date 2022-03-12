@@ -63,6 +63,7 @@ public class GameManager : MonoBehaviour
             EvaluateType.Exact => excatNum++,
             EvaluateType.Great => greatNum++,
             EvaluateType.Right => rightNum++,
+            EvaluateType.Out => rightNum++,
             EvaluateType.Bad   => badNum++,
             EvaluateType.Miss  => missNum++,
             _ => throw new System.NotImplementedException()
