@@ -21,7 +21,8 @@ public class BreakNote : BaseNote
         {
             //没接住 miss
             DestroySelf();
-            Debug.LogError($"Break音符miss：{data}");
+            //Debug.LogError($"Break音符miss：{data}");
+            LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));
             GameManager.Instance.maxScore += 2;
             GameManager.Instance.RefreshData(-1,-1,EvaluateType.Miss,float.MaxValue);
         }
@@ -35,8 +36,9 @@ public class BreakNote : BaseNote
         {
             viewObject.CreateEffectObj(0);
             DestroySelf(false);
-            Debug.LogError($"Break音符命中,{data}");
+            //Debug.LogError($"Break音符命中,{data}");
             EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);
+            LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, evaluateType));
             GameManager.Instance.maxScore += 2;
             if(evaluateType == EvaluateType.Exact)
                 GameManager.Instance.RefreshData(1,1*2,evaluateType,LogicTimer);
