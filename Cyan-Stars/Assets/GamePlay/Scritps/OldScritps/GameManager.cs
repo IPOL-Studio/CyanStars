@@ -68,6 +68,7 @@ public class GameManager : MonoBehaviour
             EvaluateType.Miss  => missNum++,
             _ => throw new System.NotImplementedException()
         };
+
         
         if(currentDeviation < 10000)
         {
