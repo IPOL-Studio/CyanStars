@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5660405168998294789}
   - component: {fileID: 5660405168998294788}
   - component: {fileID: 5660405168998294791}
+  - component: {fileID: 9014844027364174719}
   m_Layer: 0
   m_Name: NoteEffect(VEG)
   m_TagString: Untagged
@@ -40,7 +41,7 @@ VisualEffect:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5660405168998294790}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: b1cbb3000d4332a4a94c45effd7d1141, type: 3}
+  m_Asset: {fileID: 0}
   m_InitialEventName: OnPlay
   m_InitialEventNameOverriden: 0
   m_StartSeed: 0
@@ -108,3 +109,16 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &9014844027364174719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5660405168998294790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb7cfee9ec07a29409439a961daea1f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destroyTime: -1
