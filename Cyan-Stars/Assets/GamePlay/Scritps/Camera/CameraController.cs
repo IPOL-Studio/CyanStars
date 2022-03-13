@@ -13,28 +13,32 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour//摄像头控制脚本
 {
-    public static CameraController Instance;//单例模式
-    Transform oldTransform;//旧的位置
-    private bool onMove = false;//是否在移动
+    //Transform oldTransform;//旧的位置
+    public Vector3 oldPos;
+    public Vector3 oldRot;
+    public bool onMove = false;//是否在移动
     public Vector3 defaultPosition;//默认位置
     void Awake()
     {
-        Instance = this;//单例模式
         transform.position = defaultPosition;//设置默认位置
+        
+        oldPos = transform.position;//记录旧位置
+        oldRot = transform.eulerAngles;//设置旧的位置
     }
     public void MoveCamera(Vector3 newPos, Vector3 newRot, float dTime,SmoothFuncationType type = SmoothFuncationType.Linear)//移动摄像头
     {
-        if(onMove)return;
-        oldTransform = transform;//记录旧的位置
+        if(onMove)return;//如果正在移动，则返回
+
+        onMove = true;//开始移动
+
         StartCoroutine(MoveCameraCoroutine(newPos, newRot, dTime, type));//开启协程
     }
     IEnumerator MoveCameraCoroutine(Vector3 newPos,Vector3 newRot,float dtime,SmoothFuncationType type)//移动摄像头协程
     {
         newPos = defaultPosition + newPos;//相对于默认位置的位置
-        Vector3 oldPos = oldTransform.position;//记录旧的位置
-        Vector3 oldRot = oldTransform.localEulerAngles;//记录旧的角度
+
         float timer = 0;//计时器
-        onMove = true;//开始移动
+
         while(timer <= dtime)
         {
             timer += Time.deltaTime * 1000;//计时器加上时间(ms)
@@ -65,11 +69,16 @@ public class CameraController : MonoBehaviour//摄像头控制脚本
             yield return null;
         }
         onMove = false;
+
+        oldPos = newPos;//记录旧的位置
+        oldRot = newRot;//记录旧的角度
+
         yield break;
     }
     // b:开始值  e:结束值 t:当前时间，dt:持续时间
     private Vector3 LinearFunction(Vector3 b,Vector3 e,float t,float dt)//线性匀速运动效果
     {
+        Debug.Log(b + " " + e);
         return b + (e - b) * t / dt;
     }
     private Vector3 SinFunctionEaseIn(Vector3 b, Vector3 e, float t, float dt)//正弦曲线的缓动（sin(t)）/ 从0开始加速的缓动，也就是先慢后快
