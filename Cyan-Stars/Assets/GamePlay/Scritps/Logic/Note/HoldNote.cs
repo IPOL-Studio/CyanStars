@@ -102,13 +102,13 @@ public class HoldNote : BaseNote
                     {
                         //头判失败直接销毁
                         DestroySelf(false);
-                        Debug.LogError($"Hold头判失败,时间：{LogicTimer}，{data}");
+                        Debug.LogError($"Hold头判失败,时间：{LogicTimer}，{data},评分:{et}");
                         GameManager.Instance.maxScore += 2;
                         GameManager.Instance.RefreshData(-1, -1, et, float.MaxValue);
                         return;
                     }
 
-                    Debug.LogError($"Hold头判成功,时间：{LogicTimer}，{data}");
+                    Debug.LogError($"Hold头判成功,时间：{LogicTimer}，{data},评分:{et}");
                     GameManager.Instance.maxScore++;
                     if(et == EvaluateType.Exact)
                         GameManager.Instance.RefreshData(1,1,et,LogicTimer);
