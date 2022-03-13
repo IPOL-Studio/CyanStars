@@ -6,19 +6,13 @@ public class NoteClickEffect : MonoBehaviour
 {
     public bool willDestroy;
     public float destroyTime;
-
-    private Transform trans;
-    
     void Start()
     {
-        trans = transform;
         //Debug.Log(transform.position);
-        if (willDestroy) Destroy(gameObject, destroyTime);
+        if(willDestroy)Destroy(gameObject,destroyTime);
     }
     void Update()
     {
-        var pos = trans.position;
-        pos.z = 0;
-        trans.position = pos;
+        transform.position = new Vector3(transform.position.x,transform.position.y,0);
     }
 }
