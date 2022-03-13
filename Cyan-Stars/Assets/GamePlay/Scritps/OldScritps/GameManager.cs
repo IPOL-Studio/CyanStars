@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    private static GameManager instance;//游戏的实例
+    public static GameManager instance;//游戏的实例
     public static GameManager Instance//代理模式
     {
         get
@@ -37,16 +37,14 @@ public class GameManager : MonoBehaviour
     public int rightNum = 0;
     public int badNum = 0;
     public int missNum = 0;
-    
-    private void RefreshPlayingUI(int combo, float score, EvaluateType grade)
+    public void RefreshPlayingUI(int combo,float score,string grade)
     {
         foreach(var item in playingUIList)
         {
-            item.Refresh(combo, score, grade, -1);
+            item.Refresh(combo,score,grade,-1);
         }
     }
-    
-    public void RefreshData(int addCombo, float addScore, EvaluateType grade, float currentDeviation)
+    public void RefreshData(int addCombo,float addScore,EvaluateType grade,float currentDeviation)
     {
         if(addCombo < 0)
         {
@@ -65,18 +63,19 @@ public class GameManager : MonoBehaviour
             EvaluateType.Exact => excatNum++,
             EvaluateType.Great => greatNum++,
             EvaluateType.Right => rightNum++,
-            EvaluateType.Out   => rightNum++,
+            EvaluateType.Out => rightNum++,
             EvaluateType.Bad   => badNum++,
             EvaluateType.Miss  => missNum++,
             _ => throw new System.NotImplementedException()
         };
+
         
         if(currentDeviation < 10000)
         {
             this.currentDeviation = currentDeviation;
             deviationList.Add(currentDeviation);
         }    
-        RefreshPlayingUI(combo, score, grade);
+        RefreshPlayingUI(combo,score,grade.ToString());
     }
 }
 //This code is writed by Ybr.
