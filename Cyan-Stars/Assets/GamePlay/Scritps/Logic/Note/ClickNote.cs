@@ -34,7 +34,6 @@ public class ClickNote : BaseNote
             DestroySelf(false);
             //Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
             GameManager.Instance.maxScore += 1;
-            EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(time);
             LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, evaluateType, time));
             if(evaluateType == EvaluateType.Exact)
                 GameManager.Instance.RefreshData(0,1,evaluateType,LogicTimer);
@@ -65,7 +64,7 @@ public class ClickNote : BaseNote
                         else if(et == EvaluateType.Right)
                             GameManager.Instance.RefreshData(1,0.5f,et,LogicTimer);
                         //Debug.LogError($"Click音符头判命中：{data}");
-                        LogHelper.NoteLogger.Log(new ClickNoteHeadJudgeLogArgs(data, et, LogicTimer));>>>>>>> upstream/main
+                        LogHelper.NoteLogger.Log(new ClickNoteHeadJudgeLogArgs(data, et, LogicTimer));
                     }
                     else
                     {
