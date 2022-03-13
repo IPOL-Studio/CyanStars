@@ -49,6 +49,7 @@ public class GameMgr : MonoBehaviour
     public float TimeSchedule()
     {
         if(timeline == null)return 1;
+        Debug.Log(timeline.Timer/(timeline.Data.Time/1000));
         return timeline.Timer/(timeline.Data.Time/1000);
     }
     private void Start()
