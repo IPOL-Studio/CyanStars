@@ -970,10 +970,10 @@ MonoBehaviour:
     rotation: {x: 0, y: 0, z: 0}
     duration: 100
     color: {r: 0, g: 1, b: 0.9796138, a: 1}
-    intensity: 0.77
+    intensity: 0.917
     decay: 0.1
     frequency: 80
-    coefficient: 0.2
+    coefficient: 1
 --- !u!4 &2011562973
 Transform:
   m_ObjectHideFlags: 0
