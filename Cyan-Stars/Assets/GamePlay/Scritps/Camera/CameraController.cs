@@ -13,19 +13,18 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour//摄像头控制脚本
 {
-    public static CameraController Instance;//单例模式
     Transform oldTransform;//旧的位置
-    private bool onMove = false;//是否在移动
+    public bool onMove = false;//是否在移动
     public Vector3 defaultPosition;//默认位置
     void Awake()
     {
-        Instance = this;//单例模式
         transform.position = defaultPosition;//设置默认位置
     }
     public void MoveCamera(Vector3 newPos, Vector3 newRot, float dTime,SmoothFuncationType type = SmoothFuncationType.Linear)//移动摄像头
     {
         if(onMove)return;
         oldTransform = transform;//记录旧的位置
+        onMove = true;//开始移动
         StartCoroutine(MoveCameraCoroutine(newPos, newRot, dTime, type));//开启协程
     }
     IEnumerator MoveCameraCoroutine(Vector3 newPos,Vector3 newRot,float dtime,SmoothFuncationType type)//移动摄像头协程
@@ -34,7 +33,6 @@ public class CameraController : MonoBehaviour//摄像头控制脚本
         Vector3 oldPos = oldTransform.position;//记录旧的位置
         Vector3 oldRot = oldTransform.localEulerAngles;//记录旧的角度
         float timer = 0;//计时器
-        onMove = true;//开始移动
         while(timer <= dtime)
         {
             timer += Time.deltaTime * 1000;//计时器加上时间(ms)
