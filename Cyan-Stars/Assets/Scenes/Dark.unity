@@ -720,27 +720,7 @@ MonoBehaviour:
   cameraController: {fileID: 552719610}
   defaultPosition: {x: 0, y: 15, z: -2.5}
   startButton: {fileID: 577790304}
-  keyFrames:
-  - time: 5000
-    position: {x: 0, y: 25, z: -5}
-    rotation: {x: 60, y: 0, z: 0}
-    smoothType: 4
-  - time: 10000
-    position: {x: 10, y: 15, z: -3}
-    rotation: {x: 45, y: 0, z: 30}
-    smoothType: 1
-  - time: 15000
-    position: {x: 0, y: 0, z: 0}
-    rotation: {x: 45, y: 0, z: -15}
-    smoothType: 1
-  - time: 18000
-    position: {x: 0, y: 15, z: 0}
-    rotation: {x: 60, y: 0, z: 0}
-    smoothType: 3
-  - time: 20000
-    position: {x: 0, y: 3, z: -13}
-    rotation: {x: 5, y: 0, z: 0}
-    smoothType: 4
+  keyFrames: []
 --- !u!4 &970795780
 Transform:
   m_ObjectHideFlags: 0
@@ -1007,7 +987,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!73398921 &1117898722
 VFXRenderer:
   serializedVersion: 1
@@ -1456,7 +1436,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!73398921 &2144887391
 VFXRenderer:
   serializedVersion: 1
