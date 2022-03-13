@@ -720,7 +720,31 @@ MonoBehaviour:
   cameraController: {fileID: 552719610}
   defaultPosition: {x: 0, y: 15, z: -2.5}
   startButton: {fileID: 577790304}
-  keyFrames: []
+  keyFrames:
+  - time: 29389
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 45, y: 0, z: 0}
+    smoothType: 0
+  - time: 29489
+    position: {x: 0, y: -2, z: 0}
+    rotation: {x: 45, y: 0, z: 0}
+    smoothType: 3
+  - time: 30489
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 45, y: 0, z: 0}
+    smoothType: 2
+  - time: 35245
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 45, y: 0, z: 0}
+    smoothType: 0
+  - time: 35345
+    position: {x: 0, y: -1, z: 0}
+    rotation: {x: 45, y: 0, z: 0}
+    smoothType: 0
+  - time: 36345
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 45, y: 0, z: 0}
+    smoothType: 0
 --- !u!4 &970795780
 Transform:
   m_ObjectHideFlags: 0
