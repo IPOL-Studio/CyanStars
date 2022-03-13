@@ -129,7 +129,6 @@ public class EffectControllerSo : MonoBehaviour
             while(alpha > 0)
             {
                 alpha -= decay * 0.1f;
-                Debug.Log(alpha);
                 color.a = alpha;
                 frame.color = color;
                 yield return new WaitForSeconds(0.1f);
@@ -148,7 +147,6 @@ public class EffectControllerSo : MonoBehaviour
         {
             alpha = (-Mathf.Cos(timer * coefficient * Mathf.PI)+1)/2;
             color.a = alpha;
-            Debug.Log(alpha);
             frame.color = color;
             yield return new WaitForSeconds(0.1f);
             timer += 0.1f;
