@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3781862996343542697}
   - component: {fileID: 3912670870129890309}
   m_Layer: 0
-  m_Name: 'Bombardment(bushi)Effect(VEG) '
+  m_Name: MeteoriteEffect(VEG)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
