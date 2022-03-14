@@ -130,8 +130,11 @@ public class HoldNote : BaseNote
 
             case InputType.Up:
 
-                pressCount--;
-                if (pressCount == 0) viewObject.DestroyEffectObj();
+                if (pressCount > 0)
+                {
+                    pressCount--;
+                    if (pressCount == 0) viewObject.DestroyEffectObj();
+                }
                 break;
         }
 
