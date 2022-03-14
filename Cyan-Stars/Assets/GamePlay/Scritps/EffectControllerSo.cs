@@ -94,7 +94,7 @@ public class EffectControllerSo : MonoBehaviour
                     GameObject effectObj = Instantiate(effectList[keyFrames[index].index], 
                     keyFrames[index].position, Quaternion.Euler(keyFrames[index].rotation));
                     effectObj.gameObject.transform.SetParent(transform);
-                    effectObj.GetComponent<EffectObj>().destroyTime = keyFrames[index].duration;
+                    effectObj.GetComponent<EffectObj>().destroyTime = keyFrames[index].duration/1000f;
                 }
                 else if(keyFrames[index].type == EffectType.FrameOnce)
                 {
@@ -145,7 +145,7 @@ public class EffectControllerSo : MonoBehaviour
         float timePoint = timer;
         while(timer - timePoint < dTime)
         {
-            alpha = 0.5f * Mathf.Cos(bpm * 2 * Mathf.PI * (timer - timePoint) / 60000 - 30000/bpm) + 0.5f;
+            alpha = 0.5f * Mathf.Cos(bpm * 2 * Mathf.PI * (timer - timePoint - 30000/bpm) / 60000) + 0.5f;
             color.a = alpha;
             frame.color = color;
             yield return null;
