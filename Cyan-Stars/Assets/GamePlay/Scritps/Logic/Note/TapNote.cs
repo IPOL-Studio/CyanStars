@@ -12,7 +12,8 @@ public class TapNote : BaseNote
         {
             //没接住 miss
             DestroySelf();
-            Debug.LogError($"Tap音符miss：{data}");
+            //Debug.LogError($"Tap音符miss：{data}");
+            LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));
             GameManager.Instance.maxScore ++;
             GameManager.Instance.RefreshData(-1,-1,EvaluateType.Miss,float.MaxValue);
         }
@@ -27,7 +28,8 @@ public class TapNote : BaseNote
             viewObject.CreateEffectObj(data.Width);
             DestroySelf(false);
             EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);
-            Debug.LogError($"Tap音符命中,评价:{evaluateType},{data}");
+            //Debug.LogError($"Tap音符命中,评价:{evaluateType},{data}");
+            LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, evaluateType));
             GameManager.Instance.maxScore ++;
             if(evaluateType == EvaluateType.Exact)
                 GameManager.Instance.RefreshData(1,1,evaluateType,LogicTimer);
