@@ -917,63 +917,19 @@ MonoBehaviour:
   - {fileID: 1797714989872003899, guid: d677b3d5927319c4c97510dabe96cad2, type: 3}
   - {fileID: 402086266770844137, guid: 55b2ad603ec62514d876fb59f5de8be5, type: 3}
   frame: {fileID: 29562213}
-  bpm: 60
+  bpm: 82
   keyFrames:
-  - type: 2
-    time: 5000
-    index: 3
-    position: {x: 10, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-    duration: 0
-    color: {r: 1, g: 1, b: 1, a: 1}
-    intensity: 0
-    decay: 0
-    frequency: 0
-    coefficient: 0
-  - type: 2
-    time: 0
-    index: 3
-    position: {x: -10, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-    duration: 0
-    color: {r: 1, g: 1, b: 1, a: 1}
-    intensity: 1
-    decay: 0
-    frequency: 0
-    coefficient: 0
-  - type: 2
-    time: 5000
-    index: 6
-    position: {x: 10, y: 5, z: 30}
-    rotation: {x: 0, y: 0, z: 0}
-    duration: 0
-    color: {r: 0, g: 0, b: 0, a: 0}
-    intensity: 0
-    decay: 0
-    frequency: 0
-    coefficient: 0
-  - type: 2
-    time: 5000
-    index: 6
-    position: {x: -10, y: 5, z: 30}
-    rotation: {x: 0, y: 0, z: 0}
-    duration: 0
-    color: {r: 0, g: 0, b: 0, a: 0}
-    intensity: 0
-    decay: 0
-    frequency: 0
-    coefficient: 0
   - type: 0
-    time: 5000
+    time: 0
     index: 0
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     duration: 100
-    color: {r: 0, g: 1, b: 0.9796138, a: 1}
-    intensity: 0.917
+    color: {r: 1, g: 1, b: 1, a: 1}
+    intensity: 0.33
     decay: 0.1
     frequency: 80
-    coefficient: 1
+    coefficient: 0.73170733
 --- !u!4 &2011562973
 Transform:
   m_ObjectHideFlags: 0
