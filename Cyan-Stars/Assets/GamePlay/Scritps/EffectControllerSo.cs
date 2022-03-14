@@ -40,8 +40,6 @@ public class EffectControllerSo : MonoBehaviour
         [Range(0,1)]public float decay;
         [Header("播放次数(仅对frame.once有效)")]
         public int frequency;
-        [Header("时间间隔系数(仅对frame.breath有效)")]
-        public float coefficient;
     }
     [Header("边框")]
     public Image frame;
@@ -63,7 +61,7 @@ public class EffectControllerSo : MonoBehaviour
             if(keyFrames[i].type == EffectType.FrameBreath)
             {
                 //提前从波谷入场
-                keyFrames[i].time = keyFrames[i].time - 1000/keyFrames[i].coefficient;
+                keyFrames[i].time = Mathf.Max(0,keyFrames[i].time -30000/bpm);
             }
         }
     }
@@ -77,20 +75,20 @@ public class EffectControllerSo : MonoBehaviour
 
     void Update()
     {
+        timer = GameMgr.Instance.TimelineTime * 1000;
         if(!isStart)
         {
             return;
         }
-        timer += Time.deltaTime * 1000;
         if(index < keyFrames.Count)
         {
-            while(timer >= keyFrames[index].time)
+            while(index < keyFrames.Count && timer >= keyFrames[index].time)
             {   
                 if(keyFrames[index].type == EffectType.Particle)
                 {
                     if(keyFrames[index].index >= effectList.Count)
                     {
-                        Debug.Log("特效序号超出范围");
+                        Debug.LogError("特效序号超出范围");
                         return;
                     }
                     GameObject effectObj = Instantiate(effectList[keyFrames[index].index], 
@@ -110,7 +108,7 @@ public class EffectControllerSo : MonoBehaviour
                     frame.color = keyFrames[index].color;
                     frame.pixelsPerUnitMultiplier = 1 - keyFrames[index].intensity;
                     StopAllCoroutines();
-                    StartCoroutine(CosFrameFade(keyFrames[index].coefficient, keyFrames[index].duration));
+                    StartCoroutine(CosFrameFade(keyFrames[index].duration));
                 }
                 
                 index++;
@@ -139,19 +137,19 @@ public class EffectControllerSo : MonoBehaviour
         }
     }
     
-    IEnumerator CosFrameFade(float coefficient,float dTime)
+    IEnumerator CosFrameFade(float dTime)
     {
         //使用cos函数控制透明度
         Color color = frame.color;
         float alpha = 0;
-        float timer = 0;
-        while(timer < dTime)
+        float timePoint = timer;
+        while(timer - timePoint < dTime)
         {
-            alpha = (-Mathf.Cos(timer * coefficient * Mathf.PI)+1)/2;
+            alpha = 0.5f * Mathf.Cos(bpm * 2 * Mathf.PI * (timer - timePoint) / 60000 - 30000/bpm) + 0.5f;
             color.a = alpha;
             frame.color = color;
-            yield return new WaitForSeconds(0.1f);
-            timer += 0.1f;
+            yield return null;
         }
+        yield break;
     }
 }
