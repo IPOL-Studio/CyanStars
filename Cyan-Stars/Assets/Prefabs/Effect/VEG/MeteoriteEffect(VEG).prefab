@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 3781862996343542699}
   - component: {fileID: 3781862996343542696}
   - component: {fileID: 3781862996343542697}
+  - component: {fileID: 3912670870129890309}
   m_Layer: 0
-  m_Name: 'Bombardment(bushi)Effect(VEG) '
+  m_Name: MeteoriteEffect(VEG)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -108,3 +109,16 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &3912670870129890309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3781862996343542742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb7cfee9ec07a29409439a961daea1f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destroyTime: -1
