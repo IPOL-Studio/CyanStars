@@ -917,16 +917,16 @@ MonoBehaviour:
   - {fileID: 1797714989872003899, guid: d677b3d5927319c4c97510dabe96cad2, type: 3}
   - {fileID: 402086266770844137, guid: 55b2ad603ec62514d876fb59f5de8be5, type: 3}
   frame: {fileID: 29562213}
-  bpm: 41
+  bpm: 20.5
   keyFrames:
   - type: 0
-    time: 0
+    time: 5915
     index: 0
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     duration: 1000000
     color: {r: 0, g: 0.900543, b: 1, a: 1}
-    intensity: 0.33
+    intensity: 0.5
     decay: 0.1
     frequency: 80
 --- !u!4 &2011562973
