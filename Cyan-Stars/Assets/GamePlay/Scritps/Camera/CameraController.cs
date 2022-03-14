@@ -78,6 +78,7 @@ public class CameraController : MonoBehaviour//摄像头控制脚本
     // b:开始值  e:结束值 t:当前时间，dt:持续时间
     private Vector3 LinearFunction(Vector3 b,Vector3 e,float t,float dt)//线性匀速运动效果
     {
+        Debug.Log(b + " " + e);
         return b + (e - b) * t / dt;
     }
     private Vector3 SinFunctionEaseIn(Vector3 b, Vector3 e, float t, float dt)//正弦曲线的缓动（sin(t)）/ 从0开始加速的缓动，也就是先慢后快
