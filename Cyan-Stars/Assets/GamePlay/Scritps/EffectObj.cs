@@ -24,7 +24,7 @@ public class EffectObj : MonoBehaviour
         for(int i = 200;i > 0;i --)
         {
             visualEffect.SetFloat("Count",(i/2f)/100f * visualEffectStartCount);
-            yield return new WaitForSeconds(0.01f);
+            yield return null;
         }
         Destroy(gameObject,1);
     }
