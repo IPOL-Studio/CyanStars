@@ -29,7 +29,8 @@ public class DragNote : BaseNote
         {
             //没接住 miss
             DestroySelf();
-            Debug.LogError($"Drag音符miss：{data}");
+            //Debug.LogError($"Drag音符miss：{data}");
+            LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));
             GameManager.Instance.maxScore ++;
             GameManager.Instance.RefreshData(-1,-1,EvaluateType.Miss,float.MaxValue);
         }
@@ -49,7 +50,8 @@ public class DragNote : BaseNote
                     return;
                 }
                 viewObject.CreateEffectObj(data.Width);
-                Debug.LogError($"Drag音符命中：{data}");
+                //Debug.LogError($"Drag音符命中：{data}");
+                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Exact));
                 GameManager.Instance.maxScore ++;
                 GameManager.Instance.RefreshData(1,1,EvaluateType.Exact,float.MaxValue);
                 if (LogicTimer > 0)
