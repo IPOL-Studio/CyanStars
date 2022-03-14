@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public enum EffectType
 {
-    frame_breath,
-    frame_once,
-    particle,
+    FrameBreath,
+    FrameOnce,
+    Particle,
 }
 
 public class EffectControllerSo : MonoBehaviour
@@ -60,7 +60,7 @@ public class EffectControllerSo : MonoBehaviour
         startButton.onClick.AddListener(OnBtnStartClick);
         for(var i = 0; i < keyFrames.Count; i++)
         {
-            if(keyFrames[i].type == EffectType.frame_breath)
+            if(keyFrames[i].type == EffectType.FrameBreath)
             {
                 //提前从波谷入场
                 keyFrames[i].time = keyFrames[i].time - 1000/keyFrames[i].coefficient;
@@ -77,46 +77,48 @@ public class EffectControllerSo : MonoBehaviour
 
     void Update()
     {
-        timer += Time.deltaTime * 1000;
-        if(isStart)
+        if(!isStart)
         {
-            if(index < keyFrames.Count)
-            {
-                while(timer >= keyFrames[index].time)
-                {   
-                    if(keyFrames[index].type == EffectType.particle)
+            return;
+        }
+        timer += Time.deltaTime * 1000;
+        if(index < keyFrames.Count)
+        {
+            while(timer >= keyFrames[index].time)
+            {   
+                if(keyFrames[index].type == EffectType.Particle)
+                {
+                    if(keyFrames[index].index >= effectList.Count)
                     {
-                        if(keyFrames[index].index >= effectList.Count)
-                        {
-                            Debug.Log("特效序号超出范围");
-                            return;
-                        }
-                        GameObject effectObj = Instantiate(effectList[keyFrames[index].index], 
-                        keyFrames[index].position, Quaternion.Euler(keyFrames[index].rotation));
-                        effectObj.gameObject.transform.SetParent(transform);
-                        effectObj.GetComponent<EffectObj>().destroyTime = keyFrames[index].duration;
+                        Debug.Log("特效序号超出范围");
+                        return;
                     }
-                    else if(keyFrames[index].type == EffectType.frame_once)
-                    {
-                        frame.color = keyFrames[index].color;
-                        frame.pixelsPerUnitMultiplier = 1 - keyFrames[index].intensity;
-                        StopAllCoroutines();
-                        StartCoroutine(FrameFade(keyFrames[index].decay, keyFrames[index].frequency));
-                    }
-                    else if(keyFrames[index].type == EffectType.frame_breath)
-                    {
-                        frame.color = keyFrames[index].color;
-                        frame.pixelsPerUnitMultiplier = 1 - keyFrames[index].intensity;
-                        StopAllCoroutines();
-                        StartCoroutine(CosFrameFade(keyFrames[index].coefficient, keyFrames[index].duration));
-                    }
-                    index++;
+                    GameObject effectObj = Instantiate(effectList[keyFrames[index].index], 
+                    keyFrames[index].position, Quaternion.Euler(keyFrames[index].rotation));
+                    effectObj.gameObject.transform.SetParent(transform);
+                    effectObj.GetComponent<EffectObj>().destroyTime = keyFrames[index].duration;
                 }
+                else if(keyFrames[index].type == EffectType.FrameOnce)
+                {
+                    frame.color = keyFrames[index].color;
+                    frame.pixelsPerUnitMultiplier = 1 - keyFrames[index].intensity;
+                    StopAllCoroutines();
+                    StartCoroutine(FrameFade(keyFrames[index].decay, keyFrames[index].frequency));
+                }
+                else if(keyFrames[index].type == EffectType.FrameBreath)
+                {
+                    frame.color = keyFrames[index].color;
+                    frame.pixelsPerUnitMultiplier = 1 - keyFrames[index].intensity;
+                    StopAllCoroutines();
+                    StartCoroutine(CosFrameFade(keyFrames[index].coefficient, keyFrames[index].duration));
+                }
+                
+                index++;
             }
-            else
-            {
-                isStart = false;
-            }
+        }
+        else
+        {
+            isStart = false;
         }
     }
     IEnumerator FrameFade(float decay,int frequency = 1)
