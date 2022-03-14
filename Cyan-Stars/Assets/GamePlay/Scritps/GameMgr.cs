@@ -35,6 +35,10 @@ public class GameMgr : MonoBehaviour
     {
         get
         {
+            if(timeline == null)
+            {
+                return -0.1f;
+            }
             return timeline.Timer;
         }
     }
