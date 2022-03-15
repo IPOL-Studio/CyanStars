@@ -867,71 +867,6 @@ Transform:
   m_Father: {fileID: 1068476077}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1392808729
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2240277577198284640, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
-      propertyPath: m_RootOrder
-      value: 13
-      objectReference: {fileID: 0}
-    - target: {fileID: 2240277577198284640, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2240277577198284640, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 10.35
-      objectReference: {fileID: 0}
-    - target: {fileID: 2240277577198284640, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 3.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2240277577198284640, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2240277577198284640, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2240277577198284640, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2240277577198284640, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2240277577198284640, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2240277577198284640, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2240277577198284640, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3423610622994212751, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
-      propertyPath: m_Name
-      value: BlockEffect(VEG)
-      objectReference: {fileID: 0}
-    - target: {fileID: 3423610622994212751, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4355523655183995761, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
 --- !u!114 &1789870787 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 732401922024709692, guid: b02a5c2882d82a14487db388df829895, type: 3}
@@ -983,6 +918,8 @@ MonoBehaviour:
   - {fileID: 6926933232775222153, guid: 3425ab51e0f7d124c846fe295340ac54, type: 3}
   - {fileID: 3423610622994212751, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
   - {fileID: 9219679803321507132, guid: 70f897f0e89b7b245aa8e564a86186b7, type: 3}
+  - {fileID: 2696686588806595397, guid: c8ad969b11fe5504991b7df6f9dd1235, type: 3}
+  - {fileID: 6877560130653438118, guid: 55b358deb5a6bca418ac0a363548f5c4, type: 3}
   frame: {fileID: 29562213}
   bpm: 41
   keyFrames:
@@ -998,12 +935,100 @@ MonoBehaviour:
     decay: 0.1
     frequency: 80
   - type: 2
-    time: 0
-    index: 1
-    position: {x: -15, y: 0, z: 0}
+    time: 5915
+    index: 10
+    position: {x: -10, y: 5, z: -3}
+    rotation: {x: 90, y: 0, z: 0}
+    particleCount: 0
+    duration: 1e+10
+    color: {r: 0, g: 0.900543, b: 1, a: 1}
+    intensity: 0.5
+    decay: 0.1
+    frequency: 80
+  - type: 2
+    time: 5915
+    index: 10
+    position: {x: 10, y: 5, z: -3}
+    rotation: {x: 90, y: 0, z: 0}
+    particleCount: 0
+    duration: 1e+10
+    color: {r: 0, g: 0.900543, b: 1, a: 1}
+    intensity: 0.5
+    decay: 0.1
+    frequency: 80
+  - type: 2
+    time: 5915
+    index: 9
+    position: {x: 0, y: 0, z: 25}
     rotation: {x: 0, y: 0, z: 0}
     particleCount: 0
-    duration: 70000
+    duration: 1e+10
+    color: {r: 0, g: 0.900543, b: 1, a: 1}
+    intensity: 0.5
+    decay: 0.1
+    frequency: 80
+  - type: 2
+    time: 10000
+    index: 7
+    position: {x: 10, y: 5, z: 15}
+    rotation: {x: 0, y: 0, z: 0}
+    particleCount: 0
+    duration: 1e+10
+    color: {r: 0, g: 0.900543, b: 1, a: 1}
+    intensity: 0.5
+    decay: 0.1
+    frequency: 80
+  - type: 2
+    time: 10000
+    index: 7
+    position: {x: -10, y: 5, z: 15}
+    rotation: {x: 0, y: 0, z: 0}
+    particleCount: 0
+    duration: 1e+10
+    color: {r: 0, g: 0.900543, b: 1, a: 1}
+    intensity: 0.5
+    decay: 0.1
+    frequency: 80
+  - type: 2
+    time: 10000
+    index: 8
+    position: {x: -10, y: 5, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    particleCount: 0
+    duration: 20000
+    color: {r: 0, g: 0.900543, b: 1, a: 1}
+    intensity: 0.5
+    decay: 0.1
+    frequency: 80
+  - type: 2
+    time: 10000
+    index: 8
+    position: {x: 10, y: 5, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    particleCount: 0
+    duration: 20000
+    color: {r: 0, g: 0.900543, b: 1, a: 1}
+    intensity: 0.5
+    decay: 0.1
+    frequency: 80
+  - type: 2
+    time: 30000
+    index: 6
+    position: {x: 20, y: 5, z: 0}
+    rotation: {x: 0, y: 180, z: 0}
+    particleCount: 0
+    duration: 1e+10
+    color: {r: 0, g: 0.900543, b: 1, a: 1}
+    intensity: 0.5
+    decay: 0.1
+    frequency: 80
+  - type: 2
+    time: 30000
+    index: 6
+    position: {x: -20, y: 5, z: 0}
+    rotation: {x: 0, y: 180, z: 0}
+    particleCount: 0
+    duration: 1e+10
     color: {r: 0, g: 0.900543, b: 1, a: 1}
     intensity: 0.5
     decay: 0.1
@@ -1110,6 +1135,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayingUI
       objectReference: {fileID: 0}
+    - target: {fileID: 1383141806232530342, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1383141806232530346, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1197,6 +1226,10 @@ PrefabInstance:
     - target: {fileID: 2934462791087160300, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5808202062657416620, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -0.91516113
       objectReference: {fileID: 0}
     - target: {fileID: 6135646744723798344, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchoredPosition.x

@@ -120,7 +120,8 @@ public static class ViewHelper
         {
             var startTime = viewStartTimeDict[data];
             var endTime = viewHoldEndTimeDict[data];
-            (view as HoldViewObject).SetMesh(1f, endTime - startTime);
+            //(view as HoldViewObject).SetMesh(1f, endTime - startTime);
+            (view as HoldViewObject).SetLength(data.HoldEndTime - data.StartTime);
         }
 
         return view;
