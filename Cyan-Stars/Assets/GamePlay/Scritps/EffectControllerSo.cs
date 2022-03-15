@@ -30,6 +30,8 @@ public class EffectControllerSo : MonoBehaviour
         public Vector3 position;
         [Header("朝向(仅对particle有效)")]
         public Vector3 rotation;
+        [Header("粒子数量(仅对particle有效，此处若小于等于0则使用默认值)")]
+        public int particleCount;
         [Header("持续时间(仅对particle和frame.breath有效)")]
         public float duration;
         [Header("颜色(仅对frame有效)")]
@@ -95,6 +97,7 @@ public class EffectControllerSo : MonoBehaviour
                     keyFrames[index].position, Quaternion.Euler(keyFrames[index].rotation));
                     effectObj.gameObject.transform.SetParent(transform);
                     effectObj.GetComponent<EffectObj>().destroyTime = keyFrames[index].duration/1000f;
+                    effectObj.GetComponent<EffectObj>().visualEffectStartCount = keyFrames[index].particleCount;
                 }
                 else if(keyFrames[index].type == EffectType.FrameOnce)
                 {
