@@ -7,12 +7,12 @@ public class EffectObj : MonoBehaviour
 {
     public float destroyTime = -1;
     public VisualEffect visualEffect;
-    float visualEffectStartCount;
+    public float visualEffectStartCount = -1;
 
     void Start()
     {
         visualEffect = GetComponent<VisualEffect>();
-        visualEffectStartCount = visualEffect.GetFloat("Count");
+        if(visualEffectStartCount <= 0)visualEffectStartCount = visualEffect.GetFloat("Count");
         if(destroyTime > 0)
         {
             StartCoroutine(DestroySelf());
