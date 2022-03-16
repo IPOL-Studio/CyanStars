@@ -994,6 +994,17 @@ MonoBehaviour:
   frame: {fileID: 29562213}
   bpm: 41
   keyFrames:
+  - type: 2
+    time: 0
+    index: 11
+    position: {x: 0, y: 0, z: 125}
+    rotation: {x: 0, y: 0, z: 0}
+    particleCount: 0
+    duration: 25000
+    color: {r: 0, g: 0.900543, b: 1, a: 1}
+    intensity: 0.5
+    decay: 0.1
+    frequency: 80
   - type: 0
     time: 5915
     index: 0
@@ -1008,7 +1019,7 @@ MonoBehaviour:
   - type: 2
     time: 5915
     index: 10
-    position: {x: -10, y: 5, z: -3}
+    position: {x: -10, y: 5, z: -5}
     rotation: {x: 90, y: 0, z: 0}
     particleCount: 0
     duration: 1e+10
@@ -1019,7 +1030,7 @@ MonoBehaviour:
   - type: 2
     time: 5915
     index: 10
-    position: {x: 10, y: 5, z: -3}
+    position: {x: 10, y: 5, z: -5}
     rotation: {x: 90, y: 0, z: 0}
     particleCount: 0
     duration: 1e+10
@@ -1030,7 +1041,18 @@ MonoBehaviour:
   - type: 2
     time: 5915
     index: 9
-    position: {x: 0, y: 0, z: 25}
+    position: {x: 0, y: 0, z: 35}
+    rotation: {x: 0, y: 0, z: 0}
+    particleCount: 0
+    duration: 1e+10
+    color: {r: 0, g: 0.900543, b: 1, a: 1}
+    intensity: 0.5
+    decay: 0.1
+    frequency: 80
+  - type: 2
+    time: 20000
+    index: 11
+    position: {x: 0, y: 0, z: 200}
     rotation: {x: 0, y: 0, z: 0}
     particleCount: 0
     duration: 1e+10
@@ -1212,6 +1234,10 @@ PrefabInstance:
     - target: {fileID: 1383141806232530346, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6135646744723798344, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0.9868164
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b02a5c2882d82a14487db388df829895, type: 3}
