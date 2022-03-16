@@ -9,4 +9,11 @@ public class HoldViewObject : ViewObject
     {
         meshFilter.mesh = MeshHelper.CreateHoldMesh(width, length);
     }
+    public void SetLength(float length)
+    {
+        var t = transform;
+        var s = t.localScale;
+        s.z = length;
+        t.localScale = s;
+    }
 }
