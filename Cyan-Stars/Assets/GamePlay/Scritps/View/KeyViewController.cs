@@ -19,7 +19,7 @@ public class KeyViewController : MonoBehaviour//view层的Key控制器
             key = Instantiate(keyPrefab);
             var trans = key.transform;
             trans.position = new Vector3(Endpoint.Instance.GetPosWithRatio(item.RangeMin),0,20);
-            trans.localScale = new Vector3(Endpoint.Instance.GetLenth()*item.RangeWidth, 0.1f, 150);
+            trans.localScale = new Vector3(Endpoint.Instance.GetLenth()*item.RangeWidth, 0.1f, 10000);
             trans.SetParent(transform);
             key.name = item.key.ToString();
             keyList.Add(item.key, key); 
