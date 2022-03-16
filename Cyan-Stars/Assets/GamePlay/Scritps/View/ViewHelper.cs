@@ -120,7 +120,8 @@ public static class ViewHelper
         {
             var startTime = viewStartTimeDict[data];
             var endTime = viewHoldEndTimeDict[data];
-            (view as HoldViewObject).SetMesh(1f, endTime - startTime);
+            //(view as HoldViewObject).SetMesh(1f, endTime - startTime);
+            (view as HoldViewObject).SetLength(endTime - startTime);
         }
 
         return view;
@@ -169,6 +170,7 @@ public static class ViewHelper
         {
             //非Break音符需要缩放宽度
             scale.x = data.Width * Endpoint.Instance.GetLenth();
+            scale.y = 2;
         }
         else
         {

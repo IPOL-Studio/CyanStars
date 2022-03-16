@@ -96,7 +96,7 @@ public class EffectControllerSo : MonoBehaviour
                     GameObject effectObj = Instantiate(effectList[keyFrames[index].index], 
                     keyFrames[index].position, Quaternion.Euler(keyFrames[index].rotation));
                     effectObj.gameObject.transform.SetParent(transform);
-                    effectObj.GetComponent<EffectObj>().destroyTime = keyFrames[index].duration/1000f;
+                    effectObj.GetComponent<EffectObj>().destroyTime = keyFrames[index].duration;
                     effectObj.GetComponent<EffectObj>().visualEffectStartCount = keyFrames[index].particleCount;
                 }
                 else if(keyFrames[index].type == EffectType.FrameOnce)
