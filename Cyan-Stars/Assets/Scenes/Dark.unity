@@ -256,7 +256,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 552719605}
   m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: 0, y: 15, z: -2.5}
+  m_LocalPosition: {x: 0, y: 15, z: -3.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -660,7 +660,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1041143486
 PrefabInstance:
@@ -776,7 +776,7 @@ Transform:
   - {fileID: 1335608536}
   - {fileID: 3205724}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1072862548 stripped
 MonoBehaviour:
@@ -856,7 +856,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1335245775
 GameObject:
@@ -990,6 +990,7 @@ MonoBehaviour:
   - {fileID: 9219679803321507132, guid: 70f897f0e89b7b245aa8e564a86186b7, type: 3}
   - {fileID: 2696686588806595397, guid: c8ad969b11fe5504991b7df6f9dd1235, type: 3}
   - {fileID: 6877560130653438118, guid: 55b358deb5a6bca418ac0a363548f5c4, type: 3}
+  - {fileID: 5515936439533581774, guid: 58a101e988023f640b7bfc6c6756a1f4, type: 3}
   frame: {fileID: 29562213}
   bpm: 41
   keyFrames:
@@ -1037,72 +1038,6 @@ MonoBehaviour:
     intensity: 0.5
     decay: 0.1
     frequency: 80
-  - type: 2
-    time: 10000
-    index: 7
-    position: {x: 10, y: 5, z: 15}
-    rotation: {x: 0, y: 0, z: 0}
-    particleCount: 0
-    duration: 1e+10
-    color: {r: 0, g: 0.900543, b: 1, a: 1}
-    intensity: 0.5
-    decay: 0.1
-    frequency: 80
-  - type: 2
-    time: 10000
-    index: 7
-    position: {x: -10, y: 5, z: 15}
-    rotation: {x: 0, y: 0, z: 0}
-    particleCount: 0
-    duration: 1e+10
-    color: {r: 0, g: 0.900543, b: 1, a: 1}
-    intensity: 0.5
-    decay: 0.1
-    frequency: 80
-  - type: 2
-    time: 10000
-    index: 8
-    position: {x: -10, y: 5, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-    particleCount: 0
-    duration: 20000
-    color: {r: 0, g: 0.900543, b: 1, a: 1}
-    intensity: 0.5
-    decay: 0.1
-    frequency: 80
-  - type: 2
-    time: 10000
-    index: 8
-    position: {x: 10, y: 5, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-    particleCount: 0
-    duration: 20000
-    color: {r: 0, g: 0.900543, b: 1, a: 1}
-    intensity: 0.5
-    decay: 0.1
-    frequency: 80
-  - type: 2
-    time: 30000
-    index: 6
-    position: {x: 20, y: 5, z: 0}
-    rotation: {x: 0, y: 180, z: 0}
-    particleCount: 0
-    duration: 1e+10
-    color: {r: 0, g: 0.900543, b: 1, a: 1}
-    intensity: 0.5
-    decay: 0.1
-    frequency: 80
-  - type: 2
-    time: 30000
-    index: 6
-    position: {x: -20, y: 5, z: 0}
-    rotation: {x: 0, y: 180, z: 0}
-    particleCount: 0
-    duration: 1e+10
-    color: {r: 0, g: 0.900543, b: 1, a: 1}
-    intensity: 0.5
-    decay: 0.1
-    frequency: 80
 --- !u!4 &2011562973
 Transform:
   m_ObjectHideFlags: 0
@@ -1115,7 +1050,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!45 &2011562974
 Skybox:
@@ -1139,7 +1074,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1367449846713452515, guid: 474ff31453b15ad46b62c357917d9f67, type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 1367449846713452515, guid: 474ff31453b15ad46b62c357917d9f67, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1359,7 +1294,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4516123656735426892, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}
       propertyPath: m_RootOrder
-      value: 13
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4516123656735426892, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}
       propertyPath: m_AnchorMax.x
