@@ -992,70 +992,15 @@ MonoBehaviour:
   - {fileID: 6877560130653438118, guid: 55b358deb5a6bca418ac0a363548f5c4, type: 3}
   - {fileID: 5515936439533581774, guid: 58a101e988023f640b7bfc6c6756a1f4, type: 3}
   frame: {fileID: 29562213}
-  bpm: 41
+  bpm: 20.5
   keyFrames:
-  - type: 2
-    time: 0
-    index: 11
-    position: {x: 0, y: 0, z: 125}
-    rotation: {x: 0, y: 0, z: 0}
-    particleCount: 0
-    duration: 25000
-    color: {r: 0, g: 0.900543, b: 1, a: 1}
-    intensity: 0.5
-    decay: 0.1
-    frequency: 80
   - type: 0
-    time: 5915
+    time: 7000
     index: 0
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     particleCount: 0
     duration: 1000000
-    color: {r: 0, g: 0.900543, b: 1, a: 1}
-    intensity: 0.5
-    decay: 0.1
-    frequency: 80
-  - type: 2
-    time: 5915
-    index: 10
-    position: {x: -10, y: 5, z: -5}
-    rotation: {x: 90, y: 0, z: 0}
-    particleCount: 0
-    duration: 1e+10
-    color: {r: 0, g: 0.900543, b: 1, a: 1}
-    intensity: 0.5
-    decay: 0.1
-    frequency: 80
-  - type: 2
-    time: 5915
-    index: 10
-    position: {x: 10, y: 5, z: -5}
-    rotation: {x: 90, y: 0, z: 0}
-    particleCount: 0
-    duration: 1e+10
-    color: {r: 0, g: 0.900543, b: 1, a: 1}
-    intensity: 0.5
-    decay: 0.1
-    frequency: 80
-  - type: 2
-    time: 5915
-    index: 9
-    position: {x: 0, y: 0, z: 35}
-    rotation: {x: 0, y: 0, z: 0}
-    particleCount: 0
-    duration: 1e+10
-    color: {r: 0, g: 0.900543, b: 1, a: 1}
-    intensity: 0.5
-    decay: 0.1
-    frequency: 80
-  - type: 2
-    time: 20000
-    index: 11
-    position: {x: 0, y: 0, z: 200}
-    rotation: {x: 0, y: 0, z: 0}
-    particleCount: 0
-    duration: 1e+10
     color: {r: 0, g: 0.900543, b: 1, a: 1}
     intensity: 0.5
     decay: 0.1
@@ -1147,6 +1092,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 411770351898236867, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1383141806232530342, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_Name
       value: PlayingUI
