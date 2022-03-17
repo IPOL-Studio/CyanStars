@@ -70,18 +70,32 @@ public class HoldNote : BaseNote
                 viewObject.DestroyEffectObj();
                 value = pressTime / holdLength;
 
-                EvaluateType et = EvaluateHelper.GetHoldEvaluate(value);
+                EvaluateType evaluateType = EvaluateHelper.GetHoldEvaluate(value);
                 //Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
-                LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, et, value));
+                LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, evaluateType, value));
                 GameManager.Instance.maxScore++;
-                if(et == EvaluateType.Exact)
-                    GameManager.Instance.RefreshData(0,1,et,float.MaxValue);
-                else if(et == EvaluateType.Great)
-                    GameManager.Instance.RefreshData(0,0.75f,et,float.MaxValue);
-                else if(et == EvaluateType.Right)
-                    GameManager.Instance.RefreshData(0,0.5f,et,float.MaxValue);
-                else
-                    GameManager.Instance.RefreshData(-1,-1,et,float.MaxValue);
+                switch (evaluateType)
+                {
+                    case EvaluateType.Exact:
+                        GameManager.Instance.RefreshData(1,1,evaluateType,LogicTimer);
+                        break;
+                    
+                    case  EvaluateType.Great:
+                        GameManager.Instance.RefreshData(1,0.75f,evaluateType,LogicTimer);
+                        break;
+                    
+                    case EvaluateType.Right:
+                        GameManager.Instance.RefreshData(1,0.5f,evaluateType,LogicTimer);
+                        break;
+
+                    case EvaluateType.Bad:
+                        GameManager.Instance.RefreshData(-1,-1,evaluateType,LogicTimer);
+                        break;
+
+                    case EvaluateType.Miss:
+                        GameManager.Instance.RefreshData(-1,-1,evaluateType,float.MaxValue);
+                        break;
+                }
             }
 
             DestroySelf();
