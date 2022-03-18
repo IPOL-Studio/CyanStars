@@ -806,7 +806,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!45 &1303590738
 Skybox:
   m_ObjectHideFlags: 0
@@ -1100,6 +1100,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayingUI
       objectReference: {fileID: 0}
+    - target: {fileID: 1383141806232530342, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1383141806232530346, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1200,6 +1204,10 @@ PrefabInstance:
     - target: {fileID: 1511421166894896258, guid: a454ce911c4fed148bf7854e1f4b5738, type: 3}
       propertyPath: m_Name
       value: Board
+      objectReference: {fileID: 0}
+    - target: {fileID: 1511421166894896258, guid: a454ce911c4fed148bf7854e1f4b5738, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1511421166894896259, guid: a454ce911c4fed148bf7854e1f4b5738, type: 3}
       propertyPath: m_RootOrder
@@ -1346,6 +1354,10 @@ PrefabInstance:
     - target: {fileID: 4516123656735426896, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}
       propertyPath: m_Name
       value: PlayingUIOnGround
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516123656735426896, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4516123656909618943, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}
       propertyPath: m_fontSize
