@@ -15,7 +15,7 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 0
-  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_FogColor: {r: 0.509434, g: 0.509434, b: 0.509434, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.01
   m_LinearFogStart: 0
@@ -998,6 +998,17 @@ MonoBehaviour:
     time: 7000
     index: 0
     position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    particleCount: 0
+    duration: 1000000
+    color: {r: 0, g: 0.900543, b: 1, a: 1}
+    intensity: 0.5
+    decay: 0.1
+    frequency: 80
+  - type: 2
+    time: 5000
+    index: 11
+    position: {x: 0, y: 0, z: 125}
     rotation: {x: 0, y: 0, z: 0}
     particleCount: 0
     duration: 1000000
