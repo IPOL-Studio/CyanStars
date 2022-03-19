@@ -994,8 +994,8 @@ MonoBehaviour:
   frame: {fileID: 29562213}
   bpm: 20.5
   keyFrames:
-  - type: 1
-    time: 7000
+  - type: 0
+    time: 5965
     index: 0
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
