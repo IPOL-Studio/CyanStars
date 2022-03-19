@@ -42,7 +42,7 @@ public class ClickNote : BaseNote
             if(GameManager.Instance.isAutoMode)
             {
                 GameManager.Instance.maxScore++;
-                GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, 0);
+                GameManager.Instance.RefreshData(0, 1, EvaluateType.Exact, 0);
                 DestroySelf(false);
                 return;
             }
