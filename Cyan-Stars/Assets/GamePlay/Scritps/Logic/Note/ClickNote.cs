@@ -73,7 +73,8 @@ public class ClickNote : BaseNote
                         //Debug.LogError($"Click头判失败,时间：{LogicTimer}，{data}");
                         LogHelper.NoteLogger.Log(new ClickNoteHeadJudgeLogArgs(data, et, LogicTimer));
                         GameManager.Instance.maxScore +=1;
-                        GameManager.Instance.RefreshData(-1,-1,et,float.MaxValue);
+                        if(et == EvaluateType.Miss)GameManager.Instance.RefreshData(-1,-1,et,float.MaxValue);
+                        else if(et == EvaluateType.Bad)GameManager.Instance.RefreshData(-1,-1,et,LogicTimer);
                         return;
                     }
                 }
