@@ -15,6 +15,15 @@ public class ClickNote : BaseNote
     public override void OnUpdate(float deltaTime,float noteSpeedRate)
     {
         base.OnUpdate(deltaTime,noteSpeedRate);
+
+        if(EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && GameManager.Instance.isAutoMode && !headSucess)
+        {
+            headSucess = true;
+            GameManager.Instance.maxScore++;
+            GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, 0);
+            viewObject.CreateEffectObj(data.Width);
+        }
+
         if(LogicTimer < EvaluateHelper.CheckInputEndTime && !headSucess)
         {
             //没接住 miss
@@ -30,6 +39,13 @@ public class ClickNote : BaseNote
         {
             float time = LogicTimer - downTimePoint;
             viewObject.CreateEffectObj(data.Width);
+            if(GameManager.Instance.isAutoMode)
+            {
+                GameManager.Instance.maxScore++;
+                GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, 0);
+                DestroySelf(false);
+                return;
+            }
             EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(time);
             DestroySelf(false);
             //Debug.LogError($"Click音符命中，按住时间:{time}：{data}");

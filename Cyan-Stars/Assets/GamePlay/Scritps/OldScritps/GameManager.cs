@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     }
     [Header("-----UI----------")]
     public List<PlayingUI> playingUIList = new List<PlayingUI>();//游戏UI
+
     [Header("-----游戏数据-----")]
     [Header("1.Combo数量")]
     public int combo = 0;//Combo数量
@@ -37,6 +38,11 @@ public class GameManager : MonoBehaviour
     public int rightNum = 0;
     public int badNum = 0;
     public int missNum = 0;
+
+    [Header("-----游戏模式-----")]
+    [Header("AutoMode")]
+    public bool isAutoMode = false;//是否为自动模式
+
     public void RefreshPlayingUI(int combo,float score,string grade)
     {
         foreach(var item in playingUIList)

@@ -49,7 +49,15 @@ public class HoldNote : BaseNote
     {
         base.OnUpdate(deltaTime, noteSpeedRate);
 
-        if (pressCount > 0 && LogicTimer <= 0)
+        if(EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && GameManager.Instance.isAutoMode && !headSucess)
+        {
+            headSucess = true;
+            GameManager.Instance.maxScore++;
+            GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, 0);
+            viewObject.CreateEffectObj(data.Width);
+        }
+
+        if (pressCount > 0 && LogicTimer <= 0 || GameManager.Instance.isAutoMode)
         {
             //只在音符区域内计算有效时间
             pressTime += deltaTime;
@@ -57,6 +65,7 @@ public class HoldNote : BaseNote
 
         if (LogicTimer < holdCheckInputEndTime)
         {
+            if(GameManager.Instance.isAutoMode)viewObject.DestroyEffectObj();
             if (!headSucess)
             {
                 //被漏掉了 miss

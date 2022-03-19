@@ -19,6 +19,15 @@ public class DragNote : BaseNote
     {
         base.OnUpdate(deltaTime,noteSpeedRate);
 
+        if(CanReceiveInput() && GameManager.Instance.isAutoMode)
+        {
+            viewObject.CreateEffectObj(data.Width);
+            GameManager.Instance.maxScore ++;
+            GameManager.Instance.RefreshData(1,1,EvaluateType.Exact,0);
+            isHit = true;
+            return;
+        }
+
         if (isHit && LogicTimer <= 0 )
         {
             DestroySelf(false);
