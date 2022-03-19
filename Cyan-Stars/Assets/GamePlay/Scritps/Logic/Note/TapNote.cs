@@ -31,14 +31,28 @@ public class TapNote : BaseNote
             //Debug.LogError($"Tap音符命中,评价:{evaluateType},{data}");
             LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, evaluateType));
             GameManager.Instance.maxScore ++;
-            if(evaluateType == EvaluateType.Exact)
-                GameManager.Instance.RefreshData(1,1,evaluateType,LogicTimer);
-            else if(evaluateType == EvaluateType.Great)
-                GameManager.Instance.RefreshData(1,0.75f,evaluateType,LogicTimer);
-            else if(evaluateType == EvaluateType.Right)
-                GameManager.Instance.RefreshData(1,0.5f,evaluateType,LogicTimer);
-            else if(evaluateType == EvaluateType.Bad || evaluateType == EvaluateType.Miss)
-                GameManager.Instance.RefreshData(-1,-1,evaluateType,float.MaxValue);
+            switch (evaluateType)
+            {
+                case EvaluateType.Exact:
+                    GameManager.Instance.RefreshData(1,1,evaluateType,LogicTimer);
+                    break;
+                
+                case  EvaluateType.Great:
+                    GameManager.Instance.RefreshData(1,0.75f,evaluateType,LogicTimer);
+                    break;
+                
+                case EvaluateType.Right:
+                    GameManager.Instance.RefreshData(1,0.5f,evaluateType,LogicTimer);
+                    break;
+
+                case EvaluateType.Bad:
+                    GameManager.Instance.RefreshData(-1,-1,evaluateType,LogicTimer);
+                    break;
+
+                case EvaluateType.Miss:
+                    GameManager.Instance.RefreshData(-1,-1,evaluateType,float.MaxValue);
+                    break;
+            }
         }   
     }
 }
