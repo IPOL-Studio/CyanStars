@@ -38,8 +38,6 @@ public class EffectControllerSo : MonoBehaviour
         public Color color;
         [Header("强度(仅对frame有效)")]
         [Range(0,1)]public float intensity;
-        [Header("衰减系数(仅对frame.once有效)")]
-        [Range(0,1)]public float decay;
         [Header("播放次数(仅对frame.once有效)")]
         public int frequency;
         [Header("最大透明度(仅对frame.once和frame.breath有效)")]
@@ -100,7 +98,7 @@ public class EffectControllerSo : MonoBehaviour
                     frame.color = keyFrames[index].color;
                     frame.pixelsPerUnitMultiplier = 1 - keyFrames[index].intensity;
                     StopAllCoroutines();
-                    StartCoroutine(FrameFade(keyFrames[index].decay, keyFrames[index].frequency));
+                    StartCoroutine(FrameFade(keyFrames[index].frequency, keyFrames[index].maxAlpha, keyFrames[index].minAlpha));
                 }
                 else if(keyFrames[index].type == EffectType.FrameBreath)
                 {
@@ -118,7 +116,7 @@ public class EffectControllerSo : MonoBehaviour
             isStart = false;
         }
     }
-    IEnumerator FrameFade(float decay,int frequency = 1,float maxAlpha = 1,float minAlpha = 0)
+    IEnumerator FrameFade(int frequency,float maxAlpha,float minAlpha)
     {
         Color color = frame.color;
         for(int i = 0;i < frequency;i++)
