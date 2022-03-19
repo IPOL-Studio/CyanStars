@@ -15,7 +15,7 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 0
-  m_FogColor: {r: 0.509434, g: 0.509434, b: 0.509434, a: 1}
+  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.01
   m_LinearFogStart: 0
@@ -628,11 +628,11 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 45, y: 0, z: 0}
     smoothType: 0
-  - time: 29489
+  - time: 29439
     position: {x: 0, y: -2, z: 0}
-    rotation: {x: 45, y: 0, z: 0}
+    rotation: {x: 42, y: 0, z: 0}
     smoothType: 3
-  - time: 30489
+  - time: 29939
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 45, y: 0, z: 0}
     smoothType: 2
@@ -640,11 +640,11 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 45, y: 0, z: 0}
     smoothType: 0
-  - time: 35345
+  - time: 35295
     position: {x: 0, y: -1, z: 0}
-    rotation: {x: 45, y: 0, z: 0}
+    rotation: {x: 42, y: 0, z: 0}
     smoothType: 0
-  - time: 36345
+  - time: 35795
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 45, y: 0, z: 0}
     smoothType: 0
@@ -806,7 +806,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!45 &1303590738
 Skybox:
   m_ObjectHideFlags: 0
@@ -1001,18 +1001,18 @@ MonoBehaviour:
     rotation: {x: 0, y: 0, z: 0}
     particleCount: 0
     duration: 1000000
-    color: {r: 0, g: 0.900543, b: 1, a: 1}
+    color: {r: 1, g: 1, b: 1, a: 1}
     intensity: 0.5
     decay: 0.1
     frequency: 80
   - type: 2
-    time: 5000
+    time: 95000
     index: 11
-    position: {x: 0, y: 0, z: 125}
+    position: {x: 0, y: 0, z: 200}
     rotation: {x: 0, y: 0, z: 0}
     particleCount: 0
-    duration: 1000000
-    color: {r: 0, g: 0.900543, b: 1, a: 1}
+    duration: 15000
+    color: {r: 1, g: 1, b: 1, a: 1}
     intensity: 0.5
     decay: 0.1
     frequency: 80
@@ -1107,9 +1107,25 @@ PrefabInstance:
       propertyPath: m_Color.a
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 411770351898236867, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 411770351898236867, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 411770351898236867, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1383141806232530342, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_Name
       value: PlayingUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 1383141806232530342, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1383141806232530346, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_Pivot.x
@@ -1195,9 +1211,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3975412926070386678, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6135646744723798344, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0.9868164
+      objectReference: {fileID: 0}
+    - target: {fileID: 8488523274540830162, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8488523274540830162, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: m_Color.g
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8488523274540830162, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: m_Color.r
+      value: 0.4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b02a5c2882d82a14487db388df829895, type: 3}
@@ -1211,6 +1243,10 @@ PrefabInstance:
     - target: {fileID: 1511421166894896258, guid: a454ce911c4fed148bf7854e1f4b5738, type: 3}
       propertyPath: m_Name
       value: Board
+      objectReference: {fileID: 0}
+    - target: {fileID: 1511421166894896258, guid: a454ce911c4fed148bf7854e1f4b5738, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1511421166894896259, guid: a454ce911c4fed148bf7854e1f4b5738, type: 3}
       propertyPath: m_RootOrder
@@ -1357,6 +1393,10 @@ PrefabInstance:
     - target: {fileID: 4516123656735426896, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}
       propertyPath: m_Name
       value: PlayingUIOnGround
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516123656735426896, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4516123656909618943, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}
       propertyPath: m_fontSize

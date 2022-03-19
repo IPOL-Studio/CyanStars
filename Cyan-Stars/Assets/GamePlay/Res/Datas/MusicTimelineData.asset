@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MusicTimelineData
   m_EditorClassIdentifier: 
   musicTimelineData:
-    Time: 600000
+    Time: 148000
     BaseSpeed: 4
     SpeedRate: 1
     LayerDatas:
@@ -206,18 +206,18 @@ MonoBehaviour:
           Width: 0.2
           StartTime: 33415
           HoldEndTime: 34147
-        - Type: 0
-          Pos: 0
+        - Type: 2
+          Pos: 0.25
           Width: 0.2
           StartTime: 34147
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0
+        - Type: 2
+          Pos: 0.4
           Width: 0.2
           StartTime: 34513
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0
+        - Type: 2
+          Pos: 0.55
           Width: 0.2
           StartTime: 34879
           HoldEndTime: 0
@@ -231,128 +231,123 @@ MonoBehaviour:
           Width: 0.2
           StartTime: 35245
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0
+        - Type: 3
+          Pos: 0.65
           Width: 0.2
           StartTime: 35611
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0
+        - Type: 3
+          Pos: 0.65
           Width: 0.2
           StartTime: 35794
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0
+        - Type: 3
+          Pos: 0.15
           Width: 0.2
           StartTime: 36343
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0
+        - Type: 3
+          Pos: 0.15
           Width: 0.2
           StartTime: 36526
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0
+        - Type: 2
+          Pos: 0.25
           Width: 0.2
           StartTime: 37075
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0
+        - Type: 2
+          Pos: 0.55
           Width: 0.2
           StartTime: 37441
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0
+        - Type: 2
+          Pos: 0.4
           Width: 0.2
           StartTime: 37807
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.7
           Width: 0.2
           StartTime: 38173
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0
+        - Type: 1
+          Pos: 0.15
           Width: 0.2
           StartTime: 38539
-          HoldEndTime: 0
+          HoldEndTime: 39271
         - Type: 0
-          Pos: 0
+          Pos: 0.7
           Width: 0.2
           StartTime: 39271
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.15
           Width: 0.2
           StartTime: 40003
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.4
           Width: 0.2
           StartTime: 40369
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.65
           Width: 0.2
           StartTime: 40735
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0
+        - Type: 4
+          Pos: 2
           Width: 0.2
           StartTime: 41101
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.75
           Width: 0.2
           StartTime: 41467
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.75
           Width: 0.2
           StartTime: 41650
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.55
           Width: 0.2
           StartTime: 42199
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
-          Width: 0.2
-          StartTime: 42199
-          HoldEndTime: 0
-        - Type: 0
-          Pos: 0
+          Pos: 0.55
           Width: 0.2
           StartTime: 42382
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.25
           Width: 0.2
           StartTime: 42931
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.2
           Width: 0.2
           StartTime: 43297
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.6
           Width: 0.2
           StartTime: 43663
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0
+        - Type: 4
+          Pos: -1
           Width: 0.2
           StartTime: 44029
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.2
           Width: 0.2
           StartTime: 44395
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.4
           Width: 0.2
           StartTime: 44578
           HoldEndTime: 0
@@ -555,4 +550,309 @@ MonoBehaviour:
           Pos: 0
           Width: 0.2
           StartTime: 67066
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 67249
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 67797
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 67980
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 68529
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 68712
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 69261
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 69627
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 70358
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 72554
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 72920
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 73651
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 74383
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 75115
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 75481
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 76213
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 80603
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 80969
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 81701
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 82250
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 82433
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 86091
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 86823
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 87189
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 87921
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 91945
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 92677
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 93043
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 93775
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 96336
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 97068
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 97799
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 98531
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 98897
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 99629
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 100361
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 102556
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 104019
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 105483
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 108410
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 108959
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 109508
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 110056
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 110605
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 110971
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 111337
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 114264
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 115728
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 117191
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 120118
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 120667
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 121216
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 121765
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 122313
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 122679
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 125972
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 128899
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 131826
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 134753
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 137680
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 140607
+          HoldEndTime: 0
+        - Type: 0
+          Pos: 0
+          Width: 0.2
+          StartTime: 143535
           HoldEndTime: 0
