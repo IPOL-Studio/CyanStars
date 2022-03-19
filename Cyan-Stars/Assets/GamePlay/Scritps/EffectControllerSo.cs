@@ -40,9 +40,9 @@ public class EffectControllerSo : MonoBehaviour
         [Range(0,1)]public float intensity;
         [Header("播放次数(仅对frame.once有效)")]
         public int frequency;
-        [Header("最大透明度(仅对frame.once和frame.breath有效)")]
+        [Header("最大透明度(仅对frame有效)")]
         [Range(0,1)]public float maxAlpha;
-        [Header("最小透明度(仅对frame.once和frame.breath有效)")]
+        [Header("最小透明度(仅对frame有效)")]
         [Range(0,1)]public float minAlpha;
     }
     [Header("边框")]
