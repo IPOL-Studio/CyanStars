@@ -1011,7 +1011,7 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: 200}
     rotation: {x: 0, y: 0, z: 0}
     particleCount: 0
-    duration: 15000
+    duration: 27679
     color: {r: 1, g: 1, b: 1, a: 1}
     intensity: 0.5
     decay: 0.1
