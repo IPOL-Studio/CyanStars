@@ -45,24 +45,24 @@ public class CameraController : MonoBehaviour//摄像头控制脚本
             switch (type)//缓动
             {
                 case SmoothFuncationType.Linear:
-                    transform.position = SmoothFuncation.Instance.LinearFunction(oldPos, newPos,timer,dtime);
-                    transform.localEulerAngles = SmoothFuncation.Instance.LinearFunction(oldRot, newRot,timer,dtime);
+                    transform.position = SmoothFuncation.LinearFunction(oldPos, newPos,timer,dtime);
+                    transform.localEulerAngles = SmoothFuncation.LinearFunction(oldRot, newRot,timer,dtime);
                     break;
                 case SmoothFuncationType.SineaseIn:
-                    transform.position = SmoothFuncation.Instance.SinFunctionEaseIn(oldPos, newPos, timer, dtime);
-                    transform.localEulerAngles = SmoothFuncation.Instance.SinFunctionEaseIn(oldRot, newRot, timer, dtime);
+                    transform.position = SmoothFuncation.SinFunctionEaseIn(oldPos, newPos, timer, dtime);
+                    transform.localEulerAngles = SmoothFuncation.SinFunctionEaseIn(oldRot, newRot, timer, dtime);
                     break;
                 case SmoothFuncationType.SineaseOut:
-                    transform.position = SmoothFuncation.Instance.SinFunctionEaseOut(oldPos, newPos, timer, dtime);
-                    transform.localEulerAngles = SmoothFuncation.Instance.SinFunctionEaseOut(oldRot, newRot, timer, dtime);
+                    transform.position = SmoothFuncation.SinFunctionEaseOut(oldPos, newPos, timer, dtime);
+                    transform.localEulerAngles = SmoothFuncation.SinFunctionEaseOut(oldRot, newRot, timer, dtime);
                     break;
                 case SmoothFuncationType.SineaseInOut:
-                    transform.position = SmoothFuncation.Instance.SinFunctionEaseInOut(oldPos, newPos, timer, dtime);
-                    transform.localEulerAngles = SmoothFuncation.Instance.SinFunctionEaseInOut(oldRot, newRot, timer, dtime);
+                    transform.position = SmoothFuncation.SinFunctionEaseInOut(oldPos, newPos, timer, dtime);
+                    transform.localEulerAngles = SmoothFuncation.SinFunctionEaseInOut(oldRot, newRot, timer, dtime);
                     break;
                 case SmoothFuncationType.BackeaseIn:
-                    transform.position = SmoothFuncation.Instance.BackEaseIn(oldPos, newPos, timer, dtime);
-                    transform.localEulerAngles = SmoothFuncation.Instance.BackEaseIn(oldRot, newRot, timer, dtime);
+                    transform.position = SmoothFuncation.BackEaseIn(oldPos, newPos, timer, dtime);
+                    transform.localEulerAngles = SmoothFuncation.BackEaseIn(oldRot, newRot, timer, dtime);
                     break;
 
             }

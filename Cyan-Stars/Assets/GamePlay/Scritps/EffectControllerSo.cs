@@ -123,7 +123,7 @@ public class EffectControllerSo : MonoBehaviour
         {
             for(float t = 0;t < 60/bpm;t += Time.deltaTime)
             {
-                color.a = SmoothFuncation.Instance.CubicFuncation(minAlpha, maxAlpha, t, 60/bpm);
+                color.a = SmoothFuncation.CubicFuncation(minAlpha, maxAlpha, t, 60/bpm);
                 frame.color = color;
                 yield return null;
             }
