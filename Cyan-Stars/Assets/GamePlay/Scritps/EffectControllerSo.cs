@@ -38,10 +38,12 @@ public class EffectControllerSo : MonoBehaviour
         public Color color;
         [Header("强度(仅对frame有效)")]
         [Range(0,1)]public float intensity;
-        [Header("衰减系数(仅对frame.once有效)")]
-        [Range(0,1)]public float decay;
         [Header("播放次数(仅对frame.once有效)")]
         public int frequency;
+        [Header("最大透明度(仅对frame有效)")]
+        [Range(0,1)]public float maxAlpha;
+        [Header("最小透明度(仅对frame有效)")]
+        [Range(0,1)]public float minAlpha;
     }
     [Header("边框")]
     public Image frame;
@@ -58,14 +60,6 @@ public class EffectControllerSo : MonoBehaviour
     void Start()
     {
         startButton.onClick.AddListener(OnBtnStartClick);
-        for(var i = 0; i < keyFrames.Count; i++)
-        {
-            if(keyFrames[i].type == EffectType.FrameBreath)
-            {
-                //提前从波谷入场
-                keyFrames[i].time = Mathf.Max(0,keyFrames[i].time -30000/bpm);
-            }
-        }
     }
 
     void OnBtnStartClick()
@@ -104,14 +98,14 @@ public class EffectControllerSo : MonoBehaviour
                     frame.color = keyFrames[index].color;
                     frame.pixelsPerUnitMultiplier = 1 - keyFrames[index].intensity;
                     StopAllCoroutines();
-                    StartCoroutine(FrameFade(keyFrames[index].decay, keyFrames[index].frequency));
+                    StartCoroutine(FrameFade(keyFrames[index].frequency, keyFrames[index].maxAlpha, keyFrames[index].minAlpha));
                 }
                 else if(keyFrames[index].type == EffectType.FrameBreath)
                 {
                     frame.color = keyFrames[index].color;
                     frame.pixelsPerUnitMultiplier = 1 - keyFrames[index].intensity;
                     StopAllCoroutines();
-                    StartCoroutine(CosFrameFade(keyFrames[index].duration));
+                    StartCoroutine(CosFrameFade(keyFrames[index].duration, keyFrames[index].maxAlpha, keyFrames[index].minAlpha));
                 }
                 
                 index++;
@@ -122,25 +116,21 @@ public class EffectControllerSo : MonoBehaviour
             isStart = false;
         }
     }
-    IEnumerator FrameFade(float decay,int frequency = 1)
+    IEnumerator FrameFade(int frequency,float maxAlpha,float minAlpha)
     {
-        //每秒透明度减小decay
         Color color = frame.color;
         for(int i = 0;i < frequency;i++)
         {
-            float alpha = 1;
-            while(alpha > 0)
+            for(float t = 0;t < 60/bpm;t += Time.deltaTime)
             {
-                alpha -= decay * 0.1f;
-                color.a = alpha;
+                color.a = SmoothFuncation.CubicFuncation(minAlpha, maxAlpha, t, 60/bpm);
                 frame.color = color;
-                yield return new WaitForSeconds(0.1f);
-            }   
-            yield return new WaitForSeconds(60/bpm);
+                yield return null;
+            }
         }
     }
     
-    IEnumerator CosFrameFade(float dTime)
+    IEnumerator CosFrameFade(float dTime,float maxAlpha = 1,float minAlpha = 0)
     {
         //使用cos函数控制透明度
         Color color = frame.color;
@@ -148,7 +138,7 @@ public class EffectControllerSo : MonoBehaviour
         float timePoint = timer;
         while(timer - timePoint < dTime)
         {
-            alpha = 0.5f * Mathf.Cos(bpm * 2 * Mathf.PI * (timer - timePoint - 30000/bpm) / 60000) + 0.5f;
+            alpha = (0.5f * Mathf.Cos(bpm * 2 * Mathf.PI * (timer - timePoint - 30000/bpm) / 60000) + 0.5f) * (maxAlpha - minAlpha) + minAlpha;
             color.a = alpha;
             frame.color = color;
             yield return null;

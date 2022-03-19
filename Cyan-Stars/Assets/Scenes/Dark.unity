@@ -995,7 +995,7 @@ MonoBehaviour:
   bpm: 20.5
   keyFrames:
   - type: 0
-    time: 7000
+    time: 5965
     index: 0
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
@@ -1003,8 +1003,9 @@ MonoBehaviour:
     duration: 1000000
     color: {r: 1, g: 1, b: 1, a: 1}
     intensity: 0.5
-    decay: 0.1
     frequency: 80
+    maxAlpha: 1
+    minAlpha: 0
   - type: 2
     time: 95000
     index: 11
@@ -1014,8 +1015,9 @@ MonoBehaviour:
     duration: 27679
     color: {r: 1, g: 1, b: 1, a: 1}
     intensity: 0.5
-    decay: 0.1
     frequency: 80
+    maxAlpha: 0
+    minAlpha: 0
 --- !u!4 &2011562973
 Transform:
   m_ObjectHideFlags: 0
