@@ -994,7 +994,7 @@ MonoBehaviour:
   frame: {fileID: 29562213}
   bpm: 20.5
   keyFrames:
-  - type: 0
+  - type: 1
     time: 7000
     index: 0
     position: {x: 0, y: 0, z: 0}
@@ -1005,6 +1005,8 @@ MonoBehaviour:
     intensity: 0.5
     decay: 0.1
     frequency: 80
+    maxAlpha: 1
+    minAlpha: 0
   - type: 2
     time: 95000
     index: 11
@@ -1016,6 +1018,8 @@ MonoBehaviour:
     intensity: 0.5
     decay: 0.1
     frequency: 80
+    maxAlpha: 0
+    minAlpha: 0
 --- !u!4 &2011562973
 Transform:
   m_ObjectHideFlags: 0
