@@ -33,7 +33,12 @@ public partial class MusicTimeline
     /// 图层列表
     /// </summary>
     private List<Layer> layers = new List<Layer>();
-    
+
+    /// <summary>
+    /// 轨道列表
+    /// </summary>
+    private List<Track> tracks = new List<Track>();
+
     public MusicTimeline(MusicTimelineData data)
     {
         Data = data;
@@ -53,6 +58,14 @@ public partial class MusicTimeline
         }
     }
 
+    /// <summary>
+    /// 添加轨道
+    /// </summary>
+    public void AddTrack(Track track)
+    {
+        tracks.Add(track);
+    }
+
     public void OnUpdate(float deltaTime)
     {
         Timer += deltaTime;
@@ -70,6 +83,11 @@ public partial class MusicTimeline
         for (int i = 0; i < layers.Count; i++)
         {
             layers[i].OnUpdate(Timer,deltaTime,timelineSpeedRate);
+        }
+
+        for (int i = 0; i < tracks.Count; i++)
+        {
+            tracks[i].OnUpdate(Timer,deltaTime);
         }
     }
     
