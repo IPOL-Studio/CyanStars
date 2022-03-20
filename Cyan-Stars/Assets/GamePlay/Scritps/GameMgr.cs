@@ -98,6 +98,7 @@ public class GameMgr : MonoBehaviour
     /// </summary>
     private void CheckKeyboardInput()
     {
+        if(GameManager.Instance.isAutoMode)return;
         for (int i = 0; i < inputMapData.Items.Count; i++)
         {
             InputMapData.Item item = inputMapData.Items[i];

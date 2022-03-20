@@ -17,6 +17,16 @@ public class BreakNote : BaseNote
     public override void OnUpdate(float deltaTime,float noteSpeedRate)
     {
         base.OnUpdate(deltaTime,noteSpeedRate);
+
+        if(EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && GameManager.Instance.isAutoMode)
+        {
+            viewObject.CreateEffectObj(data.Width);
+            DestroySelf(false);
+            GameManager.Instance.maxScore +=2;
+            GameManager.Instance.RefreshData(1,1*2,EvaluateType.Exact,0);
+            return;
+        }
+
         if (LogicTimer < EvaluateHelper.CheckInputEndTime)
         {
             //没接住 miss
@@ -24,7 +34,7 @@ public class BreakNote : BaseNote
             //Debug.LogError($"Break音符miss：{data}");
             LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));
             GameManager.Instance.maxScore += 2;
-            GameManager.Instance.RefreshData(-1,-1,EvaluateType.Miss,float.MaxValue);
+            GameManager.Instance.RefreshData(-1,-1,EvaluateType.Exact,float.MaxValue);
         }
     }
 
