@@ -9,6 +9,10 @@ public class KeyViewController : MonoBehaviour//view层的Key控制器
     public Dictionary<KeyCode,GameObject> keyList = new Dictionary<KeyCode, GameObject>();//key列表
     public void KeyDown(InputMapData.Item item)
     {
+        if(GameManager.Instance.isAutoMode)
+        {
+            return;
+        }
         if(item.key == KeyCode.Space)return;
         if (keyList.TryGetValue(item.key, out var key))
         {
@@ -27,6 +31,10 @@ public class KeyViewController : MonoBehaviour//view层的Key控制器
     }
     public void KeyUp(InputMapData.Item item)
     {
+        if(GameManager.Instance.isAutoMode)
+        {
+            return;
+        }
         if (keyList.TryGetValue(item.key, out var key))
         {
             key.SetActive(false);

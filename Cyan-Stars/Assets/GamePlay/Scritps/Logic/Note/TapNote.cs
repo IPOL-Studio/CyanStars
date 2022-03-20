@@ -7,6 +7,14 @@ public class TapNote : BaseNote
     public override void OnUpdate(float deltaTime,float noteSpeedRate)
     {
         base.OnUpdate(deltaTime,noteSpeedRate);
+        if(EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && GameManager.Instance.isAutoMode)
+        {
+            viewObject.CreateEffectObj(data.Width);
+            DestroySelf(false);
+            GameManager.Instance.maxScore ++;
+            GameManager.Instance.RefreshData(1,1,EvaluateType.Exact,0);
+            return;
+        }
 
         if (LogicTimer < EvaluateHelper.CheckInputEndTime)
         {

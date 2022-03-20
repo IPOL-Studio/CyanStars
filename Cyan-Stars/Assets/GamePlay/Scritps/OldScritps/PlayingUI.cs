@@ -18,11 +18,22 @@ public class PlayingUI : MonoBehaviour
     {
         if(comboText)comboText.text = "COMBO:" + combo;//更新文本
         if(scoreText)scoreText.text = "SCORE:" + score;//更新文本
-        if(gradeText)gradeText.text = grade;//更新文本
+        if(gradeText)
+        {
+            if(GameManager.Instance.isAutoMode)
+            {
+                gradeText.text = "AUTO";
+                
+            }
+            else
+            {
+                gradeText.text = grade;
+            }
+        }
         if(gradeText)
         {
             Color color = Color.white;
-            if(grade == "Exact")color = Color.green;
+            if(grade == "Exact" || grade == "Auto")color = Color.green;
             if(grade == "Great")color = Color.cyan;
             if(grade == "Right" || grade =="Out")color = Color.yellow;
             if(grade == "Bad")color = Color.red;
