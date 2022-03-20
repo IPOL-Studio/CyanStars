@@ -718,6 +718,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 577790304}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: LrcAsset
+      value: 
+      objectReference: {fileID: 4900000, guid: 600bb15343d401a46ba85b3b1a765e58, type: 3}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: viewRoot
       value: 
       objectReference: {fileID: 1511421167741737513}
