@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
-
+using CatLrcParser;
 /// <summary>
 /// 游戏管理器
 /// </summary>
@@ -23,6 +23,8 @@ public class GameMgr : MonoBehaviour
     
     public Button BtnStart;
     //public Text TxtTimer;
+    
+    public TextAsset LrcAsset;
     
     private InputMapData inputMapData;
     private MusicTimeline timeline;
@@ -69,6 +71,19 @@ public class GameMgr : MonoBehaviour
         ViewHelper.CalViewTime(data);
         
         timeline = new MusicTimeline(data);
+        
+        //创建歌词轨道
+        Lyric lrc = LrcParser.Parse(LrcAsset.text);
+        MusicTimeline.Track lrcTrack = new MusicTimeline.Track(MusicTimeline.TrackType.Lrc);
+        for (int i = 0; i < lrc.TimeTagList.Count; i++)
+        {
+            LrcTimeTag timeTag = lrc.TimeTagList[i];
+            LrcNode lrcNode = new LrcNode((float) timeTag.Timestamp.TotalSeconds, timeTag.LyricText);
+            lrcTrack.AddNode(lrcNode);
+        }
+        timeline.AddTrack(lrcTrack);
+        
+        
         Debug.Log("音乐时间轴创建完毕");
     }
     

@@ -38,11 +38,13 @@ public class GameManager : MonoBehaviour
     public int rightNum = 0;
     public int badNum = 0;
     public int missNum = 0;
-
+    [Header("8.当前歌词")] 
+    public string curLrcText;
+    
     [Header("-----游戏模式-----")]
     [Header("AutoMode")]
     public bool isAutoMode = false;//是否为自动模式
-
+    
     public void RefreshPlayingUI(int combo,float score,string grade)
     {
         foreach(var item in playingUIList)
