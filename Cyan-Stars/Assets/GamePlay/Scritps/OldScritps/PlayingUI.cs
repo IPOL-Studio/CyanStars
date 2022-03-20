@@ -11,6 +11,7 @@ public class PlayingUI : MonoBehaviour
     public TMPro.TextMeshProUGUI currentDeviationText;//currentDeviation文本组件
     public TMPro.TextMeshProUGUI accuracyText;//accuracy文本组件
     public TMPro.TextMeshProUGUI scoreRatioText;//scoreRatio文本组件
+    public TMPro.TextMeshProUGUI LrcText;  //歌词文本组件
     public bool showDeviation;//是否显示杂率
     public Image img;
     public void Refresh(int combo,float score,string grade,float currentDeviation)
@@ -101,6 +102,11 @@ public class PlayingUI : MonoBehaviour
                     scoreRatioText.color = Color.white;
                 }
             }
+        }
+
+        if (LrcText)
+        {
+            LrcText.text = GameManager.Instance.curLrcText;
         }
     }
 }
