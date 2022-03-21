@@ -20,12 +20,8 @@ public class EffectObj : MonoBehaviour
     }
     IEnumerator DestroySelf()
     {
-        yield return new WaitForSeconds((destroyTime - 3000f)/1000);
-        for(int i = 200;i > 0;i --)
-        {
-            visualEffect.SetFloat("Count",(i/2f)/100f * visualEffectStartCount);
-            yield return null;
-        }
-        Destroy(gameObject,1);
+        yield return new WaitForSeconds(destroyTime/1000);
+        visualEffect.SendEvent("Stop");
+        Destroy(gameObject,10);
     }
 }
