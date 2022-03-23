@@ -255,7 +255,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 552719605}
-  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: -0.00000012665987, z: 0.00000032699785, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 15, z: -3.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -630,7 +630,7 @@ MonoBehaviour:
     smoothType: 0
   - time: 29439
     position: {x: 0, y: -2, z: 0}
-    rotation: {x: 42, y: 0, z: 0}
+    rotation: {x: 44, y: 0, z: 0}
     smoothType: 3
   - time: 29939
     position: {x: 0, y: 0, z: 0}
@@ -642,12 +642,24 @@ MonoBehaviour:
     smoothType: 0
   - time: 35295
     position: {x: 0, y: -1, z: 0}
-    rotation: {x: 42, y: 0, z: 0}
+    rotation: {x: 44, y: 0, z: 0}
     smoothType: 0
   - time: 35795
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 45, y: 0, z: 0}
     smoothType: 0
+  - time: 41051
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 45, y: 0, z: 0}
+    smoothType: 0
+  - time: 41101
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 45, y: 0, z: 2}
+    smoothType: 0
+  - time: 41651
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 45, y: 0, z: 0}
+    smoothType: 2
 --- !u!4 &970795780
 Transform:
   m_ObjectHideFlags: 0
@@ -1251,7 +1263,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4509767256361620985, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000015259
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6135646744723798344, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -1507,7 +1519,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6520518579903130260, guid: 844950010a59dd14280f12ee6b3b64fe, type: 3}
       propertyPath: isAutoMode
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6520518579903130260, guid: 844950010a59dd14280f12ee6b3b64fe, type: 3}
       propertyPath: playingUIList.Array.data[0]

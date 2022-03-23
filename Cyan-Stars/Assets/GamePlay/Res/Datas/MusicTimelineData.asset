@@ -457,175 +457,175 @@ MonoBehaviour:
           StartTime: 52812
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.7
           Width: 0.2
           StartTime: 55357
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.7
           Width: 0.2
           StartTime: 55540
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.2
           Width: 0.2
           StartTime: 56089
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.2
           Width: 0.2
           StartTime: 56272
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.55
           Width: 0.2
           StartTime: 56821
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.55
           Width: 0.2
           StartTime: 57004
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.3
           Width: 0.2
           StartTime: 57553
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.5
           Width: 0.2
           StartTime: 57919
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.4
           Width: 0.2
           StartTime: 58650
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.1
           Width: 0.2
           StartTime: 61211
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.1
           Width: 0.2
           StartTime: 61394
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.6
           Width: 0.2
           StartTime: 61943
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.6
           Width: 0.2
           StartTime: 62126
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.3
           Width: 0.2
           StartTime: 62675
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.5
           Width: 0.2
           StartTime: 62858
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.5
           Width: 0.2
           StartTime: 63407
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.35
           Width: 0.2
           StartTime: 63773
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.45
           Width: 0.2
           StartTime: 64504
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.6
           Width: 0.2
           StartTime: 67066
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.5
           Width: 0.2
           StartTime: 67249
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.2
           Width: 0.2
           StartTime: 67797
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.3
           Width: 0.2
           StartTime: 67980
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.55
           Width: 0.2
           StartTime: 68529
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.45
           Width: 0.2
           StartTime: 68712
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.35
           Width: 0.2
           StartTime: 69261
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.55
           Width: 0.2
           StartTime: 69627
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.4
           Width: 0.2
           StartTime: 70358
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.7
           Width: 0.2
           StartTime: 72554
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.1
           Width: 0.2
           StartTime: 72920
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.6
           Width: 0.2
           StartTime: 73651
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.6
           Width: 0.2
           StartTime: 74383
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.3
           Width: 0.2
           StartTime: 75115
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.3
           Width: 0.2
           StartTime: 75481
           HoldEndTime: 0
-        - Type: 0
-          Pos: 0
+        - Type: 1
+          Pos: 0.5
           Width: 0.2
           StartTime: 76213
-          HoldEndTime: 0
+          HoldEndTime: 80603
         - Type: 0
           Pos: 0
           Width: 0.2
