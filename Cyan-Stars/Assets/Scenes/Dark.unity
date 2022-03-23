@@ -1016,7 +1016,7 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: 200}
     rotation: {x: 0, y: 0, z: 0}
     particleCount: 0
-    duration: 27679
+    duration: 22679
     color: {r: 1, g: 1, b: 1, a: 1}
     intensity: 0.5
     frequency: 80
@@ -1223,35 +1223,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4509767256361620985, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.4322681
       objectReference: {fileID: 0}
     - target: {fileID: 4509767256361620985, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 0.22769234
       objectReference: {fileID: 0}
     - target: {fileID: 4509767256361620985, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.04685522
       objectReference: {fileID: 0}
     - target: {fileID: 4509767256361620985, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 0.049000002
       objectReference: {fileID: 0}
     - target: {fileID: 4509767256361620985, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 203.7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4509767256361620985, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 60.7192
+      value: 0.000011444
       objectReference: {fileID: 0}
     - target: {fileID: 4509767256361620985, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 105.85
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4509767256361620985, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 34.854385
+      value: -0.000015259
       objectReference: {fileID: 0}
     - target: {fileID: 6135646744723798344, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -1507,7 +1507,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6520518579903130260, guid: 844950010a59dd14280f12ee6b3b64fe, type: 3}
       propertyPath: isAutoMode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6520518579903130260, guid: 844950010a59dd14280f12ee6b3b64fe, type: 3}
       propertyPath: playingUIList.Array.data[0]

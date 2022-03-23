@@ -417,42 +417,42 @@ MonoBehaviour:
           StartTime: 49519
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.6
           Width: 0.2
           StartTime: 49884
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.2
           Width: 0.2
           StartTime: 50250
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.2
           Width: 0.2
           StartTime: 50433
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.5
           Width: 0.2
           StartTime: 50982
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.5
           Width: 0.2
           StartTime: 51165
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.2
           Width: 0.2
           StartTime: 52080
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.4
           Width: 0.2
           StartTime: 52446
           HoldEndTime: 0
         - Type: 0
-          Pos: 0
+          Pos: 0.6
           Width: 0.2
           StartTime: 52812
           HoldEndTime: 0
