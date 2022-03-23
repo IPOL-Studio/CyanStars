@@ -47,7 +47,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   willDestroy: 0
-  destroyTime: 0.5
+  destroyTime: 3
+  particleSystemList:
+  - {fileID: 479875855941464343}
+  - {fileID: 2246989849274054124}
+  - {fileID: 479875854597958619}
 --- !u!1 &479875854597958614
 GameObject:
   m_ObjectHideFlags: 0
@@ -9836,5 +9840,10 @@ PrefabInstance:
 --- !u!4 &6025435850418283804 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1450875951254233640, guid: acde3b383e99b5d47aa55674511a18c0, type: 3}
+  m_PrefabInstance: {fileID: 5169057079087826740}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &2246989849274054124 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 6382382812059464408, guid: acde3b383e99b5d47aa55674511a18c0, type: 3}
   m_PrefabInstance: {fileID: 5169057079087826740}
   m_PrefabAsset: {fileID: 0}

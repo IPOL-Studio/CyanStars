@@ -34,7 +34,7 @@ public class BreakNote : BaseNote
             //Debug.LogError($"Break音符miss：{data}");
             LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));
             GameManager.Instance.maxScore += 2;
-            GameManager.Instance.RefreshData(-1,-1,EvaluateType.Exact,float.MaxValue);
+            GameManager.Instance.RefreshData(-1,-1,EvaluateType.Miss,float.MaxValue);
         }
     }
 
