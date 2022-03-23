@@ -6,6 +6,8 @@ public class NoteClickEffect : MonoBehaviour
 {
     public bool willDestroy;
     public float destroyTime;
+
+    public List<ParticleSystem> particleSystemList;
     void Start()
     {
         //Debug.Log(transform.position);
