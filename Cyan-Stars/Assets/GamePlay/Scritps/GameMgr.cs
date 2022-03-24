@@ -50,6 +50,23 @@ public class GameMgr : MonoBehaviour
         Instance = this;
         inputMapData = InputMapSO.InputMapData;
         pressedKeySet = new HashSet<KeyCode>();
+        GameManager.Instance.fullScore = GetFullScore();
+    }
+
+    private int GetFullScore()
+    {
+        int fullScore = 0;
+        foreach(var layer in TimelineSo.musicTimelineData.LayerDatas)
+        {
+            foreach(var clip in layer.ClipDatas)
+            {
+                foreach(var note in clip.NoteDatas)
+                {
+                    fullScore += note.GetFullScore();
+                }
+            }
+        }
+        return fullScore;
     }
 
     public float TimeSchedule()
