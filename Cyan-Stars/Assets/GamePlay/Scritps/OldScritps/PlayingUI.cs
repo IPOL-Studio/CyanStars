@@ -7,6 +7,7 @@ public class PlayingUI : MonoBehaviour
 {
     public TMPro.TextMeshProUGUI comboText;//combo文本组件
     public TMPro.TextMeshProUGUI scoreText;//score文本组件
+    public TMPro.TextMeshProUGUI visibleScoreText;//显示的score文本组件
     public TMPro.TextMeshProUGUI gradeText;//grade文本组件
     public TMPro.TextMeshProUGUI currentDeviationText;//currentDeviation文本组件
     public TMPro.TextMeshProUGUI accuracyText;//accuracy文本组件
@@ -16,8 +17,9 @@ public class PlayingUI : MonoBehaviour
     public Image img;
     public void Refresh(int combo,float score,string grade,float currentDeviation)
     {
-        if(comboText)comboText.text = "COMBO:" + combo;//更新文本
-        if(scoreText)scoreText.text = "SCORE:" + score;//更新文本
+        if(comboText)comboText.text = combo.ToString();//更新文本
+        if(scoreText)scoreText.text = "SCORE(DEBUG):" + score;//更新文本
+        if(visibleScoreText)visibleScoreText.text = (score/GameManager.Instance.fullScore * 100000).ToString();//更新文本
         if(gradeText)
         {
             if(GameManager.Instance.isAutoMode)
@@ -64,9 +66,16 @@ public class PlayingUI : MonoBehaviour
         {
             if(currentDeviationText)
             {
-                currentDeviationText.text = "误差:" + string.Format("{0:F3}",GameManager.Instance.currentDeviation*1000) + "ms";
-                if(GameManager.Instance.currentDeviation > 0)currentDeviationText.color = Color.red;
-                if(GameManager.Instance.currentDeviation < 0)currentDeviationText.color = Color.cyan;
+                if(GameManager.Instance.currentDeviation > 0)
+                {
+                    currentDeviationText.text = "误差:+" + string.Format("{0:F3}",GameManager.Instance.currentDeviation*1000) + "ms";
+                    currentDeviationText.color = Color.red;
+                }
+                if(GameManager.Instance.currentDeviation < 0)
+                {
+                    currentDeviationText.text = "误差:" + string.Format("{0:F3}",GameManager.Instance.currentDeviation*1000) + "ms";
+                    currentDeviationText.color = Color.cyan;
+                }
             }
             if(accuracyText)
             {
@@ -97,7 +106,7 @@ public class PlayingUI : MonoBehaviour
             {
                 scoreRatio = (float)GameManager.Instance.score / (float)GameManager.Instance.maxScore;
             }
-            scoreRatioText.text = "得分率:" + string.Format("{0:F}",scoreRatio*100) + "%";
+            scoreRatioText.text = string.Format("{0:F}",scoreRatio*100) + "%";
             if(GameManager.Instance.greatNum + GameManager.Instance.rightNum + GameManager.Instance.badNum + GameManager.Instance.missNum == 0)
             {
                 scoreRatioText.color = Color.yellow;
@@ -121,4 +130,3 @@ public class PlayingUI : MonoBehaviour
         }
     }
 }
-//This code is writed by Ybr.
