@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
     public int missNum = 0;
     [Header("8.当前歌词")] 
     public string curLrcText;
-    [Header("10.全谱总分")]
+    [Header("9.全谱总分")]
     public float fullScore = 0;
     
     [Header("-----游戏模式-----")]
