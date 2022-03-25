@@ -26,11 +26,11 @@ public class NoteData
 
     /// <summary>
     /// 音符宽度
-    /// 用于判定能被哪些input接住，范围[0-1],1表示铺满中间
-    /// Break音符无视此值
+    /// 该值不变，恒为0.2
     /// </summary>
-    [Range(0,1)]
-    public float Width;
+    //[Range(0,1)]
+    [Header("不要改变这个值，这个值不变，恒为0.2")]
+    public float Width= 0.2f;
 
     /// <summary>
     /// 判定开始时间（毫秒）
@@ -42,6 +42,18 @@ public class NoteData
     /// </summary>
     public int HoldEndTime;
     
+    public int GetFullScore()
+    {
+        if (Type == NoteType.Hold || Type == NoteType.Break || Type == NoteType.Click)
+        {
+            return 2;
+        }
+        else 
+        {
+            return 1;
+        }
+    }
+
     
     public override string ToString()
     {

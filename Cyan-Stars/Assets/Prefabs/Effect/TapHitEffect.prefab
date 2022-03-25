@@ -46,7 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   willDestroy: 1
-  destroyTime: 5
+  destroyTime: 1
+  particleSystemList: []
 --- !u!1 &479875854597958614
 GameObject:
   m_ObjectHideFlags: 0
