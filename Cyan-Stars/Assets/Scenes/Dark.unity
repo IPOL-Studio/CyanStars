@@ -1459,7 +1459,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6520518579903130260, guid: 844950010a59dd14280f12ee6b3b64fe, type: 3}
       propertyPath: isAutoMode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6520518579903130260, guid: 844950010a59dd14280f12ee6b3b64fe, type: 3}
       propertyPath: playingUIList.Array.data[0]
