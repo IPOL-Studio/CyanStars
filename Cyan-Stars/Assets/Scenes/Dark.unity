@@ -5972,6 +5972,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 411770351898236867, guid: b02a5c2882d82a14487db388df829895, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1383141806232530342, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_Name
       value: PlayingUI
@@ -6062,7 +6066,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3020456833742916908, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0.767
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3020456833742916908, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchorMin.x
@@ -6074,7 +6078,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3020456833742916908, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 76
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3020456833742916908, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -6082,7 +6086,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3020456833742916908, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 38
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5808202062657416620, guid: b02a5c2882d82a14487db388df829895, type: 3}
       propertyPath: m_AnchorMax.x
