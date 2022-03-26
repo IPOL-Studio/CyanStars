@@ -1158,7 +1158,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!135 &1605124339
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1331,9 +1331,9 @@ MonoBehaviour:
     maxAlpha: 0
     minAlpha: 0
   - type: 2
-    time: 100361
+    time: 98861
     index: 0
-    position: {x: 0, y: 0, z: 20}
+    position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     particleCount: 0
     duration: 500
@@ -1685,6 +1685,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6520518579903130260, guid: 844950010a59dd14280f12ee6b3b64fe, type: 3}
+      propertyPath: isAutoMode
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6520518579903130260, guid: 844950010a59dd14280f12ee6b3b64fe, type: 3}
       propertyPath: playingUIList.Array.data[0]
       value: 
