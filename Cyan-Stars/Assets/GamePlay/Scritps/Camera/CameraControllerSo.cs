@@ -26,6 +26,14 @@ public class CameraControllerSo : MonoBehaviour
         public SmoothFuncationType smoothType;
     }
 
+    class Comparer : IComparer<KeyFrame>
+    {
+        public int Compare(KeyFrame x, KeyFrame y)
+        {
+            return x.time.CompareTo(y.time);
+        }
+    }
+
     [Header("关键帧")]
     public List<KeyFrame> keyFrames;
     private float timer;
@@ -36,6 +44,7 @@ public class CameraControllerSo : MonoBehaviour
     {
         cameraController.defaultPosition = defaultPosition;
         startButton.onClick.AddListener(OnBtnStartClick);
+        keyFrames.Sort(new Comparer());
     }
     void OnBtnStartClick()
     {

@@ -1351,112 +1351,28 @@ MonoBehaviour:
   frame: {fileID: 29562213}
   bpm: 20.5
   keyFrames:
-  - type: 0
-    time: 5965
-    index: 0
-    position: {x: 0, y: 0, z: 0}
+  - type: 2
+    time: 5000
+    index: 1
+    position: {x: 0, y: 1, z: 5}
     rotation: {x: 0, y: 0, z: 0}
     particleCount: 0
-    duration: 1000000
-    color: {r: 1, g: 1, b: 1, a: 1}
-    intensity: 0.5
-    frequency: 80
-    maxAlpha: 1
-    minAlpha: 0
-  - type: 2
-    time: 76213
-    index: 2
-    position: {x: 15, y: 0, z: 10}
-    rotation: {x: 0, y: 0, z: 0}
-    particleCount: 1
-    duration: 45000
-    color: {r: 1, g: 1, b: 1, a: 1}
-    intensity: 0.5
-    frequency: 80
+    duration: 0
+    color: {r: 0, g: 0, b: 0, a: 0}
+    intensity: 0
+    frequency: 0
     maxAlpha: 0
     minAlpha: 0
   - type: 2
-    time: 76213
+    time: 1000
     index: 2
-    position: {x: -15, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-    particleCount: 1
-    duration: 45000
-    color: {r: 1, g: 1, b: 1, a: 1}
-    intensity: 0.5
-    frequency: 80
-    maxAlpha: 0
-    minAlpha: 0
-  - type: 2
-    time: 76213
-    index: 2
-    position: {x: 15, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-    particleCount: 1
-    duration: 45000
-    color: {r: 1, g: 1, b: 1, a: 1}
-    intensity: 0.5
-    frequency: 80
-    maxAlpha: 0
-    minAlpha: 0
-  - type: 2
-    time: 76213
-    index: 2
-    position: {x: -15, y: 0, z: 10}
-    rotation: {x: 0, y: 0, z: 0}
-    particleCount: 1
-    duration: 45000
-    color: {r: 1, g: 1, b: 1, a: 1}
-    intensity: 0.5
-    frequency: 80
-    maxAlpha: 0
-    minAlpha: 0
-  - type: 2
-    time: 76213
-    index: 2
-    position: {x: 15, y: 0, z: 20}
-    rotation: {x: 0, y: 0, z: 0}
-    particleCount: 1
-    duration: 45000
-    color: {r: 1, g: 1, b: 1, a: 1}
-    intensity: 0.5
-    frequency: 80
-    maxAlpha: 0
-    minAlpha: 0
-  - type: 2
-    time: 76213
-    index: 2
-    position: {x: -15, y: 0, z: 20}
-    rotation: {x: 0, y: 0, z: 0}
-    particleCount: 1
-    duration: 45000
-    color: {r: 1, g: 1, b: 1, a: 1}
-    intensity: 0.5
-    frequency: 80
-    maxAlpha: 0
-    minAlpha: 0
-  - type: 2
-    time: 95000
-    index: 11
-    position: {x: 0, y: 0, z: 200}
+    position: {x: 0, y: 1, z: 5}
     rotation: {x: 0, y: 0, z: 0}
     particleCount: 0
-    duration: 22679
-    color: {r: 1, g: 1, b: 1, a: 1}
-    intensity: 0.5
-    frequency: 80
-    maxAlpha: 0
-    minAlpha: 0
-  - type: 2
-    time: 98861
-    index: 0
-    position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-    particleCount: 0
-    duration: 500
-    color: {r: 1, g: 1, b: 1, a: 1}
-    intensity: 0.5
-    frequency: 80
+    duration: 0
+    color: {r: 0, g: 0, b: 0, a: 0}
+    intensity: 0
+    frequency: 0
     maxAlpha: 0
     minAlpha: 0
 --- !u!4 &2011562973
