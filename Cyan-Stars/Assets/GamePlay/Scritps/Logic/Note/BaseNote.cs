@@ -108,6 +108,5 @@ public abstract class BaseNote
         viewObject.DestroySelf(autoMove);
         viewObject = null;
     }
-    
 
 }

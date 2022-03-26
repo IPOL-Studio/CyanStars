@@ -22,7 +22,7 @@ public class GameMgr : MonoBehaviour
     public GameObject BreakPrefab;
     
     public Button BtnStart;
-    //public Text TxtTimer;
+    public Text TxtTimer;
     
     public TextAsset LrcAsset;
     
@@ -32,6 +32,10 @@ public class GameMgr : MonoBehaviour
     public KeyViewController keyViewController;
 
     private HashSet<KeyCode> pressedKeySet;
+
+
+    private float deltaTime;
+    private float lastTime = 0;
 
     public float TimelineTime
     {
@@ -106,8 +110,11 @@ public class GameMgr : MonoBehaviour
     
     private void Update()
     {
+        deltaTime = MusicController.Instance.music.time - lastTime;
+        lastTime = MusicController.Instance.music.time;
         CheckKeyboardInput();
-        timeline?.OnUpdate(Time.deltaTime);
+        timeline?.OnUpdate(deltaTime);
+        RefreshTimer(timeline.Timer);
     }
     
     /// <summary>
@@ -148,12 +155,12 @@ public class GameMgr : MonoBehaviour
     {
         timeline?.OnInput(inputType,item);
     }
-    /*
+    
     public void RefreshTimer(float time)
     {
         TxtTimer.text = time.ToString("0.00");
     }
-    */
+    
 
     public void TimelineEnd()
     {

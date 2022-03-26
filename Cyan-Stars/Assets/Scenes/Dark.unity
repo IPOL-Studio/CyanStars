@@ -517,6 +517,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   music: {fileID: 552719611}
   btnStart: {fileID: 577790304}
+  txtTimer: {fileID: 0}
 --- !u!114 &577790304 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 577790304, guid: b02a5c2882d82a14487db388df829895, type: 3}
@@ -1804,7 +1805,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6520518579903130260, guid: 844950010a59dd14280f12ee6b3b64fe, type: 3}
       propertyPath: isAutoMode
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6520518579903130260, guid: 844950010a59dd14280f12ee6b3b64fe, type: 3}
       propertyPath: playingUIList.Array.data[0]
