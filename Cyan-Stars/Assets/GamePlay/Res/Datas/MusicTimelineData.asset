@@ -19,7 +19,7 @@ MonoBehaviour:
     LayerDatas:
     - ClipDatas:
       - StartTime: 0
-        SpeedRate: 20
+        SpeedRate: 50
         NoteDatas:
         - Type: 1
           Pos: 0.6
