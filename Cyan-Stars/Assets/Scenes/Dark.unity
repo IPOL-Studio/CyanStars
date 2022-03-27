@@ -921,11 +921,11 @@ MonoBehaviour:
     rotation: {x: 45, y: 0, z: 0}
     smoothType: 0
   - time: 100000
-    position: {x: 0, y: -3, z: 3.5}
+    position: {x: 0, y: -5, z: 0}
     rotation: {x: 30, y: 0, z: 0}
     smoothType: 3
   - time: 120118
-    position: {x: 0, y: -3, z: 3.5}
+    position: {x: 0, y: -5, z: 0}
     rotation: {x: 30, y: 0, z: 0}
     smoothType: 3
   - time: 125118
@@ -1254,7 +1254,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1605124338}
   m_LocalRotation: {x: 0.2588191, y: 0, z: 0, w: 0.9659258}
-  m_LocalPosition: {x: 0, y: 10, z: 0}
+  m_LocalPosition: {x: 0, y: 10, z: -2.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 789298578}
