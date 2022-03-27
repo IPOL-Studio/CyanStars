@@ -19,7 +19,7 @@ public class PlayingUI : MonoBehaviour
     {
         if(comboText)comboText.text = combo.ToString();//更新文本
         if(scoreText)scoreText.text = "SCORE(DEBUG):" + score;//更新文本
-        if(visibleScoreText)visibleScoreText.text = (score/GameManager.Instance.fullScore * 100000).ToString();//更新文本
+        if(visibleScoreText)visibleScoreText.text = ((int)(score/GameManager.Instance.fullScore * 100000)).ToString().PadLeft(6,'0');//更新文本
         if(gradeText)
         {
             if(GameManager.Instance.isAutoMode)

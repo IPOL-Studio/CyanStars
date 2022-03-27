@@ -17,7 +17,7 @@ public static class EvaluateHelper
     /// <summary>
     /// Drag音符的判定时间范围
     /// </summary>
-    public const float DragTimeRange = 0.03f;
+    public const float DragTimeRange = 0.1f;
 
     /// <summary>
     /// Click音符的判定时间范围

@@ -517,6 +517,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   music: {fileID: 552719611}
   btnStart: {fileID: 577790304}
+  txtTimer: {fileID: 0}
 --- !u!114 &577790304 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 577790304, guid: b02a5c2882d82a14487db388df829895, type: 3}

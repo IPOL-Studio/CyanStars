@@ -36,7 +36,7 @@ public class TapNote : BaseNote
             viewObject.CreateEffectObj(data.Width);
             DestroySelf(false);
             EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);
-            //Debug.LogError($"Tap音符命中,评价:{evaluateType},{data}");
+            //Debug.LogError($"Tap音符命中,评价:{evaluateType},{data}");s
             LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, evaluateType));
             GameManager.Instance.maxScore ++;
             switch (evaluateType)
