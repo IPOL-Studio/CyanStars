@@ -88,7 +88,6 @@ public struct HoldNoteJudgeLogArgs : INoteJudgeLogArgs
     
     public string GetJudgeInfo()
     {
-        var totalTime = noteData.HoldEndTime - noteData.StartTime;
         return $"Hold尾判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}, 结束时间{noteData.HoldEndTime}, 按住时间{holdTime}, 按住比例{holdRatio}";
     }
 }
