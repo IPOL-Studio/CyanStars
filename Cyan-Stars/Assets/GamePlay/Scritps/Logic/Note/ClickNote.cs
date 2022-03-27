@@ -29,7 +29,7 @@ public class ClickNote : BaseNote
             //没接住 miss
             DestroySelf();
             //Debug.LogError($"Click音符miss：{data}");
-            LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, EvaluateType.Miss));
+            LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, EvaluateType.Miss, 0));
             GameManager.Instance.maxScore += 2;
             GameManager.Instance.RefreshData(-1,-1,EvaluateType.Miss,float.MaxValue);
             return;
@@ -55,7 +55,6 @@ public class ClickNote : BaseNote
                 GameManager.Instance.RefreshData(0,1,evaluateType,LogicTimer);
             else
                 GameManager.Instance.RefreshData(0,0.5f,evaluateType,LogicTimer);
-            return;
         }
     }
     public override void OnInput(InputType inputType)
@@ -80,18 +79,16 @@ public class ClickNote : BaseNote
                         else if(et == EvaluateType.Right)
                             GameManager.Instance.RefreshData(1,0.5f,et,LogicTimer);
                         //Debug.LogError($"Click音符头判命中：{data}");
-                        LogHelper.NoteLogger.Log(new ClickNoteHeadJudgeLogArgs(data, et, LogicTimer));
+                        LogHelper.NoteLogger.Log(new ClickNoteHeadJudgeLogArgs(data, et));
                     }
                     else
                     {
                         //头判失败直接销毁
                         DestroySelf(false);
                         //Debug.LogError($"Click头判失败,时间：{LogicTimer}，{data}");
-                        LogHelper.NoteLogger.Log(new ClickNoteHeadJudgeLogArgs(data, et, LogicTimer));
+                        LogHelper.NoteLogger.Log(new ClickNoteHeadJudgeLogArgs(data, et));
                         GameManager.Instance.maxScore +=1;
-                        if(et == EvaluateType.Miss)GameManager.Instance.RefreshData(-1,-1,et,float.MaxValue);
-                        else if(et == EvaluateType.Bad)GameManager.Instance.RefreshData(-1,-1,et,LogicTimer);
-                        return;
+                        GameManager.Instance.RefreshData(-1, -1, et, et == EvaluateType.Miss ? float.MaxValue : LogicTimer);
                     }
                 }
                 else

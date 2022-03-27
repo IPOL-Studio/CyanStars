@@ -70,7 +70,7 @@ public class HoldNote : BaseNote
             {
                 //被漏掉了 miss
                 //Debug.LogError($"Hold音符miss：{data}");
-                LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Miss, 0));
+                LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Miss, 0, 0));
                 GameManager.Instance.maxScore += 2;
                 GameManager.Instance.RefreshData(-1, -1, EvaluateType.Miss, float.MaxValue);
             }
@@ -81,7 +81,7 @@ public class HoldNote : BaseNote
 
                 EvaluateType et = EvaluateHelper.GetHoldEvaluate(value);
                 //Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
-                LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, et, value));
+                LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, et, pressTime, value));
                 GameManager.Instance.maxScore++;
                 if(et == EvaluateType.Exact)
                     GameManager.Instance.RefreshData(0,1,et,float.MaxValue);
@@ -114,14 +114,14 @@ public class HoldNote : BaseNote
                         //头判失败直接销毁
                         DestroySelf(false);
                         //Debug.LogError($"Hold头判失败,时间：{LogicTimer}，{data}");
-                        LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, et, LogicTimer));
+                        LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, et));
                         GameManager.Instance.maxScore += 2;
                         GameManager.Instance.RefreshData(-1, -1, et, float.MaxValue);
                         return;
                     }
 
                     //Debug.LogError($"Hold头判成功,时间：{LogicTimer}，{data}");
-                    LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, et, LogicTimer));
+                    LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, et));
                     GameManager.Instance.maxScore++;
                     if(et == EvaluateType.Exact)
                         GameManager.Instance.RefreshData(1,1,et,LogicTimer);
