@@ -1842,14 +1842,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayingUIOnGround
       objectReference: {fileID: 0}
-    - target: {fileID: 4516123656909618940, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4516123656909618940, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f393112f66d18bd46b9e14952e3154a0, type: 3}
 --- !u!1001 &6520518578422470466
