@@ -22,7 +22,7 @@ public class GameMgr : MonoBehaviour
     public GameObject BreakPrefab;
     
     public Button BtnStart;
-    public Text TxtTimer;
+    //public Text TxtTimer;
     
     public TextAsset LrcAsset;
     
@@ -114,7 +114,7 @@ public class GameMgr : MonoBehaviour
         lastTime = MusicController.Instance.music.time;
         CheckKeyboardInput();
         timeline?.OnUpdate(deltaTime);
-        RefreshTimer(timeline.Timer);
+        //RefreshTimer(timeline.Timer);
     }
     
     /// <summary>
@@ -155,11 +155,12 @@ public class GameMgr : MonoBehaviour
     {
         timeline?.OnInput(inputType,item);
     }
-    
+    /*
     public void RefreshTimer(float time)
     {
         TxtTimer.text = time.ToString("0.00");
     }
+    */
     
 
     public void TimelineEnd()
