@@ -915,13 +915,21 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 45, y: 0, z: 0}
     smoothType: 2
-  - time: 92000
+  - time: 97000
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 45, y: 0, z: 0}
     smoothType: 0
-  - time: 95000
+  - time: 100000
     position: {x: 0, y: -3, z: 3.5}
     rotation: {x: 30, y: 0, z: 0}
+    smoothType: 3
+  - time: 120118
+    position: {x: 0, y: -3, z: 3.5}
+    rotation: {x: 30, y: 0, z: 0}
+    smoothType: 3
+  - time: 125118
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 45, y: 0, z: 0}
     smoothType: 3
 --- !u!4 &970795780
 Transform:
@@ -1364,7 +1372,7 @@ MonoBehaviour:
     maxAlpha: 1
     minAlpha: 0
   - type: 2
-    time: 76213
+    time: 74213
     index: 2
     position: {x: 15, y: 0, z: 10}
     rotation: {x: 0, y: 0, z: 0}
@@ -1376,7 +1384,7 @@ MonoBehaviour:
     maxAlpha: 0
     minAlpha: 0
   - type: 2
-    time: 76213
+    time: 74213
     index: 2
     position: {x: -15, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
@@ -1388,7 +1396,7 @@ MonoBehaviour:
     maxAlpha: 0
     minAlpha: 0
   - type: 2
-    time: 76213
+    time: 75213
     index: 2
     position: {x: 15, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
@@ -1400,7 +1408,7 @@ MonoBehaviour:
     maxAlpha: 0
     minAlpha: 0
   - type: 2
-    time: 76213
+    time: 75213
     index: 2
     position: {x: -15, y: 0, z: 10}
     rotation: {x: 0, y: 0, z: 0}
@@ -1450,7 +1458,7 @@ MonoBehaviour:
   - type: 2
     time: 98861
     index: 0
-    position: {x: 0, y: 0, z: 0}
+    position: {x: 0, y: 0, z: 10}
     rotation: {x: 0, y: 0, z: 0}
     particleCount: 0
     duration: 500
