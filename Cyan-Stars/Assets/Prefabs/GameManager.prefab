@@ -57,3 +57,6 @@ MonoBehaviour:
   rightNum: 0
   badNum: 0
   missNum: 0
+  curLrcText: 
+  fullScore: 0
+  isAutoMode: 0

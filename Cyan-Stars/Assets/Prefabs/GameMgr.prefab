@@ -52,4 +52,5 @@ MonoBehaviour:
   ClickPrefab: {fileID: 4065793755966527998, guid: e85ae38a16f3ec048a5628b586a5152e, type: 3}
   BreakPrefab: {fileID: 3149876104535507044, guid: 1ee31a272c4e7ae43acd9b45bfa82a92, type: 3}
   BtnStart: {fileID: 0}
+  LrcAsset: {fileID: 4900000, guid: 600bb15343d401a46ba85b3b1a765e58, type: 3}
   keyViewController: {fileID: 0}

@@ -19,9 +19,10 @@ public class ClickNote : BaseNote
         if(EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && GameManager.Instance.isAutoMode && !headSucess)
         {
             headSucess = true;
-            GameManager.Instance.maxScore++;
-            GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, 0);
+            GameManager.Instance.maxScore+=2;
+            GameManager.Instance.RefreshData(1, 2, EvaluateType.Exact, 0);
             viewObject.CreateEffectObj(data.Width);
+            DestroySelf(false);
         }
 
         if(LogicTimer < EvaluateHelper.CheckInputEndTime && !headSucess)
@@ -39,13 +40,6 @@ public class ClickNote : BaseNote
         {
             float time = LogicTimer - downTimePoint;
             viewObject.CreateEffectObj(data.Width);
-            if(GameManager.Instance.isAutoMode)
-            {
-                GameManager.Instance.maxScore++;
-                GameManager.Instance.RefreshData(0, 1, EvaluateType.Exact, 0);
-                DestroySelf(false);
-                return;
-            }
             EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(time);
             DestroySelf(false);
             //Debug.LogError($"Click音符命中，按住时间:{time}：{data}");

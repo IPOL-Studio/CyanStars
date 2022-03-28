@@ -45,6 +45,15 @@ public class EffectControllerSo : MonoBehaviour
         [Header("最小透明度(仅对frame有效)")]
         [Range(0,1)]public float minAlpha;
     }
+
+    class Comparer : IComparer<KeyFrame>
+    {
+        public int Compare(KeyFrame x, KeyFrame y)
+        {
+            return x.time.CompareTo(y.time);
+        }
+    }
+    
     [Header("边框")]
     public Image frame;
 
@@ -60,6 +69,7 @@ public class EffectControllerSo : MonoBehaviour
     void Start()
     {
         startButton.onClick.AddListener(OnBtnStartClick);
+        keyFrames.Sort(new Comparer());
     }
 
     void OnBtnStartClick()
