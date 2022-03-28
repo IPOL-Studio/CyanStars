@@ -26,6 +26,11 @@ public class ViewObject : MonoBehaviour, IView
     }
     public void DestroyEffectObj()
     {
+        if (effectObj == null)
+        {
+            return;
+        }
+        
         foreach(var particle in effectObj.GetComponent<NoteClickEffect>().particleSystemList)
         {
             particle.Stop();
