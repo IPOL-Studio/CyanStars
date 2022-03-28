@@ -115,10 +115,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   comboText: {fileID: 0}
   scoreText: {fileID: 0}
+  visibleScoreText: {fileID: 0}
   gradeText: {fileID: 4516123656909618943}
   currentDeviationText: {fileID: 0}
   accuracyText: {fileID: 0}
   scoreRatioText: {fileID: 0}
+  LrcText: {fileID: 0}
   showDeviation: 0
   img: {fileID: 0}
 --- !u!1 &4516123656909618941
@@ -147,7 +149,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4516123656909618941}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 8.6}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 4516123656735426892}
@@ -155,7 +157,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -397.5, y: -252.2}
+  m_AnchoredPosition: {x: 0, y: 0.1}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4516123656909618942
