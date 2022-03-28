@@ -283,7 +283,6 @@ GameObject:
   - component: {fileID: 552719607}
   - component: {fileID: 552719606}
   - component: {fileID: 552719609}
-  - component: {fileID: 552719610}
   - component: {fileID: 552719611}
   - component: {fileID: 552719612}
   m_Layer: 0
@@ -391,22 +390,6 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
---- !u!114 &552719610
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 552719605}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c19ab76df5a96b43865e99cf62b252c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  oldPos: {x: 0, y: 0, z: 0}
-  oldRot: {x: 0, y: 0, z: 0}
-  onMove: 0
-  defaultPosition: {x: 0, y: 15, z: -2.5}
 --- !u!82 &552719611
 AudioSource:
   m_ObjectHideFlags: 0
@@ -876,9 +859,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b34c8cf50f650245afa93438ca59703, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraController: {fileID: 552719610}
   defaultPosition: {x: 0, y: 15, z: -2.5}
-  startButton: {fileID: 577790304}
   keyFrames:
   - time: 29389
     position: {x: 0, y: 0, z: 0}
@@ -1006,6 +987,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1511421167741737513}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: MainCamera
+      value: 
+      objectReference: {fileID: 552719607}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: isAutoMode
       value: 1
       objectReference: {fileID: 0}
@@ -1013,6 +998,10 @@ PrefabInstance:
       propertyPath: keyViewController
       value: 
       objectReference: {fileID: 1072862548}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: CameraControllerSo
+      value: 
+      objectReference: {fileID: 970795779}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: playingUIList.Array.size
       value: 2
@@ -1027,7 +1016,7 @@ PrefabInstance:
       objectReference: {fileID: 135396306}
     - target: {fileID: 8182820371254292316, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: m_Name
-      value: GameMgr
+      value: GameManager
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
@@ -1341,7 +1330,7 @@ GameObject:
   - component: {fileID: 2011562972}
   - component: {fileID: 2011562974}
   m_Layer: 0
-  m_Name: EffectController
+  m_Name: EffectControllerSO
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

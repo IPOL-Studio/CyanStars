@@ -72,8 +72,8 @@ namespace CatTimeline
             {
                 return;
             }
-
-            //保证每次只处理第一个clip
+        
+            //只处理当前的clip
             BaseClip clip = clips[curClipIndex];
 
             if (currentTime >= clip.StartTime && previousTime < clip.StartTime )
@@ -87,12 +87,15 @@ namespace CatTimeline
                 //更新片段
                 clip.Update(currentTime,previousTime);
             }
-
+            
             if (currentTime > clip.EndTime && previousTime <= clip.EndTime)
             {
                 //离开片段
                 clip.OnExit();
                 curClipIndex++;
+                
+                //clipIndex更新了 需要重新Update一遍 保证不漏掉新clip的enter和exit
+                Update(currentTime,previousTime);
             }
         }
     }
