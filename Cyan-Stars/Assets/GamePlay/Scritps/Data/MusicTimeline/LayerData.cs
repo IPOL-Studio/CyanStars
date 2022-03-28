@@ -13,8 +13,4 @@ public class LayerData
     /// 片段数据
     /// </summary>
     public List<ClipData> ClipDatas;
-
-
-    
-   
 }

@@ -14,7 +14,7 @@ public static class ViewHelper
     /// <summary>
     /// 视图层物体创建倒计时时间（是受速率影响的时间）
     /// </summary>
-    public const float ViewObjectCreateTime = 100;
+    public const float ViewObjectCreateTime = 200;
     
     /// <summary>
     /// 计算受速率影响的视图层音符开始时间和结束时间，用于视图层物体计算位置和长度

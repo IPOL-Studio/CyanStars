@@ -68,7 +68,8 @@ public partial class MusicTimeline
 
     public void OnUpdate(float deltaTime)
     {
-        Timer += deltaTime;
+        //Timer += deltaTime;
+        Timer = MusicController.Instance.music.time;
         
         //计算timeline速率
         float timelineSpeedRate = Data.BaseSpeed * Data.SpeedRate;
