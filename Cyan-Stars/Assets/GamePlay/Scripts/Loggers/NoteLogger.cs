@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class NoteLogger : LoggerBase<NoteLogger>
 {
-    public LogLevelType LogLevel { get; set; } = LogLevelType.Error;
+    public LogLevelType LogLevel { get; set; } = LogLevelType.Log;
 
     public void Log<T>(T args) where T : struct, INoteJudgeLogArgs
     {
@@ -31,8 +31,7 @@ public struct DefaultNoteJudgeLogArgs : INoteJudgeLogArgs
         
     public string GetJudgeInfo()
     {
-        var holdEndTime = noteData.Type == NoteType.Hold ? $",Hold音符结束时间{noteData.HoldEndTime}" : string.Empty;
-        return $"{noteData.Type}音符{evaluate}，音符数据：位置{noteData.Pos}，宽度{noteData.Width},开始时间{noteData.StartTime}{holdEndTime}";
+        return $"{noteData.Type}音符{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}";
     }
 }
 
@@ -42,7 +41,7 @@ public struct ClickNoteJudgeLogArgs : INoteJudgeLogArgs
     private EvaluateType evaluate;
     private float holdTime;
 
-    public ClickNoteJudgeLogArgs(NoteData data, EvaluateType evaluate, float holdTime = 0)
+    public ClickNoteJudgeLogArgs(NoteData data, EvaluateType evaluate, float holdTime)
     {
         this.noteData = data;
         this.evaluate = evaluate;
@@ -51,9 +50,7 @@ public struct ClickNoteJudgeLogArgs : INoteJudgeLogArgs
     
     public string GetJudgeInfo()
     {
-        return evaluate == EvaluateType.Miss 
-            ? $"Click音符miss: 音符数据：位置{noteData.Pos}，宽度{noteData.Width},开始时间{noteData.StartTime}" 
-            : $"Click音符命中，按住时间：{holdTime}: 音符数据：位置{noteData.Pos}，宽度{noteData.Width},开始时间{noteData.StartTime}";
+        return $"Click尾判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}, 按住时间{holdTime}";
     }
 }
 
@@ -61,20 +58,16 @@ public struct ClickNoteHeadJudgeLogArgs : INoteJudgeLogArgs
 {
     private NoteData noteData;
     private EvaluateType evaluate;
-    private float logicTime;
 
-    public ClickNoteHeadJudgeLogArgs(NoteData data, EvaluateType evaluate, float logicTime)
+    public ClickNoteHeadJudgeLogArgs(NoteData data, EvaluateType evaluate)
     {
         this.noteData = data;
         this.evaluate = evaluate;
-        this.logicTime = logicTime;
     }
     
     public string GetJudgeInfo()
     {
-        return evaluate == EvaluateType.Bad || evaluate == EvaluateType.Miss
-            ? $"Click头判失败:时间：{logicTime}，音符数据：位置{noteData.Pos}，宽度{noteData.Width},开始时间{noteData.StartTime}" 
-            : $"Click头判命中，{logicTime}: 音符数据：位置{noteData.Pos}，宽度{noteData.Width},开始时间{noteData.StartTime}";
+        return $"Click头判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}";
     }
 }
 
@@ -82,20 +75,20 @@ public struct HoldNoteJudgeLogArgs : INoteJudgeLogArgs
 {
     private NoteData noteData;
     private EvaluateType evaluate;
-    private float holdLength;
+    private float holdTime;
+    private float holdRatio;
 
-    public HoldNoteJudgeLogArgs(NoteData data, EvaluateType evaluate, float holdLength)
+    public HoldNoteJudgeLogArgs(NoteData data, EvaluateType evaluate, float holdTime, float holdRatio)
     {
         this.noteData = data;
         this.evaluate = evaluate;
-        this.holdLength = holdLength;
+        this.holdTime = holdTime * 1000;
+        this.holdRatio = holdRatio;
     }
     
     public string GetJudgeInfo()
     {
-        return evaluate == EvaluateType.Miss
-            ? $"Hold音符miss: 音符数据：位置{noteData.Pos}，宽度{noteData.Width},开始时间{noteData.StartTime},Hold音符结束时间{noteData.HoldEndTime}"
-            : $"Hold音符命中，百分比:{holdLength},评价:{evaluate},音符数据：位置{noteData.Pos}，宽度{noteData.Width},开始时间{noteData.StartTime},Hold音符结束时间{noteData.HoldEndTime}";
+        return $"Hold尾判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}, 结束时间{noteData.HoldEndTime}, 按住时间{holdTime}, 按住比例{holdRatio}";
     }
 }
 
@@ -103,17 +96,15 @@ public struct HoldNoteHeadJudgeLogArgs : INoteJudgeLogArgs
 {
     private NoteData noteData;
     private EvaluateType evaluate;
-    private float logicTime;
 
-    public HoldNoteHeadJudgeLogArgs(NoteData data, EvaluateType evaluate, float logicTime)
+    public HoldNoteHeadJudgeLogArgs(NoteData data, EvaluateType evaluate)
     {
         this.noteData = data;
         this.evaluate = evaluate;
-        this.logicTime = logicTime;
     }
     
     public string GetJudgeInfo()
     {
-        return $"Hold头判{(evaluate == EvaluateType.Bad || evaluate == EvaluateType.Miss ? "失败" : "成功")}，时间：{logicTime}，音符数据：位置{noteData.Pos}，宽度{noteData.Width},开始时间{noteData.StartTime},Hold音符结束时间{noteData.HoldEndTime}";
+        return $"Hold头判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}, 结束时间{noteData.HoldEndTime}";
     }
 }
