@@ -45,8 +45,6 @@ public class NoteClip : BaseClip
     
     public override void Update(float currentTime, float previousTime)
     {
-        
-        //Debug.LogError(Time.frameCount + ":" + currentTime + ",music time： " +  MusicController.Instance.music.time);
         for (int i = 0; i < layers.Count; i++)
         {
             NoteLayer layer = layers[i];

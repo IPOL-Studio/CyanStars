@@ -5,13 +5,8 @@ using UnityEngine.UI;
 
 public class CameraControllerSo : MonoBehaviour
 {
-    [Header("相机")]
-    public CameraController cameraController;
     [Header("相机默认位置")]
     public Vector3 defaultPosition;
-
-    [Header("开始按钮")]
-    public Button startButton;
 
     [System.Serializable]
     public class KeyFrame
@@ -26,42 +21,7 @@ public class CameraControllerSo : MonoBehaviour
         public SmoothFuncationType smoothType;
     }
 
-    class Comparer : IComparer<KeyFrame>
-    {
-        public int Compare(KeyFrame x, KeyFrame y)
-        {
-            return x.time.CompareTo(y.time);
-        }
-    }
-
     [Header("关键帧")]
     public List<KeyFrame> keyFrames;
-    private float timer;
-    private int index = 0;
-    private bool isStart = false;
-
-    void Start()
-    {
-        cameraController.defaultPosition = defaultPosition;
-        startButton.onClick.AddListener(OnBtnStartClick);
-        keyFrames.Sort(new Comparer());
-    }
-    void OnBtnStartClick()
-    {
-        timer = 0;
-        index = 0;
-        isStart = true;
-    }
-    void Update()
-    {
-        if(isStart && !cameraController.onMove)
-        {
-            if(index < keyFrames.Count)
-            {
-                cameraController.MoveCamera(keyFrames[index].position, keyFrames[index].rotation,
-                keyFrames[index].time - timer, keyFrames[index].smoothType);
-                timer = keyFrames[index++].time;
-            }
-        }
-    }
+    
 }

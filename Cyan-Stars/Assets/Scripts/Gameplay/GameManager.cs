@@ -16,6 +16,9 @@ public class GameManager : MonoBehaviour
 
     public MusicTimelineSO TimelineSo;
     public InputMapSO InputMapSO;
+    public CameraControllerSo CameraControllerSo;
+
+    public Camera MainCamera;
     public Transform viewRoot;
     public GameObject TapPrefab;
     public GameObject HoldPrefab;
@@ -90,8 +93,12 @@ public class GameManager : MonoBehaviour
         Instance = this;
         inputMapData = InputMapSO.InputMapData;
         pressedKeySet = new HashSet<KeyCode>();
+        
+        CameraControllerSo.keyFrames.Sort((x, y) => x.time.CompareTo(y.time));
+
         fullScore = GetFullScore();
         RegisterTimelineCreateClipFuncFunc();
+      
     }
     
 
@@ -107,6 +114,12 @@ public class GameManager : MonoBehaviour
         
         deltaTime = MusicController.Instance.music.time - lastTime;
         lastTime = MusicController.Instance.music.time;
+
+        if (deltaTime == 0)
+        {
+            return;
+        }
+
         timeline?.Update(deltaTime);
 
     }
@@ -133,8 +146,10 @@ public class GameManager : MonoBehaviour
         //添加歌词轨道
         timeline.AddTrack<LrcTrack>(lrc.TimeTagList.Count, lrc.TimeTagList);
 
-
-
+        //添加相机轨道
+        timeline.AddTrack<CameraTrack>(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames);
+        timeline.GetTrack<CameraTrack>().DefaultCameraPos = CameraControllerSo.defaultPosition;
+        
         Debug.Log("时间轴创建完毕");
     }
 
@@ -203,8 +218,26 @@ public class GameManager : MonoBehaviour
             
             return clip;
         });
-    }
+        
+        //相机
+        Timeline.RegisterCreateClipFunc<CameraTrack>((clipIndex, userdata) =>
+        {
+            List<CameraControllerSo.KeyFrame> keyFrames = (List<CameraControllerSo.KeyFrame>)userdata;
+            CameraControllerSo.KeyFrame keyFrame = keyFrames[clipIndex];
 
+            float startTime = 0;
+            if (clipIndex > 0)
+            {
+                startTime = keyFrames[clipIndex - 1].time;
+            }
+            
+            CameraClip clip = new CameraClip(startTime / 1000f, keyFrame.time / 1000f, keyFrame.position, keyFrame.rotation,
+                keyFrame.smoothType,MainCamera.transform);
+
+            return clip;
+        });
+    }
+    
     /// <summary>
     /// 根据音符数据创建音符
     /// </summary>
@@ -238,7 +271,7 @@ public class GameManager : MonoBehaviour
     public float TimeSchedule()
     {
         if(timeline == null)return 1;
-        return timeline.CurrentTime/(timeline.Length/1000);
+        return timeline.CurrentTime/timeline.Length;
     }
     
     
