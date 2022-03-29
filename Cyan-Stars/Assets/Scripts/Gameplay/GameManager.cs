@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public CameraControllerSo CameraControllerSo;
 
     public Camera MainCamera;
+    public AudioSource AudioSource;
     public Transform viewRoot;
     public GameObject TapPrefab;
     public GameObject HoldPrefab;
@@ -27,10 +28,10 @@ public class GameManager : MonoBehaviour
     public GameObject BreakPrefab;
     
     public Button BtnStart;
-    //public Text TxtTimer;
+    
     
     public TextAsset LrcAsset;
-    
+    public AudioClip Music;
     private InputMapData inputMapData;
     private Timeline timeline;
     private NoteTrack noteTrack;
@@ -41,7 +42,7 @@ public class GameManager : MonoBehaviour
 
 
     private float deltaTime;
-    private float lastTime = 0;
+    private float lastTime = -float.Epsilon;
 
     public float TimelineTime
     {
@@ -107,19 +108,15 @@ public class GameManager : MonoBehaviour
     
     private void Update()
     {
-        
-        CheckKeyboardInput();
-        
-        deltaTime = MusicController.Instance.music.time - lastTime;
-        lastTime = MusicController.Instance.music.time;
-
-        if (deltaTime == 0)
+        if (timeline != null)
         {
-            return;
+            CheckKeyboardInput();
+
+            deltaTime = AudioSource.time - lastTime;
+            lastTime = AudioSource.time;
+            
+            timeline.OnUpdate(deltaTime);
         }
-
-        timeline?.OnUpdate(deltaTime);
-
     }
     
     /// <summary>
@@ -150,6 +147,10 @@ public class GameManager : MonoBehaviour
         cameraTrack.DefaultCameraPos = CameraControllerSo.defaultPosition;
         cameraTrack.CameraTrans = MainCamera.transform;
         
+        //添加音乐轨道
+        index = timeline.AddTrack<MusicTrack>(1, null, CreateMusicClip);
+        timeline.GetTrack<MusicTrack>(index).audioSource = AudioSource;
+        
         Debug.Log("时间轴创建完毕");
     }
 
@@ -170,9 +171,9 @@ public class GameManager : MonoBehaviour
     }
     
     /// <summary>
-    /// 创建音符片段
+    /// 创建音符轨道片段
     /// </summary>
-    private NoteClip CreateNoteClip(NoteTrack track, int clipIndex, object userdata)
+    private BaseClip<NoteTrack> CreateNoteClip(NoteTrack track, int clipIndex, object userdata)
     {
         MusicTimelineData data = (MusicTimelineData) userdata;
 
@@ -206,9 +207,9 @@ public class GameManager : MonoBehaviour
     }
     
     /// <summary>
-    /// 创建歌词片段
+    /// 创建歌词轨道片段
     /// </summary>
-    private LrcClip CreateLrcClip(LrcTrack track, int clipIndex, object userdata)
+    private BaseClip<LrcTrack> CreateLrcClip(LrcTrack track, int clipIndex, object userdata)
     {
         List<LrcTimeTag> timeTags = (List<LrcTimeTag>) userdata;
         LrcTimeTag timeTag = timeTags[clipIndex];
@@ -220,9 +221,9 @@ public class GameManager : MonoBehaviour
     }
     
     /// <summary>
-    /// 创建相机片段
+    /// 创建相机轨道片段
     /// </summary>
-    private CameraClip CreateCameraClip(CameraTrack track, int clipIndex, object userdata)
+    private BaseClip<CameraTrack> CreateCameraClip(CameraTrack track, int clipIndex, object userdata)
     {
         List<CameraControllerSo.KeyFrame> keyFrames = (List<CameraControllerSo.KeyFrame>)userdata;
         CameraControllerSo.KeyFrame keyFrame = keyFrames[clipIndex];
@@ -235,6 +236,15 @@ public class GameManager : MonoBehaviour
             
         CameraClip clip = new CameraClip(startTime / 1000f, keyFrame.time / 1000f, track, keyFrame.position, keyFrame.rotation,keyFrame.smoothType);
 
+        return clip;
+    }
+
+    /// <summary>
+    /// 创建音乐轨道片段
+    /// </summary>
+    private BaseClip<MusicTrack> CreateMusicClip(MusicTrack track, int clipIndex, object userdata)
+    {
+        MusicClip clip = new MusicClip(0, Music.length, track, Music);
         return clip;
     }
     
@@ -312,7 +322,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ReceiveInput(InputType inputType, InputMapData.Item item)
     {
-        noteTrack?.OnInput(inputType,item);
+        noteTrack.OnInput(inputType,item);
     }
 
     

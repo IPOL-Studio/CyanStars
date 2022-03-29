@@ -281,10 +281,9 @@ GameObject:
   m_Component:
   - component: {fileID: 552719608}
   - component: {fileID: 552719607}
+  - component: {fileID: 552719611}
   - component: {fileID: 552719606}
   - component: {fileID: 552719609}
-  - component: {fileID: 552719611}
-  - component: {fileID: 552719612}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -400,7 +399,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: e2071cab7178a60439688aa355a82914, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -486,21 +485,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &552719612
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 552719605}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7aca9a6349d72834c98546e5652b8f45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  music: {fileID: 552719611}
-  btnStart: {fileID: 577790304}
-  txtTimer: {fileID: 0}
 --- !u!114 &577790304 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 577790304, guid: b02a5c2882d82a14487db388df829895, type: 3}
@@ -979,6 +963,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: Music
+      value: 
+      objectReference: {fileID: 8300000, guid: e2071cab7178a60439688aa355a82914, type: 3}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: BtnStart
       value: 
       objectReference: {fileID: 577790304}
@@ -994,6 +982,10 @@ PrefabInstance:
       propertyPath: isAutoMode
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: AudioSource
+      value: 
+      objectReference: {fileID: 552719611}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: keyViewController
       value: 
