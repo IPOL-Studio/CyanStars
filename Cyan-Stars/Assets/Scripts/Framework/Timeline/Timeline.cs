@@ -115,7 +115,7 @@ namespace CatTimeline
         /// </summary>
         public void OnUpdate(float deltaTime)
         {
-            if (CurrentTime >= Length)
+            if (deltaTime <= 0 || CurrentTime >= Length)
             {
                 return;
             }

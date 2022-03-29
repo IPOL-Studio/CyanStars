@@ -10,4 +10,23 @@ public class CameraTrack : BaseTrack
 {
     public Vector3 DefaultCameraPos;
     public Transform CameraTrans;
+    
+    /// <summary>
+    /// 创建相机轨道片段
+    /// </summary>
+    public static BaseClip<CameraTrack> CreateCameraClip(CameraTrack track, int clipIndex, object userdata)
+    {
+        List<CameraControllerSo.KeyFrame> keyFrames = (List<CameraControllerSo.KeyFrame>)userdata;
+        CameraControllerSo.KeyFrame keyFrame = keyFrames[clipIndex];
+
+        float startTime = 0;
+        if (clipIndex > 0)
+        {
+            startTime = keyFrames[clipIndex - 1].time;
+        }
+            
+        CameraClip clip = new CameraClip(startTime / 1000f, keyFrame.time / 1000f, track, keyFrame.position, keyFrame.rotation,keyFrame.smoothType);
+
+        return clip;
+    }
 }
