@@ -135,20 +135,20 @@ public class GameManager : MonoBehaviour
         };
         
         //添加音符轨道
-        int index = timeline.AddTrack<NoteTrack>(1, data,CreateNoteClip);
+        int index = timeline.AddTrack<NoteTrack>(1, data,NoteTrack.CreateNoteClip);
         noteTrack = timeline.GetTrack<NoteTrack>(index);
         
         //添加歌词轨道
-        timeline.AddTrack<LrcTrack>(lrc.TimeTagList.Count, lrc.TimeTagList,CreateLrcClip);
+        timeline.AddTrack<LrcTrack>(lrc.TimeTagList.Count, lrc.TimeTagList,LrcTrack.CreateLrcClip);
 
         //添加相机轨道
-        index = timeline.AddTrack<CameraTrack>(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames,CreateCameraClip);
+        index = timeline.AddTrack<CameraTrack>(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames,CameraTrack.CreateCameraClip);
         CameraTrack cameraTrack = timeline.GetTrack<CameraTrack>(index);
         cameraTrack.DefaultCameraPos = CameraControllerSo.defaultPosition;
         cameraTrack.CameraTrans = MainCamera.transform;
         
         //添加音乐轨道
-        index = timeline.AddTrack<MusicTrack>(1, null, CreateMusicClip);
+        index = timeline.AddTrack<MusicTrack>(1, Music,MusicTrack.CreateMusicClip);
         timeline.GetTrack<MusicTrack>(index).audioSource = AudioSource;
         
         Debug.Log("时间轴创建完毕");
@@ -170,113 +170,6 @@ public class GameManager : MonoBehaviour
         return fullScore;
     }
     
-    /// <summary>
-    /// 创建音符轨道片段
-    /// </summary>
-    private BaseClip<NoteTrack> CreateNoteClip(NoteTrack track, int clipIndex, object userdata)
-    {
-        MusicTimelineData data = (MusicTimelineData) userdata;
-
-        NoteClip clip = new NoteClip(0, data.Time / 1000f, track, data.BaseSpeed, data.SpeedRate);
-
-        for (int i = 0; i < data.LayerDatas.Count; i++)
-        {
-            LayerData layerData = data.LayerDatas[i];
-            NoteLayer layer = new NoteLayer();
-
-            for (int j = 0; j < layerData.ClipDatas.Count; j++)
-            {
-                ClipData clipData = layerData.ClipDatas[j];
-                layer.AddTimeSpeedRate(clipData.StartTime / 1000f,clipData.SpeedRate);
-                    
-                for (int k = 0; k < clipData.NoteDatas.Count; k++)
-                {
-                    NoteData noteData = clipData.NoteDatas[k];
-
-                    BaseNote note = CreateNote(noteData, layer);
-                    layer.AddNote(note);
-
-                }
-            }
-                
-            clip.AddLayer(layer);
-        }
-            
-        return clip;
-        
-    }
-    
-    /// <summary>
-    /// 创建歌词轨道片段
-    /// </summary>
-    private BaseClip<LrcTrack> CreateLrcClip(LrcTrack track, int clipIndex, object userdata)
-    {
-        List<LrcTimeTag> timeTags = (List<LrcTimeTag>) userdata;
-        LrcTimeTag timeTag = timeTags[clipIndex];
-
-        float time = (float) timeTag.Timestamp.TotalSeconds;
-        LrcClip clip = new LrcClip(time, time,track, timeTag.LyricText);
-            
-        return clip;
-    }
-    
-    /// <summary>
-    /// 创建相机轨道片段
-    /// </summary>
-    private BaseClip<CameraTrack> CreateCameraClip(CameraTrack track, int clipIndex, object userdata)
-    {
-        List<CameraControllerSo.KeyFrame> keyFrames = (List<CameraControllerSo.KeyFrame>)userdata;
-        CameraControllerSo.KeyFrame keyFrame = keyFrames[clipIndex];
-
-        float startTime = 0;
-        if (clipIndex > 0)
-        {
-            startTime = keyFrames[clipIndex - 1].time;
-        }
-            
-        CameraClip clip = new CameraClip(startTime / 1000f, keyFrame.time / 1000f, track, keyFrame.position, keyFrame.rotation,keyFrame.smoothType);
-
-        return clip;
-    }
-
-    /// <summary>
-    /// 创建音乐轨道片段
-    /// </summary>
-    private BaseClip<MusicTrack> CreateMusicClip(MusicTrack track, int clipIndex, object userdata)
-    {
-        MusicClip clip = new MusicClip(0, Music.length, track, Music);
-        return clip;
-    }
-    
-    /// <summary>
-    /// 根据音符数据创建音符
-    /// </summary>
-    private BaseNote CreateNote(NoteData noteData, NoteLayer layer)
-    {
-        BaseNote note = null;
-        switch (noteData.Type)
-        {
-            case NoteType.Tap:
-                note = new TapNote();
-                break;
-            case NoteType.Hold:
-                note = new HoldNote();
-                break;
-            case NoteType.Drag:
-                note = new DragNote();
-                break;
-            case NoteType.Click:
-                note = new ClickNote();
-                break;
-            case NoteType.Break:
-                note = new BreakNote();
-                break;
-        }
-
-        note.Init(noteData, layer);
-        return note;
-    }
-
 
     public float TimeSchedule()
     {
