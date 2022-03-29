@@ -6,21 +6,27 @@ namespace CatTimeline
     /// <summary>
     /// 时间轴片段基类
     /// </summary>
-    public abstract class BaseClip
+    public abstract class BaseClip<T> : IClip where T : BaseTrack
     {
-        public BaseClip(float startTime, float endTime)
+        protected BaseClip(float startTime, float endTime ,T owner)
         {
             StartTime = startTime;
             EndTime = endTime;
+            Owner = owner;
         }
         
+
         /// <summary>
         /// 持有此片段的轨道
         /// </summary>
-        public BaseTrack Owner
+        BaseTrack IClip.Owner => Owner;
+
+        /// <summary>
+        /// 持有此片段的轨道
+        /// </summary>
+        public T Owner
         {
             get;
-            set;
         }
         
         /// <summary>
@@ -29,7 +35,6 @@ namespace CatTimeline
         public float StartTime
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -38,7 +43,6 @@ namespace CatTimeline
         public float EndTime
         {
             get;
-            private set;
         }
 
 
@@ -61,7 +65,7 @@ namespace CatTimeline
         /// <summary>
         /// 更新片段
         /// </summary>
-        public virtual void Update(float currentTime,float previousTime)
+        public virtual void OnUpdate(float currentTime,float previousTime)
         {
             
         }

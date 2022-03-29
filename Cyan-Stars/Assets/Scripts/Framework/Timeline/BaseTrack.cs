@@ -22,7 +22,7 @@ namespace CatTimeline
         /// <summary>
         /// 片段列表
         /// </summary>
-        protected List<BaseClip> clips = new List<BaseClip>();
+        protected List<IClip> clips = new List<IClip>();
 
         /// <summary>
         /// 当前运行片段的索引
@@ -42,7 +42,7 @@ namespace CatTimeline
         /// <summary>
         /// 添加片段
         /// </summary>
-        public virtual void AddClip(BaseClip clip)
+        public virtual void AddClip(IClip clip)
         {
             clips.Add(clip);
         }
@@ -52,16 +52,13 @@ namespace CatTimeline
         /// </summary>
         public virtual void SortClip()
         {
-            clips.Sort((x, y) =>
-            {
-                return x.StartTime.CompareTo(y.StartTime);
-            });
+            clips.Sort((x, y) => x.StartTime.CompareTo(y.StartTime));
         }
 
         /// <summary>
         /// 更新轨道
         /// </summary>
-        public virtual void Update(float currentTime,float previousTime)
+        public virtual void OnUpdate(float currentTime,float previousTime)
         {
             if (!Enabled)
             {
@@ -74,7 +71,7 @@ namespace CatTimeline
             }
         
             //只处理当前的clip
-            BaseClip clip = clips[curClipIndex];
+            IClip clip = clips[curClipIndex];
 
             if (currentTime >= clip.StartTime && previousTime < clip.StartTime )
             {
@@ -85,7 +82,7 @@ namespace CatTimeline
             if (currentTime >= clip.StartTime && currentTime <= clip.EndTime)
             {
                 //更新片段
-                clip.Update(currentTime,previousTime);
+                clip.OnUpdate(currentTime,previousTime);
             }
             
             if (currentTime > clip.EndTime && previousTime <= clip.EndTime)
@@ -95,7 +92,7 @@ namespace CatTimeline
                 curClipIndex++;
                 
                 //clipIndex更新了 需要重新Update一遍 保证不漏掉新clip的enter和exit
-                Update(currentTime,previousTime);
+                OnUpdate(currentTime,previousTime);
             }
         }
     }

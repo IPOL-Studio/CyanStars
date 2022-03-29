@@ -5,9 +5,9 @@ using System.Collections.Generic;
 namespace CatTimeline
 {
     /// <summary>
-    /// 轨道片段创建函数
+    /// 片段创建函数原型
     /// </summary>
-    public delegate BaseClip CreateClipFunc(int clipIndex,object userData);
+    public delegate BaseClip<T> CreateClipFunc<T>(T track, int clipIndex,object userData) where T : BaseTrack;
     
     /// <summary>
     /// 时间轴
@@ -51,41 +51,21 @@ namespace CatTimeline
         /// 轨道列表
         /// </summary>
         private List<BaseTrack> tracks = new List<BaseTrack>();
-
-        /// <summary>
-        /// 轨道片段创建函数字典
-        /// </summary>
-        private static Dictionary<Type, CreateClipFunc> createClipFuncDict = new Dictionary<Type, CreateClipFunc>();
-
-        /// <summary>
-        /// 注册轨道片段创建函数
-        /// </summary>
-        public static void RegisterCreateClipFunc<T>(CreateClipFunc func) where T : BaseTrack
-        {
-            createClipFuncDict[typeof(T)] = func;
-        }
         
         /// <summary>
         /// 添加轨道
         /// </summary>
-        public int AddTrack<T>(int clipCount,object userData) where T : BaseTrack, new()
+        public int AddTrack<T>(int clipCount,object userData,CreateClipFunc<T> func) where T : BaseTrack, new()
         {
-            Type type = typeof(T);
-            if (!createClipFuncDict.TryGetValue(type,out CreateClipFunc func))
-            {
-                throw new Exception($"添加轨道失败，缺少轨道节点创建函数:{type.FullName}");
-            }
-
-            BaseTrack track = new T();
+            T track = new T();
             for (int i = 0; i < clipCount; i++)
             {
-                BaseClip clip = func(i,userData);
-                clip.Owner = track;
+                BaseClip<T> clip = func(track,i,userData);
                 track.AddClip(clip);
             }
             track.SortClip();
-
             track.Owner = this;
+            
             tracks.Add(track);
 
             return tracks.Count - 1;
@@ -103,9 +83,18 @@ namespace CatTimeline
 
             return tracks[index];
         }
-        
+
         /// <summary>
         /// 获取轨道
+        /// </summary>
+        public T GetTrack<T>(int index) where T : BaseTrack
+        {
+            BaseTrack track = GetTrack(index);
+            return track as T;
+        }
+        
+        /// <summary>
+        /// 获取轨道（指定类型的第一个）
         /// </summary>
         public T GetTrack<T>() where T : BaseTrack
         {
@@ -124,7 +113,7 @@ namespace CatTimeline
         /// <summary>
         /// 更新时间轴
         /// </summary>
-        public void Update(float deltaTime)
+        public void OnUpdate(float deltaTime)
         {
             if (CurrentTime >= Length)
             {
@@ -137,7 +126,7 @@ namespace CatTimeline
             {
                 //更新轨道
                 BaseTrack track = tracks[i];
-                track.Update(CurrentTime,previousTime);
+                track.OnUpdate(CurrentTime,previousTime);
             }
 
             if (CurrentTime >= Length)
@@ -145,14 +134,7 @@ namespace CatTimeline
                 OnStop?.Invoke();
             }
         }
-
-        /// <summary>
-        /// 重置时间轴
-        /// </summary>
-        public void Reset()
-        {
-            CurrentTime = -float.Epsilon;
-        }
+        
     }
 }
 

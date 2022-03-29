@@ -9,4 +9,5 @@ using UnityEngine;
 public class CameraTrack : BaseTrack
 {
     public Vector3 DefaultCameraPos;
+    public Transform CameraTrans;
 }

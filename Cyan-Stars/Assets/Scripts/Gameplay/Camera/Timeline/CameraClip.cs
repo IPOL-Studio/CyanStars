@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// 相机片段
 /// </summary>
-public class CameraClip : BaseClip
+public class CameraClip : BaseClip<CameraTrack>
 {
     private Vector3 position;
     private Vector3 rotation;
@@ -20,26 +20,26 @@ public class CameraClip : BaseClip
     private Vector3 oldPos;
     private Vector3 oldRot;
 
-    public CameraClip(float startTime, float endTime, Vector3 position, Vector3 rotation, SmoothFuncationType smoothType, Transform camTrans) : base(startTime, endTime)
+    public CameraClip(float startTime, float endTime, CameraTrack owner, Vector3 position, Vector3 rotation, SmoothFuncationType smoothType) : base(startTime, endTime,owner)
     {
         this.position = position;
         this.rotation = rotation;
         this.smoothType = smoothType;
-        this.camTrans = camTrans;
+        length = EndTime - StartTime;
+       
     }
 
     public override void OnEnter()
     {
-        length = EndTime - StartTime;
-        
-        newPos = ((CameraTrack) Owner).DefaultCameraPos + position;
+        camTrans = Owner.CameraTrans;
+        newPos = Owner.DefaultCameraPos + position;
         newRot = rotation;
-        
         oldPos = camTrans.position;
         oldRot = camTrans.eulerAngles;
+
     }
     
-    public override void Update(float currentTime, float previousTime)
+    public override void OnUpdate(float currentTime, float previousTime)
     {
         float localTimer = currentTime - StartTime;
         
