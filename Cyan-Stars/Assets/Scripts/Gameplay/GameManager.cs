@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public CameraControllerSo CameraControllerSo;
 
     public Camera MainCamera;
+    public AudioSource AudioSource;
     public Transform viewRoot;
     public GameObject TapPrefab;
     public GameObject HoldPrefab;
@@ -27,10 +28,10 @@ public class GameManager : MonoBehaviour
     public GameObject BreakPrefab;
     
     public Button BtnStart;
-    //public Text TxtTimer;
+    
     
     public TextAsset LrcAsset;
-    
+    public AudioClip Music;
     private InputMapData inputMapData;
     private Timeline timeline;
     private NoteTrack noteTrack;
@@ -41,7 +42,7 @@ public class GameManager : MonoBehaviour
 
 
     private float deltaTime;
-    private float lastTime = 0;
+    private float lastTime = -float.Epsilon;
 
     public float TimelineTime
     {
@@ -107,19 +108,15 @@ public class GameManager : MonoBehaviour
     
     private void Update()
     {
-        
-        CheckKeyboardInput();
-        
-        deltaTime = MusicController.Instance.music.time - lastTime;
-        lastTime = MusicController.Instance.music.time;
-
-        if (deltaTime == 0)
+        if (timeline != null)
         {
-            return;
+            CheckKeyboardInput();
+
+            deltaTime = AudioSource.time - lastTime;
+            lastTime = AudioSource.time;
+            
+            timeline.OnUpdate(deltaTime);
         }
-
-        timeline?.OnUpdate(deltaTime);
-
     }
     
     /// <summary>
@@ -138,17 +135,21 @@ public class GameManager : MonoBehaviour
         };
         
         //添加音符轨道
-        int index = timeline.AddTrack<NoteTrack>(1, data,CreateNoteClip);
+        int index = timeline.AddTrack<NoteTrack>(1, data,NoteTrack.CreateNoteClip);
         noteTrack = timeline.GetTrack<NoteTrack>(index);
         
         //添加歌词轨道
-        timeline.AddTrack<LrcTrack>(lrc.TimeTagList.Count, lrc.TimeTagList,CreateLrcClip);
+        timeline.AddTrack<LrcTrack>(lrc.TimeTagList.Count, lrc.TimeTagList,LrcTrack.CreateLrcClip);
 
         //添加相机轨道
-        index = timeline.AddTrack<CameraTrack>(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames,CreateCameraClip);
+        index = timeline.AddTrack<CameraTrack>(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames,CameraTrack.CreateCameraClip);
         CameraTrack cameraTrack = timeline.GetTrack<CameraTrack>(index);
         cameraTrack.DefaultCameraPos = CameraControllerSo.defaultPosition;
         cameraTrack.CameraTrans = MainCamera.transform;
+        
+        //添加音乐轨道
+        index = timeline.AddTrack<MusicTrack>(1, Music,MusicTrack.CreateMusicClip);
+        timeline.GetTrack<MusicTrack>(index).audioSource = AudioSource;
         
         Debug.Log("时间轴创建完毕");
     }
@@ -169,104 +170,6 @@ public class GameManager : MonoBehaviour
         return fullScore;
     }
     
-    /// <summary>
-    /// 创建音符片段
-    /// </summary>
-    private NoteClip CreateNoteClip(NoteTrack track, int clipIndex, object userdata)
-    {
-        MusicTimelineData data = (MusicTimelineData) userdata;
-
-        NoteClip clip = new NoteClip(0, data.Time / 1000f, track, data.BaseSpeed, data.SpeedRate);
-
-        for (int i = 0; i < data.LayerDatas.Count; i++)
-        {
-            LayerData layerData = data.LayerDatas[i];
-            NoteLayer layer = new NoteLayer();
-
-            for (int j = 0; j < layerData.ClipDatas.Count; j++)
-            {
-                ClipData clipData = layerData.ClipDatas[j];
-                layer.AddTimeSpeedRate(clipData.StartTime / 1000f,clipData.SpeedRate);
-                    
-                for (int k = 0; k < clipData.NoteDatas.Count; k++)
-                {
-                    NoteData noteData = clipData.NoteDatas[k];
-
-                    BaseNote note = CreateNote(noteData, layer);
-                    layer.AddNote(note);
-
-                }
-            }
-                
-            clip.AddLayer(layer);
-        }
-            
-        return clip;
-        
-    }
-    
-    /// <summary>
-    /// 创建歌词片段
-    /// </summary>
-    private LrcClip CreateLrcClip(LrcTrack track, int clipIndex, object userdata)
-    {
-        List<LrcTimeTag> timeTags = (List<LrcTimeTag>) userdata;
-        LrcTimeTag timeTag = timeTags[clipIndex];
-
-        float time = (float) timeTag.Timestamp.TotalSeconds;
-        LrcClip clip = new LrcClip(time, time,track, timeTag.LyricText);
-            
-        return clip;
-    }
-    
-    /// <summary>
-    /// 创建相机片段
-    /// </summary>
-    private CameraClip CreateCameraClip(CameraTrack track, int clipIndex, object userdata)
-    {
-        List<CameraControllerSo.KeyFrame> keyFrames = (List<CameraControllerSo.KeyFrame>)userdata;
-        CameraControllerSo.KeyFrame keyFrame = keyFrames[clipIndex];
-
-        float startTime = 0;
-        if (clipIndex > 0)
-        {
-            startTime = keyFrames[clipIndex - 1].time;
-        }
-            
-        CameraClip clip = new CameraClip(startTime / 1000f, keyFrame.time / 1000f, track, keyFrame.position, keyFrame.rotation,keyFrame.smoothType);
-
-        return clip;
-    }
-    
-    /// <summary>
-    /// 根据音符数据创建音符
-    /// </summary>
-    private BaseNote CreateNote(NoteData noteData, NoteLayer layer)
-    {
-        BaseNote note = null;
-        switch (noteData.Type)
-        {
-            case NoteType.Tap:
-                note = new TapNote();
-                break;
-            case NoteType.Hold:
-                note = new HoldNote();
-                break;
-            case NoteType.Drag:
-                note = new DragNote();
-                break;
-            case NoteType.Click:
-                note = new ClickNote();
-                break;
-            case NoteType.Break:
-                note = new BreakNote();
-                break;
-        }
-
-        note.Init(noteData, layer);
-        return note;
-    }
-
 
     public float TimeSchedule()
     {
@@ -312,7 +215,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ReceiveInput(InputType inputType, InputMapData.Item item)
     {
-        noteTrack?.OnInput(inputType,item);
+        noteTrack.OnInput(inputType,item);
     }
 
     
