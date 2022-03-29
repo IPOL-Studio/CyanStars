@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// 音符片段
 /// </summary>
-public class NoteClip : BaseClip
+public class NoteClip : BaseClip<NoteTrack>
 {
     /// <summary>
     /// 基础速度
@@ -28,7 +28,7 @@ public class NoteClip : BaseClip
     /// </summary>
     private List<NoteLayer> layers = new List<NoteLayer>();
 
-    public NoteClip(float startTime, float endTime,float baseSpeed,float speedRate) : base(startTime, endTime)
+    public NoteClip(float startTime, float endTime, NoteTrack owner,float baseSpeed,float speedRate) : base(startTime, endTime,owner)
     {
         this.baseSpeed = baseSpeed;
         this.speedRate = speedRate;
@@ -43,7 +43,7 @@ public class NoteClip : BaseClip
         layers.Add(layer);
     }
     
-    public override void Update(float currentTime, float previousTime)
+    public override void OnUpdate(float currentTime, float previousTime)
     {
         for (int i = 0; i < layers.Count; i++)
         {

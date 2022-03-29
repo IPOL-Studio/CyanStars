@@ -97,8 +97,6 @@ public class GameManager : MonoBehaviour
         CameraControllerSo.keyFrames.Sort((x, y) => x.time.CompareTo(y.time));
 
         fullScore = GetFullScore();
-        RegisterTimelineCreateClipFuncFunc();
-      
     }
     
 
@@ -120,7 +118,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        timeline?.Update(deltaTime);
+        timeline?.OnUpdate(deltaTime);
 
     }
     
@@ -140,15 +138,17 @@ public class GameManager : MonoBehaviour
         };
         
         //添加音符轨道
-        timeline.AddTrack<NoteTrack>(1, data);
-        noteTrack = timeline.GetTrack<NoteTrack>();
+        int index = timeline.AddTrack<NoteTrack>(1, data,CreateNoteClip);
+        noteTrack = timeline.GetTrack<NoteTrack>(index);
         
         //添加歌词轨道
-        timeline.AddTrack<LrcTrack>(lrc.TimeTagList.Count, lrc.TimeTagList);
+        timeline.AddTrack<LrcTrack>(lrc.TimeTagList.Count, lrc.TimeTagList,CreateLrcClip);
 
         //添加相机轨道
-        timeline.AddTrack<CameraTrack>(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames);
-        timeline.GetTrack<CameraTrack>().DefaultCameraPos = CameraControllerSo.defaultPosition;
+        index = timeline.AddTrack<CameraTrack>(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames,CreateCameraClip);
+        CameraTrack cameraTrack = timeline.GetTrack<CameraTrack>(index);
+        cameraTrack.DefaultCameraPos = CameraControllerSo.defaultPosition;
+        cameraTrack.CameraTrans = MainCamera.transform;
         
         Debug.Log("时间轴创建完毕");
     }
@@ -168,74 +168,74 @@ public class GameManager : MonoBehaviour
         }
         return fullScore;
     }
-
+    
     /// <summary>
-    /// 注册时间轴创建片段函数
+    /// 创建音符片段
     /// </summary>
-    private void RegisterTimelineCreateClipFuncFunc()
+    private NoteClip CreateNoteClip(NoteTrack track, int clipIndex, object userdata)
     {
-        //音符
-        Timeline.RegisterCreateClipFunc<NoteTrack>((clipIndex, userdata) =>
+        MusicTimelineData data = (MusicTimelineData) userdata;
+
+        NoteClip clip = new NoteClip(0, data.Time / 1000f, track, data.BaseSpeed, data.SpeedRate);
+
+        for (int i = 0; i < data.LayerDatas.Count; i++)
         {
-            MusicTimelineData data = (MusicTimelineData) userdata;
+            LayerData layerData = data.LayerDatas[i];
+            NoteLayer layer = new NoteLayer();
 
-            NoteClip clip = new NoteClip(0, data.Time / 1000f, data.BaseSpeed, data.SpeedRate);
-
-            for (int i = 0; i < data.LayerDatas.Count; i++)
+            for (int j = 0; j < layerData.ClipDatas.Count; j++)
             {
-                LayerData layerData = data.LayerDatas[i];
-                NoteLayer layer = new NoteLayer();
-
-                for (int j = 0; j < layerData.ClipDatas.Count; j++)
-                {
-                    ClipData clipData = layerData.ClipDatas[j];
-                    layer.AddTimeSpeedRate(clipData.StartTime / 1000f,clipData.SpeedRate);
+                ClipData clipData = layerData.ClipDatas[j];
+                layer.AddTimeSpeedRate(clipData.StartTime / 1000f,clipData.SpeedRate);
                     
-                    for (int k = 0; k < clipData.NoteDatas.Count; k++)
-                    {
-                        NoteData noteData = clipData.NoteDatas[k];
+                for (int k = 0; k < clipData.NoteDatas.Count; k++)
+                {
+                    NoteData noteData = clipData.NoteDatas[k];
 
-                        BaseNote note = CreateNote(noteData, layer);
-                        layer.AddNote(note);
+                    BaseNote note = CreateNote(noteData, layer);
+                    layer.AddNote(note);
 
-                    }
                 }
+            }
                 
-                clip.AddLayer(layer);
-            }
+            clip.AddLayer(layer);
+        }
             
-            return clip;
-        });
+        return clip;
         
-        //歌词
-        Timeline.RegisterCreateClipFunc<LrcTrack>((clipIndex, userdata) =>
-        {
-            List<LrcTimeTag> timeTags = (List<LrcTimeTag>) userdata;
-            LrcTimeTag timeTag = timeTags[clipIndex];
+    }
+    
+    /// <summary>
+    /// 创建歌词片段
+    /// </summary>
+    private LrcClip CreateLrcClip(LrcTrack track, int clipIndex, object userdata)
+    {
+        List<LrcTimeTag> timeTags = (List<LrcTimeTag>) userdata;
+        LrcTimeTag timeTag = timeTags[clipIndex];
 
-            float time = (float) timeTag.Timestamp.TotalSeconds;
-            LrcClip clip = new LrcClip(time, time, timeTag.LyricText);
+        float time = (float) timeTag.Timestamp.TotalSeconds;
+        LrcClip clip = new LrcClip(time, time,track, timeTag.LyricText);
             
-            return clip;
-        });
-        
-        //相机
-        Timeline.RegisterCreateClipFunc<CameraTrack>((clipIndex, userdata) =>
+        return clip;
+    }
+    
+    /// <summary>
+    /// 创建相机片段
+    /// </summary>
+    private CameraClip CreateCameraClip(CameraTrack track, int clipIndex, object userdata)
+    {
+        List<CameraControllerSo.KeyFrame> keyFrames = (List<CameraControllerSo.KeyFrame>)userdata;
+        CameraControllerSo.KeyFrame keyFrame = keyFrames[clipIndex];
+
+        float startTime = 0;
+        if (clipIndex > 0)
         {
-            List<CameraControllerSo.KeyFrame> keyFrames = (List<CameraControllerSo.KeyFrame>)userdata;
-            CameraControllerSo.KeyFrame keyFrame = keyFrames[clipIndex];
-
-            float startTime = 0;
-            if (clipIndex > 0)
-            {
-                startTime = keyFrames[clipIndex - 1].time;
-            }
+            startTime = keyFrames[clipIndex - 1].time;
+        }
             
-            CameraClip clip = new CameraClip(startTime / 1000f, keyFrame.time / 1000f, keyFrame.position, keyFrame.rotation,
-                keyFrame.smoothType,MainCamera.transform);
+        CameraClip clip = new CameraClip(startTime / 1000f, keyFrame.time / 1000f, track, keyFrame.position, keyFrame.rotation,keyFrame.smoothType);
 
-            return clip;
-        });
+        return clip;
     }
     
     /// <summary>
