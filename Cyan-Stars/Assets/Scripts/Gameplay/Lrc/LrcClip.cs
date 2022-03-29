@@ -6,12 +6,12 @@ using UnityEngine;
 /// <summary>
 /// Lrc歌词片段
 /// </summary>
-public class LrcClip : BaseClip
+public class LrcClip : BaseClip<LrcTrack>
 {
 
     private string lrcText;
     
-    public LrcClip(float startTime, float endTime,string lrcText) : base(startTime, endTime)
+    public LrcClip(float startTime, float endTime,LrcTrack owner ,string lrcText) : base(startTime, endTime,owner)
     {
         this.lrcText = lrcText;
     }
