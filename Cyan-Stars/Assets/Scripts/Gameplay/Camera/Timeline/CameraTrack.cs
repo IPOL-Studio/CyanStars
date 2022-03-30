@@ -14,7 +14,7 @@ public class CameraTrack : BaseTrack
     /// <summary>
     /// 创建相机轨道片段
     /// </summary>
-    public static BaseClip<CameraTrack> CreateCameraClip(CameraTrack track, int clipIndex, object userdata)
+    public static BaseClip<CameraTrack> CreateClip(CameraTrack track, int clipIndex, object userdata)
     {
         List<CameraControllerSo.KeyFrame> keyFrames = (List<CameraControllerSo.KeyFrame>)userdata;
         CameraControllerSo.KeyFrame keyFrame = keyFrames[clipIndex];
