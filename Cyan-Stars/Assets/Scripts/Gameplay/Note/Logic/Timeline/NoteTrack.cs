@@ -10,7 +10,7 @@ public class NoteTrack : BaseTrack
     /// <summary>
     /// 创建音符轨道片段
     /// </summary>
-    public static BaseClip<NoteTrack> CreateNoteClip(NoteTrack track, int clipIndex, object userdata)
+    public static BaseClip<NoteTrack> CreateClip(NoteTrack track, int clipIndex, object userdata)
     {
         MusicTimelineData data = (MusicTimelineData) userdata;
 

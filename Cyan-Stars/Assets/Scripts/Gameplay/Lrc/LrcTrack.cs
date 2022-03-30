@@ -12,7 +12,7 @@ public class LrcTrack : BaseTrack
     /// <summary>
     /// 创建歌词轨道片段
     /// </summary>
-    public static BaseClip<LrcTrack> CreateLrcClip(LrcTrack track, int clipIndex, object userdata)
+    public static BaseClip<LrcTrack> CreateClip(LrcTrack track, int clipIndex, object userdata)
     {
         List<LrcTimeTag> timeTags = (List<LrcTimeTag>) userdata;
         LrcTimeTag timeTag = timeTags[clipIndex];
