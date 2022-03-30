@@ -17,7 +17,8 @@ public class GameManager : MonoBehaviour
     public MusicTimelineSO TimelineSo;
     public InputMapSO InputMapSO;
     public CameraControllerSo CameraControllerSo;
-
+    public EffectControllerSo EffectControllerSo;
+    
     public Camera MainCamera;
     public AudioSource AudioSource;
     public Transform viewRoot;
@@ -135,21 +136,29 @@ public class GameManager : MonoBehaviour
         };
         
         //添加音符轨道
-        int index = timeline.AddTrack<NoteTrack>(1, data,NoteTrack.CreateNoteClip);
+        int index = timeline.AddTrack<NoteTrack>(1, data,NoteTrack.CreateClip);
         noteTrack = timeline.GetTrack<NoteTrack>(index);
         
         //添加歌词轨道
-        timeline.AddTrack<LrcTrack>(lrc.TimeTagList.Count, lrc.TimeTagList,LrcTrack.CreateLrcClip);
+        timeline.AddTrack<LrcTrack>(lrc.TimeTagList.Count, lrc.TimeTagList,LrcTrack.CreateClip);
 
         //添加相机轨道
-        index = timeline.AddTrack<CameraTrack>(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames,CameraTrack.CreateCameraClip);
+        index = timeline.AddTrack<CameraTrack>(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames,CameraTrack.CreateClip);
         CameraTrack cameraTrack = timeline.GetTrack<CameraTrack>(index);
         cameraTrack.DefaultCameraPos = CameraControllerSo.defaultPosition;
         cameraTrack.CameraTrans = MainCamera.transform;
         
         //添加音乐轨道
-        index = timeline.AddTrack<MusicTrack>(1, Music,MusicTrack.CreateMusicClip);
+        index = timeline.AddTrack<MusicTrack>(1, Music,MusicTrack.CreateClip);
         timeline.GetTrack<MusicTrack>(index).audioSource = AudioSource;
+        
+        //添加特效轨道
+        index = timeline.AddTrack<EffectTrack>(EffectControllerSo.keyFrames.Count, EffectControllerSo.keyFrames, EffectTrack.CreateClip);
+        EffectTrack effectTrack = timeline.GetTrack<EffectTrack>(index);
+        effectTrack.Bpm = EffectControllerSo.bpm;
+        effectTrack.EffectGOs = EffectControllerSo.effectList;
+        effectTrack.EffectParent = EffectControllerSo.transform;
+        effectTrack.Frame = EffectControllerSo.frame;
         
         Debug.Log("时间轴创建完毕");
     }

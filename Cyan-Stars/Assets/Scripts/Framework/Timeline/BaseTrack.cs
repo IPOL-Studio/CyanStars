@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -9,6 +10,21 @@ namespace CatTimeline
     /// </summary>
     public abstract class BaseTrack
     {
+        /// <summary>
+        /// 片段处理模式
+        /// </summary>
+        public enum ClipProcessMode
+        {
+            /// <summary>
+            /// 每次只处理一个片段（适合片段不会重叠的情况）
+            /// </summary>
+            Single,
+            
+            /// <summary>
+            /// 每次都处理所有片段（适合片段会重叠的情况）
+            /// </summary>
+            All,
+        }
         
         /// <summary>
         /// 持有此轨道的时间轴
@@ -37,8 +53,12 @@ namespace CatTimeline
             get;
             set;
         } = true;
-        
-        
+
+        /// <summary>
+        /// 片段更新模式
+        /// </summary>
+        protected virtual ClipProcessMode Mode => ClipProcessMode.Single;
+
         /// <summary>
         /// 添加片段
         /// </summary>
@@ -65,35 +85,72 @@ namespace CatTimeline
                 return;
             }
 
-            if (curClipIndex == clips.Count)
+            switch (Mode)
             {
-                return;
-            }
+                case ClipProcessMode.Single:
+                    
+                    if (curClipIndex == clips.Count)
+                    {
+                        return;
+                    }
         
-            //只处理当前的clip
-            IClip clip = clips[curClipIndex];
+                    //只处理当前的片段
+                    IClip clip = clips[curClipIndex];
 
-            if (currentTime >= clip.StartTime && previousTime < clip.StartTime )
-            {
-                //进入片段
-                clip.OnEnter();
-            }
+                    if (currentTime >= clip.StartTime && previousTime < clip.StartTime )
+                    {
+                        //进入片段
+                        clip.OnEnter();
+                    }
 
-            if (currentTime >= clip.StartTime && currentTime <= clip.EndTime)
-            {
-                //更新片段
-                clip.OnUpdate(currentTime,previousTime);
+                    if (currentTime >= clip.StartTime && currentTime <= clip.EndTime)
+                    {
+                        //更新片段
+                        clip.OnUpdate(currentTime,previousTime);
+                    }
+            
+                    if (currentTime > clip.EndTime && previousTime <= clip.EndTime)
+                    {
+                        //离开片段
+                        clip.OnExit();
+                        curClipIndex++;
+                
+                        //clipIndex更新了 需要重新Update一遍 保证不漏掉新clip的enter和exit
+                        OnUpdate(currentTime,previousTime);
+                    }
+                    
+                    break;
+                
+                
+                case ClipProcessMode.All:
+                    
+                    for (int i = 0; i < clips.Count; i++)
+                    {
+                        clip = clips[i];
+            
+                        if (currentTime >= clip.StartTime && previousTime < clip.StartTime )
+                        {
+                            //进入片段
+                            clip.OnEnter();
+                        }
+
+                        if (currentTime >= clip.StartTime && currentTime <= clip.EndTime)
+                        {
+                            //更新片段
+                            clip.OnUpdate(currentTime,previousTime);
+                        }
+            
+                        if (currentTime > clip.EndTime && previousTime <= clip.EndTime)
+                        {
+                            //离开片段
+                            clip.OnExit();
+                        }
+                    }
+                    
+                    break;
             }
             
-            if (currentTime > clip.EndTime && previousTime <= clip.EndTime)
-            {
-                //离开片段
-                clip.OnExit();
-                curClipIndex++;
-                
-                //clipIndex更新了 需要重新Update一遍 保证不漏掉新clip的enter和exit
-                OnUpdate(currentTime,previousTime);
-            }
+          
         }
     }
 

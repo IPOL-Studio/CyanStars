@@ -995,6 +995,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 970795779}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: EffectControllerSo
+      value: 
+      objectReference: {fileID: 2011562972}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: playingUIList.Array.size
       value: 2
       objectReference: {fileID: 0}
