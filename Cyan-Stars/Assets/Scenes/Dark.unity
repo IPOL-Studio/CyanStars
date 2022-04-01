@@ -564,7 +564,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 2
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
@@ -582,13 +582,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 754579191}
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 0.000008106232, z: 42.5}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 20, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &789298577
 GameObject:
   m_ObjectHideFlags: 0
@@ -1344,7 +1344,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95ba6121ca0bb2547960dddca17a9d44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startButton: {fileID: 577790304}
   effectList:
   - {fileID: 3781862996343542742, guid: f16993a2c2102a64d9ddf94155b06405, type: 3}
   - {fileID: 3090660559402485272, guid: 124627e73d8f9074f95448efb66a21bc, type: 3}
