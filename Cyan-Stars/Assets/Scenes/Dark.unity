@@ -889,6 +889,18 @@ MonoBehaviour:
     position: {x: 0, y: -5, z: 0}
     rotation: {x: 30, y: 0, z: 0}
     smoothType: 3
+  - time: 108360
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 0}
+    smoothType: 3
+  - time: 108410
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 2}
+    smoothType: 2
+  - time: 108610
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 0}
+    smoothType: 2
   - time: 120118
     position: {x: 0, y: -5, z: 0}
     rotation: {x: 30, y: 0, z: 0}
