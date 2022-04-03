@@ -136,30 +136,51 @@ public class GameManager : MonoBehaviour
         };
         
         //添加音符轨道
-        int index = timeline.AddTrack<NoteTrack>(1, data,NoteTrack.CreateClip);
-        noteTrack = timeline.GetTrack<NoteTrack>(index);
-        
+        TrackHelper.CreateBuilder<NoteTrack>()
+            .AddClips(1, data, NoteTrack.CreateClip)
+            .Build()
+            .AddToTimeline(timeline);
+
         //添加歌词轨道
-        timeline.AddTrack<LrcTrack>(lrc.TimeTagList.Count, lrc.TimeTagList,LrcTrack.CreateClip);
+        TrackHelper.CreateBuilder<LrcTrack>()
+            .AddClips(lrc.TimeTagList.Count, lrc.TimeTagList, LrcTrack.CreateClip)
+            .SortClip()
+            .Build()
+            .AddToTimeline(timeline);
 
         //添加相机轨道
-        index = timeline.AddTrack<CameraTrack>(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames,CameraTrack.CreateClip);
-        CameraTrack cameraTrack = timeline.GetTrack<CameraTrack>(index);
-        cameraTrack.DefaultCameraPos = CameraControllerSo.defaultPosition;
-        cameraTrack.CameraTrans = MainCamera.transform;
-        
+        TrackHelper.CreateBuilder<CameraTrack>()
+            .AddClips(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames, CameraTrack.CreateClip)
+            .SortClip()
+            .PostProcess(track =>
+            {
+                track.DefaultCameraPos = CameraControllerSo.defaultPosition;
+                track.CameraTrans = MainCamera.transform;
+            })
+            .Build()
+            .AddToTimeline(timeline);
+
         //添加音乐轨道
-        index = timeline.AddTrack<MusicTrack>(1, Music,MusicTrack.CreateClip);
-        timeline.GetTrack<MusicTrack>(index).audioSource = AudioSource;
-        
+        TrackHelper.CreateBuilder<MusicTrack>()
+            .AddClips(1, Music, MusicTrack.CreateClip)
+            .PostProcess(track => track.audioSource = AudioSource)
+            .Build()
+            .AddToTimeline(timeline);
+
         //添加特效轨道
-        index = timeline.AddTrack<EffectTrack>(EffectControllerSo.keyFrames.Count, EffectControllerSo.keyFrames, EffectTrack.CreateClip);
-        EffectTrack effectTrack = timeline.GetTrack<EffectTrack>(index);
-        effectTrack.Bpm = EffectControllerSo.bpm;
-        effectTrack.EffectGOs = EffectControllerSo.effectList;
-        effectTrack.EffectParent = EffectControllerSo.transform;
-        effectTrack.Frame = EffectControllerSo.frame;
-        
+        TrackHelper.CreateBuilder<EffectTrack>()
+            .AddClips(EffectControllerSo.keyFrames.Count, EffectControllerSo.keyFrames, EffectTrack.CreateClip)
+            .SortClip()
+            .PostProcess(track =>
+            {
+                track.Bpm = EffectControllerSo.bpm;
+                track.EffectGOs = EffectControllerSo.effectList;
+                track.EffectParent = EffectControllerSo.transform;
+                track.Frame = EffectControllerSo.frame;
+            })
+            .Build()
+            .AddToTimeline(timeline);
+
         Debug.Log("时间轴创建完毕");
     }
 
