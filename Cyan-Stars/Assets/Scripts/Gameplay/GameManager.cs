@@ -87,7 +87,9 @@ public class GameManager : MonoBehaviour
     [Header("-----游戏模式-----")]
     [Header("AutoMode")]
     public bool isAutoMode = false;//是否为自动模式
-    
+
+    private List<NoteData> LinearNoteData = new List<NoteData>();
+
     private void Awake()
     {
         Application.targetFrameRate = 60;
@@ -151,7 +153,11 @@ public class GameManager : MonoBehaviour
         //添加音乐轨道
         index = timeline.AddTrack<MusicTrack>(1, Music,MusicTrack.CreateClip);
         timeline.GetTrack<MusicTrack>(index).audioSource = AudioSource;
-        
+
+        //添加提示音轨道
+        index = timeline.AddTrack<PromptToneTrack>(this.LinearNoteData.Count, this.LinearNoteData, PromptToneTrack.CreateClip);
+        timeline.GetTrack<PromptToneTrack>(index).audioSource = AudioSource;
+
         //添加特效轨道
         index = timeline.AddTrack<EffectTrack>(EffectControllerSo.keyFrames.Count, EffectControllerSo.keyFrames, EffectTrack.CreateClip);
         EffectTrack effectTrack = timeline.GetTrack<EffectTrack>(index);
@@ -173,6 +179,7 @@ public class GameManager : MonoBehaviour
                 foreach(var note in clip.NoteDatas)
                 {
                     fullScore += note.GetFullScore();
+                    LinearNoteData.Add(note);
                 }
             }
         }
