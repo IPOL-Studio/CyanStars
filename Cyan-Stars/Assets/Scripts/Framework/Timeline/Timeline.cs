@@ -54,7 +54,10 @@ namespace CatTimeline
         {
             if (track is null)
                 return false;
-            
+
+            if (track.Owner != null)
+                throw new ArgumentException("track 已经被添加到了一个存在的 timeline 中");
+
             track.Owner = this;
             tracks.Add(track);
             return true;
