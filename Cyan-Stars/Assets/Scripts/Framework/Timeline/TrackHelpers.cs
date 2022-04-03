@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using System.Runtime.CompilerServices;
 
 namespace CatTimeline
 {
@@ -15,39 +13,86 @@ namespace CatTimeline
         ITrackBuilder<T> AddClips(int clipCount, object userData, CreateClipFunc<T> func);
         ITrackBuilder<T> SortClip();
         ITrackBuilder<T> PostProcess(Action<T> action);
-        bool AddToTimeline(Timeline timeline);
+        TrackBuildResult<T> Build();
+    }
+
+    public struct TrackBuildResult<T> where T : BaseTrack
+    {
+        public T Track { get; private set; }
+
+        public TrackBuildResult(T track)
+        {
+            Track = track;
+        }
+
+        public bool AddToTimeline(Timeline timeline)
+        {
+            return timeline.AddTrack(Track);
+        }
     }
 
     internal class TrackBuilder<T> : ITrackBuilder<T> where T : BaseTrack, new()
     {
-        private T track = new T();
-
-        public ITrackBuilder<T> AddClips(int clipCount, object userData, CreateClipFunc<T> func)
+        [Flags]
+        private enum BuildOperators
         {
+            None = 0,
+            AddClips = 1,
+            SortClip = 1 << 1,
+            PostProcess = 1 << 2
+        }
+
+        private BuildOperators buildOP = BuildOperators.None;
+        private (int, object, CreateClipFunc<T>) createClipArgs;
+        private Action<T> postProcessAction;
+
+        private void AddClips(T track)
+        {
+            var (clipCount, userData, func) = createClipArgs;
             for (int i = 0; i < clipCount; i++)
             {
                 BaseClip<T> clip = func(track, i, userData);
                 track.AddClip(clip);
             }
+        }
+
+        public ITrackBuilder<T> AddClips(int clipCount, object userData, CreateClipFunc<T> func)
+        {
+            createClipArgs = (clipCount, userData, func);
+            buildOP |= BuildOperators.AddClips;
             return this;
         }
 
         public ITrackBuilder<T> SortClip()
         {
-            track.SortClip();
-            return this;
-        }
-        
-        public ITrackBuilder<T> PostProcess(Action<T> action)
-        {
-            action?.Invoke(track);
+            buildOP |= BuildOperators.SortClip;
             return this;
         }
 
-        public bool AddToTimeline(Timeline timeline)
+        public ITrackBuilder<T> PostProcess(Action<T> action)
         {
-            return timeline.AddTrack(track);
+            postProcessAction = action;
+            buildOP |= BuildOperators.PostProcess;
+            return this;
         }
+
+        public TrackBuildResult<T> Build()
+        {
+            T track = new T();
+            if (ShouldExecute(BuildOperators.AddClips))
+                AddClips(track);
+            
+            if(ShouldExecute(BuildOperators.SortClip))
+                track.SortClip();
+            
+            if (ShouldExecute(BuildOperators.PostProcess))
+                postProcessAction?.Invoke(track);
+
+            return new TrackBuildResult<T>(track);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool ShouldExecute(BuildOperators ops) => (buildOP & ops) != 0;
     }
 
     public static class TrackHelper

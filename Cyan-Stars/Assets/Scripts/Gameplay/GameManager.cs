@@ -138,12 +138,14 @@ public class GameManager : MonoBehaviour
         //添加音符轨道
         TrackHelper.CreateBuilder<NoteTrack>()
             .AddClips(1, data, NoteTrack.CreateClip)
+            .Build()
             .AddToTimeline(timeline);
 
         //添加歌词轨道
         TrackHelper.CreateBuilder<LrcTrack>()
             .AddClips(lrc.TimeTagList.Count, lrc.TimeTagList, LrcTrack.CreateClip)
             .SortClip()
+            .Build()
             .AddToTimeline(timeline);
 
         //添加相机轨道
@@ -155,12 +157,14 @@ public class GameManager : MonoBehaviour
                 track.DefaultCameraPos = CameraControllerSo.defaultPosition;
                 track.CameraTrans = MainCamera.transform;
             })
+            .Build()
             .AddToTimeline(timeline);
 
         //添加音乐轨道
         TrackHelper.CreateBuilder<MusicTrack>()
             .AddClips(1, Music, MusicTrack.CreateClip)
             .PostProcess(track => track.audioSource = AudioSource)
+            .Build()
             .AddToTimeline(timeline);
 
         //添加特效轨道
@@ -174,6 +178,7 @@ public class GameManager : MonoBehaviour
                 track.EffectParent = EffectControllerSo.transform;
                 track.Frame = EffectControllerSo.frame;
             })
+            .Build()
             .AddToTimeline(timeline);
 
         Debug.Log("时间轴创建完毕");
