@@ -6,8 +6,8 @@ namespace CatTimeline
     /// <summary>
     /// 片段创建函数原型
     /// </summary>
-    public delegate BaseClip<T> CreateClipFunc<T>(T track, int clipIndex,object userData) where T : BaseTrack;
-    
+    public delegate BaseClip<T> CreateClipFunc<T>(T track, int clipIndex, object userData) where T : BaseTrack;
+
     public interface ITrackBuilder<T> where T : BaseTrack
     {
         ITrackBuilder<T> AddClips(int clipCount, object userData, CreateClipFunc<T> func);
@@ -81,10 +81,10 @@ namespace CatTimeline
             T track = new T();
             if (ShouldExecute(BuildOperators.AddClips))
                 AddClips(track);
-            
-            if(ShouldExecute(BuildOperators.SortClip))
+
+            if (ShouldExecute(BuildOperators.SortClip))
                 track.SortClip();
-            
+
             if (ShouldExecute(BuildOperators.PostProcess))
                 postProcessAction?.Invoke(track);
 
@@ -97,7 +97,7 @@ namespace CatTimeline
 
     public static class TrackHelper
     {
-        public static ITrackBuilder<T> CreateBuilder<T>() where T : BaseTrack, new() => 
+        public static ITrackBuilder<T> CreateBuilder<T>() where T : BaseTrack, new() =>
             new TrackBuilder<T>();
     }
 }
