@@ -845,6 +845,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultPosition: {x: 0, y: 15, z: -2.5}
   keyFrames:
+  - time: 1000
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 45, y: 0, z: -1}
+    smoothType: 3
+  - time: 3000
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 45, y: 0, z: 0}
+    smoothType: 3
   - time: 29389
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 45, y: 0, z: 0}
@@ -897,7 +905,19 @@ MonoBehaviour:
     position: {x: 0, y: -5, z: 0}
     rotation: {x: 30, y: 0, z: 2}
     smoothType: 2
-  - time: 108610
+  - time: 108710
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 0}
+    smoothType: 2
+  - time: 108909
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 0}
+    smoothType: 3
+  - time: 108959
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: -2}
+    smoothType: 2
+  - time: 109259
     position: {x: 0, y: -5, z: 0}
     rotation: {x: 30, y: 0, z: 0}
     smoothType: 2
