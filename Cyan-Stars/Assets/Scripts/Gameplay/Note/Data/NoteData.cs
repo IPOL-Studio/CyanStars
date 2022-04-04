@@ -1,7 +1,6 @@
 using UnityEngine;
-using CyanStars.Gameplay.Note.Logic;
 
-namespace CyanStars.Gameplay.Note.Data
+namespace CyanStars.Gameplay.Note
 {
     /// <summary>
     /// 音符数据

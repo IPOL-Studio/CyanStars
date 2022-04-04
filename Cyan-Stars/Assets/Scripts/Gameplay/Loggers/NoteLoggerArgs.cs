@@ -1,6 +1,6 @@
 using CyanStars.Framework.Loggers;
 using CyanStars.Gameplay.Evaluate;
-using CyanStars.Gameplay.Note.Data;
+using CyanStars.Gameplay.Note;
 
 namespace CyanStars.Gameplay.Loggers
 {

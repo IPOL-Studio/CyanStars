@@ -1,7 +1,7 @@
 using UnityEngine;
 using CyanStars.Framework.Timeline;
 
-namespace CyanStars.Gameplay.Effect.Timeline
+namespace CyanStars.Gameplay.Effect
 {
     /// <summary>
     /// 粒子特效片段

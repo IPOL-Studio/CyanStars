@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Input;
 
-namespace CyanStars.Gameplay.Note.Logic.Timeline
+namespace CyanStars.Gameplay.Note
 {
     /// <summary>
     /// 音符片段

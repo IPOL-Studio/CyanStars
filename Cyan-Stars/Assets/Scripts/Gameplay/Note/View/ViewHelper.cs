@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using CyanStars.Gameplay.Note.Data;
-using CyanStars.Gameplay.Note.Logic;
+using CyanStars.Gameplay.Note;
 using UnityEngine;
 
-namespace CyanStars.Gameplay.Note.View
+namespace CyanStars.Gameplay.Note
 {
     /// <summary>
     /// 视图层辅助类

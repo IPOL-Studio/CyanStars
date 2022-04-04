@@ -1,7 +1,7 @@
 using UnityEngine;
 using CyanStars.Framework.Timeline;
 
-namespace CyanStars.Gameplay.Music.Timeline
+namespace CyanStars.Gameplay.Music
 {
     /// <summary>
     /// 音乐轨道

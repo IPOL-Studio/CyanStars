@@ -1,4 +1,4 @@
-namespace CyanStars.Gameplay.Note.View
+namespace CyanStars.Gameplay.Note
 {
     /// <summary>
     /// 视图层接口

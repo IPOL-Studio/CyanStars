@@ -1,6 +1,6 @@
 using CyanStars.Framework.Timeline;
 
-namespace CyanStars.Gameplay.Lrc.Timeline
+namespace CyanStars.Gameplay.Lrc
 {
     /// <summary>
     /// Lrc歌词片段

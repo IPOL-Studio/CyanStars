@@ -1,7 +1,7 @@
 using UnityEngine;
 using CyanStars.Framework.Timeline;
 
-namespace CyanStars.Gameplay.Camera.Timeline
+namespace CyanStars.Gameplay.Camera
 {
     /// <summary>
     /// 相机片段

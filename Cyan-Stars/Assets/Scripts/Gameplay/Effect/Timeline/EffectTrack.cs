@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using CyanStars.Framework.Timeline;
 
-namespace CyanStars.Gameplay.Effect.Timeline
+namespace CyanStars.Gameplay.Effect
 {
     /// <summary>
     /// 特效轨道

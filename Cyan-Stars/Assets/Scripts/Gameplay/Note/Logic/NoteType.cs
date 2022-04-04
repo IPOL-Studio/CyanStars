@@ -1,4 +1,4 @@
-namespace CyanStars.Gameplay.Note.Logic
+namespace CyanStars.Gameplay.Note
 {
     /// <summary>
     /// 音符类型

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CyanStars.Gameplay.Note.View
+namespace CyanStars.Gameplay.Note
 {
     public class Endpoint : MonoBehaviour //场景的两个端点
     {

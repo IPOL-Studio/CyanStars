@@ -1,8 +1,8 @@
+using UnityEngine;
 using System.Collections;
 using CyanStars.Gameplay.Effect;
-using UnityEngine;
 
-namespace CyanStars.Gameplay.Note.View
+namespace CyanStars.Gameplay.Note
 {
     /// <summary>
     /// 视图层物体脚本

@@ -2,7 +2,7 @@ using UnityEngine;
 using CyanStars.Framework.Timeline;
 
 
-namespace CyanStars.Gameplay.Effect.Timeline
+namespace CyanStars.Gameplay.Effect
 {
     /// <summary>
     /// 边框呼吸特效片段

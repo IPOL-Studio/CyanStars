@@ -1,8 +1,7 @@
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Input;
-using CyanStars.Gameplay.Note.Data;
 
-namespace CyanStars.Gameplay.Note.Logic.Timeline
+namespace CyanStars.Gameplay.Note
 {
     /// <summary>
     /// 音符轨道

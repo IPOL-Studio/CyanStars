@@ -1,7 +1,7 @@
 using UnityEngine;
 using CyanStars.Framework.Helpers;
 
-namespace CyanStars.Gameplay.Note.View
+namespace CyanStars.Gameplay.Note
 {
     public class HoldViewObject : ViewObject
     {

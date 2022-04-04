@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using CyanStars.Gameplay.Input;
-using CyanStars.Gameplay.Note.Data;
+using CyanStars.Gameplay.Note;
 
-namespace CyanStars.Gameplay.Note.Logic
+namespace CyanStars.Gameplay.Note
 {
     /// <summary>
     /// 音符图层

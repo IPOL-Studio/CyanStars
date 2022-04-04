@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using CyanStars.Gameplay.Note.View;
+using CyanStars.Gameplay.Note;
 
 namespace CyanStars.Gameplay.Input
 {

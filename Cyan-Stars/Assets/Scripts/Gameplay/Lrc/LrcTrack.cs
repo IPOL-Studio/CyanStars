@@ -2,7 +2,7 @@ using CatLrcParser;
 using System.Collections.Generic;
 using CyanStars.Framework.Timeline;
 
-namespace CyanStars.Gameplay.Lrc.Timeline
+namespace CyanStars.Gameplay.Lrc
 {
     /// <summary>
     /// Lrc歌词轨道

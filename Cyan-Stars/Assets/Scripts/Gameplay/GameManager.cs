@@ -4,17 +4,13 @@ using System.Collections.Generic;
 using CatLrcParser;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.UI;
+using CyanStars.Gameplay.Lrc;
+using CyanStars.Gameplay.Note;
 using CyanStars.Gameplay.Input;
-using CyanStars.Gameplay.Camera;
+using CyanStars.Gameplay.Music;
 using CyanStars.Gameplay.Effect;
+using CyanStars.Gameplay.Camera;
 using CyanStars.Gameplay.Evaluate;
-using CyanStars.Gameplay.Note.View;
-using CyanStars.Gameplay.Note.Data;
-using CyanStars.Gameplay.Lrc.Timeline;
-using CyanStars.Gameplay.Music.Timeline;
-using CyanStars.Gameplay.Camera.Timeline;
-using CyanStars.Gameplay.Effect.Timeline;
-using CyanStars.Gameplay.Note.Logic.Timeline;
 
 using UInput = UnityEngine.Input;
 

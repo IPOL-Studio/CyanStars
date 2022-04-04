@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CyanStars.Gameplay.Note.Data
+namespace CyanStars.Gameplay.Note
 {
     /// <summary>
     /// 音乐时间轴图层数据

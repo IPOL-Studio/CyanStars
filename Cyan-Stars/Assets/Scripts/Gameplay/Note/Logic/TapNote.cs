@@ -3,7 +3,7 @@ using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Loggers;
 using CyanStars.Gameplay.Evaluate;
 
-namespace CyanStars.Gameplay.Note.Logic
+namespace CyanStars.Gameplay.Note
 {
     public class TapNote : BaseNote
     {

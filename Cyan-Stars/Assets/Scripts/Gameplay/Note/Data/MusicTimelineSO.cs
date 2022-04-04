@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CyanStars.Gameplay.Note.Data
+namespace CyanStars.Gameplay.Note
 {
     /// <summary>
     /// 音乐时间轴数据的SO

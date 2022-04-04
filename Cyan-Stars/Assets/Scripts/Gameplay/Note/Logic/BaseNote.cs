@@ -1,9 +1,7 @@
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Evaluate;
-using CyanStars.Gameplay.Note.Data;
-using CyanStars.Gameplay.Note.View;
 
-namespace CyanStars.Gameplay.Note.Logic
+namespace CyanStars.Gameplay.Note
 {
     /// <summary>
     /// 音符基类
