@@ -5,7 +5,7 @@ Unity Version: [2020.3.28f1](https://unity3d.com/get-unity/download/archive)
 >
 > 项目成立初期，暂时限制交互
 >
-> 主线部分将统一开发，开发完毕后会全面开源，欢迎加群参与
+> 主线部分将统一开发，开发完毕后会部分开源，欢迎加群参与
 
 ## CyanStars 项目简介
 
