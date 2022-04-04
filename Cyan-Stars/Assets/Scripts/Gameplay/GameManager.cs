@@ -136,21 +136,21 @@ public class GameManager : MonoBehaviour
         };
         
         //添加音符轨道
-        TrackHelper.CreateBuilder<NoteTrack>()
-            .AddClips(1, data, NoteTrack.CreateClip)
+        TrackHelper.CreateBuilder<NoteTrack, MusicTimelineData>()
+            .AddClips(1, data, NoteTrack.ClipCreator)
             .Build()
             .AddToTimeline(timeline);
 
         //添加歌词轨道
-        TrackHelper.CreateBuilder<LrcTrack>()
-            .AddClips(lrc.TimeTagList.Count, lrc.TimeTagList, LrcTrack.CreateClip)
+        TrackHelper.CreateBuilder<LrcTrack, IList<LrcTimeTag>>()
+            .AddClips(lrc.TimeTagList.Count, lrc.TimeTagList, LrcTrack.ClipCreator)
             .SortClip()
             .Build()
             .AddToTimeline(timeline);
 
         //添加相机轨道
-        TrackHelper.CreateBuilder<CameraTrack>()
-            .AddClips(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames, CameraTrack.CreateClip)
+        TrackHelper.CreateBuilder<CameraTrack, IList<CameraControllerSo.KeyFrame>>()
+            .AddClips(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames, CameraTrack.ClipCreator)
             .SortClip()
             .PostProcess(track =>
             {
@@ -161,15 +161,15 @@ public class GameManager : MonoBehaviour
             .AddToTimeline(timeline);
 
         //添加音乐轨道
-        TrackHelper.CreateBuilder<MusicTrack>()
-            .AddClips(1, Music, MusicTrack.CreateClip)
+        TrackHelper.CreateBuilder<MusicTrack, AudioClip>()
+            .AddClips(1, Music, MusicTrack.ClipCreator)
             .PostProcess(track => track.audioSource = AudioSource)
             .Build()
             .AddToTimeline(timeline);
 
         //添加特效轨道
-        TrackHelper.CreateBuilder<EffectTrack>()
-            .AddClips(EffectControllerSo.keyFrames.Count, EffectControllerSo.keyFrames, EffectTrack.CreateClip)
+        TrackHelper.CreateBuilder<EffectTrack, IList<EffectControllerSo.KeyFrame>>()
+            .AddClips(EffectControllerSo.keyFrames.Count, EffectControllerSo.keyFrames, EffectTrack.ClipCreator)
             .SortClip()
             .PostProcess(track =>
             {
