@@ -1,14 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
-namespace CatTimeline
+namespace CyanStars.Framework.Timeline
 {
-    /// <summary>
-    /// 片段创建函数原型
-    /// </summary>
-    public delegate BaseClip<T> CreateClipFunc<T>(T track, int clipIndex,object userData) where T : BaseTrack;
-    
     /// <summary>
     /// 时间轴
     /// </summary>
@@ -55,22 +49,29 @@ namespace CatTimeline
         /// <summary>
         /// 添加轨道
         /// </summary>
-        public int AddTrack<T>(int clipCount,object userData,CreateClipFunc<T> func) where T : BaseTrack, new()
+        public bool AddTrack<T>(T track) where T : BaseTrack
         {
-            T track = new T();
-            for (int i = 0; i < clipCount; i++)
-            {
-                BaseClip<T> clip = func(track,i,userData);
-                track.AddClip(clip);
-            }
-            track.SortClip();
-            track.Owner = this;
-            
-            tracks.Add(track);
+            if (track is null)
+                return false;
 
-            return tracks.Count - 1;
+            if (track.Owner != null)
+                throw new ArgumentException("track 已经被添加到了一个存在的 timeline 中");
+
+            track.Owner = this;
+            tracks.Add(track);
+            return true;
         }
 
+        /// <summary>
+        /// 创建一个空轨道并添加至timeline
+        /// </summary>
+        public T AddTrack<T>() where T : BaseTrack, new()
+        {
+            T track = new T { Owner = this };
+            tracks.Add(track);
+            return track;
+        }
+        
         /// <summary>
         /// 获取轨道
         /// </summary>
@@ -89,8 +90,7 @@ namespace CatTimeline
         /// </summary>
         public T GetTrack<T>(int index) where T : BaseTrack
         {
-            BaseTrack track = GetTrack(index);
-            return track as T;
+            return GetTrack(index) as T;
         }
         
         /// <summary>

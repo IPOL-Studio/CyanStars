@@ -1,30 +1,31 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-/// <summary>
-/// 音乐时间轴数据
-/// </summary>
-[System.Serializable]
-public class MusicTimelineData
+namespace CyanStars.Gameplay.Note
 {
     /// <summary>
-    /// 总时间（毫秒）
+    /// 音乐时间轴数据
     /// </summary>
-    public int Time;
+    [System.Serializable]
+    public class MusicTimelineData
+    {
+        /// <summary>
+        /// 总时间（毫秒）
+        /// </summary>
+        public int Time;
 
-    /// <summary>
-    /// 基础速度
-    /// </summary>
-    public float BaseSpeed = 1;
-    
-    /// <summary>
-    /// 速率
-    /// </summary>
-    public float SpeedRate = 1;
-    
-    /// <summary>
-    /// 图层数据
-    /// </summary>
-    public List<LayerData> LayerDatas;
+        /// <summary>
+        /// 基础速度
+        /// </summary>
+        public float BaseSpeed = 1;
+
+        /// <summary>
+        /// 速率
+        /// </summary>
+        public float SpeedRate = 1;
+
+        /// <summary>
+        /// 图层数据
+        /// </summary>
+        public List<LayerData> LayerDatas;
+    }
 }

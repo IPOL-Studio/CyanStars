@@ -1,22 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
-using CatTimeline;
 using UnityEngine;
+using CyanStars.Framework.Timeline;
 
-/// <summary>
-/// 音乐轨道
-/// </summary>
-public class MusicTrack : BaseTrack
+namespace CyanStars.Gameplay.Music
 {
-    public AudioSource audioSource;
-    
     /// <summary>
-    /// 创建音乐轨道片段
+    /// 音乐轨道
     /// </summary>
-    public static BaseClip<MusicTrack> CreateClip(MusicTrack track, int clipIndex, object userdata)
+    public class MusicTrack : BaseTrack
     {
-        AudioClip music = (AudioClip) userdata;
-        MusicClip clip = new MusicClip(0, music.length, track, music);
-        return clip;
+        public AudioSource audioSource;
+
+        /// <summary>
+        /// 创建音乐轨道片段
+        /// </summary>
+        public static readonly IClipCreator<MusicTrack, AudioClip> ClipCreator = new MusicClipCreator();
+
+        private sealed class MusicClipCreator : IClipCreator<MusicTrack, AudioClip>
+        {
+            public BaseClip<MusicTrack> CreateClip(MusicTrack track, int clipIndex, AudioClip music)
+            {
+                return new MusicClip(0, music.length, track, music);
+            }
+        }
     }
 }
