@@ -3,16 +3,11 @@ using System.Runtime.CompilerServices;
 
 namespace CatTimeline
 {
-    /// <summary>
-    /// 片段创建函数原型
-    /// </summary>
-    public delegate BaseClip<T> CreateClipFunc<T>(T track, int clipIndex, object userData) where T : BaseTrack;
-
-    public interface ITrackBuilder<T> where T : BaseTrack
+    public interface ITrackBuilder<T, D> where T : BaseTrack
     {
-        ITrackBuilder<T> AddClips(int clipCount, object userData, CreateClipFunc<T> func);
-        ITrackBuilder<T> SortClip();
-        ITrackBuilder<T> PostProcess(Action<T> action);
+        ITrackBuilder<T, D> AddClips(int clipCount, D userData, IClipCreator<T, D> clipCreator);
+        ITrackBuilder<T, D> SortClip();
+        ITrackBuilder<T, D> PostProcess(Action<T> action);
         TrackBuildResult<T> Build();
     }
 
@@ -31,7 +26,7 @@ namespace CatTimeline
         }
     }
 
-    internal class TrackBuilder<T> : ITrackBuilder<T> where T : BaseTrack, new()
+    internal class TrackBuilder<T, D> : ITrackBuilder<T, D> where T : BaseTrack, new()
     {
         [Flags]
         private enum BuildOperators
@@ -43,33 +38,33 @@ namespace CatTimeline
         }
 
         private BuildOperators buildOP = BuildOperators.None;
-        private (int, object, CreateClipFunc<T>) createClipArgs;
+        private (int, D, IClipCreator<T, D>) createClipArgs;
         private Action<T> postProcessAction;
 
         private void AddClips(T track)
         {
-            var (clipCount, userData, func) = createClipArgs;
+            var (clipCount, userData, clipCreator) = createClipArgs;
             for (int i = 0; i < clipCount; i++)
             {
-                BaseClip<T> clip = func(track, i, userData);
+                BaseClip<T> clip = clipCreator.CreateClip(track, i, userData);
                 track.AddClip(clip);
             }
         }
 
-        public ITrackBuilder<T> AddClips(int clipCount, object userData, CreateClipFunc<T> func)
+        public ITrackBuilder<T, D> AddClips(int clipCount, D userData, IClipCreator<T, D> clipCreator)
         {
-            createClipArgs = (clipCount, userData, func);
+            createClipArgs = (clipCount, userData, clipCreator);
             buildOP |= BuildOperators.AddClips;
             return this;
         }
 
-        public ITrackBuilder<T> SortClip()
+        public ITrackBuilder<T, D> SortClip()
         {
             buildOP |= BuildOperators.SortClip;
             return this;
         }
 
-        public ITrackBuilder<T> PostProcess(Action<T> action)
+        public ITrackBuilder<T, D> PostProcess(Action<T> action)
         {
             postProcessAction = action;
             buildOP |= BuildOperators.PostProcess;
@@ -97,7 +92,10 @@ namespace CatTimeline
 
     public static class TrackHelper
     {
-        public static ITrackBuilder<T> CreateBuilder<T>() where T : BaseTrack, new() =>
-            new TrackBuilder<T>();
+        public static ITrackBuilder<T, D> CreateBuilder<T, D>() where T : BaseTrack, new() =>
+            new TrackBuilder<T, D>();
+
+        public static ITrackBuilder<T, object> CreateBuilder<T>() where T : BaseTrack, new() =>
+            new TrackBuilder<T, object>();
     }
 }
