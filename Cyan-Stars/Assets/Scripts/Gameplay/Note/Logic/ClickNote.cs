@@ -91,6 +91,7 @@ public class ClickNote : BaseNote
                 }
                 break;
             case InputType.Up:
+                if (!headSucess) return;
                 float time = downTimePoint - LogicTimer;
                 viewObject.CreateEffectObj(data.Width);
                 DestroySelf(false);
