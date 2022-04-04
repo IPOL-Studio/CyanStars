@@ -1,110 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using CyanStars.Framework.Helpers;
 
-
-public class NoteLogger : LoggerBase<NoteLogger>
+namespace CyanStars.Framework.Loggers
 {
-    public LogLevelType LogLevel { get; set; } = LogLevelType.Log;
-
-    public void Log<T>(T args) where T : struct, INoteJudgeLogArgs
+    public class NoteLogger : LoggerBase<NoteLogger>
     {
-        LogHelper.Log(args.GetJudgeInfo(), LogLevel);
+        public LogLevelType LogLevel { get; set; } = LogLevelType.Log;
+
+        public void Log<T>(T args) where T : struct, INoteJudgeLogArgs
+        {
+            LogHelper.Log(args.GetJudgeInfo(), LogLevel);
+        }
     }
-}
 
-public interface INoteJudgeLogArgs
-{
-    public string GetJudgeInfo();
-}
-
-public struct DefaultNoteJudgeLogArgs : INoteJudgeLogArgs
-{
-    private NoteData noteData;
-    private EvaluateType evaluate;
-
-    public DefaultNoteJudgeLogArgs(NoteData data, EvaluateType evaluate)
+    public interface INoteJudgeLogArgs
     {
-        this.noteData = data;
-        this.evaluate = evaluate;
-    }
-        
-    public string GetJudgeInfo()
-    {
-        return $"{noteData.Type}音符{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}";
-    }
-}
-
-public struct ClickNoteJudgeLogArgs : INoteJudgeLogArgs
-{
-    private NoteData noteData;
-    private EvaluateType evaluate;
-    private float holdTime;
-
-    public ClickNoteJudgeLogArgs(NoteData data, EvaluateType evaluate, float holdTime)
-    {
-        this.noteData = data;
-        this.evaluate = evaluate;
-        this.holdTime = holdTime;
-    }
-    
-    public string GetJudgeInfo()
-    {
-        return $"Click尾判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}, 按住时间{holdTime}";
-    }
-}
-
-public struct ClickNoteHeadJudgeLogArgs : INoteJudgeLogArgs
-{
-    private NoteData noteData;
-    private EvaluateType evaluate;
-
-    public ClickNoteHeadJudgeLogArgs(NoteData data, EvaluateType evaluate)
-    {
-        this.noteData = data;
-        this.evaluate = evaluate;
-    }
-    
-    public string GetJudgeInfo()
-    {
-        return $"Click头判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}";
-    }
-}
-
-public struct HoldNoteJudgeLogArgs : INoteJudgeLogArgs
-{
-    private NoteData noteData;
-    private EvaluateType evaluate;
-    private float holdTime;
-    private float holdRatio;
-
-    public HoldNoteJudgeLogArgs(NoteData data, EvaluateType evaluate, float holdTime, float holdRatio)
-    {
-        this.noteData = data;
-        this.evaluate = evaluate;
-        this.holdTime = holdTime * 1000;
-        this.holdRatio = holdRatio;
-    }
-    
-    public string GetJudgeInfo()
-    {
-        return $"Hold尾判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}, 结束时间{noteData.HoldEndTime}, 按住时间{holdTime}, 按住比例{holdRatio}";
-    }
-}
-
-public struct HoldNoteHeadJudgeLogArgs : INoteJudgeLogArgs
-{
-    private NoteData noteData;
-    private EvaluateType evaluate;
-
-    public HoldNoteHeadJudgeLogArgs(NoteData data, EvaluateType evaluate)
-    {
-        this.noteData = data;
-        this.evaluate = evaluate;
-    }
-    
-    public string GetJudgeInfo()
-    {
-        return $"Hold头判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}, 结束时间{noteData.HoldEndTime}";
+        public string GetJudgeInfo();
     }
 }

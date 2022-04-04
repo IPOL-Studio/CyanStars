@@ -1,20 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
-public class NoteClickEffect : MonoBehaviour
+namespace CyanStars.Gameplay.Effect
 {
-    public bool willDestroy;
-    public float destroyTime;
+    public class NoteClickEffect : MonoBehaviour
+    {
+        public bool willDestroy;
+        public float destroyTime;
 
-    public List<ParticleSystem> particleSystemList;
-    void Start()
-    {
-        //Debug.Log(transform.position);
-        if(willDestroy)Destroy(gameObject,destroyTime);
-    }
-    void Update()
-    {
-        transform.position = new Vector3(transform.position.x,transform.position.y,0);
+        public List<ParticleSystem> particleSystemList;
+
+        void Start()
+        {
+            //Debug.Log(transform.position);
+            if (willDestroy) Destroy(gameObject, destroyTime);
+        }
+
+        void Update()
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+        }
     }
 }

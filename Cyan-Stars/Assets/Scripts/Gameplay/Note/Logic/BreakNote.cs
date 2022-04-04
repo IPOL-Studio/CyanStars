@@ -1,76 +1,80 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using CyanStars.Framework.Helpers;
+using CyanStars.Gameplay.Input;
+using CyanStars.Gameplay.Loggers;
+using CyanStars.Gameplay.Evaluate;
 
-/// <summary>
-/// Break音符
-/// </summary>
-public class BreakNote : BaseNote
+namespace CyanStars.Gameplay.Note
 {
-    public override bool IsInRange(float min, float max)
+    /// <summary>s
+    /// Break音符
+    /// </summary>
+    public class BreakNote : BaseNote
     {
-        //Break音符的InRange判定有点特殊
-        return Math.Abs(min - data.Pos) < 0.4f;
-    }
-    
-    public override void OnUpdate(float deltaTime,float noteSpeedRate)
-    {
-        base.OnUpdate(deltaTime,noteSpeedRate);
-
-        if(EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && GameManager.Instance.isAutoMode)
+        public override bool IsInRange(float min, float max)
         {
-            viewObject.CreateEffectObj(data.Width);
-            DestroySelf(false);
-            GameManager.Instance.maxScore +=2;
-            GameManager.Instance.RefreshData(1,1*2,EvaluateType.Exact,0);
-            return;
+            //Break音符的InRange判定有点特殊
+            return Math.Abs(min - data.Pos) < 0.4f;
         }
 
-        if (LogicTimer < EvaluateHelper.CheckInputEndTime)
+        public override void OnUpdate(float deltaTime, float noteSpeedRate)
         {
-            //没接住 miss
-            DestroySelf();
-            //Debug.LogError($"Break音符miss：{data}");
-            LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));
-            GameManager.Instance.maxScore += 2;
-            GameManager.Instance.RefreshData(-1,-1,EvaluateType.Miss,float.MaxValue);
-        }
-    }
+            base.OnUpdate(deltaTime, noteSpeedRate);
 
-    public override void OnInput(InputType inputType)
-    {
-        base.OnInput(inputType);
-
-        if (inputType == InputType.Down)
-        {
-            viewObject.CreateEffectObj(0);
-            DestroySelf(false);
-            //Debug.LogError($"Break音符命中,{data}");
-            EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);
-            LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, evaluateType));
-            GameManager.Instance.maxScore += 2;
-            switch (evaluateType)
+            if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && GameManager.Instance.isAutoMode)
             {
-                case EvaluateType.Exact:
-                    GameManager.Instance.RefreshData(1,1*2,evaluateType,LogicTimer);
-                    break;
-                
-                case  EvaluateType.Great:
-                    GameManager.Instance.RefreshData(1,0.75f*2,evaluateType,LogicTimer);
-                    break;
-                
-                case EvaluateType.Right:
-                    GameManager.Instance.RefreshData(1,0.5f*2,evaluateType,LogicTimer);
-                    break;
+                viewObject.CreateEffectObj(data.Width);
+                DestroySelf(false);
+                GameManager.Instance.maxScore += 2;
+                GameManager.Instance.RefreshData(1, 1 * 2, EvaluateType.Exact, 0);
+                return;
+            }
 
-                case EvaluateType.Bad:
-                    GameManager.Instance.RefreshData(-1,-1,evaluateType,LogicTimer);
-                    break;
+            if (LogicTimer < EvaluateHelper.CheckInputEndTime)
+            {
+                //没接住 miss
+                DestroySelf();
+                //Debug.LogError($"Break音符miss：{data}");
+                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));
+                GameManager.Instance.maxScore += 2;
+                GameManager.Instance.RefreshData(-1, -1, EvaluateType.Miss, float.MaxValue);
+            }
+        }
 
-                case EvaluateType.Miss:
-                    GameManager.Instance.RefreshData(-1,-1,evaluateType,float.MaxValue);
-                    break;
+        public override void OnInput(InputType inputType)
+        {
+            base.OnInput(inputType);
+
+            if (inputType == InputType.Down)
+            {
+                viewObject.CreateEffectObj(0);
+                DestroySelf(false);
+                //Debug.LogError($"Break音符命中,{data}");
+                EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);
+                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, evaluateType));
+                GameManager.Instance.maxScore += 2;
+                switch (evaluateType)
+                {
+                    case EvaluateType.Exact:
+                        GameManager.Instance.RefreshData(1, 1 * 2, evaluateType, LogicTimer);
+                        break;
+
+                    case EvaluateType.Great:
+                        GameManager.Instance.RefreshData(1, 0.75f * 2, evaluateType, LogicTimer);
+                        break;
+
+                    case EvaluateType.Right:
+                        GameManager.Instance.RefreshData(1, 0.5f * 2, evaluateType, LogicTimer);
+                        break;
+
+                    case EvaluateType.Bad:
+                        GameManager.Instance.RefreshData(-1, -1, evaluateType, LogicTimer);
+                        break;
+
+                    case EvaluateType.Miss:
+                        GameManager.Instance.RefreshData(-1, -1, evaluateType, float.MaxValue);
+                        break;
+                }
             }
         }
     }
