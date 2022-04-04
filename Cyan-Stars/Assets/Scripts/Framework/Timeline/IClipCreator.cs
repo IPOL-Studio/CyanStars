@@ -1,4 +1,4 @@
-﻿namespace CatTimeline
+﻿namespace CyanStars.Framework.Timeline
 {
     public interface IClipCreator<T, D> where T : BaseTrack
     {

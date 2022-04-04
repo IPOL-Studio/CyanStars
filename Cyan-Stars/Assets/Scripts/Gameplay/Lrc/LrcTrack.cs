@@ -1,28 +1,30 @@
-using System.Collections;
-using System.Collections.Generic;
 using CatLrcParser;
-using CatTimeline;
+using System.Collections.Generic;
+using CyanStars.Framework.Timeline;
 
-/// <summary>
-/// Lrc歌词轨道
-/// </summary>
-public class LrcTrack : BaseTrack
+namespace CyanStars.Gameplay.Lrc
 {
     /// <summary>
-    /// 创建歌词轨道片段
+    /// Lrc歌词轨道
     /// </summary>
-    public static readonly IClipCreator<LrcTrack, IList<LrcTimeTag>> ClipCreator = new LrcClipCreator();
-    
-    private sealed class LrcClipCreator : IClipCreator<LrcTrack, IList<LrcTimeTag>>
+    public class LrcTrack : BaseTrack
     {
-        public BaseClip<LrcTrack> CreateClip(LrcTrack track, int clipIndex, IList<LrcTimeTag> timeTags)
+        /// <summary>
+        /// 创建歌词轨道片段
+        /// </summary>
+        public static readonly IClipCreator<LrcTrack, IList<LrcTimeTag>> ClipCreator = new LrcClipCreator();
+
+        private sealed class LrcClipCreator : IClipCreator<LrcTrack, IList<LrcTimeTag>>
         {
-            LrcTimeTag timeTag = timeTags[clipIndex];
+            public BaseClip<LrcTrack> CreateClip(LrcTrack track, int clipIndex, IList<LrcTimeTag> timeTags)
+            {
+                LrcTimeTag timeTag = timeTags[clipIndex];
 
-            float time = (float)timeTag.Timestamp.TotalSeconds;
-            LrcClip clip = new LrcClip(time, time, track, timeTag.LyricText);
+                float time = (float)timeTag.Timestamp.TotalSeconds;
+                LrcClip clip = new LrcClip(time, time, track, timeTag.LyricText);
 
-            return clip;
+                return clip;
+            }
         }
     }
 }
