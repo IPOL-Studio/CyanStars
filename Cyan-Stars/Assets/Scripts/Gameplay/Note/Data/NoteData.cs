@@ -1,4 +1,5 @@
 using UnityEngine;
+using CyanStars.Gameplay.PromptTone;
 
 namespace CyanStars.Gameplay.Note
 {
@@ -42,7 +43,7 @@ namespace CyanStars.Gameplay.Note
         /// <summary>
         /// 提示音
         /// </summary>
-        public PromptToneType PromptToneType = PromptToneType.ns_ka;
+        public PromptToneType PromptToneType = PromptToneType.NsKa;
 
         public int GetFullScore()
         {

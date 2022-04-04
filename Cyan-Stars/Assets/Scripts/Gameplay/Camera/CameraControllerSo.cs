@@ -3,10 +3,11 @@ using System.Collections.Generic;
 
 namespace CyanStars.Gameplay.Camera
 {
+    public class CameraControllerSo : MonoBehaviour
     {
         [Header("相机默认位置")]
         public Vector3 defaultPosition;
-
+        
         [Header("相机默认角度")]
         public Vector3 defaultRotate;
 

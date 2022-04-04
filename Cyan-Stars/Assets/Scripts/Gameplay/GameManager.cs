@@ -11,7 +11,7 @@ using CyanStars.Gameplay.Music;
 using CyanStars.Gameplay.Effect;
 using CyanStars.Gameplay.Camera;
 using CyanStars.Gameplay.Evaluate;
-
+using CyanStars.Gameplay.PromptTone;
 using UInput = UnityEngine.Input;
 
 namespace CyanStars.Gameplay
@@ -167,7 +167,11 @@ namespace CyanStars.Gameplay
                 .Build()
                 .AddToTimeline(timeline);
 
-            //TODO: 提示音轨道
+            TrackHelper.CreateBuilder<PromptToneTrack, IList<NoteData>>()
+                .AddClips(LinearNoteData.Count, LinearNoteData, PromptToneTrack.ClipCreator)
+                .PostProcess(track => track.audioSource = AudioSource)
+                .Build()
+                .AddToTimeline(timeline);
 
             //添加特效轨道
             TrackHelper.CreateBuilder<EffectTrack, IList<EffectControllerSo.KeyFrame>>()
