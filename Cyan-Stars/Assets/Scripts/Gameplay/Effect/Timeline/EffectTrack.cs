@@ -21,7 +21,7 @@ public class EffectTrack : BaseTrack
     /// <summary>
     /// 创建特效轨道片段
     /// </summary>
-    public static IClipCreator<EffectTrack, IList<EffectControllerSo.KeyFrame>> ClipCreator = new EffectClipCreator();
+    public static readonly IClipCreator<EffectTrack, IList<EffectControllerSo.KeyFrame>> ClipCreator = new EffectClipCreator();
 
     private sealed class EffectClipCreator : IClipCreator<EffectTrack, IList<EffectControllerSo.KeyFrame>>
     {
