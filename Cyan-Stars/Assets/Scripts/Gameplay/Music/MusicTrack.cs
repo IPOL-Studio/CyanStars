@@ -9,14 +9,17 @@ using UnityEngine;
 public class MusicTrack : BaseTrack
 {
     public AudioSource audioSource;
-    
+
     /// <summary>
     /// 创建音乐轨道片段
     /// </summary>
-    public static BaseClip<MusicTrack> CreateClip(MusicTrack track, int clipIndex, object userdata)
+    public static readonly IClipCreator<MusicTrack, AudioClip> ClipCreator = new MusicClipCreator();
+
+    private sealed class MusicClipCreator : IClipCreator<MusicTrack, AudioClip>
     {
-        AudioClip music = (AudioClip) userdata;
-        MusicClip clip = new MusicClip(0, music.length, track, music);
-        return clip;
+        public BaseClip<MusicTrack> CreateClip(MusicTrack track, int clipIndex, AudioClip music)
+        {
+            return new MusicClip(0, music.length, track, music);
+        }
     }
 }

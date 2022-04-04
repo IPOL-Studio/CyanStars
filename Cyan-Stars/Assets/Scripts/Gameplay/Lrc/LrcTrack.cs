@@ -8,18 +8,21 @@ using CatTimeline;
 /// </summary>
 public class LrcTrack : BaseTrack
 {
-
     /// <summary>
     /// 创建歌词轨道片段
     /// </summary>
-    public static BaseClip<LrcTrack> CreateClip(LrcTrack track, int clipIndex, object userdata)
+    public static readonly IClipCreator<LrcTrack, IList<LrcTimeTag>> ClipCreator = new LrcClipCreator();
+    
+    private sealed class LrcClipCreator : IClipCreator<LrcTrack, IList<LrcTimeTag>>
     {
-        List<LrcTimeTag> timeTags = (List<LrcTimeTag>) userdata;
-        LrcTimeTag timeTag = timeTags[clipIndex];
+        public BaseClip<LrcTrack> CreateClip(LrcTrack track, int clipIndex, IList<LrcTimeTag> timeTags)
+        {
+            LrcTimeTag timeTag = timeTags[clipIndex];
 
-        float time = (float) timeTag.Timestamp.TotalSeconds;
-        LrcClip clip = new LrcClip(time, time,track, timeTag.LyricText);
-            
-        return clip;
+            float time = (float)timeTag.Timestamp.TotalSeconds;
+            LrcClip clip = new LrcClip(time, time, track, timeTag.LyricText);
+
+            return clip;
+        }
     }
 }
