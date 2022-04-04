@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CyanStars.Framework.Timeline;
 
 namespace CyanStars.Gameplay.Camera
-{    
+{
     /// <summary>
     /// 相机轨道
     /// </summary>
