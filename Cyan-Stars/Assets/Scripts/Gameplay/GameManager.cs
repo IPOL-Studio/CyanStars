@@ -148,6 +148,7 @@ public class GameManager : MonoBehaviour
         index = timeline.AddTrack<CameraTrack>(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames,CameraTrack.CreateClip);
         CameraTrack cameraTrack = timeline.GetTrack<CameraTrack>(index);
         cameraTrack.DefaultCameraPos = CameraControllerSo.defaultPosition;
+        cameraTrack.oldRot = CameraControllerSo.defaultRotate;
         cameraTrack.CameraTrans = MainCamera.transform;
         
         //添加音乐轨道

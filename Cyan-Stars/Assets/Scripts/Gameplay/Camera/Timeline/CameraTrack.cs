@@ -10,6 +10,8 @@ public class CameraTrack : BaseTrack
 {
     public Vector3 DefaultCameraPos;
     public Transform CameraTrans;
+
+    public Vector3 oldRot;
     
     /// <summary>
     /// 创建相机轨道片段

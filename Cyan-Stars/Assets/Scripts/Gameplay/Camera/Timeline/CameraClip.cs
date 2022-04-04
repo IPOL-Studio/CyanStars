@@ -35,7 +35,7 @@ public class CameraClip : BaseClip<CameraTrack>
         newPos = Owner.DefaultCameraPos + position;
         newRot = rotation;
         oldPos = camTrans.position;
-        oldRot = camTrans.eulerAngles;
+        oldRot = Owner.oldRot;
 
     }
     
@@ -68,5 +68,9 @@ public class CameraClip : BaseClip<CameraTrack>
         }
     }
 
+    public override void OnExit()
+    {
+        Owner.oldRot = newRot;
+    }
 
 }
