@@ -1,23 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
-using CatTimeline;
 using UnityEngine;
+using CyanStars.Framework.Timeline;
 
-/// <summary>
-/// 音乐片段
-/// </summary>
-public class MusicClip : BaseClip<MusicTrack>
+namespace CyanStars.Gameplay.Music
 {
-    private AudioClip music;
-    
-    public MusicClip(float startTime, float endTime, MusicTrack owner,AudioClip music) : base(startTime, endTime, owner)
+    /// <summary>
+    /// 音乐片段
+    /// </summary>
+    public class MusicClip : BaseClip<MusicTrack>
     {
-        this.music = music;
-    }
+        private AudioClip music;
 
-    public override void OnEnter()
-    {
-        Owner.audioSource.clip = music;
-        Owner.audioSource.Play();
+        public MusicClip(float startTime, float endTime, MusicTrack owner, AudioClip music) : base(startTime, endTime,
+            owner)
+        {
+            this.music = music;
+        }
+
+        public override void OnEnter()
+        {
+            Owner.audioSource.clip = music;
+            Owner.audioSource.Play();
+        }
     }
 }

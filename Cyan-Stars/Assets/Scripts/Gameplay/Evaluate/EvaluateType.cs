@@ -1,17 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-/// <summary>
-/// 评价类型
-/// </summary>
-public enum EvaluateType
+namespace CyanStars.Gameplay.Evaluate
 {
-    Miss,
-    
-    Exact,
-    Great,
-    Bad,
-    Right,
-    Out,
+    /// <summary>
+    /// 评价类型
+    /// </summary>
+    public enum EvaluateType
+    {
+        Miss,
+
+        Exact,
+        Great,
+        Bad,
+        Right,
+        Out,
+    }
 }

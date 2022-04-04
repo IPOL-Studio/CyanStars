@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-
-namespace CatTimeline
+namespace CyanStars.Framework.Timeline
 {
     /// <summary>
     /// 时间轴片段基类

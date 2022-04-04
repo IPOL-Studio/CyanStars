@@ -1,38 +1,41 @@
-using System.Collections;
-using System.Collections.Generic;
-using CatTimeline;
 using UnityEngine;
+using System.Collections.Generic;
+using CyanStars.Framework.Timeline;
 
-/// <summary>
-/// 相机轨道
-/// </summary>
-public class CameraTrack : BaseTrack
+namespace CyanStars.Gameplay.Camera
 {
-    public Vector3 DefaultCameraPos;
-    public Transform CameraTrans;
-
     /// <summary>
-    /// 创建相机轨道片段
-    /// </summary> 
-    public static readonly IClipCreator<CameraTrack, IList<CameraControllerSo.KeyFrame>> ClipCreator =
-        new CameraClipCreator();
-
-    private sealed class CameraClipCreator : IClipCreator<CameraTrack, IList<CameraControllerSo.KeyFrame>>
+    /// 相机轨道
+    /// </summary>
+    public class CameraTrack : BaseTrack
     {
-        public BaseClip<CameraTrack> CreateClip(CameraTrack track, int clipIndex, IList<CameraControllerSo.KeyFrame> keyFrames)
+        public Vector3 DefaultCameraPos;
+        public Transform CameraTrans;
+
+        /// <summary>
+        /// 创建相机轨道片段
+        /// </summary> 
+        public static readonly IClipCreator<CameraTrack, IList<CameraControllerSo.KeyFrame>> ClipCreator =
+            new CameraClipCreator();
+
+        private sealed class CameraClipCreator : IClipCreator<CameraTrack, IList<CameraControllerSo.KeyFrame>>
         {
-            CameraControllerSo.KeyFrame keyFrame = keyFrames[clipIndex];
-
-            float startTime = 0;
-            if (clipIndex > 0)
+            public BaseClip<CameraTrack> CreateClip(CameraTrack track, int clipIndex,
+                IList<CameraControllerSo.KeyFrame> keyFrames)
             {
-                startTime = keyFrames[clipIndex - 1].time;
+                CameraControllerSo.KeyFrame keyFrame = keyFrames[clipIndex];
+
+                float startTime = 0;
+                if (clipIndex > 0)
+                {
+                    startTime = keyFrames[clipIndex - 1].time;
+                }
+
+                CameraClip clip = new CameraClip(startTime / 1000f, keyFrame.time / 1000f, track, keyFrame.position,
+                    keyFrame.rotation, keyFrame.smoothType);
+
+                return clip;
             }
-
-            CameraClip clip = new CameraClip(startTime / 1000f, keyFrame.time / 1000f, track, keyFrame.position,
-                keyFrame.rotation, keyFrame.smoothType);
-
-            return clip;
         }
     }
 }
