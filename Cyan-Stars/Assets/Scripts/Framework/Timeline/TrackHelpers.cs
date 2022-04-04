@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace CatTimeline
+namespace CyanStars.Framework.Timeline
 {
     public interface ITrackBuilder<T, D> where T : BaseTrack
     {

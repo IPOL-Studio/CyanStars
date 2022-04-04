@@ -1,79 +1,84 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using CyanStars.Framework.Helpers;
+using CyanStars.Gameplay.Input;
+using CyanStars.Gameplay.Loggers;
+using CyanStars.Gameplay.Evaluate;
 
-/// <summary>
-/// Drag音符
-/// </summary>
-public class DragNote : BaseNote
+namespace CyanStars.Gameplay.Note.Logic
 {
-    private bool isHit;
-    
-    public override bool CanReceiveInput()
+    /// <summary>
+    /// Drag音符
+    /// </summary>
+    public class DragNote : BaseNote
     {
-        return LogicTimer <= EvaluateHelper.DragTimeRange && LogicTimer >= -EvaluateHelper.DragTimeRange;
-    }
+        private bool isHit;
 
-    public override void OnUpdate(float deltaTime,float noteSpeedRate)
-    {
-        base.OnUpdate(deltaTime,noteSpeedRate);
-
-        if(CanReceiveInput() && GameManager.Instance.isAutoMode && !isHit)
+        public override bool CanReceiveInput()
         {
-            viewObject.CreateEffectObj(data.Width);
-            GameManager.Instance.maxScore ++;
-            GameManager.Instance.RefreshData(1,1,EvaluateType.Exact,0);
-            isHit = true;
-            return;
+            return LogicTimer <= EvaluateHelper.DragTimeRange && LogicTimer >= -EvaluateHelper.DragTimeRange;
         }
 
-        if (isHit && LogicTimer <= 0 )
+        public override void OnUpdate(float deltaTime, float noteSpeedRate)
         {
-            DestroySelf(false);
-            return;
-        }
-        
-        if (LogicTimer < -EvaluateHelper.DragTimeRange)
-        {
-            //没接住 miss
-            DestroySelf();
-            //Debug.LogError($"Drag音符miss：{data}");
-            LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));
-            GameManager.Instance.maxScore ++;
-            GameManager.Instance.RefreshData(-1,-1,EvaluateType.Miss,float.MaxValue);
-        }
-    }
+            base.OnUpdate(deltaTime, noteSpeedRate);
 
-    public override void OnInput(InputType inputType)
-    {
-        base.OnInput(inputType);
-
-        switch (inputType)
-        {
-
-            case InputType.Press:
-
-                if (isHit)
-                {
-                    return;
-                }
+            if (CanReceiveInput() && GameManager.Instance.isAutoMode && !isHit)
+            {
                 viewObject.CreateEffectObj(data.Width);
-                //Debug.LogError($"Drag音符命中：{data}");
-                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Exact));
-                GameManager.Instance.maxScore ++;
-                GameManager.Instance.RefreshData(1,1,EvaluateType.Exact,float.MaxValue);
-                if (LogicTimer > 0)
-                {
-                    //早按准点放
-                    isHit = true;
-                }
-                else
-                {
-                    //晚按即刻放
-                    DestroySelf(false);
-                }
-                break;
+                GameManager.Instance.maxScore++;
+                GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, 0);
+                isHit = true;
+                return;
+            }
+
+            if (isHit && LogicTimer <= 0)
+            {
+                DestroySelf(false);
+                return;
+            }
+
+            if (LogicTimer < -EvaluateHelper.DragTimeRange)
+            {
+                //没接住 miss
+                DestroySelf();
+                //Debug.LogError($"Drag音符miss：{data}");
+                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));
+                GameManager.Instance.maxScore++;
+                GameManager.Instance.RefreshData(-1, -1, EvaluateType.Miss, float.MaxValue);
+            }
+        }
+
+        public override void OnInput(InputType inputType)
+        {
+            base.OnInput(inputType);
+
+            switch (inputType)
+            {
+
+                case InputType.Press:
+
+                    if (isHit)
+                    {
+                        return;
+                    }
+
+                    viewObject.CreateEffectObj(data.Width);
+                    //Debug.LogError($"Drag音符命中：{data}");
+                    LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Exact));
+                    GameManager.Instance.maxScore++;
+                    GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, float.MaxValue);
+                    if (LogicTimer > 0)
+                    {
+                        //早按准点放
+                        isHit = true;
+                    }
+                    else
+                    {
+                        //晚按即刻放
+                        DestroySelf(false);
+                    }
+
+                    break;
+            }
         }
     }
 }

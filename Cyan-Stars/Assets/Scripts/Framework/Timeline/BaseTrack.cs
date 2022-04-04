@@ -1,9 +1,6 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 
-namespace CatTimeline
+namespace CyanStars.Framework.Timeline
 {
     /// <summary>
     /// 时间轴轨道基类

@@ -1,151 +1,159 @@
-﻿using System;
-using UnityEngine;
+﻿using CyanStars.Framework.Helpers;
+using CyanStars.Gameplay.Input;
+using CyanStars.Gameplay.Loggers;
+using CyanStars.Gameplay.Evaluate;
+using CyanStars.Gameplay.Note.Data;
 
-/// <summary>
-/// Hold音符
-/// </summary>
-public class HoldNote : BaseNote
+namespace CyanStars.Gameplay.Note.Logic
 {
-
     /// <summary>
-    /// Hold音符的检查输入结束时间
+    /// Hold音符
     /// </summary>
-    private float holdCheckInputEndTime;
-
-    /// <summary>
-    /// Hold音符长度
-    /// </summary>
-    private float holdLength;
-
-    /// <summary>
-    /// 头判是否成功
-    /// </summary>
-    private bool headSucess;
-
-    /// <summary>
-    /// 累计有效时长值(0-1)
-    /// </summary>
-    private float value;
-
-
-    private int pressCount;
-    private float pressTime;
-
-    public override void Init(NoteData data, NoteLayer layer)
+    public class HoldNote : BaseNote
     {
-        base.Init(data, layer);
 
-        holdLength = (data.HoldEndTime - data.StartTime) / 1000f;
-        //hold结束时间点与长度相同
-        holdCheckInputEndTime = -holdLength;
-    }
+        /// <summary>
+        /// Hold音符的检查输入结束时间
+        /// </summary>
+        private float holdCheckInputEndTime;
 
-    public override bool CanReceiveInput()
-    {
-        return LogicTimer <= EvaluateHelper.CheckInputStartTime && LogicTimer >= holdCheckInputEndTime;
-    }
+        /// <summary>
+        /// Hold音符长度
+        /// </summary>
+        private float holdLength;
 
-    public override void OnUpdate(float deltaTime, float noteSpeedRate)
-    {
-        base.OnUpdate(deltaTime, noteSpeedRate);
+        /// <summary>
+        /// 头判是否成功
+        /// </summary>
+        private bool headSucess;
 
-        if(EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && GameManager.Instance.isAutoMode && !headSucess)
+        /// <summary>
+        /// 累计有效时长值(0-1)
+        /// </summary>
+        private float value;
+
+
+        private int pressCount;
+        private float pressTime;
+
+        public override void Init(NoteData data, NoteLayer layer)
         {
-            headSucess = true;
-            GameManager.Instance.maxScore++;
-            GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, 0);
-            viewObject.CreateEffectObj(data.Width);
+            base.Init(data, layer);
+
+            holdLength = (data.HoldEndTime - data.StartTime) / 1000f;
+            //hold结束时间点与长度相同
+            holdCheckInputEndTime = -holdLength;
         }
 
-        if (pressCount > 0 && LogicTimer <= 0 || GameManager.Instance.isAutoMode)
+        public override bool CanReceiveInput()
         {
-            //只在音符区域内计算有效时间
-            pressTime += deltaTime;
+            return LogicTimer <= EvaluateHelper.CheckInputStartTime && LogicTimer >= holdCheckInputEndTime;
         }
 
-        if (LogicTimer < holdCheckInputEndTime)
+        public override void OnUpdate(float deltaTime, float noteSpeedRate)
         {
-            if(GameManager.Instance.isAutoMode)viewObject.DestroyEffectObj();
-            if (!headSucess)
-            {
-                //被漏掉了 miss
-                //Debug.LogError($"Hold音符miss：{data}");
-                LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Miss, 0, 0));
-                GameManager.Instance.maxScore += 2;
-                GameManager.Instance.RefreshData(-1, -1, EvaluateType.Miss, float.MaxValue);
-            }
-            else
-            {
-                viewObject.DestroyEffectObj();
-                value = pressTime / holdLength;
+            base.OnUpdate(deltaTime, noteSpeedRate);
 
-                EvaluateType et = EvaluateHelper.GetHoldEvaluate(value);
-                //Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
-                LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, et, pressTime, value));
+            if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && GameManager.Instance.isAutoMode &&
+                !headSucess)
+            {
+                headSucess = true;
                 GameManager.Instance.maxScore++;
-                if(et == EvaluateType.Exact)
-                    GameManager.Instance.RefreshData(0,1,et,float.MaxValue);
-                else if(et == EvaluateType.Great)
-                    GameManager.Instance.RefreshData(0,0.75f,et,float.MaxValue);
-                else if(et == EvaluateType.Right)
-                    GameManager.Instance.RefreshData(0,0.5f,et,float.MaxValue);
-                else
-                    GameManager.Instance.RefreshData(-1,-1,et,float.MaxValue);
+                GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, 0);
+                viewObject.CreateEffectObj(data.Width);
             }
 
-            DestroySelf();
-        }
-    }
+            if (pressCount > 0 && LogicTimer <= 0 || GameManager.Instance.isAutoMode)
+            {
+                //只在音符区域内计算有效时间
+                pressTime += deltaTime;
+            }
 
-    public override void OnInput(InputType inputType)
-    {
-        base.OnInput(inputType);
-
-        switch (inputType)
-        {
-            case InputType.Down:
-
+            if (LogicTimer < holdCheckInputEndTime)
+            {
+                if (GameManager.Instance.isAutoMode) viewObject.DestroyEffectObj();
                 if (!headSucess)
                 {
-                    //判断头判评价
-                    EvaluateType et = EvaluateHelper.GetTapEvaluate(LogicTimer);
-                    if (et == EvaluateType.Bad || et == EvaluateType.Miss)
-                    {
-                        //头判失败直接销毁
-                        DestroySelf(false);
-                        //Debug.LogError($"Hold头判失败,时间：{LogicTimer}，{data}");
-                        LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, et));
-                        GameManager.Instance.maxScore += 2;
-                        GameManager.Instance.RefreshData(-1, -1, et, float.MaxValue);
-                        return;
-                    }
-
-                    //Debug.LogError($"Hold头判成功,时间：{LogicTimer}，{data}");
-                    LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, et));
-                    GameManager.Instance.maxScore++;
-                    if(et == EvaluateType.Exact)
-                        GameManager.Instance.RefreshData(1,1,et,LogicTimer);
-                    else if(et == EvaluateType.Great)
-                        GameManager.Instance.RefreshData(1,0.75f,et,LogicTimer);
-                    else if(et == EvaluateType.Right)
-                        GameManager.Instance.RefreshData(1,0.5f,et,LogicTimer);
+                    //被漏掉了 miss
+                    //Debug.LogError($"Hold音符miss：{data}");
+                    LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Miss, 0, 0));
+                    GameManager.Instance.maxScore += 2;
+                    GameManager.Instance.RefreshData(-1, -1, EvaluateType.Miss, float.MaxValue);
                 }
-
-                //头判成功
-                headSucess = true;
-                if (pressCount == 0) viewObject.CreateEffectObj(data.Width);
-                pressCount++;
-                break;
-
-            case InputType.Up:
-
-                if (pressCount > 0)
+                else
                 {
-                    pressCount--;
-                    if (pressCount == 0) viewObject.DestroyEffectObj();
+                    viewObject.DestroyEffectObj();
+                    value = pressTime / holdLength;
+
+                    EvaluateType et = EvaluateHelper.GetHoldEvaluate(value);
+                    //Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
+                    LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, et, pressTime, value));
+                    GameManager.Instance.maxScore++;
+                    if (et == EvaluateType.Exact)
+                        GameManager.Instance.RefreshData(0, 1, et, float.MaxValue);
+                    else if (et == EvaluateType.Great)
+                        GameManager.Instance.RefreshData(0, 0.75f, et, float.MaxValue);
+                    else if (et == EvaluateType.Right)
+                        GameManager.Instance.RefreshData(0, 0.5f, et, float.MaxValue);
+                    else
+                        GameManager.Instance.RefreshData(-1, -1, et, float.MaxValue);
                 }
-                break;
+
+                DestroySelf();
+            }
         }
 
+        public override void OnInput(InputType inputType)
+        {
+            base.OnInput(inputType);
+
+            switch (inputType)
+            {
+                case InputType.Down:
+
+                    if (!headSucess)
+                    {
+                        //判断头判评价
+                        EvaluateType et = EvaluateHelper.GetTapEvaluate(LogicTimer);
+                        if (et == EvaluateType.Bad || et == EvaluateType.Miss)
+                        {
+                            //头判失败直接销毁
+                            DestroySelf(false);
+                            //Debug.LogError($"Hold头判失败,时间：{LogicTimer}，{data}");
+                            LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, et));
+                            GameManager.Instance.maxScore += 2;
+                            GameManager.Instance.RefreshData(-1, -1, et, float.MaxValue);
+                            return;
+                        }
+
+                        //Debug.LogError($"Hold头判成功,时间：{LogicTimer}，{data}");
+                        LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, et));
+                        GameManager.Instance.maxScore++;
+                        if (et == EvaluateType.Exact)
+                            GameManager.Instance.RefreshData(1, 1, et, LogicTimer);
+                        else if (et == EvaluateType.Great)
+                            GameManager.Instance.RefreshData(1, 0.75f, et, LogicTimer);
+                        else if (et == EvaluateType.Right)
+                            GameManager.Instance.RefreshData(1, 0.5f, et, LogicTimer);
+                    }
+
+                    //头判成功
+                    headSucess = true;
+                    if (pressCount == 0) viewObject.CreateEffectObj(data.Width);
+                    pressCount++;
+                    break;
+
+                case InputType.Up:
+
+                    if (pressCount > 0)
+                    {
+                        pressCount--;
+                        if (pressCount == 0) viewObject.DestroyEffectObj();
+                    }
+
+                    break;
+            }
+
+        }
     }
 }

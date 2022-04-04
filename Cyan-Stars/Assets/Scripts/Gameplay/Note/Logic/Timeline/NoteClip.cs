@@ -1,62 +1,65 @@
-using System.Collections;
 using System.Collections.Generic;
-using CatTimeline;
-using UnityEngine;
+using CyanStars.Framework.Timeline;
+using CyanStars.Gameplay.Input;
 
-/// <summary>
-/// 音符片段
-/// </summary>
-public class NoteClip : BaseClip<NoteTrack>
+namespace CyanStars.Gameplay.Note.Logic.Timeline
 {
     /// <summary>
-    /// 基础速度
+    /// 音符片段
     /// </summary>
-    private float baseSpeed;
-    
-    /// <summary>
-    /// 速率
-    /// </summary>
-    private float speedRate;
-
-    /// <summary>
-    /// 片段速度
-    /// </summary>
-    private float clipSpeed;
-    
-    /// <summary>
-    /// 音符图层列表
-    /// </summary>
-    private List<NoteLayer> layers = new List<NoteLayer>();
-
-    public NoteClip(float startTime, float endTime, NoteTrack owner,float baseSpeed,float speedRate) : base(startTime, endTime,owner)
+    public class NoteClip : BaseClip<NoteTrack>
     {
-        this.baseSpeed = baseSpeed;
-        this.speedRate = speedRate;
-        clipSpeed = baseSpeed * speedRate;
-    }
+        /// <summary>
+        /// 基础速度
+        /// </summary>
+        private float baseSpeed;
 
-    /// <summary>
-    /// 添加音符图层
-    /// </summary>
-    public void AddLayer(NoteLayer layer)
-    {
-        layers.Add(layer);
-    }
-    
-    public override void OnUpdate(float currentTime, float previousTime)
-    {
-        for (int i = 0; i < layers.Count; i++)
+        /// <summary>
+        /// 速率
+        /// </summary>
+        private float speedRate;
+
+        /// <summary>
+        /// 片段速度
+        /// </summary>
+        private float clipSpeed;
+
+        /// <summary>
+        /// 音符图层列表
+        /// </summary>
+        private List<NoteLayer> layers = new List<NoteLayer>();
+
+        public NoteClip(float startTime, float endTime, NoteTrack owner, float baseSpeed, float speedRate) : base(
+            startTime, endTime, owner)
         {
-            NoteLayer layer = layers[i];
-            layer.Update(currentTime,previousTime,clipSpeed);
+            this.baseSpeed = baseSpeed;
+            this.speedRate = speedRate;
+            clipSpeed = baseSpeed * speedRate;
         }
-    }
 
-    public void OnInput(InputType inputType, InputMapData.Item item)
-    {
-        for (int i = 0; i < layers.Count; i++)
+        /// <summary>
+        /// 添加音符图层
+        /// </summary>
+        public void AddLayer(NoteLayer layer)
         {
-            layers[i].OnInput(inputType,item);
+            layers.Add(layer);
+        }
+
+        public override void OnUpdate(float currentTime, float previousTime)
+        {
+            for (int i = 0; i < layers.Count; i++)
+            {
+                NoteLayer layer = layers[i];
+                layer.Update(currentTime, previousTime, clipSpeed);
+            }
+        }
+
+        public void OnInput(InputType inputType, InputMapData.Item item)
+        {
+            for (int i = 0; i < layers.Count; i++)
+            {
+                layers[i].OnInput(inputType, item);
+            }
         }
     }
 }
