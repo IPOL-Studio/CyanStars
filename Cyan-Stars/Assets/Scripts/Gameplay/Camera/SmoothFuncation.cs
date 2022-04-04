@@ -25,7 +25,7 @@ public class SmoothFuncation
     }
     public static Vector3 BackEaseIn(Vector3 b, Vector3 e, float t, float dt)//超过范围的三次方缓动（(s+1)*t^3 – s*t^2）/ 从0开始加速的缓动，也就是先慢后快
     {
-        float s = 1.70158f;
+        float s = 1f;
         return (e - b) * (t /= dt) * t * ((s + 1) * t - s) + b;
     }
 
@@ -48,7 +48,7 @@ public class SmoothFuncation
     }
     public static float BackEaseIn(float b, float e, float t, float dt)//超过范围的三次方缓动（(s+1)*t^3 – s*t^2）/ 从0开始加速的缓动，也就是先慢后快
     {
-        float s = 1.70158f;
+        float s = 1f;
         return (e - b) * (t /= dt) * t * ((s + 1) * t - s) + b;
     }
 
