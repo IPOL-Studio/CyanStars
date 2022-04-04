@@ -305,11 +305,11 @@ MonoBehaviour:
   keyFrames:
   - time: 1000
     position: {x: 0, y: 0, z: 0}
-    rotation: {x: 45, y: 0, z: -1}
+    rotation: {x: 45, y: 0, z: 0}
     smoothType: 3
   - time: 3000
     position: {x: 0, y: 0, z: 0}
-    rotation: {x: 45, y: 0, z: 0}
+    rotation: {x: 45, y: 0, z: 3600}
     smoothType: 3
 --- !u!4 &387384357
 Transform:

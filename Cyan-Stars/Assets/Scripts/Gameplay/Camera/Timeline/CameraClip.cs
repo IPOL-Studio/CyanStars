@@ -71,6 +71,8 @@ public class CameraClip : BaseClip<CameraTrack>
     public override void OnExit()
     {
         Owner.oldRot = newRot;
+        camTrans.position = newPos;
+        camTrans.localEulerAngles = newRot;
     }
 
 }
