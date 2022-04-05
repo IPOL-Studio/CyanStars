@@ -4,6 +4,6 @@ namespace CyanStars.Gameplay.PromptTone
     {
         NsKa,
         NaDing,
-        Null,
+        None,
     }
 }
