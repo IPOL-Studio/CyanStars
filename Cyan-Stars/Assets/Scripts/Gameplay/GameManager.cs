@@ -136,7 +136,7 @@ namespace CyanStars.Gameplay
             timeline.OnStop += () => { timeline = null; };
 
             //添加音符轨道
-           TrackHelper.CreateBuilder<NoteTrack, MusicTimelineData>()
+            TrackHelper.CreateBuilder<NoteTrack, MusicTimelineData>()
                 .AddClips(1, data, NoteTrack.ClipCreator)
                 .Build()
                 .AddToTimeline(timeline);
