@@ -138,10 +138,9 @@ namespace CyanStars.Gameplay
             //添加音符轨道
             TrackHelper.CreateBuilder<NoteTrack, MusicTimelineData>()
                 .AddClips(1, data, NoteTrack.ClipCreator)
+                .PostProcess(track => noteTrack = track)
                 .Build()
                 .AddToTimeline(timeline);
-
-            noteTrack = timeline.GetTrack<NoteTrack>();
 
             //添加歌词轨道
             TrackHelper.CreateBuilder<LrcTrack, IList<LrcTimeTag>>()
@@ -257,7 +256,12 @@ namespace CyanStars.Gameplay
         /// </summary>
         public void ReceiveInput(InputType inputType, InputMapData.Item item)
         {
-            noteTrack?.OnInput(inputType, item);
+            if(noteTrack == null)
+            {
+                Debug.LogError("noteTrack为null");
+                return;
+            }
+            noteTrack.OnInput(inputType, item);
         }
 
 
