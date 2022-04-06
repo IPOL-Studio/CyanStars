@@ -846,14 +846,6 @@ MonoBehaviour:
   defaultPosition: {x: 0, y: 15, z: -2.5}
   defaultRotate: {x: 45, y: 0, z: 0}
   keyFrames:
-  - time: 1000
-    position: {x: 0, y: 0, z: 0}
-    rotation: {x: 45, y: 0, z: -1}
-    smoothType: 3
-  - time: 3000
-    position: {x: 0, y: 0, z: 0}
-    rotation: {x: 45, y: 0, z: 0}
-    smoothType: 3
   - time: 29389
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 45, y: 0, z: 0}

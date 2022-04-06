@@ -26,13 +26,13 @@ MonoBehaviour:
           Width: 0.2
           StartTime: 5855
           HoldEndTime: 6953
-          PromptToneType: 1
+          PromptToneType: 0
         - Type: 0
           Pos: 0.25
           Width: 0.2
           StartTime: 6953
           HoldEndTime: 0
-          PromptToneType: 1
+          PromptToneType: 0
         - Type: 0
           Pos: 0.55
           Width: 0.2
