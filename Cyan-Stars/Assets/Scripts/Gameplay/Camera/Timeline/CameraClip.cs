@@ -35,15 +35,15 @@ namespace CyanStars.Gameplay.Camera
             newPos = Owner.DefaultCameraPos + position;
             newRot = rotation;
             oldPos = camTrans.position;
-            oldRot = camTrans.eulerAngles;
+            oldRot = Owner.oldRot;
         }
 
-    public override void OnExit()
-    {
-        Owner.oldRot = newRot;
-        camTrans.position = newPos;
-        camTrans.localEulerAngles = newRot;
-    }
+        public override void OnExit()
+        {
+            Owner.oldRot = newRot;
+            camTrans.position = newPos;
+            camTrans.localEulerAngles = newRot;
+        }
         public override void OnUpdate(float currentTime, float previousTime)
         {
             float localTimer = currentTime - StartTime;
