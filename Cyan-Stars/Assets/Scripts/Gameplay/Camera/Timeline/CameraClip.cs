@@ -20,8 +20,7 @@ namespace CyanStars.Gameplay.Camera
         private Vector3 oldPos;
         private Vector3 oldRot;
 
-        public CameraClip(float startTime, float endTime, CameraTrack owner, Vector3 position, Vector3 rotation,
-            SmoothFuncationType smoothType) : base(startTime, endTime, owner)
+        public CameraClip(float startTime, float endTime, CameraTrack owner, Vector3 position, Vector3 rotation, SmoothFuncationType smoothType) : base(startTime, endTime, owner)
         {
             this.position = position;
             this.rotation = rotation;
@@ -37,9 +36,14 @@ namespace CyanStars.Gameplay.Camera
             newRot = rotation;
             oldPos = camTrans.position;
             oldRot = camTrans.eulerAngles;
-
         }
 
+    public override void OnExit()
+    {
+        Owner.oldRot = newRot;
+        camTrans.position = newPos;
+        camTrans.localEulerAngles = newRot;
+    }
         public override void OnUpdate(float currentTime, float previousTime)
         {
             float localTimer = currentTime - StartTime;
