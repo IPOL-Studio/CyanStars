@@ -21,23 +21,31 @@ namespace CyanStars.Gameplay.Note
         {
             base.OnUpdate(deltaTime, noteSpeedRate);
 
-            if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && GameManager.Instance.isAutoMode)
+            if (LogicTimer < EvaluateHelper.CheckInputEndTime)//没接住Miss
             {
-                viewObject.CreateEffectObj(data.Width);
-                DestroySelf(false);
-                GameManager.Instance.maxScore += 2;
-                GameManager.Instance.RefreshData(1, 1 * 2, EvaluateType.Exact, 0);
-                return;
-            }
+                DestroySelf();//延迟销毁
 
-            if (LogicTimer < EvaluateHelper.CheckInputEndTime)
+                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));//Log
+
+                GameManager.Instance.maxScore += data.GetFullScore();//更新最理论高分
+                GameManager.Instance.RefreshData(-1, -1, EvaluateType.Miss, float.MaxValue);//更新数据
+            }
+        }
+
+        public override void OnUpdateInAutoMode(float deltaTime, float noteSpeedRate)
+        {
+            base.OnUpdateInAutoMode(deltaTime, noteSpeedRate);
+
+            if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact)
             {
-                //没接住 miss
-                DestroySelf();
-                //Debug.LogError($"Break音符miss：{data}");
-                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));
-                GameManager.Instance.maxScore += 2;
-                GameManager.Instance.RefreshData(-1, -1, EvaluateType.Miss, float.MaxValue);
+                viewObject.CreateEffectObj(data.Width);//生成特效
+                DestroySelf(false);//销毁
+
+                GameManager.Instance.maxScore += data.GetFullScore();//更新理论最高分
+                GameManager.Instance.RefreshData(addCombo: 1,
+                addScore: data.GetFullScore(),
+                grade: EvaluateType.Exact, currentDeviation: float.MaxValue);//更新数据
+                return;
             }
         }
 
@@ -47,34 +55,18 @@ namespace CyanStars.Gameplay.Note
 
             if (inputType == InputType.Down)
             {
-                viewObject.CreateEffectObj(0);
-                DestroySelf(false);
-                //Debug.LogError($"Break音符命中,{data}");
-                EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);
-                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, evaluateType));
-                GameManager.Instance.maxScore += 2;
-                switch (evaluateType)
-                {
-                    case EvaluateType.Exact:
-                        GameManager.Instance.RefreshData(1, 1 * 2, evaluateType, LogicTimer);
-                        break;
+                viewObject.CreateEffectObj(0);//生成特效
+                DestroySelf(false);//销毁
 
-                    case EvaluateType.Great:
-                        GameManager.Instance.RefreshData(1, 0.75f * 2, evaluateType, LogicTimer);
-                        break;
+                EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);//获取评价类型
 
-                    case EvaluateType.Right:
-                        GameManager.Instance.RefreshData(1, 0.5f * 2, evaluateType, LogicTimer);
-                        break;
+                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, evaluateType));//Log
 
-                    case EvaluateType.Bad:
-                        GameManager.Instance.RefreshData(-1, -1, evaluateType, LogicTimer);
-                        break;
-
-                    case EvaluateType.Miss:
-                        GameManager.Instance.RefreshData(-1, -1, evaluateType, float.MaxValue);
-                        break;
-                }
+                GameManager.Instance.maxScore += data.GetFullScore();//更新理论最高分
+                GameManager.Instance.RefreshData(addCombo: 1,
+                addScore: EvaluateHelper.GetScoreWithEvaluate(evaluateType) * data.GetMagnification(),
+                grade: evaluateType, currentDeviation: LogicTimer);//更新数据
+                
             }
         }
     }

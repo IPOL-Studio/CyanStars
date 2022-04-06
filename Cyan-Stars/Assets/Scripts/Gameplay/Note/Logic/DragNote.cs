@@ -45,12 +45,14 @@ namespace CyanStars.Gameplay.Note
             if (CanReceiveInput() && !isHit)
             {
                 viewObject.CreateEffectObj(data.Width);//生成特效
+
+                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Exact));//Log
                 
                 GameManager.Instance.maxScore += data.GetFullScore();//更新理论最高分
-                GameManager.Instance.RefreshData(1, 0.25f, EvaluateType.Exact, 0);//更新数据
-                /*
-                *Drag的最高分为0.25，所以不能用EvaluateHelper.GetScoreWithEvaluate获取分数
-                */
+                GameManager.Instance.RefreshData(addCombo: 1,
+                addScore: data.GetFullScore(),
+                grade: EvaluateType.Exact, currentDeviation: float.MaxValue);//更新数据
+
                 isHit = true;
             }
         }
@@ -67,10 +69,11 @@ namespace CyanStars.Gameplay.Note
             LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Exact));//Log
 
             GameManager.Instance.maxScore += data.GetFullScore();//更新理论最高分
-            GameManager.Instance.RefreshData(1, 0.25f, EvaluateType.Exact, float.MaxValue);//更新数据
-            /*
-             *Drag的最高分为0.25，所以不能用EvaluateHelper.GetScoreWithEvaluate获取分数
-            */
+
+            GameManager.Instance.RefreshData(addCombo: 1, 
+            addScore: EvaluateHelper.GetScoreWithEvaluate(EvaluateType.Exact) * data.GetMagnification(),
+            grade: EvaluateType.Exact, currentDeviation: LogicTimer);//更新数据
+
 
             if (LogicTimer > 0)
             {

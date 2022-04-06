@@ -58,6 +58,19 @@ namespace CyanStars.Gameplay.Note
             };
         }
 
+        public float GetMagnification()
+        {
+            return Type switch
+            {
+                NoteType.Tap => 1,
+                NoteType.Hold => 1,
+                NoteType.Break => 2,
+                NoteType.Drag => 0.25f,
+                NoteType.Click => 1,
+                _ => throw new System.NotFiniteNumberException()
+            };
+        }
+
 
         public override string ToString()
         {
