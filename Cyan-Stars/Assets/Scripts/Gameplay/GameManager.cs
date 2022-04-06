@@ -11,6 +11,7 @@ using CyanStars.Gameplay.Music;
 using CyanStars.Gameplay.Effect;
 using CyanStars.Gameplay.Camera;
 using CyanStars.Gameplay.Evaluate;
+using CyanStars.Gameplay.PromptTone;
 
 using UInput = UnityEngine.Input;
 
@@ -88,6 +89,8 @@ namespace CyanStars.Gameplay
         [Header("-----游戏模式-----")] [Header("AutoMode")]
         public bool isAutoMode = false; //是否为自动模式
 
+        private List<NoteData> LinearNoteData = new List<NoteData>();
+
         private void Awake()
         {
             Application.targetFrameRate = 60;
@@ -135,6 +138,7 @@ namespace CyanStars.Gameplay
             //添加音符轨道
             TrackHelper.CreateBuilder<NoteTrack, MusicTimelineData>()
                 .AddClips(1, data, NoteTrack.ClipCreator)
+                .PostProcess(track => noteTrack = track)
                 .Build()
                 .AddToTimeline(timeline);
 
@@ -152,6 +156,7 @@ namespace CyanStars.Gameplay
                 .PostProcess(track =>
                 {
                     track.DefaultCameraPos = CameraControllerSo.defaultPosition;
+                    track.oldRot = CameraControllerSo.defaultRotate;
                     track.CameraTrans = MainCamera.transform;
                 })
                 .Build()
@@ -160,6 +165,13 @@ namespace CyanStars.Gameplay
             //添加音乐轨道
             TrackHelper.CreateBuilder<MusicTrack, AudioClip>()
                 .AddClips(1, Music, MusicTrack.ClipCreator)
+                .PostProcess(track => track.audioSource = AudioSource)
+                .Build()
+                .AddToTimeline(timeline);
+
+            //添加提示音轨道
+            TrackHelper.CreateBuilder<PromptToneTrack, IList<NoteData>>()
+                .AddClips(LinearNoteData.Count, LinearNoteData, PromptToneTrack.ClipCreator)
                 .PostProcess(track => track.audioSource = AudioSource)
                 .Build()
                 .AddToTimeline(timeline);
@@ -191,6 +203,7 @@ namespace CyanStars.Gameplay
                     foreach (var note in clip.NoteDatas)
                     {
                         fullScore += note.GetFullScore();
+                        LinearNoteData.Add(note);
                     }
                 }
             }
@@ -243,6 +256,11 @@ namespace CyanStars.Gameplay
         /// </summary>
         public void ReceiveInput(InputType inputType, InputMapData.Item item)
         {
+            if(noteTrack == null)
+            {
+                Debug.LogError("noteTrack为null");
+                return;
+            }
             noteTrack.OnInput(inputType, item);
         }
 

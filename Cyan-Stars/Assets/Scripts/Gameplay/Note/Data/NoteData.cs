@@ -1,4 +1,5 @@
 using UnityEngine;
+using CyanStars.Gameplay.PromptTone;
 
 namespace CyanStars.Gameplay.Note
 {
@@ -38,6 +39,11 @@ namespace CyanStars.Gameplay.Note
         /// Hold音符的判定结束时间（毫秒）
         /// </summary>
         public int HoldEndTime;
+
+        /// <summary>
+        /// 提示音
+        /// </summary>
+        public PromptToneType PromptToneType = PromptToneType.NsKa;
 
         public int GetFullScore()
         {

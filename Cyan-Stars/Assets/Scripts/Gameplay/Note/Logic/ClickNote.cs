@@ -44,7 +44,7 @@ namespace CyanStars.Gameplay.Note
 
             if (LogicTimer < EvaluateHelper.CheckInputEndTime)
             {
-                float time = LogicTimer - downTimePoint;
+                float time = downTimePoint - LogicTimer;
                 viewObject.CreateEffectObj(data.Width);
                 EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(time);
                 DestroySelf(false);
@@ -100,7 +100,8 @@ namespace CyanStars.Gameplay.Note
 
                     break;
                 case InputType.Up:
-                    float time = LogicTimer - downTimePoint;
+                    if (!headSucess) return;
+                    float time = downTimePoint - LogicTimer;
                     viewObject.CreateEffectObj(data.Width);
                     DestroySelf(false);
                     //Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
