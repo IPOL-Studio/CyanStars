@@ -88,6 +88,11 @@ namespace CyanStars.Gameplay.Note
             viewObject?.OnUpdate(deltaTime * noteSpeedRate);
         }
 
+        public virtual void OnUpdateInAutoMode(float deltaTime, float noteSpeedRate)
+        {
+            
+        }
+
         /// <summary>
         /// 此音符有对应输入时
         /// </summary>
