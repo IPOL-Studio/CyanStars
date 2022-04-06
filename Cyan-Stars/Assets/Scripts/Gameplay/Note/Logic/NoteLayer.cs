@@ -131,7 +131,8 @@ namespace CyanStars.Gameplay.Note
 
             for (int i = notes.Count - 1; i >= 0; i--)
             {
-                notes[i].OnUpdate(deltaTime, noteViewSpeed);
+                if(GameManager.Instance.isAutoMode)notes[i].OnUpdateInAutoMode(deltaTime, noteViewSpeed);
+                else notes[i].OnUpdate(deltaTime, noteViewSpeed);
             }
         }
 

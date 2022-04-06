@@ -11,12 +11,6 @@ namespace CyanStars.Gameplay.Note
         {
             base.OnUpdate(deltaTime, noteSpeedRate);
 
-            if (GameManager.Instance.isAutoMode)//当处于AutoMode时使用另一个方法处理
-            {
-                OnUpdateInAutoMode(deltaTime, noteSpeedRate);
-                return;
-            }
-
             if (LogicTimer < EvaluateHelper.CheckInputEndTime)//没接住Miss
             {
                 DestroySelf();//延迟销毁
@@ -30,6 +24,8 @@ namespace CyanStars.Gameplay.Note
 
         public override void OnUpdateInAutoMode(float deltaTime, float noteSpeedRate)//AutoMode下的更新
         {
+            base.OnUpdateInAutoMode(deltaTime, noteSpeedRate);
+
             if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact)
             {
                 viewObject.CreateEffectObj(data.Width);//生成特效

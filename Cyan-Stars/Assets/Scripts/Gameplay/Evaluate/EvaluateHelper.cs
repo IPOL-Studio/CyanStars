@@ -92,29 +92,16 @@ namespace CyanStars.Gameplay.Evaluate
 
         public static float GetScoreWithEvaluate(EvaluateType et)//由评价获取分数倍率
         {
-            switch (et)
+            return et switch
             {
-                case EvaluateType.Exact:
-                    return 1;
-                
-                case EvaluateType.Great:
-                    return 0.75f;
-
-                case EvaluateType.Right:
-                    return 0.5f;
-
-                case EvaluateType.Out:
-                    return 0.5f;
-
-                case EvaluateType.Bad:
-                    return 0;
-
-                case EvaluateType.Miss:
-                    return 0;
-                
-                default:
-                    throw new System.NotImplementedException();
-            }
+                EvaluateType.Exact => 1,
+                EvaluateType.Great => 0.75f,
+                EvaluateType.Right => 0.5f,
+                EvaluateType.Out => 0.5f,
+                EvaluateType.Bad => 0,
+                EvaluateType.Miss => 0,
+                _ => throw new System.NotImplementedException()
+            };
         }
     }
 }
