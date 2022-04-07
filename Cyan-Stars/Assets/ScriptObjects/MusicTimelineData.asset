@@ -945,38 +945,74 @@ MonoBehaviour:
           StartTime: 117081
           HoldEndTime: 120008
           PromptToneType: 0
-        - Type: 3
+        - Type: 0
           Pos: 0.2
           Width: 0.2
           StartTime: 120008
           HoldEndTime: 0
           PromptToneType: 0
-        - Type: 3
+        - Type: 4
+          Pos: 2
+          Width: 0.2
+          StartTime: 120008
+          HoldEndTime: 0
+          PromptToneType: 0
+        - Type: 0
           Pos: 0.6
           Width: 0.2
           StartTime: 120557
           HoldEndTime: 0
           PromptToneType: 0
-        - Type: 3
+        - Type: 4
+          Pos: -1
+          Width: 0.2
+          StartTime: 120557
+          HoldEndTime: 0
+          PromptToneType: 0
+        - Type: 0
           Pos: 0.2
           Width: 0.2
           StartTime: 121106
           HoldEndTime: 0
           PromptToneType: 0
-        - Type: 3
+        - Type: 4
+          Pos: 2
+          Width: 0.2
+          StartTime: 121106
+          HoldEndTime: 0
+          PromptToneType: 0
+        - Type: 0
           Pos: 0.6
           Width: 0.2
           StartTime: 121655
           HoldEndTime: 0
           PromptToneType: 0
-        - Type: 3
+        - Type: 4
+          Pos: -1
+          Width: 0.2
+          StartTime: 121655
+          HoldEndTime: 0
+          PromptToneType: 0
+        - Type: 0
           Pos: 0.2
           Width: 0.2
           StartTime: 122203
           HoldEndTime: 0
           PromptToneType: 0
-        - Type: 3
+        - Type: 4
+          Pos: 2
+          Width: 0.2
+          StartTime: 122203
+          HoldEndTime: 0
+          PromptToneType: 0
+        - Type: 0
           Pos: 0.7
+          Width: 0.2
+          StartTime: 122569
+          HoldEndTime: 0
+          PromptToneType: 0
+        - Type: 4
+          Pos: -1
           Width: 0.2
           StartTime: 122569
           HoldEndTime: 0
