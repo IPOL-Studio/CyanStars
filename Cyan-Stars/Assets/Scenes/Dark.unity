@@ -986,30 +986,78 @@ MonoBehaviour:
     position: {x: 0, y: -5, z: 0}
     rotation: {x: 30, y: 0, z: 0}
     smoothType: 3
-  - time: 108360
+  - time: 108300
     position: {x: 0, y: -5, z: 0}
     rotation: {x: 30, y: 0, z: 0}
     smoothType: 3
-  - time: 108410
+  - time: 108350
     position: {x: 0, y: -5, z: 0}
     rotation: {x: 30, y: 0, z: 2}
     smoothType: 2
-  - time: 108710
+  - time: 108650
     position: {x: 0, y: -5, z: 0}
     rotation: {x: 30, y: 0, z: 0}
     smoothType: 2
-  - time: 108909
+  - time: 108849
     position: {x: 0, y: -5, z: 0}
     rotation: {x: 30, y: 0, z: 0}
     smoothType: 3
-  - time: 108959
+  - time: 108899
     position: {x: 0, y: -5, z: 0}
     rotation: {x: 30, y: 0, z: -2}
     smoothType: 2
-  - time: 109259
+  - time: 109199
     position: {x: 0, y: -5, z: 0}
     rotation: {x: 30, y: 0, z: 0}
     smoothType: 2
+  - time: 109398
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 0}
+    smoothType: 3
+  - time: 109448
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 2}
+    smoothType: 3
+  - time: 109748
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 0}
+    smoothType: 3
+  - time: 109946
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 0}
+    smoothType: 3
+  - time: 109996
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: -2}
+    smoothType: 3
+  - time: 110296
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 0}
+    smoothType: 3
+  - time: 110495
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 0}
+    smoothType: 3
+  - time: 110545
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 2}
+    smoothType: 3
+  - time: 110845
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 0}
+    smoothType: 3
+  - time: 110861
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 0}
+    smoothType: 3
+  - time: 110911
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: -2}
+    smoothType: 3
+  - time: 111411
+    position: {x: 0, y: -5, z: 0}
+    rotation: {x: 30, y: 0, z: 0}
+    smoothType: 3
   - time: 120118
     position: {x: 0, y: -5, z: 0}
     rotation: {x: 30, y: 0, z: 0}
@@ -1101,7 +1149,7 @@ PrefabInstance:
       objectReference: {fileID: 552719607}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: isAutoMode
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: AudioSource
