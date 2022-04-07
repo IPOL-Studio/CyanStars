@@ -193,9 +193,9 @@ namespace CyanStars.Gameplay
             Debug.Log("时间轴创建完毕");
         }
 
-        private int GetFullScore()
+        private float GetFullScore()
         {
-            int fullScore = 0;
+            float fullScore = 0;
             foreach (var layer in TimelineSo.musicTimelineData.LayerDatas)
             {
                 foreach (var clip in layer.ClipDatas)
