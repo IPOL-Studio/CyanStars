@@ -63,7 +63,7 @@ namespace CyanStars.Gameplay.Note
 
             if (inputType != InputType.Press) return;//只处理按下的情况
 
-            if (isHit)return;//已经接住了
+            if (isHit) return;//已经接住了
 
             viewObject.CreateEffectObj(data.Width);//生成特效
             LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Exact));//Log
