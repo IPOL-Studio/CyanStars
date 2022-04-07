@@ -53,21 +53,19 @@ namespace CyanStars.Gameplay.Note
         {
             base.OnInput(inputType);
 
-            if (inputType == InputType.Down)
-            {
-                viewObject.CreateEffectObj(0);//生成特效
-                DestroySelf(false);//销毁
+            if (inputType != InputType.Down) return;
 
-                EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);//获取评价类型
+            viewObject.CreateEffectObj(0);//生成特效
+            DestroySelf(false);//销毁
 
-                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, evaluateType));//Log
+            EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);//获取评价类型
 
-                GameManager.Instance.maxScore += data.GetFullScore();//更新理论最高分
-                GameManager.Instance.RefreshData(addCombo: 1,
-                addScore: EvaluateHelper.GetScoreWithEvaluate(evaluateType) * data.GetMagnification(),
-                grade: evaluateType, currentDeviation: LogicTimer);//更新数据
-                
-            }
+            LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, evaluateType));//Log
+
+            GameManager.Instance.maxScore += data.GetFullScore();//更新理论最高分
+            GameManager.Instance.RefreshData(addCombo: 1,
+            addScore: EvaluateHelper.GetScoreWithEvaluate(evaluateType) * data.GetMagnification(),
+            grade: evaluateType, currentDeviation: LogicTimer);//更新数据
         }
     }
 }

@@ -56,6 +56,7 @@ namespace CyanStars.Gameplay.Note
             {
                 headSucess = true;
                 GameManager.Instance.maxScore += 2;
+                LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, EvaluateType.Exact, 0));
                 GameManager.Instance.RefreshData(1, 2, EvaluateType.Exact, 0);
                 viewObject.CreateEffectObj(data.Width);
                 DestroySelf(false);

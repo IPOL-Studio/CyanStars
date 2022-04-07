@@ -100,6 +100,7 @@ namespace CyanStars.Gameplay.Note
             {
                 headSucess = true;
                 GameManager.Instance.maxScore++;
+                LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, EvaluateType.Exact));
                 GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, 0);
                 viewObject.CreateEffectObj(data.Width);
             }
@@ -108,6 +109,7 @@ namespace CyanStars.Gameplay.Note
             {
                 viewObject.DestroyEffectObj();
                 GameManager.Instance.maxScore++;
+                LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Exact, holdLength, 1));
                 GameManager.Instance.RefreshData(0, 1, EvaluateType.Exact, float.MaxValue);
                 DestroySelf();
             }

@@ -44,7 +44,7 @@ namespace CyanStars.Gameplay.Note
         {
             base.OnInput(inputType);
 
-            if (inputType != InputType.Down)return;                               //只处理按下的情况
+            if (inputType != InputType.Down) return;                               //只处理按下的情况
 
             viewObject.CreateEffectObj(data.Width);                               //生成特效
             DestroySelf(false);                                                   //销毁
