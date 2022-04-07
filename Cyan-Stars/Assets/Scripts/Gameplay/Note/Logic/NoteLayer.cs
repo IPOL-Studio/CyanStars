@@ -129,10 +129,21 @@ namespace CyanStars.Gameplay.Note
 
             float deltaTime = currentTime - previousTime;
 
-            for (int i = notes.Count - 1; i >= 0; i--)
+            if (GameManager.Instance.isAutoMode)//如果是AutoMode
             {
-                notes[i].OnUpdate(deltaTime, noteViewSpeed);
+                for (int i = notes.Count - 1; i >= 0; i--)
+                {
+                    notes[i].OnUpdateInAutoMode(deltaTime, noteViewSpeed);//使用AutoMode的OnUpdate
+                }
             }
+            else
+            {
+                for (int i = notes.Count - 1; i >= 0; i--)
+                {
+                    notes[i].OnUpdate(deltaTime, noteViewSpeed);//正常的OnUpdate
+                }
+            }
+            
         }
 
         public void OnInput(InputType inputType, InputMapData.Item item)

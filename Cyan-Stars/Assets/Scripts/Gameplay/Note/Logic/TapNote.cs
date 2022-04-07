@@ -10,23 +10,33 @@ namespace CyanStars.Gameplay.Note
         public override void OnUpdate(float deltaTime, float noteSpeedRate)
         {
             base.OnUpdate(deltaTime, noteSpeedRate);
-            if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && GameManager.Instance.isAutoMode)
-            {
-                viewObject.CreateEffectObj(data.Width);
-                DestroySelf(false);
-                GameManager.Instance.maxScore++;
-                GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, 0);
-                return;
-            }
 
-            if (LogicTimer < EvaluateHelper.CheckInputEndTime)
+            if (LogicTimer < EvaluateHelper.CheckInputEndTime)//没接住Miss
             {
-                //没接住 miss
-                DestroySelf();
-                //Debug.LogError($"Tap音符miss：{data}");
-                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));
-                GameManager.Instance.maxScore++;
-                GameManager.Instance.RefreshData(-1, -1, EvaluateType.Miss, float.MaxValue);
+                DestroySelf();//延迟销毁
+
+                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));//Log
+
+                GameManager.Instance.maxScore += data.GetFullScore();//更新最理论高分
+                GameManager.Instance.RefreshData(-1, -1, EvaluateType.Miss, float.MaxValue);//更新数据
+            }
+        }
+
+        public override void OnUpdateInAutoMode(float deltaTime, float noteSpeedRate)//AutoMode下的更新
+        {
+            base.OnUpdateInAutoMode(deltaTime, noteSpeedRate);
+
+            if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact)
+            {
+                viewObject.CreateEffectObj(data.Width);//生成特效
+                DestroySelf(false);//销毁
+
+                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Exact));//Log
+                
+                GameManager.Instance.maxScore += data.GetFullScore();//更新理论最高分
+                GameManager.Instance.RefreshData(addCombo: 1, 
+                addScore: data.GetFullScore(),
+                grade: EvaluateType.Exact, currentDeviation: float.MaxValue);//更新数据
             }
         }
 
@@ -34,37 +44,20 @@ namespace CyanStars.Gameplay.Note
         {
             base.OnInput(inputType);
 
-            if (inputType == InputType.Down)
-            {
-                viewObject.CreateEffectObj(data.Width);
-                DestroySelf(false);
-                EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);
-                //Debug.LogError($"Tap音符命中,评价:{evaluateType},{data}");s
-                LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, evaluateType));
-                GameManager.Instance.maxScore++;
-                switch (evaluateType)
-                {
-                    case EvaluateType.Exact:
-                        GameManager.Instance.RefreshData(1, 1, evaluateType, LogicTimer);
-                        break;
+            if (inputType != InputType.Down) return;                               //只处理按下的情况
 
-                    case EvaluateType.Great:
-                        GameManager.Instance.RefreshData(1, 0.75f, evaluateType, LogicTimer);
-                        break;
+            viewObject.CreateEffectObj(data.Width);                               //生成特效
+            DestroySelf(false);                                                   //销毁
 
-                    case EvaluateType.Right:
-                        GameManager.Instance.RefreshData(1, 0.5f, evaluateType, LogicTimer);
-                        break;
+            EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);//获取评价类型
 
-                    case EvaluateType.Bad:
-                        GameManager.Instance.RefreshData(-1, -1, evaluateType, LogicTimer);
-                        break;
+            LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, evaluateType));//Log
 
-                    case EvaluateType.Miss:
-                        GameManager.Instance.RefreshData(-1, -1, evaluateType, float.MaxValue);
-                        break;
-                }
-            }
+            GameManager.Instance.maxScore += data.GetFullScore();                 //更新理论最高分
+            GameManager.Instance.RefreshData(addCombo: 1, 
+            addScore: EvaluateHelper.GetScoreWithEvaluate(evaluateType) * data.GetMagnification(),
+            grade: evaluateType, currentDeviation: LogicTimer);//更新数据
+
         }
     }
 }

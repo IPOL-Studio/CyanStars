@@ -45,16 +45,30 @@ namespace CyanStars.Gameplay.Note
         /// </summary>
         public PromptToneType PromptToneType = PromptToneType.NsKa;
 
-        public int GetFullScore()
+        public float GetFullScore()
         {
-            if (Type == NoteType.Hold || Type == NoteType.Break || Type == NoteType.Click)
+            return Type switch
             {
-                return 2;
-            }
-            else
+                NoteType.Tap => 1,
+                NoteType.Hold => 2,
+                NoteType.Break => 2,
+                NoteType.Drag => 0.25f,
+                NoteType.Click => 2f,
+                _ => throw new System.NotFiniteNumberException()
+            };
+        }
+
+        public float GetMagnification()
+        {
+            return Type switch
             {
-                return 1;
-            }
+                NoteType.Tap => 1,
+                NoteType.Hold => 1,
+                NoteType.Break => 2,
+                NoteType.Drag => 0.25f,
+                NoteType.Click => 1,
+                _ => throw new System.NotFiniteNumberException()
+            };
         }
 
 

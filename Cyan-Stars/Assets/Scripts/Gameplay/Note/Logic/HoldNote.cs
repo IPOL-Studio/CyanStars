@@ -53,15 +53,6 @@ namespace CyanStars.Gameplay.Note
         {
             base.OnUpdate(deltaTime, noteSpeedRate);
 
-            if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && GameManager.Instance.isAutoMode &&
-                !headSucess)
-            {
-                headSucess = true;
-                GameManager.Instance.maxScore++;
-                GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, 0);
-                viewObject.CreateEffectObj(data.Width);
-            }
-
             if (pressCount > 0 && LogicTimer <= 0 || GameManager.Instance.isAutoMode)
             {
                 //只在音符区域内计算有效时间
@@ -70,7 +61,6 @@ namespace CyanStars.Gameplay.Note
 
             if (LogicTimer < holdCheckInputEndTime)
             {
-                if (GameManager.Instance.isAutoMode) viewObject.DestroyEffectObj();
                 if (!headSucess)
                 {
                     //被漏掉了 miss
@@ -98,6 +88,29 @@ namespace CyanStars.Gameplay.Note
                         GameManager.Instance.RefreshData(-1, -1, et, float.MaxValue);
                 }
 
+                DestroySelf();
+            }
+        }
+
+        public override void OnUpdateInAutoMode(float deltaTime, float noteSpeedRate)
+        {
+            base.OnUpdateInAutoMode(deltaTime, noteSpeedRate);
+
+            if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && !headSucess)
+            {
+                headSucess = true;
+                GameManager.Instance.maxScore++;
+                LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, EvaluateType.Exact));
+                GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, 0);
+                viewObject.CreateEffectObj(data.Width);
+            }
+
+            if (LogicTimer < holdCheckInputEndTime)
+            {
+                viewObject.DestroyEffectObj();
+                GameManager.Instance.maxScore++;
+                LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Exact, holdLength, 1));
+                GameManager.Instance.RefreshData(0, 1, EvaluateType.Exact, float.MaxValue);
                 DestroySelf();
             }
         }
