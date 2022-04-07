@@ -1,9 +1,9 @@
+using CyanStars.Framework.Helpers;
+
 namespace CyanStars.Framework.Loggers
 {
-//TODO: 一个统一的单例基类，替换LoggerBase独立的单例实现
-    public abstract class LoggerBase<T> where T : LoggerBase<T>, new()
+    public abstract class LoggerBase<T> : SingletonBase<T> where T : LoggerBase<T>, new()
     {
-        private static T instnace;
-        public static T Instance => instnace ??= new T();
+        public LogLevelType LogLevel { get; set; } = LogLevelType.Log;
     }
 }

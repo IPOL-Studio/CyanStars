@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using CatLrcParser;
+using CyanStars.Framework;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.UI;
 using CyanStars.Gameplay.Lrc;
@@ -20,10 +21,8 @@ namespace CyanStars.Gameplay
     /// <summary>
     /// 游戏管理器
     /// </summary>
-    public class GameManager : MonoBehaviour
+    public class GameManager : SingletonMono<GameManager>
     {
-        public static GameManager Instance;
-
         public MusicTimelineSO TimelineSo;
         public InputMapSO InputMapSO;
         public CameraControllerSo CameraControllerSo;
@@ -91,11 +90,10 @@ namespace CyanStars.Gameplay
 
         private List<NoteData> LinearNoteData = new List<NoteData>();
 
-        private void Awake()
+        protected override void OnAwake()
         {
             Application.targetFrameRate = 60;
-
-            Instance = this;
+            
             inputMapData = InputMapSO.InputMapData;
             pressedKeySet = new HashSet<KeyCode>();
 

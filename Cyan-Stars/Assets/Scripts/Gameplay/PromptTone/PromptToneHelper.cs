@@ -1,18 +1,12 @@
+using CyanStars.Framework;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.PromptTone
 {
-    public class PromptToneHelper : MonoBehaviour
+    public class PromptToneHelper : SingletonMono<PromptToneHelper>
     {
-        public static PromptToneHelper Instance;
-
         public AudioClip ns_ka;
         public AudioClip na_ding;
-
-        private void Start()
-        {
-            Instance = this;
-        }
 
         public AudioClip GetAudioClipWithType(PromptToneType type) => type switch
         {
