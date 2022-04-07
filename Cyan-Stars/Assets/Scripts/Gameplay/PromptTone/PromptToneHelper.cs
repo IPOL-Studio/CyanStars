@@ -1,5 +1,5 @@
-using CyanStars.Framework;
 using UnityEngine;
+using CyanStars.Framework;
 
 namespace CyanStars.Gameplay.PromptTone
 {
