@@ -31,6 +31,7 @@ namespace CyanStars.Framework
             else
             {
                 Debug.LogError($"当前实例{GetType().Name}不能分配给单例{typeof(T).Name}");
+                Destroy(this);
             }
         }
     }
