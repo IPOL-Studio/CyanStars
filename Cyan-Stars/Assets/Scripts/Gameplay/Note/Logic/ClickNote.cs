@@ -21,16 +21,6 @@ namespace CyanStars.Gameplay.Note
         {
             base.OnUpdate(deltaTime, noteSpeedRate);
 
-            if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && GameManager.Instance.isAutoMode &&
-                !headSucess)
-            {
-                headSucess = true;
-                GameManager.Instance.maxScore += 2;
-                GameManager.Instance.RefreshData(1, 2, EvaluateType.Exact, 0);
-                viewObject.CreateEffectObj(data.Width);
-                DestroySelf(false);
-            }
-
             if (LogicTimer < EvaluateHelper.CheckInputEndTime && !headSucess)
             {
                 //没接住 miss
@@ -55,6 +45,21 @@ namespace CyanStars.Gameplay.Note
                     GameManager.Instance.RefreshData(0, 1, evaluateType, LogicTimer);
                 else
                     GameManager.Instance.RefreshData(0, 0.5f, evaluateType, LogicTimer);
+            }
+        }
+
+        public override void OnUpdateInAutoMode(float deltaTime, float noteSpeedRate)
+        {
+            base.OnUpdateInAutoMode(deltaTime, noteSpeedRate);
+
+            if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && !headSucess)
+            {
+                headSucess = true;
+                GameManager.Instance.maxScore += 2;
+                LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, EvaluateType.Exact, 0));
+                GameManager.Instance.RefreshData(1, 2, EvaluateType.Exact, 0);
+                viewObject.CreateEffectObj(data.Width);
+                DestroySelf(false);
             }
         }
 

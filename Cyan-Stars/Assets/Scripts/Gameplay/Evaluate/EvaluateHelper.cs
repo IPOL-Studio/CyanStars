@@ -89,5 +89,19 @@ namespace CyanStars.Gameplay.Evaluate
 
             return EvaluateType.Out;
         }
+
+        public static float GetScoreWithEvaluate(EvaluateType et)//由评价获取分数倍率
+        {
+            return et switch
+            {
+                EvaluateType.Exact => 1,
+                EvaluateType.Great => 0.75f,
+                EvaluateType.Right => 0.5f,
+                EvaluateType.Out => 0.5f,
+                EvaluateType.Bad => 0,
+                EvaluateType.Miss => 0,
+                _ => throw new System.NotImplementedException()
+            };
+        }
     }
 }
