@@ -72,7 +72,7 @@ namespace CyanStars.Gameplay.Note
 
             GameManager.Instance.RefreshData(addCombo: 1, 
             addScore: EvaluateHelper.GetScoreWithEvaluate(EvaluateType.Exact) * data.GetMagnification(),
-            grade: EvaluateType.Exact, currentDeviation: LogicTimer);//更新数据
+            grade: EvaluateType.Exact, currentDeviation: float.MaxValue);//更新数据
 
 
             if (LogicTimer > 0)
