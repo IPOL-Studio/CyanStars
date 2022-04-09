@@ -139,7 +139,7 @@ namespace CyanStars.Gameplay.Note
 
             pos.z = viewCreateTime;
 
-            pos.y = Endpoint.Instance.leftObj.transform.position.y;
+            pos.y = Endpoint.Instance.leftTrans.position.y;
             if (data.Type == NoteType.Break)
             {
                 if (Mathf.Abs(data.Pos - (-1)) < float.Epsilon)
@@ -173,7 +173,7 @@ namespace CyanStars.Gameplay.Note
             if (data.Type != NoteType.Break)
             {
                 //非Break音符需要缩放宽度
-                scale.x = data.Width * Endpoint.Instance.GetLenth();
+                scale.x = data.Width * Endpoint.Instance.Length;
                 scale.y = 2;
             }
             else

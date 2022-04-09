@@ -1,48 +1,34 @@
 using UnityEngine;
+using CyanStars.Framework;
 
 namespace CyanStars.Gameplay.Note
 {
-    public class Endpoint : MonoBehaviour //场景的两个端点
+    public class Endpoint : SingletonMono<Endpoint> //场景的两个端点
     {
-        public static Endpoint Instance; //单例
-        public GameObject leftObj; //左端点
-        public GameObject rightObj; //右端点
-
-        void Start()
-        {
-            Instance = this; //设置单例
-        }
+        public Transform leftTrans; //左端点
+        public Transform rightTrans; //右端点
 
         /// <summary>
         /// 获取左端点的X坐标
         /// </summary>
-        public float GetLeftPos()
-        {
-            return leftObj.transform.position.x;
-        }
-
+        public float LeftPos => leftTrans.position.x;
+        
         /// <summary>
         /// 获取右端点的X坐标
         /// </summary>
-        public float GetRightPos()
-        {
-            return rightObj.transform.position.x;
-        }
+        public float RightPos => rightTrans.position.x;
 
         /// <summary>
         /// 场景宽度
         /// </summary>
-        public float GetLenth()
-        {
-            return rightObj.transform.position.x - leftObj.transform.position.x;
-        }
+        public float Length => Mathf.Abs(RightPos - LeftPos);
 
         /// <summary>
         /// 获取指定比例的X坐标
         /// </summary>
         public float GetPosWithRatio(float ratio)
         {
-            return leftObj.transform.position.x + ratio * (rightObj.transform.position.x - leftObj.transform.position.x);
+            return LeftPos + ratio * Length;
         }
     }
 }
