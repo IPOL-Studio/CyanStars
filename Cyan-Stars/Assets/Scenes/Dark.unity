@@ -1214,8 +1214,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f75607db0465ba45862ab4bfe424a27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftObj: {fileID: 1335608535}
-  rightObj: {fileID: 3205723}
+  leftTrans: {fileID: 1335608536}
+  rightTrans: {fileID: 3205724}
 --- !u!4 &1068476077
 Transform:
   m_ObjectHideFlags: 0

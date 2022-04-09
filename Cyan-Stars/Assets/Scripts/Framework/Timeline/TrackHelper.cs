@@ -11,9 +11,9 @@ namespace CyanStars.Framework.Timeline
         TrackBuildResult<T> Build();
     }
 
-    public struct TrackBuildResult<T> where T : BaseTrack
+    public readonly struct TrackBuildResult<T> where T : BaseTrack
     {
-        public T Track { get; private set; }
+        public readonly T Track;
 
         public TrackBuildResult(T track)
         {

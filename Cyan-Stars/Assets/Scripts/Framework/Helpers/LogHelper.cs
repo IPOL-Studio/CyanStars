@@ -3,13 +3,6 @@ using CyanStars.Framework.Loggers;
 
 namespace CyanStars.Framework.Helpers
 {
-    public enum LogLevelType
-    {
-        Log,
-        Warning,
-        Error
-    }
-
     public static class LogHelper
     {
         public static NoteLogger NoteLogger => NoteLogger.Instance;
