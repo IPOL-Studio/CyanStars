@@ -25,7 +25,7 @@ namespace CyanStars.Gameplay.Note
         public void CreateEffectObj(float w)
         {
             effectObj = GameObject.Instantiate(effectPrefab,
-                transform.position + new Vector3(Endpoint.Instance.GetLenth() * w / 2, 0, 0), Quaternion.identity);
+                transform.position + new Vector3(Endpoint.Instance.Length * w / 2, 0, 0), Quaternion.identity);
         }
 
         public void DestroyEffectObj()
@@ -57,16 +57,17 @@ namespace CyanStars.Gameplay.Note
         /// <summary>
         /// 自动移动一段时间然后销毁自己
         /// </summary>
-        public IEnumerator AutoMove()
+        private IEnumerator AutoMove()
         {
             float timer = 0;
+            var trans = transform;
             while (true)
             {
                 timer += deltaTime;
 
-                Vector3 pos = transform.position;
+                Vector3 pos = trans.position;
                 pos.z -= deltaTime;
-                transform.position = pos;
+                trans.position = pos;
 
                 if (timer >= 2f)
                 {
