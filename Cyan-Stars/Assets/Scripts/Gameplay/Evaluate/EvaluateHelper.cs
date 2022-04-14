@@ -82,7 +82,7 @@ namespace CyanStars.Gameplay.Evaluate
         /// </summary>
         public static EvaluateType GetClickEvaluate(float value)
         {
-            if (value <= 0.07f)
+            if (value <= 0.125f)
             {
                 return EvaluateType.Exact;
             }
