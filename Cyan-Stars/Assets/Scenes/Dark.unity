@@ -1395,6 +1395,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 552719607}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: TimelineSo
+      value: 
+      objectReference: {fileID: 11400000, guid: aa5078e5d93ab22488bc446efa6c9343, type: 2}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: isAutoMode
       value: 0
       objectReference: {fileID: 0}

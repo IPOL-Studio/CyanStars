@@ -77,16 +77,14 @@ namespace CyanStars.Gameplay.UI
                 {
                     if (GameManager.Instance.currentDeviation > 0)
                     {
-                        currentDeviationText.text = "误差:+" +
-                                                    string.Format("{0:F3}",
+                        currentDeviationText.text = "+" + string.Format("{0:F3}",
                                                         GameManager.Instance.currentDeviation * 1000) + "ms";
                         currentDeviationText.color = Color.red / 1.35f;
                     }
 
                     if (GameManager.Instance.currentDeviation < 0)
                     {
-                        currentDeviationText.text = "误差:" +
-                                                    string.Format("{0:F3}",
+                        currentDeviationText.text = string.Format("{0:F3}",
                                                         GameManager.Instance.currentDeviation * 1000) + "ms";
                         currentDeviationText.color = Color.cyan / 1.35f;
                     }
