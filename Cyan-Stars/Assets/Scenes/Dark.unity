@@ -1412,7 +1412,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: isAutoMode
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: AudioSource
@@ -1435,9 +1435,53 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: EffectList.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: effectList.Array.size
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: EffectList.Array.data[0]
+      value: 
+      objectReference: {fileID: 3781862996343542742, guid: f16993a2c2102a64d9ddf94155b06405, type: 3}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: EffectList.Array.data[1]
+      value: 
+      objectReference: {fileID: 3090660559402485272, guid: 124627e73d8f9074f95448efb66a21bc, type: 3}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: EffectList.Array.data[2]
+      value: 
+      objectReference: {fileID: 4104089223263765346, guid: 6c27707279452b844a1b8d984ca0fa24, type: 3}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: EffectList.Array.data[3]
+      value: 
+      objectReference: {fileID: 9159847793241450868, guid: d3d89a9bcf589fa4591df36c831e6ff1, type: 3}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: EffectList.Array.data[4]
+      value: 
+      objectReference: {fileID: 1797714989872003899, guid: d677b3d5927319c4c97510dabe96cad2, type: 3}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: EffectList.Array.data[5]
+      value: 
+      objectReference: {fileID: 402086266770844137, guid: 55b2ad603ec62514d876fb59f5de8be5, type: 3}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: EffectList.Array.data[6]
+      value: 
+      objectReference: {fileID: 6926933232775222153, guid: 3425ab51e0f7d124c846fe295340ac54, type: 3}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: EffectList.Array.data[7]
+      value: 
+      objectReference: {fileID: 3423610622994212751, guid: ff98bb4eee1f4214a86babbeb8599350, type: 3}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: EffectList.Array.data[8]
+      value: 
+      objectReference: {fileID: 9219679803321507132, guid: 70f897f0e89b7b245aa8e564a86186b7, type: 3}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: EffectList.Array.data[9]
+      value: 
+      objectReference: {fileID: 2696686588806595397, guid: c8ad969b11fe5504991b7df6f9dd1235, type: 3}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: effectList.Array.data[0]
       value: 
@@ -1482,6 +1526,14 @@ PrefabInstance:
       propertyPath: playingUIList.Array.size
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: EffectList.Array.data[10]
+      value: 
+      objectReference: {fileID: 6877560130653438118, guid: 55b358deb5a6bca418ac0a363548f5c4, type: 3}
+    - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
+      propertyPath: EffectList.Array.data[11]
+      value: 
+      objectReference: {fileID: 5515936439533581774, guid: 58a101e988023f640b7bfc6c6756a1f4, type: 3}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: effectList.Array.data[10]
       value: 
