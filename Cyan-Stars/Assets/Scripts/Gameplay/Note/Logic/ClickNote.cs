@@ -42,9 +42,9 @@ namespace CyanStars.Gameplay.Note
                 GameManager.Instance.maxScore += 1;
                 LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, evaluateType, time));
                 if (evaluateType == EvaluateType.Exact)
-                    GameManager.Instance.RefreshData(0, 1, evaluateType, LogicTimer);
+                    GameManager.Instance.RefreshData(0, 1, evaluateType, float.MaxValue);
                 else
-                    GameManager.Instance.RefreshData(0, 0.5f, evaluateType, LogicTimer);
+                    GameManager.Instance.RefreshData(0, 0.5f, evaluateType, float.MaxValue);
             }
         }
 
@@ -114,9 +114,9 @@ namespace CyanStars.Gameplay.Note
                     EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(time);
                     LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, evaluateType, time));
                     if (evaluateType == EvaluateType.Exact)
-                        GameManager.Instance.RefreshData(0, 1, evaluateType, LogicTimer);
+                        GameManager.Instance.RefreshData(0, 1, evaluateType, float.MaxValue);
                     else
-                        GameManager.Instance.RefreshData(0, 0.5f, evaluateType, LogicTimer);
+                        GameManager.Instance.RefreshData(0, 0.5f, evaluateType, float.MaxValue);
                     break;
             }
         }
