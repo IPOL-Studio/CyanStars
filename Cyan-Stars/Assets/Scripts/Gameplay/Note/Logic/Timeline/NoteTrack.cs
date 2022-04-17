@@ -1,4 +1,5 @@
 using CyanStars.Framework.Timeline;
+using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 
 namespace CyanStars.Gameplay.Note
@@ -11,27 +12,28 @@ namespace CyanStars.Gameplay.Note
         /// <summary>
         /// 创建音符轨道片段
         /// </summary>
-        public static readonly IClipCreator<NoteTrack, MusicTimelineData> ClipCreator = new NoteClipCreator();
+        public static readonly IClipCreator<NoteTrack, MusicGameData> ClipCreator = new NoteClipCreator();
 
-        private sealed class NoteClipCreator : IClipCreator<NoteTrack, MusicTimelineData>
+        private sealed class NoteClipCreator : IClipCreator<NoteTrack, MusicGameData>
         {
-            public BaseClip<NoteTrack> CreateClip(NoteTrack track, int clipIndex, MusicTimelineData data)
+            public BaseClip<NoteTrack> CreateClip(NoteTrack track, int clipIndex, MusicGameData data)
             {
-                NoteClip clip = new NoteClip(0, data.Time / 1000f, track, data.BaseSpeed, data.SpeedRate);
 
-                for (int i = 0; i < data.LayerDatas.Count; i++)
+                NoteClip clip = new NoteClip(0, data.Time / 1000f, track,data.NoteTrackData.BaseSpeed, data.NoteTrackData.SpeedRate);
+
+                for (int i = 0; i < data.NoteTrackData.LayerDatas.Count; i++)
                 {
-                    LayerData layerData = data.LayerDatas[i];
+                    NoteLayerData layerData = data.NoteTrackData.LayerDatas[i];
                     NoteLayer layer = new NoteLayer();
 
-                    for (int j = 0; j < layerData.ClipDatas.Count; j++)
+                    for (int j = 0; j < layerData.TimeAxisDatas.Count; j++)
                     {
-                        ClipData clipData = layerData.ClipDatas[j];
-                        layer.AddTimeSpeedRate(clipData.StartTime / 1000f, clipData.SpeedRate);
+                        NoteTimeAxisData timeAxisData = layerData.TimeAxisDatas[j];
+                        layer.AddTimeSpeedRate(timeAxisData.StartTime / 1000f, timeAxisData.SpeedRate);
 
-                        for (int k = 0; k < clipData.NoteDatas.Count; k++)
+                        for (int k = 0; k < timeAxisData.NoteDatas.Count; k++)
                         {
-                            NoteData noteData = clipData.NoteDatas[k];
+                            NoteData noteData = timeAxisData.NoteDatas[k];
 
                             BaseNote note = CreateNote(noteData, layer);
                             layer.AddNote(note);

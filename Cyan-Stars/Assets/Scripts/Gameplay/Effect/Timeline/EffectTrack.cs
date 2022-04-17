@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using CyanStars.Framework.Timeline;
+using CyanStars.Gameplay.Data;
 
 namespace CyanStars.Gameplay.Effect
 {
@@ -10,7 +11,7 @@ namespace CyanStars.Gameplay.Effect
     /// </summary>
     public class EffectTrack : BaseTrack
     {
-        public float Bpm;
+        public float BPM;
         public List<GameObject> EffectGOs;
         public Transform EffectParent;
         public Image Frame;
@@ -21,25 +22,25 @@ namespace CyanStars.Gameplay.Effect
         /// <summary>
         /// 创建特效轨道片段
         /// </summary>
-        public static readonly IClipCreator<EffectTrack, IList<EffectControllerSo.KeyFrame>> ClipCreator =
+        public static readonly IClipCreator<EffectTrack, EffectTrackData> ClipCreator =
             new EffectClipCreator();
 
-        private sealed class EffectClipCreator : IClipCreator<EffectTrack, IList<EffectControllerSo.KeyFrame>>
+        private sealed class EffectClipCreator : IClipCreator<EffectTrack, EffectTrackData>
         {
-            public BaseClip<EffectTrack> CreateClip(EffectTrack track, int clipIndex, IList<EffectControllerSo.KeyFrame> keyFrames)
+            public BaseClip<EffectTrack> CreateClip(EffectTrack track, int clipIndex, EffectTrackData data)
             {
-                EffectControllerSo.KeyFrame keyFrame = keyFrames[clipIndex];
+                EffectTrackData.KeyFrame keyFrame = data.KeyFrames[clipIndex];
 
-                float time = keyFrame.time / 1000f;
-                float duration = keyFrame.duration / 1000f;
+                float time = keyFrame.Time / 1000f;
+                float duration = keyFrame.Duration / 1000f;
 
                 BaseClip<EffectTrack> clip = null;
-                switch (keyFrame.type)
+                switch (keyFrame.Type)
                 {
                     case EffectType.FrameBreath:
-                        clip = new FrameBreathClip(time, time + duration, track, duration, keyFrame.color,
-                            keyFrame.intensity,
-                            keyFrame.maxAlpha, keyFrame.minAlpha);
+                        clip = new FrameBreathClip(time, time + duration, track, duration, keyFrame.Color,
+                            keyFrame.Intensity,
+                            keyFrame.MaxAlpha, keyFrame.MinAlpha);
                         break;
 
                     case EffectType.FrameOnce:
@@ -47,9 +48,9 @@ namespace CyanStars.Gameplay.Effect
                         break;
 
                     case EffectType.Particle:
-                        clip = new ParticleEffectClip(time, time, track, keyFrame.index, keyFrame.position,
-                            keyFrame.rotation,
-                            keyFrame.particleCount, duration);
+                        clip = new ParticleEffectClip(time, time, track, keyFrame.Index, keyFrame.Position,
+                            keyFrame.Rotation,
+                            keyFrame.ParticleCount, duration);
                         break;
                 }
 

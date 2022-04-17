@@ -1,5 +1,6 @@
 using System;
 using CyanStars.Framework.Helpers;
+using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Loggers;
 using CyanStars.Gameplay.Evaluate;
@@ -38,7 +39,7 @@ namespace CyanStars.Gameplay.Note
 
             if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact)
             {
-                viewObject.CreateEffectObj(data.Width);//生成特效
+                viewObject.CreateEffectObj(NoteData.NoteWidth);//生成特效
                 DestroySelf(false);//销毁
 
                 GameManager.Instance.maxScore += data.GetFullScore();//更新理论最高分

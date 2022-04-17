@@ -1,4 +1,5 @@
 using CyanStars.Framework.Helpers;
+using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Loggers;
 using CyanStars.Gameplay.Evaluate;
@@ -28,7 +29,7 @@ namespace CyanStars.Gameplay.Note
 
             if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact)
             {
-                viewObject.CreateEffectObj(data.Width);//生成特效
+                viewObject.CreateEffectObj(NoteData.NoteWidth);//生成特效
                 DestroySelf(false);//销毁
 
                 LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Exact));//Log
@@ -46,7 +47,7 @@ namespace CyanStars.Gameplay.Note
 
             if (inputType != InputType.Down) return;                               //只处理按下的情况
 
-            viewObject.CreateEffectObj(data.Width);                               //生成特效
+            viewObject.CreateEffectObj(NoteData.NoteWidth);                               //生成特效
             DestroySelf(false);                                                   //销毁
 
             EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);//获取评价类型

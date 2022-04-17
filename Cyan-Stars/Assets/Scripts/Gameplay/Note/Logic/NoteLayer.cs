@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Note;
 
@@ -11,11 +12,11 @@ namespace CyanStars.Gameplay.Note
     public class NoteLayer
     {
         /// <summary>
-        /// 时间速率范围
+        /// 音符时轴
         /// </summary>
-        private struct TimeSpeedRateRange
+        private struct NoteTimeAxis
         {
-            public TimeSpeedRateRange(float startTime, float speedRate)
+            public NoteTimeAxis(float startTime, float speedRate)
             {
                 this.startTime = startTime;
                 this.speedRate = speedRate;
@@ -34,14 +35,14 @@ namespace CyanStars.Gameplay.Note
         }
 
         /// <summary>
-        /// 时间速率范围列表
+        /// 时轴列表
         /// </summary>
-        private List<TimeSpeedRateRange> ranges = new List<TimeSpeedRateRange>();
+        private List<NoteTimeAxis> timeAxises = new List<NoteTimeAxis>();
 
         /// <summary>
-        /// 当前时间速率范围索引
+        /// 当前时轴索引
         /// </summary>
-        private int curRangeIndex;
+        private int curTimeAxisIndex;
 
         /// <summary>
         /// 音符列表
@@ -55,7 +56,7 @@ namespace CyanStars.Gameplay.Note
         /// </summary>
         public void AddTimeSpeedRate(float startTime, float speedRate)
         {
-            ranges.Add(new TimeSpeedRateRange(startTime, speedRate));
+            timeAxises.Add(new NoteTimeAxis(startTime, speedRate));
         }
 
         /// <summary>
@@ -75,22 +76,21 @@ namespace CyanStars.Gameplay.Note
         }
 
         /// <summary>
-        /// 刷新当前时间速率范围索引
+        /// 刷新当前时轴索引
         /// </summary>
         private void RefreshCurRangeIndex(float currentTime)
         {
-            if (curRangeIndex == ranges.Count - 1)
+            if (curTimeAxisIndex == timeAxises.Count - 1)
             {
-                //最后一个range 不计算了
+                //最后一个timeAxis 不计算了
                 return;
-                ;
             }
 
-            //是否到达了下一个range的开始？
-            float nextRangeStartTime = ranges[curRangeIndex + 1].startTime;
-            if (currentTime >= nextRangeStartTime)
+            //是否到达了下一个timeAxis的开始？
+            float nextTimeAxisStartTime = timeAxises[curTimeAxisIndex + 1].startTime;
+            if (currentTime >= nextTimeAxisStartTime)
             {
-                curRangeIndex++;
+                curTimeAxisIndex++;
             }
 
         }
@@ -125,7 +125,7 @@ namespace CyanStars.Gameplay.Note
             RefreshCurRangeIndex(currentTime);
 
             //计算音符表现层的速度
-            float noteViewSpeed = clipSpeed * ranges[curRangeIndex].speedRate;
+            float noteViewSpeed = clipSpeed * timeAxises[curTimeAxisIndex].speedRate;
 
             float deltaTime = currentTime - previousTime;
 
@@ -171,7 +171,7 @@ namespace CyanStars.Gameplay.Note
                 }
 
                 //第二优先级是离屏幕中间的距离
-                return Math.Abs(x.Pos - NoteData.MiddlePos).CompareTo(Math.Abs(y.Pos - NoteData.MiddlePos));
+                return Math.Abs(x.Pos - NoteData.MiddlePos).CompareTo(Math.Abs(y.Pos - NoteDataOld.MiddlePos));
             });
 
             //一次输入信号 只发给一个note处理 避免同时有多个note响应

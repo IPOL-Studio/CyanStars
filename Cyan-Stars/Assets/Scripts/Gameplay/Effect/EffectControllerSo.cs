@@ -1,16 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using CyanStars.Gameplay.Data;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.Effect
 {
-    public enum EffectType
-    {
-        FrameBreath,
-        FrameOnce,
-        Particle,
-    }
+    // public enum EffectType
+    // {
+    //     FrameBreath,
+    //     FrameOnce,
+    //     Particle,
+    // }
 
     public class EffectControllerSo : MonoBehaviour
     {
