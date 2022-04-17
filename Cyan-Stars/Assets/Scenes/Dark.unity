@@ -2009,7 +2009,7 @@ MonoBehaviour:
   bpm: 20.5
   keyFrames:
   - type: 0
-    time: 5965
+    time: 5855
     index: 0
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
