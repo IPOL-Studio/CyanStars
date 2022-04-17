@@ -55,13 +55,15 @@ namespace CyanStars.Gameplay.UI
 
         IEnumerator FadeGradeTMP()
         {
-            Color color = gradeText.color;
+            Color GradeColor;
+            if (gradeText) GradeColor = gradeText.color;
+            else GradeColor = Color.black;
             yield return new WaitForSeconds(0.1f);
-            gradeText.fontSize = 11;
+            if(gradeText) gradeText.fontSize = 11;
             for (float i = 1; i >= 0; i -= 0.01f)
             {
-                color.a = i;
-                gradeText.color = color;
+                GradeColor.a = i;
+                if (gradeText) gradeText.color = GradeColor;
                 yield return new WaitForSeconds(0.01f);
             }
         }
@@ -75,18 +77,16 @@ namespace CyanStars.Gameplay.UI
                 {
                     if (GameManager.Instance.currentDeviation > 0)
                     {
-                        currentDeviationText.text = "误差:+" +
-                                                    string.Format("{0:F3}",
+                        currentDeviationText.text = "+" + string.Format("{0:F3}",
                                                         GameManager.Instance.currentDeviation * 1000) + "ms";
-                        currentDeviationText.color = Color.red;
+                        currentDeviationText.color = Color.red / 1.35f;
                     }
 
                     if (GameManager.Instance.currentDeviation < 0)
                     {
-                        currentDeviationText.text = "误差:" +
-                                                    string.Format("{0:F3}",
+                        currentDeviationText.text = string.Format("{0:F3}",
                                                         GameManager.Instance.currentDeviation * 1000) + "ms";
-                        currentDeviationText.color = Color.cyan;
+                        currentDeviationText.color = Color.cyan / 1.35f;
                     }
                 }
 
