@@ -1,4 +1,5 @@
 ﻿using CyanStars.Framework.Helpers;
+using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Loggers;
 using CyanStars.Gameplay.Evaluate;
@@ -102,7 +103,7 @@ namespace CyanStars.Gameplay.Note
                 GameManager.Instance.maxScore++;
                 LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, EvaluateType.Exact));
                 GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, 0);
-                viewObject.CreateEffectObj(data.Width);
+                viewObject.CreateEffectObj(NoteData.NoteWidth);
             }
 
             if (LogicTimer < holdCheckInputEndTime)
@@ -151,7 +152,7 @@ namespace CyanStars.Gameplay.Note
 
                     //头判成功
                     headSucess = true;
-                    if (pressCount == 0) viewObject.CreateEffectObj(data.Width);
+                    if (pressCount == 0) viewObject.CreateEffectObj(NoteData.NoteWidth);
                     pressCount++;
                     break;
 

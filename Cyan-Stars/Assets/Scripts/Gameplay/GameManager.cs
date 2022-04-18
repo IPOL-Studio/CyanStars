@@ -13,7 +13,7 @@ using CyanStars.Gameplay.Effect;
 using CyanStars.Gameplay.Camera;
 using CyanStars.Gameplay.Evaluate;
 using CyanStars.Gameplay.PromptTone;
-
+using CyanStars.Gameplay.Data;
 using UInput = UnityEngine.Input;
 
 namespace CyanStars.Gameplay
@@ -23,11 +23,15 @@ namespace CyanStars.Gameplay
     /// </summary>
     public class GameManager : SingletonMono<GameManager>
     {
-        public MusicTimelineSO TimelineSo;
         public InputMapSO InputMapSO;
-        public CameraControllerSo CameraControllerSo;
-        public EffectControllerSo EffectControllerSo;
-
+        public MusicGameDataSO MusicGameDataSo;
+      
+        
+        [Header("特效边框")]
+        public Image Frame;
+        [Header("特效种类")] 
+        public List<GameObject> EffectList;
+        
         public UnityEngine.Camera MainCamera;
         public AudioSource AudioSource;
         public Transform viewRoot;
@@ -36,13 +40,15 @@ namespace CyanStars.Gameplay
         public GameObject DragPrefab;
         public GameObject ClickPrefab;
         public GameObject BreakPrefab;
-
+        public Transform EffectParent;
+        
         public Button BtnStart;
 
 
         public TextAsset LrcAsset;
         public AudioClip Music;
         private InputMapData inputMapData;
+        private MusicGameData MusicGameData;
         private Timeline timeline;
         private NoteTrack noteTrack;
 
@@ -97,8 +103,8 @@ namespace CyanStars.Gameplay
             inputMapData = InputMapSO.InputMapData;
             pressedKeySet = new HashSet<KeyCode>();
 
-            CameraControllerSo.keyFrames.Sort((x, y) => x.time.CompareTo(y.time));
-
+            //CameraControllerSo.keyFrames.Sort((x, y) => x.time.CompareTo(y.time));
+            MusicGameData = MusicGameDataSo.Data;
             fullScore = GetFullScore();
         }
 
@@ -126,15 +132,17 @@ namespace CyanStars.Gameplay
         /// </summary>
         private void OnBtnStartClick()
         {
-            MusicTimelineData data = TimelineSo.musicTimelineData;
-            ViewHelper.CalViewTime(data);
+            MusicGameData data = MusicGameData;
+            ViewHelper.CalViewTime(data.Time, data.NoteTrackData);
+
+            LrcAsset = Resources.Load<TextAsset>(data.LrcFileName);
             Lyric lrc = LrcParser.Parse(LrcAsset.text);
 
             timeline = new Timeline(data.Time / 1000f);
             timeline.OnStop += () => { timeline = null; };
 
             //添加音符轨道
-            TrackHelper.CreateBuilder<NoteTrack, MusicTimelineData>()
+            TrackHelper.CreateBuilder<NoteTrack, MusicGameData>()
                 .AddClips(1, data, NoteTrack.ClipCreator)
                 .PostProcess(track => noteTrack = track)
                 .Build()
@@ -148,19 +156,20 @@ namespace CyanStars.Gameplay
                 .AddToTimeline(timeline);
 
             //添加相机轨道
-            TrackHelper.CreateBuilder<CameraTrack, IList<CameraControllerSo.KeyFrame>>()
-                .AddClips(CameraControllerSo.keyFrames.Count, CameraControllerSo.keyFrames, CameraTrack.ClipCreator)
+            TrackHelper.CreateBuilder<CameraTrack, CameraTrackData>()
+                .AddClips(data.CameraTrackData.KeyFrames.Count, data.CameraTrackData, CameraTrack.ClipCreator)
                 .SortClip()
                 .PostProcess(track =>
                 {
-                    track.DefaultCameraPos = CameraControllerSo.defaultPosition;
-                    track.oldRot = CameraControllerSo.defaultRotate;
+                    track.DefaultCameraPos = data.CameraTrackData.DefaultPosition;
+                    track.oldRot = data.CameraTrackData.DefaultRotation;
                     track.CameraTrans = MainCamera.transform;
                 })
                 .Build()
                 .AddToTimeline(timeline);
 
             //添加音乐轨道
+            Music = Resources.Load<AudioClip>(data.MusicFileName);
             TrackHelper.CreateBuilder<MusicTrack, AudioClip>()
                 .AddClips(1, Music, MusicTrack.ClipCreator)
                 .PostProcess(track => track.audioSource = AudioSource)
@@ -175,15 +184,15 @@ namespace CyanStars.Gameplay
                 .AddToTimeline(timeline);
 
             //添加特效轨道
-            TrackHelper.CreateBuilder<EffectTrack, IList<EffectControllerSo.KeyFrame>>()
-                .AddClips(EffectControllerSo.keyFrames.Count, EffectControllerSo.keyFrames, EffectTrack.ClipCreator)
+            TrackHelper.CreateBuilder<EffectTrack, EffectTrackData>()
+                .AddClips(data.EffectTrackData.KeyFrames.Count,data.EffectTrackData,EffectTrack.ClipCreator)
                 .SortClip()
                 .PostProcess(track =>
                 {
-                    track.Bpm = EffectControllerSo.bpm;
-                    track.EffectGOs = EffectControllerSo.effectList;
-                    track.EffectParent = EffectControllerSo.transform;
-                    track.Frame = EffectControllerSo.frame;
+                    track.BPM = data.EffectTrackData.BPM;
+                    track.EffectPrefabs = EffectList;
+                    track.EffectParent = EffectParent;
+                    track.Frame = Frame;
                 })
                 .Build()
                 .AddToTimeline(timeline);
@@ -194,11 +203,11 @@ namespace CyanStars.Gameplay
         private float GetFullScore()
         {
             float fullScore = 0;
-            foreach (var layer in TimelineSo.musicTimelineData.LayerDatas)
+            foreach (var layer in MusicGameData.NoteTrackData.LayerDatas)
             {
-                foreach (var clip in layer.ClipDatas)
+                foreach (var timeAxis in layer.TimeAxisDatas)
                 {
-                    foreach (var note in clip.NoteDatas)
+                    foreach (var note in timeAxis.NoteDatas)
                     {
                         fullScore += note.GetFullScore();
                         LinearNoteData.Add(note);

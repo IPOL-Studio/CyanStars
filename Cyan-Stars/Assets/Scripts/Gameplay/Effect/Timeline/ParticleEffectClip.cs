@@ -39,7 +39,7 @@ namespace CyanStars.Gameplay.Effect
         public override void OnEnter()
         {
             GameObject effectObj =
-                Object.Instantiate(Owner.EffectGOs[effectPrefabIndex], position, Quaternion.Euler(rotation));
+                Object.Instantiate(Owner.EffectPrefabs[effectPrefabIndex], position, Quaternion.Euler(rotation));
             effectObj.gameObject.transform.SetParent(Owner.EffectParent);
 
             EffectObj eo = effectObj.GetComponent<EffectObj>();

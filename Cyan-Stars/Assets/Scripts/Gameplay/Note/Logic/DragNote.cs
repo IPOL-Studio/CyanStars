@@ -1,4 +1,5 @@
 using CyanStars.Framework.Helpers;
+using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Loggers;
 using CyanStars.Gameplay.Evaluate;
@@ -44,7 +45,7 @@ namespace CyanStars.Gameplay.Note
 
             if (CanReceiveInput() && !isHit)
             {
-                viewObject.CreateEffectObj(data.Width);//生成特效
+                viewObject.CreateEffectObj(NoteData.NoteWidth);//生成特效
 
                 LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Exact));//Log
                 
@@ -65,7 +66,7 @@ namespace CyanStars.Gameplay.Note
 
             if (isHit) return;//已经接住了
 
-            viewObject.CreateEffectObj(data.Width);//生成特效
+            viewObject.CreateEffectObj(NoteData.NoteWidth);//生成特效
             LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Exact));//Log
 
             GameManager.Instance.maxScore += data.GetFullScore();//更新理论最高分
