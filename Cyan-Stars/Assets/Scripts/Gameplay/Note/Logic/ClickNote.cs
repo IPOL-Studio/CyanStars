@@ -1,4 +1,5 @@
 using CyanStars.Framework.Helpers;
+using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Loggers;
 using CyanStars.Gameplay.Evaluate;
@@ -35,7 +36,7 @@ namespace CyanStars.Gameplay.Note
             if (LogicTimer < EvaluateHelper.CheckInputEndTime)
             {
                 float time = downTimePoint - LogicTimer;
-                viewObject.CreateEffectObj(data.Width);
+                viewObject.CreateEffectObj(NoteData.NoteWidth);
                 EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(time);
                 DestroySelf(false);
                 //Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
@@ -58,7 +59,7 @@ namespace CyanStars.Gameplay.Note
                 GameManager.Instance.maxScore += 2;
                 LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, EvaluateType.Exact, 0));
                 GameManager.Instance.RefreshData(1, 2, EvaluateType.Exact, 0);
-                viewObject.CreateEffectObj(data.Width);
+                viewObject.CreateEffectObj(NoteData.NoteWidth);
                 DestroySelf(false);
             }
         }
@@ -73,7 +74,7 @@ namespace CyanStars.Gameplay.Note
                     if (!headSucess)
                     {
                         headSucess = true;
-                        viewObject.CreateEffectObj(data.Width);
+                        viewObject.CreateEffectObj(NoteData.NoteWidth);
                         EvaluateType et = EvaluateHelper.GetTapEvaluate(LogicTimer);
                         GameManager.Instance.maxScore += 1;
                         if (et != EvaluateType.Bad && et != EvaluateType.Miss)
@@ -107,7 +108,7 @@ namespace CyanStars.Gameplay.Note
                 case InputType.Up:
                     if (!headSucess) return;
                     float time = downTimePoint - LogicTimer;
-                    viewObject.CreateEffectObj(data.Width);
+                    viewObject.CreateEffectObj(NoteData.NoteWidth);
                     DestroySelf(false);
                     //Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
                     GameManager.Instance.maxScore += 1;

@@ -5,7 +5,7 @@ namespace CyanStars.Gameplay.Input
     /// <summary>
     /// 输入映射数据的SO
     /// </summary>
-    [CreateAssetMenu(menuName = "输入映射数据配置")]
+    [CreateAssetMenu(menuName = "创建输入映射数据")]
     public class InputMapSO : ScriptableObject
     {
         /// <summary>

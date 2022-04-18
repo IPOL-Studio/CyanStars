@@ -52,7 +52,7 @@ namespace CyanStars.Gameplay.Effect
 
         public override void OnUpdate(float currentTime, float previousTime)
         {
-            float bpm = Owner.Bpm;
+            float bpm = Owner.BPM;
             float alpha = (0.5f * Mathf.Cos(bpm * 2 * Mathf.PI * (currentTime - StartTime - 30 / bpm) / 60) + 0.5f) *
                 (maxAlpha - minAlpha) + minAlpha;
 
