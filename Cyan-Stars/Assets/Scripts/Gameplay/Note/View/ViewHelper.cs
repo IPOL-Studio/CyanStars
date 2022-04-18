@@ -1,6 +1,8 @@
 using System.Collections.Generic;
-using CyanStars.Gameplay.Note;
+using CyanStars.Gameplay.Data;
+
 using UnityEngine;
+
 
 namespace CyanStars.Gameplay.Note
 {
@@ -20,60 +22,60 @@ namespace CyanStars.Gameplay.Note
         /// <summary>
         /// 计算受速率影响的视图层音符开始时间和结束时间，用于视图层物体计算位置和长度
         /// </summary>
-        public static void CalViewTime(MusicTimelineData data)
+        public static void CalViewTime(float time,NoteTrackData data)
         {
             viewStartTimeDict.Clear();
             viewHoldEndTimeDict.Clear();
 
             float timelineSpeedRate = data.BaseSpeed * data.SpeedRate;
 
-            foreach (LayerData layerData in data.LayerDatas)
+            foreach (NoteLayerData layerData in data.LayerDatas)
             {
-                //从第一个clip到前一个clip 受流速缩放影响后的总时间值（毫秒）
+                //从第一个TimeAxis到前一个TimeAxis 受流速缩放影响后的总时间值（毫秒）
                 float scaledTime = 0;
 
-                for (int i = 0; i < layerData.ClipDatas.Count; i++)
+                for (int i = 0; i < layerData.TimeAxisDatas.Count; i++)
                 {
-                    ClipData curClipData = layerData.ClipDatas[i];
-                    float speedRate = curClipData.SpeedRate * timelineSpeedRate;
+                    NoteTimeAxisData curTimeAxisData = layerData.TimeAxisDatas[i];
+                    float speedRate = curTimeAxisData.SpeedRate * timelineSpeedRate;
 
-                    for (int j = 0; j < curClipData.NoteDatas.Count; j++)
+                    for (int j = 0; j < curTimeAxisData.NoteDatas.Count; j++)
                     {
-                        NoteData noteData = curClipData.NoteDatas[j];
+                        NoteData noteData = curTimeAxisData.NoteDatas[j];
 
-                        //之前的clip累计下来的受缩放影响的时间值，再加上当前clip到当前note这段时间缩放后的时间值
+                        //之前的TimeAxis累计下来的受缩放影响的时间值，再加上当前TimeAxis到当前note这段时间缩放后的时间值
                         //就能得到当前note缩放后的开始时间，因为是毫秒所以要/1000转换为秒
                         float scaledNoteStartTime =
-                            scaledTime + ((noteData.StartTime - curClipData.StartTime)) * speedRate;
+                            scaledTime + ((noteData.StartTime - curTimeAxisData.StartTime)) * speedRate;
                         viewStartTimeDict.Add(noteData, scaledNoteStartTime / 1000);
 
                         if (noteData.Type == NoteType.Hold)
                         {
                             //hold结束时间同理
                             float scaledHoldNoteEndTime =
-                                scaledTime + ((noteData.HoldEndTime - curClipData.StartTime)) * speedRate;
+                                scaledTime + ((noteData.HoldEndTime - curTimeAxisData.StartTime)) * speedRate;
                             viewHoldEndTimeDict.Add(noteData, scaledHoldNoteEndTime / 1000);
                         }
                     }
 
-                    float curClipEndTime;
-                    if (i < layerData.ClipDatas.Count - 1)
+                    float curTimeAxisEndTime;
+                    if (i < layerData.TimeAxisDatas.Count - 1)
                     {
-                        //并非最后一个clip
-                        //将下一个clip的开始时间作为当前clip的结束时间
-                        curClipEndTime = layerData.ClipDatas[i + 1].StartTime;
+                        //并非最后一个TimeAxis
+                        //将下一个TimeAxis的开始时间作为当前TimeAxis的结束时间
+                        curTimeAxisEndTime = layerData.TimeAxisDatas[i + 1].StartTime;
                     }
                     else
                     {
-                        //最后一个clip
-                        //将timeline结束时间作为最后一个clip的结束时间
-                        curClipEndTime = data.Time;
+                        //最后一个TimeAxis
+                        //将timeline结束时间作为最后一个TimeAxis的结束时间
+                        curTimeAxisEndTime = time;
                     }
 
-                    float scaledTimeLength = curClipEndTime - curClipData.StartTime;
+                    float scaledTimeLength = curTimeAxisEndTime - curTimeAxisData.StartTime;
 
 
-                    //将此clip缩放后的时间值 累加到总时间值上
+                    //将此TimeAxis缩放后的时间值 累加到总时间值上
                     scaledTime += scaledTimeLength * speedRate;
                 }
             }
@@ -173,7 +175,7 @@ namespace CyanStars.Gameplay.Note
             if (data.Type != NoteType.Break)
             {
                 //非Break音符需要缩放宽度
-                scale.x = data.Width * Endpoint.Instance.Length;
+                scale.x = NoteData.NoteWidth * Endpoint.Instance.Length;
                 scale.y = 2;
             }
             else

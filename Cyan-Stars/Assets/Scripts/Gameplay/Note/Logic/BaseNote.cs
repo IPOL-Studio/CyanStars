@@ -1,3 +1,4 @@
+using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Evaluate;
 
@@ -68,8 +69,8 @@ namespace CyanStars.Gameplay.Note
         {
             //3种情况可能重合 1.最左侧在范围内 2.最右侧在范围内 3.中间部分在范围内
             bool result = (data.Pos >= min && data.Pos <= max)
-                          || ((data.Pos + data.Width) >= min && (data.Pos + data.Width) <= max)
-                          || (data.Pos <= min && (data.Pos + data.Width) >= max);
+                          || ((data.Pos + NoteData.NoteWidth) >= min && (data.Pos + NoteData.NoteWidth) <= max)
+                          || (data.Pos <= min && (data.Pos + NoteData.NoteWidth) >= max);
 
             return result;
         }

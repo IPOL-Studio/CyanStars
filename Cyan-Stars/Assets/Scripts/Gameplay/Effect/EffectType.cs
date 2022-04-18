@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CyanStars.Gameplay.Effect
 {
-    public enum VfxType // 特效种类
+    public enum VfxType 
     {
         Line,
         BlockRain,

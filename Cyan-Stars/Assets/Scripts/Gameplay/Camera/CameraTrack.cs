@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using CyanStars.Framework.Timeline;
+using CyanStars.Gameplay.Data;
 
 namespace CyanStars.Gameplay.Camera
 {
@@ -17,24 +18,24 @@ namespace CyanStars.Gameplay.Camera
         /// <summary>
         /// 创建相机轨道片段
         /// </summary> 
-        public static readonly IClipCreator<CameraTrack, IList<CameraControllerSo.KeyFrame>> ClipCreator =
+        public static readonly IClipCreator<CameraTrack, CameraTrackData> ClipCreator =
             new CameraClipCreator();
 
-        private sealed class CameraClipCreator : IClipCreator<CameraTrack, IList<CameraControllerSo.KeyFrame>>
+        private sealed class CameraClipCreator : IClipCreator<CameraTrack, CameraTrackData>
         {
             public BaseClip<CameraTrack> CreateClip(CameraTrack track, int clipIndex,
-                IList<CameraControllerSo.KeyFrame> keyFrames)
+                CameraTrackData data)
             {
-                CameraControllerSo.KeyFrame keyFrame = keyFrames[clipIndex];
+                CameraTrackData.KeyFrame keyFrame = data.KeyFrames[clipIndex];
 
                 float startTime = 0;
                 if (clipIndex > 0)
                 {
-                    startTime = keyFrames[clipIndex - 1].time;
+                    startTime = data.KeyFrames[clipIndex - 1].Time;
                 }
 
-                CameraClip clip = new CameraClip(startTime / 1000f, keyFrame.time / 1000f, track, keyFrame.position,
-                    keyFrame.rotation, keyFrame.smoothType);
+                CameraClip clip = new CameraClip(startTime / 1000f, keyFrame.Time / 1000f, track, keyFrame.Position,
+                    keyFrame.Rotation, keyFrame.SmoothType);
 
                 return clip;
             }

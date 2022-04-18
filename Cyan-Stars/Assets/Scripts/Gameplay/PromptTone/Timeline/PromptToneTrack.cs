@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using CyanStars.Framework.Timeline;
+using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Note;
 
 namespace CyanStars.Gameplay.PromptTone
