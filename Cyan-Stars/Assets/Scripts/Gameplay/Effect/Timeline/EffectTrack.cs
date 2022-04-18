@@ -12,7 +12,7 @@ namespace CyanStars.Gameplay.Effect
     public class EffectTrack : BaseTrack
     {
         public float BPM;
-        public List<GameObject> EffectGOs;
+        public List<GameObject> EffectPrefabs;
         public Transform EffectParent;
         public Image Frame;
 

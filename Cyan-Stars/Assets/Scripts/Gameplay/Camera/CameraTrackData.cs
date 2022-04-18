@@ -1,9 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
-using CyanStars.Gameplay;
 using UnityEngine;
 
-namespace CyanStars.Gameplay.Data
+namespace CyanStars.Gameplay.Camera
 {
     /// <summary>
     /// 相机轨道数据

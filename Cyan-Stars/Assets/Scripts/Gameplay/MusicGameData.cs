@@ -1,6 +1,9 @@
+using CyanStars.Gameplay.Camera;
+using CyanStars.Gameplay.Data;
+using CyanStars.Gameplay.Effect;
 using UnityEngine;
 
-namespace CyanStars.Gameplay.Data
+namespace CyanStars.Gameplay
 {
     /// <summary>
     /// 音游谱面数据

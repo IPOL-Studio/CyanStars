@@ -171,7 +171,7 @@ namespace CyanStars.Gameplay.Note
                 }
 
                 //第二优先级是离屏幕中间的距离
-                return Math.Abs(x.Pos - NoteData.MiddlePos).CompareTo(Math.Abs(y.Pos - NoteDataOld.MiddlePos));
+                return Math.Abs(x.Pos - NoteData.MiddlePos).CompareTo(Math.Abs(y.Pos - NoteData.MiddlePos));
             });
 
             //一次输入信号 只发给一个note处理 避免同时有多个note响应

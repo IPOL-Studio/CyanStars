@@ -1,9 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
-using CyanStars.Gameplay.Effect;
 using UnityEngine;
 
-namespace CyanStars.Gameplay.Data
+namespace CyanStars.Gameplay.Effect
 {
     public enum EffectType
     {

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CyanStars.Gameplay.Data
+namespace CyanStars.Gameplay
 {
     /// <summary>
     /// 音游谱面数据SO

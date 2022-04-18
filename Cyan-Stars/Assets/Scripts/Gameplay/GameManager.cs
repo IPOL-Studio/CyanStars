@@ -23,10 +23,7 @@ namespace CyanStars.Gameplay
     /// </summary>
     public class GameManager : SingletonMono<GameManager>
     {
-        public MusicTimelineSO TimelineSo;
         public InputMapSO InputMapSO;
-        public CameraControllerSo CameraControllerSo;
-        public EffectControllerSo EffectControllerSo;
         public MusicGameDataSO MusicGameDataSo;
       
         
@@ -193,7 +190,7 @@ namespace CyanStars.Gameplay
                 .PostProcess(track =>
                 {
                     track.BPM = data.EffectTrackData.BPM;
-                    track.EffectGOs = EffectList;
+                    track.EffectPrefabs = EffectList;
                     track.EffectParent = EffectParent;
                     track.Frame = Frame;
                 })
