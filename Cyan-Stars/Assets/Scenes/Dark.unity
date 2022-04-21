@@ -1255,7 +1255,7 @@ PrefabInstance:
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: MusicGameDataSo
       value: 
-      objectReference: {fileID: 11400000, guid: 4f6d8ba46e141b645865584aec1b574a, type: 2}
+      objectReference: {fileID: 11400000, guid: 5029f76e52cd6ab4481962061c25260f, type: 2}
     - target: {fileID: 8182820371254292315, guid: 59c249f57158efb4a8569d3aa9af8797, type: 3}
       propertyPath: keyViewController
       value: 
