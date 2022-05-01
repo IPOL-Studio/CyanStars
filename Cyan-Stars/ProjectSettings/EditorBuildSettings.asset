@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Dark.unity
-    guid: 162c9ad03afa17440ab443de3bce2c16
+    path: Assets/Scenes/CyanStarsEntry.unity
+    guid: e21b4dcbcd173e948a9b4e98f0ea5516
   m_configObjects: {}

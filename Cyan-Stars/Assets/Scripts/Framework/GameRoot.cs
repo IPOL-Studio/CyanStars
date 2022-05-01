@@ -21,10 +21,6 @@ namespace CyanStars.Framework
         /// </summary>
         public static FSMManager FSM;
         
-        private void Awake()
-        {
-
-        }
 
         private void Start()
         {
