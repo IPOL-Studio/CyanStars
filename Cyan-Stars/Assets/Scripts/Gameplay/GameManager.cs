@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using CatLrcParser;
 using CyanStars.Framework;
+using CyanStars.Framework.Asset;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.UI;
 using CyanStars.Gameplay.Lrc;
@@ -43,7 +44,7 @@ namespace CyanStars.Gameplay
         public Transform EffectParent;
         
         public Button BtnStart;
-
+        public Button BtnClose;
 
         public TextAsset LrcAsset;
         public AudioClip Music;
@@ -112,6 +113,10 @@ namespace CyanStars.Gameplay
         private void Start()
         {
             BtnStart.onClick.AddListener(OnBtnStartClick);
+            BtnClose.onClick.AddListener(() =>
+            {
+                GameRoot.Asset.UnloadScene("Assets/BundleRes/Scenes/Dark.unity");
+            });
         }
 
         private void Update()
@@ -130,15 +135,12 @@ namespace CyanStars.Gameplay
         /// <summary>
         /// 点击开始按钮
         /// </summary>
-        private void OnBtnStartClick()
+        private async void OnBtnStartClick()
         {
             MusicGameData data = MusicGameData;
             ViewHelper.CalViewTime(data.Time, data.NoteTrackData);
 
-            LrcAsset = Resources.Load<TextAsset>(data.LrcFileName);
-            Lyric lrc = LrcParser.Parse(LrcAsset.text);
-
-            timeline = new Timeline(data.Time / 1000f);
+            Timeline timeline = new Timeline(data.Time / 1000f);
             timeline.OnStop += () => { timeline = null; };
 
             //添加音符轨道
@@ -148,12 +150,18 @@ namespace CyanStars.Gameplay
                 .Build()
                 .AddToTimeline(timeline);
 
-            //添加歌词轨道
-            TrackHelper.CreateBuilder<LrcTrack, IList<LrcTimeTag>>()
-                .AddClips(lrc.TimeTagList.Count, lrc.TimeTagList, LrcTrack.ClipCreator)
-                .SortClip()
-                .Build()
-                .AddToTimeline(timeline);
+            if (!string.IsNullOrEmpty(data.LrcFileName))
+            {
+                //添加歌词轨道
+                LrcAsset = await GameRoot.Asset.AwaitLoadAsset<TextAsset>(data.LrcFileName,gameObject);
+                Lyric lrc = LrcParser.Parse(LrcAsset.text);
+                TrackHelper.CreateBuilder<LrcTrack, IList<LrcTimeTag>>()
+                    .AddClips(lrc.TimeTagList.Count, lrc.TimeTagList, LrcTrack.ClipCreator)
+                    .SortClip()
+                    .Build()
+                    .AddToTimeline(timeline);
+            }
+           
 
             //添加相机轨道
             TrackHelper.CreateBuilder<CameraTrack, CameraTrackData>()
@@ -169,12 +177,16 @@ namespace CyanStars.Gameplay
                 .AddToTimeline(timeline);
 
             //添加音乐轨道
-            Music = Resources.Load<AudioClip>(data.MusicFileName);
-            TrackHelper.CreateBuilder<MusicTrack, AudioClip>()
-                .AddClips(1, Music, MusicTrack.ClipCreator)
-                .PostProcess(track => track.audioSource = AudioSource)
-                .Build()
-                .AddToTimeline(timeline);
+            if (!string.IsNullOrEmpty(data.MusicFileName))
+            {
+                Music = await GameRoot.Asset.AwaitLoadAsset<AudioClip>(data.MusicFileName,gameObject);
+                TrackHelper.CreateBuilder<MusicTrack, AudioClip>()
+                    .AddClips(1, Music, MusicTrack.ClipCreator)
+                    .PostProcess(track => track.audioSource = AudioSource)
+                    .Build()
+                    .AddToTimeline(timeline);
+            }
+            
 
             //添加提示音轨道
             TrackHelper.CreateBuilder<PromptToneTrack, IList<NoteData>>()
@@ -197,6 +209,7 @@ namespace CyanStars.Gameplay
                 .Build()
                 .AddToTimeline(timeline);
 
+            this.timeline = timeline;
             Debug.Log("时间轴创建完毕");
         }
 
