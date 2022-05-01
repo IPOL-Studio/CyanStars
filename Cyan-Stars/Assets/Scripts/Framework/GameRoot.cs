@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using CyanStars.Framework.Asset;
 using CyanStars.Framework.FSM;
 using UnityEngine;
 
@@ -17,12 +18,17 @@ namespace CyanStars.Framework
         private static List<BaseManager> managers = new List<BaseManager>();
 
         /// <summary>
+        /// 资源管理器
+        /// </summary>
+        public static AssetManager Asset;
+        
+        /// <summary>
         /// 有效状态机管理器
         /// </summary>
         public static FSMManager FSM;
         
 
-        private void Start()
+        private async void Start()
         {
             //按优先级排序并初始化所有Manager
             managers.Sort((x, y) => x.Priority.CompareTo(y.Priority));
@@ -32,6 +38,25 @@ namespace CyanStars.Framework
             }
 
             FSM = GetManager<FSMManager>();
+            Asset = GetManager<AssetManager>();
+
+#if UNITY_EDITOR
+            if (Asset.IsEditorMode)
+            {
+                Asset.LoadScene("Assets/BundleRes/Scenes/Dark.unity", null);
+                return;
+            }
+#endif
+            bool success = await Asset.AwaitCheckPackageManifest();
+            if (success)
+            {
+                Asset.LoadScene("Assets/BundleRes/Scenes/Dark.unity", null);
+            }
+            else
+            {
+                Debug.LogError("资源清单检查失败");
+            }
+
         }
 
         private void Update()

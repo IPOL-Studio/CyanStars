@@ -25,7 +25,6 @@ namespace CatAsset
         {
             //场景加载完毕
             onFinished?.Invoke(true, null);
-            return;
         }
 
      

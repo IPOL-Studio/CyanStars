@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: PackageRuleConfig
   m_EditorClassIdentifier: 
   Rules:
-  - Directory: Assets/ResourceWorkspace/Chart0
+  - Directory: Assets/BundleRes/Chart00
     Mode: 0
     Group: Base
-  - Directory: Assets/ResourceWorkspace/Chart01
+  - Directory: Assets/BundleRes/Chart01
     Mode: 0
     Group: Base
-  - Directory: Assets/ResourceWorkspace/Scenes
+  - Directory: Assets/BundleRes/Scenes
     Mode: 2
     Group: Base

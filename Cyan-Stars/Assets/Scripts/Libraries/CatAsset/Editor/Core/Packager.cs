@@ -32,7 +32,7 @@ namespace CatAsset.Editor
             CatAssetManifest manifest = GenerateManifestFile(finalOutputPath, abBuildList,unityManifest,manifestVersion);
 
             //资源清单版本号自增
-            ChangeManifestVersion();
+            //ChangeManifestVersion();
 
             //将资源复制到StreamingAssets下
             if (isCopyToStreamingAssets)
