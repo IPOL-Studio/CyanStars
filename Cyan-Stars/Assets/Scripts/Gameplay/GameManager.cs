@@ -44,7 +44,7 @@ namespace CyanStars.Gameplay
         public Transform EffectParent;
         
         public Button BtnStart;
-
+        public Button BtnClose;
 
         public TextAsset LrcAsset;
         public AudioClip Music;
@@ -113,6 +113,10 @@ namespace CyanStars.Gameplay
         private void Start()
         {
             BtnStart.onClick.AddListener(OnBtnStartClick);
+            BtnClose.onClick.AddListener(() =>
+            {
+                GameRoot.Asset.UnloadScene("Assets/BundleRes/Scenes/Dark.unity");
+            });
         }
 
         private void Update()
@@ -149,7 +153,7 @@ namespace CyanStars.Gameplay
             if (!string.IsNullOrEmpty(data.LrcFileName))
             {
                 //添加歌词轨道
-                LrcAsset = await GameRoot.Asset.AwaitLoadAsset<TextAsset>(data.LrcFileName);
+                LrcAsset = await GameRoot.Asset.AwaitLoadAsset<TextAsset>(data.LrcFileName,gameObject);
                 Lyric lrc = LrcParser.Parse(LrcAsset.text);
                 TrackHelper.CreateBuilder<LrcTrack, IList<LrcTimeTag>>()
                     .AddClips(lrc.TimeTagList.Count, lrc.TimeTagList, LrcTrack.ClipCreator)
@@ -175,7 +179,7 @@ namespace CyanStars.Gameplay
             //添加音乐轨道
             if (!string.IsNullOrEmpty(data.MusicFileName))
             {
-                Music = await GameRoot.Asset.AwaitLoadAsset<AudioClip>(data.MusicFileName);
+                Music = await GameRoot.Asset.AwaitLoadAsset<AudioClip>(data.MusicFileName,gameObject);
                 TrackHelper.CreateBuilder<MusicTrack, AudioClip>()
                     .AddClips(1, Music, MusicTrack.ClipCreator)
                     .PostProcess(track => track.audioSource = AudioSource)

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CyanStars.Framework.Utils;
 using UnityEngine;
 
 namespace CyanStars.Framework.Asset
@@ -23,11 +24,15 @@ namespace CyanStars.Framework.Asset
         /// <summary>
         /// 加载资源（可等待）
         /// </summary>
-        public static Task<T> AwaitLoadAsset<T>(this AssetManager self, string assetName) where T : Object
+        public static Task<T> AwaitLoadAsset<T>(this AssetManager self, string assetName,GameObject bindingTarget = null) where T : Object
         {
             TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
             self.LoadAsset(assetName, (success, asset) =>
             {
+                if (bindingTarget)
+                {
+                    bindingTarget.GetOrAddComponent<AssetBinder>().BindTo(asset);
+                }
                 tcs.SetResult(asset as T);
             });
             return tcs.Task;
@@ -49,11 +54,21 @@ namespace CyanStars.Framework.Asset
         /// <summary>
         /// 批量加载资源（可等待）
         /// </summary>
-        public static Task<List<Object>> AwaitLoadAssets(this AssetManager self, List<string> assetNames)
+        public static Task<List<Object>> AwaitLoadAssets(this AssetManager self, List<string> assetNames,GameObject bindingTarget = null)
         {
             TaskCompletionSource<List<Object>> tcs = new TaskCompletionSource<List<Object>>();
             self.LoadAssets(assetNames, (assets) =>
             {
+                if (bindingTarget)
+                {
+                    AssetBinder binder = bindingTarget.GetOrAddComponent<AssetBinder>();
+                    for (int i = 0; i < assets.Count; i++)
+                    {
+                        binder.BindTo(assets[i]);
+                    }
+                }
+            
+                
                 tcs.SetResult(assets);
             });
             return tcs.Task;

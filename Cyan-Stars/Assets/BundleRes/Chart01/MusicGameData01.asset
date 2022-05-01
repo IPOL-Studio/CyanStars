@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
     Time: 148000
-    LrcFileName: Chart01/LrcText
-    MusicFileName: Chart01/Music
+    LrcFileName: Assets/BundleRes/Chart01/LrcText.txt
+    MusicFileName: Assets/BundleRes/Chart01/Music.ogg
     NoteTrackData:
       BaseSpeed: 4
       SpeedRate: 1
