@@ -26,6 +26,7 @@ namespace CyanStars.Gameplay.Note
         {
             effectObj = GameObject.Instantiate(effectPrefab,
                 transform.position + new Vector3(Endpoint.Instance.Length * w / 2, 0, 0), Quaternion.identity);
+            effectObj.transform.SetParent(GameManager.Instance.EffectParent);
         }
 
         public void DestroyEffectObj()
