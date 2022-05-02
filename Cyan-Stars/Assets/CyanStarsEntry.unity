@@ -169,7 +169,7 @@ MonoBehaviour:
   RunMode: 0
   MaxTaskExcuteCount: 10
   UnloadDelayTime: 5
-  IsEditorMode: 0
+  IsEditorMode: 1
   EditorModeMaxDelay: 1
 --- !u!1 &791002638
 GameObject:
