@@ -5,6 +5,7 @@ using CatLrcParser;
 using CyanStars.Framework;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.Timeline;
+using CyanStars.Framework.Utils;
 using CyanStars.Gameplay.UI;
 using CyanStars.Gameplay.Lrc;
 using CyanStars.Gameplay.Note;
@@ -15,6 +16,7 @@ using CyanStars.Gameplay.Camera;
 using CyanStars.Gameplay.Evaluate;
 using CyanStars.Gameplay.PromptTone;
 using CyanStars.Gameplay.Data;
+using CyanStars.Gameplay.Procedure;
 using UInput = UnityEngine.Input;
 
 namespace CyanStars.Gameplay
@@ -115,7 +117,8 @@ namespace CyanStars.Gameplay
             BtnStart.onClick.AddListener(OnBtnStartClick);
             BtnClose.onClick.AddListener(() =>
             {
-                GameRoot.Asset.UnloadScene("Assets/BundleRes/Scenes/Dark.unity");
+                //切回主界面流程
+                GameRoot.ChangeProcedure<MainHomeProcedure>();
             });
         }
 
