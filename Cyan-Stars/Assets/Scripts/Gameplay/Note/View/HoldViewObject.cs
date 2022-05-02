@@ -1,5 +1,5 @@
 using UnityEngine;
-using CyanStars.Framework.Helpers;
+using CyanStars.Framework.Utils;
 
 namespace CyanStars.Gameplay.Note
 {

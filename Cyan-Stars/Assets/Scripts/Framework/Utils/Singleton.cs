@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CyanStars.Framework
+namespace CyanStars.Framework.Utils
 {
     public abstract class SingletonBase<T> where T : SingletonBase<T>, new()
     {

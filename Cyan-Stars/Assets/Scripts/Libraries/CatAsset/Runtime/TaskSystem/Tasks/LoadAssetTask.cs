@@ -231,13 +231,9 @@ namespace CatAsset
                 }
                 else
                 {
-                    Debug.Log("Asset加载成功：" + Name);
+                    //Debug.Log("Asset加载成功：" + Name);
                     onFinished?.Invoke(true, assetInfo.Asset);
                 }
-
-               
-
-               
             }
 
         }

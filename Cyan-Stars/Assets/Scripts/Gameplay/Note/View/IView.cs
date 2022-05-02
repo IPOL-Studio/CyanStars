@@ -6,7 +6,6 @@ namespace CyanStars.Gameplay.Note
     public interface IView
     {
 
-
         void OnUpdate(float deltaTime);
 
         void DestroySelf(bool autoMove = true);

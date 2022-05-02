@@ -18,6 +18,8 @@ namespace CyanStars.Framework.FSM
         /// </summary>
         private List<FSM> fsms = new List<FSM>();
 
+        private List<FSM> tempFSMs = new List<FSM>();
+
         /// <inheritdoc />
         public override void OnInit()
         {
@@ -27,19 +29,35 @@ namespace CyanStars.Framework.FSM
         /// <inheritdoc />
         public override void OnUpdate(float deltaTime)
         {
-            for (int i = fsms.Count - 1; i >= 0; i--)
+            tempFSMs.Clear();
+            for (int i = 0; i < fsms.Count; i++)
             {
-                fsms[i].OnUpdate(deltaTime);
+                tempFSMs.Add(fsms[i]);
+            }
+
+            for (int i = 0; i < tempFSMs.Count; i++)
+            {
+                tempFSMs[i].OnUpdate(deltaTime);
             }
         }
 
         /// <summary>
         /// 创建有限状态机
         /// </summary>
-        public void CreateFSM<T>(List<BaseFSMState> states) where T : BaseFSMState
+        public FSM CreateFSM<T>(List<BaseState> states) where T : BaseState
+        {
+            return CreateFSM(states,typeof(T));
+        }
+
+        /// <summary>
+        /// 创建有限状态机
+        /// </summary>
+        public FSM CreateFSM(List<BaseState> states, Type entryStateType)
         {
             FSM fsm = new FSM(states);
-            fsm.ChangeState<T>();
+            fsms.Add(fsm);
+            fsm.ChangeState(entryStateType);
+            return fsm;
         }
 
         /// <summary>

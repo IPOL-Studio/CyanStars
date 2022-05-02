@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CyanStars.Framework.FSM
 {
@@ -11,18 +12,19 @@ namespace CyanStars.Framework.FSM
         /// <summary>
         /// 状态字典
         /// </summary>
-        private Dictionary<Type, BaseFSMState> stateDict = new Dictionary<Type, BaseFSMState>();
+        private Dictionary<Type, BaseState> stateDict = new Dictionary<Type, BaseState>();
 
         /// <summary>
         /// 当前状态
         /// </summary>
-        private BaseFSMState currentState;
+        private BaseState currentState;
         
-        public FSM(List<BaseFSMState> states)
+        public FSM(List<BaseState> states)
         {
             for (int i = 0; i < states.Count; i++)
             {
-                BaseFSMState state = states[i];
+                BaseState state = states[i];
+                state.SetOwner(this);
                 stateDict.Add(state.GetType(),state);
             }
         }
@@ -30,18 +32,29 @@ namespace CyanStars.Framework.FSM
         /// <summary>
         /// 切换状态
         /// </summary>
-        public void ChangeState<T>() where T : BaseFSMState
+        public void ChangeState<T>() where T : BaseState
         {
             Type type = typeof(T);
-            
-            if (!stateDict.TryGetValue(type,out BaseFSMState state))
+            ChangeState(type);
+        }
+
+        /// <summary>
+        /// 切换状态
+        /// </summary>
+        public void ChangeState(Type stateType)
+        {
+            if (!stateDict.TryGetValue(stateType,out BaseState state))
             {
-                throw new Exception($"状态切换失败，没有此状态：{type}");
+                throw new Exception($"状态切换失败，FSM的状态字典中没有此状态：{stateType}");
             }
             
-            currentState.OnExit();
+            Debug.Log($"状态切换：{currentState?.GetType().Name}->{stateType.Name}");
+            
+            currentState?.OnExit();
             currentState = state;
             currentState.OnEnter();
+            
+            
         }
         
         /// <summary>
