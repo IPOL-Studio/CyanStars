@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using CyanStars.Framework;
 using CyanStars.Gameplay.Effect;
 
 namespace CyanStars.Gameplay.Note
@@ -12,7 +13,7 @@ namespace CyanStars.Gameplay.Note
         private float deltaTime;
         public GameObject effectPrefab;
         private GameObject effectObj;
-
+        public string PrefabName;
         public void OnUpdate(float deltaTime)
         {
             this.deltaTime = deltaTime;
@@ -48,7 +49,8 @@ namespace CyanStars.Gameplay.Note
         {
             if (!autoMove)
             {
-                Destroy(gameObject);
+                //Destroy(gameObject);
+                GameRoot.GameObjectPool.ReleaseGameObject(PrefabName,gameObject);
                 return;
             }
 
@@ -72,7 +74,8 @@ namespace CyanStars.Gameplay.Note
 
                 if (timer >= 2f)
                 {
-                    Destroy(gameObject);
+                    //Destroy(gameObject);
+                    GameRoot.GameObjectPool.ReleaseGameObject(PrefabName,gameObject);
                     yield break;
                 }
 

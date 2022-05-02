@@ -11,6 +11,9 @@ namespace CyanStars.Framework.Asset
     /// </summary>
     public static class AwaitableExtension
     {
+        /// <summary>
+        /// 检查资源清单（可等待）
+        /// </summary>
         public static Task<bool> AwaitCheckPackageManifest(this AssetManager self)
         {
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
@@ -41,12 +44,13 @@ namespace CyanStars.Framework.Asset
         /// <summary>
         /// 加载场景（可等待）
         /// </summary>
-        public static Task AwaitLoadScene(this AssetManager self,string sceneName)
+        public static Task<bool> AwaitLoadScene(this AssetManager self,string sceneName)
         {
-            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
             self.LoadScene(sceneName, (success, obj) =>
             {
-                tcs.SetResult(null);
+                Debug.Log("加载场景完成");
+                tcs.SetResult(success);
             });
             return tcs.Task;
         }

@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using CyanStars.Framework;
+using CyanStars.Framework.GameObjectPool;
 using CyanStars.Gameplay.Data;
 
 using UnityEngine;
@@ -92,35 +95,41 @@ namespace CyanStars.Gameplay.Note
         /// <summary>
         /// 创建视图层物体
         /// </summary>
-        public static IView CreateViewObject(NoteData data, float viewCreateTime)
+        public static async Task<IView> CreateViewObject(NoteData data, BaseNote note)
         {
             GameObject go = null;
+            string prefabName = null;
             switch (data.Type)
             {
                 case NoteType.Tap:
-                    go = Object.Instantiate(GameManager.Instance.TapPrefab);
+                    prefabName = GameManager.Instance.TapPrefabName;
                     break;
                 case NoteType.Hold:
-                    go = Object.Instantiate(GameManager.Instance.HoldPrefab);
+                    prefabName = GameManager.Instance.HoldPrefabName;
                     break;
                 case NoteType.Drag:
-                    go = Object.Instantiate(GameManager.Instance.DragPrefab);
+                    prefabName = GameManager.Instance.DragPrefabName;
                     break;
                 case NoteType.Click:
-                    go = Object.Instantiate(GameManager.Instance.ClickPrefab);
+                    prefabName = GameManager.Instance.ClickPrefabName;
                     break;
                 case NoteType.Break:
-                    go = Object.Instantiate(GameManager.Instance.BreakPrefab);
+                    prefabName = GameManager.Instance.BreakPrefabName;
                     break;
             }
-
+            
+            go = await GameRoot.GameObjectPool.AwaitGetGameObject(prefabName);
             go.transform.SetParent(GameManager.Instance.viewRoot);
-            go.transform.position = GetViewObjectPos(data, viewCreateTime);
+            
+            //这里因为用了异步await，所以需要使用note在物体创建成功后这一刻的viewTimer作为viewCreateTime，否则位置会对不上
+            go.transform.position = GetViewObjectPos(data, note.ViewTimer); 
+            
             go.transform.localScale = GetViewObjectScale(data);
             go.transform.localEulerAngles = GetViewObjectRotation(data);
 
             var view = go.GetComponent<ViewObject>();
-
+            view.PrefabName = prefabName;
+            
             if (data.Type == NoteType.Hold)
             {
                 var startTime = viewStartTimeDict[data];
