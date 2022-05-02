@@ -32,12 +32,17 @@ namespace CyanStars.Gameplay.Note
         /// <summary>
         /// 受速率缩放影响的剩余时间的倒计时（主要用于视图层）
         /// </summary>
-        private float viewTimer;
+        public float ViewTimer;
 
         /// <summary>
         /// 视图层物体
         /// </summary>
         protected IView viewObject;
+
+        /// <summary>
+        /// 是否创建过视图层物体
+        /// </summary>
+        private bool createdViewObject = false;
 
         /// <summary>
         /// 设置数据
@@ -47,7 +52,7 @@ namespace CyanStars.Gameplay.Note
             this.data = data;
             this.layer = layer;
             LogicTimer = data.StartTime / 1000f;
-            viewTimer = ViewHelper.GetViewStartTime(data);
+            ViewTimer = ViewHelper.GetViewStartTime(data);
 
             //考虑性能问题 不再会一开始就创建出所有Note的游戏物体
             //而是需要在viewTimer运行到一个特定时间时再创建
@@ -78,13 +83,9 @@ namespace CyanStars.Gameplay.Note
         public virtual void OnUpdate(float deltaTime, float noteSpeedRate)
         {
             LogicTimer -= deltaTime;
-            viewTimer -= deltaTime * noteSpeedRate;
+            ViewTimer -= deltaTime * noteSpeedRate;
 
-            if (viewObject == null && viewTimer <= ViewHelper.ViewObjectCreateTime)
-            {
-                //到创建视图层物体的时间点了
-                viewObject = ViewHelper.CreateViewObject(data, viewTimer);
-            }
+            TryCreateViewObject();
 
             viewObject?.OnUpdate(deltaTime * noteSpeedRate);
         }
@@ -92,17 +93,26 @@ namespace CyanStars.Gameplay.Note
         public virtual void OnUpdateInAutoMode(float deltaTime, float noteSpeedRate)
         {
             LogicTimer -= deltaTime;
-            viewTimer -= deltaTime * noteSpeedRate;
+            ViewTimer -= deltaTime * noteSpeedRate;
 
-            if (viewObject == null && viewTimer <= ViewHelper.ViewObjectCreateTime)
-            {
-                //到创建视图层物体的时间点了
-                viewObject = ViewHelper.CreateViewObject(data, viewTimer);
-            }
+            TryCreateViewObject();
 
             viewObject?.OnUpdate(deltaTime * noteSpeedRate);
         }
 
+        /// <summary>
+        /// 尝试创建视图层物体
+        /// </summary>
+        private async void TryCreateViewObject()
+        {
+            if (viewObject == null && ViewTimer <= ViewHelper.ViewObjectCreateTime && !createdViewObject)
+            {
+                //到创建视图层物体的时间点了
+                createdViewObject = true;
+                viewObject = await ViewHelper.CreateViewObject(data, this);
+            }
+        }
+        
         /// <summary>
         /// 此音符有对应输入时
         /// </summary>

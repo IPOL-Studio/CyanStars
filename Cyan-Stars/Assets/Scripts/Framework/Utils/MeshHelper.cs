@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CyanStars.Framework.Helpers
+namespace CyanStars.Framework.Utils
 {
     public static class MeshHelper
     {

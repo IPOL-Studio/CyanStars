@@ -1,7 +1,7 @@
 using UnityEngine;
 using CyanStars.Framework.Loggers;
 
-namespace CyanStars.Framework.Helpers
+namespace CyanStars.Framework.Utils
 {
     public static class LogHelper
     {

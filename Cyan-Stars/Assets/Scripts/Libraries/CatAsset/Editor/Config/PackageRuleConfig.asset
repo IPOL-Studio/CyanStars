@@ -19,6 +19,9 @@ MonoBehaviour:
   - Directory: Assets/BundleRes/Chart01
     Mode: 0
     Group: Base
+  - Directory: Assets/BundleRes/Prefabs
+    Mode: 1
+    Group: Base
   - Directory: Assets/BundleRes/Scenes
     Mode: 2
     Group: Base
