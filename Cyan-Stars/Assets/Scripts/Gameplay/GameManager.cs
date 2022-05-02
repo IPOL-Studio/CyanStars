@@ -43,6 +43,13 @@ namespace CyanStars.Gameplay
         public GameObject DragPrefab;
         public GameObject ClickPrefab;
         public GameObject BreakPrefab;
+        
+        public string TapPrefabName;
+        public string HoldPrefabName;
+        public string DragPrefabName;
+        public string ClickPrefabName;
+        public string BreakPrefabName;
+        
         public Transform EffectParent;
         
         public Button BtnStart;

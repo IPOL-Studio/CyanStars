@@ -15,7 +15,7 @@ namespace CyanStars.Gameplay.Procedure
     {
         public override async void OnEnter()
         { 
-            await GameRoot.Asset.AwaitLoadScene("Assets/BundleRes/Scenes/Dark.unity");
+            bool success = await GameRoot.Asset.AwaitLoadScene("Assets/BundleRes/Scenes/Dark.unity");
         }
 
         public override void OnUpdate(float deltaTime)

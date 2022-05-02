@@ -4217,11 +4217,16 @@ MonoBehaviour:
   MainCamera: {fileID: 552719607}
   AudioSource: {fileID: 552719611}
   viewRoot: {fileID: 1334202027}
-  TapPrefab: {fileID: 2834893591176590126, guid: 18db18d69cf86224d9f0fc4f805332c1, type: 3}
-  HoldPrefab: {fileID: 6698156141441568055, guid: 259be15945cc3694f9c2ef05e9bd55f9, type: 3}
-  DragPrefab: {fileID: 6236107155078963146, guid: 4025f0caeca59634991b40496ca3f86d, type: 3}
-  ClickPrefab: {fileID: 4065793755966527998, guid: e85ae38a16f3ec048a5628b586a5152e, type: 3}
-  BreakPrefab: {fileID: 3149876104535507044, guid: 1ee31a272c4e7ae43acd9b45bfa82a92, type: 3}
+  TapPrefab: {fileID: 0}
+  HoldPrefab: {fileID: 0}
+  DragPrefab: {fileID: 0}
+  ClickPrefab: {fileID: 0}
+  BreakPrefab: {fileID: 0}
+  TapPrefabName: Assets/BundleRes/Prefabs/Notes/Tap.prefab
+  HoldPrefabName: Assets/BundleRes/Prefabs/Notes/Hold.prefab
+  DragPrefabName: Assets/BundleRes/Prefabs/Notes/Drag.prefab
+  ClickPrefabName: Assets/BundleRes/Prefabs/Notes/Click.prefab
+  BreakPrefabName: Assets/BundleRes/Prefabs/Notes/Break.prefab
   EffectParent: {fileID: 1496501033}
   BtnStart: {fileID: 1383141806815406067}
   BtnClose: {fileID: 2018914510}

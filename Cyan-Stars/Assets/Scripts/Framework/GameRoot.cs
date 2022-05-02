@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.FSM;
+using CyanStars.Framework.GameObjectPool;
 using UnityEngine;
 
 namespace CyanStars.Framework
@@ -29,6 +30,11 @@ namespace CyanStars.Framework
         public static FSMManager FSM;
 
         /// <summary>
+        /// 游戏对象池
+        /// </summary>
+        public static GameObjectPoolManager GameObjectPool;
+        
+        /// <summary>
         /// 流程状态机
         /// </summary>
         private static FSM.FSM procedureFSM;
@@ -44,6 +50,7 @@ namespace CyanStars.Framework
 
             FSM = GetManager<FSMManager>();
             Asset = GetManager<AssetManager>();
+            GameObjectPool = GetManager<GameObjectPoolManager>();
             
             //启动游戏流程
             GameProcedureStartUp();

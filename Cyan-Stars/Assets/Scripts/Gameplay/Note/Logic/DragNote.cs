@@ -46,7 +46,8 @@ namespace CyanStars.Gameplay.Note
             if (CanReceiveInput() && !isHit)
             {
                 viewObject.CreateEffectObj(NoteData.NoteWidth);//生成特效
-
+                DestroySelf(false);//立即销毁
+                
                 LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Exact));//Log
                 
                 GameManager.Instance.maxScore += data.GetFullScore();//更新理论最高分
