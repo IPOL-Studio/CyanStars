@@ -16,12 +16,23 @@ namespace CyanStars.Gameplay.Note
     {
         private static Dictionary<NoteData, float> viewStartTimeDict = new Dictionary<NoteData, float>();
         private static Dictionary<NoteData, float> viewHoldEndTimeDict = new Dictionary<NoteData, float>();
-
+        
+        
         /// <summary>
         /// 视图层物体创建倒计时时间（是受速率影响的时间）
         /// </summary>
         public const float ViewObjectCreateTime = 200;
 
+        /// <summary>
+        /// 视图层物体根节点
+        /// </summary>
+        public static Transform ViewRoot { get; set; }
+        
+        /// <summary>
+        /// 特效根节点
+        /// </summary>
+        public static Transform EffectRoot { get; set; }
+        
         /// <summary>
         /// 计算受速率影响的视图层音符开始时间和结束时间，用于视图层物体计算位置和长度
         /// </summary>
@@ -98,28 +109,18 @@ namespace CyanStars.Gameplay.Note
         public static async Task<IView> CreateViewObject(NoteData data, BaseNote note)
         {
             GameObject go = null;
-            string prefabName = null;
-            switch (data.Type)
+            string prefabName = data.Type switch
             {
-                case NoteType.Tap:
-                    prefabName = GameManager.Instance.TapPrefabName;
-                    break;
-                case NoteType.Hold:
-                    prefabName = GameManager.Instance.HoldPrefabName;
-                    break;
-                case NoteType.Drag:
-                    prefabName = GameManager.Instance.DragPrefabName;
-                    break;
-                case NoteType.Click:
-                    prefabName = GameManager.Instance.ClickPrefabName;
-                    break;
-                case NoteType.Break:
-                    prefabName = GameManager.Instance.BreakPrefabName;
-                    break;
-            }
-            
+                NoteType.Tap => GameRoot.GetDataModule<MusicGameModule>().TapPrefabName,
+                NoteType.Hold => GameRoot.GetDataModule<MusicGameModule>().HoldPrefabName,
+                NoteType.Drag => GameRoot.GetDataModule<MusicGameModule>().DragPrefabName,
+                NoteType.Click => GameRoot.GetDataModule<MusicGameModule>().ClickPrefabName,
+                NoteType.Break => GameRoot.GetDataModule<MusicGameModule>().BreakPrefabName,
+                _ => null
+            };
+
             go = await GameRoot.GameObjectPool.AwaitGetGameObject(prefabName);
-            go.transform.SetParent(GameManager.Instance.viewRoot);
+            go.transform.SetParent(ViewRoot);
             
             //这里因为用了异步await，所以需要使用note在物体创建成功后这一刻的viewTimer作为viewCreateTime，否则位置会对不上
             go.transform.position = GetViewObjectPos(data, note.ViewTimer); 

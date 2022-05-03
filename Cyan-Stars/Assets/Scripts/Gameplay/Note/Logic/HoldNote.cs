@@ -1,4 +1,5 @@
-﻿using CyanStars.Framework.Utils;
+﻿using CyanStars.Framework;
+using CyanStars.Framework.Utils;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Loggers;
@@ -54,7 +55,7 @@ namespace CyanStars.Gameplay.Note
         {
             base.OnUpdate(deltaTime, noteSpeedRate);
 
-            if (pressCount > 0 && LogicTimer <= 0 || GameManager.Instance.isAutoMode)
+            if (pressCount > 0 && LogicTimer <= 0 || GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)
             {
                 //只在音符区域内计算有效时间
                 pressTime += deltaTime;
@@ -67,8 +68,8 @@ namespace CyanStars.Gameplay.Note
                     //被漏掉了 miss
                     //Debug.LogError($"Hold音符miss：{data}");
                     LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Miss, 0, 0));
-                    GameManager.Instance.maxScore += 2;
-                    GameManager.Instance.RefreshData(-1, -1, EvaluateType.Miss, float.MaxValue);
+                    GameRoot.GetDataModule<MusicGameModule>().MaxScore += 2;
+                    GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);
                 }
                 else
                 {
@@ -78,15 +79,15 @@ namespace CyanStars.Gameplay.Note
                     EvaluateType et = EvaluateHelper.GetHoldEvaluate(value);
                     //Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
                     LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, et, pressTime, value));
-                    GameManager.Instance.maxScore++;
+                    GameRoot.GetDataModule<MusicGameModule>().MaxScore++;
                     if (et == EvaluateType.Exact)
-                        GameManager.Instance.RefreshData(0, 1, et, float.MaxValue);
+                        GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(0, 1, et, float.MaxValue);
                     else if (et == EvaluateType.Great)
-                        GameManager.Instance.RefreshData(0, 0.75f, et, float.MaxValue);
+                        GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(0, 0.75f, et, float.MaxValue);
                     else if (et == EvaluateType.Right)
-                        GameManager.Instance.RefreshData(0, 0.5f, et, float.MaxValue);
+                        GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(0, 0.5f, et, float.MaxValue);
                     else
-                        GameManager.Instance.RefreshData(-1, -1, et, float.MaxValue);
+                        GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(-1, -1, et, float.MaxValue);
                 }
 
                 DestroySelf();
@@ -100,18 +101,18 @@ namespace CyanStars.Gameplay.Note
             if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && !headSucess)
             {
                 headSucess = true;
-                GameManager.Instance.maxScore++;
+                GameRoot.GetDataModule<MusicGameModule>().MaxScore++;
                 LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, EvaluateType.Exact));
-                GameManager.Instance.RefreshData(1, 1, EvaluateType.Exact, 0);
+                GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(1, 1, EvaluateType.Exact, 0);
                 viewObject.CreateEffectObj(NoteData.NoteWidth);
             }
 
             if (LogicTimer < holdCheckInputEndTime)
             {
                 viewObject.DestroyEffectObj();
-                GameManager.Instance.maxScore++;
+                GameRoot.GetDataModule<MusicGameModule>().MaxScore++;
                 LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Exact, holdLength, 1));
-                GameManager.Instance.RefreshData(0, 1, EvaluateType.Exact, float.MaxValue);
+                GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(0, 1, EvaluateType.Exact, float.MaxValue);
                 DestroySelf();
             }
         }
@@ -134,20 +135,20 @@ namespace CyanStars.Gameplay.Note
                             DestroySelf(false);
                             //Debug.LogError($"Hold头判失败,时间：{LogicTimer}，{data}");
                             LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, et));
-                            GameManager.Instance.maxScore += 2;
-                            GameManager.Instance.RefreshData(-1, -1, et, float.MaxValue);
+                            GameRoot.GetDataModule<MusicGameModule>().MaxScore += 2;
+                            GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(-1, -1, et, float.MaxValue);
                             return;
                         }
 
                         //Debug.LogError($"Hold头判成功,时间：{LogicTimer}，{data}");
                         LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, et));
-                        GameManager.Instance.maxScore++;
+                        GameRoot.GetDataModule<MusicGameModule>().MaxScore++;
                         if (et == EvaluateType.Exact)
-                            GameManager.Instance.RefreshData(1, 1, et, LogicTimer);
+                            GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(1, 1, et, LogicTimer);
                         else if (et == EvaluateType.Great)
-                            GameManager.Instance.RefreshData(1, 0.75f, et, LogicTimer);
+                            GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(1, 0.75f, et, LogicTimer);
                         else if (et == EvaluateType.Right)
-                            GameManager.Instance.RefreshData(1, 0.5f, et, LogicTimer);
+                            GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(1, 0.5f, et, LogicTimer);
                     }
 
                     //头判成功

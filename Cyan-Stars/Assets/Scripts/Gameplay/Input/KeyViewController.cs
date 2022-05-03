@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using CyanStars.Framework;
 using CyanStars.Gameplay.Note;
 
 namespace CyanStars.Gameplay.Input
@@ -11,7 +12,7 @@ namespace CyanStars.Gameplay.Input
 
         public void KeyDown(InputMapData.Item item)
         {
-            if (GameManager.Instance.isAutoMode)
+            if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)
             {
                 return;
             }
@@ -35,7 +36,7 @@ namespace CyanStars.Gameplay.Input
 
         public void KeyUp(InputMapData.Item item)
         {
-            if (GameManager.Instance.isAutoMode)
+            if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)
             {
                 return;
             }
