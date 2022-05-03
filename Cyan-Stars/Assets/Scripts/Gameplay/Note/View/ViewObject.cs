@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using CyanStars.Framework;
@@ -14,6 +15,10 @@ namespace CyanStars.Gameplay.Note
         public GameObject effectPrefab;
         private GameObject effectObj;
         public string PrefabName;
+        
+        
+
+
         public void OnUpdate(float deltaTime)
         {
             this.deltaTime = deltaTime;
@@ -27,7 +32,7 @@ namespace CyanStars.Gameplay.Note
         {
             effectObj = GameObject.Instantiate(effectPrefab,
                 transform.position + new Vector3(Endpoint.Instance.Length * w / 2, 0, 0), Quaternion.identity);
-            effectObj.transform.SetParent(GameManager.Instance.EffectParent);
+            effectObj.transform.SetParent(ViewHelper.EffectRoot);
         }
 
         public void DestroyEffectObj()

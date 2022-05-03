@@ -1,6 +1,8 @@
+using System;
 using UnityEngine;
 using UnityEngine.VFX;
 using System.Collections;
+using CyanStars.Framework;
 
 namespace CyanStars.Gameplay.Effect
 {
@@ -10,9 +12,14 @@ namespace CyanStars.Gameplay.Effect
         public VisualEffect visualEffect;
         public float visualEffectStartCount = -1;
 
-        void Start()
+        public string effectName;
+        
+
+
+        public void PlayEffect()
         {
             visualEffect = GetComponent<VisualEffect>();
+            visualEffect.Play();
             if (visualEffectStartCount <= 0) visualEffectStartCount = visualEffect.GetFloat("Count");
             if (destroyTime > 0)
             {
@@ -24,7 +31,9 @@ namespace CyanStars.Gameplay.Effect
         {
             yield return new WaitForSeconds(destroyTime);
             visualEffect.SendEvent("Stop");
-            Destroy(gameObject, 10);
+            yield return new WaitForSeconds(10f);
+            //Destroy(gameObject, 10);
+            GameRoot.GameObjectPool.ReleaseGameObject(effectName,gameObject);
         }
     }
 }

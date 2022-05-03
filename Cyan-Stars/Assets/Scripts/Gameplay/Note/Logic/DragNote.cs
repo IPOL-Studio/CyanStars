@@ -1,3 +1,4 @@
+using CyanStars.Framework;
 using CyanStars.Framework.Utils;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
@@ -34,8 +35,8 @@ namespace CyanStars.Gameplay.Note
 
                 LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));//Log
 
-                GameManager.Instance.maxScore += data.GetFullScore();//更新最理论高分
-                GameManager.Instance.RefreshData(-1, -1, EvaluateType.Miss, float.MaxValue);//更新数据
+                GameRoot.GetDataModule<MusicGameModule>().MaxScore += data.GetFullScore();//更新最理论高分
+                GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);//更新数据
             }
         }
 
@@ -50,8 +51,8 @@ namespace CyanStars.Gameplay.Note
                 
                 LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Exact));//Log
                 
-                GameManager.Instance.maxScore += data.GetFullScore();//更新理论最高分
-                GameManager.Instance.RefreshData(addCombo: 1,
+                GameRoot.GetDataModule<MusicGameModule>().MaxScore += data.GetFullScore();//更新理论最高分
+                GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(addCombo: 1,
                 addScore: data.GetFullScore(),
                 grade: EvaluateType.Exact, currentDeviation: float.MaxValue);//更新数据
 
@@ -70,9 +71,9 @@ namespace CyanStars.Gameplay.Note
             viewObject.CreateEffectObj(NoteData.NoteWidth);//生成特效
             LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Exact));//Log
 
-            GameManager.Instance.maxScore += data.GetFullScore();//更新理论最高分
+            GameRoot.GetDataModule<MusicGameModule>().MaxScore += data.GetFullScore();//更新理论最高分
 
-            GameManager.Instance.RefreshData(addCombo: 1, 
+            GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(addCombo: 1, 
             addScore: EvaluateHelper.GetScoreWithEvaluate(EvaluateType.Exact) * data.GetMagnification(),
             grade: EvaluateType.Exact, currentDeviation: float.MaxValue);//更新数据
 

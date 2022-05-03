@@ -53,8 +53,6 @@ namespace CyanStars.Framework.FSM
             currentState?.OnExit();
             currentState = state;
             currentState.OnEnter();
-            
-            
         }
         
         /// <summary>
@@ -63,6 +61,14 @@ namespace CyanStars.Framework.FSM
         public void OnUpdate(float deltaTime)
         {
             currentState.OnUpdate(deltaTime);
+        }
+
+        /// <summary>
+        /// 销毁有限状态机
+        /// </summary>
+        public void OnDestroy()
+        {
+            currentState.OnExit();
         }
     }
 
