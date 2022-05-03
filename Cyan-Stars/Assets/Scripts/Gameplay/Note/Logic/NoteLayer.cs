@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CyanStars.Framework;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Note;
@@ -129,7 +130,7 @@ namespace CyanStars.Gameplay.Note
 
             float deltaTime = currentTime - previousTime;
 
-            if (GameManager.Instance.isAutoMode)//如果是AutoMode
+            if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)//如果是AutoMode
             {
                 for (int i = notes.Count - 1; i >= 0; i--)
                 {

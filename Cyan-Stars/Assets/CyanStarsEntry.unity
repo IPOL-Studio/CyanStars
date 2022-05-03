@@ -260,6 +260,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6546c5af4d2063469b5c8ac42051fc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsAutoMode: 1
+  MusicGameDataName: Assets/BundleRes/Chart01/MusicGameData01.asset
 --- !u!1 &1883494367
 GameObject:
   m_ObjectHideFlags: 0
@@ -303,5 +305,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4369668a2466b5148b2fd8a810ea3473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultExpireTime: 600
+  DefaultExpireTime: 60
   MaxInstantiateCount: 10
