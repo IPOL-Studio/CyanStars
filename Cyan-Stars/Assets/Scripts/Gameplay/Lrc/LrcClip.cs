@@ -1,3 +1,4 @@
+using CyanStars.Framework;
 using CyanStars.Framework.Timeline;
 
 namespace CyanStars.Gameplay.Lrc
@@ -18,7 +19,7 @@ namespace CyanStars.Gameplay.Lrc
         public override void OnEnter()
         {
             //显示歌词到UI上
-            GameManager.Instance.curLrcText = lrcText;
+            GameRoot.GetDataModule<MusicGameModule>().CurLrcText = lrcText;
         }
     }
 }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using CyanStars.Framework;
 
 namespace CyanStars.Gameplay.UI
 {
@@ -23,10 +24,10 @@ namespace CyanStars.Gameplay.UI
             if (scoreText) scoreText.text = "SCORE(DEBUG):" + score; //更新文本
             if (visibleScoreText)
                 visibleScoreText.text =
-                    ((int)(score / GameManager.Instance.fullScore * 100000)).ToString().PadLeft(6, '0'); //更新文本
+                    ((int)(score /  GameRoot.GetDataModule<MusicGameModule>().FullScore * 100000)).ToString().PadLeft(6, '0'); //更新文本
             if (gradeText)
             {
-                if (GameManager.Instance.isAutoMode)
+                if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)
                 {
                     gradeText.text = "AUTO";
 
@@ -70,22 +71,22 @@ namespace CyanStars.Gameplay.UI
 
         void Update()
         {
-            if (img) img.fillAmount = GameManager.Instance.TimeSchedule();
+            if (img) img.fillAmount = GameRoot.GetDataModule<MusicGameModule>().TimeSchedule();
             if (showDeviation)
             {
                 if (currentDeviationText)
                 {
-                    if (GameManager.Instance.currentDeviation > 0)
+                    if (GameRoot.GetDataModule<MusicGameModule>().CurrentDeviation > 0)
                     {
                         currentDeviationText.text = "+" + string.Format("{0:F3}",
-                                                        GameManager.Instance.currentDeviation * 1000) + "ms";
+                                                        GameRoot.GetDataModule<MusicGameModule>().CurrentDeviation * 1000) + "ms";
                         currentDeviationText.color = Color.red / 1.35f;
                     }
 
-                    if (GameManager.Instance.currentDeviation < 0)
+                    if (GameRoot.GetDataModule<MusicGameModule>().CurrentDeviation < 0)
                     {
                         currentDeviationText.text = string.Format("{0:F3}",
-                                                        GameManager.Instance.currentDeviation * 1000) + "ms";
+                                                        GameRoot.GetDataModule<MusicGameModule>().CurrentDeviation * 1000) + "ms";
                         currentDeviationText.color = Color.cyan / 1.35f;
                     }
                 }
@@ -93,14 +94,14 @@ namespace CyanStars.Gameplay.UI
                 if (accuracyText)
                 {
                     float accuracy = 0, sum = 0;
-                    if (GameManager.Instance.deviationList.Count > 0)
+                    if (GameRoot.GetDataModule<MusicGameModule>().DeviationList.Count > 0)
                     {
-                        foreach (var item in GameManager.Instance.deviationList)
+                        foreach (var item in GameRoot.GetDataModule<MusicGameModule>().DeviationList)
                         {
                             sum += Mathf.Abs(item);
                         }
 
-                        accuracy = sum / (float)GameManager.Instance.deviationList.Count;
+                        accuracy = sum / (float)GameRoot.GetDataModule<MusicGameModule>().DeviationList.Count;
                     }
 
                     accuracyText.text = "杂率:" + string.Format("{0:F3}", accuracy) + "s";
@@ -118,20 +119,20 @@ namespace CyanStars.Gameplay.UI
             if (scoreRatioText)
             {
                 float scoreRatio = 0;
-                if (GameManager.Instance.maxScore > 0)
+                if (GameRoot.GetDataModule<MusicGameModule>().MaxScore > 0)
                 {
-                    scoreRatio = (float)GameManager.Instance.score / (float)GameManager.Instance.maxScore;
+                    scoreRatio = (float)GameRoot.GetDataModule<MusicGameModule>().Score / (float)GameRoot.GetDataModule<MusicGameModule>().MaxScore;
                 }
 
                 scoreRatioText.text = string.Format("{0:F}", scoreRatio * 100) + "%";
-                if (GameManager.Instance.greatNum + GameManager.Instance.rightNum + GameManager.Instance.badNum +
-                    GameManager.Instance.missNum == 0)
+                if (GameRoot.GetDataModule<MusicGameModule>().GreatNum + GameRoot.GetDataModule<MusicGameModule>().RightNum + GameRoot.GetDataModule<MusicGameModule>().BadNum +
+                    GameRoot.GetDataModule<MusicGameModule>().MissNum == 0)
                 {
                     scoreRatioText.color = Color.yellow;
                 }
                 else
                 {
-                    if (GameManager.Instance.missNum + GameManager.Instance.badNum == 0)
+                    if (GameRoot.GetDataModule<MusicGameModule>().MissNum + GameRoot.GetDataModule<MusicGameModule>().BadNum == 0)
                     {
                         scoreRatioText.color = Color.cyan;
                     }
@@ -144,7 +145,7 @@ namespace CyanStars.Gameplay.UI
 
             if (LrcText)
             {
-                LrcText.text = GameManager.Instance.curLrcText;
+                LrcText.text = GameRoot.GetDataModule<MusicGameModule>().CurLrcText;
             }
         }
     }

@@ -5,6 +5,7 @@ using System.Reflection;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.GameObjectPool;
+using CyanStars.Gameplay;
 using UnityEngine;
 
 namespace CyanStars.Framework
@@ -18,6 +19,11 @@ namespace CyanStars.Framework
         /// 游戏管理器列表
         /// </summary>
         private static List<BaseManager> managers = new List<BaseManager>();
+
+        /// <summary>
+        /// 数据模块字典
+        /// </summary>
+        private static Dictionary<Type,BaseDataModule> dataModuleDict = new Dictionary<Type,BaseDataModule>();
 
         /// <summary>
         /// 资源管理器
@@ -38,22 +44,35 @@ namespace CyanStars.Framework
         /// 流程状态机
         /// </summary>
         private static FSM.FSM procedureFSM;
+
+        [Header("是否开启自动模式")]
+        public bool IsAutoMode;
+
+        [Header("谱面文件名")]
+        public string MusicGameDataName;
         
-        private async void Start()
+        private void Start()
         {
+            FSM = GetManager<FSMManager>();
+            Asset = GetManager<AssetManager>();
+            GameObjectPool = GetManager<GameObjectPoolManager>();
+            
             //按优先级排序并初始化所有Manager
             managers.Sort((x, y) => x.Priority.CompareTo(y.Priority));
             for (int i = 0; i < managers.Count; i++)
             {
                 managers[i].OnInit();
             }
-
-            FSM = GetManager<FSMManager>();
-            Asset = GetManager<AssetManager>();
-            GameObjectPool = GetManager<GameObjectPoolManager>();
+            
+            Type[] types = typeof(GameRoot).Assembly.GetTypes();
+            
+            //初始化数据模块
+            InitDataModules(types);
+            GetDataModule<MusicGameModule>().IsAutoMode = IsAutoMode;
+            GetDataModule<MusicGameModule>().MusicGameDataName = MusicGameDataName;
             
             //启动游戏流程
-            GameProcedureStartUp();
+            GameProcedureStartUp(types);
         }
 
         private void Update()
@@ -78,23 +97,56 @@ namespace CyanStars.Framework
         /// </summary>
         public static T GetManager<T>() where T : BaseManager
         {
+            Type type = typeof(T);
             for (int i = 0; i < managers.Count; i++)
             {
-                if (typeof(T) == managers[i].GetType())
+                if (type == managers[i].GetType())
                 {
                     return (T)managers[i];
                 }
             }
 
+            Debug.LogError($"要获取的管理器不存在{type.Name}");
             return null;
         }
 
         /// <summary>
+        /// 初始化数据模块
+        /// </summary>
+        private static void InitDataModules(Type[] types)
+        {
+            foreach (Type type in types)
+            {
+                if (type.IsSubclassOf(typeof(BaseDataModule)))
+                {
+                    BaseDataModule dataModule = (BaseDataModule)Activator.CreateInstance(type);
+                    dataModuleDict.Add(type,dataModule);
+                    dataModule.OnInit();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取数据模块
+        /// </summary>
+        public static T GetDataModule<T>() where T: BaseDataModule
+        {
+            Type type = typeof(T);
+            if (!dataModuleDict.TryGetValue(type,out BaseDataModule dataModule))
+            {
+                Debug.LogError($"要获取的数据模块不存在:{type.Name}");
+                return null;
+            }
+
+            return (T)dataModule;
+        }
+        
+        /// <summary>
         /// 启动游戏流程
         /// </summary>
-        private static void GameProcedureStartUp()
+        private static void GameProcedureStartUp(Type[] types)
         {
-           Type[] types = typeof(GameRoot).Assembly.GetTypes();
+
            List<BaseState> procedureStates = new List<BaseState>();
            Type entryProcedureType = null;
            
@@ -125,7 +177,8 @@ namespace CyanStars.Framework
            }
 
            
-           procedureFSM = FSM.CreateFSM(procedureStates, entryProcedureType);
+           procedureFSM = FSM.CreateFSM(procedureStates);
+           procedureFSM.ChangeState(entryProcedureType);
         }
 
         /// <summary>

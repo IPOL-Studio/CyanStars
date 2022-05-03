@@ -77,7 +77,7 @@ namespace CyanStars.Gameplay.Effect
 
         void Update()
         {
-            currentTime = GameManager.Instance.TimelineTime * 1000;
+            //currentTime = GameManager.Instance.TimelineTime * 1000;
             if (isStart)
             {
                 if (revolveIndex < revolveKeyFrames.Count)
