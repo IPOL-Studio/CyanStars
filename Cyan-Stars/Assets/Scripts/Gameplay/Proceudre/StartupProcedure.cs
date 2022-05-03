@@ -20,7 +20,7 @@ namespace CyanStars.Gameplay.Procedure
             if (GameRoot.Asset.IsEditorMode)
             {
                 //编辑器下并且开启了编辑器资源模式 直接切换到主界面流程
-                owner.ChangeState<MainHomeProcedure>();
+                GameRoot.ChangeProcedure<MainHomeProcedure>();
                 return;
             }
 #endif

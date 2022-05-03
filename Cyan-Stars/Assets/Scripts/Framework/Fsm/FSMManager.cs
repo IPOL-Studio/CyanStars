@@ -18,6 +18,9 @@ namespace CyanStars.Framework.FSM
         /// </summary>
         private List<FSM> fsms = new List<FSM>();
 
+        /// <summary>
+        /// 遍历用的临时状态机列表
+        /// </summary>
         private List<FSM> tempFSMs = new List<FSM>();
 
         /// <inheritdoc />
@@ -44,19 +47,10 @@ namespace CyanStars.Framework.FSM
         /// <summary>
         /// 创建有限状态机
         /// </summary>
-        public FSM CreateFSM<T>(List<BaseState> states) where T : BaseState
-        {
-            return CreateFSM(states,typeof(T));
-        }
-
-        /// <summary>
-        /// 创建有限状态机
-        /// </summary>
-        public FSM CreateFSM(List<BaseState> states, Type entryStateType)
+        public FSM CreateFSM(List<BaseState> states)
         {
             FSM fsm = new FSM(states);
             fsms.Add(fsm);
-            fsm.ChangeState(entryStateType);
             return fsm;
         }
 
@@ -65,6 +59,7 @@ namespace CyanStars.Framework.FSM
         /// </summary>
         public bool DestroyFSM(FSM fsm)
         {
+            fsm.OnDestroy();
             return fsms.Remove(fsm);
         }
     }

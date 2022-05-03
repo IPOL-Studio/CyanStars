@@ -168,7 +168,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RunMode: 0
   MaxTaskExcuteCount: 10
-  UnloadDelayTime: 5
+  UnloadDelayTime: 60
   IsEditorMode: 1
   EditorModeMaxDelay: 1
 --- !u!1 &791002638
@@ -182,7 +182,7 @@ GameObject:
   - component: {fileID: 791002639}
   - component: {fileID: 791002640}
   m_Layer: 0
-  m_Name: FsmManager
+  m_Name: FSMManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -303,5 +303,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4369668a2466b5148b2fd8a810ea3473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultExpireTime: 30
+  DefaultExpireTime: 600
   MaxInstantiateCount: 10

@@ -39,7 +39,7 @@ namespace CyanStars.Framework
         /// </summary>
         private static FSM.FSM procedureFSM;
         
-        private async void Start()
+        private void Start()
         {
             //按优先级排序并初始化所有Manager
             managers.Sort((x, y) => x.Priority.CompareTo(y.Priority));
@@ -125,7 +125,8 @@ namespace CyanStars.Framework
            }
 
            
-           procedureFSM = FSM.CreateFSM(procedureStates, entryProcedureType);
+           procedureFSM = FSM.CreateFSM(procedureStates);
+           procedureFSM.ChangeState(entryProcedureType);
         }
 
         /// <summary>
