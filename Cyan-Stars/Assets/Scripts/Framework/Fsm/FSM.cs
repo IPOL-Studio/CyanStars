@@ -18,6 +18,15 @@ namespace CyanStars.Framework.FSM
         /// 当前状态
         /// </summary>
         private BaseState currentState;
+
+        /// <summary>
+        /// 是否已被销毁
+        /// </summary>
+        public bool IsDestroyed
+        {
+            get;
+            private set;
+        }
         
         public FSM(List<BaseState> states)
         {
@@ -69,6 +78,7 @@ namespace CyanStars.Framework.FSM
         public void OnDestroy()
         {
             currentState.OnExit();
+            IsDestroyed = true;
         }
     }
 
