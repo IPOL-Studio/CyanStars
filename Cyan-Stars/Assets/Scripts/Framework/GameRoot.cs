@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using CyanStars.Framework.Asset;
+using CyanStars.Framework.Event;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.GameObjectPool;
 using CyanStars.Gameplay;
@@ -29,6 +30,11 @@ namespace CyanStars.Framework
         /// 资源管理器
         /// </summary>
         public static AssetManager Asset;
+
+        /// <summary>
+        /// 事件管理器
+        /// </summary>
+        public static EventManager Event;
         
         /// <summary>
         /// 有效状态机管理器
@@ -53,8 +59,9 @@ namespace CyanStars.Framework
         
         private void Start()
         {
-            FSM = GetManager<FSMManager>();
             Asset = GetManager<AssetManager>();
+            Event = GetManager<EventManager>();
+            FSM = GetManager<FSMManager>();
             GameObjectPool = GetManager<GameObjectPoolManager>();
             
             //按优先级排序并初始化所有Manager
@@ -68,6 +75,8 @@ namespace CyanStars.Framework
             
             //初始化数据模块
             InitDataModules(types);
+            
+            //先暂时这样直接给参数
             GetDataModule<MusicGameModule>().IsAutoMode = IsAutoMode;
             GetDataModule<MusicGameModule>().MusicGameDataName = MusicGameDataName;
             
