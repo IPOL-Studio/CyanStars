@@ -25,3 +25,6 @@ MonoBehaviour:
   - Directory: Assets/BundleRes/Scenes
     Mode: 2
     Group: Base
+  - Directory: Assets/BundleRes/ScriptObjects
+    Mode: 0
+    Group: Base
