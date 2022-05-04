@@ -83,6 +83,8 @@ namespace CatAsset.Editor
             }
 
             PkgUtil.PkgRuleCfg.Rules.Sort();
+            EditorUtility.SetDirty(PkgUtil.PkgRuleCfg);
+            AssetDatabase.SaveAssets();
         }
 
         [MenuItem("Assets/添加为打包规则目录（可多选）", true)]
