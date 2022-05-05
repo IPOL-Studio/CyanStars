@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using CyanStars.Framework;
+using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Evaluate;
+using CyanStars.Gameplay.Event;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Procedure;
 
@@ -13,12 +15,16 @@ namespace CyanStars.Gameplay
     /// </summary>
     public class MusicGameModule : BaseDataModule
     {
-        public MusicGameProcedure procedure { get; set; }
         
         /// <summary>
         /// 音游数据文件名
         /// </summary>
         public string MusicGameDataName { get; set; }
+        
+        /// <summary>
+        /// 时间轴当前时间
+        /// </summary>
+        public Timeline timeline{ get; set; }
         
         /// <summary>
         /// 输入映射数据文件名
@@ -57,8 +63,7 @@ namespace CyanStars.Gameplay
         public int BadNum = 0;
         public int MissNum = 0;
         public float FullScore; //全谱总分
-        public string CurLrcText; //当前歌词
-        
+
         #endregion
         
        
@@ -109,10 +114,6 @@ namespace CyanStars.Gameplay
             }
         }
         
-        public float TimeSchedule()
-        {
-            return procedure.TimeSchedule();
-        }
 
         /// <summary>
         /// 刷新玩家游戏中的数据
@@ -148,8 +149,9 @@ namespace CyanStars.Gameplay
                 CurrentDeviation = currentDeviation;
                 DeviationList.Add(currentDeviation);
             }
-
-            procedure.RefreshPlayingUI(Combo,Score,grade.ToString());
+            
+            //procedure.RefreshPlayingUI(Combo,Score,grade.ToString());
+            GameRoot.Event.Dispatch(EventConst.MusicGameDataRefreshEvent,this,EventArgs.Empty);
         }
     }
 }

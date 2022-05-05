@@ -105,7 +105,7 @@ namespace CyanStars.Framework.GameObjectPool
         /// <summary>
         /// 从池中获取一个游戏对象
         /// </summary>
-        public void GetGameObject(Action<GameObject> callback)
+        public void GetGameObject(Transform parent, Action<GameObject> callback)
         {
             if (prefab == null)
             {
@@ -113,7 +113,7 @@ namespace CyanStars.Framework.GameObjectPool
                 GameRoot.Asset.LoadAsset(prefabName, (success, asset) =>
                 {
                     prefab = (GameObject) asset;
-                    GetGameObject(callback);
+                    GetGameObject(parent,callback);
                 });
                 return;
             }
@@ -121,7 +121,7 @@ namespace CyanStars.Framework.GameObjectPool
             if (unusedPoolObjectList.Count == 0)
             {
                 //没有未使用的池对象，需要实例化出来
-                GameRoot.GameObjectPool.InstantiateAsync(prefab, (go) =>
+                GameRoot.GameObjectPool.InstantiateAsync(prefab,parent, (go) =>
                 {
                     PoolObject poolObject = new PoolObject
                     {
@@ -141,6 +141,7 @@ namespace CyanStars.Framework.GameObjectPool
             //从未被使用的池对象中拿一个出来
             PoolObject poolObject = unusedPoolObjectList[unusedPoolObjectList.Count - 1];
             unusedPoolObjectList.RemoveAt(unusedPoolObjectList.Count - 1);
+            poolObject.Target.transform.SetParent(parent);
             poolObject.Target.SetActive(true);
             callback?.Invoke(poolObject.Target);
         }
@@ -157,7 +158,8 @@ namespace CyanStars.Framework.GameObjectPool
 
             poolObject.Used = false;
             poolObject.UnusedTimer = 0;
-
+            go.SetActive(false);
+            
             unusedPoolObjectList.Add(poolObject);
         }
         

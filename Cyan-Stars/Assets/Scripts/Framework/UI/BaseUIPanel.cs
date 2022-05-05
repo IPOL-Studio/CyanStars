@@ -1,6 +1,7 @@
 ﻿using System;
 using CyanStars.Framework.Utils;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CyanStars.Framework.UI
 {
@@ -26,6 +27,9 @@ namespace CyanStars.Framework.UI
         private void Awake()
         {
             canvas = gameObject.GetOrAddComponent<Canvas>();
+            canvas.overrideSorting = true;
+
+            gameObject.AddComponent<GraphicRaycaster>();
             
             OnCreate();
         }

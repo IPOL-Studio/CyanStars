@@ -46,8 +46,8 @@ namespace CyanStars.Gameplay.Effect
 
         public override void OnEnter()
         {
-            Owner.Frame.color = color;
-            Owner.Frame.pixelsPerUnitMultiplier = 1 - intensity;
+            Owner.ImgFrame.color = color;
+            Owner.ImgFrame.pixelsPerUnitMultiplier = 1 - intensity;
         }
 
         public override void OnUpdate(float currentTime, float previousTime)
@@ -57,7 +57,7 @@ namespace CyanStars.Gameplay.Effect
                 (maxAlpha - minAlpha) + minAlpha;
 
             color.a = alpha;
-            Owner.Frame.color = color;
+            Owner.ImgFrame.color = color;
         }
     }
 }

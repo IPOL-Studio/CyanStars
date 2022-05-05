@@ -29,8 +29,8 @@ namespace CyanStars.Gameplay.Note
 
                 LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));//Log
 
-                GameRoot.GetDataModule<MusicGameModule>().MaxScore += data.GetFullScore();//更新最理论高分
-                GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);//更新数据
+                dataModule.MaxScore += data.GetFullScore();//更新最理论高分
+                dataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);//更新数据
             }
         }
 
@@ -43,8 +43,8 @@ namespace CyanStars.Gameplay.Note
                 viewObject.CreateEffectObj(NoteData.NoteWidth);//生成特效
                 DestroySelf(false);//销毁
 
-                GameRoot.GetDataModule<MusicGameModule>().MaxScore += data.GetFullScore();//更新理论最高分
-                GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(addCombo: 1,
+                dataModule.MaxScore += data.GetFullScore();//更新理论最高分
+                dataModule.RefreshPlayingData(addCombo: 1,
                 addScore: data.GetFullScore(),
                 grade: EvaluateType.Exact, currentDeviation: float.MaxValue);//更新数据
                 return;
@@ -64,8 +64,8 @@ namespace CyanStars.Gameplay.Note
 
             LogHelper.NoteLogger.Log(new DefaultNoteJudgeLogArgs(data, evaluateType));//Log
 
-            GameRoot.GetDataModule<MusicGameModule>().MaxScore += data.GetFullScore();//更新理论最高分
-            GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(addCombo: 1,
+            dataModule.MaxScore += data.GetFullScore();//更新理论最高分
+            dataModule.RefreshPlayingData(addCombo: 1,
             addScore: EvaluateHelper.GetScoreWithEvaluate(evaluateType) * data.GetMagnification(),
             grade: evaluateType, currentDeviation: LogicTimer);//更新数据
         }

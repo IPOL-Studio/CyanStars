@@ -36,16 +36,19 @@ namespace CyanStars.Framework.GameObjectPool
         /// <summary>
         /// 等待实例化的游戏对象队列
         /// </summary>
-        private Queue<ValueTuple<GameObject, Action<GameObject>>> waitInstantiateQueue =
-            new Queue<(GameObject, Action<GameObject>)>();
+        private Queue<ValueTuple<GameObject,Transform, Action<GameObject>>> waitInstantiateQueue =
+            new Queue<(GameObject,Transform, Action<GameObject>)>();
 
+        /// <inheritdoc />
         public override int Priority { get; }
         
+        /// <inheritdoc />
         public override void OnInit()
         {
             
         }
 
+        /// <inheritdoc />
         public override void OnUpdate(float deltaTime)
         {
             //轮询池子
@@ -57,8 +60,8 @@ namespace CyanStars.Framework.GameObjectPool
             //处理分帧实例化
             while (instantiateCounter < MaxInstantiateCount && waitInstantiateQueue.Count > 0)
             {
-                var (prefab, callback) = waitInstantiateQueue.Dequeue();
-                callback?.Invoke(Instantiate(prefab));
+                var (prefab,parent, callback) = waitInstantiateQueue.Dequeue();
+                callback?.Invoke(Instantiate(prefab,parent));
                 instantiateCounter++;
                 Debug.Log($"实例化了游戏对象：{prefab.name}，当前帧已实例化数：{instantiateCounter}");
             }
@@ -69,14 +72,14 @@ namespace CyanStars.Framework.GameObjectPool
         /// <summary>
         /// 从池中获取一个游戏对象
         /// </summary>
-        public void GetGameObject(string prefabName, Action<GameObject> callback)
+        public void GetGameObject(string prefabName,Transform parent, Action<GameObject> callback)
         {
             if (!poolDict.TryGetValue(prefabName,out GameObjectPool pool))
             {
                 pool = new GameObjectPool(prefabName, DefaultExpireTime);
                 poolDict.Add(prefabName,pool);
             }
-            pool.GetGameObject(callback);
+            pool.GetGameObject(parent, callback);
         }
 
         /// <summary>
@@ -90,17 +93,15 @@ namespace CyanStars.Framework.GameObjectPool
             }
             
             pool.ReleaseGameObject(go);
-            
-            go.SetActive(false);
             go.transform.SetParent(transform);
         }
         
         /// <summary>
         /// 分帧异步实例化
         /// </summary>
-        public void InstantiateAsync(GameObject prefab, Action<GameObject> callback)
+        public void InstantiateAsync(GameObject prefab, Transform parent, Action<GameObject> callback)
         {
-            waitInstantiateQueue.Enqueue((prefab,callback));
+            waitInstantiateQueue.Enqueue((prefab,parent,callback));
         }
     }
 }
