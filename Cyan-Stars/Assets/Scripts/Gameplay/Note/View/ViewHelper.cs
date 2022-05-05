@@ -119,8 +119,8 @@ namespace CyanStars.Gameplay.Note
                 _ => null
             };
 
-            go = await GameRoot.GameObjectPool.AwaitGetGameObject(prefabName);
-            go.transform.SetParent(ViewRoot);
+            go = await GameRoot.GameObjectPool.AwaitGetGameObject(prefabName,ViewRoot);
+            //go.transform.SetParent(ViewRoot);
             
             //这里因为用了异步await，所以需要使用note在物体创建成功后这一刻的viewTimer作为viewCreateTime，否则位置会对不上
             go.transform.position = GetViewObjectPos(data, note.ViewTimer); 

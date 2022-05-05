@@ -6,6 +6,7 @@ using CyanStars.Framework;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Timeline;
+using CyanStars.Framework.UI;
 using CyanStars.Gameplay.Camera;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Effect;
@@ -72,14 +73,18 @@ namespace CyanStars.Gameplay.Procedure
                 }
                 
                 await LoadDataFile();
-                
+
+                //打开UI
+                await GameRoot.UI.AwaitOpenUI<MusicGameMainPanel>();
+                await GameRoot.UI.AwaitOpenUI<MusicGame3DUIPanel>();
+
                 //监听开始和关闭按钮的点击
-                Button startBtn = GameObject.Find("PlayingUI/StartButton").GetComponent<Button>();
-                startBtn.onClick.AddListener(StartMusicGame);
-                Button closeBtn = GameObject.Find("PlayingUI/CloseButton").GetComponent<Button>();
-                closeBtn.onClick.AddListener(GameRoot.ChangeProcedure<MainHomeProcedure>);
-                
-               
+                // Button startBtn = GameObject.Find("PlayingUI/StartButton").GetComponent<Button>();
+                // startBtn.onClick.AddListener(StartMusicGame);
+                // Button closeBtn = GameObject.Find("PlayingUI/CloseButton").GetComponent<Button>();
+                // closeBtn.onClick.AddListener(GameRoot.ChangeProcedure<MainHomeProcedure>);
+
+
             }
         
         }

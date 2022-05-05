@@ -45,9 +45,9 @@ namespace CyanStars.Framework.UI
         /// </summary>
         public void OpenUI<T>(UIDataAttribute uiData,Action<T> callback) where T : BaseUIPanel
         {
-            GameRoot.GameObjectPool.GetGameObject(uiData.UIPrefabName, (go) =>
+            GameRoot.GameObjectPool.GetGameObject(uiData.UIPrefabName,UIRoot.transform, (go) =>
             {
-                go.transform.SetParent(UIRoot.transform);
+                //go.transform.SetParent(UIRoot.transform);
                 
                 BaseUIPanel uiPanel = go.GetComponent<BaseUIPanel>();
                 uiPanels.Add(uiPanel);
