@@ -6,6 +6,7 @@ using CyanStars.Framework.Asset;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.GameObjectPool;
+using CyanStars.Framework.UI;
 using CyanStars.Gameplay;
 using UnityEngine;
 
@@ -37,14 +38,19 @@ namespace CyanStars.Framework
         public static EventManager Event;
         
         /// <summary>
-        /// 有效状态机管理器
+        /// 有限状态机管理器
         /// </summary>
         public static FSMManager FSM;
 
         /// <summary>
-        /// 游戏对象池
+        /// 游戏对象池管理器
         /// </summary>
         public static GameObjectPoolManager GameObjectPool;
+
+        /// <summary>
+        /// UI管理器
+        /// </summary>
+        public static UIManager UI;
         
         /// <summary>
         /// 流程状态机
@@ -63,6 +69,7 @@ namespace CyanStars.Framework
             Event = GetManager<EventManager>();
             FSM = GetManager<FSMManager>();
             GameObjectPool = GetManager<GameObjectPoolManager>();
+            UI = GetManager<UIManager>();
             
             //按优先级排序并初始化所有Manager
             managers.Sort((x, y) => x.Priority.CompareTo(y.Priority));

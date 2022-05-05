@@ -10,9 +10,13 @@ namespace CyanStars.Framework.UI
     /// </summary>
     public class UIManager : BaseManager
     {
+        [Header("UI相机")]
+        public Camera UICamare;
+        
         /// <summary>
         /// UI组深度间隔
         /// </summary>
+        [Header(" UI组深度间隔")]
         public int UIGroupDepthStep = 100;
         
         /// <summary>
@@ -42,6 +46,8 @@ namespace CyanStars.Framework.UI
             {
                 UIGroup group = UIGroups[i];
                 uiGroupDict.Add(group.Name,group);
+
+                group.Depth = i * UIGroupDepthStep;
             }
         }
 
@@ -78,6 +84,15 @@ namespace CyanStars.Framework.UI
             uiGroup.CloseUI(uiData,uiPanel);
         }
 
+        /// <summary>
+        /// 获取UI面板
+        /// </summary>
+        public T GetUI<T>() where T : BaseUIPanel
+        {
+            UIGroup uiGroup = GetUIGroup<T>(out UIDataAttribute uiData);
+            return uiGroup.GetUI<T>();
+        }
+        
         /// <summary>
         /// 获取UI组
         /// </summary>

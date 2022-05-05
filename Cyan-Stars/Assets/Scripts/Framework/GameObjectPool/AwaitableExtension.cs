@@ -11,10 +11,10 @@ namespace CyanStars.Framework.GameObjectPool
         /// <summary>
         /// 从池中获取一个游戏对象（可等待）
         /// </summary>
-        public static Task<GameObject> AwaitGetGameObject(this GameObjectPoolManager self,string prefabName)
+        public static Task<GameObject> AwaitGetGameObject(this GameObjectPoolManager self,string prefabName,Transform parent)
         {
             TaskCompletionSource<GameObject> tcs = new TaskCompletionSource<GameObject>();
-            self.GetGameObject(prefabName, (go) =>
+            self.GetGameObject(prefabName,parent, (go) =>
             {
                 tcs.SetResult(go);
             });
