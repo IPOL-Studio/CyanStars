@@ -85,6 +85,15 @@ namespace CyanStars.Framework.UI
         }
 
         /// <summary>
+        /// 获取UI面板
+        /// </summary>
+        public T GetUI<T>() where T : BaseUIPanel
+        {
+            UIGroup uiGroup = GetUIGroup<T>(out UIDataAttribute uiData);
+            return uiGroup.GetUI<T>();
+        }
+        
+        /// <summary>
         /// 获取UI组
         /// </summary>
         private UIGroup GetUIGroup<T>(out UIDataAttribute uiData) where T : BaseUIPanel

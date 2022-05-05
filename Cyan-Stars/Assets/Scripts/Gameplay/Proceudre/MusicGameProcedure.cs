@@ -10,6 +10,7 @@ using CyanStars.Framework.UI;
 using CyanStars.Gameplay.Camera;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Effect;
+using CyanStars.Gameplay.Event;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Lrc;
 using CyanStars.Gameplay.Music;
@@ -33,8 +34,7 @@ namespace CyanStars.Gameplay.Procedure
         private GameObject sceneRoot;
         private AudioSource audioSource;
         private KeyViewController keyViewController;
-        private List<PlayingUI> playingUIList = new List<PlayingUI>();
-        
+
         private InputMapData inputMapData;
         private MusicGameData musicGameData;
         private string lrcText;
@@ -52,11 +52,14 @@ namespace CyanStars.Gameplay.Procedure
         public MusicGameProcedure()
         {
             dataModule = GameRoot.GetDataModule<MusicGameModule>();
-            dataModule.procedure = this;
         }
         
         public override async void OnEnter()
         {
+            //监听事件
+            GameRoot.Event.AddListener(EventConst.MusicGameStartEvent,StartMusicGame);
+            
+            //打开游戏场景
             bool success = await GameRoot.Asset.AwaitLoadScene("Assets/BundleRes/Scenes/Dark.unity");
 
             if (success)
@@ -67,26 +70,13 @@ namespace CyanStars.Gameplay.Procedure
                 audioSource = sceneRoot.GetComponent<AudioSource>();
                 keyViewController = sceneRoot.transform.Find("KeyViewController").GetComponent<KeyViewController>();
                 
-                foreach (PlayingUI playingUI in GameObject.FindObjectsOfType<PlayingUI>())
-                {
-                    playingUIList.Add(playingUI);
-                }
-                
                 await LoadDataFile();
-
+                
                 //打开UI
-                await GameRoot.UI.AwaitOpenUI<MusicGameMainPanel>();
-                await GameRoot.UI.AwaitOpenUI<MusicGame3DUIPanel>();
-
-                //监听开始和关闭按钮的点击
-                // Button startBtn = GameObject.Find("PlayingUI/StartButton").GetComponent<Button>();
-                // startBtn.onClick.AddListener(StartMusicGame);
-                // Button closeBtn = GameObject.Find("PlayingUI/CloseButton").GetComponent<Button>();
-                // closeBtn.onClick.AddListener(GameRoot.ChangeProcedure<MainHomeProcedure>);
-
-
+                GameRoot.UI.OpenUI<MusicGameMainPanel>(null);
+                GameRoot.UI.OpenUI<MusicGame3DUIPanel>(null);
             }
-        
+            
         }
 
         public override void OnUpdate(float deltaTime)
@@ -104,7 +94,6 @@ namespace CyanStars.Gameplay.Procedure
 
         public override void OnExit()
         {
-         
             timeline = null;
             inputMapData = null;
             musicGameData = null;
@@ -115,13 +104,14 @@ namespace CyanStars.Gameplay.Procedure
             lastTime = -float.Epsilon;
             isStartGame = false;
             
+            GameRoot.Event.RemoveListener(EventConst.MusicGameStartEvent,StartMusicGame);
             GameRoot.Asset.UnloadScene("Assets/BundleRes/Scenes/Dark.unity");
         }
 
         /// <summary>
         /// 开始游戏
         /// </summary>
-        public void StartMusicGame()
+        public void StartMusicGame(object sender,EventArgs args)
         {
             isStartGame = true;
             CreateTimeline();
@@ -184,6 +174,10 @@ namespace CyanStars.Gameplay.Procedure
                 TrackHelper.CreateBuilder<LrcTrack, IList<LrcTimeTag>>()
                     .AddClips(lrc.TimeTagList.Count, lrc.TimeTagList, LrcTrack.ClipCreator)
                     .SortClip()
+                    .PostProcess((track) =>
+                    {
+                        track.TxtLrc = GameRoot.UI.GetUI<MusicGameMainPanel>().TxtLrc;
+                    })
                     .Build()
                     .AddToTimeline(timeline);
                
@@ -230,12 +224,13 @@ namespace CyanStars.Gameplay.Procedure
                     track.BPM = data.EffectTrackData.BPM;
                     track.EffectNames = dataModule.EffectNames;
                     track.EffectParent = ViewHelper.EffectRoot;
-                    track.Frame = GameObject.Find("PlayingUI/Frame").GetComponent<Image>();
+                    track.ImgFrame = GameRoot.UI.GetUI<MusicGameMainPanel>().ImgFrame;
                 })
                 .Build()
                 .AddToTimeline(timeline);
 
             this.timeline = timeline;
+            dataModule.timeline = timeline;
             Debug.Log("时间轴创建完毕");
         }
 
@@ -305,16 +300,7 @@ namespace CyanStars.Gameplay.Procedure
             return timeline.CurrentTime / timeline.Length;
         }
         
-        /// <summary>
-        /// 刷新PlayingUI
-        /// </summary>
-        public void RefreshPlayingUI(int combo, float score, string grade)
-        {
-            foreach (var item in playingUIList)
-            {
-                item.Refresh(combo, score, grade, -1);
-            }
-        }
+
     }
 }
 

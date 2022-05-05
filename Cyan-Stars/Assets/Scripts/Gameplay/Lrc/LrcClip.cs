@@ -19,7 +19,7 @@ namespace CyanStars.Gameplay.Lrc
         public override void OnEnter()
         {
             //显示歌词到UI上
-            GameRoot.GetDataModule<MusicGameModule>().CurLrcText = lrcText;
+            Owner.TxtLrc.text = lrcText;
         }
     }
 }

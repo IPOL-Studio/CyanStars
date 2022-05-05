@@ -55,7 +55,7 @@ namespace CyanStars.Gameplay.Note
         {
             base.OnUpdate(deltaTime, noteSpeedRate);
 
-            if (pressCount > 0 && LogicTimer <= 0 || GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)
+            if (pressCount > 0 && LogicTimer <= 0 || dataModule.IsAutoMode)
             {
                 //只在音符区域内计算有效时间
                 pressTime += deltaTime;
@@ -68,8 +68,8 @@ namespace CyanStars.Gameplay.Note
                     //被漏掉了 miss
                     //Debug.LogError($"Hold音符miss：{data}");
                     LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Miss, 0, 0));
-                    GameRoot.GetDataModule<MusicGameModule>().MaxScore += 2;
-                    GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);
+                    dataModule.MaxScore += 2;
+                    dataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);
                 }
                 else
                 {
@@ -79,15 +79,15 @@ namespace CyanStars.Gameplay.Note
                     EvaluateType et = EvaluateHelper.GetHoldEvaluate(value);
                     //Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
                     LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, et, pressTime, value));
-                    GameRoot.GetDataModule<MusicGameModule>().MaxScore++;
+                    dataModule.MaxScore++;
                     if (et == EvaluateType.Exact)
-                        GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(0, 1, et, float.MaxValue);
+                        dataModule.RefreshPlayingData(0, 1, et, float.MaxValue);
                     else if (et == EvaluateType.Great)
-                        GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(0, 0.75f, et, float.MaxValue);
+                        dataModule.RefreshPlayingData(0, 0.75f, et, float.MaxValue);
                     else if (et == EvaluateType.Right)
-                        GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(0, 0.5f, et, float.MaxValue);
+                        dataModule.RefreshPlayingData(0, 0.5f, et, float.MaxValue);
                     else
-                        GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(-1, -1, et, float.MaxValue);
+                        dataModule.RefreshPlayingData(-1, -1, et, float.MaxValue);
                 }
 
                 DestroySelf();
@@ -101,18 +101,18 @@ namespace CyanStars.Gameplay.Note
             if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && !headSucess)
             {
                 headSucess = true;
-                GameRoot.GetDataModule<MusicGameModule>().MaxScore++;
+                dataModule.MaxScore++;
                 LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, EvaluateType.Exact));
-                GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(1, 1, EvaluateType.Exact, 0);
+                dataModule.RefreshPlayingData(1, 1, EvaluateType.Exact, 0);
                 viewObject.CreateEffectObj(NoteData.NoteWidth);
             }
 
             if (LogicTimer < holdCheckInputEndTime)
             {
                 viewObject.DestroyEffectObj();
-                GameRoot.GetDataModule<MusicGameModule>().MaxScore++;
+                dataModule.MaxScore++;
                 LogHelper.NoteLogger.Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Exact, holdLength, 1));
-                GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(0, 1, EvaluateType.Exact, float.MaxValue);
+                dataModule.RefreshPlayingData(0, 1, EvaluateType.Exact, float.MaxValue);
                 DestroySelf();
             }
         }
@@ -135,20 +135,20 @@ namespace CyanStars.Gameplay.Note
                             DestroySelf(false);
                             //Debug.LogError($"Hold头判失败,时间：{LogicTimer}，{data}");
                             LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, et));
-                            GameRoot.GetDataModule<MusicGameModule>().MaxScore += 2;
-                            GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(-1, -1, et, float.MaxValue);
+                            dataModule.MaxScore += 2;
+                            dataModule.RefreshPlayingData(-1, -1, et, float.MaxValue);
                             return;
                         }
 
                         //Debug.LogError($"Hold头判成功,时间：{LogicTimer}，{data}");
                         LogHelper.NoteLogger.Log(new HoldNoteHeadJudgeLogArgs(data, et));
-                        GameRoot.GetDataModule<MusicGameModule>().MaxScore++;
+                        dataModule.MaxScore++;
                         if (et == EvaluateType.Exact)
-                            GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(1, 1, et, LogicTimer);
+                            dataModule.RefreshPlayingData(1, 1, et, LogicTimer);
                         else if (et == EvaluateType.Great)
-                            GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(1, 0.75f, et, LogicTimer);
+                            dataModule.RefreshPlayingData(1, 0.75f, et, LogicTimer);
                         else if (et == EvaluateType.Right)
-                            GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(1, 0.5f, et, LogicTimer);
+                            dataModule.RefreshPlayingData(1, 0.5f, et, LogicTimer);
                     }
 
                     //头判成功

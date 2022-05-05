@@ -18,7 +18,6 @@ namespace CyanStars.Gameplay.Procedure
                 flag = true;
                 
                 //直接切换到音游流程
-               
                 GameRoot.ChangeProcedure<MusicGameProcedure>();
             }
            

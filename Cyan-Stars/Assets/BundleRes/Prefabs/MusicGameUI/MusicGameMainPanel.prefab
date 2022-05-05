@@ -209,7 +209,7 @@ GameObject:
   - component: {fileID: 7242250859426830269}
   - component: {fileID: 7242250859426829890}
   m_Layer: 5
-  m_Name: TransFrame
+  m_Name: ImgFrame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -885,6 +885,6 @@ MonoBehaviour:
   ImgProgress: {fileID: 7242250859462915502}
   TxtCombo: {fileID: 7242250859521682838}
   TxtScore: {fileID: 7242250860124888760}
-  TransFrame: {fileID: 7242250859426829891}
+  ImgFrame: {fileID: 7242250859426829890}
   BtnStart: {fileID: 7242250859267684433}
   TxtLrc: {fileID: 7242250859895190165}

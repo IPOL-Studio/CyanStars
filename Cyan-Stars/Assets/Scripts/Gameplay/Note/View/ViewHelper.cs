@@ -108,14 +108,15 @@ namespace CyanStars.Gameplay.Note
         /// </summary>
         public static async Task<IView> CreateViewObject(NoteData data, BaseNote note)
         {
+            MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
             GameObject go = null;
             string prefabName = data.Type switch
             {
-                NoteType.Tap => GameRoot.GetDataModule<MusicGameModule>().TapPrefabName,
-                NoteType.Hold => GameRoot.GetDataModule<MusicGameModule>().HoldPrefabName,
-                NoteType.Drag => GameRoot.GetDataModule<MusicGameModule>().DragPrefabName,
-                NoteType.Click => GameRoot.GetDataModule<MusicGameModule>().ClickPrefabName,
-                NoteType.Break => GameRoot.GetDataModule<MusicGameModule>().BreakPrefabName,
+                NoteType.Tap => dataModule.TapPrefabName,
+                NoteType.Hold => dataModule.HoldPrefabName,
+                NoteType.Drag => dataModule.DragPrefabName,
+                NoteType.Click => dataModule.ClickPrefabName,
+                NoteType.Break => dataModule.BreakPrefabName,
                 _ => null
             };
 
