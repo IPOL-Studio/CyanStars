@@ -18,10 +18,5 @@ namespace CyanStars.Framework.UI
         public string UIGroupName;
         
 
-        public UIDataAttribute(string uiPrefabName, string uiGroupName)
-        {
-            UIPrefabName = uiPrefabName;
-            UIGroupName = uiGroupName;
-        }
     }
 }

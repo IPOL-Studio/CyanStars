@@ -1,6 +1,7 @@
 using CatLrcParser;
 using System.Collections.Generic;
 using CyanStars.Framework.Timeline;
+using TMPro;
 
 namespace CyanStars.Gameplay.Lrc
 {
@@ -9,6 +10,8 @@ namespace CyanStars.Gameplay.Lrc
     /// </summary>
     public class LrcTrack : BaseTrack
     {
+        public TextMeshProUGUI TxtLrc;
+        
         /// <summary>
         /// 创建歌词轨道片段
         /// </summary>

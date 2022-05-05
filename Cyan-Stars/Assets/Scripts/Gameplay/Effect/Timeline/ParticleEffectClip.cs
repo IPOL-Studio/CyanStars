@@ -45,8 +45,8 @@ namespace CyanStars.Gameplay.Effect
             // effectObj.gameObject.transform.SetParent(Owner.EffectParent);
 
             GameObject effectGO =
-                await GameRoot.GameObjectPool.AwaitGetGameObject(Owner.EffectNames[effectPrefabIndex]);
-            effectGO.transform.SetParent(Owner.EffectParent);
+                await GameRoot.GameObjectPool.AwaitGetGameObject(Owner.EffectNames[effectPrefabIndex],Owner.EffectParent);
+            //effectGO.transform.SetParent(Owner.EffectParent);
             effectGO.transform.position = position;
             effectGO.transform.rotation = Quaternion.Euler(rotation);
            

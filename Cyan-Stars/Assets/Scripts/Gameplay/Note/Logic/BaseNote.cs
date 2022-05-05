@@ -1,3 +1,4 @@
+using CyanStars.Framework;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Evaluate;
@@ -44,6 +45,8 @@ namespace CyanStars.Gameplay.Note
         /// </summary>
         private bool createdViewObject = false;
 
+        protected MusicGameModule dataModule;
+        
         /// <summary>
         /// 设置数据
         /// </summary>
@@ -53,6 +56,8 @@ namespace CyanStars.Gameplay.Note
             this.layer = layer;
             LogicTimer = data.StartTime / 1000f;
             ViewTimer = ViewHelper.GetViewStartTime(data);
+
+            dataModule = GameRoot.GetDataModule<MusicGameModule>();
 
             //考虑性能问题 不再会一开始就创建出所有Note的游戏物体
             //而是需要在viewTimer运行到一个特定时间时再创建

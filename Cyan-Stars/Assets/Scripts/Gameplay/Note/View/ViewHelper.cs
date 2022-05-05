@@ -108,19 +108,20 @@ namespace CyanStars.Gameplay.Note
         /// </summary>
         public static async Task<IView> CreateViewObject(NoteData data, BaseNote note)
         {
+            MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
             GameObject go = null;
             string prefabName = data.Type switch
             {
-                NoteType.Tap => GameRoot.GetDataModule<MusicGameModule>().TapPrefabName,
-                NoteType.Hold => GameRoot.GetDataModule<MusicGameModule>().HoldPrefabName,
-                NoteType.Drag => GameRoot.GetDataModule<MusicGameModule>().DragPrefabName,
-                NoteType.Click => GameRoot.GetDataModule<MusicGameModule>().ClickPrefabName,
-                NoteType.Break => GameRoot.GetDataModule<MusicGameModule>().BreakPrefabName,
+                NoteType.Tap => dataModule.TapPrefabName,
+                NoteType.Hold => dataModule.HoldPrefabName,
+                NoteType.Drag => dataModule.DragPrefabName,
+                NoteType.Click => dataModule.ClickPrefabName,
+                NoteType.Break => dataModule.BreakPrefabName,
                 _ => null
             };
 
-            go = await GameRoot.GameObjectPool.AwaitGetGameObject(prefabName);
-            go.transform.SetParent(ViewRoot);
+            go = await GameRoot.GameObjectPool.AwaitGetGameObject(prefabName,ViewRoot);
+            //go.transform.SetParent(ViewRoot);
             
             //这里因为用了异步await，所以需要使用note在物体创建成功后这一刻的viewTimer作为viewCreateTime，否则位置会对不上
             go.transform.position = GetViewObjectPos(data, note.ViewTimer); 

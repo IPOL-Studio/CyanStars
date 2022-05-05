@@ -29,8 +29,8 @@ namespace CyanStars.Gameplay.Note
                 DestroySelf();
                 //Debug.LogError($"Click音符miss：{data}");
                 LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, EvaluateType.Miss, 0));
-                GameRoot.GetDataModule<MusicGameModule>().MaxScore += 2;
-                GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);
+                dataModule.MaxScore += 2;
+                dataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);
                 return;
             }
 
@@ -41,12 +41,12 @@ namespace CyanStars.Gameplay.Note
                 EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(time);
                 DestroySelf(false);
                 //Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
-                GameRoot.GetDataModule<MusicGameModule>().MaxScore += 1;
+                dataModule.MaxScore += 1;
                 LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, evaluateType, time));
                 if (evaluateType == EvaluateType.Exact)
-                    GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(0, 1, evaluateType, float.MaxValue);
+                    dataModule.RefreshPlayingData(0, 1, evaluateType, float.MaxValue);
                 else
-                    GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(0, 0.5f, evaluateType, float.MaxValue);
+                    dataModule.RefreshPlayingData(0, 0.5f, evaluateType, float.MaxValue);
             }
         }
 
@@ -57,9 +57,9 @@ namespace CyanStars.Gameplay.Note
             if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && !headSucess)
             {
                 headSucess = true;
-                GameRoot.GetDataModule<MusicGameModule>().MaxScore += 2;
+                dataModule.MaxScore += 2;
                 LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, EvaluateType.Exact, 0));
-                GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(1, 2, EvaluateType.Exact, 0);
+                dataModule.RefreshPlayingData(1, 2, EvaluateType.Exact, 0);
                 viewObject.CreateEffectObj(NoteData.NoteWidth);
                 DestroySelf(false);
             }
@@ -77,15 +77,15 @@ namespace CyanStars.Gameplay.Note
                         headSucess = true;
                         viewObject.CreateEffectObj(NoteData.NoteWidth);
                         EvaluateType et = EvaluateHelper.GetTapEvaluate(LogicTimer);
-                        GameRoot.GetDataModule<MusicGameModule>().MaxScore += 1;
+                        dataModule.MaxScore += 1;
                         if (et != EvaluateType.Bad && et != EvaluateType.Miss)
                         {
                             if (et == EvaluateType.Exact)
-                                GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(1, 1, et, LogicTimer);
+                                dataModule.RefreshPlayingData(1, 1, et, LogicTimer);
                             else if (et == EvaluateType.Great)
-                                GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(1, 0.75f, et, LogicTimer);
+                                dataModule.RefreshPlayingData(1, 0.75f, et, LogicTimer);
                             else if (et == EvaluateType.Right)
-                                GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(1, 0.5f, et, LogicTimer);
+                                dataModule.RefreshPlayingData(1, 0.5f, et, LogicTimer);
                             //Debug.LogError($"Click音符头判命中：{data}");
                             LogHelper.NoteLogger.Log(new ClickNoteHeadJudgeLogArgs(data, et));
                         }
@@ -95,8 +95,8 @@ namespace CyanStars.Gameplay.Note
                             DestroySelf(false);
                             //Debug.LogError($"Click头判失败,时间：{LogicTimer}，{data}");
                             LogHelper.NoteLogger.Log(new ClickNoteHeadJudgeLogArgs(data, et));
-                            GameRoot.GetDataModule<MusicGameModule>().MaxScore += 1;
-                            GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(-1, -1, et,
+                            dataModule.MaxScore += 1;
+                            dataModule.RefreshPlayingData(-1, -1, et,
                                 et == EvaluateType.Miss ? float.MaxValue : LogicTimer);
                         }
                     }
@@ -112,13 +112,13 @@ namespace CyanStars.Gameplay.Note
                     viewObject.CreateEffectObj(NoteData.NoteWidth);
                     DestroySelf(false);
                     //Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
-                    GameRoot.GetDataModule<MusicGameModule>().MaxScore += 1;
+                    dataModule.MaxScore += 1;
                     EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(time);
                     LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, evaluateType, time));
                     if (evaluateType == EvaluateType.Exact)
-                        GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(0, 1, evaluateType, float.MaxValue);
+                        dataModule.RefreshPlayingData(0, 1, evaluateType, float.MaxValue);
                     else
-                        GameRoot.GetDataModule<MusicGameModule>().RefreshPlayingData(0, 0.5f, evaluateType, float.MaxValue);
+                        dataModule.RefreshPlayingData(0, 0.5f, evaluateType, float.MaxValue);
                     break;
             }
         }
