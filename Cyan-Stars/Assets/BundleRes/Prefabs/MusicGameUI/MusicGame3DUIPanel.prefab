@@ -588,7 +588,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb488109882cf284c8db9be0c29a2ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TxtGrad: {fileID: 3612869322121431603}
+  TxtGrade: {fileID: 3612869322121431603}
   TxtAccuracy: {fileID: 4373908580246485952}
   TxtScoreRatio: {fileID: 5211216755963802654}
   TxtVisibleScore: {fileID: 6410618749659017958}
