@@ -211,6 +211,7 @@ namespace CyanStars.Gameplay.Procedure
             GetLinearNoteData();
             TrackHelper.CreateBuilder<PromptToneTrack, IList<NoteData>>()
                 .AddClips(LinearNoteData.Count, LinearNoteData, PromptToneTrack.ClipCreator)
+                .SortClip()
                 .PostProcess(track => track.audioSource = audioSource)
                 .Build()
                 .AddToTimeline(timeline);
