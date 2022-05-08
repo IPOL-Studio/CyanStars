@@ -313,7 +313,7 @@ GameObject:
   - component: {fileID: 210480341}
   - component: {fileID: 210480340}
   m_Layer: 5
-  m_Name: ButtonCover
+  m_Name: MusicCover
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -543,7 +543,7 @@ GameObject:
   - component: {fileID: 343458163}
   - component: {fileID: 343458162}
   m_Layer: 5
-  m_Name: Button
+  m_Name: MusicButton1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -732,7 +732,7 @@ GameObject:
   - component: {fileID: 428242352}
   - component: {fileID: 428242351}
   m_Layer: 5
-  m_Name: CoverCover
+  m_Name: CoverMask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -777,7 +777,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 761646356874752752, guid: 1a22c7aba95977c4b9ba4d496b998c57, type: 3}
+  m_Sprite: {fileID: -710117256364220538, guid: 1a22c7aba95977c4b9ba4d496b998c57, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -882,7 +882,7 @@ GameObject:
   - component: {fileID: 682973816}
   - component: {fileID: 682973815}
   m_Layer: 5
-  m_Name: CoverCover
+  m_Name: CoverMask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -927,7 +927,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4996669372412906663, guid: 1a22c7aba95977c4b9ba4d496b998c57, type: 3}
+  m_Sprite: {fileID: -4166580829966953713, guid: 1a22c7aba95977c4b9ba4d496b998c57, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1036,7 +1036,7 @@ GameObject:
   - component: {fileID: 866960024}
   - component: {fileID: 866960023}
   m_Layer: 5
-  m_Name: ButtonCover
+  m_Name: MusicCover
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1187,7 +1187,7 @@ GameObject:
   - component: {fileID: 1390773050}
   - component: {fileID: 1390773049}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: MusicButton2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

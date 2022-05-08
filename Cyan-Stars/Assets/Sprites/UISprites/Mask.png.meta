@@ -8,6 +8,12 @@ TextureImporter:
   - first:
       213: 761646356874752752
     second: CoverCover_1
+  - first:
+      213: -4166580829966953713
+    second: Mask_0
+  - first:
+      213: -710117256364220538
+    second: Mask_1
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -109,7 +115,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CoverCover_0
+      name: Mask_0
       rect:
         serializedVersion: 2
         x: 72
@@ -123,14 +129,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7acceba125cb75540800000000000000
-      internalID: 4996669372412906663
+      spriteID: f031ed58fc45d26c0800000000000000
+      internalID: -4166580829966953713
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CoverCover_1
+      name: Mask_1
       rect:
         serializedVersion: 2
         x: 59
@@ -144,8 +150,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0f27df18359e19a00800000000000000
-      internalID: 761646356874752752
+      spriteID: 68f19812e182526f0800000000000000
+      internalID: -710117256364220538
       vertices: []
       indices: 
       edges: []
