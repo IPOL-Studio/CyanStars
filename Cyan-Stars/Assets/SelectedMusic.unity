@@ -1707,7 +1707,7 @@ GameObject:
   - component: {fileID: 1992009285}
   - component: {fileID: 1992009284}
   m_Layer: 5
-  m_Name: LeftSidebar
+  m_Name: MusicSidebar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
