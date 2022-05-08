@@ -1,7 +1,13 @@
 fileFormatVersion: 2
-guid: 781f95f2922568e4dbd7796ea1ffb1fa
+guid: 1a22c7aba95977c4b9ba4d496b998c57
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: 4996669372412906663
+    second: CoverCover_0
+  - first:
+      213: 761646356874752752
+    second: CoverCover_1
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -41,9 +47,9 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
@@ -101,7 +107,49 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: CoverCover_0
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 694
+        width: 1920
+        height: 480
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7acceba125cb75540800000000000000
+      internalID: 4996669372412906663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CoverCover_1
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 94
+        width: 1920
+        height: 480
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f27df18359e19a00800000000000000
+      internalID: 761646356874752752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
