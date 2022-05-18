@@ -19,6 +19,15 @@ namespace CyanStars.Framework.Logger
             return (T)logger;
         }
 
+        public static T GetLogger<T>() where T : LoggerBase => (T)loggerDict[typeof(T)];
+
+        public static bool TryGetLogger<T>(out T logger) where T : LoggerBase
+        {
+            var isFound = loggerDict.TryGetValue(typeof(T), out var result);
+            logger = isFound ? (T)result : default;
+            return isFound;
+        }
+
         public static void AddLogger<T>(T logger) where T : LoggerBase
         {
             if (logger is null)
