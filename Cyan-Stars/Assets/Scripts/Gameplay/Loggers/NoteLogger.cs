@@ -1,5 +1,5 @@
-using CyanStars.Framework.Logger;
 using CyanStars.Framework.Utils;
+using CyanStars.Framework.Logger;
 
 namespace CyanStars.Gameplay.Loggers
 {

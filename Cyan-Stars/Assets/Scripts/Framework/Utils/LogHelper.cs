@@ -1,5 +1,5 @@
-using CyanStars.Framework.Logger;
 using UnityEngine;
+using CyanStars.Framework.Logger;
 
 namespace CyanStars.Framework.Utils
 {

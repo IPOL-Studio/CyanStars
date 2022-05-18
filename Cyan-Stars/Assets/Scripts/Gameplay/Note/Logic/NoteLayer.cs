@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CyanStars.Framework;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
-using CyanStars.Gameplay.Note;
 
 namespace CyanStars.Gameplay.Note
 {
