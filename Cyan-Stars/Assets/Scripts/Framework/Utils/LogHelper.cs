@@ -1,12 +1,10 @@
+using CyanStars.Framework.Logger;
 using UnityEngine;
-using CyanStars.Framework.Loggers;
 
 namespace CyanStars.Framework.Utils
 {
     public static class LogHelper
     {
-        public static NoteLogger NoteLogger => NoteLogger.Instance;
-
         public static void Log(string message, LogLevelType logLevel)
         {
 #if UNITY_EDITOR || CYS_LOGGER_ENABLE

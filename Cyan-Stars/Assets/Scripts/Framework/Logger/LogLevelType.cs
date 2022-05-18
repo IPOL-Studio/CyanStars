@@ -1,4 +1,4 @@
-﻿namespace CyanStars.Framework.Loggers
+﻿namespace CyanStars.Framework.Logger
 {
     public enum LogLevelType
     {

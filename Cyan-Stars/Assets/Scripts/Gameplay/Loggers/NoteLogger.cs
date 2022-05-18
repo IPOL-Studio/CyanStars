@@ -1,8 +1,9 @@
+using CyanStars.Framework.Logger;
 using CyanStars.Framework.Utils;
 
-namespace CyanStars.Framework.Loggers
+namespace CyanStars.Gameplay.Loggers
 {
-    public class NoteLogger : LoggerBase<NoteLogger>
+    public class NoteLogger : LoggerBase
     {
         public void Log<T>(T args) where T : struct, INoteJudgeLogArgs
         {
