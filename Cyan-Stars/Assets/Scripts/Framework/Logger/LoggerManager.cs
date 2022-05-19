@@ -7,7 +7,7 @@ namespace CyanStars.Framework.Logger
     {
         private static Dictionary<Type, LoggerBase> loggerDict = new Dictionary<Type, LoggerBase>();
 
-        public static T GetOrAddLogger<T>() where T : LoggerBase, new()
+        public static T GetOrCreateLogger<T>() where T : LoggerBase, new()
         {
             var type = typeof(T);
             if (loggerDict.TryGetValue(type, out var logger))

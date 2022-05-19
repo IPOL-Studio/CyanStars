@@ -66,7 +66,7 @@ namespace CyanStars.Gameplay.Note
                 {
                     //被漏掉了 miss
                     //Debug.LogError($"Hold音符miss：{data}");
-                    LoggerManager.GetOrAddLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Miss, 0, 0));
+                    LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Miss, 0, 0));
                     dataModule.MaxScore += 2;
                     dataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);
                 }
@@ -77,7 +77,7 @@ namespace CyanStars.Gameplay.Note
 
                     EvaluateType et = EvaluateHelper.GetHoldEvaluate(value);
                     //Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
-                    LoggerManager.GetOrAddLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(data, et, pressTime, value));
+                    LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(data, et, pressTime, value));
                     dataModule.MaxScore++;
                     if (et == EvaluateType.Exact)
                         dataModule.RefreshPlayingData(0, 1, et, float.MaxValue);
@@ -101,7 +101,7 @@ namespace CyanStars.Gameplay.Note
             {
                 headSucess = true;
                 dataModule.MaxScore++;
-                LoggerManager.GetOrAddLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(data, EvaluateType.Exact));
+                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(data, EvaluateType.Exact));
                 dataModule.RefreshPlayingData(1, 1, EvaluateType.Exact, 0);
                 viewObject.CreateEffectObj(NoteData.NoteWidth);
             }
@@ -110,7 +110,7 @@ namespace CyanStars.Gameplay.Note
             {
                 viewObject.DestroyEffectObj();
                 dataModule.MaxScore++;
-                LoggerManager.GetOrAddLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Exact, holdLength, 1));
+                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Exact, holdLength, 1));
                 dataModule.RefreshPlayingData(0, 1, EvaluateType.Exact, float.MaxValue);
                 DestroySelf();
             }
@@ -133,14 +133,14 @@ namespace CyanStars.Gameplay.Note
                             //头判失败直接销毁
                             DestroySelf(false);
                             //Debug.LogError($"Hold头判失败,时间：{LogicTimer}，{data}");
-                            LoggerManager.GetOrAddLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(data, et));
+                            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(data, et));
                             dataModule.MaxScore += 2;
                             dataModule.RefreshPlayingData(-1, -1, et, float.MaxValue);
                             return;
                         }
 
                         //Debug.LogError($"Hold头判成功,时间：{LogicTimer}，{data}");
-                        LoggerManager.GetOrAddLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(data, et));
+                        LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(data, et));
                         dataModule.MaxScore++;
                         if (et == EvaluateType.Exact)
                             dataModule.RefreshPlayingData(1, 1, et, LogicTimer);
