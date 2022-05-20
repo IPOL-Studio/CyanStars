@@ -1,7 +1,7 @@
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Evaluate;
 
-namespace CyanStars.Gameplay.Loggers
+namespace CyanStars.Gameplay.Logger
 {
     public struct DefaultNoteJudgeLogArgs : INoteJudgeLogArgs
     {

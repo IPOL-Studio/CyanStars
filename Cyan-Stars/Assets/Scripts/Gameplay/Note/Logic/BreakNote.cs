@@ -2,7 +2,7 @@ using System;
 using CyanStars.Framework.Logger;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
-using CyanStars.Gameplay.Loggers;
+using CyanStars.Gameplay.Logger;
 using CyanStars.Gameplay.Evaluate;
 
 namespace CyanStars.Gameplay.Note

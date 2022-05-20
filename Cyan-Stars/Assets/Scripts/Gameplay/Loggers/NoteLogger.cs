@@ -1,7 +1,7 @@
 using CyanStars.Framework.Utils;
 using CyanStars.Framework.Logger;
 
-namespace CyanStars.Gameplay.Loggers
+namespace CyanStars.Gameplay.Logger
 {
     public class NoteLogger : LoggerBase
     {
