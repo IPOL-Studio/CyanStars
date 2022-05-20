@@ -21,7 +21,7 @@ TextureImporter:
       213: 3107388354620262379
     second: G1_5
   - first:
-      213: -7575241136414532529
+      213: -6559928402962736842
     second: G1_6
   externalObjects: {}
   serializedVersion: 11
@@ -127,9 +127,9 @@ TextureImporter:
       name: G1_0
       rect:
         serializedVersion: 2
-        x: 12
+        x: 8
         y: 8
-        width: 56
+        width: 64
         height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -148,10 +148,10 @@ TextureImporter:
       name: G1_1
       rect:
         serializedVersion: 2
-        x: 81
-        y: 15
-        width: 58
-        height: 55
+        x: 72
+        y: 8
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -169,10 +169,10 @@ TextureImporter:
       name: G1_2
       rect:
         serializedVersion: 2
-        x: 149
-        y: 15
-        width: 58
-        height: 55
+        x: 136
+        y: 8
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -190,10 +190,10 @@ TextureImporter:
       name: G1_3
       rect:
         serializedVersion: 2
-        x: 216
-        y: 13
-        width: 52
-        height: 52
+        x: 200
+        y: 8
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -211,10 +211,10 @@ TextureImporter:
       name: G1_4
       rect:
         serializedVersion: 2
-        x: 276
-        y: 14
-        width: 52
-        height: 52
+        x: 264
+        y: 8
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -232,10 +232,10 @@ TextureImporter:
       name: G1_5
       rect:
         serializedVersion: 2
-        x: 336
-        y: 18
-        width: 45
-        height: 45
+        x: 328
+        y: 8
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -253,10 +253,10 @@ TextureImporter:
       name: G1_6
       rect:
         serializedVersion: 2
-        x: 442
-        y: 18
-        width: 45
-        height: 45
+        x: 392
+        y: 8
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -264,8 +264,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f4cd51062565fd690800000000000000
-      internalID: -7575241136414532529
+      spriteID: 639196d9fd376f4a0800000000000000
+      internalID: -6559928402962736842
       vertices: []
       indices: 
       edges: []
@@ -273,7 +273,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 6c780a8bfd302a6439febb4968acf3e2
+    spriteID: b9a7749deda12814bada51837d613a5c
     internalID: 0
     vertices: []
     indices: 
