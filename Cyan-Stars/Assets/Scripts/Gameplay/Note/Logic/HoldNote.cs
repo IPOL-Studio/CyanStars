@@ -35,6 +35,7 @@ namespace CyanStars.Gameplay.Note
 
         private int pressCount;
         private float pressTime;
+        private float pressStartTime;
 
         public override void Init(NoteData data, NoteLayer layer)
         {
@@ -73,7 +74,8 @@ namespace CyanStars.Gameplay.Note
                 else
                 {
                     viewObject.DestroyEffectObj();
-                    value = pressTime / holdLength;
+                    if (pressStartTime < 0) value = pressTime / (pressStartTime - LogicTimer);
+                    else value = pressTime / holdLength;
 
                     EvaluateType et = EvaluateHelper.GetHoldEvaluate(value);
                     //Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
@@ -148,6 +150,7 @@ namespace CyanStars.Gameplay.Note
                             dataModule.RefreshPlayingData(1, 0.75f, et, LogicTimer);
                         else if (et == EvaluateType.Right)
                             dataModule.RefreshPlayingData(1, 0.5f, et, LogicTimer);
+                        pressStartTime = LogicTimer;
                     }
 
                     //头判成功
