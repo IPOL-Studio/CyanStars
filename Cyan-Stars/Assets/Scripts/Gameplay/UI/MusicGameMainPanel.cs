@@ -49,9 +49,9 @@ namespace CyanStars.Gameplay.UI
         private void Update()
         {
             //先暂时这样，后面有了timerManager后再改
-            if (dataModule.timeline != null)
+            if (dataModule.RunningTimeline != null)
             {
-                ImgProgress.fillAmount = dataModule.timeline.CurrentTime / dataModule.timeline.Length;
+                ImgProgress.fillAmount = dataModule.RunningTimeline.CurrentTime / dataModule.RunningTimeline.Length;
             }
         }
 
