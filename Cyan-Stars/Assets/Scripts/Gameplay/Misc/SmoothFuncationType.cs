@@ -1,4 +1,4 @@
-namespace CyanStars.Gameplay
+namespace CyanStars.Gameplay.Misc
 {
     public enum SmoothFuncationType //参考效果:http://www.195440.com/html/tween/
     {

@@ -1,34 +1,20 @@
+using System;
 using CyanStars.Gameplay.Camera;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Effect;
 using UnityEngine;
 
-namespace CyanStars.Gameplay
+namespace CyanStars.Gameplay.MapData
 {
     /// <summary>
-    /// 音游谱面数据
+    /// 谱面时间轴数据
     /// </summary>
-    [System.Serializable]
-    public class MusicGameData
+    [Serializable]
+    public class MapTimelineData
     {
-        /// <summary>
-        /// 总时间（毫秒）
-        /// </summary>
-        [Header("总时间（毫秒）")]
+        [NonSerialized]
         public int Time;
-
-        /// <summary>
-        /// 歌词文件名
-        /// </summary>
-        [Header("歌词文件名")]
-        public string LrcFileName;
-    
-        /// <summary>
-        /// 音乐文件名
-        /// </summary>
-        [Header("音乐文件名")]
-        public string MusicFileName;
-    
+        
         /// <summary>
         /// 音符轨道数据
         /// </summary>
