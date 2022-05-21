@@ -13,11 +13,8 @@ MonoBehaviour:
   m_Name: PackageRuleConfig
   m_EditorClassIdentifier: 
   Rules:
-  - Directory: Assets/BundleRes/Chart00
-    Mode: 0
-    Group: Base
-  - Directory: Assets/BundleRes/Chart01
-    Mode: 0
+  - Directory: Assets/BundleRes/MusicGameMap
+    Mode: 1
     Group: Base
   - Directory: Assets/BundleRes/Prefabs
     Mode: 1
@@ -26,5 +23,5 @@ MonoBehaviour:
     Mode: 2
     Group: Base
   - Directory: Assets/BundleRes/ScriptObjects
-    Mode: 0
+    Mode: 1
     Group: Base

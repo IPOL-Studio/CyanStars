@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CyanStars.Gameplay
+namespace CyanStars.Gameplay.Misc
 {
     public static class SmoothFuncation
     {

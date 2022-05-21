@@ -60,8 +60,8 @@ namespace CyanStars.Framework
         [Header("是否开启自动模式")]
         public bool IsAutoMode;
 
-        [Header("谱面文件名")]
-        public string MusicGameDataName;
+        [Header("谱面序号")]
+        public int MapIndex;
         
         private void Start()
         {
@@ -85,7 +85,7 @@ namespace CyanStars.Framework
             
             //先暂时这样直接给参数
             GetDataModule<MusicGameModule>().IsAutoMode = IsAutoMode;
-            GetDataModule<MusicGameModule>().MusicGameDataName = MusicGameDataName;
+            GetDataModule<MusicGameModule>().MapIndex = MapIndex;
             
             //启动游戏流程
             GameProcedureStartUp(types);

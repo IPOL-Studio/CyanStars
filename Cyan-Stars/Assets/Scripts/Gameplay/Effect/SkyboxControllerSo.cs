@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using CyanStars.Gameplay.Misc;
 
 namespace CyanStars.Gameplay.Effect
 {
