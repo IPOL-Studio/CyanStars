@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CyanStars.Framework;
+using CyanStars.Framework.Asset;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Evaluate;
 using CyanStars.Gameplay.Event;
 using CyanStars.Gameplay.Input;
+using CyanStars.Gameplay.MapData;
 using CyanStars.Gameplay.Procedure;
 
 namespace CyanStars.Gameplay
@@ -17,19 +20,24 @@ namespace CyanStars.Gameplay
     {
         
         /// <summary>
-        /// 音游数据文件名
+        /// 谱面序号
         /// </summary>
-        public string MusicGameDataName { get; set; }
+        public int MapIndex { get; set; }
         
         /// <summary>
-        /// 时间轴当前时间
+        /// 当前运行中的时间轴
         /// </summary>
-        public Timeline timeline{ get; set; }
+        public Timeline RunningTimeline{ get; set; }
         
         /// <summary>
         /// 输入映射数据文件名
         /// </summary>
         public string InputMapDataName { get; private set;}
+        
+        /// <summary>
+        /// 内置谱面列表文件名
+        /// </summary>
+        public string InternalMapListName { get; private set;}
 
         public string TapPrefabName { get; private set; }
         public string HoldPrefabName { get; private set; }
@@ -41,6 +49,11 @@ namespace CyanStars.Gameplay
         /// 特效预制体名称列表
         /// </summary>
         public List<string> EffectNames { get; private set; }
+
+        /// <summary>
+        /// 谱面清单列表
+        /// </summary>
+        private List<MapManifest> mapManifests;
 
         /// <summary>
         /// 是否为自动模式
@@ -70,7 +83,8 @@ namespace CyanStars.Gameplay
         
         public override void OnInit()
         {
-            InputMapDataName = "Assets/BundleRes/ScriptObjects/InputMapData.asset";
+            InputMapDataName = "Assets/BundleRes/ScriptObjects/InputMap/InputMapData.asset";
+            InternalMapListName = "Assets/BundleRes/ScriptObjects/InternalMap/InternalMapList.asset";
             
             TapPrefabName = "Assets/BundleRes/Prefabs/Notes/Tap.prefab";
             HoldPrefabName = "Assets/BundleRes/Prefabs/Notes/Hold.prefab";
@@ -94,6 +108,25 @@ namespace CyanStars.Gameplay
                 "Assets/BundleRes/Prefabs/Effect/VEG/SpaceJumpEffect(VEG).prefab"
             };
 
+        }
+
+        /// <summary>
+        /// 加载内置谱面
+        /// </summary>
+        /// <returns></returns>
+        public async Task LoadInternalMaps()
+        {
+            InternalMapListSO internalMapListSo = await GameRoot.Asset.AwaitLoadAsset<InternalMapListSO>(InternalMapListName);
+            mapManifests = internalMapListSo.InteralMaps;
+            GameRoot.Asset.UnloadAsset(internalMapListSo);
+        }
+
+        /// <summary>
+        /// 获取谱面清单
+        /// </summary>
+        public MapManifest GetMap(int index)
+        {
+            return mapManifests[index];
         }
         
         /// <summary>

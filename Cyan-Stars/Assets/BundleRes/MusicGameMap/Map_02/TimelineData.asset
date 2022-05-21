@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d267d061d6f25064ca29be65bbc73fd0, type: 3}
-  m_Name: MusicGameData00
+  m_Name: TimelineData
   m_EditorClassIdentifier: 
   Data:
     Time: 205049

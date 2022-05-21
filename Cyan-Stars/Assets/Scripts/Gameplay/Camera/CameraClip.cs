@@ -1,5 +1,6 @@
 using UnityEngine;
 using CyanStars.Framework.Timeline;
+using CyanStars.Gameplay.Misc;
 
 namespace CyanStars.Gameplay.Camera
 {

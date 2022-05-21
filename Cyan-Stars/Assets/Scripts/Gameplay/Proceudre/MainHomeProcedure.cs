@@ -11,13 +11,16 @@ namespace CyanStars.Gameplay.Procedure
     {
         private bool flag;
         
-        public override void OnEnter()
+        public override async void OnEnter()
         {
             if (!flag)
             {
                 flag = true;
+
+                //加载内置谱面清单
+                await GameRoot.GetDataModule<MusicGameModule>().LoadInternalMaps();
                 
-                //直接切换到音游流程
+                //切换到音游流程
                 GameRoot.ChangeProcedure<MusicGameProcedure>();
             }
            
