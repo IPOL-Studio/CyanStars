@@ -1,8 +1,7 @@
-using CyanStars.Framework;
-using CyanStars.Framework.Utils;
+using CyanStars.Framework.Logger;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
-using CyanStars.Gameplay.Loggers;
+using CyanStars.Gameplay.Logger;
 using CyanStars.Gameplay.Evaluate;
 
 namespace CyanStars.Gameplay.Note
@@ -28,7 +27,7 @@ namespace CyanStars.Gameplay.Note
                 //没接住 miss
                 DestroySelf();
                 //Debug.LogError($"Click音符miss：{data}");
-                LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, EvaluateType.Miss, 0));
+                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteJudgeLogArgs(data, EvaluateType.Miss, 0));
                 dataModule.MaxScore += 2;
                 dataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);
                 return;
@@ -42,7 +41,7 @@ namespace CyanStars.Gameplay.Note
                 DestroySelf(false);
                 //Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
                 dataModule.MaxScore += 1;
-                LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, evaluateType, time));
+                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteJudgeLogArgs(data, evaluateType, time));
                 if (evaluateType == EvaluateType.Exact)
                     dataModule.RefreshPlayingData(0, 1, evaluateType, float.MaxValue);
                 else
@@ -58,7 +57,7 @@ namespace CyanStars.Gameplay.Note
             {
                 headSucess = true;
                 dataModule.MaxScore += 2;
-                LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, EvaluateType.Exact, 0));
+                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteJudgeLogArgs(data, EvaluateType.Exact, 0));
                 dataModule.RefreshPlayingData(1, 2, EvaluateType.Exact, 0);
                 viewObject.CreateEffectObj(NoteData.NoteWidth);
                 DestroySelf(false);
@@ -87,14 +86,14 @@ namespace CyanStars.Gameplay.Note
                             else if (et == EvaluateType.Right)
                                 dataModule.RefreshPlayingData(1, 0.5f, et, LogicTimer);
                             //Debug.LogError($"Click音符头判命中：{data}");
-                            LogHelper.NoteLogger.Log(new ClickNoteHeadJudgeLogArgs(data, et));
+                            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteHeadJudgeLogArgs(data, et));
                         }
                         else
                         {
                             //头判失败直接销毁
                             DestroySelf(false);
                             //Debug.LogError($"Click头判失败,时间：{LogicTimer}，{data}");
-                            LogHelper.NoteLogger.Log(new ClickNoteHeadJudgeLogArgs(data, et));
+                            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteHeadJudgeLogArgs(data, et));
                             dataModule.MaxScore += 1;
                             dataModule.RefreshPlayingData(-1, -1, et,
                                 et == EvaluateType.Miss ? float.MaxValue : LogicTimer);
@@ -114,7 +113,7 @@ namespace CyanStars.Gameplay.Note
                     //Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
                     dataModule.MaxScore += 1;
                     EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(time);
-                    LogHelper.NoteLogger.Log(new ClickNoteJudgeLogArgs(data, evaluateType, time));
+                    LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteJudgeLogArgs(data, evaluateType, time));
                     if (evaluateType == EvaluateType.Exact)
                         dataModule.RefreshPlayingData(0, 1, evaluateType, float.MaxValue);
                     else
