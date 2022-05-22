@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using CyanStars.Framework;
+using CyanStars.Framework.Asset;
 using UnityEngine;
 
 namespace CyanStars.Framework.GameObjectPool
@@ -12,15 +13,27 @@ namespace CyanStars.Framework.GameObjectPool
     public class GameObjectPoolManager : BaseManager
     {
         /// <summary>
-        /// 预制体名字->游戏对象池
+        /// 预制体名字->加载好的预制体
         /// </summary>
-        private Dictionary<string, GameObjectPool> poolDict = new Dictionary<string, GameObjectPool>();
+        private Dictionary<string, GameObject> loadedPrefabDict = new Dictionary<string, GameObject>();
 
+        /// <summary>
+        /// 模板->对象池
+        /// </summary>
+        private Dictionary<GameObject, GameObjectPool> poolDict = new Dictionary<GameObject, GameObjectPool>();
+
+        
         /// <summary>
         /// 默认对象失效时间
         /// </summary>
         [Header("默认对象失效时间")]
-        public float DefaultExpireTime = 30;
+        public float DefaultObjectExpireTime = 30;
+        
+        /// <summary>
+        /// 默认对象池失效时间
+        /// </summary>
+        [Header("默认对象池失效时间")]
+        public float DefaultPoolExpireTime = 60;
         
         /// <summary>
         /// 单帧最大实例化数
@@ -39,6 +52,11 @@ namespace CyanStars.Framework.GameObjectPool
         private Queue<ValueTuple<GameObject,Transform, Action<GameObject>>> waitInstantiateQueue =
             new Queue<(GameObject,Transform, Action<GameObject>)>();
 
+        /// <summary>
+        /// 等待卸载的预制体名字列表
+        /// </summary>
+        private List<string> waitUnloadPrefabNames = new List<string>();
+
         /// <inheritdoc />
         public override int Priority { get; }
         
@@ -52,10 +70,25 @@ namespace CyanStars.Framework.GameObjectPool
         public override void OnUpdate(float deltaTime)
         {
             //轮询池子
-            foreach (KeyValuePair<string,GameObjectPool> item in poolDict)
+            foreach (KeyValuePair<GameObject,GameObjectPool> pair in poolDict)
             {
-                item.Value.OnUpdate(deltaTime);
+                pair.Value.OnUpdate(deltaTime);
             }
+
+            //销毁长时间未使用的，且是由对象池管理器加载了预制体资源的对象池
+            foreach (KeyValuePair<string,GameObject> pair in loadedPrefabDict)
+            {
+                GameObjectPool pool = poolDict[pair.Value];
+                if (pool.UnusedTimer > DefaultPoolExpireTime)
+                {
+                    waitUnloadPrefabNames.Add(pair.Key);
+                }
+            }
+            foreach (string prefabName in waitUnloadPrefabNames)
+            {
+                DestroyPool(prefabName);
+            }
+            waitUnloadPrefabNames.Clear();
             
             //处理分帧实例化
             while (instantiateCounter < MaxInstantiateCount && waitInstantiateQueue.Count > 0)
@@ -65,36 +98,125 @@ namespace CyanStars.Framework.GameObjectPool
                 instantiateCounter++;
                 Debug.Log($"实例化了游戏对象：{prefab.name}，当前帧已实例化数：{instantiateCounter}");
             }
-
             instantiateCounter = 0;
         }
 
         /// <summary>
-        /// 从池中获取一个游戏对象
+        /// 使用预制体名从池中获取一个游戏对象
         /// </summary>
         public void GetGameObject(string prefabName,Transform parent, Action<GameObject> callback)
         {
-            if (!poolDict.TryGetValue(prefabName,out GameObjectPool pool))
+            if (!loadedPrefabDict.ContainsKey(prefabName))
             {
-                pool = new GameObjectPool(prefabName, DefaultExpireTime);
-                poolDict.Add(prefabName,pool);
+                //此prefab未加载过，先加载
+                GameRoot.Asset.LoadAsset(prefabName,(success, obj) =>
+                {
+                    if (success)
+                    {
+                        if (obj is GameObject prefab)
+                        {
+                            
+                            GetGameObject(prefab,parent,callback);
+                            
+                            //这里还得再进行一次判断，因为如果一帧调用多次GetGameObject的话是会多次回调到这里的
+                            if (!loadedPrefabDict.ContainsKey(prefabName))
+                            {
+                                GameObject root = poolDict[prefab].Root.gameObject;
+                                AssetBinder assetBinder = root.AddComponent<AssetBinder>();
+                                assetBinder.BindingAssets.Add(prefab);
+                                loadedPrefabDict.Add(prefabName,prefab);
+                            }
+                           
+                        }
+                        else
+                        {
+                            GameRoot.Asset.UnloadAsset(obj);
+                            Debug.LogError($"GetGameObject调用失败,{prefabName}不是一个GameObject");
+                        }
+                      
+                    }
+                    
+                });
             }
-            pool.GetGameObject(parent, callback);
+            else
+            {
+                GetGameObject(loadedPrefabDict[prefabName],parent,callback);
+            }
         }
 
         /// <summary>
-        /// 将游戏对象归还池中
+        /// 使用模板中从池中获取一个游戏对象
+        /// </summary>
+        public void GetGameObject(GameObject template, Transform parent, Action<GameObject> callback)
+        {
+            if (!poolDict.TryGetValue(template,out GameObjectPool pool))
+            {
+                GameObject root = new GameObject($"Pool-{template.name}");
+                root.transform.SetParent(transform);
+                
+                pool = new GameObjectPool(template, DefaultObjectExpireTime,root.transform);
+                poolDict.Add(template,pool);
+            }
+            pool.GetGameObject(parent, callback);
+        }
+        
+        /// <summary>
+        ///  使用预制体名将游戏对象归还池中
         /// </summary>
         public void ReleaseGameObject(string prefabName,GameObject go)
         {
-            if (!poolDict.TryGetValue(prefabName,out GameObjectPool pool))
+            if (!loadedPrefabDict.ContainsKey(prefabName))
             {
                 return;
             }
             
-            pool.ReleaseGameObject(go);
-            go.transform.SetParent(transform);
+            ReleaseGameObject(loadedPrefabDict[prefabName],go);
         }
+
+        /// <summary>
+        /// 使用模板将游戏对象归还池中
+        /// </summary>
+        public void ReleaseGameObject(GameObject template, GameObject go)
+        {
+            if (!poolDict.TryGetValue(template,out GameObjectPool pool))
+            {
+                return;
+            }
+            pool.ReleaseGameObject(go);
+        }
+
+        /// <summary>
+        /// 销毁对象池
+        /// </summary>
+        public void DestroyPool(string prefabName)
+        {
+            if (!loadedPrefabDict.ContainsKey(prefabName))
+            {
+                return;
+            }
+            
+            DestroyPool(loadedPrefabDict[prefabName]);
+            
+            loadedPrefabDict.Remove(prefabName);
+        }
+        
+        /// <summary>
+        /// 销毁对象池
+        /// </summary>
+        public void DestroyPool(GameObject template)
+        {
+            if (!poolDict.TryGetValue(template,out GameObjectPool pool))
+            {
+                return;
+            }
+            
+            pool.OnDestroy();
+            poolDict.Remove(template);
+            Debug.Log($"{template.name}的对象池被销毁了");
+        }
+
+
+
         
         /// <summary>
         /// 分帧异步实例化
