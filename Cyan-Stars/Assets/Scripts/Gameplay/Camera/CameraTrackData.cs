@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using CyanStars.Gameplay.Misc;
 using UnityEngine;
+using CyanStars.Framework.Timeline;
+using CyanStars.Gameplay.Misc;
 
 namespace CyanStars.Gameplay.Camera
 {
@@ -8,11 +9,11 @@ namespace CyanStars.Gameplay.Camera
     /// 相机轨道数据
     /// </summary>
     [System.Serializable]
-    public class CameraTrackData
+    public class CameraTrackData : IClipCount
     {
         [Header("相机默认位置")]
         public Vector3 DefaultPosition;
-        
+
         [Header("相机默认角度")]
         public Vector3 DefaultRotation;
 
@@ -27,6 +28,7 @@ namespace CyanStars.Gameplay.Camera
         }
 
         [Header("关键帧")] public List<KeyFrame> KeyFrames;
+        public int ClipCount => KeyFrames.Count;
     }
 }
 

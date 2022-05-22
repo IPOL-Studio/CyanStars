@@ -1,101 +1,32 @@
-using System;
-using System.Runtime.CompilerServices;
-
-namespace CyanStars.Framework.Timeline
+﻿namespace CyanStars.Framework.Timeline
 {
-    public interface ITrackBuilder<T, D> where T : BaseTrack
-    {
-        ITrackBuilder<T, D> AddClips(int clipCount, D userData, IClipCreator<T, D> clipCreator);
-        ITrackBuilder<T, D> SortClip();
-        ITrackBuilder<T, D> PostProcess(Action<T> action);
-        TrackBuildResult<T> Build();
-    }
-
-    public readonly struct TrackBuildResult<T> where T : BaseTrack
-    {
-        public readonly T Track;
-
-        public TrackBuildResult(T track)
-        {
-            Track = track;
-        }
-
-        public bool AddToTimeline(Timeline timeline)
-        {
-            return timeline.AddTrack(Track);
-        }
-    }
-
-    internal class TrackBuilder<T, D> : ITrackBuilder<T, D> where T : BaseTrack, new()
-    {
-        [Flags]
-        private enum BuildOperators
-        {
-            None = 0,
-            AddClips = 1,
-            SortClip = 1 << 1,
-            PostProcess = 1 << 2
-        }
-
-        private BuildOperators buildOP = BuildOperators.None;
-        private (int, D, IClipCreator<T, D>) createClipArgs;
-        private Action<T> postProcessAction;
-
-        private void AddClips(T track)
-        {
-            var (clipCount, userData, clipCreator) = createClipArgs;
-            for (int i = 0; i < clipCount; i++)
-            {
-                BaseClip<T> clip = clipCreator.CreateClip(track, i, userData);
-                track.AddClip(clip);
-            }
-        }
-
-        public ITrackBuilder<T, D> AddClips(int clipCount, D userData, IClipCreator<T, D> clipCreator)
-        {
-            createClipArgs = (clipCount, userData, clipCreator);
-            buildOP |= BuildOperators.AddClips;
-            return this;
-        }
-
-        public ITrackBuilder<T, D> SortClip()
-        {
-            buildOP |= BuildOperators.SortClip;
-            return this;
-        }
-
-        public ITrackBuilder<T, D> PostProcess(Action<T> action)
-        {
-            postProcessAction = action;
-            buildOP |= BuildOperators.PostProcess;
-            return this;
-        }
-
-        public TrackBuildResult<T> Build()
-        {
-            T track = new T();
-            if (ShouldExecute(BuildOperators.AddClips))
-                AddClips(track);
-
-            if (ShouldExecute(BuildOperators.SortClip))
-                track.SortClip();
-
-            if (ShouldExecute(BuildOperators.PostProcess))
-                postProcessAction?.Invoke(track);
-
-            return new TrackBuildResult<T>(track);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool ShouldExecute(BuildOperators ops) => (buildOP & ops) != 0;
-    }
-
     public static class TrackHelper
     {
-        public static ITrackBuilder<T, D> CreateBuilder<T, D>() where T : BaseTrack, new() =>
+        /// <summary>
+        /// 使用任意数据源的Builder
+        /// </summary>
+        /// <typeparam name="T">Track</typeparam>
+        /// <typeparam name="D">数据源</typeparam>
+        public static TrackBuilder<T, D> CreateBuilder<T, D>() where T : BaseTrack, new() =>
             new TrackBuilder<T, D>();
 
-        public static ITrackBuilder<T, object> CreateBuilder<T>() where T : BaseTrack, new() =>
-            new TrackBuilder<T, object>();
+        ///<summary>
+        /// 创建使用数组作为数据源的Builder
+        /// </summary>
+        /// <typeparam name="T">Track</typeparam>
+        /// <typeparam name="TItem">数据源Item</typeparam>
+        public static TrackBuilder_A<T,TItem> CreateBuilder_A<T, TItem>() where T : BaseTrack, new() =>
+            new TrackBuilder_A<T, TItem>();
+
+        /// <summary>
+        /// 使用迭代器传入数据的Builder
+        /// </summary>
+        /// <remarks>
+        /// <see cref="IClipCreatorForEach{T,TItem}"/>
+        /// </remarks>
+        /// <typeparam name="T">Track</typeparam>
+        /// <typeparam name="TItem">数据源Item</typeparam>
+        public static TrackBuilder_I<T, TItem> CreateBuilder_I<T, TItem>() where T : BaseTrack, new() =>
+            new TrackBuilder_I<T, TItem>();
     }
 }
