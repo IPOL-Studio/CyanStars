@@ -96,7 +96,7 @@ namespace CyanStars.Framework.GameObjectPool
                 var (prefab,parent, callback) = waitInstantiateQueue.Dequeue();
                 callback?.Invoke(Instantiate(prefab,parent));
                 instantiateCounter++;
-                Debug.Log($"实例化了游戏对象：{prefab.name}，当前帧已实例化数：{instantiateCounter}");
+                Debug.Log($"实例化了游戏对象：{prefab.name}，当前帧已实例化数量：{instantiateCounter}");
             }
             instantiateCounter = 0;
         }
@@ -123,7 +123,7 @@ namespace CyanStars.Framework.GameObjectPool
                             {
                                 GameObject root = poolDict[prefab].Root.gameObject;
                                 AssetBinder assetBinder = root.AddComponent<AssetBinder>();
-                                assetBinder.BindingAssets.Add(prefab);
+                                assetBinder.BindTo(prefab);
                                 loadedPrefabDict.Add(prefabName,prefab);
                             }
                            
