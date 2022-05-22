@@ -29,7 +29,7 @@ namespace CyanStars.Framework.GameObjectPool
 
         public void Destroy()
         {
-            GameObject.Destroy(Target);
+            Object.Destroy(Target);
         }
     }
 }
