@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using UnityEngine;
 
 namespace CyanStars.Framework.UI
 {
@@ -19,6 +20,36 @@ namespace CyanStars.Framework.UI
                 tcs.SetResult(uiPanel);
             });
 
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// 使用预制体名获取UIItem（可等待）
+        /// </summary>
+        public static Task<T> AwaitGetUIItem<T>(this BaseUIPanel self,string prefabName,Transform parent) where T : BaseUIItem
+        {
+            TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
+
+            self.GetUIItem<T>(prefabName,parent, (item) =>
+            {
+                tcs.SetResult(item);
+            });
+            
+            return tcs.Task;
+        }
+        
+        /// <summary>
+        /// 使用模板获取UIItem（可等待）
+        /// </summary>
+        public static Task<T> AwaitGetUIItem<T>(this BaseUIPanel self,GameObject template,Transform parent) where T : BaseUIItem
+        {
+            TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
+
+            self.GetUIItem<T>(template,parent, (item) =>
+            {
+                tcs.SetResult(item);
+            });
+            
             return tcs.Task;
         }
     }
