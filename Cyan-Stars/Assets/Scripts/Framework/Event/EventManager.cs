@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 namespace CyanStars.Framework.Event
 {
     /// <summary>
@@ -12,7 +11,7 @@ namespace CyanStars.Framework.Event
     {
         /// <inheritdoc />
         public override int Priority { get; }
-        
+
         /// <summary>
         /// 事件名->事件处理方法集合
         /// </summary>
@@ -24,7 +23,7 @@ namespace CyanStars.Framework.Event
         /// </summary>
         private readonly List<ValueTuple<string, EventHandler<EventArgs>>> waitAddHanlders =
             new List<ValueTuple<string, EventHandler<EventArgs>>>();
-        
+
         /// <summary>
         /// 等待删除的事件处理方法列表
         /// </summary>
@@ -35,7 +34,6 @@ namespace CyanStars.Framework.Event
         /// <inheritdoc />
         public override void OnInit()
         {
-
         }
 
         /// <inheritdoc />
@@ -47,33 +45,32 @@ namespace CyanStars.Framework.Event
                 for (int i = 0; i < waitAddHanlders.Count; i++)
                 {
                     (string eventName, EventHandler<EventArgs> handler) = waitAddHanlders[i];
-                    InternalAddListener(eventName,handler);
+                    InternalAddListener(eventName, handler);
                 }
+
                 waitAddHanlders.Clear();
             }
-            
+
             //移除等待移除的事件处理方法
             if (waitRemoveHanlders.Count != 0)
             {
                 for (int i = 0; i < waitRemoveHanlders.Count; i++)
                 {
                     (string eventName, EventHandler<EventArgs> handler) = waitRemoveHanlders[i];
-                    InternalRemoveListener(eventName,handler);
+                    InternalRemoveListener(eventName, handler);
                 }
-            
+
                 waitRemoveHanlders.Clear();
             }
-            
-           
         }
-        
+
         /// <summary>
         /// 添加事件监听
         /// </summary>
         public void AddListener(string eventName, EventHandler<EventArgs> handler)
         {
             //防止在handler回调里添加handler导致报错，统一在onUpdate时再正式添加
-            ValueTuple<string,EventHandler<EventArgs>> tuple = (eventName, handler);
+            ValueTuple<string, EventHandler<EventArgs>> tuple = (eventName, handler);
             waitAddHanlders.Add(tuple);
         }
 
@@ -82,10 +79,10 @@ namespace CyanStars.Framework.Event
         /// </summary>
         private void InternalAddListener(string eventName, EventHandler<EventArgs> handler)
         {
-            if (!eventHandlerDict.TryGetValue(eventName,out var handlers))
+            if (!eventHandlerDict.TryGetValue(eventName, out var handlers))
             {
                 handlers = new HashSet<EventHandler<EventArgs>>();
-                eventHandlerDict.Add(eventName,handlers);
+                eventHandlerDict.Add(eventName, handlers);
             }
 
             if (handlers.Contains(handler))
@@ -93,25 +90,26 @@ namespace CyanStars.Framework.Event
                 Debug.LogError($"禁止重复添加事件处理函数：{eventName}");
                 return;
             }
+
             handlers.Add(handler);
         }
-        
+
         /// <summary>
         /// 移除事件监听
         /// </summary>
-        public void RemoveListener(string eventName,EventHandler<EventArgs> handler)
+        public void RemoveListener(string eventName, EventHandler<EventArgs> handler)
         {
             //防止在handler回调里移除handler导致报错，统一在onUpdate时再正式移除
-            ValueTuple<string,EventHandler<EventArgs>> tuple = (eventName, handler);
+            ValueTuple<string, EventHandler<EventArgs>> tuple = (eventName, handler);
             waitRemoveHanlders.Add(tuple);
         }
 
         /// <summary>
         /// 移除事件监听
         /// </summary>
-        private void InternalRemoveListener(string eventName,EventHandler<EventArgs> handler)
+        private void InternalRemoveListener(string eventName, EventHandler<EventArgs> handler)
         {
-            if (!eventHandlerDict.TryGetValue(eventName,out var handlers))
+            if (!eventHandlerDict.TryGetValue(eventName, out var handlers))
             {
                 return;
             }
@@ -122,9 +120,9 @@ namespace CyanStars.Framework.Event
         /// <summary>
         /// 派发事件
         /// </summary>
-        public void Dispatch<T>(string eventName,object sender, T eventArgs) where T : EventArgs
+        public void Dispatch<T>(string eventName, object sender, T eventArgs) where T : EventArgs
         {
-            if (!eventHandlerDict.TryGetValue(eventName,out HashSet<EventHandler<EventArgs>> handlers))
+            if (!eventHandlerDict.TryGetValue(eventName, out HashSet<EventHandler<EventArgs>> handlers))
             {
                 return;
             }
@@ -134,8 +132,5 @@ namespace CyanStars.Framework.Event
                 handler(sender, eventArgs);
             }
         }
-        
-        
     }
-
 }

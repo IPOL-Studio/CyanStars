@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -11,8 +8,7 @@ namespace CyanStars.Framework.UI
     {
         private void Awake()
         {
-            GetComponent<Camera>().GetUniversalAdditionalCameraData().cameraStack.Add(GameRoot.UI.UICamare);
+            GetComponent<Camera>().GetUniversalAdditionalCameraData().cameraStack.Add(GameRoot.UI.UICamera);
         }
     }
 }
-

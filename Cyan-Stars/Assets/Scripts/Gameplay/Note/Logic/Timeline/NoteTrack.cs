@@ -1,10 +1,7 @@
-using System.Collections.Generic;
 using CyanStars.Framework;
 using CyanStars.Framework.Timeline;
-using CyanStars.Gameplay.Camera;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
-using CyanStars.Gameplay.MapData;
 
 namespace CyanStars.Gameplay.Note
 {
@@ -15,13 +12,13 @@ namespace CyanStars.Gameplay.Note
     {
         /// <summary>
         /// 片段创建方法
-        /// </summary> 
-        public static readonly CreateClipFunc<NoteTrack,NoteTrackData, NoteLayerData> CreateClipFunc = CreateClip;
-        
+        /// </summary>
+        public static readonly CreateClipFunc<NoteTrack, NoteTrackData, NoteLayerData> CreateClipFunc = CreateClip;
+
         private static BaseClip<NoteTrack> CreateClip(NoteTrack track, NoteTrackData trackData, int curIndex, NoteLayerData _)
         {
-            
-            NoteClip clip = new NoteClip(0, GameRoot.GetDataModule<MusicGameModule>().CurTimelineLength, track,trackData.BaseSpeed, trackData.SpeedRate);
+            NoteClip clip = new NoteClip(0, GameRoot.GetDataModule<MusicGameModule>().CurTimelineLength, track,
+                trackData.BaseSpeed, trackData.SpeedRate);
 
             for (int i = 0; i < trackData.LayerDatas.Count; i++)
             {
@@ -48,34 +45,23 @@ namespace CyanStars.Gameplay.Note
             }
 
             return clip;
-            
         }
-        
+
 
         /// <summary>
         /// 根据音符数据创建音符
         /// </summary>
         private static BaseNote CreateNote(NoteData noteData, NoteLayer layer)
         {
-            BaseNote note = null;
-            switch (noteData.Type)
+            BaseNote note = noteData.Type switch
             {
-                case NoteType.Tap:
-                    note = new TapNote();
-                    break;
-                case NoteType.Hold:
-                    note = new HoldNote();
-                    break;
-                case NoteType.Drag:
-                    note = new DragNote();
-                    break;
-                case NoteType.Click:
-                    note = new ClickNote();
-                    break;
-                case NoteType.Break:
-                    note = new BreakNote();
-                    break;
-            }
+                NoteType.Tap => new TapNote(),
+                NoteType.Hold => new HoldNote(),
+                NoteType.Drag => new DragNote(),
+                NoteType.Click => new ClickNote(),
+                NoteType.Break => new BreakNote(),
+                _ => null
+            };
 
             note.Init(noteData, layer);
             return note;

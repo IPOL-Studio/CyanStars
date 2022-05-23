@@ -1,0 +1,34 @@
+<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+  <!--Unity serialized field naming style-->
+  <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/UserRules/=e66e0435_002Dde09_002D4fdf_002Da4ba_002D16a598a0c336/@EntryIndexedValue">
+      &lt;Policy&gt;
+        &lt;Descriptor Staticness="Instance" AccessRightKinds="Public, Protected, ProtectedInternal, Internal" Description="Unity serialized field (Public)"&gt;
+          &lt;ElementKinds&gt;
+            &lt;Kind Name="UNITY_SERIALISED_FIELD"/&gt;
+          &lt;/ElementKinds&gt;
+        &lt;/Descriptor&gt;
+        &lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb" /&gt;
+      &lt;/Policy&gt;
+  </s:String>
+  <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/UserRules/=110218a1_002Dc4d4_002D4137_002Db798_002D981bc635cddc/@EntryIndexedValue">
+    &lt;Policy&gt;
+      &lt;Descriptor Staticness="Instance" AccessRightKinds="Private" Description="Unity serialized field (Non-public)"&gt;
+        &lt;ElementKinds&gt;
+          &lt;Kind Name="UNITY_SERIALISED_FIELD" /&gt;
+        &lt;/ElementKinds&gt;
+      &lt;/Descriptor&gt;
+      &lt;Policy Inspect="True" Prefix="" Suffix="" Style="aaBb" /&gt;
+    &lt;/Policy&gt;
+  </s:String>
+
+  <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=3D/@EntryIndexedValue">3D</s:String>
+  <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=UI/@EntryIndexedValue">UI</s:String>
+  <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=3DUI/@EntryIndexedValue">3DUI</s:String>
+  <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=Datas/@EntryIndexedValue">Datas</s:String>
+  <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=FSM/@EntryIndexedValue">FSM</s:String>
+  <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=Excute/@EntryIndexedValue">Excute</s:String>
+  <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=BPM/@EntryIndexedValue">BPM</s:String>
+  <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=bpm/@EntryIndexedValue">bpm</s:String>
+  <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=GO/@EntryIndexedValue">GO</s:String>
+  <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=SO/@EntryIndexedValue">SO</s:String>
+</wpf:ResourceDictionary>

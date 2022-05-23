@@ -1,12 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
+using UnityEngine.UI;
 using CyanStars.Framework;
 using CyanStars.Framework.UI;
 using CyanStars.Gameplay.Event;
-using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.UI
 {
@@ -25,25 +22,25 @@ namespace CyanStars.Gameplay.UI
         public TextMeshProUGUI TxtLrc;
 
         private MusicGameModule dataModule;
-        
+
         protected override void OnCreate()
         {
             dataModule = GameRoot.GetDataModule<MusicGameModule>();
-            
+
             BtnStart.onClick.AddListener(() =>
             {
-                GameRoot.Event.Dispatch(EventConst.MusicGameStartEvent,this,System.EventArgs.Empty);
+                GameRoot.Event.Dispatch(EventConst.MusicGameStartEvent, this, System.EventArgs.Empty);
             });
         }
 
         public override void OnOpen()
         {
-            GameRoot.Event.AddListener(EventConst.MusicGameDataRefreshEvent,OnMusicGameDataRefresh);
+            GameRoot.Event.AddListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
         }
 
         public override void OnClose()
         {
-            GameRoot.Event.RemoveListener(EventConst.MusicGameDataRefreshEvent,OnMusicGameDataRefresh);
+            GameRoot.Event.RemoveListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
         }
 
         private void Update()
@@ -65,4 +62,3 @@ namespace CyanStars.Gameplay.UI
         }
     }
 }
-

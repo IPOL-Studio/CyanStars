@@ -16,22 +16,18 @@ namespace CyanStars.Framework.Timeline
             /// 每次只处理一个片段（适合片段不会重叠的情况）
             /// </summary>
             Single,
-            
+
             /// <summary>
             /// 每次都处理所有片段（适合片段会重叠的情况）
             /// </summary>
             All,
         }
-        
+
         /// <summary>
         /// 持有此轨道的时间轴
         /// </summary>
-        public Timeline Owner
-        {
-            get;
-            set;
-        }
-        
+        public Timeline Owner { get; set; }
+
 
         /// <summary>
         /// 片段列表
@@ -42,15 +38,11 @@ namespace CyanStars.Framework.Timeline
         /// 当前运行片段的索引
         /// </summary>
         protected int CurClipIndex;
-        
+
         /// <summary>
         /// 轨道是否被启用
         /// </summary>
-        public bool Enabled
-        {
-            get;
-            set;
-        } = true;
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// 片段更新模式
@@ -76,7 +68,7 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 更新轨道
         /// </summary>
-        public virtual void OnUpdate(float currentTime,float previousTime)
+        public virtual void OnUpdate(float currentTime, float previousTime)
         {
             if (!Enabled)
             {
@@ -86,16 +78,16 @@ namespace CyanStars.Framework.Timeline
             switch (Mode)
             {
                 case ClipProcessMode.Single:
-                    
+
                     if (CurClipIndex == Clips.Count)
                     {
                         return;
                     }
-        
+
                     //只处理当前的片段
                     IClip clip = Clips[CurClipIndex];
 
-                    if (currentTime >= clip.StartTime && previousTime < clip.StartTime )
+                    if (currentTime >= clip.StartTime && previousTime < clip.StartTime)
                     {
                         //进入片段
                         clip.OnEnter();
@@ -104,29 +96,29 @@ namespace CyanStars.Framework.Timeline
                     if (currentTime >= clip.StartTime && currentTime <= clip.EndTime)
                     {
                         //更新片段
-                        clip.OnUpdate(currentTime,previousTime);
+                        clip.OnUpdate(currentTime, previousTime);
                     }
-            
+
                     if (currentTime > clip.EndTime && previousTime <= clip.EndTime)
                     {
                         //离开片段
                         clip.OnExit();
                         CurClipIndex++;
-                
+
                         //clipIndex更新了 需要重新Update一遍 保证不漏掉新clip的enter和exit
-                        OnUpdate(currentTime,previousTime);
+                        OnUpdate(currentTime, previousTime);
                     }
-                    
+
                     break;
-                
-                
+
+
                 case ClipProcessMode.All:
-                    
+
                     for (int i = 0; i < Clips.Count; i++)
                     {
                         clip = Clips[i];
-            
-                        if (currentTime >= clip.StartTime && previousTime < clip.StartTime )
+
+                        if (currentTime >= clip.StartTime && previousTime < clip.StartTime)
                         {
                             //进入片段
                             clip.OnEnter();
@@ -135,21 +127,18 @@ namespace CyanStars.Framework.Timeline
                         if (currentTime >= clip.StartTime && currentTime <= clip.EndTime)
                         {
                             //更新片段
-                            clip.OnUpdate(currentTime,previousTime);
+                            clip.OnUpdate(currentTime, previousTime);
                         }
-            
+
                         if (currentTime > clip.EndTime && previousTime <= clip.EndTime)
                         {
                             //离开片段
                             clip.OnExit();
                         }
                     }
-                    
+
                     break;
             }
-            
-          
         }
     }
-
 }

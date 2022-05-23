@@ -1,8 +1,8 @@
 using System;
-using CyanStars.Gameplay.Camera;
-using CyanStars.Gameplay.Data;
-using CyanStars.Gameplay.Effect;
 using UnityEngine;
+using CyanStars.Gameplay.Data;
+using CyanStars.Gameplay.Camera;
+using CyanStars.Gameplay.Effect;
 
 namespace CyanStars.Gameplay.MapData
 {
@@ -14,7 +14,7 @@ namespace CyanStars.Gameplay.MapData
     {
         [NonSerialized]
         public int Time;
-        
+
         /// <summary>
         /// 音符轨道数据
         /// </summary>
@@ -26,7 +26,7 @@ namespace CyanStars.Gameplay.MapData
         /// </summary>
         [Header("相机轨道数据")]
         public CameraTrackData CameraTrackData;
-    
+
         /// <summary>
         /// 特效轨道数据
         /// </summary>
@@ -34,5 +34,3 @@ namespace CyanStars.Gameplay.MapData
         public EffectTrackData EffectTrackData;
     }
 }
-
-

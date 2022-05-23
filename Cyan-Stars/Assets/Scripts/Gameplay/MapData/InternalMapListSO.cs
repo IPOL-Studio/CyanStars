@@ -10,6 +10,6 @@ namespace CyanStars.Gameplay.MapData
     public class InternalMapListSO : ScriptableObject
     {
         [Header("内置谱面列表")]
-        public List<MapManifest> InteralMaps;
+        public List<MapManifest> InternalMaps;
     }
 }

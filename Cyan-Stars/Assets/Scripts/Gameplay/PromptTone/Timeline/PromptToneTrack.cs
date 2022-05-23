@@ -10,18 +10,17 @@ namespace CyanStars.Gameplay.PromptTone
     /// </summary>
     public class PromptToneTrack : BaseTrack
     {
-        public AudioSource audioSource;
+        public AudioSource AudioSource;
 
         /// <summary>
         /// 片段创建方法
-        /// </summary> 
+        /// </summary>
         public static readonly CreateClipFunc<PromptToneTrack, PromptToneTrackData, NoteData> CreateClipFunc =
             CreateClip;
 
         private static BaseClip<PromptToneTrack> CreateClip(PromptToneTrack track, PromptToneTrackData trackData,
             int curIndex, NoteData noteData)
         {
-
             AudioClip promptTone = PromptToneHelper.Instance.GetAudioClipWithType(noteData.PromptToneType);
 
             if (promptTone == null) return new PromptToneClip(0, 0, track, promptTone);
@@ -30,8 +29,5 @@ namespace CyanStars.Gameplay.PromptTone
                 noteData.StartTime / 1000f + promptTone.length, track, promptTone);
             return clip;
         }
-
-
-
     }
 }

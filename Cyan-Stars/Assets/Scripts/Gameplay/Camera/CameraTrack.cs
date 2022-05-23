@@ -17,11 +17,10 @@ namespace CyanStars.Gameplay.Camera
 
         /// <summary>
         /// 片段创建方法
-        /// </summary> 
-        public static readonly CreateClipFunc<CameraTrack,CameraTrackData, CameraTrackData.KeyFrame> CreateClipFunc = CreateClip;
+        /// </summary>
+        public static readonly CreateClipFunc<CameraTrack, CameraTrackData, CameraTrackData.KeyFrame> CreateClipFunc = CreateClip;
 
-
-        private static BaseClip<CameraTrack> CreateClip(CameraTrack track,CameraTrackData trackData,int curIndex, CameraTrackData.KeyFrame keyFrame)
+        private static BaseClip<CameraTrack> CreateClip(CameraTrack track, CameraTrackData trackData, int curIndex, CameraTrackData.KeyFrame keyFrame)
         {
             float startTime = 0;
             if (curIndex > 0)

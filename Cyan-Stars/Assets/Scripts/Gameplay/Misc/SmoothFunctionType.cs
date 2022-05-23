@@ -1,6 +1,6 @@
 namespace CyanStars.Gameplay.Misc
 {
-    public enum SmoothFuncationType //参考效果:http://www.195440.com/html/tween/
+    public enum SmoothFunctionType //参考效果:http://www.195440.com/html/tween/
     {
         Linear, //线性匀速运动效果
         SineaseIn, //正弦曲线的缓动（sin(t)）/ 从0开始加速的缓动，也就是先慢后快

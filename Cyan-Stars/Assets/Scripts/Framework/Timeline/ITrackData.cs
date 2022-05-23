@@ -11,12 +11,10 @@ namespace CyanStars.Framework.Timeline
         /// 获取片段数量
         /// </summary>
         int ClipCount { get; }
-        
+
         /// <summary>
         /// 获取片段数据列表
         /// </summary>
         List<TClipData> ClipDataList { get; }
-        
-
     }
 }

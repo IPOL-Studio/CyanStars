@@ -11,12 +11,12 @@ namespace CyanStars.Framework.GameObjectPool
         /// 包装的游戏对象
         /// </summary>
         public GameObject Target;
-        
+
         /// <summary>
         /// 是否被使用了
         /// </summary>
         public bool Used;
-        
+
         /// <summary>
         /// 未使用计时
         /// </summary>

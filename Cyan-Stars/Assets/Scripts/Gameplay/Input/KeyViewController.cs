@@ -7,8 +7,10 @@ namespace CyanStars.Gameplay.Input
 {
     public class KeyViewController : MonoBehaviour //view层的Key控制器
     {
-        [Header("Key预制体")] public GameObject keyPrefab; //key预制体
-        public Dictionary<KeyCode, GameObject> keyList = new Dictionary<KeyCode, GameObject>(); //key列表
+        [Header("Key预制体"), SerializeField]
+        private GameObject keyPrefab; //key预制体
+
+        public Dictionary<KeyCode, GameObject> KeyDict = new Dictionary<KeyCode, GameObject>(); //key列表
 
         public void KeyDown(InputMapData.Item item)
         {
@@ -17,8 +19,8 @@ namespace CyanStars.Gameplay.Input
                 return;
             }
 
-            if (item.key == KeyCode.Space) return;
-            if (keyList.TryGetValue(item.key, out var key))
+            if (item.Key == KeyCode.Space) return;
+            if (KeyDict.TryGetValue(item.Key, out var key))
             {
                 key.SetActive(true);
             }
@@ -29,8 +31,8 @@ namespace CyanStars.Gameplay.Input
                 trans.position = new Vector3(Endpoint.Instance.GetPosWithRatio(item.RangeMin), 0, 20);
                 trans.localScale = new Vector3(Endpoint.Instance.Length * item.RangeWidth, 0.1f, 10000);
                 trans.SetParent(transform);
-                key.name = item.key.ToString();
-                keyList.Add(item.key, key);
+                key.name = item.Key.ToString();
+                KeyDict.Add(item.Key, key);
             }
         }
 
@@ -41,7 +43,7 @@ namespace CyanStars.Gameplay.Input
                 return;
             }
 
-            if (keyList.TryGetValue(item.key, out var key))
+            if (KeyDict.TryGetValue(item.Key, out var key))
             {
                 key.SetActive(false);
             }
