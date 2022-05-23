@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Data;
 
@@ -12,33 +13,26 @@ namespace CyanStars.Gameplay.Camera
     {
         public Vector3 DefaultCameraPos;
         public Transform CameraTrans;
-
         public Vector3 oldRot;
 
         /// <summary>
-        /// 创建相机轨道片段
+        /// 片段创建方法
         /// </summary> 
-        public static readonly IClipCreator<CameraTrack, CameraTrackData> ClipCreator =
-            new CameraClipCreator();
+        public static readonly CreateClipFunc<CameraTrack,CameraTrackData, CameraTrackData.KeyFrame> CreateClipFunc = CreateClip;
 
-        private sealed class CameraClipCreator : IClipCreator<CameraTrack, CameraTrackData>
+
+        private static BaseClip<CameraTrack> CreateClip(CameraTrack track,CameraTrackData trackData,int curIndex, CameraTrackData.KeyFrame keyFrame)
         {
-            public BaseClip<CameraTrack> CreateClip(CameraTrack track, int clipIndex,
-                CameraTrackData data)
+            float startTime = 0;
+            if (curIndex > 0)
             {
-                CameraTrackData.KeyFrame keyFrame = data.KeyFrames[clipIndex];
-
-                float startTime = 0;
-                if (clipIndex > 0)
-                {
-                    startTime = data.KeyFrames[clipIndex - 1].Time;
-                }
-
-                CameraClip clip = new CameraClip(startTime / 1000f, keyFrame.Time / 1000f, track, keyFrame.Position,
-                    keyFrame.Rotation, keyFrame.SmoothType);
-
-                return clip;
+                startTime = trackData.KeyFrames[curIndex - 1].Time;
             }
+
+            CameraClip clip = new CameraClip(startTime / 1000f, keyFrame.Time / 1000f, track, keyFrame.Position,
+                keyFrame.Rotation, keyFrame.SmoothType);
+
+            return clip;
         }
     }
 }

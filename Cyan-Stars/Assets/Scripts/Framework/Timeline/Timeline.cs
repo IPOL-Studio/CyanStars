@@ -8,11 +8,21 @@ namespace CyanStars.Framework.Timeline
     /// </summary>
     public class Timeline
     {
-        public Timeline(float length)
-        {
-            Length = length;
-        }
+        /// <summary>
+        /// 轨道列表
+        /// </summary>
+        private List<BaseTrack> tracks = new List<BaseTrack>();
+        
+        /// <summary>
+        /// 长度
+        /// </summary>
+        public readonly float Length;
 
+        /// <summary>
+        /// 时间轴停止回调
+        /// </summary>
+        public event Action OnStop;
+        
         /// <summary>
         /// 当前时间
         /// </summary>
@@ -31,47 +41,27 @@ namespace CyanStars.Framework.Timeline
             set;
         } = 1;
         
-        /// <summary>
-        /// 长度
-        /// </summary>
-        public readonly float Length;
+        public Timeline(float length)
+        {
+            Length = length;
+        }
 
-        /// <summary>
-        /// 时间轴停止回调
-        /// </summary>
-        public event Action OnStop;
-        
-        /// <summary>
-        /// 轨道列表
-        /// </summary>
-        private List<BaseTrack> tracks = new List<BaseTrack>();
         
         /// <summary>
         /// 添加轨道
         /// </summary>
-        public bool AddTrack<T>(T track) where T : BaseTrack
+        public TTrack AddTrack<TTrack, TTrackData, TClipData>(TTrackData trackData, CreateClipFunc<TTrack,TTrackData, TClipData> creator)
+            where TTrack : BaseTrack, new()
+            where TTrackData : ITrackData<TClipData>
         {
-            if (track is null)
-                return false;
-
-            if (track.Owner != null)
-                throw new ArgumentException("track 已经被添加到了一个存在的 timeline 中");
+            TTrack track = TrackBuilder<TTrack,TTrackData,TClipData>.Build(trackData, creator);
 
             track.Owner = this;
             tracks.Add(track);
-            return true;
-        }
-
-        /// <summary>
-        /// 创建一个空轨道并添加至timeline
-        /// </summary>
-        public T AddTrack<T>() where T : BaseTrack, new()
-        {
-            T track = new T { Owner = this };
-            tracks.Add(track);
+            
             return track;
         }
-        
+
         /// <summary>
         /// 获取轨道
         /// </summary>

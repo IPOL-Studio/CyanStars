@@ -11,16 +11,17 @@ namespace CyanStars.Gameplay.Music
         public AudioSource audioSource;
 
         /// <summary>
-        /// 创建音乐轨道片段
-        /// </summary>
-        public static readonly IClipCreator<MusicTrack, AudioClip> ClipCreator = new MusicClipCreator();
+        /// 片段创建方法
+        /// </summary> 
+        public static readonly CreateClipFunc<MusicTrack,MusicTrackData, AudioClip> CreateClipFunc = CreateClip;
 
-        private sealed class MusicClipCreator : IClipCreator<MusicTrack, AudioClip>
+        private static BaseClip<MusicTrack> CreateClip(MusicTrack track, MusicTrackData trackData, int curIndex, AudioClip music)
         {
-            public BaseClip<MusicTrack> CreateClip(MusicTrack track, int clipIndex, AudioClip music)
-            {
-                return new MusicClip(0, music.length, track, music);
-            }
+            return new MusicClip(0, music.length, track, music);
         }
+
+
+        
+
     }
 }
