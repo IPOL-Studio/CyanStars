@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CyanStars.Framework.Timeline;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.Data
@@ -7,7 +8,7 @@ namespace CyanStars.Gameplay.Data
     /// 音符轨道数据
     /// </summary>
     [System.Serializable]
-    public class NoteTrackData
+    public class NoteTrackData : ITrackData<NoteLayerData>
     {
         /// <summary>
         /// 音符基础速度
@@ -26,6 +27,10 @@ namespace CyanStars.Gameplay.Data
         /// </summary>
         [Header("音符图层数据")]
         public List<NoteLayerData> LayerDatas;
+
+        public int ClipCount => 1;
+
+        public List<NoteLayerData> ClipDataList => LayerDatas;
     }
 }
 
