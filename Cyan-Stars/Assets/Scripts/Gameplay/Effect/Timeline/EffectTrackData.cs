@@ -15,7 +15,7 @@ namespace CyanStars.Gameplay.Effect
     /// 特效轨道数据
     /// </summary>
     [System.Serializable]
-    public class EffectTrackData : IClipCount
+    public class EffectTrackData : ITrackData<EffectTrackData.KeyFrame>
     {
         [System.Serializable]
         public class KeyFrame
@@ -51,6 +51,7 @@ namespace CyanStars.Gameplay.Effect
         [Header("关键帧")] public List<KeyFrame> KeyFrames;
 
         public int ClipCount => KeyFrames.Count;
+        public List<KeyFrame> ClipDataList => KeyFrames;
     }
 }
 
