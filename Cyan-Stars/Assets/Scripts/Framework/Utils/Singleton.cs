@@ -12,7 +12,9 @@ namespace CyanStars.Framework.Utils
     {
         public static T Instance { get; private set; }
 
-        protected virtual void OnAwake() {}
+        protected virtual void OnAwake()
+        {
+        }
 
         private void Awake()
         {
@@ -22,7 +24,7 @@ namespace CyanStars.Framework.Utils
                 Destroy(this);
                 return;
             }
-            
+
             if (this is T instance)
             {
                 Instance = instance;

@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace CyanStars.Framework
@@ -13,13 +10,13 @@ namespace CyanStars.Framework
         /// <summary>
         /// 优先级
         /// </summary>
-        public abstract int  Priority { get; }
-        
+        public abstract int Priority { get; }
+
         /// <summary>
         /// 初始化管理器
         /// </summary>
         public abstract void OnInit();
-        
+
         /// <summary>
         /// 轮询管理器
         /// </summary>
@@ -30,6 +27,4 @@ namespace CyanStars.Framework
             GameRoot.RegisterManager(this);
         }
     }
-
 }
-

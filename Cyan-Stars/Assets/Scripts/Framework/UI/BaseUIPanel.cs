@@ -29,14 +29,14 @@ namespace CyanStars.Framework.UI
             get => canvas.sortingOrder;
             set => canvas.sortingOrder = value;
         }
-        
+
         private void Awake()
         {
             canvas = gameObject.GetOrAddComponent<Canvas>();
             canvas.overrideSorting = true;
 
             gameObject.AddComponent<GraphicRaycaster>();
-            
+
             OnCreate();
         }
 
@@ -45,7 +45,6 @@ namespace CyanStars.Framework.UI
         /// </summary>
         protected virtual void OnCreate()
         {
-            
         }
 
         /// <summary>
@@ -54,7 +53,7 @@ namespace CyanStars.Framework.UI
         public virtual void OnOpen()
         {
         }
-        
+
         /// <summary>
         /// 关闭UI面板时调用
         /// </summary>
@@ -65,6 +64,7 @@ namespace CyanStars.Framework.UI
             {
                 ReleaseUIItem(item);
             }
+
             showingUIItems.Clear();
         }
 
@@ -78,25 +78,25 @@ namespace CyanStars.Framework.UI
         /// <summary>
         /// 使用预制体名获取UIItem
         /// </summary>
-        public void GetUIItem<T>(string prefabName,Transform parent,Action<T> callback) where T : BaseUIItem
+        public void GetUIItem<T>(string prefabName, Transform parent, Action<T> callback) where T : BaseUIItem
         {
-            GameRoot.GameObjectPool.GetGameObject(prefabName,parent, (go) =>
+            GameRoot.GameObjectPool.GetGameObject(prefabName, parent, (go) =>
             {
                 T item = OnGetUIItem(callback, go);
 
                 item.PrefabName = prefabName;
             });
         }
-        
+
         /// <summary>
         /// 使用模板获取UIItem
         /// </summary>
-        public void GetUIItem<T>(GameObject itemTemplate,Transform parent,Action<T> callback) where T : BaseUIItem
+        public void GetUIItem<T>(GameObject itemTemplate, Transform parent, Action<T> callback) where T : BaseUIItem
         {
-            GameRoot.GameObjectPool.GetGameObject(itemTemplate,parent, (go) =>
+            GameRoot.GameObjectPool.GetGameObject(itemTemplate, parent, (go) =>
             {
                 T item = OnGetUIItem(callback, go);
-                
+
                 item.Template = itemTemplate;
             });
         }
@@ -119,21 +119,18 @@ namespace CyanStars.Framework.UI
         protected void ReleaseUIItem(BaseUIItem item)
         {
             item.OnHide();
-            
+
             if (string.IsNullOrEmpty(item.PrefabName))
             {
-                GameRoot.GameObjectPool.ReleaseGameObject(item.PrefabName,item.gameObject);   
+                GameRoot.GameObjectPool.ReleaseGameObject(item.PrefabName, item.gameObject);
             }
             else
             {
-                GameRoot.GameObjectPool.ReleaseGameObject(item.Template,item.gameObject);   
+                GameRoot.GameObjectPool.ReleaseGameObject(item.Template, item.gameObject);
             }
 
             item.PrefabName = null;
             item.Template = null;
-
         }
-        
-
     }
 }

@@ -5,13 +5,13 @@ namespace CyanStars.Framework.Timeline
     /// </summary>
     public abstract class BaseClip<T> : IClip where T : BaseTrack
     {
-        protected BaseClip(float startTime, float endTime ,T owner)
+        protected BaseClip(float startTime, float endTime, T owner)
         {
             StartTime = startTime;
             EndTime = endTime;
             Owner = owner;
         }
-        
+
 
         /// <summary>
         /// 持有此片段的轨道
@@ -21,26 +21,17 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 持有此片段的轨道
         /// </summary>
-        public T Owner
-        {
-            get;
-        }
-        
+        public T Owner { get; }
+
         /// <summary>
         /// 开始时间
         /// </summary>
-        public float StartTime
-        {
-            get;
-        }
+        public float StartTime { get; }
 
         /// <summary>
         /// 结束时间
         /// </summary>
-        public float EndTime
-        {
-            get;
-        }
+        public float EndTime { get; }
 
 
         /// <summary>
@@ -48,7 +39,6 @@ namespace CyanStars.Framework.Timeline
         /// </summary>
         public virtual void OnEnter()
         {
-            
         }
 
         /// <summary>
@@ -56,17 +46,13 @@ namespace CyanStars.Framework.Timeline
         /// </summary>
         public virtual void OnExit()
         {
-            
         }
-        
+
         /// <summary>
         /// 更新片段
         /// </summary>
-        public virtual void OnUpdate(float currentTime,float previousTime)
+        public virtual void OnUpdate(float currentTime, float previousTime)
         {
-            
         }
     }
 }
-
-

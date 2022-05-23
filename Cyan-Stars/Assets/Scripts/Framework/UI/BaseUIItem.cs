@@ -10,10 +10,10 @@ namespace CyanStars.Framework.UI
     {
         [NonSerialized]
         public string PrefabName;
-        
+
         [NonSerialized]
         public GameObject Template;
-        
+
         private void Awake()
         {
             OnCreate();
@@ -24,7 +24,6 @@ namespace CyanStars.Framework.UI
         /// </summary>
         public virtual void OnCreate()
         {
-            
         }
 
         /// <summary>
@@ -32,7 +31,6 @@ namespace CyanStars.Framework.UI
         /// </summary>
         public virtual void OnShow()
         {
-            
         }
 
         /// <summary>
@@ -40,7 +38,6 @@ namespace CyanStars.Framework.UI
         /// </summary>
         public virtual void OnHide()
         {
-            
         }
 
         /// <summary>
@@ -48,17 +45,14 @@ namespace CyanStars.Framework.UI
         /// </summary>
         public virtual void OnDestroy()
         {
-            
         }
 
-        
+
         /// <summary>
         /// 刷新Item
         /// </summary>
         public virtual void RefreshItem<T>(T data) where T : UIItemData
         {
-            
         }
     }
 }
-
