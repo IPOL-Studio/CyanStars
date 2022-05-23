@@ -6,7 +6,6 @@ using CyanStars.Framework;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Timeline;
-using CyanStars.Framework.UI;
 using CyanStars.Gameplay.Camera;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Effect;
@@ -19,7 +18,6 @@ using CyanStars.Gameplay.Note;
 using CyanStars.Gameplay.PromptTone;
 using CyanStars.Gameplay.UI;
 using UnityEngine;
-using UnityEngine.UI;
 using UInput = UnityEngine.Input;
 
 namespace CyanStars.Gameplay.Procedure
@@ -44,7 +42,7 @@ namespace CyanStars.Gameplay.Procedure
         private MapTimelineData timelineData;
         private string lrcText;
         private AudioClip music;
-        
+
         //----时间轴相关对象--------
         private Timeline timeline;
         private NoteTrack noteTrack;
@@ -54,13 +52,13 @@ namespace CyanStars.Gameplay.Procedure
         private HashSet<KeyCode> pressedKeySet = new HashSet<KeyCode>();
         private float lastTime = -float.Epsilon;
         private bool isStartGame = false;
-        
+
 
         public override async void OnEnter()
         {
             //监听事件
-            GameRoot.Event.AddListener(EventConst.MusicGameStartEvent,StartMusicGame);
-            
+            GameRoot.Event.AddListener(EventConst.MusicGameStartEvent, StartMusicGame);
+
             //打开游戏场景
             bool success = await GameRoot.Asset.AwaitLoadScene("Assets/BundleRes/Scenes/Dark.unity");
 
@@ -68,15 +66,13 @@ namespace CyanStars.Gameplay.Procedure
             {
                 //获取场景物体与组件
                 GetSceneObj();
-                
+
                 //加载数据文件
                 await LoadDataFile();
-                
+
                 //打开音游UI
                 OpenMusicGameUI();
-                
             }
-            
         }
 
         public override void OnUpdate(float deltaTime)
@@ -97,29 +93,29 @@ namespace CyanStars.Gameplay.Procedure
             sceneRoot = null;
             audioSource = null;
             keyViewController = null;
-            
+
             inputMapData = null;
             mapManifest = null;
             timelineData = null;
             lrcText = null;
             music = null;
-            
+
             timeline = null;
             noteTrack = null;
             LinearNoteData.Clear();
-            
+
             pressedKeySet.Clear();
             lastTime = -float.Epsilon;
             isStartGame = false;
-            
-            GameRoot.Event.RemoveListener(EventConst.MusicGameStartEvent,StartMusicGame);
+
+            GameRoot.Event.RemoveListener(EventConst.MusicGameStartEvent, StartMusicGame);
             GameRoot.Asset.UnloadScene("Assets/BundleRes/Scenes/Dark.unity");
         }
 
         /// <summary>
         /// 开始游戏
         /// </summary>
-        private void StartMusicGame(object sender,EventArgs args)
+        private void StartMusicGame(object sender, EventArgs args)
         {
             isStartGame = true;
             CreateTimeline();
@@ -130,48 +126,45 @@ namespace CyanStars.Gameplay.Procedure
         /// </summary>
         private void GetSceneObj()
         {
-           
             sceneRoot = GameObject.Find("SceneRoot");
             ViewHelper.ViewRoot = sceneRoot.transform.Find("ViewRoot");
             ViewHelper.EffectRoot = sceneRoot.transform.Find("EffectRoot");
             audioSource = sceneRoot.GetComponent<AudioSource>();
             keyViewController = sceneRoot.transform.Find("KeyViewController").GetComponent<KeyViewController>();
         }
-        
+
         /// <summary>
         /// 加载数据文件
         /// </summary>
         private async Task LoadDataFile()
         {
             //输入映射数据
-            InputMapSO inputMapSo = await GameRoot.Asset.AwaitLoadAsset<InputMapSO>(dataModule.InputMapDataName,sceneRoot);
+            InputMapSO inputMapSo = await GameRoot.Asset.AwaitLoadAsset<InputMapSO>(dataModule.InputMapDataName, sceneRoot);
             inputMapData = inputMapSo.InputMapData;
 
             //谱面清单
             mapManifest = dataModule.GetMap(dataModule.MapIndex);
-                
+
             //时间轴数据
-            MapTimelineDataSO timelineDataSo = await GameRoot.Asset.AwaitLoadAsset<MapTimelineDataSO>(mapManifest.TimelineFileName,sceneRoot);
+            MapTimelineDataSO timelineDataSo = await GameRoot.Asset.AwaitLoadAsset<MapTimelineDataSO>(mapManifest.TimelineFileName, sceneRoot);
             timelineData = timelineDataSo.Data;
             timelineData.Time = mapManifest.Time; //在这里赋值时间轴数据的Time字段
-            
+
             dataModule.CalFullScore(timelineData.NoteTrackData);
             ViewHelper.CalViewTime(mapManifest.Time, timelineData.NoteTrackData);
 
             //歌词
             if (!string.IsNullOrEmpty(mapManifest.LrcFileName))
             {
-                TextAsset lrcAsset = await GameRoot.Asset.AwaitLoadAsset<TextAsset>(mapManifest.LrcFileName,sceneRoot);
+                TextAsset lrcAsset = await GameRoot.Asset.AwaitLoadAsset<TextAsset>(mapManifest.LrcFileName, sceneRoot);
                 lrcText = lrcAsset.text;
             }
 
             //音乐
             if (!string.IsNullOrEmpty(mapManifest.MusicFileName))
             {
-                music = await GameRoot.Asset.AwaitLoadAsset<AudioClip>(mapManifest.MusicFileName,sceneRoot);
+                music = await GameRoot.Asset.AwaitLoadAsset<AudioClip>(mapManifest.MusicFileName, sceneRoot);
             }
-           
-         
         }
 
         /// <summary>
@@ -182,14 +175,14 @@ namespace CyanStars.Gameplay.Procedure
             GameRoot.UI.OpenUI<MusicGameMainPanel>(null);
             GameRoot.UI.OpenUI<MusicGame3DUIPanel>(null);
         }
-        
+
         /// <summary>
         /// 创建时间轴
         /// </summary>
         private void CreateTimeline()
         {
             MapTimelineData data = timelineData;
-            
+
             Timeline timeline = new Timeline(mapManifest.Time / 1000f);
             timeline.OnStop += () =>
             {
@@ -210,21 +203,17 @@ namespace CyanStars.Gameplay.Procedure
             {
                 //添加歌词轨道
                 Lyric lrc = LrcParser.Parse(lrcText);
-                TrackHelper.CreateBuilder<LrcTrack, IList<LrcTimeTag>>()
-                    .AddClips(lrc.TimeTagList.Count, lrc.TimeTagList, LrcTrack.ClipCreator)
+                TrackHelper.CreateBuilder_I<LrcTrack, LrcTimeTag>()
+                    .AddClips(lrc.TimeTagList, LrcTrack.ClipCreator)
                     .SortClip()
-                    .PostProcess((track) =>
-                    {
-                        track.TxtLrc = GameRoot.UI.GetUI<MusicGameMainPanel>().TxtLrc;
-                    })
+                    .PostProcess(track => { track.TxtLrc = GameRoot.UI.GetUI<MusicGameMainPanel>().TxtLrc; })
                     .Build()
                     .AddToTimeline(timeline);
-               
             }
 
             //添加相机轨道
             TrackHelper.CreateBuilder<CameraTrack, CameraTrackData>()
-                .AddClips(data.CameraTrackData.KeyFrames.Count, data.CameraTrackData, CameraTrack.ClipCreator)
+                .AddClips(data.CameraTrackData, CameraTrack.ClipCreator)
                 .SortClip()
                 .PostProcess(track =>
                 {
@@ -244,12 +233,11 @@ namespace CyanStars.Gameplay.Procedure
                     .Build()
                     .AddToTimeline(timeline);
             }
-            
 
             //添加提示音轨道
             GetLinearNoteData();
-            TrackHelper.CreateBuilder<PromptToneTrack, IList<NoteData>>()
-                .AddClips(LinearNoteData.Count, LinearNoteData, PromptToneTrack.ClipCreator)
+            TrackHelper.CreateBuilder_I<PromptToneTrack, NoteData>()
+                .AddClips(LinearNoteData, PromptToneTrack.ClipCreator)
                 .SortClip()
                 .PostProcess(track => track.audioSource = audioSource)
                 .Build()
@@ -257,7 +245,7 @@ namespace CyanStars.Gameplay.Procedure
 
             //添加特效轨道
             TrackHelper.CreateBuilder<EffectTrack, EffectTrackData>()
-                .AddClips(data.EffectTrackData.KeyFrames.Count,data.EffectTrackData,EffectTrack.ClipCreator)
+                .AddClips(data.EffectTrackData, EffectTrack.ClipCreator)
                 .SortClip()
                 .PostProcess(track =>
                 {
@@ -283,12 +271,12 @@ namespace CyanStars.Gameplay.Procedure
                 {
                     foreach (NoteData note in timeAxis.NoteDatas)
                     {
-                       LinearNoteData.Add(note);
+                        LinearNoteData.Add(note);
                     }
                 }
             }
         }
-        
+
         /// <summary>
         /// 检查键盘输入
         /// </summary>
@@ -326,13 +314,13 @@ namespace CyanStars.Gameplay.Procedure
         /// </summary>
         private void ReceiveInput(InputType inputType, InputMapData.Item item)
         {
-            if(noteTrack == null)
+            if (noteTrack == null)
             {
                 Debug.LogError("noteTrack为null");
                 return;
             }
+
             noteTrack.OnInput(inputType, item);
         }
     }
 }
-

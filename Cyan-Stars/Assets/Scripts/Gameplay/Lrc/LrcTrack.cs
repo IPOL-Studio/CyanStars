@@ -1,5 +1,4 @@
 using CatLrcParser;
-using System.Collections.Generic;
 using CyanStars.Framework.Timeline;
 using TMPro;
 
@@ -15,14 +14,12 @@ namespace CyanStars.Gameplay.Lrc
         /// <summary>
         /// 创建歌词轨道片段
         /// </summary>
-        public static readonly IClipCreator<LrcTrack, IList<LrcTimeTag>> ClipCreator = new LrcClipCreator();
+        public static readonly IClipCreatorForEach<LrcTrack, LrcTimeTag> ClipCreator = new LrcClipCreator();
 
-        private sealed class LrcClipCreator : IClipCreator<LrcTrack, IList<LrcTimeTag>>
+        private sealed class LrcClipCreator : IClipCreatorForEach<LrcTrack, LrcTimeTag>
         {
-            public BaseClip<LrcTrack> CreateClip(LrcTrack track, int clipIndex, IList<LrcTimeTag> timeTags)
+            public BaseClip<LrcTrack> CreateClip(LrcTrack track, LrcTimeTag timeTag)
             {
-                LrcTimeTag timeTag = timeTags[clipIndex];
-
                 float time = (float)timeTag.Timestamp.TotalSeconds;
                 LrcClip clip = new LrcClip(time, time, track, timeTag.LyricText);
 

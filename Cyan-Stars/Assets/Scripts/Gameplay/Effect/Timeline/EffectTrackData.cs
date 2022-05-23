@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using CyanStars.Framework.Timeline;
 
 namespace CyanStars.Gameplay.Effect
 {
@@ -9,15 +10,13 @@ namespace CyanStars.Gameplay.Effect
         FrameOnce,
         Particle,
     }
-    
+
     /// <summary>
     /// 特效轨道数据
     /// </summary>
     [System.Serializable]
-    public class EffectTrackData
+    public class EffectTrackData : IClipCount
     {
-        
-
         [System.Serializable]
         public class KeyFrame
         {
@@ -50,6 +49,8 @@ namespace CyanStars.Gameplay.Effect
         [Header("BPM")] public float BPM;
 
         [Header("关键帧")] public List<KeyFrame> KeyFrames;
+
+        public int ClipCount => KeyFrames.Count;
     }
 }
 
