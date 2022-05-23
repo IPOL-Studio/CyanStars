@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace CyanStars.Framework
 {
     /// <summary>
@@ -15,4 +11,3 @@ namespace CyanStars.Framework
         public abstract void OnInit();
     }
 }
-

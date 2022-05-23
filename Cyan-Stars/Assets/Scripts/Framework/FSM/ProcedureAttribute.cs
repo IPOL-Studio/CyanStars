@@ -10,7 +10,7 @@ namespace CyanStars.Framework.FSM
         /// <summary>
         /// 是否为入口流程
         /// </summary>
-        public bool IsEntryProcedure;
+        public readonly bool IsEntryProcedure;
 
         public ProcedureStateAttribute(bool isEntryProcedure = false)
         {
@@ -18,4 +18,3 @@ namespace CyanStars.Framework.FSM
         }
     }
 }
-

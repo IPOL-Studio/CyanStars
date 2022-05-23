@@ -8,29 +8,11 @@ namespace CyanStars.Framework.Timeline
     /// </summary>
     public class Timeline
     {
-        public Timeline(float length)
-        {
-            Length = length;
-        }
-
         /// <summary>
-        /// 当前时间
+        /// 轨道列表
         /// </summary>
-        public float CurrentTime
-        {
-            get;
-            private set;
-        } = -float.Epsilon;
+        private List<BaseTrack> tracks = new List<BaseTrack>();
 
-        /// <summary>
-        /// 播放速度
-        /// </summary>
-        public float PlaybackSpeed
-        {
-            get;
-            set;
-        } = 1;
-        
         /// <summary>
         /// 长度
         /// </summary>
@@ -40,38 +22,39 @@ namespace CyanStars.Framework.Timeline
         /// 时间轴停止回调
         /// </summary>
         public event Action OnStop;
-        
+
         /// <summary>
-        /// 轨道列表
+        /// 当前时间
         /// </summary>
-        private List<BaseTrack> tracks = new List<BaseTrack>();
-        
+        public float CurrentTime { get; private set; } = -float.Epsilon;
+
+        /// <summary>
+        /// 播放速度
+        /// </summary>
+        public float PlaybackSpeed { get; set; } = 1;
+
+        public Timeline(float length)
+        {
+            Length = length;
+        }
+
+
         /// <summary>
         /// 添加轨道
         /// </summary>
-        public bool AddTrack<T>(T track) where T : BaseTrack
+        public TTrack AddTrack<TTrack, TTrackData, TClipData>(TTrackData trackData,
+            CreateClipFunc<TTrack, TTrackData, TClipData> creator)
+            where TTrack : BaseTrack, new()
+            where TTrackData : ITrackData<TClipData>
         {
-            if (track is null)
-                return false;
-
-            if (track.Owner != null)
-                throw new ArgumentException("track 已经被添加到了一个存在的 timeline 中");
+            TTrack track = TrackBuilder<TTrack, TTrackData, TClipData>.Build(trackData, creator);
 
             track.Owner = this;
             tracks.Add(track);
-            return true;
-        }
 
-        /// <summary>
-        /// 创建一个空轨道并添加至timeline
-        /// </summary>
-        public T AddTrack<T>() where T : BaseTrack, new()
-        {
-            T track = new T { Owner = this };
-            tracks.Add(track);
             return track;
         }
-        
+
         /// <summary>
         /// 获取轨道
         /// </summary>
@@ -92,7 +75,7 @@ namespace CyanStars.Framework.Timeline
         {
             return GetTrack(index) as T;
         }
-        
+
         /// <summary>
         /// 获取轨道（指定类型的第一个）
         /// </summary>
@@ -100,16 +83,16 @@ namespace CyanStars.Framework.Timeline
         {
             for (int i = 0; i < tracks.Count; i++)
             {
-               BaseTrack track = tracks[i];
-               if (track.GetType() == typeof(T))
-               {
-                   return (T)track;
-               }
+                BaseTrack track = tracks[i];
+                if (track.GetType() == typeof(T))
+                {
+                    return (T)track;
+                }
             }
 
             return null;
         }
-        
+
         /// <summary>
         /// 更新时间轴
         /// </summary>
@@ -119,14 +102,14 @@ namespace CyanStars.Framework.Timeline
             {
                 return;
             }
-            
+
             float previousTime = CurrentTime;
             CurrentTime += deltaTime * PlaybackSpeed;
             for (int i = 0; i < tracks.Count; i++)
             {
                 //更新轨道
                 BaseTrack track = tracks[i];
-                track.OnUpdate(CurrentTime,previousTime);
+                track.OnUpdate(CurrentTime, previousTime);
             }
 
             if (CurrentTime >= Length)
@@ -134,7 +117,5 @@ namespace CyanStars.Framework.Timeline
                 OnStop?.Invoke();
             }
         }
-        
     }
 }
-

@@ -1,6 +1,8 @@
 # CyanStars
 Unity Version: [2020.3.28f1](https://unity3d.com/get-unity/download/archive)
 
+Unity Hub内下载链接: unityhub://2020.3.28f1/f5400f52e03f
+
 > **公告**
 >
 > 项目成立初期，暂时限制交互

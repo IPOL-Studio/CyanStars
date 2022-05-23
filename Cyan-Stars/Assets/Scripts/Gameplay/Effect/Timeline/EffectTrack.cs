@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using CyanStars.Framework.Timeline;
-using CyanStars.Gameplay.Data;
 
 namespace CyanStars.Gameplay.Effect
 {
@@ -20,42 +19,36 @@ namespace CyanStars.Gameplay.Effect
         protected override ClipProcessMode Mode => ClipProcessMode.All;
 
         /// <summary>
-        /// 创建特效轨道片段
+        /// 片段创建方法
         /// </summary>
-        public static readonly IClipCreator<EffectTrack, EffectTrackData> ClipCreator =
-            new EffectClipCreator();
+        public static readonly CreateClipFunc<EffectTrack, EffectTrackData, EffectTrackData.KeyFrame> CreateClipFunc = CreateClip;
 
-        private sealed class EffectClipCreator : IClipCreator<EffectTrack, EffectTrackData>
+        private static BaseClip<EffectTrack> CreateClip(EffectTrack track, EffectTrackData trackData, int curIndex, EffectTrackData.KeyFrame keyFrame)
         {
-            public BaseClip<EffectTrack> CreateClip(EffectTrack track, int clipIndex, EffectTrackData data)
+            float time = keyFrame.Time / 1000f;
+            float duration = keyFrame.Duration / 1000f;
+
+            BaseClip<EffectTrack> clip = null;
+            switch (keyFrame.Type)
             {
-                EffectTrackData.KeyFrame keyFrame = data.KeyFrames[clipIndex];
+                case EffectType.FrameBreath:
+                    clip = new FrameBreathClip(time, time + duration, track, duration, keyFrame.Color,
+                        keyFrame.Intensity,
+                        keyFrame.MaxAlpha, keyFrame.MinAlpha);
+                    break;
 
-                float time = keyFrame.Time / 1000f;
-                float duration = keyFrame.Duration / 1000f;
+                case EffectType.FrameOnce:
+                    Debug.LogError("EffectType.FrameOnce 没实现捏");
+                    break;
 
-                BaseClip<EffectTrack> clip = null;
-                switch (keyFrame.Type)
-                {
-                    case EffectType.FrameBreath:
-                        clip = new FrameBreathClip(time, time + duration, track, duration, keyFrame.Color,
-                            keyFrame.Intensity,
-                            keyFrame.MaxAlpha, keyFrame.MinAlpha);
-                        break;
-
-                    case EffectType.FrameOnce:
-                        Debug.LogError("EffectType.FrameOnce 没实现捏");
-                        break;
-
-                    case EffectType.Particle:
-                        clip = new ParticleEffectClip(time, time, track, keyFrame.Index, keyFrame.Position,
-                            keyFrame.Rotation,
-                            keyFrame.ParticleCount, duration);
-                        break;
-                }
-
-                return clip;
+                case EffectType.Particle:
+                    clip = new ParticleEffectClip(time, time, track, keyFrame.Index, keyFrame.Position,
+                        keyFrame.Rotation,
+                        keyFrame.ParticleCount, duration);
+                    break;
             }
+
+            return clip;
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace CyanStars.Framework.GameObjectPool
 {
@@ -19,13 +17,13 @@ namespace CyanStars.Framework.GameObjectPool
         /// <summary>
         /// 根节点
         /// </summary>
-        public Transform Root{ get; private set; }
-        
+        public Transform Root { get; private set; }
+
         /// <summary>
         /// 模板
         /// </summary>
         private GameObject template;
-        
+
         /// <summary>
         /// 对象失效时间
         /// </summary>
@@ -42,7 +40,7 @@ namespace CyanStars.Framework.GameObjectPool
         private List<PoolObject> unusedPoolObjectList = new List<PoolObject>();
 
 
-        public GameObjectPool(GameObject template, float expireTime,Transform root)
+        public GameObjectPool(GameObject template, float expireTime, Transform root)
         {
             this.template = template;
             this.expireTime = expireTime;
@@ -64,7 +62,7 @@ namespace CyanStars.Framework.GameObjectPool
                     //已过期且未锁定 销毁掉
                     poolObjectDict.Remove(poolObject.Target);
                     unusedPoolObjectList.RemoveAt(i);
-                    
+
                     poolObject.Destroy();
                 }
             }
@@ -79,7 +77,7 @@ namespace CyanStars.Framework.GameObjectPool
             }
         }
 
-        
+
         /// <summary>
         /// 销毁对象池
         /// </summary>
@@ -99,6 +97,7 @@ namespace CyanStars.Framework.GameObjectPool
             {
                 unusedPoolObjectList[i].Destroy();
             }
+
             unusedPoolObjectList.Clear();
             poolObjectDict.Clear();
         }
@@ -106,16 +105,16 @@ namespace CyanStars.Framework.GameObjectPool
         /// <summary>
         /// 锁定游戏对象，被锁定后不会被销毁
         /// </summary>
-        public void LockGameObject(GameObject go,bool isLock = true)
+        public void LockGameObject(GameObject go, bool isLock = true)
         {
-            if (!poolObjectDict.TryGetValue(go,out PoolObject poolObject))
+            if (!poolObjectDict.TryGetValue(go, out PoolObject poolObject))
             {
                 return;
             }
 
             poolObject.IsLock = true;
         }
-        
+
         /// <summary>
         /// 从池中获取一个游戏对象
         /// </summary>
@@ -124,16 +123,12 @@ namespace CyanStars.Framework.GameObjectPool
             if (unusedPoolObjectList.Count == 0)
             {
                 //没有未使用的池对象，需要实例化出来
-                GameRoot.GameObjectPool.InstantiateAsync(template,parent, (go) =>
+                GameRoot.GameObjectPool.InstantiateAsync(template, parent, (go) =>
                 {
-                    PoolObject poolObject = new PoolObject
-                    {
-                        Target = go,
-                        Used = true
-                    };
-                    
-                    poolObjectDict.Add(go,poolObject);
-                    
+                    PoolObject poolObject = new PoolObject { Target = go, Used = true };
+
+                    poolObjectDict.Add(go, poolObject);
+
                     go.SetActive(true);
                     callback?.Invoke(go);
                 });
@@ -155,7 +150,7 @@ namespace CyanStars.Framework.GameObjectPool
         /// </summary>
         public void ReleaseGameObject(GameObject go)
         {
-            if (!poolObjectDict.TryGetValue(go,out PoolObject poolObject))
+            if (!poolObjectDict.TryGetValue(go, out PoolObject poolObject))
             {
                 return;
             }
@@ -164,9 +159,8 @@ namespace CyanStars.Framework.GameObjectPool
             poolObject.UnusedTimer = 0;
             go.SetActive(false);
             go.transform.SetParent(Root);
-            
+
             unusedPoolObjectList.Add(poolObject);
         }
-        
     }
 }

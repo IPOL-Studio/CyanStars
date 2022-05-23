@@ -9,7 +9,7 @@ namespace CyanStars.Gameplay.Camera
     /// 相机轨道数据
     /// </summary>
     [System.Serializable]
-    public class CameraTrackData : IClipCount
+    public class CameraTrackData : ITrackData<CameraTrackData.KeyFrame>
     {
         [Header("相机默认位置")]
         public Vector3 DefaultPosition;
@@ -20,16 +20,22 @@ namespace CyanStars.Gameplay.Camera
         [System.Serializable]
         public class KeyFrame
         {
-            [Header("时间")] public float Time;
-            [Header("目标")] public Vector3 Position;
+            [Header("时间")]
+            public float Time;
+
+            [Header("目标")]
+            public Vector3 Position;
+
             public Vector3 Rotation;
 
-            [Header("缓动方式")] public SmoothFuncationType SmoothType;
+            [Header("缓动方式")]
+            public SmoothFunctionType SmoothType;
         }
 
-        [Header("关键帧")] public List<KeyFrame> KeyFrames;
+        [Header("关键帧")]
+        public List<KeyFrame> KeyFrames;
+
         public int ClipCount => KeyFrames.Count;
+        public List<KeyFrame> ClipDataList => KeyFrames;
     }
 }
-
-

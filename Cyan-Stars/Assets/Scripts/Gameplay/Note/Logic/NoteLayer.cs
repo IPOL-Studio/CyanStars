@@ -31,13 +31,12 @@ namespace CyanStars.Gameplay.Note
             /// 速率
             /// </summary>
             public float speedRate;
-
         }
 
         /// <summary>
         /// 时轴列表
         /// </summary>
-        private List<NoteTimeAxis> timeAxises = new List<NoteTimeAxis>();
+        private List<NoteTimeAxis> timeAxes = new List<NoteTimeAxis>();
 
         /// <summary>
         /// 当前时轴索引
@@ -56,7 +55,7 @@ namespace CyanStars.Gameplay.Note
         /// </summary>
         public void AddTimeSpeedRate(float startTime, float speedRate)
         {
-            timeAxises.Add(new NoteTimeAxis(startTime, speedRate));
+            timeAxes.Add(new NoteTimeAxis(startTime, speedRate));
         }
 
         /// <summary>
@@ -80,19 +79,18 @@ namespace CyanStars.Gameplay.Note
         /// </summary>
         private void RefreshCurRangeIndex(float currentTime)
         {
-            if (curTimeAxisIndex == timeAxises.Count - 1)
+            if (curTimeAxisIndex == timeAxes.Count - 1)
             {
                 //最后一个timeAxis 不计算了
                 return;
             }
 
             //是否到达了下一个timeAxis的开始？
-            float nextTimeAxisStartTime = timeAxises[curTimeAxisIndex + 1].startTime;
+            float nextTimeAxisStartTime = timeAxes[curTimeAxisIndex + 1].startTime;
             if (currentTime >= nextTimeAxisStartTime)
             {
                 curTimeAxisIndex++;
             }
-
         }
 
 
@@ -125,25 +123,24 @@ namespace CyanStars.Gameplay.Note
             RefreshCurRangeIndex(currentTime);
 
             //计算音符表现层的速度
-            float noteViewSpeed = clipSpeed * timeAxises[curTimeAxisIndex].speedRate;
+            float noteViewSpeed = clipSpeed * timeAxes[curTimeAxisIndex].speedRate;
 
             float deltaTime = currentTime - previousTime;
 
-            if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)//如果是AutoMode
+            if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode) //如果是AutoMode
             {
                 for (int i = notes.Count - 1; i >= 0; i--)
                 {
-                    notes[i].OnUpdateInAutoMode(deltaTime, noteViewSpeed);//使用AutoMode的OnUpdate
+                    notes[i].OnUpdateInAutoMode(deltaTime, noteViewSpeed); //使用AutoMode的OnUpdate
                 }
             }
             else
             {
                 for (int i = notes.Count - 1; i >= 0; i--)
                 {
-                    notes[i].OnUpdate(deltaTime, noteViewSpeed);//正常的OnUpdate
+                    notes[i].OnUpdate(deltaTime, noteViewSpeed); //正常的OnUpdate
                 }
             }
-            
         }
 
         public void OnInput(InputType inputType, InputMapData.Item item)

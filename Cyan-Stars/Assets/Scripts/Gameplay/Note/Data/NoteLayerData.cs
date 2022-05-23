@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,6 +15,4 @@ namespace CyanStars.Gameplay.Data
         [Header("音符时轴数据")]
         public List<NoteTimeAxisData> TimeAxisDatas;
     }
-
 }
-

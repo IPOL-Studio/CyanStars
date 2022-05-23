@@ -1,8 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CyanStars.Framework.Utils;
 using UnityEngine;
+using CyanStars.Framework.Utils;
 
 namespace CyanStars.Framework.Asset
 {
@@ -17,17 +16,15 @@ namespace CyanStars.Framework.Asset
         public static Task<bool> AwaitCheckPackageManifest(this AssetManager self)
         {
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-            self.CheckPackageManifest((success) =>
-            {
-                tcs.SetResult(success);
-            });
+            self.CheckPackageManifest(success => tcs.SetResult(success));
             return tcs.Task;
         }
-        
+
         /// <summary>
         /// 加载资源（可等待）
         /// </summary>
-        public static Task<T> AwaitLoadAsset<T>(this AssetManager self, string assetName,GameObject bindingTarget = null) where T : Object
+        public static Task<T> AwaitLoadAsset<T>(this AssetManager self, string assetName,
+            GameObject bindingTarget = null) where T : Object
         {
             TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
             self.LoadAsset(assetName, (success, asset) =>
@@ -36,15 +33,16 @@ namespace CyanStars.Framework.Asset
                 {
                     bindingTarget.GetOrAddComponent<AssetBinder>().BindTo(asset);
                 }
+
                 tcs.SetResult(asset as T);
             });
             return tcs.Task;
         }
-        
+
         /// <summary>
         /// 加载场景（可等待）
         /// </summary>
-        public static Task<bool> AwaitLoadScene(this AssetManager self,string sceneName)
+        public static Task<bool> AwaitLoadScene(this AssetManager self, string sceneName)
         {
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
             self.LoadScene(sceneName, (success, obj) =>
@@ -54,11 +52,12 @@ namespace CyanStars.Framework.Asset
             });
             return tcs.Task;
         }
-        
+
         /// <summary>
         /// 批量加载资源（可等待）
         /// </summary>
-        public static Task<List<Object>> AwaitLoadAssets(this AssetManager self, List<string> assetNames,GameObject bindingTarget = null)
+        public static Task<List<Object>> AwaitLoadAssets(this AssetManager self, List<string> assetNames,
+            GameObject bindingTarget = null)
         {
             TaskCompletionSource<List<Object>> tcs = new TaskCompletionSource<List<Object>>();
             self.LoadAssets(assetNames, (assets) =>
@@ -71,12 +70,11 @@ namespace CyanStars.Framework.Asset
                         binder.BindTo(assets[i]);
                     }
                 }
-            
-                
+
+
                 tcs.SetResult(assets);
             });
             return tcs.Task;
         }
     }
-
 }

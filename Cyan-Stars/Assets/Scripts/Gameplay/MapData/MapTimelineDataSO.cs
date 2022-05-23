@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MapData
@@ -14,4 +12,3 @@ namespace CyanStars.Gameplay.MapData
         public MapTimelineData Data;
     }
 }
-

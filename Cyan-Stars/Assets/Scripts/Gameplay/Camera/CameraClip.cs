@@ -11,7 +11,7 @@ namespace CyanStars.Gameplay.Camera
     {
         private Vector3 position;
         private Vector3 rotation;
-        private SmoothFuncationType smoothType;
+        private SmoothFunctionType smoothType;
 
         private Transform camTrans;
         private float length;
@@ -21,13 +21,12 @@ namespace CyanStars.Gameplay.Camera
         private Vector3 oldPos;
         private Vector3 oldRot;
 
-        public CameraClip(float startTime, float endTime, CameraTrack owner, Vector3 position, Vector3 rotation, SmoothFuncationType smoothType) : base(startTime, endTime, owner)
+        public CameraClip(float startTime, float endTime, CameraTrack owner, Vector3 position, Vector3 rotation, SmoothFunctionType smoothType) : base(startTime, endTime, owner)
         {
             this.position = position;
             this.rotation = rotation;
             this.smoothType = smoothType;
             length = EndTime - StartTime;
-
         }
 
         public override void OnEnter()
@@ -45,32 +44,33 @@ namespace CyanStars.Gameplay.Camera
             camTrans.position = newPos;
             camTrans.localEulerAngles = newRot;
         }
+
         public override void OnUpdate(float currentTime, float previousTime)
         {
             float localTimer = currentTime - StartTime;
 
             switch (smoothType) //缓动
             {
-                case SmoothFuncationType.Linear:
-                    camTrans.position = SmoothFuncation.LinearFunction(oldPos, newPos, localTimer, length);
-                    camTrans.localEulerAngles = SmoothFuncation.LinearFunction(oldRot, newRot, localTimer, length);
+                case SmoothFunctionType.Linear:
+                    camTrans.position = SmoothFunction.LinearFunction(oldPos, newPos, localTimer, length);
+                    camTrans.localEulerAngles = SmoothFunction.LinearFunction(oldRot, newRot, localTimer, length);
                     break;
-                case SmoothFuncationType.SineaseIn:
-                    camTrans.position = SmoothFuncation.SinFunctionEaseIn(oldPos, newPos, localTimer, length);
-                    camTrans.localEulerAngles = SmoothFuncation.SinFunctionEaseIn(oldRot, newRot, localTimer, length);
+                case SmoothFunctionType.SineaseIn:
+                    camTrans.position = SmoothFunction.SinFunctionEaseIn(oldPos, newPos, localTimer, length);
+                    camTrans.localEulerAngles = SmoothFunction.SinFunctionEaseIn(oldRot, newRot, localTimer, length);
                     break;
-                case SmoothFuncationType.SineaseOut:
-                    camTrans.position = SmoothFuncation.SinFunctionEaseOut(oldPos, newPos, localTimer, length);
-                    camTrans.localEulerAngles = SmoothFuncation.SinFunctionEaseOut(oldRot, newRot, localTimer, length);
+                case SmoothFunctionType.SineaseOut:
+                    camTrans.position = SmoothFunction.SinFunctionEaseOut(oldPos, newPos, localTimer, length);
+                    camTrans.localEulerAngles = SmoothFunction.SinFunctionEaseOut(oldRot, newRot, localTimer, length);
                     break;
-                case SmoothFuncationType.SineaseInOut:
-                    camTrans.position = SmoothFuncation.SinFunctionEaseInOut(oldPos, newPos, localTimer, length);
+                case SmoothFunctionType.SineaseInOut:
+                    camTrans.position = SmoothFunction.SinFunctionEaseInOut(oldPos, newPos, localTimer, length);
                     camTrans.localEulerAngles =
-                        SmoothFuncation.SinFunctionEaseInOut(oldRot, newRot, localTimer, length);
+                        SmoothFunction.SinFunctionEaseInOut(oldRot, newRot, localTimer, length);
                     break;
-                case SmoothFuncationType.BackeaseIn:
-                    camTrans.position = SmoothFuncation.BackEaseIn(oldPos, newPos, localTimer, length);
-                    camTrans.localEulerAngles = SmoothFuncation.BackEaseIn(oldRot, newRot, localTimer, length);
+                case SmoothFunctionType.BackeaseIn:
+                    camTrans.position = SmoothFunction.BackEaseIn(oldPos, newPos, localTimer, length);
+                    camTrans.localEulerAngles = SmoothFunction.BackEaseIn(oldRot, newRot, localTimer, length);
                     break;
             }
         }

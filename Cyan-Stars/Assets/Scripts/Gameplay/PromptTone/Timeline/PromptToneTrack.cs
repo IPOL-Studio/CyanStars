@@ -10,25 +10,24 @@ namespace CyanStars.Gameplay.PromptTone
     /// </summary>
     public class PromptToneTrack : BaseTrack
     {
-        public AudioSource audioSource;
+        public AudioSource AudioSource;
 
         /// <summary>
-        /// 创建提示音轨道片段
+        /// 片段创建方法
         /// </summary>
-        public static readonly IClipCreatorForEach<PromptToneTrack, NoteData> ClipCreator = new PromptToneClipCreator();
-        
-        private sealed class PromptToneClipCreator : IClipCreatorForEach<PromptToneTrack, NoteData>
+        public static readonly CreateClipFunc<PromptToneTrack, PromptToneTrackData, NoteData> CreateClipFunc =
+            CreateClip;
+
+        private static BaseClip<PromptToneTrack> CreateClip(PromptToneTrack track, PromptToneTrackData trackData,
+            int curIndex, NoteData noteData)
         {
-            public BaseClip<PromptToneTrack> CreateClip(PromptToneTrack track, NoteData note)
-            {
-                AudioClip promptTone = PromptToneHelper.Instance.GetAudioClipWithType(note.PromptToneType);
+            AudioClip promptTone = PromptToneHelper.Instance.GetAudioClipWithType(noteData.PromptToneType);
 
-                if (promptTone == null) return new PromptToneClip(0, 0, track, promptTone);
+            if (promptTone == null) return new PromptToneClip(0, 0, track, promptTone);
 
-                PromptToneClip clip = new PromptToneClip(note.StartTime / 1000f,
-                    note.StartTime / 1000f + promptTone.length, track, promptTone);
-                return clip;
-            }
+            PromptToneClip clip = new PromptToneClip(noteData.StartTime / 1000f,
+                noteData.StartTime / 1000f + promptTone.length, track, promptTone);
+            return clip;
         }
     }
 }
