@@ -20,6 +20,21 @@ namespace CyanStars.Gameplay
     {
         
         /// <summary>
+        /// 谱面清单列表
+        /// </summary>
+        private List<MapManifest> mapManifests;
+
+        /// <summary>
+        /// 当前时间轴长度
+        /// </summary>
+        public float CurTimelineLength { get; set; }
+        
+        /// <summary>
+        /// 是否为自动模式
+        /// </summary>
+        public bool IsAutoMode { get; set; }
+        
+        /// <summary>
         /// 谱面序号
         /// </summary>
         public int MapIndex { get; set; }
@@ -50,15 +65,7 @@ namespace CyanStars.Gameplay
         /// </summary>
         public List<string> EffectNames { get; private set; }
 
-        /// <summary>
-        /// 谱面清单列表
-        /// </summary>
-        private List<MapManifest> mapManifests;
 
-        /// <summary>
-        /// 是否为自动模式
-        /// </summary>
-        public bool IsAutoMode { get; set; }
         
 
         

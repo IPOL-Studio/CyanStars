@@ -12,19 +12,18 @@ namespace CyanStars.Gameplay.Lrc
         public TextMeshProUGUI TxtLrc;
         
         /// <summary>
-        /// 创建歌词轨道片段
-        /// </summary>
-        public static readonly IClipCreatorForEach<LrcTrack, LrcTimeTag> ClipCreator = new LrcClipCreator();
+        /// 片段创建方法
+        /// </summary> 
+        public static readonly CreateClipFunc<LrcTrack,LrcTrackData, LrcTimeTag> CreateClipFunc = CreateClip;
 
-        private sealed class LrcClipCreator : IClipCreatorForEach<LrcTrack, LrcTimeTag>
+        private static BaseClip<LrcTrack> CreateClip(LrcTrack track, LrcTrackData trackData, int curIndex, LrcTimeTag timeTag)
         {
-            public BaseClip<LrcTrack> CreateClip(LrcTrack track, LrcTimeTag timeTag)
-            {
-                float time = (float)timeTag.Timestamp.TotalSeconds;
-                LrcClip clip = new LrcClip(time, time, track, timeTag.LyricText);
-
-                return clip;
-            }
+            float time = (float)timeTag.Timestamp.TotalSeconds;
+            LrcClip clip = new LrcClip(time, time, track, timeTag.LyricText);
+            return clip;
         }
+
+
+
     }
 }
