@@ -11,12 +11,10 @@ namespace CyanStars.Framework.UI
         /// UI预制体名
         /// </summary>
         public string UIPrefabName;
-        
+
         /// <summary>
         /// UI组名
         /// </summary>
         public string UIGroupName;
-        
-
     }
 }

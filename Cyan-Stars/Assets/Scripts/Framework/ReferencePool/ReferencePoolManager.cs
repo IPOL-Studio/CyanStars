@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace CyanStars.Framework.Timer
+namespace CyanStars.Framework.ReferencePool
 {
-    public class TimerManager : MonoBehaviour
+    public class ReferencePoolManager : MonoBehaviour
     {
         // Start is called before the first frame update
         void Start()

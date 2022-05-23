@@ -10,7 +10,7 @@ namespace CyanStars.Gameplay.Lrc
     public class LrcTrackData : ITrackData<LrcTimeTag>
     {
         public int ClipCount => ClipDataList.Count;
-        
+
         public List<LrcTimeTag> ClipDataList { get; set; }
     }
 }

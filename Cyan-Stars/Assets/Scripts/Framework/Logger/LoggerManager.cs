@@ -14,6 +14,7 @@ namespace CyanStars.Framework.Logger
             {
                 return (T)logger;
             }
+
             logger = new T();
             loggerDict.Add(type, logger);
             return (T)logger;
@@ -34,6 +35,7 @@ namespace CyanStars.Framework.Logger
             {
                 throw new NullReferenceException(nameof(logger));
             }
+
             loggerDict.Add(typeof(T), logger);
         }
 

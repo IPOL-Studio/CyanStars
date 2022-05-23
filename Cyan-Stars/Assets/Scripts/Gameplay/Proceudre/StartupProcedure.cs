@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using CyanStars.Framework;
-using CyanStars.Framework.Asset;
 using CyanStars.Framework.FSM;
-using UnityEngine;
+using CyanStars.Framework.Asset;
 
 namespace CyanStars.Gameplay.Procedure
 {
@@ -13,7 +10,6 @@ namespace CyanStars.Gameplay.Procedure
     [ProcedureState(true)]
     public class StartupProcedure : BaseState
     {
-        
         public override async void OnEnter()
         {
 #if UNITY_EDITOR
@@ -30,19 +26,14 @@ namespace CyanStars.Gameplay.Procedure
             {
                 GameRoot.ChangeProcedure<MainHomeProcedure>();
             }
-            
-           
         }
 
         public override void OnUpdate(float deltaTime)
         {
-            
         }
 
         public override void OnExit()
         {
-            
         }
     }
 }
-

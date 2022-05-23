@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -21,7 +19,7 @@ namespace CyanStars.Framework.Asset
         {
             bindingAssets.Add(asset);
         }
-        
+
         private void OnDestroy()
         {
             for (int i = 0; i < bindingAssets.Count; i++)
@@ -31,4 +29,3 @@ namespace CyanStars.Framework.Asset
         }
     }
 }
-

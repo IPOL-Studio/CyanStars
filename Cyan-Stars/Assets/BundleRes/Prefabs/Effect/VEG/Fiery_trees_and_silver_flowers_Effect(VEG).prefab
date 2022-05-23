@@ -124,5 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb7cfee9ec07a29409439a961daea1f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destroyTime: -1
-  visualEffect: {fileID: 3090660559402485274}
+  DestroyTime: -1
+  VisualEffect: {fileID: 3090660559402485274}
+  VisualEffectStartCount: -1
+  EffectName: 

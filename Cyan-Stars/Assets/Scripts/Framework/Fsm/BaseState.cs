@@ -18,22 +18,20 @@ namespace CyanStars.Framework.FSM
         {
             this.owner = owner;
         }
-        
+
         /// <summary>
         /// 进入状态
         /// </summary>
         public abstract void OnEnter();
-        
+
         /// <summary>
         /// 轮询状态
         /// </summary>
         public abstract void OnUpdate(float deltaTime);
-        
+
         /// <summary>
         /// 退出状态
         /// </summary>
         public abstract void OnExit();
-
     }
 }
-

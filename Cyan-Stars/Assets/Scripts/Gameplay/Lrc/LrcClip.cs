@@ -8,7 +8,6 @@ namespace CyanStars.Gameplay.Lrc
     /// </summary>
     public class LrcClip : BaseClip<LrcTrack>
     {
-
         private string lrcText;
 
         public LrcClip(float startTime, float endTime, LrcTrack owner, string lrcText) : base(startTime, endTime, owner)

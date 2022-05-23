@@ -5,11 +5,11 @@
         /// <summary>
         /// 音游开始事件
         /// </summary>
-        public static string MusicGameStartEvent = "MusicGameStartEvent";
-        
+        public const string MusicGameStartEvent = "MusicGameStartEvent";
+
         /// <summary>
         /// 音游数据刷新事件
         /// </summary>
-        public static string MusicGameDataRefreshEvent = "MusicGameDataRefreshEvent";
+        public const string MusicGameDataRefreshEvent = "MusicGameDataRefreshEvent";
     }
 }

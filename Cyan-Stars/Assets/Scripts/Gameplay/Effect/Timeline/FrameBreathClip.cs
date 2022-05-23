@@ -1,7 +1,6 @@
 using UnityEngine;
 using CyanStars.Framework.Timeline;
 
-
 namespace CyanStars.Gameplay.Effect
 {
     /// <summary>

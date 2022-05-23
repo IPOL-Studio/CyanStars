@@ -33,5 +33,3 @@ namespace CyanStars.Gameplay.Data
         public List<NoteLayerData> ClipDataList => LayerDatas;
     }
 }
-
-

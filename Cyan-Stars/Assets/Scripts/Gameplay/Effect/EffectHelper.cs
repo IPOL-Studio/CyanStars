@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace CyanStars.Gameplay.Effect
 {
-    public class EffectHelper: MonoBehaviour
+    public class EffectHelper : MonoBehaviour
     {
         public static EffectHelper Instance;
 
-        public GameObject line;
-        public GameObject blockRain;
+        public GameObject Line;
+        public GameObject BlockRain;
 
-        public Dictionary<VfxType, List<string>> parameterDict;
+        public Dictionary<VfxType, List<string>> ParameterDict;
 
         private void Start()
         {
@@ -19,14 +19,14 @@ namespace CyanStars.Gameplay.Effect
 
         public GameObject GetAudioClipWithType(VfxType type) => type switch
         {
-            VfxType.Line => line,
-            VfxType.BlockRain => blockRain,
+            VfxType.Line => Line,
+            VfxType.BlockRain => BlockRain,
             _ => null
         };
 
-        public List<string> GetParmeterWithType(VfxType type) => type switch
+        public List<string> GetParameterWithType(VfxType type) => type switch
         {
-            VfxType.Line => new List<string>() {"Count","Color"},
+            VfxType.Line => new List<string> { "Count", "Color" },
             _ => throw new System.NotImplementedException()
         };
     }
