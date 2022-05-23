@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MapData
@@ -14,19 +15,19 @@ namespace CyanStars.Gameplay.MapData
         /// </summary>
         [Header("歌曲名")]
         public string Name;
-        
+
         /// <summary>
         /// 总时间（毫秒）
         /// </summary>
         [Header("总时间（毫秒）")]
-        public int Time;
+        public int Duration;
 
         /// <summary>
         /// 歌词文件名
         /// </summary>
         [Header("歌词文件名")]
         public string LrcFileName;
-    
+
         /// <summary>
         /// 音乐文件名
         /// </summary>

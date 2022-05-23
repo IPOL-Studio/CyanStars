@@ -5,13 +5,16 @@ namespace CyanStars.Gameplay.PromptTone
 {
     public class PromptToneHelper : SingletonMono<PromptToneHelper>
     {
-        public AudioClip ns_ka;
-        public AudioClip na_ding;
+        [SerializeField]
+        private AudioClip nsKa;
+
+        [SerializeField]
+        private AudioClip naDing;
 
         public AudioClip GetAudioClipWithType(PromptToneType type) => type switch
         {
-            PromptToneType.NsKa => ns_ka,
-            PromptToneType.NaDing => na_ding,
+            PromptToneType.NsKa => nsKa,
+            PromptToneType.NaDing => naDing,
             _ => null
         };
     }

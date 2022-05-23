@@ -2,8 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using CyanStars.Framework.Timeline;
-using CyanStars.Gameplay.Data;
-using CyanStars.Gameplay.Music;
 
 namespace CyanStars.Gameplay.Effect
 {
@@ -22,8 +20,8 @@ namespace CyanStars.Gameplay.Effect
 
         /// <summary>
         /// 片段创建方法
-        /// </summary> 
-        public static readonly CreateClipFunc<EffectTrack,EffectTrackData, EffectTrackData.KeyFrame> CreateClipFunc = CreateClip;
+        /// </summary>
+        public static readonly CreateClipFunc<EffectTrack, EffectTrackData, EffectTrackData.KeyFrame> CreateClipFunc = CreateClip;
 
         private static BaseClip<EffectTrack> CreateClip(EffectTrack track, EffectTrackData trackData, int curIndex, EffectTrackData.KeyFrame keyFrame)
         {
@@ -52,7 +50,5 @@ namespace CyanStars.Gameplay.Effect
 
             return clip;
         }
-
-
     }
 }

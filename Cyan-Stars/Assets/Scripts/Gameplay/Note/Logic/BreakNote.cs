@@ -15,21 +15,21 @@ namespace CyanStars.Gameplay.Note
         public override bool IsInRange(float min, float max)
         {
             //Break音符的InRange判定有点特殊
-            return Math.Abs(min - data.Pos) < 0.4f;
+            return Math.Abs(min - Data.Pos) < 0.4f;
         }
 
         public override void OnUpdate(float deltaTime, float noteSpeedRate)
         {
             base.OnUpdate(deltaTime, noteSpeedRate);
 
-            if (LogicTimer < EvaluateHelper.CheckInputEndTime)//没接住Miss
+            if (LogicTimer < EvaluateHelper.CheckInputEndTime) //没接住Miss
             {
-                DestroySelf();//延迟销毁
+                DestroySelf(); //延迟销毁
 
-                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(data, EvaluateType.Miss));//Log
+                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(Data, EvaluateType.Miss)); //Log
 
-                dataModule.MaxScore += data.GetFullScore();//更新最理论高分
-                dataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);//更新数据
+                DataModule.MaxScore += Data.GetFullScore(); //更新最理论高分
+                DataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue); //更新数据
             }
         }
 
@@ -39,14 +39,13 @@ namespace CyanStars.Gameplay.Note
 
             if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact)
             {
-                viewObject.CreateEffectObj(NoteData.NoteWidth);//生成特效
-                DestroySelf(false);//销毁
+                ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
+                DestroySelf(false); //销毁
 
-                dataModule.MaxScore += data.GetFullScore();//更新理论最高分
-                dataModule.RefreshPlayingData(addCombo: 1,
-                addScore: data.GetFullScore(),
-                grade: EvaluateType.Exact, currentDeviation: float.MaxValue);//更新数据
-                return;
+                DataModule.MaxScore += Data.GetFullScore(); //更新理论最高分
+                DataModule.RefreshPlayingData(addCombo: 1,
+                    addScore: Data.GetFullScore(),
+                    grade: EvaluateType.Exact, currentDeviation: float.MaxValue); //更新数据
             }
         }
 
@@ -56,17 +55,17 @@ namespace CyanStars.Gameplay.Note
 
             if (inputType != InputType.Down) return;
 
-            viewObject.CreateEffectObj(0);//生成特效
-            DestroySelf(false);//销毁
+            ViewObject.CreateEffectObj(0); //生成特效
+            DestroySelf(false); //销毁
 
-            EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer);//获取评价类型
+            EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer); //获取评价类型
 
-            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(data, evaluateType));//Log
+            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(Data, evaluateType)); //Log
 
-            dataModule.MaxScore += data.GetFullScore();//更新理论最高分
-            dataModule.RefreshPlayingData(addCombo: 1,
-            addScore: EvaluateHelper.GetScoreWithEvaluate(evaluateType) * data.GetMagnification(),
-            grade: evaluateType, currentDeviation: LogicTimer);//更新数据
+            DataModule.MaxScore += Data.GetFullScore(); //更新理论最高分
+            DataModule.RefreshPlayingData(addCombo: 1,
+                addScore: EvaluateHelper.GetScoreWithEvaluate(evaluateType) * Data.GetMagnification(),
+                grade: evaluateType, currentDeviation: LogicTimer); //更新数据
         }
     }
 }

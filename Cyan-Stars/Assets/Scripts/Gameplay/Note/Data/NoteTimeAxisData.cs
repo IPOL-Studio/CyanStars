@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CyanStars.Gameplay.Data;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.Data
@@ -29,5 +28,3 @@ namespace CyanStars.Gameplay.Data
         public List<NoteData> NoteDatas;
     }
 }
-
-

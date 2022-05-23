@@ -1,6 +1,6 @@
+using UnityEngine;
 using CyanStars.Framework;
 using CyanStars.Framework.GameObjectPool;
-using UnityEngine;
 using CyanStars.Framework.Timeline;
 
 namespace CyanStars.Gameplay.Effect
@@ -44,17 +44,16 @@ namespace CyanStars.Gameplay.Effect
             //     Object.Instantiate(Owner.EffectNames[effectPrefabIndex], position, Quaternion.Euler(rotation));
             // effectObj.gameObject.transform.SetParent(Owner.EffectParent);
 
-            GameObject effectGO =
-                await GameRoot.GameObjectPool.AwaitGetGameObject(Owner.EffectNames[effectPrefabIndex],Owner.EffectParent);
+            GameObject effectGO = await GameRoot.GameObjectPool.AwaitGetGameObject(Owner.EffectNames[effectPrefabIndex], Owner.EffectParent);
             //effectGO.transform.SetParent(Owner.EffectParent);
             effectGO.transform.position = position;
             effectGO.transform.rotation = Quaternion.Euler(rotation);
-           
-            
+
+
             EffectObj eo = effectGO.GetComponent<EffectObj>();
-            eo.effectName = Owner.EffectNames[effectPrefabIndex];
-            eo.destroyTime = duration;
-            eo.visualEffectStartCount = particleCount;
+            eo.EffectName = Owner.EffectNames[effectPrefabIndex];
+            eo.DestroyTime = duration;
+            eo.VisualEffectStartCount = particleCount;
             eo.PlayEffect();
         }
     }

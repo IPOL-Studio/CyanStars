@@ -10,11 +10,11 @@ namespace CyanStars.Gameplay.Lrc
     public class LrcTrack : BaseTrack
     {
         public TextMeshProUGUI TxtLrc;
-        
+
         /// <summary>
         /// 片段创建方法
-        /// </summary> 
-        public static readonly CreateClipFunc<LrcTrack,LrcTrackData, LrcTimeTag> CreateClipFunc = CreateClip;
+        /// </summary>
+        public static readonly CreateClipFunc<LrcTrack, LrcTrackData, LrcTimeTag> CreateClipFunc = CreateClip;
 
         private static BaseClip<LrcTrack> CreateClip(LrcTrack track, LrcTrackData trackData, int curIndex, LrcTimeTag timeTag)
         {
@@ -22,8 +22,5 @@ namespace CyanStars.Gameplay.Lrc
             LrcClip clip = new LrcClip(time, time, track, timeTag.LyricText);
             return clip;
         }
-
-
-
     }
 }

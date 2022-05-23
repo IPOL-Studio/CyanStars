@@ -6,7 +6,6 @@ namespace CyanStars.Gameplay.Evaluate
     public enum EvaluateType
     {
         Miss,
-
         Exact,
         Great,
         Bad,

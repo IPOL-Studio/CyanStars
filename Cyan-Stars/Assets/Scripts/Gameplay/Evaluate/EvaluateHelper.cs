@@ -90,7 +90,7 @@ namespace CyanStars.Gameplay.Evaluate
             return EvaluateType.Out;
         }
 
-        public static float GetScoreWithEvaluate(EvaluateType et)//由评价获取分数倍率
+        public static float GetScoreWithEvaluate(EvaluateType et) //由评价获取分数倍率
         {
             return et switch
             {
@@ -100,7 +100,7 @@ namespace CyanStars.Gameplay.Evaluate
                 EvaluateType.Out => 0.5f,
                 EvaluateType.Bad => 0,
                 EvaluateType.Miss => 0,
-                _ => throw new System.NotImplementedException()
+                _ => throw new System.ArgumentException(nameof(et))
             };
         }
     }

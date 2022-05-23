@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using CyanStars.Gameplay.Note;
 using CyanStars.Gameplay.PromptTone;
 using UnityEngine;
@@ -16,7 +14,7 @@ namespace CyanStars.Gameplay.Data
         public const float MaxPos = 1;
         public const float MiddlePos = MaxPos / 2;
         public const float NoteWidth = 0.2f;
-        
+
         /// <summary>
         /// 音符类型
         /// </summary>
@@ -28,7 +26,7 @@ namespace CyanStars.Gameplay.Data
         /// 处于中间的位置范围在[0-1]，Break音符则左-1右2
         /// </summary>
         [Header("位置坐标")]
-        [Range(-1, 2)] 
+        [Range(-1, 2)]
         public float Pos;
 
         /// <summary>
@@ -82,4 +80,3 @@ namespace CyanStars.Gameplay.Data
         }
     }
 }
-
