@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using System.Collections;
 using CyanStars.Framework;
@@ -11,12 +10,12 @@ namespace CyanStars.Gameplay.Note
     /// </summary>
     public class ViewObject : MonoBehaviour, IView
     {
+        [SerializeField]
+        private GameObject effectPrefab;
+
         private float deltaTime;
-        public GameObject effectPrefab;
         private GameObject effectObj;
         public string PrefabName;
-        
-        
 
 
         public void OnUpdate(float deltaTime)
@@ -42,7 +41,7 @@ namespace CyanStars.Gameplay.Note
                 return;
             }
 
-            foreach (var particle in effectObj.GetComponent<NoteClickEffect>().particleSystemList)
+            foreach (var particle in effectObj.GetComponent<NoteClickEffect>().ParticleSystemList)
             {
                 particle.Stop();
             }
@@ -55,7 +54,7 @@ namespace CyanStars.Gameplay.Note
             if (!autoMove)
             {
                 //Destroy(gameObject);
-                GameRoot.GameObjectPool.ReleaseGameObject(PrefabName,gameObject);
+                GameRoot.GameObjectPool.ReleaseGameObject(PrefabName, gameObject);
                 return;
             }
 
@@ -80,7 +79,7 @@ namespace CyanStars.Gameplay.Note
                 if (timer >= 2f)
                 {
                     //Destroy(gameObject);
-                    GameRoot.GameObjectPool.ReleaseGameObject(PrefabName,gameObject);
+                    GameRoot.GameObjectPool.ReleaseGameObject(PrefabName, gameObject);
                     yield break;
                 }
 

@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d0e7e12b4d34a3ea6aab87f1a10370c, type: 3}
   m_Name: InternalMapList
   m_EditorClassIdentifier: 
-  InteralMaps:
+  InternalMaps:
   - Name: "\u6DF1\u7A7A\u65C1\u767D"
-    Time: 148000
+    Duration: 148000
     LrcFileName: Assets/BundleRes/MusicGameMap/Map_01/LrcText.txt
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_01/Music.ogg
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_01/TimelineData.asset
   - Name: "\u5E7D\u7075\u5C11\u5973"
-    Time: 205049
+    Duration: 205049
     LrcFileName: 
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_02/Music.ogg
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_02/TimelineData.asset

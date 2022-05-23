@@ -22,19 +22,15 @@ namespace CyanStars.Framework.FSM
         /// <summary>
         /// 是否已被销毁
         /// </summary>
-        public bool IsDestroyed
-        {
-            get;
-            private set;
-        }
-        
+        public bool IsDestroyed { get; private set; }
+
         public FSM(List<BaseState> states)
         {
             for (int i = 0; i < states.Count; i++)
             {
                 BaseState state = states[i];
                 state.SetOwner(this);
-                stateDict.Add(state.GetType(),state);
+                stateDict.Add(state.GetType(), state);
             }
         }
 
@@ -52,18 +48,18 @@ namespace CyanStars.Framework.FSM
         /// </summary>
         public void ChangeState(Type stateType)
         {
-            if (!stateDict.TryGetValue(stateType,out BaseState state))
+            if (!stateDict.TryGetValue(stateType, out BaseState state))
             {
                 throw new Exception($"状态切换失败，FSM的状态字典中没有此状态：{stateType}");
             }
-            
+
             Debug.Log($"状态切换：{currentState?.GetType().Name}->{stateType.Name}");
-            
+
             currentState?.OnExit();
             currentState = state;
             currentState.OnEnter();
         }
-        
+
         /// <summary>
         /// 轮询有限状态机
         /// </summary>
@@ -81,5 +77,4 @@ namespace CyanStars.Framework.FSM
             IsDestroyed = true;
         }
     }
-
 }

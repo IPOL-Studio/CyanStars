@@ -148,10 +148,10 @@ namespace CyanStars.Gameplay.Procedure
             //时间轴数据
             MapTimelineDataSO timelineDataSo = await GameRoot.Asset.AwaitLoadAsset<MapTimelineDataSO>(mapManifest.TimelineFileName, sceneRoot);
             timelineData = timelineDataSo.Data;
-            dataModule.CurTimelineLength = mapManifest.Time / 1000f;
+            dataModule.CurTimelineLength = mapManifest.Duration / 1000f;
 
             dataModule.CalFullScore(timelineData.NoteTrackData);
-            ViewHelper.CalViewTime(mapManifest.Time, timelineData.NoteTrackData);
+            ViewHelper.CalViewTime(mapManifest.Duration, timelineData.NoteTrackData);
 
             //歌词
             if (!string.IsNullOrEmpty(mapManifest.LrcFileName))
@@ -183,7 +183,7 @@ namespace CyanStars.Gameplay.Procedure
         {
             MapTimelineData data = timelineData;
 
-            Timeline timeline = new Timeline(mapManifest.Time / 1000f);
+            Timeline timeline = new Timeline(mapManifest.Duration / 1000f);
             timeline.OnStop += () =>
             {
                 this.timeline = null;
@@ -194,18 +194,15 @@ namespace CyanStars.Gameplay.Procedure
 
             //添加音符轨道
             noteTrack = timeline.AddTrack(data.NoteTrackData, NoteTrack.CreateClipFunc);
-            
+
             if (!string.IsNullOrEmpty(lrcText))
             {
                 //添加歌词轨道
                 Lyric lrc = LrcParser.Parse(lrcText);
-                LrcTrackData lrcTrackData = new LrcTrackData
-                {
-                    ClipDataList = lrc.TimeTagList
-                };
+                LrcTrackData lrcTrackData = new LrcTrackData { ClipDataList = lrc.TimeTagList };
 
                 LrcTrack lrcTrack = timeline.AddTrack(lrcTrackData, LrcTrack.CreateClipFunc);
-                lrcTrack.TxtLrc= GameRoot.UI.GetUI<MusicGameMainPanel>().TxtLrc;
+                lrcTrack.TxtLrc = GameRoot.UI.GetUI<MusicGameMainPanel>().TxtLrc;
             }
 
             //添加相机轨道
@@ -213,14 +210,11 @@ namespace CyanStars.Gameplay.Procedure
             cameraTrack.DefaultCameraPos = data.CameraTrackData.DefaultPosition;
             cameraTrack.oldRot = data.CameraTrackData.DefaultRotation;
             cameraTrack.CameraTrans = UnityEngine.Camera.main.transform;
-            
+
             //添加音乐轨道
             if (music)
             {
-                MusicTrackData musicTrackData = new MusicTrackData
-                {
-                    ClipDataList = new List<AudioClip>() {music}
-                };
+                MusicTrackData musicTrackData = new MusicTrackData { ClipDataList = new List<AudioClip>() { music } };
 
                 MusicTrack musicTrack = timeline.AddTrack(musicTrackData, MusicTrack.CreateClipFunc);
                 musicTrack.audioSource = audioSource;
@@ -228,21 +222,18 @@ namespace CyanStars.Gameplay.Procedure
 
             //添加提示音轨道
             GetLinearNoteData();
-            PromptToneTrackData promptToneTrackData = new PromptToneTrackData
-            {
-                ClipDataList = linearNoteData
-            };
-            
+            PromptToneTrackData promptToneTrackData = new PromptToneTrackData { ClipDataList = linearNoteData };
+
             PromptToneTrack promptToneTrack = timeline.AddTrack(promptToneTrackData, PromptToneTrack.CreateClipFunc);
-            promptToneTrack.audioSource = audioSource;
-            
+            promptToneTrack.AudioSource = audioSource;
+
             //添加特效轨道
             EffectTrack effectTrack = timeline.AddTrack(data.EffectTrackData, EffectTrack.CreateClipFunc);
             effectTrack.BPM = data.EffectTrackData.BPM;
             effectTrack.EffectNames = dataModule.EffectNames;
             effectTrack.EffectParent = ViewHelper.EffectRoot;
             effectTrack.ImgFrame = GameRoot.UI.GetUI<MusicGameMainPanel>().ImgFrame;
-            
+
             this.timeline = timeline;
             dataModule.RunningTimeline = timeline;
             Debug.Log("时间轴创建完毕");
@@ -273,21 +264,21 @@ namespace CyanStars.Gameplay.Procedure
             for (int i = 0; i < inputMapData.Items.Count; i++)
             {
                 InputMapData.Item item = inputMapData.Items[i];
-                if (UInput.GetKeyDown(item.key))
+                if (UInput.GetKeyDown(item.Key))
                 {
-                    pressedKeySet.Add(item.key);
+                    pressedKeySet.Add(item.Key);
                     ReceiveInput(InputType.Down, item);
                     keyViewController.KeyDown(item);
                     continue;
                 }
 
-                if (UInput.GetKey(item.key))
+                if (UInput.GetKey(item.Key))
                 {
                     ReceiveInput(InputType.Press, item);
                     continue;
                 }
 
-                if (pressedKeySet.Remove(item.key))
+                if (pressedKeySet.Remove(item.Key))
                 {
                     ReceiveInput(InputType.Up, item);
                     keyViewController.KeyUp(item);

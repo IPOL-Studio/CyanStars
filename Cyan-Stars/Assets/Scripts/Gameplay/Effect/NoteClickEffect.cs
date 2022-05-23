@@ -5,20 +5,21 @@ namespace CyanStars.Gameplay.Effect
 {
     public class NoteClickEffect : MonoBehaviour
     {
-        public bool willDestroy;
-        public float destroyTime;
+        public bool WillDestroy;
+        public float DestroyTime;
 
-        public List<ParticleSystem> particleSystemList;
+        public List<ParticleSystem> ParticleSystemList;
 
         void Start()
         {
             //Debug.Log(transform.position);
-            if (willDestroy) Destroy(gameObject, destroyTime);
+            if (WillDestroy) Destroy(gameObject, DestroyTime);
         }
 
         void Update()
         {
-            transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+            var position = transform.position;
+            transform.position = new Vector3(position.x, position.y, 0);
         }
     }
 }

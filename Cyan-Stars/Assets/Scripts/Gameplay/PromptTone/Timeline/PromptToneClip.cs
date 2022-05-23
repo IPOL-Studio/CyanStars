@@ -10,14 +10,15 @@ namespace CyanStars.Gameplay.PromptTone
     {
         private AudioClip promptTone;
 
-        public PromptToneClip(float startTime, float endTime, PromptToneTrack owner, AudioClip promptTone) : base(startTime, endTime, owner)
+        public PromptToneClip(float startTime, float endTime, PromptToneTrack owner, AudioClip promptTone) :
+            base(startTime, endTime, owner)
         {
             this.promptTone = promptTone;
         }
 
         public override void OnEnter()
         {
-            Owner.audioSource.PlayOneShot(promptTone);
+            Owner.AudioSource.PlayOneShot(promptTone);
         }
     }
 }

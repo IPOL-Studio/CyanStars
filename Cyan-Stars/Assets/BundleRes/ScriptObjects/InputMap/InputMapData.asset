@@ -14,108 +14,108 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InputMapData:
     Items:
-    - key: 113
+    - Key: 113
       RangeMin: 0
       RangeWidth: 0.075
-    - key: 119
+    - Key: 119
       RangeMin: 0.08409091
       RangeWidth: 0.075
-    - key: 101
+    - Key: 101
       RangeMin: 0.16818184
       RangeWidth: 0.075
-    - key: 114
+    - Key: 114
       RangeMin: 0.2522727
       RangeWidth: 0.075
-    - key: 116
+    - Key: 116
       RangeMin: 0.3363636
       RangeWidth: 0.075
-    - key: 121
+    - Key: 121
       RangeMin: 0.42045453
       RangeWidth: 0.075
-    - key: 117
+    - Key: 117
       RangeMin: 0.50454545
       RangeWidth: 0.075
-    - key: 105
+    - Key: 105
       RangeMin: 0.5886364
       RangeWidth: 0.075
-    - key: 111
+    - Key: 111
       RangeMin: 0.6727272
       RangeWidth: 0.075
-    - key: 112
+    - Key: 112
       RangeMin: 0.7604568
       RangeWidth: 0.075
-    - key: 91
+    - Key: 91
       RangeMin: 0.84090906
       RangeWidth: 0.075
-    - key: 93
+    - Key: 93
       RangeMin: 0.925
       RangeWidth: 0.075
-    - key: 97
+    - Key: 97
       RangeMin: 0.022129187
       RangeWidth: 0.075
-    - key: 115
+    - Key: 115
       RangeMin: 0.1062201
       RangeWidth: 0.075
-    - key: 100
+    - Key: 100
       RangeMin: 0.190311
       RangeWidth: 0.075
-    - key: 102
+    - Key: 102
       RangeMin: 0.2744019
       RangeWidth: 0.075
-    - key: 103
+    - Key: 103
       RangeMin: 0.35849282
       RangeWidth: 0.075
-    - key: 104
+    - Key: 104
       RangeMin: 0.44258374
       RangeWidth: 0.075
-    - key: 106
+    - Key: 106
       RangeMin: 0.5266746
       RangeWidth: 0.075
-    - key: 107
+    - Key: 107
       RangeMin: 0.6107655
       RangeWidth: 0.075
-    - key: 108
+    - Key: 108
       RangeMin: 0.69485646
       RangeWidth: 0.075
-    - key: 59
+    - Key: 59
       RangeMin: 0.77894735
       RangeWidth: 0.075
-    - key: 39
+    - Key: 39
       RangeMin: 0.8630383
       RangeWidth: 0.075
-    - key: 122
+    - Key: 122
       RangeMin: 0.06638756
       RangeWidth: 0.075
-    - key: 120
+    - Key: 120
       RangeMin: 0.15047847
       RangeWidth: 0.075
-    - key: 99
+    - Key: 99
       RangeMin: 0.23456937
       RangeWidth: 0.075
-    - key: 118
+    - Key: 118
       RangeMin: 0.3186603
       RangeWidth: 0.075
-    - key: 98
+    - Key: 98
       RangeMin: 0.4027512
       RangeWidth: 0.075
-    - key: 110
+    - Key: 110
       RangeMin: 0.4868421
       RangeWidth: 0.075
-    - key: 109
+    - Key: 109
       RangeMin: 0.57093304
       RangeWidth: 0.075
-    - key: 44
+    - Key: 44
       RangeMin: 0.65502393
       RangeWidth: 0.075
-    - key: 46
+    - Key: 46
       RangeMin: 0.7391148
       RangeWidth: 0.075
-    - key: 47
+    - Key: 47
       RangeMin: 0.82320577
       RangeWidth: 0.075
-    - key: 32
+    - Key: 32
       RangeMin: -1
       RangeWidth: 0.5
-    - key: 32
+    - Key: 32
       RangeMin: 2
       RangeWidth: 0.5

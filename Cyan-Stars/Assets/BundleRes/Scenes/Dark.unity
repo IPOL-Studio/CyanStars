@@ -1072,8 +1072,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e6080d3e0792ff43b3ef7a4f9eb1855, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  line: {fileID: 9219679803321507132, guid: 70f897f0e89b7b245aa8e564a86186b7, type: 3}
-  blockRain: {fileID: 2696686588806595397, guid: c8ad969b11fe5504991b7df6f9dd1235, type: 3}
+  Line: {fileID: 9219679803321507132, guid: 70f897f0e89b7b245aa8e564a86186b7, type: 3}
+  BlockRain: {fileID: 2696686588806595397, guid: c8ad969b11fe5504991b7df6f9dd1235, type: 3}
 --- !u!4 &1138458552
 Transform:
   m_ObjectHideFlags: 0
@@ -1131,8 +1131,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 295499e69ee6c6a4cb5a6b004fada11c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ns_ka: {fileID: 8300000, guid: a540c468fb4b24143b988316415511e9, type: 3}
-  na_ding: {fileID: 8300000, guid: f1fbe14f0384b7145ade582b22d0f5f5, type: 3}
+  nsKa: {fileID: 8300000, guid: a540c468fb4b24143b988316415511e9, type: 3}
+  naDing: {fileID: 8300000, guid: f1fbe14f0384b7145ade582b22d0f5f5, type: 3}
 --- !u!1 &1334202026
 GameObject:
   m_ObjectHideFlags: 0

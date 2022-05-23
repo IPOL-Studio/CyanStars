@@ -1,14 +1,11 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
 using CyanStars.Framework;
 using CyanStars.Framework.UI;
-using CyanStars.Gameplay.Evaluate;
 using CyanStars.Gameplay.Event;
-using TMPro;
-using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
+using CyanStars.Gameplay.Evaluate;
 
 namespace CyanStars.Gameplay.UI
 {
@@ -23,25 +20,25 @@ namespace CyanStars.Gameplay.UI
         public TextMeshProUGUI TxtAccuracy;
         public TextMeshProUGUI TxtScoreRatio;
         public TextMeshProUGUI TxtVisibleScore;
-        
+
         private MusicGameModule dataModule;
-        
+
         protected override void OnCreate()
         {
             dataModule = GameRoot.GetDataModule<MusicGameModule>();
         }
 
-        
+
         public override void OnOpen()
         {
-            GameRoot.Event.AddListener(EventConst.MusicGameDataRefreshEvent,OnMusicGameDataRefresh);
+            GameRoot.Event.AddListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
         }
 
         public override void OnClose()
         {
-            GameRoot.Event.RemoveListener(EventConst.MusicGameDataRefreshEvent,OnMusicGameDataRefresh);
+            GameRoot.Event.RemoveListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
         }
-        
+
         /// <summary>
         /// 音游数据刷新回调
         /// </summary>
@@ -57,7 +54,7 @@ namespace CyanStars.Gameplay.UI
             else
             {
                 TxtGrade.text = dataModule.Grade.ToString();
-                
+
                 switch (dataModule.Grade)
                 {
                     case EvaluateType.Miss:
@@ -78,13 +75,13 @@ namespace CyanStars.Gameplay.UI
                         break;
                 }
             }
-            
+
             color.a = 1;
             TxtGrade.color = color;
             TxtGrade.fontSize = 12;
             StopAllCoroutines();
             StartCoroutine(FadeGradeTMP());
-            
+
             //刷新杂率
             float accuracy = 0, sum = 0;
             if (dataModule.DeviationList.Count > 0)
@@ -101,16 +98,17 @@ namespace CyanStars.Gameplay.UI
 
             if (accuracy < 0.03)
             {
-                TxtAccuracy.color =  Color.yellow;
-            }else if (accuracy < 0.05)
+                TxtAccuracy.color = Color.yellow;
+            }
+            else if (accuracy < 0.05)
             {
-                TxtAccuracy.color =  Color.blue;
+                TxtAccuracy.color = Color.blue;
             }
             else
             {
-                TxtAccuracy.color =   Color.white;
+                TxtAccuracy.color = Color.white;
             }
-            
+
             //刷新得分率
             float scoreRatio = 0;
             if (dataModule.MaxScore > 0)
@@ -119,7 +117,7 @@ namespace CyanStars.Gameplay.UI
             }
 
             TxtScoreRatio.text = $"{(scoreRatio * 100):F}%";
-          
+
             if (dataModule.GreatNum + dataModule.RightNum + dataModule.BadNum +
                 dataModule.MissNum == 0)
             {
@@ -136,24 +134,24 @@ namespace CyanStars.Gameplay.UI
                     TxtScoreRatio.color = Color.white;
                 }
             }
-            
+
             //刷新当前分数
-            TxtVisibleScore.text =
-                ((int)(dataModule.Score /  dataModule.FullScore * 100000)).ToString().PadLeft(6, '0'); //更新文本
+            TxtVisibleScore.text = ((int)(dataModule.Score / dataModule.FullScore * 100000)).ToString().PadLeft(6, '0'); //更新文本
         }
+
         private IEnumerator FadeGradeTMP()
         {
             yield return new WaitForSeconds(0.1f);
-            
-            Color GradeColor = TxtGrade.color;
+
+            Color gradeColor = TxtGrade.color;
             TxtGrade.fontSize = 11;
 
             float a = 1;
             while (a >= 0)
             {
                 a -= Time.deltaTime;
-                GradeColor.a = a;
-                TxtGrade.color = GradeColor;
+                gradeColor.a = a;
+                TxtGrade.color = gradeColor;
                 yield return null;
             }
         }

@@ -1,7 +1,7 @@
-using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 using CyanStars.Gameplay.Misc;
 
 namespace CyanStars.Gameplay.Effect
@@ -14,36 +14,58 @@ namespace CyanStars.Gameplay.Effect
 
     public class SkyboxControllerSo : MonoBehaviour
     {
-        [Header("开始按钮")] public Button startButton;
+        [Header("开始按钮")]
+        public Button StartButton;
 
-        [Header("Skybox")] public Skybox skybox;
+        [Header("Skybox")]
+        public Skybox Skybox;
 
-        [Header("BPM")] public float bpm;
+        [Header("BPM")]
+        public float BPM;
 
-        [Header("默认亮度")] public float defaultBrightness;
-        [Header("默认角度")] public float defaultAngle;
+        [Header("默认亮度")]
+        public float DefaultBrightness;
+
+        [Header("默认角度")]
+        public float DefaultAngle;
 
         [System.Serializable]
         public class TwinkleKeyFrame
         {
-            [Header("时间")] public float time;
-            [Header("类型")] public TwinkleType type;
-            [Header("持续时间（仅对TwinkleBreath生效）")] public float duration;
-            [Header("最小亮度（仅对TwinkleBreath生效）")] public float minIntensity;
-            [Header("最大亮度（仅对TwinkleBreath生效）")] public float maxIntensity;
+            [Header("时间")]
+            public float Time;
+
+            [Header("类型")]
+            public TwinkleType Type;
+
+            [Header("持续时间（仅对TwinkleBreath生效）")]
+            public float Duration;
+
+            [Header("最小亮度（仅对TwinkleBreath生效）")]
+            public float MinIntensity;
+
+            [Header("最大亮度（仅对TwinkleBreath生效）")]
+            public float MaxIntensity;
         }
 
         [System.Serializable]
         public class RevolveKeyFrame
         {
-            [Header("时间")] public float time;
-            [Header("角度")] public float angle;
-            [Header("缓动类型")] public SmoothFuncationType easeType;
+            [Header("时间")]
+            public float Time;
+
+            [Header("角度")]
+            public float Angle;
+
+            [Header("缓动类型")]
+            public SmoothFunctionType EaseType;
         }
 
-        [Header("旋转关键帧")] public List<RevolveKeyFrame> revolveKeyFrames;
+        [Header("旋转关键帧")]
+        public List<RevolveKeyFrame> RevolveKeyFrames;
 
-        [Header("闪烁关键帧")] public List<TwinkleKeyFrame> twinkleKeyFrames;
+        [Header("闪烁关键帧")]
+        public List<TwinkleKeyFrame> TwinkleKeyFrames;
 
         private float currentTime = 0;
         private float currentAngle = 0;
@@ -51,17 +73,17 @@ namespace CyanStars.Gameplay.Effect
         private int revolveIndex = 0;
         private int twinkleIndex = 0;
         private bool isStart = false;
-        public bool onRevolve = false;
+        public bool IsRevolving = false;
 
         void Start()
         {
-            startButton.onClick.AddListener(OnStartButtonClick);
-            for (var i = 0; i < twinkleKeyFrames.Count; i++)
+            StartButton.onClick.AddListener(OnStartButtonClick);
+            for (var i = 0; i < TwinkleKeyFrames.Count; i++)
             {
-                if (twinkleKeyFrames[i].type == TwinkleType.TwinkleBreath)
+                if (TwinkleKeyFrames[i].Type == TwinkleType.TwinkleBreath)
                 {
                     //提前从波谷入场
-                    twinkleKeyFrames[i].time = Mathf.Max(0, twinkleKeyFrames[i].time - 30000 / bpm);
+                    TwinkleKeyFrames[i].Time = Mathf.Max(0, TwinkleKeyFrames[i].Time - 30000 / BPM);
                 }
             }
         }
@@ -72,8 +94,8 @@ namespace CyanStars.Gameplay.Effect
             currentTime = 0;
             currentAngle = 0;
             revolveIndex = 0;
-            skybox.material.SetFloat("_Rotation", defaultAngle);
-            skybox.material.SetFloat("_Exposure", defaultBrightness);
+            Skybox.material.SetFloat("_Rotation", DefaultAngle);
+            Skybox.material.SetFloat("_Exposure", DefaultBrightness);
         }
 
         void Update()
@@ -81,23 +103,23 @@ namespace CyanStars.Gameplay.Effect
             //currentTime = GameManager.Instance.TimelineTime * 1000;
             if (isStart)
             {
-                if (revolveIndex < revolveKeyFrames.Count)
+                if (revolveIndex < RevolveKeyFrames.Count)
                 {
-                    if (!onRevolve)
+                    if (!IsRevolving)
                     {
-                        StartCoroutine(Revolve(revolveKeyFrames[revolveIndex].angle,
-                            revolveKeyFrames[revolveIndex].time - revolveTimer,
-                            revolveKeyFrames[revolveIndex].easeType));
+                        StartCoroutine(Revolve(RevolveKeyFrames[revolveIndex].Angle,
+                            RevolveKeyFrames[revolveIndex].Time - revolveTimer,
+                            RevolveKeyFrames[revolveIndex].EaseType));
                         revolveIndex++;
                     }
                 }
 
-                if (twinkleIndex < twinkleKeyFrames.Count)
+                if (twinkleIndex < TwinkleKeyFrames.Count)
                 {
-                    if (currentTime >= twinkleKeyFrames[twinkleIndex].time)
+                    if (currentTime >= TwinkleKeyFrames[twinkleIndex].Time)
                     {
-                        StartCoroutine(TwinkleBreath(twinkleKeyFrames[twinkleIndex].minIntensity,
-                            twinkleKeyFrames[twinkleIndex].maxIntensity, twinkleKeyFrames[twinkleIndex].duration));
+                        StartCoroutine(TwinkleBreath(TwinkleKeyFrames[twinkleIndex].MinIntensity,
+                            TwinkleKeyFrames[twinkleIndex].MaxIntensity, TwinkleKeyFrames[twinkleIndex].Duration));
                         twinkleIndex++;
                     }
                 }
@@ -110,16 +132,16 @@ namespace CyanStars.Gameplay.Effect
             while (currentTime - timePoint < duration)
             {
                 float intensity =
-                    (0.5f * Mathf.Cos(bpm * 2 * Mathf.PI * (currentTime - timePoint - 30000 / bpm) / 60000) + 0.5f)
+                    (0.5f * Mathf.Cos(BPM * 2 * Mathf.PI * (currentTime - timePoint - 30000 / BPM) / 60000) + 0.5f)
                     * maxIntensity + minIntensity;
-                skybox.material.SetFloat("_Exposure", intensity);
+                Skybox.material.SetFloat("_Exposure", intensity);
                 yield return null;
             }
         }
 
-        IEnumerator Revolve(float angle, float dTime, SmoothFuncationType easeType)
+        IEnumerator Revolve(float angle, float dTime, SmoothFunctionType easeType)
         {
-            onRevolve = true;
+            IsRevolving = true;
             float timer = 0; //计时器
 
             while (timer <= dTime)
@@ -127,31 +149,28 @@ namespace CyanStars.Gameplay.Effect
                 timer += Time.deltaTime * 1000; //计时器加上时间(ms)
                 switch (easeType) //缓动
                 {
-                    case SmoothFuncationType.Linear:
-                        skybox.material.SetFloat("_Rotation", LinearFunction(currentAngle, angle, timer, dTime));
+                    case SmoothFunctionType.Linear:
+                        Skybox.material.SetFloat("_Rotation", LinearFunction(currentAngle, angle, timer, dTime));
                         break;
-                    case SmoothFuncationType.SineaseIn:
-                        skybox.material.SetFloat("_Rotation", SinFunctionEaseIn(currentAngle, angle, timer, dTime));
+                    case SmoothFunctionType.SineaseIn:
+                        Skybox.material.SetFloat("_Rotation", SinFunctionEaseIn(currentAngle, angle, timer, dTime));
                         break;
-                    case SmoothFuncationType.SineaseOut:
-                        skybox.material.SetFloat("_Rotation", SinFunctionEaseOut(currentAngle, angle, timer, dTime));
+                    case SmoothFunctionType.SineaseOut:
+                        Skybox.material.SetFloat("_Rotation", SinFunctionEaseOut(currentAngle, angle, timer, dTime));
                         break;
-                    case SmoothFuncationType.SineaseInOut:
-                        skybox.material.SetFloat("_Rotation", SinFunctionEaseInOut(currentAngle, angle, timer, dTime));
+                    case SmoothFunctionType.SineaseInOut:
+                        Skybox.material.SetFloat("_Rotation", SinFunctionEaseInOut(currentAngle, angle, timer, dTime));
                         break;
-                    case SmoothFuncationType.BackeaseIn:
-                        skybox.material.SetFloat("_Rotation", BackEaseIn(currentAngle, angle, timer, dTime));
+                    case SmoothFunctionType.BackeaseIn:
+                        Skybox.material.SetFloat("_Rotation", BackEaseIn(currentAngle, angle, timer, dTime));
                         break;
-
                 }
 
-                onRevolve = false;
+                IsRevolving = false;
                 yield return null;
             }
 
             currentAngle = angle;
-
-            yield break;
         }
 
         // b:开始值  e:结束值 t:当前时间，dt:持续时间
