@@ -16,10 +16,7 @@ namespace CyanStars.Framework.Asset
         public static Task<bool> AwaitCheckPackageManifest(this AssetManager self)
         {
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-            self.CheckPackageManifest((success) =>
-            {
-                tcs.SetResult(success);
-            });
+            self.CheckPackageManifest(success => tcs.SetResult(success));
             return tcs.Task;
         }
 

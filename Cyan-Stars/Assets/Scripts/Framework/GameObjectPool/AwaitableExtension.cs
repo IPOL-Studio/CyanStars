@@ -14,10 +14,7 @@ namespace CyanStars.Framework.GameObjectPool
         public static Task<GameObject> AwaitGetGameObject(this GameObjectPoolManager self, string prefabName, Transform parent)
         {
             TaskCompletionSource<GameObject> tcs = new TaskCompletionSource<GameObject>();
-            self.GetGameObject(prefabName, parent, (go) =>
-            {
-                tcs.SetResult(go);
-            });
+            self.GetGameObject(prefabName, parent, go => tcs.SetResult(go));
             return tcs.Task;
         }
 
@@ -27,10 +24,7 @@ namespace CyanStars.Framework.GameObjectPool
         public static Task<GameObject> AwaitGetGameObject(this GameObjectPoolManager self, GameObject template, Transform parent)
         {
             TaskCompletionSource<GameObject> tcs = new TaskCompletionSource<GameObject>();
-            self.GetGameObject(template, parent, (go) =>
-            {
-                tcs.SetResult(go);
-            });
+            self.GetGameObject(template, parent, (go) => { tcs.SetResult(go); });
             return tcs.Task;
         }
     }

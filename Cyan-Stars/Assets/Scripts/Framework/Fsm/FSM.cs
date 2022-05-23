@@ -22,11 +22,7 @@ namespace CyanStars.Framework.FSM
         /// <summary>
         /// 是否已被销毁
         /// </summary>
-        public bool IsDestroyed
-        {
-            get;
-            private set;
-        }
+        public bool IsDestroyed { get; private set; }
 
         public FSM(List<BaseState> states)
         {

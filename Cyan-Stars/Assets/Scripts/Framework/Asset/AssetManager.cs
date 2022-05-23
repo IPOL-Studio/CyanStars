@@ -11,10 +11,7 @@ namespace CyanStars.Framework.Asset
     /// </summary>
     public class AssetManager : BaseManager
     {
-        public override int Priority
-        {
-            get;
-        }
+        public override int Priority { get; }
 
         /// <summary>
         /// 运行模式
