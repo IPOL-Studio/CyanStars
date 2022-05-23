@@ -1,0 +1,157 @@
+﻿root = true
+
+[*]
+indent_style = space
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.cs]
+indent_size = 4
+max_line_length = 120
+
+# dotnet
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+csharp_space_after_cast = false
+csharp_space_before_colon_in_inheritance_clause = true
+csharp_space_after_colon_in_inheritance_clause = true
+csharp_space_around_binary_operators = before_and_after
+
+# resharper
+csharp_place_accessorholder_attribute_on_same_line = false
+csharp_place_field_attribute_on_same_line = false
+
+# 在逗号右边插入空格
+csharp_space_after_comma = true
+
+# 首选语言内置 keyword 而非类型名称
+dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
+dotnet_style_predefined_type_for_member_access = true:suggestion
+
+# 将语句和成员声明保留在不同行上
+csharp_preserve_single_line_statements = false
+
+# 不在 [] 的左边和中间插入空格
+csharp_space_before_open_square_brackets = false
+csharp_space_between_empty_square_brackets = false
+
+# 删除非空 [] 中的空格
+csharp_space_between_square_brackets = false
+
+# for 语句分号
+csharp_space_before_semicolon_in_for_statement = false
+csharp_space_after_semicolon_in_for_statement = true
+
+# 禁用 var 建议
+csharp_style_var_elsewhere = false:silent
+csharp_style_var_for_built_in_types = false:silent
+csharp_style_var_when_type_is_apparent = false:silent
+
+# 内联 out 变量声明
+csharp_style_inlined_variable_declaration = true
+
+# new line
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+
+# 只有一行代码时不使用大括号 (e.g: if(condition) action() )
+csharp_prefer_braces = false
+
+# private field
+dotnet_naming_rule.private_field.style = private_field
+dotnet_naming_rule.private_field.severity = warning
+dotnet_naming_rule.private_field.symbols = private_field
+
+dotnet_naming_style.private_field.required_prefix =
+dotnet_naming_style.private_field.required_suffix =
+dotnet_naming_style.private_field.word_separator =
+dotnet_naming_style.private_field.capitalization = camel_case
+
+dotnet_naming_symbols.private_field.applicable_kinds = field
+dotnet_naming_symbols.private_field.applicable_accessibilities = *
+
+# public field
+dotnet_naming_rule.public_field.style = public_field
+dotnet_naming_rule.public_field.severity = warning
+dotnet_naming_rule.public_field.symbols = public_field
+
+dotnet_naming_style.public_field.required_prefix =
+dotnet_naming_style.public_field.required_suffix =
+dotnet_naming_style.public_field.word_separator =
+dotnet_naming_style.public_field.capitalization = pascal_case
+
+dotnet_naming_symbols.public_field.applicable_kinds = field
+dotnet_naming_symbols.public_field.applicable_accessibilities = public, protected, internal
+
+# property namespace class struct enum method delegate
+dotnet_naming_rule.property.style = property
+dotnet_naming_rule.property.severity = warning
+dotnet_naming_rule.property.symbols = property
+
+dotnet_naming_style.property.required_prefix =
+dotnet_naming_style.property.required_suffix =
+dotnet_naming_style.property.word_separator =
+dotnet_naming_style.property.capitalization = pascal_case
+
+dotnet_naming_symbols.property.applicable_kinds = property, namespace, class, struct, enum, method, delegate
+dotnet_naming_symbols.property.applicable_accessibilities = *
+
+# interface
+dotnet_naming_rule.interface.style = interface
+dotnet_naming_rule.interface.severity = warning
+dotnet_naming_rule.interface.symbols = interface
+
+dotnet_naming_style.interface.required_prefix = I
+dotnet_naming_style.interface.required_suffix =
+dotnet_naming_style.interface.word_separator =
+dotnet_naming_style.interface.capitalization = pascal_case
+
+dotnet_naming_symbols.interface.applicable_kinds = interface
+dotnet_naming_symbols.interface.applicable_accessibilities = *
+
+# event
+dotnet_naming_rule.event.style = event
+dotnet_naming_rule.event.severity = warning
+dotnet_naming_rule.event.symbols = event
+
+dotnet_naming_style.event.required_prefix = On
+dotnet_naming_style.event.required_suffix =
+dotnet_naming_style.event.word_separator =
+dotnet_naming_style.event.capitalization = pascal_case
+
+dotnet_naming_symbols.event.applicable_kinds = event
+dotnet_naming_symbols.event.applicable_accessibilities = *
+
+# const
+dotnet_naming_rule.const.style = const
+dotnet_naming_rule.const.severity = warning
+dotnet_naming_rule.const.symbols = const
+
+dotnet_naming_style.const.required_prefix =
+dotnet_naming_style.const.required_suffix =
+dotnet_naming_style.const.word_separator =
+dotnet_naming_style.const.capitalization = pascal_case
+
+dotnet_naming_symbols.const.applicable_kinds = field
+dotnet_naming_symbols.const.applicable_accessibilities = *
+dotnet_naming_symbols.const.required_modifiers = const
+
+# readonly
+dotnet_naming_rule.readonly.style = readonly
+dotnet_naming_rule.readonly.severity = warning
+dotnet_naming_rule.readonly.symbols = readonly
+
+dotnet_naming_style.readonly.required_prefix =
+dotnet_naming_style.readonly.required_suffix =
+dotnet_naming_style.readonly.word_separator =
+dotnet_naming_style.readonly.capitalization = pascal_case
+
+dotnet_naming_symbols.readonly.applicable_kinds = field
+dotnet_naming_symbols.readonly.applicable_accessibilities = *
+dotnet_naming_symbols.readonly.required_modifiers = readonly
