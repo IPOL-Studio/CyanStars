@@ -42,7 +42,7 @@ namespace CyanStars.Framework.UI
         /// <summary>
         /// 打开UI
         /// </summary>
-        public void OpenUI<T>(UIDataAttribute uiData, Action<T> callback) where T : BaseUIPanel
+        public void OpenUIPanel<T>(UIDataAttribute uiData, Action<T> callback) where T : BaseUIPanel
         {
             GameRoot.GameObjectPool.GetGameObject(uiData.UIPrefabName, UIRoot.transform, (go) =>
             {
@@ -96,7 +96,7 @@ namespace CyanStars.Framework.UI
         /// <summary>
         /// 获取UI
         /// </summary>
-        public T GetUI<T>() where T : BaseUIPanel
+        public T GetUIPanel<T>() where T : BaseUIPanel
         {
             for (int i = 0; i < uiPanels.Count; i++)
             {

@@ -27,12 +27,12 @@ namespace CyanStars.Framework.UI
         /// <summary>
         /// UI组名->UI组
         /// </summary>
-        private Dictionary<string, UIGroup> uiGroupDict = new Dictionary<string, UIGroup>();
+        private readonly Dictionary<string, UIGroup> uiGroupDict = new Dictionary<string, UIGroup>();
 
         /// <summary>
         /// UI面板->UI面板数据
         /// </summary>
-        private Dictionary<Type, UIDataAttribute> uiDataDict = new Dictionary<Type, UIDataAttribute>();
+        private readonly Dictionary<Type, UIDataAttribute> uiDataDict = new Dictionary<Type, UIDataAttribute>();
 
         /// <inheritdoc />
         public override int Priority { get; }
@@ -40,6 +40,7 @@ namespace CyanStars.Framework.UI
         /// <inheritdoc />
         public override void OnInit()
         {
+            //计算各UI组深度
             for (int i = 0; i < UIGroups.Count; i++)
             {
                 UIGroup group = UIGroups[i];
@@ -56,26 +57,26 @@ namespace CyanStars.Framework.UI
         /// <summary>
         /// 打开UI面板
         /// </summary>
-        public void OpenUI<T>(Action<T> callback) where T : BaseUIPanel
+        public void OpenUIPanel<T>(Action<T> callback) where T : BaseUIPanel
         {
             UIGroup uiGroup = GetUIGroup<T>(out UIDataAttribute uiData);
-            uiGroup.OpenUI(uiData, callback);
+            uiGroup.OpenUIPanel(uiData, callback);
         }
 
         /// <summary>
         /// 关闭UI面板
         /// </summary>
-        public void CloseUI<T>() where T : BaseUIPanel
+        public void CloseUIPanel<T>() where T : BaseUIPanel
         {
             UIGroup uiGroup = GetUIGroup<T>(out UIDataAttribute uiData);
-            T uiPanel = uiGroup.GetUI<T>();
-            CloseUI(uiPanel);
+            T uiPanel = uiGroup.GetUIPanel<T>();
+            CloseUIPanel(uiPanel);
         }
 
         /// <summary>
         /// 关闭UI面板
         /// </summary>
-        public void CloseUI<T>(T uiPanel) where T : BaseUIPanel
+        public void CloseUIPanel<T>(T uiPanel) where T : BaseUIPanel
         {
             UIGroup uiGroup = GetUIGroup<T>(out UIDataAttribute uiData);
             uiGroup.CloseUI(uiData, uiPanel);
@@ -87,7 +88,7 @@ namespace CyanStars.Framework.UI
         public T GetUI<T>() where T : BaseUIPanel
         {
             UIGroup uiGroup = GetUIGroup<T>(out UIDataAttribute uiData);
-            return uiGroup.GetUI<T>();
+            return uiGroup.GetUIPanel<T>();
         }
 
         /// <summary>
@@ -124,6 +125,78 @@ namespace CyanStars.Framework.UI
             }
 
             return uiData;
+        }
+
+        /// <summary>
+        /// 使用预制体名获取UIItem
+        /// </summary>
+        public void GetUIItem<T>(string prefabName, Transform parent, Action<T> callback) where T : BaseUIItem
+        {
+            GameRoot.GameObjectPool.GetGameObject(prefabName, parent, (go) =>
+            {
+                T item = OnGetUIItem(callback, go);
+
+                item.PrefabName = prefabName;
+            });
+        }
+
+        /// <summary>
+        /// 使用模板获取UIItem
+        /// </summary>
+        public void GetUIItem<T>(GameObject itemTemplate, Transform parent, Action<T> callback) where T : BaseUIItem
+        {
+            GameRoot.GameObjectPool.GetGameObject(itemTemplate, parent, (go) =>
+            {
+                T item = OnGetUIItem(callback, go);
+
+                item.Template = itemTemplate;
+            });
+        }
+
+        /// <summary>
+        /// 从对象池中获取UIItem时调用
+        /// </summary>
+        private T OnGetUIItem<T>(Action<T> callback, GameObject go) where T : BaseUIItem
+        {
+            T item = go.GetComponent<T>();
+            item.OnShow();
+            callback?.Invoke(item);
+            return item;
+        }
+
+        /// <summary>
+        /// 将列表中的UIItem归还到对象池中
+        /// </summary>
+        public void ReleaseUIItems(List<BaseUIItem> items)
+        {
+            //归还所有Item到对象池中
+            foreach (BaseUIItem item in items)
+            {
+                ReleaseUIItem(item);
+            }
+
+            items.Clear();
+        }
+
+
+        /// <summary>
+        /// 将UIItem归还到对象池中
+        /// </summary>
+        public void ReleaseUIItem(BaseUIItem item)
+        {
+            item.OnHide();
+
+            if (string.IsNullOrEmpty(item.PrefabName))
+            {
+                GameRoot.GameObjectPool.ReleaseGameObject(item.PrefabName, item.gameObject);
+            }
+            else
+            {
+                GameRoot.GameObjectPool.ReleaseGameObject(item.Template, item.gameObject);
+            }
+
+            item.PrefabName = null;
+            item.Template = null;
         }
     }
 }

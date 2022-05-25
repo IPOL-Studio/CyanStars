@@ -172,8 +172,8 @@ namespace CyanStars.Gameplay.Procedure
         /// </summary>
         private void OpenMusicGameUI()
         {
-            GameRoot.UI.OpenUI<MusicGameMainPanel>(null);
-            GameRoot.UI.OpenUI<MusicGame3DUIPanel>(null);
+            GameRoot.UI.OpenUIPanel<MusicGameMainPanel>(null);
+            GameRoot.UI.OpenUIPanel<MusicGame3DUIPanel>(null);
         }
 
         /// <summary>
