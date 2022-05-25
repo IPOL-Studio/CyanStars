@@ -105,38 +105,44 @@ namespace CyanStars.Framework.GameObjectPool
         /// </summary>
         public void GetGameObject(string prefabName, Transform parent, Action<GameObject> callback)
         {
-            if (!loadedPrefabDict.ContainsKey(prefabName))
-            {
-                //此prefab未加载过，先加载
-                GameRoot.Asset.LoadAsset(prefabName, (success, obj) =>
-                {
-                    if (success)
-                    {
-                        if (obj is GameObject prefab)
-                        {
-                            GetGameObject(prefab, parent, callback);
-
-                            //这里还得再进行一次判断，因为如果一帧调用多次GetGameObject的话是会多次回调到这里的
-                            if (!loadedPrefabDict.ContainsKey(prefabName))
-                            {
-                                GameObject root = poolDict[prefab].Root.gameObject;
-                                AssetBinder assetBinder = root.AddComponent<AssetBinder>();
-                                assetBinder.BindTo(prefab);
-                                loadedPrefabDict.Add(prefabName, prefab);
-                            }
-                        }
-                        else
-                        {
-                            GameRoot.Asset.UnloadAsset(obj);
-                            Debug.LogError($"GetGameObject调用失败,{prefabName}不是一个GameObject");
-                        }
-                    }
-                });
-            }
-            else
+            if (loadedPrefabDict.ContainsKey(prefabName))
             {
                 GetGameObject(loadedPrefabDict[prefabName], parent, callback);
+                return;
             }
+
+            //此prefab未加载过，先加载
+            GameRoot.Asset.LoadAsset(prefabName, (success, obj) =>
+            {
+                if (!success)
+                {
+                    return;
+                }
+
+                if (!(obj is GameObject prefab))
+                {
+                    GameRoot.Asset.UnloadAsset(obj);
+                    Debug.LogError($"GetGameObject调用失败,{prefabName}不是一个GameObject");
+                    return;
+                }
+
+                GetGameObject(prefab, parent, callback);
+
+                //进行prefab资源绑定
+                //这里还得再进行一次判断，因为如果一帧调用多次GetGameObject的话是会多次回调到这里的
+                if (!loadedPrefabDict.ContainsKey(prefabName))
+                {
+                    GameObject root = poolDict[prefab].Root.gameObject;
+                    AssetBinder assetBinder = root.AddComponent<AssetBinder>();
+                    assetBinder.BindTo(prefab);
+                    loadedPrefabDict.Add(prefabName, prefab);
+                }
+                else
+                {
+                    Debug.LogError(prefabName + "重复调用了LoadAsset");
+                }
+            });
+
         }
 
         /// <summary>
