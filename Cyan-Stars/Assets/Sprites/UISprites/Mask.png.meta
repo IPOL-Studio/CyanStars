@@ -1,19 +1,7 @@
 fileFormatVersion: 2
 guid: 1a22c7aba95977c4b9ba4d496b998c57
 TextureImporter:
-  internalIDToNameTable:
-  - first:
-      213: 4996669372412906663
-    second: CoverCover_0
-  - first:
-      213: 761646356874752752
-    second: CoverCover_1
-  - first:
-      213: -4166580829966953713
-    second: Mask_0
-  - first:
-      213: -710117256364220538
-    second: Mask_1
+  internalIDToNameTable: []
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -53,9 +41,9 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
-  spriteMeshType: 0
+  spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
@@ -113,49 +101,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: Mask_0
-      rect:
-        serializedVersion: 2
-        x: 72
-        y: 694
-        width: 1920
-        height: 480
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f031ed58fc45d26c0800000000000000
-      internalID: -4166580829966953713
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Mask_1
-      rect:
-        serializedVersion: 2
-        x: 59
-        y: 94
-        width: 1920
-        height: 480
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 68f19812e182526f0800000000000000
-      internalID: -710117256364220538
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     physicsShape: []
     bones: []
