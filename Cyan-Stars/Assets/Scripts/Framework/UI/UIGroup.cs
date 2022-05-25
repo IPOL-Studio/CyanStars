@@ -62,7 +62,7 @@ namespace CyanStars.Framework.UI
         /// <summary>
         /// 关闭UI
         /// </summary>
-        public void CloseUI(UIDataAttribute uiData, BaseUIPanel uiPanel)
+        public void CloseUIPanel(UIDataAttribute uiData, BaseUIPanel uiPanel)
         {
             uiPanel.OnClose();
 

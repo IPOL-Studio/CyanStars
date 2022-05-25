@@ -79,7 +79,7 @@ namespace CyanStars.Framework.UI
         public void CloseUIPanel<T>(T uiPanel) where T : BaseUIPanel
         {
             UIGroup uiGroup = GetUIGroup<T>(out UIDataAttribute uiData);
-            uiGroup.CloseUI(uiData, uiPanel);
+            uiGroup.CloseUIPanel(uiData, uiPanel);
         }
 
         /// <summary>
