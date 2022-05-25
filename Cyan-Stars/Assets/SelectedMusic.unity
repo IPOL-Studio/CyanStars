@@ -294,6 +294,7 @@ RectTransform:
   - {fileID: 1992009283}
   - {fileID: 16842035}
   - {fileID: 1589206100}
+  - {fileID: 1838900324}
   - {fileID: 1523229680}
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -672,7 +673,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1589206100}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -5466,7 +5467,7 @@ RectTransform:
   - {fileID: 625096596}
   - {fileID: 1588574415}
   m_Father: {fileID: 4164232}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -5731,7 +5732,6 @@ RectTransform:
   - {fileID: 1581726835}
   - {fileID: 446370136}
   - {fileID: 1930084607}
-  - {fileID: 1838900324}
   - {fileID: 110527018}
   m_Father: {fileID: 4164232}
   m_RootOrder: 4
@@ -6862,7 +6862,7 @@ GameObject:
   - component: {fileID: 1838900326}
   - component: {fileID: 1838900325}
   m_Layer: 5
-  m_Name: SwitchButton
+  m_Name: SwitchVerButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6875,7 +6875,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1838900323}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -6883,11 +6883,11 @@ RectTransform:
   - {fileID: 697655372}
   - {fileID: 637016054}
   - {fileID: 1610840143}
-  m_Father: {fileID: 1589206100}
-  m_RootOrder: 3
+  m_Father: {fileID: 4164232}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.16666667, y: 1}
+  m_AnchorMin: {x: 0.69040406, y: 0.09259259}
+  m_AnchorMax: {x: 0.7308081, y: 0.2037037}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
