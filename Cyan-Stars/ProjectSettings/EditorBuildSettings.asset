@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/CyanStarsEntry.unity
     guid: e21b4dcbcd173e948a9b4e98f0ea5516
   - enabled: 1
