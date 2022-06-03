@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace CyanStars.Gameplay.Misc
 {
-    public static class SmoothFunction
+    public static class EasingFunction
     {
         // b:开始值  e:结束值 t:当前时间，dt:持续时间
 

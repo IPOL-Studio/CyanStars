@@ -40,7 +40,7 @@ namespace CyanStars.Gameplay.Note
         {
             base.Init(data, layer);
 
-            holdLength = (data.HoldEndTime - data.StartTime) / 1000f;
+            holdLength = (data.HoldEndTime - data.JudgeTime) / 1000f;
             //hold结束时间点与长度相同
             holdCheckInputEndTime = -holdLength;
         }

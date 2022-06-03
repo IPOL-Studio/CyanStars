@@ -16,7 +16,7 @@ namespace CyanStars.Gameplay.Logger
 
         public string GetJudgeInfo()
         {
-            return $"{noteData.Type}音符{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}";
+            return $"{noteData.Type}音符{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.JudgeTime}";
         }
     }
 
@@ -35,7 +35,7 @@ namespace CyanStars.Gameplay.Logger
 
         public string GetJudgeInfo()
         {
-            return $"Click尾判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}, 按住时间{holdTime}";
+            return $"Click尾判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.JudgeTime}, 按住时间{holdTime}";
         }
     }
 
@@ -52,7 +52,7 @@ namespace CyanStars.Gameplay.Logger
 
         public string GetJudgeInfo()
         {
-            return $"Click头判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}";
+            return $"Click头判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.JudgeTime}";
         }
     }
 
@@ -74,7 +74,7 @@ namespace CyanStars.Gameplay.Logger
         public string GetJudgeInfo()
         {
             return
-                $"Hold尾判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}, 结束时间{noteData.HoldEndTime}, 按住时间{holdTime}, 按住比例{holdRatio}";
+                $"Hold尾判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.JudgeTime}, 结束时间{noteData.HoldEndTime}, 按住时间{holdTime}, 按住比例{holdRatio}";
         }
     }
 
@@ -91,7 +91,7 @@ namespace CyanStars.Gameplay.Logger
 
         public string GetJudgeInfo()
         {
-            return $"Hold头判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.StartTime}, 结束时间{noteData.HoldEndTime}";
+            return $"Hold头判{evaluate}, 位置{noteData.Pos}, 开始时间{noteData.JudgeTime}, 结束时间{noteData.HoldEndTime}";
         }
     }
 }

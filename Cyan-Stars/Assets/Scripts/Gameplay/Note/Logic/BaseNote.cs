@@ -54,7 +54,7 @@ namespace CyanStars.Gameplay.Note
         {
             this.Data = data;
             this.layer = layer;
-            LogicTimer = data.StartTime / 1000f;
+            LogicTimer = data.JudgeTime / 1000f;
             ViewTimer = ViewHelper.GetViewStartTime(data);
 
             DataModule = GameRoot.GetDataModule<MusicGameModule>();

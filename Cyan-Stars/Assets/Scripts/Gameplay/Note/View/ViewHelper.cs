@@ -51,7 +51,7 @@ namespace CyanStars.Gameplay.Note
                 for (int i = 0; i < layerData.TimeAxisDatas.Count; i++)
                 {
                     NoteTimeAxisData curTimeAxisData = layerData.TimeAxisDatas[i];
-                    float speedRate = curTimeAxisData.SpeedRate * timelineSpeedRate;
+                    float speedRate = curTimeAxisData.Coefficient * timelineSpeedRate;
 
                     for (int j = 0; j < curTimeAxisData.NoteDatas.Count; j++)
                     {
@@ -60,9 +60,9 @@ namespace CyanStars.Gameplay.Note
                         //之前的TimeAxis累计下来的受缩放影响的时间值，再加上当前TimeAxis到当前note这段时间缩放后的时间值
                         //就能得到当前note缩放后的开始时间，因为是毫秒所以要/1000转换为秒
                         float scaledNoteStartTime =
-                            scaledTime + ((noteData.StartTime - curTimeAxisData.StartTime)) * speedRate;
+                            scaledTime + ((noteData.JudgeTime - curTimeAxisData.StartTime)) * speedRate;
                         viewStartTimeDict.Add(noteData, scaledNoteStartTime / 1000);
-
+                        //Debug.Log($"逻辑层时间：{noteData.JudgeTime}，视图层时间：{scaledNoteStartTime}");
                         if (noteData.Type == NoteType.Hold)
                         {
                             //hold结束时间同理
@@ -93,6 +93,8 @@ namespace CyanStars.Gameplay.Note
                     scaledTime += scaledTimeLength * speedRate;
                 }
             }
+
+
         }
 
         /// <summary>

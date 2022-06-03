@@ -30,7 +30,7 @@ namespace CyanStars.Gameplay.Note
                 {
                     //创建时轴
                     NoteTimeAxisData timeAxisData = layerData.TimeAxisDatas[j];
-                    layer.AddTimeSpeedRate(timeAxisData.StartTime / 1000f, timeAxisData.SpeedRate);
+                    layer.AddTimeSpeedRate(timeAxisData.StartTime / 1000f, timeAxisData.Coefficient);
 
                     for (int k = 0; k < timeAxisData.NoteDatas.Count; k++)
                     {

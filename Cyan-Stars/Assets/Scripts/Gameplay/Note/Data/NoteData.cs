@@ -1,6 +1,7 @@
 using CyanStars.Gameplay.Note;
 using CyanStars.Gameplay.PromptTone;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 namespace CyanStars.Gameplay.Data
@@ -30,10 +31,11 @@ namespace CyanStars.Gameplay.Data
         public float Pos;
 
         /// <summary>
-        /// 判定开始时间（毫秒）
+        /// 判定时间（毫秒）
         /// </summary>
-        [Header("判定开始时间（毫秒）")]
-        public int StartTime;
+        [FormerlySerializedAs("StartTime")]
+        [Header("判定时间（毫秒）")]
+        public int JudgeTime;
 
         /// <summary>
         /// Hold音符的判定结束时间（毫秒）
@@ -46,6 +48,18 @@ namespace CyanStars.Gameplay.Data
         /// </summary>
         [Header("提示音")]
         public PromptToneType PromptToneType = PromptToneType.NsKa;
+
+        /// <summary>
+        /// 视图层时间（毫秒）
+        /// </summary>
+        [Header("视图层时间（毫秒）【不用填】")]
+        public int ViewTime;
+
+        /// <summary>
+        /// Hold音符的视图层结束时间（毫秒）
+        /// </summary>
+        [Header("Hold音符的视图层结束时间（毫秒）【不用填】")]
+        public int HoldViewEndTime;
 
         public float GetFullScore()
         {
@@ -76,7 +90,7 @@ namespace CyanStars.Gameplay.Data
 
         public override string ToString()
         {
-            return $"音符数据：类型{Type}，位置{Pos},开始时间{StartTime},Hold音符结束时间{HoldEndTime}";
+            return $"音符数据：类型{Type}，位置{Pos},判定时间{JudgeTime},Hold音符结束时间{HoldEndTime}";
         }
     }
 }
