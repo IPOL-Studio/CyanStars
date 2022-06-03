@@ -148,10 +148,10 @@ namespace CyanStars.Gameplay.Procedure
             //时间轴数据
             MapTimelineDataSO timelineDataSo = await GameRoot.Asset.AwaitLoadAsset<MapTimelineDataSO>(mapManifest.TimelineFileName, sceneRoot);
             timelineData = timelineDataSo.Data;
-            dataModule.CurTimelineLength = mapManifest.Duration / 1000f;
+            dataModule.CurTimelineLength = timelineData.Length / 1000f;
 
             dataModule.CalFullScore(timelineData.NoteTrackData);
-            ViewHelper.CalViewTime(mapManifest.Duration, timelineData.NoteTrackData);
+            ViewHelper.CalViewTime(timelineDataSo.Data.Length, timelineData.NoteTrackData);
 
             //歌词
             if (!string.IsNullOrEmpty(mapManifest.LrcFileName))
@@ -183,7 +183,7 @@ namespace CyanStars.Gameplay.Procedure
         {
             MapTimelineData data = timelineData;
 
-            Timeline timeline = new Timeline(mapManifest.Duration / 1000f);
+            Timeline timeline = new Timeline(data.Length/ 1000f);
             timeline.OnStop += () =>
             {
                 this.timeline = null;

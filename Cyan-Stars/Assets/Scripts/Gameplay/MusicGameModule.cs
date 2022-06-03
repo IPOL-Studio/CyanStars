@@ -182,8 +182,7 @@ namespace CyanStars.Gameplay
                 CurrentDeviation = currentDeviation;
                 DeviationList.Add(currentDeviation);
             }
-
-            //procedure.RefreshPlayingUI(Combo,Score,grade.ToString());
+            
             GameRoot.Event.Dispatch(EventConst.MusicGameDataRefreshEvent, this, EventArgs.Empty);
         }
     }
