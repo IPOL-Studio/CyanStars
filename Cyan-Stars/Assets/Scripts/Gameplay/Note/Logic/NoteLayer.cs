@@ -4,6 +4,7 @@ using CyanStars.Framework;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Misc;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.Note
 {
@@ -102,7 +103,6 @@ namespace CyanStars.Gameplay.Note
 
             //计算当前视图层时间
             float curViewTime = CalCurViewTime(currentTime,mapSpeed);
-
             if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode) //如果是AutoMode
             {
                 for (int i = notes.Count - 1; i >= 0; i--)

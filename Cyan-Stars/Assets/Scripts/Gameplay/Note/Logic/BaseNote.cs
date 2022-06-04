@@ -2,6 +2,7 @@ using CyanStars.Framework;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Evaluate;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.Note
 {
@@ -124,12 +125,11 @@ namespace CyanStars.Gameplay.Note
         private void OnBaseUpdate(float curLogicTime,float curViewTime)
         {
             CurLogicTime = curLogicTime;
-            float viewDeltaTime = curViewTime - CurViewTime;
             CurViewTime = curViewTime;
 
             TryCreateViewObject();
 
-            ViewObject?.OnUpdate(ViewDistance,viewDeltaTime);
+            ViewObject?.OnUpdate(ViewDistance);
         }
 
         /// <summary>

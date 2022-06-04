@@ -81,10 +81,10 @@ namespace CyanStars.Gameplay.Procedure
             {
                 CheckKeyboardInput();
 
-                deltaTime = audioSource.time - lastTime;
+                float timelineDeltaTime = audioSource.time - lastTime;
                 lastTime = audioSource.time;
 
-                timeline.OnUpdate(deltaTime);
+                timeline.OnUpdate(timelineDeltaTime);
             }
         }
 

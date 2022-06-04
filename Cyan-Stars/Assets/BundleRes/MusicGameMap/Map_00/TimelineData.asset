@@ -26,19 +26,12 @@ MonoBehaviour:
           ViewStartTime: 0
           ViewEndTime: 11840000
           NoteDatas:
-          - Type: 0
-            Pos: 0.5
+          - Type: 3
+            Pos: 0
             JudgeTime: 5000
             HoldEndTime: 0
             PromptToneType: 0
             ViewJudgeTime: 400000
-            HoldViewEndTime: 0
-          - Type: 0
-            Pos: 0.5
-            JudgeTime: 5100
-            HoldEndTime: 0
-            PromptToneType: 0
-            ViewJudgeTime: 408000
             HoldViewEndTime: 0
     CameraTrackData:
       DefaultPosition: {x: 0, y: 0, z: 0}

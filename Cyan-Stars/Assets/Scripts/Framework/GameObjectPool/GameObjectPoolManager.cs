@@ -94,7 +94,7 @@ namespace CyanStars.Framework.GameObjectPool
                 var (prefab, parent, callback) = waitInstantiateQueue.Dequeue();
                 callback?.Invoke(Instantiate(prefab, parent));
                 instantiateCounter++;
-                Debug.Log($"实例化了游戏对象：{prefab.name}，当前帧已实例化数量：{instantiateCounter}");
+                //Debug.Log($"实例化了游戏对象：{prefab.name}，当前帧已实例化数量：{instantiateCounter}");
             }
 
             instantiateCounter = 0;

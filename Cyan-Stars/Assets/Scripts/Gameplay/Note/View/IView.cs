@@ -5,7 +5,7 @@ namespace CyanStars.Gameplay.Note
     /// </summary>
     public interface IView
     {
-        void OnUpdate(float viewDistance, float viewDeltaTime);
+        void OnUpdate(float viewDistance);
         void DestroySelf(bool autoMove = true);
         void CreateEffectObj(float w);
         void DestroyEffectObj();

@@ -65,18 +65,7 @@ namespace CyanStars.Gameplay.Note
             base.OnInput(inputType);
 
             if (inputType != InputType.Press) return; //只处理按下的情况
-
             if (isHit) return; //已经接住了
-
-
-            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(Data, EvaluateType.Exact)); //Log
-
-            DataModule.MaxScore += Data.GetFullScore(); //更新理论最高分
-
-            DataModule.RefreshPlayingData(addCombo: 1,
-                addScore: EvaluateHelper.GetScoreWithEvaluate(EvaluateType.Exact) * Data.GetMagnification(),
-                grade: EvaluateType.Exact, currentDeviation: float.MaxValue); //更新数据
-
 
             if (Distance > 0)
             {
@@ -89,6 +78,14 @@ namespace CyanStars.Gameplay.Note
                 ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
                 DestroySelf(false);
             }
+
+            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(Data, EvaluateType.Exact)); //Log
+
+            DataModule.MaxScore += Data.GetFullScore(); //更新理论最高分
+
+            DataModule.RefreshPlayingData(addCombo: 1,
+                addScore: EvaluateHelper.GetScoreWithEvaluate(EvaluateType.Exact) * Data.GetMagnification(),
+                grade: EvaluateType.Exact, currentDeviation: float.MaxValue); //更新数据
         }
     }
 }
