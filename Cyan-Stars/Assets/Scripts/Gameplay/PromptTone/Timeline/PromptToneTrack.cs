@@ -25,8 +25,8 @@ namespace CyanStars.Gameplay.PromptTone
 
             if (promptTone == null) return new PromptToneClip(0, 0, track, promptTone);
 
-            PromptToneClip clip = new PromptToneClip(noteData.StartTime / 1000f,
-                noteData.StartTime / 1000f + promptTone.length, track, promptTone);
+            PromptToneClip clip = new PromptToneClip(noteData.JudgeTime / 1000f,
+                noteData.JudgeTime / 1000f + promptTone.length, track, promptTone);
             return clip;
         }
     }

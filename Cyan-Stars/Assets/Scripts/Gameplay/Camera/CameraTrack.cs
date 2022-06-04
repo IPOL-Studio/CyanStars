@@ -29,7 +29,7 @@ namespace CyanStars.Gameplay.Camera
             }
 
             CameraClip clip = new CameraClip(startTime / 1000f, keyFrame.Time / 1000f, track, keyFrame.Position,
-                keyFrame.Rotation, keyFrame.SmoothType);
+                keyFrame.Rotation, keyFrame.EasingType);
 
             return clip;
         }

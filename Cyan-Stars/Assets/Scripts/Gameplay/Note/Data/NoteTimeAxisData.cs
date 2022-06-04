@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
+using CyanStars.Gameplay.Misc;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace CyanStars.Gameplay.Data
 {
@@ -16,10 +19,34 @@ namespace CyanStars.Gameplay.Data
         public int StartTime;
 
         /// <summary>
-        /// 速率
+        /// 缓动函数类型
         /// </summary>
-        [Header("速率")]
-        public float SpeedRate = 1;
+        [Header("缓动函数类型")]
+        public EasingFunctionType EasingType;
+
+        /// <summary>
+        /// 系数
+        /// </summary>
+        [Header("系数")]
+        public float Coefficient = 1;
+
+        /// <summary>
+        /// 结束时间（毫秒）
+        /// </summary>
+        [Header("结束时间（毫秒）【不用填】")]
+        public int EndTime;
+
+        /// <summary>
+        /// 视图层开始时间（毫秒）
+        /// </summary>
+        [Header("视图层开始时间（毫秒）【不用填】")]
+        public int ViewStartTime;
+
+        /// <summary>
+        /// 视图层结束时间（毫秒）
+        /// </summary>
+        [Header("视图层结束时间（毫秒）【不用填】")]
+        public int ViewEndTime;
 
         /// <summary>
         /// 音符数据

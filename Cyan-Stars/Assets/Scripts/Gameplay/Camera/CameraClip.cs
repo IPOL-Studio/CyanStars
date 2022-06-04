@@ -11,7 +11,7 @@ namespace CyanStars.Gameplay.Camera
     {
         private Vector3 position;
         private Vector3 rotation;
-        private SmoothFunctionType smoothType;
+        private EasingFunctionType easingType;
 
         private Transform camTrans;
         private float length;
@@ -21,11 +21,11 @@ namespace CyanStars.Gameplay.Camera
         private Vector3 oldPos;
         private Vector3 oldRot;
 
-        public CameraClip(float startTime, float endTime, CameraTrack owner, Vector3 position, Vector3 rotation, SmoothFunctionType smoothType) : base(startTime, endTime, owner)
+        public CameraClip(float startTime, float endTime, CameraTrack owner, Vector3 position, Vector3 rotation, EasingFunctionType easingType) : base(startTime, endTime, owner)
         {
             this.position = position;
             this.rotation = rotation;
-            this.smoothType = smoothType;
+            this.easingType = easingType;
             length = EndTime - StartTime;
         }
 
@@ -49,28 +49,28 @@ namespace CyanStars.Gameplay.Camera
         {
             float localTimer = currentTime - StartTime;
 
-            switch (smoothType) //缓动
+            switch (easingType) //缓动
             {
-                case SmoothFunctionType.Linear:
-                    camTrans.position = SmoothFunction.LinearFunction(oldPos, newPos, localTimer, length);
-                    camTrans.localEulerAngles = SmoothFunction.LinearFunction(oldRot, newRot, localTimer, length);
+                case EasingFunctionType.Linear:
+                    camTrans.position = EasingFunction.LinearFunction(oldPos, newPos, localTimer, length);
+                    camTrans.localEulerAngles = EasingFunction.LinearFunction(oldRot, newRot, localTimer, length);
                     break;
-                case SmoothFunctionType.SineaseIn:
-                    camTrans.position = SmoothFunction.SinFunctionEaseIn(oldPos, newPos, localTimer, length);
-                    camTrans.localEulerAngles = SmoothFunction.SinFunctionEaseIn(oldRot, newRot, localTimer, length);
+                case EasingFunctionType.SineaseIn:
+                    camTrans.position = EasingFunction.SinFunctionEaseIn(oldPos, newPos, localTimer, length);
+                    camTrans.localEulerAngles = EasingFunction.SinFunctionEaseIn(oldRot, newRot, localTimer, length);
                     break;
-                case SmoothFunctionType.SineaseOut:
-                    camTrans.position = SmoothFunction.SinFunctionEaseOut(oldPos, newPos, localTimer, length);
-                    camTrans.localEulerAngles = SmoothFunction.SinFunctionEaseOut(oldRot, newRot, localTimer, length);
+                case EasingFunctionType.SineaseOut:
+                    camTrans.position = EasingFunction.SinFunctionEaseOut(oldPos, newPos, localTimer, length);
+                    camTrans.localEulerAngles = EasingFunction.SinFunctionEaseOut(oldRot, newRot, localTimer, length);
                     break;
-                case SmoothFunctionType.SineaseInOut:
-                    camTrans.position = SmoothFunction.SinFunctionEaseInOut(oldPos, newPos, localTimer, length);
+                case EasingFunctionType.SineaseInOut:
+                    camTrans.position = EasingFunction.SinFunctionEaseInOut(oldPos, newPos, localTimer, length);
                     camTrans.localEulerAngles =
-                        SmoothFunction.SinFunctionEaseInOut(oldRot, newRot, localTimer, length);
+                        EasingFunction.SinFunctionEaseInOut(oldRot, newRot, localTimer, length);
                     break;
-                case SmoothFunctionType.BackeaseIn:
-                    camTrans.position = SmoothFunction.BackEaseIn(oldPos, newPos, localTimer, length);
-                    camTrans.localEulerAngles = SmoothFunction.BackEaseIn(oldRot, newRot, localTimer, length);
+                case EasingFunctionType.BackeaseIn:
+                    camTrans.position = EasingFunction.BackEaseIn(oldPos, newPos, localTimer, length);
+                    camTrans.localEulerAngles = EasingFunction.BackEaseIn(oldRot, newRot, localTimer, length);
                     break;
             }
         }

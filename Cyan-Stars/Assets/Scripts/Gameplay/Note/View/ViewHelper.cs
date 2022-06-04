@@ -14,14 +14,10 @@ namespace CyanStars.Gameplay.Note
     /// </summary>
     public static class ViewHelper
     {
-        private static Dictionary<NoteData, float> viewStartTimeDict = new Dictionary<NoteData, float>();
-        private static Dictionary<NoteData, float> viewHoldEndTimeDict = new Dictionary<NoteData, float>();
-
-
         /// <summary>
-        /// 视图层物体创建倒计时时间（是受速率影响的时间）
+        /// 创建视图层物体的时间距离
         /// </summary>
-        public const float ViewObjectCreateTime = 200;
+        public const float ViewObjectCreateDistance = 200;
 
         /// <summary>
         /// 视图层物体根节点
@@ -32,76 +28,6 @@ namespace CyanStars.Gameplay.Note
         /// 特效根节点
         /// </summary>
         public static Transform EffectRoot { get; set; }
-
-        /// <summary>
-        /// 计算受速率影响的视图层音符开始时间和结束时间，用于视图层物体计算位置和长度
-        /// </summary>
-        public static void CalViewTime(float time,NoteTrackData data)
-        {
-            viewStartTimeDict.Clear();
-            viewHoldEndTimeDict.Clear();
-
-            float timelineSpeedRate = data.BaseSpeed * data.SpeedRate;
-
-            foreach (NoteLayerData layerData in data.LayerDatas)
-            {
-                //从第一个TimeAxis到前一个TimeAxis 受流速缩放影响后的总时间值（毫秒）
-                float scaledTime = 0;
-
-                for (int i = 0; i < layerData.TimeAxisDatas.Count; i++)
-                {
-                    NoteTimeAxisData curTimeAxisData = layerData.TimeAxisDatas[i];
-                    float speedRate = curTimeAxisData.SpeedRate * timelineSpeedRate;
-
-                    for (int j = 0; j < curTimeAxisData.NoteDatas.Count; j++)
-                    {
-                        NoteData noteData = curTimeAxisData.NoteDatas[j];
-
-                        //之前的TimeAxis累计下来的受缩放影响的时间值，再加上当前TimeAxis到当前note这段时间缩放后的时间值
-                        //就能得到当前note缩放后的开始时间，因为是毫秒所以要/1000转换为秒
-                        float scaledNoteStartTime =
-                            scaledTime + ((noteData.StartTime - curTimeAxisData.StartTime)) * speedRate;
-                        viewStartTimeDict.Add(noteData, scaledNoteStartTime / 1000);
-
-                        if (noteData.Type == NoteType.Hold)
-                        {
-                            //hold结束时间同理
-                            float scaledHoldNoteEndTime =
-                                scaledTime + ((noteData.HoldEndTime - curTimeAxisData.StartTime)) * speedRate;
-                            viewHoldEndTimeDict.Add(noteData, scaledHoldNoteEndTime / 1000);
-                        }
-                    }
-
-                    float curTimeAxisEndTime;
-                    if (i < layerData.TimeAxisDatas.Count - 1)
-                    {
-                        //并非最后一个TimeAxis
-                        //将下一个TimeAxis的开始时间作为当前TimeAxis的结束时间
-                        curTimeAxisEndTime = layerData.TimeAxisDatas[i + 1].StartTime;
-                    }
-                    else
-                    {
-                        //最后一个TimeAxis
-                        //将timeline结束时间作为最后一个TimeAxis的结束时间
-                        curTimeAxisEndTime = time;
-                    }
-
-                    float scaledTimeLength = curTimeAxisEndTime - curTimeAxisData.StartTime;
-
-
-                    //将此TimeAxis缩放后的时间值 累加到总时间值上
-                    scaledTime += scaledTimeLength * speedRate;
-                }
-            }
-        }
-
-        /// <summary>
-        /// 获取受速率影响的视图层音符开始时间
-        /// </summary>
-        public static float GetViewStartTime(NoteData data)
-        {
-            return viewStartTimeDict[data];
-        }
 
         /// <summary>
         /// 创建视图层物体
@@ -123,9 +49,8 @@ namespace CyanStars.Gameplay.Note
             go = await GameRoot.GameObjectPool.AwaitGetGameObject(prefabName,ViewRoot);
             //go.transform.SetParent(ViewRoot);
 
-            //这里因为用了异步await，所以需要使用note在物体创建成功后这一刻的viewTimer作为viewCreateTime，否则位置会对不上
-            go.transform.position = GetViewObjectPos(data, note.ViewTimer);
-
+            //这里因为用了异步await，所以需要使用note在物体创建成功后这一刻的视图层时间作为viewCreateTime，否则位置会对不上
+            go.transform.position = GetViewObjectPos(data,note.ViewDistance);
             go.transform.localScale = GetViewObjectScale(data);
             go.transform.localEulerAngles = GetViewObjectRotation(data);
 
@@ -134,10 +59,9 @@ namespace CyanStars.Gameplay.Note
 
             if (data.Type == NoteType.Hold)
             {
-                var startTime = viewStartTimeDict[data];
-                var endTime = viewHoldEndTimeDict[data];
                 //(view as HoldViewObject).SetMesh(1f, endTime - startTime);
-                (view as HoldViewObject).SetLength(endTime - startTime);
+                float length = (data.HoldViewEndTime - data.ViewJudgeTime) / 1000f;
+                (view as HoldViewObject).SetLength(length);
             }
 
             return view;
@@ -146,11 +70,11 @@ namespace CyanStars.Gameplay.Note
         /// <summary>
         /// 根据音符数据获取映射后的视图层位置
         /// </summary>
-        private static Vector3 GetViewObjectPos(NoteData data, float viewCreateTime)
+        private static Vector3 GetViewObjectPos(NoteData data,float viewDistance)
         {
             Vector3 pos = default;
 
-            pos.z = viewCreateTime;
+            pos.z = viewDistance;
 
             pos.y = Endpoint.Instance.LeftTrans.position.y;
             if (data.Type == NoteType.Break)
@@ -198,6 +122,9 @@ namespace CyanStars.Gameplay.Note
             return scale;
         }
 
+        /// <summary>
+        /// 根据音符数据获取视图层物体旋转
+        /// </summary>
         private static Vector3 GetViewObjectRotation(NoteData data)
         {
             Vector3 rotation = Vector3.zero;

@@ -58,7 +58,7 @@ namespace CyanStars.Gameplay.Effect
             public float Angle;
 
             [Header("缓动类型")]
-            public SmoothFunctionType EaseType;
+            public EasingFunctionType EaseType;
         }
 
         [Header("旋转关键帧")]
@@ -139,7 +139,7 @@ namespace CyanStars.Gameplay.Effect
             }
         }
 
-        IEnumerator Revolve(float angle, float dTime, SmoothFunctionType easeType)
+        IEnumerator Revolve(float angle, float dTime, EasingFunctionType easeType)
         {
             IsRevolving = true;
             float timer = 0; //计时器
@@ -149,19 +149,19 @@ namespace CyanStars.Gameplay.Effect
                 timer += Time.deltaTime * 1000; //计时器加上时间(ms)
                 switch (easeType) //缓动
                 {
-                    case SmoothFunctionType.Linear:
+                    case EasingFunctionType.Linear:
                         Skybox.material.SetFloat("_Rotation", LinearFunction(currentAngle, angle, timer, dTime));
                         break;
-                    case SmoothFunctionType.SineaseIn:
+                    case EasingFunctionType.SineaseIn:
                         Skybox.material.SetFloat("_Rotation", SinFunctionEaseIn(currentAngle, angle, timer, dTime));
                         break;
-                    case SmoothFunctionType.SineaseOut:
+                    case EasingFunctionType.SineaseOut:
                         Skybox.material.SetFloat("_Rotation", SinFunctionEaseOut(currentAngle, angle, timer, dTime));
                         break;
-                    case SmoothFunctionType.SineaseInOut:
+                    case EasingFunctionType.SineaseInOut:
                         Skybox.material.SetFloat("_Rotation", SinFunctionEaseInOut(currentAngle, angle, timer, dTime));
                         break;
-                    case SmoothFunctionType.BackeaseIn:
+                    case EasingFunctionType.BackeaseIn:
                         Skybox.material.SetFloat("_Rotation", BackEaseIn(currentAngle, angle, timer, dTime));
                         break;
                 }
