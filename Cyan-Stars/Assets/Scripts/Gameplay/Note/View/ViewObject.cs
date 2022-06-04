@@ -13,17 +13,19 @@ namespace CyanStars.Gameplay.Note
         [SerializeField]
         private GameObject effectPrefab;
 
-        private float deltaTime;
+        private float viewDistance;
+        private float viewDeltaTime;
+
         private GameObject effectObj;
         public string PrefabName;
 
 
-        public void OnUpdate(float deltaTime)
+        public void OnUpdate(float viewDistance)
         {
-            this.deltaTime = deltaTime;
-
+            viewDeltaTime = this.viewDistance - viewDistance;
+            this.viewDistance = viewDistance;
             Vector3 pos = transform.position;
-            pos.z -= deltaTime;
+            pos.z = viewDistance;
             transform.position = pos;
         }
 
@@ -62,28 +64,27 @@ namespace CyanStars.Gameplay.Note
         }
 
         /// <summary>
-        /// 自动移动一段时间然后销毁自己
+        /// 自动移动一段距离然后销毁自己
         /// </summary>
         private IEnumerator AutoMove()
         {
+            Transform trans = transform;
             float timer = 0;
-            var trans = transform;
             while (true)
             {
-                timer += deltaTime;
+                yield return null;
+                timer += Time.deltaTime;
 
+                viewDistance -= viewDeltaTime;
                 Vector3 pos = trans.position;
-                pos.z -= deltaTime;
+                pos.z = viewDistance;
                 trans.position = pos;
 
-                if (timer >= 2f)
+                if (timer >= 1f)
                 {
-                    //Destroy(gameObject);
                     GameRoot.GameObjectPool.ReleaseGameObject(PrefabName, gameObject);
                     yield break;
                 }
-
-                yield return null;
             }
         }
     }

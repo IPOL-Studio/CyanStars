@@ -15,47 +15,40 @@ namespace CyanStars.Gameplay.Note
 
         public override bool CanReceiveInput()
         {
-            return LogicTimer <= EvaluateHelper.DragTimeRange && LogicTimer >= -EvaluateHelper.DragTimeRange;
+            return Distance <= EvaluateHelper.DragJudgeDistanceRange && Distance >= -EvaluateHelper.DragJudgeDistanceRange;
         }
 
-        public override void OnUpdate(float deltaTime, float noteSpeedRate)
+        public override void OnUpdate(float curLogicTime,float curViewTime)
         {
-            base.OnUpdate(deltaTime, noteSpeedRate);
+            base.OnUpdate(curLogicTime,curViewTime);
 
-            if (isHit && LogicTimer <= 0) //接住并过线
+            if (isHit && Distance <= 0) //接住并过线
             {
+                ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
                 DestroySelf(false); //立即销毁
                 return;
             }
 
-            if (LogicTimer < -EvaluateHelper.DragTimeRange) //没接住Miss
+            if (Distance < -EvaluateHelper.DragJudgeDistanceRange) //没接住Miss
             {
                 DestroySelf(); //延迟销毁
 
-                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(Data, EvaluateType.Miss)); //Log
-
-                DataModule.MaxScore += Data.GetFullScore(); //更新最理论高分
-                DataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue); //更新数据
+                NoteJudger.DragJudge(Data,true);
             }
         }
 
-        public override void OnUpdateInAutoMode(float deltaTime, float noteSpeedRate)
+        public override void OnUpdateInAutoMode(float curLogicTime,float curViewTime)
         {
-            base.OnUpdateInAutoMode(deltaTime, noteSpeedRate);
+            base.OnUpdateInAutoMode(curLogicTime,curViewTime);
 
             if (CanReceiveInput() && !isHit)
             {
+                isHit = true;
+
                 ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
                 DestroySelf(false); //立即销毁
 
-                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(Data, EvaluateType.Exact)); //Log
-
-                DataModule.MaxScore += Data.GetFullScore(); //更新理论最高分
-                DataModule.RefreshPlayingData(addCombo: 1,
-                    addScore: Data.GetFullScore(),
-                    grade: EvaluateType.Exact, currentDeviation: float.MaxValue); //更新数据
-
-                isHit = true;
+                NoteJudger.DragJudge(Data,true);
             }
         }
 
@@ -64,20 +57,9 @@ namespace CyanStars.Gameplay.Note
             base.OnInput(inputType);
 
             if (inputType != InputType.Press) return; //只处理按下的情况
-
             if (isHit) return; //已经接住了
 
-            ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
-            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(Data, EvaluateType.Exact)); //Log
-
-            DataModule.MaxScore += Data.GetFullScore(); //更新理论最高分
-
-            DataModule.RefreshPlayingData(addCombo: 1,
-                addScore: EvaluateHelper.GetScoreWithEvaluate(EvaluateType.Exact) * Data.GetMagnification(),
-                grade: EvaluateType.Exact, currentDeviation: float.MaxValue); //更新数据
-
-
-            if (LogicTimer > 0)
+            if (Distance > 0)
             {
                 //早按准点放
                 isHit = true;
@@ -85,8 +67,11 @@ namespace CyanStars.Gameplay.Note
             else
             {
                 //晚按即刻放
+                ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
                 DestroySelf(false);
             }
+
+            NoteJudger.DragJudge(Data,false);
         }
     }
 }

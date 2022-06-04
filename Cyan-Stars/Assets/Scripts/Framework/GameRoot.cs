@@ -61,6 +61,11 @@ namespace CyanStars.Framework
         [Header("谱面序号")]
         public int MapIndex;
 
+        private void Awake()
+        {
+            Application.targetFrameRate = 60;
+        }
+
         private void Start()
         {
             Asset = GetManager<AssetManager>();

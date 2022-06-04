@@ -9,20 +9,11 @@ namespace CyanStars.Gameplay.Note
     /// </summary>
     public class NoteClip : BaseClip<NoteTrack>
     {
-        /// <summary>
-        /// 基础速度
-        /// </summary>
-        private float baseSpeed;
 
         /// <summary>
-        /// 速率
+        /// 谱面整体速度
         /// </summary>
-        private float speedRate;
-
-        /// <summary>
-        /// 片段速度
-        /// </summary>
-        private float clipSpeed;
+        private float mapSpeed;
 
         /// <summary>
         /// 音符图层列表
@@ -32,9 +23,7 @@ namespace CyanStars.Gameplay.Note
         public NoteClip(float startTime, float endTime, NoteTrack owner, float baseSpeed, float speedRate) : base(
             startTime, endTime, owner)
         {
-            this.baseSpeed = baseSpeed;
-            this.speedRate = speedRate;
-            clipSpeed = baseSpeed * speedRate;
+            mapSpeed = baseSpeed * speedRate;
         }
 
         /// <summary>
@@ -50,7 +39,7 @@ namespace CyanStars.Gameplay.Note
             for (int i = 0; i < layers.Count; i++)
             {
                 NoteLayer layer = layers[i];
-                layer.Update(currentTime, previousTime, clipSpeed);
+                layer.Update(currentTime, previousTime, mapSpeed);
             }
         }
 

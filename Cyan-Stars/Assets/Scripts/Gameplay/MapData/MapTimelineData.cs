@@ -12,8 +12,11 @@ namespace CyanStars.Gameplay.MapData
     [Serializable]
     public class MapTimelineData
     {
-        [NonSerialized]
-        public int Time;
+        /// <summary>
+        /// 时间轴长度（毫秒）
+        /// </summary>
+        [Header("时间轴长度（毫秒）")]
+        public int Length;
 
         /// <summary>
         /// 音符轨道数据

@@ -17,12 +17,6 @@ namespace CyanStars.Gameplay.MapData
         public string Name;
 
         /// <summary>
-        /// 总时间（毫秒）
-        /// </summary>
-        [Header("总时间（毫秒）")]
-        public int Duration;
-
-        /// <summary>
         /// 歌词文件名
         /// </summary>
         [Header("歌词文件名")]
