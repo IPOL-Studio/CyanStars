@@ -75,20 +75,17 @@ namespace CyanStars.Gameplay.Note
             if (Distance < holdCheckInputEndDistance)
             {
                 //整条hold都跑完了
-                DestroySelf();
 
                 if (!headChecked)
                 {
                     //没进行过头判 被漏掉了 miss
-                    LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(Data, EvaluateType.Miss, 0, 0));
-
-                    DataModule.MaxScore += 2;
-                    DataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);
+                    NoteJudger.HoldMiss(Data);
                 }
                 else
                 {
                     //进行过头判 计算按住比例
                     ViewObject.DestroyEffectObj();
+
                     if (firstPressTime > JudgeTime)
                     {
                         //首次按下时间在判定时间之后的情况下 以首次按下时间为起点计算总长度
@@ -100,22 +97,11 @@ namespace CyanStars.Gameplay.Note
                         value = pressTimeLength / holdLength;
                     }
 
-                    EvaluateType et = EvaluateHelper.GetHoldEvaluate(value);
-
-                    LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(Data, et, pressTimeLength, value));
-
-                    DataModule.MaxScore++;
-                    if (et == EvaluateType.Exact)
-                        DataModule.RefreshPlayingData(0, 1, et, float.MaxValue);
-                    else if (et == EvaluateType.Great)
-                        DataModule.RefreshPlayingData(0, 0.75f, et, float.MaxValue);
-                    else if (et == EvaluateType.Right)
-                        DataModule.RefreshPlayingData(0, 0.5f, et, float.MaxValue);
-                    else
-                        DataModule.RefreshPlayingData(-1, -1, et, float.MaxValue);
+                    NoteJudger.HoldTailJudge(Data,pressTimeLength,value);
                 }
 
 
+                DestroySelf();
             }
         }
 
@@ -126,19 +112,17 @@ namespace CyanStars.Gameplay.Note
             if (EvaluateHelper.GetTapEvaluate(Distance) == EvaluateType.Exact && !headChecked)
             {
                 headChecked = true;
-                DataModule.MaxScore++;
-                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(Data, EvaluateType.Exact));
-                DataModule.RefreshPlayingData(1, 1, EvaluateType.Exact, 0);
                 ViewObject.CreateEffectObj(NoteData.NoteWidth);
+
+                NoteJudger.HoldHeadJudge(Data, Distance);
             }
 
             if (Distance < holdCheckInputEndDistance)
             {
                 ViewObject.DestroyEffectObj();
-                DataModule.MaxScore++;
-                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(Data, EvaluateType.Exact, holdLength, 1));
-                DataModule.RefreshPlayingData(0, 1, EvaluateType.Exact, float.MaxValue);
                 DestroySelf();
+
+                NoteJudger.HoldTailJudge(Data,holdLength,1);
             }
         }
 
@@ -162,35 +146,19 @@ namespace CyanStars.Gameplay.Note
                         headChecked = true;
                         //头判处理
 
-                        EvaluateType et = EvaluateHelper.GetTapEvaluate(Distance);
+                        EvaluateType et =  NoteJudger.HoldHeadJudge(Data, Distance);
                         if (et == EvaluateType.Bad || et == EvaluateType.Miss)
                         {
                             //头判失败直接销毁
+                            ViewObject.DestroyEffectObj();
                             DestroySelf(false);
-                            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(Data, et));
-                            DataModule.MaxScore += 2;
-                            DataModule.RefreshPlayingData(-1, -1, et, float.MaxValue);
                         }
                         else
                         {
                             //头判成功
                             firstPressTime = CurLogicTime;
-
-                            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(Data, et));
-                            DataModule.MaxScore++;
-                            if (et == EvaluateType.Exact)
-                                DataModule.RefreshPlayingData(1, 1, et, Distance);
-                            else if (et == EvaluateType.Great)
-                                DataModule.RefreshPlayingData(1, 0.75f, et, Distance);
-                            else if (et == EvaluateType.Right)
-                                DataModule.RefreshPlayingData(1, 0.5f, et, Distance);
                         }
-
-
                     }
-
-
-
                     break;
 
                 case InputType.Up:

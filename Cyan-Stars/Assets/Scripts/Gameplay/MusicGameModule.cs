@@ -3,11 +3,13 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using CyanStars.Framework;
 using CyanStars.Framework.Asset;
+using CyanStars.Framework.Logger;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Event;
 using CyanStars.Gameplay.MapData;
 using CyanStars.Gameplay.Evaluate;
+using CyanStars.Gameplay.Logger;
 
 namespace CyanStars.Gameplay
 {
@@ -147,7 +149,6 @@ namespace CyanStars.Gameplay
             }
         }
 
-
         /// <summary>
         /// 刷新玩家游戏中的数据
         /// </summary>
@@ -182,7 +183,7 @@ namespace CyanStars.Gameplay
                 CurrentDeviation = currentDeviation;
                 DeviationList.Add(currentDeviation);
             }
-            
+
             GameRoot.Event.Dispatch(EventConst.MusicGameDataRefreshEvent, this, EventArgs.Empty);
         }
     }

@@ -18,11 +18,6 @@ namespace CyanStars.Gameplay.Evaluate
         public const float DragJudgeDistanceRange = 0.1f;
 
         /// <summary>
-        /// Click音符的判定时间距离范围
-        /// </summary>
-        public const float ClickJudgeDistanceRange = 0.03f;
-
-        /// <summary>
         /// 根据Tap音符命中时间和判定时间的距离获取评价类型
         /// </summary>
         public static EvaluateType GetTapEvaluate(float distance)
@@ -90,7 +85,10 @@ namespace CyanStars.Gameplay.Evaluate
             return EvaluateType.Out;
         }
 
-        public static float GetScoreWithEvaluate(EvaluateType et) //由评价获取分数倍率
+        /// <summary>
+        /// //由评价获取分数倍率
+        /// </summary>
+        public static float GetScoreWithEvaluate(EvaluateType et)
         {
             return et switch
             {

@@ -29,10 +29,7 @@ namespace CyanStars.Gameplay.Note
             {
                 DestroySelf(); //延迟销毁
 
-                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(Data, EvaluateType.Miss)); //Log
-
-                DataModule.MaxScore += Data.GetFullScore(); //更新最理论高分
-                DataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue); //更新数据
+                NoteJudger.BreakJudge(Data,Distance);
             }
         }
 
@@ -45,10 +42,7 @@ namespace CyanStars.Gameplay.Note
                 ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
                 DestroySelf(false); //销毁
 
-                DataModule.MaxScore += Data.GetFullScore(); //更新理论最高分
-                DataModule.RefreshPlayingData(addCombo: 1,
-                    addScore: Data.GetFullScore(),
-                    grade: EvaluateType.Exact, currentDeviation: float.MaxValue); //更新数据
+                NoteJudger.BreakJudge(Data,Distance);
             }
         }
 
@@ -61,14 +55,7 @@ namespace CyanStars.Gameplay.Note
             ViewObject.CreateEffectObj(0); //生成特效
             DestroySelf(false); //销毁
 
-            EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(Distance); //获取评价类型
-
-            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(Data, evaluateType)); //Log
-
-            DataModule.MaxScore += Data.GetFullScore(); //更新理论最高分
-            DataModule.RefreshPlayingData(addCombo: 1,
-                addScore: EvaluateHelper.GetScoreWithEvaluate(evaluateType) * Data.GetMagnification(),
-                grade: evaluateType, currentDeviation: Distance); //更新数据
+            NoteJudger.BreakJudge(Data,Distance);
         }
     }
 }

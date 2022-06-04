@@ -67,10 +67,10 @@ namespace CyanStars.Gameplay.Data
             return Type switch
             {
                 NoteType.Tap => 1,
-                NoteType.Hold => 2,
+                NoteType.Hold => 2, //包括头判和尾判的总分
                 NoteType.Break => 2,
                 NoteType.Drag => 0.25f,
-                NoteType.Click => 2f,
+                NoteType.Click => 2, //包括头判和尾判的总分
                 _ => throw new System.NotFiniteNumberException()
             };
         }

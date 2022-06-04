@@ -33,26 +33,16 @@ namespace CyanStars.Gameplay.Note
                     //没接住 miss
                     DestroySelf();
 
-                    LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteJudgeLogArgs(Data, EvaluateType.Miss, 0));
-
-                    DataModule.MaxScore += 2;
-                    DataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);
+                    NoteJudger.ClickMiss(Data);
                 }
                 else
                 {
-                    //头判成功过超时未抬起 自动结算
-                    float timeLength = curLogicTime - downTimePoint;
+                    //头判成功过且超时未抬起 结算尾判
                     ViewObject.CreateEffectObj(NoteData.NoteWidth);
-                    EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(timeLength);
                     DestroySelf(false);
 
-                    LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteJudgeLogArgs(Data, evaluateType, timeLength));
-
-                    DataModule.MaxScore += 1;
-                    if (evaluateType == EvaluateType.Exact)
-                        DataModule.RefreshPlayingData(0, 1, evaluateType, float.MaxValue);
-                    else
-                        DataModule.RefreshPlayingData(0, 0.5f, evaluateType, float.MaxValue);
+                    float timeLength = curLogicTime - downTimePoint;
+                    NoteJudger.ClickTailJudge(Data,timeLength);
                 }
 
             }
@@ -90,48 +80,26 @@ namespace CyanStars.Gameplay.Note
                         headChecked = true;
 
                         //处理头判
-
-                        EvaluateType et = EvaluateHelper.GetTapEvaluate(Distance);
-                        DataModule.MaxScore += 1;
-
-                        if (et != EvaluateType.Bad && et != EvaluateType.Miss)
-                        {
-                            //头判成功
-                            if (et == EvaluateType.Exact)
-                                DataModule.RefreshPlayingData(1, 1, et, Distance);
-                            else if (et == EvaluateType.Great)
-                                DataModule.RefreshPlayingData(1, 0.75f, et, Distance);
-                            else if (et == EvaluateType.Right)
-                                DataModule.RefreshPlayingData(1, 0.5f, et, Distance);
-                            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteHeadJudgeLogArgs(Data, et));
-                        }
-                        else
+                        EvaluateType et =  NoteJudger.ClickHeadJudge(Data, Distance);
+                        if (et == EvaluateType.Bad || et == EvaluateType.Miss)
                         {
                             //头判失败直接销毁
                             ViewObject.CreateEffectObj(NoteData.NoteWidth);
                             DestroySelf(false);
-                            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteHeadJudgeLogArgs(Data, et));
-                            DataModule.MaxScore += 1;
-                            DataModule.RefreshPlayingData(-1, -1, et,
-                                et == EvaluateType.Miss ? float.MaxValue : Distance);
                         }
                     }
 
                     break;
                 case InputType.Up:
+
                     if (!headChecked) return;
 
-                    float timeLength = CurLogicTime - downTimePoint;
                     ViewObject.CreateEffectObj(NoteData.NoteWidth);
                     DestroySelf(false);
-                    DataModule.MaxScore += 1;
-                    EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(timeLength);
-                    LoggerManager.GetOrCreateLogger<NoteLogger>()
-                        .Log(new ClickNoteJudgeLogArgs(Data, evaluateType, timeLength));
-                    if (evaluateType == EvaluateType.Exact)
-                        DataModule.RefreshPlayingData(0, 1, evaluateType, float.MaxValue);
-                    else
-                        DataModule.RefreshPlayingData(0, 0.5f, evaluateType, float.MaxValue);
+
+                    float timeLength = CurLogicTime - downTimePoint;
+                    NoteJudger.ClickTailJudge(Data,timeLength);
+
                     break;
             }
         }
