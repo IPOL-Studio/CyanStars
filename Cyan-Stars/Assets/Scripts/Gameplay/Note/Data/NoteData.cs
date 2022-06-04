@@ -52,13 +52,14 @@ namespace CyanStars.Gameplay.Data
         /// <summary>
         /// 视图层时间（毫秒）
         /// </summary>
-        [Header("视图层时间（毫秒）【不用填】")]
-        public int ViewTime;
+        [FormerlySerializedAs("ViewTime")]
+        [Header("视图层判定时间（毫秒）【不用填】")]
+        public int ViewJudgeTime;
 
         /// <summary>
         /// Hold音符的视图层结束时间（毫秒）
         /// </summary>
-        [Header("Hold音符的视图层结束时间（毫秒）【不用填】")]
+        [Header("Hold音符的视图层判定结束时间（毫秒）【不用填】")]
         public int HoldViewEndTime;
 
         public float GetFullScore()

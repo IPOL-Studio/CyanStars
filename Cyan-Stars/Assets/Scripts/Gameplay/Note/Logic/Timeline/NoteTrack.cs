@@ -24,14 +24,11 @@ namespace CyanStars.Gameplay.Note
             {
                 //创建图层
                 NoteLayerData layerData = trackData.LayerDatas[i];
-                NoteLayer layer = new NoteLayer();
+                NoteLayer layer = new NoteLayer(layerData);
 
                 for (int j = 0; j < layerData.TimeAxisDatas.Count; j++)
                 {
-                    //创建时轴
                     NoteTimeAxisData timeAxisData = layerData.TimeAxisDatas[j];
-                    layer.AddTimeSpeedRate(timeAxisData.StartTime / 1000f, timeAxisData.Coefficient);
-
                     for (int k = 0; k < timeAxisData.NoteDatas.Count; k++)
                     {
                         //创建音符

@@ -8,11 +8,11 @@ namespace CyanStars.Gameplay.Note
 {
     public class TapNote : BaseNote
     {
-        public override void OnUpdate(float deltaTime, float noteSpeedRate)
+        public override void OnUpdate(float curLogicTime,float curViewTime)
         {
-            base.OnUpdate(deltaTime, noteSpeedRate);
+            base.OnUpdate(curLogicTime, curViewTime);
 
-            if (LogicTimer < EvaluateHelper.CheckInputEndTime) //没接住Miss
+            if (Distance < EvaluateHelper.CheckInputEndDistance) //没接住Miss
             {
                 DestroySelf(); //延迟销毁
 
@@ -23,11 +23,11 @@ namespace CyanStars.Gameplay.Note
             }
         }
 
-        public override void OnUpdateInAutoMode(float deltaTime, float noteSpeedRate) //AutoMode下的更新
+        public override void OnUpdateInAutoMode(float curLogicTime,float curViewTime) //AutoMode下的更新
         {
-            base.OnUpdateInAutoMode(deltaTime, noteSpeedRate);
+            base.OnUpdateInAutoMode(curLogicTime, curViewTime);
 
-            if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact)
+            if (EvaluateHelper.GetTapEvaluate(Distance) == EvaluateType.Exact)
             {
                 ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
                 DestroySelf(false); //销毁
@@ -50,14 +50,14 @@ namespace CyanStars.Gameplay.Note
             ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
             DestroySelf(false); //销毁
 
-            EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(LogicTimer); //获取评价类型
+            EvaluateType evaluateType = EvaluateHelper.GetTapEvaluate(Distance); //获取评价类型
 
             LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(Data, evaluateType)); //Log
 
             DataModule.MaxScore += Data.GetFullScore(); //更新理论最高分
             DataModule.RefreshPlayingData(addCombo: 1,
                 addScore: EvaluateHelper.GetScoreWithEvaluate(evaluateType) * Data.GetMagnification(),
-                grade: evaluateType, currentDeviation: LogicTimer); //更新数据
+                grade: evaluateType, currentDeviation: CurLogicTime); //更新数据
         }
     }
 }

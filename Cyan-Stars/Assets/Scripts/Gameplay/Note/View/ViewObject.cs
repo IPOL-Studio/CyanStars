@@ -14,16 +14,17 @@ namespace CyanStars.Gameplay.Note
         private GameObject effectPrefab;
 
         private float deltaTime;
+
         private GameObject effectObj;
         public string PrefabName;
 
 
-        public void OnUpdate(float deltaTime)
+        public void OnUpdate(float viewDistance, float viewDeltaTime)
         {
-            this.deltaTime = deltaTime;
+            deltaTime = viewDeltaTime;
 
             Vector3 pos = transform.position;
-            pos.z -= deltaTime;
+            pos.z = viewDistance;
             transform.position = pos;
         }
 
@@ -67,7 +68,7 @@ namespace CyanStars.Gameplay.Note
         private IEnumerator AutoMove()
         {
             float timer = 0;
-            var trans = transform;
+            Transform trans = transform;
             while (true)
             {
                 timer += deltaTime;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CyanStars.Framework;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
+using CyanStars.Gameplay.Misc;
 
 namespace CyanStars.Gameplay.Note
 {
@@ -12,36 +13,15 @@ namespace CyanStars.Gameplay.Note
     public class NoteLayer
     {
         /// <summary>
-        /// 音符时轴
+        /// 图层数据
         /// </summary>
-        private struct NoteTimeAxis
-        {
-            public NoteTimeAxis(float startTime, float speedRate)
-            {
-                this.startTime = startTime;
-                this.speedRate = speedRate;
-            }
-
-            /// <summary>
-            /// 开始时间
-            /// </summary>
-            public float startTime;
-
-            /// <summary>
-            /// 速率
-            /// </summary>
-            public float speedRate;
-        }
+        private NoteLayerData layerData;
 
         /// <summary>
-        /// 时轴列表
-        /// </summary>
-        private List<NoteTimeAxis> timeAxes = new List<NoteTimeAxis>();
-
-        /// <summary>
-        /// 当前时轴索引
+        /// 当前时轴
         /// </summary>
         private int curTimeAxisIndex;
+
 
         /// <summary>
         /// 音符列表
@@ -50,12 +30,9 @@ namespace CyanStars.Gameplay.Note
 
         private List<BaseNote> cachedList = new List<BaseNote>();
 
-        /// <summary>
-        /// 添加时间速率
-        /// </summary>
-        public void AddTimeSpeedRate(float startTime, float speedRate)
+        public NoteLayer(NoteLayerData layerData)
         {
-            timeAxes.Add(new NoteTimeAxis(startTime, speedRate));
+            this.layerData = layerData;
         }
 
         /// <summary>
@@ -75,19 +52,19 @@ namespace CyanStars.Gameplay.Note
         }
 
         /// <summary>
-        /// 刷新当前时轴索引
+        /// 更新当前时轴索引
         /// </summary>
-        private void RefreshCurRangeIndex(float currentTime)
+        private void UpdateCurTimeAxisIndex(float currentTime)
         {
-            if (curTimeAxisIndex == timeAxes.Count - 1)
+            if (curTimeAxisIndex == layerData.TimeAxisDatas.Count - 1)
             {
                 //最后一个timeAxis 不计算了
                 return;
             }
 
-            //是否到达了下一个timeAxis的开始？
-            float nextTimeAxisStartTime = timeAxes[curTimeAxisIndex + 1].startTime;
-            if (currentTime >= nextTimeAxisStartTime)
+            NoteTimeAxisData curTimeAxis = layerData.TimeAxisDatas[curTimeAxisIndex];
+
+            if ((currentTime * 1000) >= curTimeAxis.EndTime)
             {
                 curTimeAxisIndex++;
             }
@@ -104,7 +81,7 @@ namespace CyanStars.Gameplay.Note
             for (int i = 0; i < notes.Count; i++)
             {
                 BaseNote note = notes[i];
-                if (note.CanReceiveInput() && note.IsInRange(item.RangeMin, item.RangeMin + item.RangeWidth))
+                if (note.CanReceiveInput() && note.IsInInputRange(item.RangeMin, item.RangeMin + item.RangeWidth))
                 {
                     cachedList.Add(note);
                 }
@@ -113,34 +90,50 @@ namespace CyanStars.Gameplay.Note
             return cachedList;
         }
 
-        public void Update(float currentTime, float previousTime, float clipSpeed)
+        public void Update(float currentTime, float previousTime, float mapSpeed)
         {
             if (notes.Count == 0)
             {
                 return;
             }
 
-            RefreshCurRangeIndex(currentTime);
+            //更新时轴
+            UpdateCurTimeAxisIndex(currentTime);
 
-            //计算音符表现层的速度
-            float noteViewSpeed = clipSpeed * timeAxes[curTimeAxisIndex].speedRate;
-
-            float deltaTime = currentTime - previousTime;
+            //计算当前视图层时间
+            float curViewTime = CalCurViewTime(currentTime,mapSpeed);
 
             if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode) //如果是AutoMode
             {
                 for (int i = notes.Count - 1; i >= 0; i--)
                 {
-                    notes[i].OnUpdateInAutoMode(deltaTime, noteViewSpeed); //使用AutoMode的OnUpdate
+                    notes[i].OnUpdateInAutoMode(currentTime,curViewTime); //使用AutoMode的OnUpdate
                 }
             }
             else
             {
                 for (int i = notes.Count - 1; i >= 0; i--)
                 {
-                    notes[i].OnUpdate(deltaTime, noteViewSpeed); //正常的OnUpdate
+                    notes[i].OnUpdate(currentTime,curViewTime); //正常的OnUpdate
                 }
             }
+        }
+
+        /// <summary>
+        /// 计算当前视图层时间
+        /// </summary>
+        private float CalCurViewTime(float currentTime,float mapSpeed)
+        {
+            NoteTimeAxisData curTimeAxis = layerData.TimeAxisDatas[curTimeAxisIndex];
+            int timeLength = curTimeAxis.EndTime - curTimeAxis.StartTime;
+            int targetTime = (int)(currentTime * 1000) - curTimeAxis.StartTime;
+            float finalCoefficient = mapSpeed * curTimeAxis.Coefficient;
+
+            int easingValue = EasingFunction.CalTimeAxisEasingValue(curTimeAxis.EasingType, finalCoefficient,
+                targetTime, timeLength);
+
+            int curViewTime = curTimeAxis.ViewStartTime + easingValue;
+            return curViewTime / 1000f;
         }
 
         public void OnInput(InputType inputType, InputMapData.Item item)
@@ -155,21 +148,23 @@ namespace CyanStars.Gameplay.Note
             if (list.Count == 0)
             {
                 return;
-                ;
             }
 
-
-            list.Sort((x, y) =>
+            if (list.Count > 1)
             {
-                if (Math.Abs(x.LogicTimer - y.LogicTimer) > float.Epsilon)
+                list.Sort((x, y) =>
                 {
-                    //第一优先级是离玩家的距离
-                    return x.LogicTimer.CompareTo(y.LogicTimer);
-                }
+                    if (Math.Abs(x.CurLogicTime - y.CurLogicTime) > float.Epsilon)
+                    {
+                        //第一优先级是离玩家的距离
+                        return x.CurLogicTime.CompareTo(y.CurLogicTime);
+                    }
 
-                //第二优先级是离屏幕中间的距离
-                return Math.Abs(x.Pos - NoteData.MiddlePos).CompareTo(Math.Abs(y.Pos - NoteData.MiddlePos));
-            });
+                    //第二优先级是离屏幕中间的距离
+                    return Math.Abs(x.Pos - NoteData.MiddlePos).CompareTo(Math.Abs(y.Pos - NoteData.MiddlePos));
+                });
+            }
+
 
             //一次输入信号 只发给一个note处理 避免同时有多个note响应
             list[0].OnInput(inputType);

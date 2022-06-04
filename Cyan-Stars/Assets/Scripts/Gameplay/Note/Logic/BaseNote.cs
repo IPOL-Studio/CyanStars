@@ -10,10 +10,6 @@ namespace CyanStars.Gameplay.Note
     /// </summary>
     public abstract class BaseNote
     {
-        /// <summary>
-        /// 音符数据
-        /// </summary>
-        protected NoteData Data;
 
         /// <summary>
         /// 此音符所属图层
@@ -21,9 +17,9 @@ namespace CyanStars.Gameplay.Note
         private NoteLayer layer;
 
         /// <summary>
-        /// 剩余时间的倒计时（主要用于逻辑层）
+        /// 音符数据
         /// </summary>
-        public float LogicTimer { get; private set; }
+        protected NoteData Data;
 
         /// <summary>
         /// 音符位置值
@@ -31,19 +27,46 @@ namespace CyanStars.Gameplay.Note
         public float Pos => Data.Pos;
 
         /// <summary>
-        /// 受速率缩放影响的剩余时间的倒计时（主要用于视图层）
+        /// 判定时间
         /// </summary>
-        public float ViewTimer;
+        protected float JudgeTime;
+
+        /// <summary>
+        /// 当前逻辑层时间
+        /// </summary>
+        public float CurLogicTime { get; private set; }
+
+        /// <summary>
+        /// 当前逻辑层时间和判定时间的距离
+        /// </summary>
+        public float Distance => JudgeTime - CurLogicTime;
+
+        /// <summary>
+        /// 视图层判定时间
+        /// </summary>
+        private float viewJudgeTime;
+
+        /// <summary>
+        /// 当前视图层时间
+        /// </summary>
+        public float CurViewTime { get; private set; }
+
+        /// <summary>
+        /// 当前视图层时间和视图层时间的距离
+        /// </summary>
+        public float ViewDistance => viewJudgeTime - CurViewTime;
+
+        /// <summary>
+        /// 是否创建过视图层物体
+        /// </summary>
+        private bool createdViewObject = false;
 
         /// <summary>
         /// 视图层物体
         /// </summary>
         protected IView ViewObject;
 
-        /// <summary>
-        /// 是否创建过视图层物体
-        /// </summary>
-        private bool createdViewObject = false;
+
 
         protected MusicGameModule DataModule;
 
@@ -52,10 +75,10 @@ namespace CyanStars.Gameplay.Note
         /// </summary>
         public virtual void Init(NoteData data, NoteLayer layer)
         {
-            this.Data = data;
+            Data = data;
             this.layer = layer;
-            LogicTimer = data.JudgeTime / 1000f;
-            ViewTimer = ViewHelper.GetViewStartTime(data);
+            JudgeTime = data.JudgeTime / 1000f;
+            viewJudgeTime = data.ViewJudgeTime / 1000f;
 
             DataModule = GameRoot.GetDataModule<MusicGameModule>();
 
@@ -69,40 +92,44 @@ namespace CyanStars.Gameplay.Note
         /// </summary>
         public virtual bool CanReceiveInput()
         {
-            return LogicTimer <= EvaluateHelper.CheckInputStartTime && LogicTimer >= EvaluateHelper.CheckInputEndTime;
+            return Distance <= EvaluateHelper.CheckInputStartDistance && Distance >= EvaluateHelper.CheckInputEndDistance;
         }
 
         /// <summary>
-        /// 是否与指定范围有重合
+        /// 是否在指定输入范围内
         /// </summary>
-        public virtual bool IsInRange(float min, float max)
+        public virtual bool IsInInputRange(float min, float max)
         {
+            float left = Data.Pos;
+            float right = Data.Pos + NoteData.NoteWidth;
+
             //3种情况可能重合 1.最左侧在范围内 2.最右侧在范围内 3.中间部分在范围内
-            bool result = (Data.Pos >= min && Data.Pos <= max)
-                          || ((Data.Pos + NoteData.NoteWidth) >= min && (Data.Pos + NoteData.NoteWidth) <= max)
-                          || (Data.Pos <= min && (Data.Pos + NoteData.NoteWidth) >= max);
+            bool result = (left >= min && left <= max)
+                          || (right >= min && right <= max)
+                          || (left <= min && right >= max);
 
             return result;
         }
 
-        public virtual void OnUpdate(float deltaTime, float noteSpeedRate)
+        public virtual void OnUpdate(float curLogicTime,float curViewTime)
         {
-            LogicTimer -= deltaTime;
-            ViewTimer -= deltaTime * noteSpeedRate;
-
-            TryCreateViewObject();
-
-            ViewObject?.OnUpdate(deltaTime * noteSpeedRate);
+            OnBaseUpdate(curLogicTime,curViewTime);
         }
 
-        public virtual void OnUpdateInAutoMode(float deltaTime, float noteSpeedRate)
+        public virtual void OnUpdateInAutoMode(float curLogicTime,float curViewTime)
         {
-            LogicTimer -= deltaTime;
-            ViewTimer -= deltaTime * noteSpeedRate;
+            OnBaseUpdate(curLogicTime,curViewTime);
+        }
+
+        private void OnBaseUpdate(float curLogicTime,float curViewTime)
+        {
+            CurLogicTime = curLogicTime;
+            float viewDeltaTime = curViewTime - CurViewTime;
+            CurViewTime = curViewTime;
 
             TryCreateViewObject();
 
-            ViewObject?.OnUpdate(deltaTime * noteSpeedRate);
+            ViewObject?.OnUpdate(ViewDistance,viewDeltaTime);
         }
 
         /// <summary>
@@ -110,10 +137,11 @@ namespace CyanStars.Gameplay.Note
         /// </summary>
         private async void TryCreateViewObject()
         {
-            if (ViewObject == null && ViewTimer <= ViewHelper.ViewObjectCreateTime && !createdViewObject)
+            if (!createdViewObject && ViewDistance <= ViewHelper.ViewObjectCreateDistance)
             {
                 //到创建视图层物体的时间点了
                 createdViewObject = true;
+
                 ViewObject = await ViewHelper.CreateViewObject(Data, this);
             }
         }

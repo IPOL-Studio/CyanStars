@@ -64,7 +64,7 @@ namespace CyanStars.Editor
                     //视图层结束时间
                     int timeLength = noteTimeAxisData.EndTime - noteTimeAxisData.StartTime;
                     int targetTime = timeLength;
-                    int easingValue = CalEasingValue(noteTimeAxisData.EasingType, finalCoefficient,
+                    int easingValue = EasingFunction.CalTimeAxisEasingValue(noteTimeAxisData.EasingType, finalCoefficient,
                         targetTime, timeLength);
 
                     //视图层结束时间 = 当前时轴的视图层开始时间 + 时轴的时间长度，应用时轴函数后的值
@@ -74,18 +74,18 @@ namespace CyanStars.Editor
                     {
                         //音符视图层时间
                         targetTime = noteData.JudgeTime - noteTimeAxisData.StartTime;
-                        easingValue = CalEasingValue(noteTimeAxisData.EasingType, finalCoefficient,
+                        easingValue = EasingFunction.CalTimeAxisEasingValue(noteTimeAxisData.EasingType, finalCoefficient,
                             targetTime, timeLength);
 
                         //音符视图层时间 = 当前时轴的视图层开始时间 + 当前时轴的开始时间到音符判定时间的时间长度，应用时轴函数后的值
-                        noteData.ViewTime = noteTimeAxisData.ViewStartTime + easingValue;
+                        noteData.ViewJudgeTime = noteTimeAxisData.ViewStartTime + easingValue;
 
                         if (noteData.Type == NoteType.Hold)
                         {
                             //Hold音符的视图层结束时间
                             //计算方式同上
                             targetTime = noteData.HoldEndTime - noteTimeAxisData.StartTime;
-                            easingValue = CalEasingValue(noteTimeAxisData.EasingType, finalCoefficient,
+                            easingValue = EasingFunction.CalTimeAxisEasingValue(noteTimeAxisData.EasingType, finalCoefficient,
                                 targetTime, timeLength);
                             noteData.HoldViewEndTime = noteTimeAxisData.ViewStartTime + easingValue;
                         }
@@ -94,27 +94,7 @@ namespace CyanStars.Editor
             }
         }
 
-        /// <summary>
-        /// 计算缓动函数结果值
-        /// </summary>
-        private int CalEasingValue(EasingFunctionType type,float coefficient,int targetTime,int timeLength)
-        {
-            int value = 0;
-            switch (type)
-            {
-                case EasingFunctionType.Linear:
-                    float endValue = timeLength;
-                    value = (int)EasingFunction.LinearFunction(0, endValue, targetTime, timeLength);
-                    value = (int)(value * coefficient);
-                    break;
 
-                default:
-                    Debug.LogError("EasingFunctionType.Linear以外未实现");
-                    break;
-            }
-
-            return value;
-        }
     }
 }
 

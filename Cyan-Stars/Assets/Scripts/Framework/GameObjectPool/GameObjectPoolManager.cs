@@ -139,7 +139,7 @@ namespace CyanStars.Framework.GameObjectPool
                 }
                 else
                 {
-                    Debug.LogError(prefabName + "重复调用了LoadAsset");
+                    //Debug.LogError(prefabName + "重复调用了LoadAsset");
                 }
             });
 

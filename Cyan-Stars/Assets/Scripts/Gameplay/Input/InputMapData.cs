@@ -29,9 +29,8 @@ namespace CyanStars.Gameplay.Input
 
             /// <summary>
             /// 映射范围的宽度
-            /// 对应NoteData中的Width
             /// </summary>
-            [Range(-1, 2)]
+            [Range(0, 1)]
             public float RangeWidth;
         }
 

@@ -151,7 +151,6 @@ namespace CyanStars.Gameplay.Procedure
             dataModule.CurTimelineLength = timelineData.Length / 1000f;
 
             dataModule.CalFullScore(timelineData.NoteTrackData);
-            ViewHelper.CalViewTime(timelineDataSo.Data.Length, timelineData.NoteTrackData);
 
             //歌词
             if (!string.IsNullOrEmpty(mapManifest.LrcFileName))

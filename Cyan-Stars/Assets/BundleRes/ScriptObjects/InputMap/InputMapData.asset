@@ -115,7 +115,7 @@ MonoBehaviour:
       RangeWidth: 0.075
     - Key: 32
       RangeMin: -1
-      RangeWidth: 0.5
+      RangeWidth: 0
     - Key: 32
       RangeMin: 2
-      RangeWidth: 0.5
+      RangeWidth: 0

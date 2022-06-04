@@ -105,5 +105,27 @@ namespace CyanStars.Gameplay.Misc
         {
             return ((e - b) / (dt * dt * dt)) * (-t + dt) * (-t + dt) * (-t + dt) + b;
         }
+
+        /// <summary>
+        /// 计算时轴目标时间对应的缓动函数结果值
+        /// </summary>
+        public static int CalTimeAxisEasingValue(EasingFunctionType type,float coefficient,int targetTime,int timeLength)
+        {
+            int value = 0;
+            switch (type)
+            {
+                case EasingFunctionType.Linear:
+                    float endValue = timeLength;
+                    value = (int)EasingFunction.LinearFunction(0, endValue, targetTime, timeLength);
+                    value = (int)(value * coefficient);
+                    break;
+
+                default:
+                    Debug.LogError("EasingFunctionType.Linear以外未实现");
+                    break;
+            }
+
+            return value;
+        }
     }
 }

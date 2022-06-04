@@ -12,9 +12,9 @@ namespace CyanStars.Gameplay.Note
     public class HoldNote : BaseNote
     {
         /// <summary>
-        /// Hold音符的检查输入结束时间
+        /// Hold音符的检查输入结束距离
         /// </summary>
-        private float holdCheckInputEndTime;
+        private float holdCheckInputEndDistance;
 
         /// <summary>
         /// Hold音符长度
@@ -22,19 +22,29 @@ namespace CyanStars.Gameplay.Note
         private float holdLength;
 
         /// <summary>
-        /// 头判是否成功
+        /// 是否进行过头判
         /// </summary>
-        private bool headSuccess;
+        private bool headChecked;
 
         /// <summary>
         /// 累计有效时长值(0-1)
         /// </summary>
         private float value;
 
-
+        /// <summary>
+        /// 按住的按键数量
+        /// </summary>
         private int pressCount;
-        private float pressTime;
-        private float pressStartTime;
+
+        /// <summary>
+        /// 按住时间累计长度
+        /// </summary>
+        private float pressTimeLength;
+
+        /// <summary>
+        /// 首次按下时间
+        /// </summary>
+        private float firstPressTime;
 
         public override void Init(NoteData data, NoteLayer layer)
         {
@@ -42,27 +52,29 @@ namespace CyanStars.Gameplay.Note
 
             holdLength = (data.HoldEndTime - data.JudgeTime) / 1000f;
             //hold结束时间点与长度相同
-            holdCheckInputEndTime = -holdLength;
+            holdCheckInputEndDistance = -holdLength;
         }
 
         public override bool CanReceiveInput()
         {
-            return LogicTimer <= EvaluateHelper.CheckInputStartTime && LogicTimer >= holdCheckInputEndTime;
+            return Distance <= EvaluateHelper.CheckInputStartDistance && Distance >= holdCheckInputEndDistance;
         }
 
-        public override void OnUpdate(float deltaTime, float noteSpeedRate)
+        public override void OnUpdate(float curLogicTime,float curViewTime)
         {
-            base.OnUpdate(deltaTime, noteSpeedRate);
+            float deltaTime = curLogicTime - CurLogicTime;
 
-            if (pressCount > 0 && LogicTimer <= 0 || DataModule.IsAutoMode)
+            base.OnUpdate(curLogicTime, curViewTime);
+
+            if (pressCount > 0 && Distance <= 0)
             {
-                //只在音符区域内计算有效时间
-                pressTime += deltaTime;
+                //只在hold音符区域内有按下时，计算有效时长
+                pressTimeLength += deltaTime;
             }
 
-            if (LogicTimer < holdCheckInputEndTime)
+            if (Distance < holdCheckInputEndDistance)
             {
-                if (!headSuccess)
+                if (!headChecked)
                 {
                     //被漏掉了 miss
                     //Debug.LogError($"Hold音符miss：{data}");
@@ -73,12 +85,20 @@ namespace CyanStars.Gameplay.Note
                 else
                 {
                     ViewObject.DestroyEffectObj();
-                    if (pressStartTime < 0) value = pressTime / (pressStartTime - LogicTimer);
-                    else value = pressTime / holdLength;
+                    if (firstPressTime > JudgeTime)
+                    {
+                        //首次按下时间在判定时间之后的情况下 以首次按下时间为起点计算总长度
+                        value = pressTimeLength / (Data.HoldEndTime/1000f - firstPressTime);
+                    }
+                    else
+                    {
+                        //否则以hold长度作为总长度
+                        value = pressTimeLength / holdLength;
+                    }
 
                     EvaluateType et = EvaluateHelper.GetHoldEvaluate(value);
                     //Debug.LogError($"Hold音符命中，百分比:{value},评价:{et},{data}");
-                    LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(Data, et, pressTime, value));
+                    LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(Data, et, pressTimeLength, value));
                     DataModule.MaxScore++;
                     if (et == EvaluateType.Exact)
                         DataModule.RefreshPlayingData(0, 1, et, float.MaxValue);
@@ -94,20 +114,20 @@ namespace CyanStars.Gameplay.Note
             }
         }
 
-        public override void OnUpdateInAutoMode(float deltaTime, float noteSpeedRate)
+        public override void OnUpdateInAutoMode(float curLogicTime,float curViewTime)
         {
-            base.OnUpdateInAutoMode(deltaTime, noteSpeedRate);
+            base.OnUpdateInAutoMode(curLogicTime, curViewTime);
 
-            if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && !headSuccess)
+            if (EvaluateHelper.GetTapEvaluate(Distance) == EvaluateType.Exact && !headChecked)
             {
-                headSuccess = true;
+                headChecked = true;
                 DataModule.MaxScore++;
                 LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(Data, EvaluateType.Exact));
                 DataModule.RefreshPlayingData(1, 1, EvaluateType.Exact, 0);
                 ViewObject.CreateEffectObj(NoteData.NoteWidth);
             }
 
-            if (LogicTimer < holdCheckInputEndTime)
+            if (Distance < holdCheckInputEndDistance)
             {
                 ViewObject.DestroyEffectObj();
                 DataModule.MaxScore++;
@@ -125,10 +145,12 @@ namespace CyanStars.Gameplay.Note
             {
                 case InputType.Down:
 
-                    if (!headSuccess)
+                    if (!headChecked)
                     {
+                        headChecked = true;
+
                         //判断头判评价
-                        EvaluateType et = EvaluateHelper.GetTapEvaluate(LogicTimer);
+                        EvaluateType et = EvaluateHelper.GetTapEvaluate(Distance);
                         if (et == EvaluateType.Bad || et == EvaluateType.Miss)
                         {
                             //头判失败直接销毁
@@ -137,25 +159,28 @@ namespace CyanStars.Gameplay.Note
                             LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(Data, et));
                             DataModule.MaxScore += 2;
                             DataModule.RefreshPlayingData(-1, -1, et, float.MaxValue);
-                            return;
+                        }
+                        else
+                        {
+                            //头判成功
+                            firstPressTime = CurLogicTime;
+
+                            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(Data, et));
+                            DataModule.MaxScore++;
+                            if (et == EvaluateType.Exact)
+                                DataModule.RefreshPlayingData(1, 1, et, CurLogicTime);
+                            else if (et == EvaluateType.Great)
+                                DataModule.RefreshPlayingData(1, 0.75f, et, CurLogicTime);
+                            else if (et == EvaluateType.Right)
+                                DataModule.RefreshPlayingData(1, 0.5f, et, CurLogicTime);
                         }
 
-                        //Debug.LogError($"Hold头判成功,时间：{LogicTimer}，{data}");
-                        LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(Data, et));
-                        DataModule.MaxScore++;
-                        if (et == EvaluateType.Exact)
-                            DataModule.RefreshPlayingData(1, 1, et, LogicTimer);
-                        else if (et == EvaluateType.Great)
-                            DataModule.RefreshPlayingData(1, 0.75f, et, LogicTimer);
-                        else if (et == EvaluateType.Right)
-                            DataModule.RefreshPlayingData(1, 0.5f, et, LogicTimer);
-                        pressStartTime = LogicTimer;
+
                     }
 
-                    //头判成功
-                    headSuccess = true;
                     if (pressCount == 0) ViewObject.CreateEffectObj(NoteData.NoteWidth);
                     pressCount++;
+
                     break;
 
                 case InputType.Up:
