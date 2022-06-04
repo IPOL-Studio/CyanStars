@@ -179,11 +179,11 @@ namespace CyanStars.Gameplay.Note
                             LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(Data, et));
                             DataModule.MaxScore++;
                             if (et == EvaluateType.Exact)
-                                DataModule.RefreshPlayingData(1, 1, et, CurLogicTime);
+                                DataModule.RefreshPlayingData(1, 1, et, Distance);
                             else if (et == EvaluateType.Great)
-                                DataModule.RefreshPlayingData(1, 0.75f, et, CurLogicTime);
+                                DataModule.RefreshPlayingData(1, 0.75f, et, Distance);
                             else if (et == EvaluateType.Right)
-                                DataModule.RefreshPlayingData(1, 0.5f, et, CurLogicTime);
+                                DataModule.RefreshPlayingData(1, 0.5f, et, Distance);
                         }
 
 

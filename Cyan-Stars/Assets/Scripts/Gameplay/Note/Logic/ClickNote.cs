@@ -113,7 +113,7 @@ namespace CyanStars.Gameplay.Note
                             LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteHeadJudgeLogArgs(Data, et));
                             DataModule.MaxScore += 1;
                             DataModule.RefreshPlayingData(-1, -1, et,
-                                et == EvaluateType.Miss ? float.MaxValue : CurLogicTime);
+                                et == EvaluateType.Miss ? float.MaxValue : Distance);
                         }
                     }
 

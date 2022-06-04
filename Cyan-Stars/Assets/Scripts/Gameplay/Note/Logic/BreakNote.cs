@@ -68,7 +68,7 @@ namespace CyanStars.Gameplay.Note
             DataModule.MaxScore += Data.GetFullScore(); //更新理论最高分
             DataModule.RefreshPlayingData(addCombo: 1,
                 addScore: EvaluateHelper.GetScoreWithEvaluate(evaluateType) * Data.GetMagnification(),
-                grade: evaluateType, currentDeviation: CurLogicTime); //更新数据
+                grade: evaluateType, currentDeviation: Distance); //更新数据
         }
     }
 }
