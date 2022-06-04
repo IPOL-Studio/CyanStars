@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: InternalMapList
   m_EditorClassIdentifier: 
   InternalMaps:
+  - Name: "\u6D4B\u8BD5\u8C31"
+    LrcFileName: Assets/BundleRes/MusicGameMap/Map_01/LrcText.txt
+    MusicFileName: Assets/BundleRes/MusicGameMap/Map_01/Music.ogg
+    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_00/TimelineData.asset
   - Name: "\u6DF1\u7A7A\u65C1\u767D"
-    Duration: 148000
     LrcFileName: Assets/BundleRes/MusicGameMap/Map_01/LrcText.txt
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_01/Music.ogg
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_01/TimelineData.asset
   - Name: "\u5E7D\u7075\u5C11\u5973"
-    Duration: 205049
     LrcFileName: 
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_02/Music.ogg
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_02/TimelineData.asset

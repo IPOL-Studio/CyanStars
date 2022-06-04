@@ -3,6 +3,7 @@ using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Logger;
 using CyanStars.Gameplay.Evaluate;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.Note
 {
@@ -16,46 +17,46 @@ namespace CyanStars.Gameplay.Note
         /// </summary>
         private float downTimePoint;
 
-        bool headSuccess; //头部命中
+        /// <summary>
+        /// 是否进行过头判
+        /// </summary>
+        private bool headChecked;
 
-        public override void OnUpdate(float deltaTime, float noteSpeedRate)
+        public override void OnUpdate(float curLogicTime,float curViewTime)
         {
-            base.OnUpdate(deltaTime, noteSpeedRate);
+            base.OnUpdate(curLogicTime, curViewTime);
 
-            if (LogicTimer < EvaluateHelper.CheckInputEndTime && !headSuccess)
+            if (Distance < EvaluateHelper.CheckInputEndDistance)
             {
-                //没接住 miss
-                DestroySelf();
-                //Debug.LogError($"Click音符miss：{data}");
-                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteJudgeLogArgs(Data, EvaluateType.Miss, 0));
-                DataModule.MaxScore += 2;
-                DataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);
-                return;
-            }
+                if (!headChecked)
+                {
+                    //没接住 miss
+                    DestroySelf();
 
-            if (LogicTimer < EvaluateHelper.CheckInputEndTime)
-            {
-                float time = downTimePoint - LogicTimer;
-                ViewObject.CreateEffectObj(NoteData.NoteWidth);
-                EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(time);
-                DestroySelf(false);
-                //Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
-                DataModule.MaxScore += 1;
-                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteJudgeLogArgs(Data, evaluateType, time));
-                if (evaluateType == EvaluateType.Exact)
-                    DataModule.RefreshPlayingData(0, 1, evaluateType, float.MaxValue);
+                    NoteJudger.ClickMiss(Data);
+                }
                 else
-                    DataModule.RefreshPlayingData(0, 0.5f, evaluateType, float.MaxValue);
+                {
+                    //头判成功过且超时未抬起 结算尾判
+                    ViewObject.CreateEffectObj(NoteData.NoteWidth);
+                    DestroySelf(false);
+
+                    float timeLength = curLogicTime - downTimePoint;
+                    NoteJudger.ClickTailJudge(Data,timeLength);
+                }
+
             }
+
+
         }
 
-        public override void OnUpdateInAutoMode(float deltaTime, float noteSpeedRate)
+        public override void OnUpdateInAutoMode(float curLogicTime,float curViewTime)
         {
-            base.OnUpdateInAutoMode(deltaTime, noteSpeedRate);
+            base.OnUpdateInAutoMode(curLogicTime, curViewTime);
 
-            if (EvaluateHelper.GetTapEvaluate(LogicTimer) == EvaluateType.Exact && !headSuccess)
+            if (EvaluateHelper.GetTapEvaluate(Distance) == EvaluateType.Exact && !headChecked)
             {
-                headSuccess = true;
+                headChecked = true;
                 DataModule.MaxScore += 2;
                 LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteJudgeLogArgs(Data, EvaluateType.Exact, 0));
                 DataModule.RefreshPlayingData(1, 2, EvaluateType.Exact, 0);
@@ -71,56 +72,38 @@ namespace CyanStars.Gameplay.Note
             switch (inputType)
             {
                 case InputType.Down:
-                    if (!headSuccess)
+
+                    downTimePoint = CurLogicTime;
+
+                    if (!headChecked)
                     {
-                        headSuccess = true;
-                        ViewObject.CreateEffectObj(NoteData.NoteWidth);
-                        EvaluateType et = EvaluateHelper.GetTapEvaluate(LogicTimer);
-                        DataModule.MaxScore += 1;
-                        if (et != EvaluateType.Bad && et != EvaluateType.Miss)
-                        {
-                            if (et == EvaluateType.Exact)
-                                DataModule.RefreshPlayingData(1, 1, et, LogicTimer);
-                            else if (et == EvaluateType.Great)
-                                DataModule.RefreshPlayingData(1, 0.75f, et, LogicTimer);
-                            else if (et == EvaluateType.Right)
-                                DataModule.RefreshPlayingData(1, 0.5f, et, LogicTimer);
-                            //Debug.LogError($"Click音符头判命中：{data}");
-                            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteHeadJudgeLogArgs(Data, et));
-                        }
-                        else
+                        headChecked = true;
+
+                        //处理头判
+                        EvaluateType et =  NoteJudger.ClickHeadJudge(Data, Distance);
+                        if (et == EvaluateType.Bad || et == EvaluateType.Miss)
                         {
                             //头判失败直接销毁
+                            ViewObject.CreateEffectObj(NoteData.NoteWidth);
                             DestroySelf(false);
-                            //Debug.LogError($"Click头判失败,时间：{LogicTimer}，{data}");
-                            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteHeadJudgeLogArgs(Data, et));
-                            DataModule.MaxScore += 1;
-                            DataModule.RefreshPlayingData(-1, -1, et,
-                                et == EvaluateType.Miss ? float.MaxValue : LogicTimer);
                         }
-                    }
-                    else
-                    {
-                        downTimePoint = LogicTimer;
                     }
 
                     break;
                 case InputType.Up:
-                    if (!headSuccess) return;
-                    float time = downTimePoint - LogicTimer;
+
+                    if (!headChecked) return;
+
                     ViewObject.CreateEffectObj(NoteData.NoteWidth);
                     DestroySelf(false);
-                    //Debug.LogError($"Click音符命中，按住时间:{time}：{data}");
-                    DataModule.MaxScore += 1;
-                    EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(time);
-                    LoggerManager.GetOrCreateLogger<NoteLogger>()
-                        .Log(new ClickNoteJudgeLogArgs(Data, evaluateType, time));
-                    if (evaluateType == EvaluateType.Exact)
-                        DataModule.RefreshPlayingData(0, 1, evaluateType, float.MaxValue);
-                    else
-                        DataModule.RefreshPlayingData(0, 0.5f, evaluateType, float.MaxValue);
+
+                    float timeLength = CurLogicTime - downTimePoint;
+                    NoteJudger.ClickTailJudge(Data,timeLength);
+
                     break;
             }
         }
+
+
     }
 }

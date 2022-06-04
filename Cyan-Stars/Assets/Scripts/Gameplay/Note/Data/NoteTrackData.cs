@@ -17,9 +17,9 @@ namespace CyanStars.Gameplay.Data
         public float BaseSpeed = 1;
 
         /// <summary>
-        /// 音符速率
+        /// 谱面整体速率
         /// </summary>
-        [Header("音符速率")]
+        [Header("谱面整体速率")]
         public float SpeedRate = 1;
 
         /// <summary>

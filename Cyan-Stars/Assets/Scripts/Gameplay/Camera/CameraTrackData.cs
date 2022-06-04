@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Misc;
+using UnityEngine.Serialization;
 
 namespace CyanStars.Gameplay.Camera
 {
@@ -25,11 +26,10 @@ namespace CyanStars.Gameplay.Camera
 
             [Header("目标")]
             public Vector3 Position;
-
             public Vector3 Rotation;
 
             [Header("缓动方式")]
-            public SmoothFunctionType SmoothType;
+            public EasingFunctionType EasingType;
         }
 
         [Header("关键帧")]
