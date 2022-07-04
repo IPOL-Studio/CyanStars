@@ -25,3 +25,7 @@ MonoBehaviour:
     LrcFileName: 
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_02/Music.ogg
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_02/TimelineData.asset
+  - Name: "\u6EE1\u5929\u661F"
+    LrcFileName: 
+    MusicFileName: Assets/BundleRes/MusicGameMap/Map_03/Music.ogg
+    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_03/TimelineData.asset
