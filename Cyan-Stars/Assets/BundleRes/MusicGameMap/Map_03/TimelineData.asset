@@ -2340,26 +2340,34 @@ MonoBehaviour:
       DefaultPosition: {x: 0, y: 15, z: -2.5}
       DefaultRotation: {x: 45, y: 0, z: 0}
       KeyFrames:
-      - Time: 51784
+      - Time: 80300
         Position: {x: 0, y: 0, z: 0}
         Rotation: {x: 45, y: 0, z: 0}
         EasingType: 0
-      - Time: 54364
+      - Time: 82800
         Position: {x: 0, y: -2, z: 0}
         Rotation: {x: 30, y: 0, z: 0}
+        EasingType: 3
+      - Time: 101500
+        Position: {x: 0, y: -2, z: 0}
+        Rotation: {x: 30, y: 0, z: 0}
+        EasingType: 0
+      - Time: 103000
+        Position: {x: 0, y: 0, z: 0}
+        Rotation: {x: 45, y: 0, z: 0}
         EasingType: 3
     EffectTrackData:
       BPM: 23.25
       KeyFrames:
       - Type: 0
-        Time: 128.25
+        Time: 128
         Index: 0
         Position: {x: 0, y: 0, z: 0}
         Rotation: {x: 0, y: 0, z: 0}
         ParticleCount: 0
-        Duration: 100000
+        Duration: 175870
         Color: {r: 1, g: 1, b: 1, a: 1}
-        Intensity: 0.1
+        Intensity: 0.6
         Frequency: 0
         MaxAlpha: 1
         MinAlpha: 0
