@@ -58,6 +58,7 @@ namespace CyanStars.Gameplay.Procedure
         {
             //监听事件
             GameRoot.Event.AddListener(EventConst.MusicGameStartEvent, StartMusicGame);
+            GameRoot.Event.AddListener(InputEventArgs.EventName,OnInput);
 
             //打开游戏场景
             bool success = await GameRoot.Asset.AwaitLoadScene("Assets/BundleRes/Scenes/Dark.unity");
@@ -75,8 +76,12 @@ namespace CyanStars.Gameplay.Procedure
             }
         }
 
+
+
         public override void OnUpdate(float deltaTime)
         {
+
+
             if (isStartGame && timeline != null)
             {
                 CheckKeyboardInput();
@@ -109,6 +114,7 @@ namespace CyanStars.Gameplay.Procedure
             isStartGame = false;
 
             GameRoot.Event.RemoveListener(EventConst.MusicGameStartEvent, StartMusicGame);
+            GameRoot.Event.RemoveListener(InputEventArgs.EventName,OnInput);
             GameRoot.Asset.UnloadScene("Assets/BundleRes/Scenes/Dark.unity");
         }
 
@@ -121,6 +127,17 @@ namespace CyanStars.Gameplay.Procedure
             CreateTimeline();
         }
 
+        private void OnInput(object sender, EventArgs e)
+        {
+            if (!isStartGame || timeline == null)
+            {
+                return;
+            }
+
+            InputEventArgs args = (InputEventArgs)e;
+            ReceiveInput(args.Type,args.Item);
+        }
+
         /// <summary>
         /// 获取场景物体与组件
         /// </summary>
@@ -131,6 +148,7 @@ namespace CyanStars.Gameplay.Procedure
             ViewHelper.EffectRoot = sceneRoot.transform.Find("EffectRoot");
             audioSource = sceneRoot.GetComponent<AudioSource>();
             keyViewController = sceneRoot.transform.Find("KeyViewController").GetComponent<KeyViewController>();
+
         }
 
         /// <summary>
@@ -141,7 +159,7 @@ namespace CyanStars.Gameplay.Procedure
             //输入映射数据
             InputMapSO inputMapSo = await GameRoot.Asset.AwaitLoadAsset<InputMapSO>(dataModule.InputMapDataName, sceneRoot);
             inputMapData = inputMapSo.InputMapData;
-
+            sceneRoot.transform.Find("TouchInputReceiverGenerator").GetComponent<TouchInputReceiverGenerator>().SetInputMapData(inputMapSo.InputMapData);
             //谱面清单
             mapManifest = dataModule.GetMap(dataModule.MapIndex);
 
@@ -258,8 +276,6 @@ namespace CyanStars.Gameplay.Procedure
         /// </summary>
         private void CheckKeyboardInput()
         {
-            if (dataModule.IsAutoMode) return;
-
             for (int i = 0; i < inputMapData.Items.Count; i++)
             {
                 InputMapData.Item item = inputMapData.Items[i];
@@ -267,7 +283,6 @@ namespace CyanStars.Gameplay.Procedure
                 {
                     pressedKeySet.Add(item.Key);
                     ReceiveInput(InputType.Down, item);
-                    keyViewController.KeyDown(item);
                     continue;
                 }
 
@@ -280,7 +295,6 @@ namespace CyanStars.Gameplay.Procedure
                 if (pressedKeySet.Remove(item.Key))
                 {
                     ReceiveInput(InputType.Up, item);
-                    keyViewController.KeyUp(item);
                 }
             }
         }
@@ -290,10 +304,30 @@ namespace CyanStars.Gameplay.Procedure
         /// </summary>
         private void ReceiveInput(InputType inputType, InputMapData.Item item)
         {
+
+
+            if (dataModule.IsAutoMode)
+            {
+                return;
+            }
+
             if (noteTrack == null)
             {
                 Debug.LogError("noteTrack为null");
                 return;
+            }
+
+            switch (inputType)
+            {
+                case InputType.Down:
+                    keyViewController.KeyDown(item);
+                    break;
+
+                case InputType.Up:
+                    keyViewController.KeyUp(item);
+                    break;
+
+
             }
 
             noteTrack.OnInput(inputType, item);
