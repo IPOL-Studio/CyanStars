@@ -2341,5 +2341,17 @@ MonoBehaviour:
       DefaultRotation: {x: 45, y: 0, z: 0}
       KeyFrames: []
     EffectTrackData:
-      BPM: 30.5
-      KeyFrames: []
+      BPM: 23.25
+      KeyFrames:
+      - Type: 0
+        Time: 128.25
+        Index: 0
+        Position: {x: 0, y: 0, z: 0}
+        Rotation: {x: 0, y: 0, z: 0}
+        ParticleCount: 0
+        Duration: 100000
+        Color: {r: 1, g: 1, b: 1, a: 1}
+        Intensity: 0.1
+        Frequency: 0
+        MaxAlpha: 1
+        MinAlpha: 0
