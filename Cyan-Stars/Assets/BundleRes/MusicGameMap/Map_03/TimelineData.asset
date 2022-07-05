@@ -2339,7 +2339,15 @@ MonoBehaviour:
     CameraTrackData:
       DefaultPosition: {x: 0, y: 15, z: -2.5}
       DefaultRotation: {x: 45, y: 0, z: 0}
-      KeyFrames: []
+      KeyFrames:
+      - Time: 51784
+        Position: {x: 0, y: 0, z: 0}
+        Rotation: {x: 45, y: 0, z: 0}
+        EasingType: 0
+      - Time: 54364
+        Position: {x: 0, y: -2, z: 0}
+        Rotation: {x: 30, y: 0, z: 0}
+        EasingType: 3
     EffectTrackData:
       BPM: 23.25
       KeyFrames:
