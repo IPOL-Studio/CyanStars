@@ -112,7 +112,7 @@ namespace CyanStars.Gameplay.Note
             if (EvaluateHelper.GetTapEvaluate(Distance) == EvaluateType.Exact && !headChecked)
             {
                 headChecked = true;
-                ViewObject.CreateEffectObj(NoteData.NoteWidth);
+                ViewObject?.CreateEffectObj(NoteData.NoteWidth);
 
                 NoteJudger.HoldHeadJudge(Data, Distance);
             }
