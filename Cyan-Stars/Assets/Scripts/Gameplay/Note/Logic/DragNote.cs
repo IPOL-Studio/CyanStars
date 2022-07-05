@@ -48,7 +48,7 @@ namespace CyanStars.Gameplay.Note
                 ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
                 DestroySelf(false); //立即销毁
 
-                NoteJudger.DragJudge(Data,true);
+                NoteJudger.DragJudge(Data,false);
             }
         }
 
