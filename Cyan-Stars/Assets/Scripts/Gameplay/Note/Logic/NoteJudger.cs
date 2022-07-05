@@ -1,4 +1,4 @@
-﻿using CyanStars.Framework;
+using CyanStars.Framework;
 using CyanStars.Framework.Logger;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Evaluate;
