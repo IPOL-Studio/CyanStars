@@ -29,7 +29,8 @@ namespace CyanStars.Gameplay.UI
 
             BtnStart.onClick.AddListener(() =>
             {
-                GameRoot.Event.Dispatch(EventConst.MusicGameStartEvent, this, System.EventArgs.Empty);
+                GameRoot.Event.Dispatch(EventConst.MusicGameStartEvent, this, EmptyEventArgs.Create());
+                BtnStart.gameObject.SetActive(false);
             });
         }
 

@@ -184,7 +184,7 @@ namespace CyanStars.Gameplay
                 DeviationList.Add(currentDeviation);
             }
 
-            GameRoot.Event.Dispatch(EventConst.MusicGameDataRefreshEvent, this, EventArgs.Empty);
+            GameRoot.Event.Dispatch(EventConst.MusicGameDataRefreshEvent, this,EmptyEventArgs.Create());
         }
     }
 }
