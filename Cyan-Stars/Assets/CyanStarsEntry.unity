@@ -527,7 +527,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutoMode: 1
-  MapIndex: 2
+  MapIndex: 1
 --- !u!1 &1651403616
 GameObject:
   m_ObjectHideFlags: 0

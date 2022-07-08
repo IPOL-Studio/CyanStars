@@ -1,0 +1,104 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using CyanStars.Framework.Asset;
+using CyanStars.Gameplay.Dialogue;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.Events;
+
+namespace CyanStars.Framework.Dialogue
+{
+    public class DialogueManager : MonoBehaviour
+    {
+        private const string spritesScriptObjectDataPath = "Assets/BundleRes/ScriptObjects/DialogueSprites/SpritesScriptObject.asset";
+
+        /// <summary>
+        /// 精灵字典
+        /// </summary>
+        public Dictionary<string, Sprite> spriteDictionary { get; private set; }
+
+        /// <summary>
+        /// 当前章节的json数据，从选择章节的地方传入
+        /// </summary>
+        public List<Cell> dialogueContentCells { get; private set; }
+
+        public event UnityAction switchDialog;
+
+        public int dialogIndex { get; set; }
+
+        #region SingletonPattern
+        private static DialogueManager _instance = null;
+        public static DialogueManager Instance
+        {
+            get
+            {
+                if(_instance == null)
+                {
+                    _instance = GameObject.FindObjectOfType<DialogueManager>();
+                    if(_instance == null)
+                    {
+                        GameObject go = new GameObject("DialogueManager");
+                        _instance = go.AddComponent<DialogueManager>();
+                    }
+                }
+                return _instance;
+            }
+        }
+        #endregion
+
+        private void Awake()
+        {
+            if (_instance == null)
+            {
+                _instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        private void Start()
+        {
+            Init();
+        }
+
+        private void Update()
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                switchDialog?.Invoke();
+            }
+        }
+
+        private void Init()
+        {
+            GetTextContent();
+            spriteDictionary = InitSpriteDictionary(spritesScriptObjectDataPath);
+            dialogIndex = 0;
+        }
+
+        /// <summary>
+        /// 获取对话内容
+        /// </summary>
+        /// TODO:如果会加载大量的文本，需要拆分，就一般来讲不会这么夸张吧（大概~~~）
+        private void GetTextContent()
+        {
+            dialogueContentCells = AnalysisJSON.LoadJson(FindObjectOfType<JsonInformation>().GetJsonDataFilePath());
+        }
+
+        /// <summary>
+        /// 初始化精灵表字典
+        /// </summary>
+        /// <param name="dataPath">精灵表地址</param>
+        /// TODO:通过读取的Json来获取精灵（如果图量很大的话）
+        private Dictionary<string, Sprite> InitSpriteDictionary(string dataPath)
+        {
+            DialogueSpritesListObject dialogueSpritesListObject = AssetDatabase.LoadAssetAtPath<DialogueSpritesListObject>(dataPath);
+            return dialogueSpritesListObject.sprites.ToDictionary(sprite => sprite.name);
+        }
+    }
+}
+
+

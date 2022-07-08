@@ -3,15 +3,33 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-public class TextContent
+[System.Serializable]
+class Cell
 {
-    public List<string> textContent = new List<string>();
+    public string sign;
+    public string id;
+    public string name;
+    public string pos;
+    public string text;
+    public string color;
+    public string link;
+    public string backgroundTex;
+    public string leftVerticalDrawing;
+    public string rightVerticalDrawing;
+    public string stop;
+    public string effect;
+    public string jump;
+}
+[System.Serializable]
+class TextContent
+{
+    public List<Cell> textContent = new List<Cell>();
 }
 
 public class CSV2JSON : EditorWindow
 {
     public TextAsset csv;
-    public TextContent textContent = new TextContent();
+    private TextContent textContent = new TextContent();
 
     [MenuItem("临时位置/CSV转JSON")]
     static void Init()
@@ -41,17 +59,37 @@ public class CSV2JSON : EditorWindow
         }
     }
 
+/// <summary>
+/// 创建JSON
+/// </summary>
+/// <param name="textAsset">传入UTF-8CSV</param>
     public void CreateJSON(TextAsset textAsset)
     {
-        string[] rows = textAsset.text.Split('\n');
-        foreach (string row in rows)
-        {
-            textContent.textContent.Add(row);
-        }
-        // string json = JsonConvert.SerializeObject(textContent);
-        string json = JsonUtility.ToJson(textContent, true);
         textContent.textContent.Clear();
-        string filepath = Application.streamingAssetsPath + "/textjson.json";
+        string[] rows = textAsset.text.Split('\n');
+        for(int i = 1; i < rows.Length - 1; i++)
+        {
+            string[] cells = rows[i].Replace("\r", "").Split(',');
+            Cell cell = new Cell();
+            cell.sign = cells[0];
+            cell.id = cells[1];
+            cell.name = cells[2];
+            cell.pos = cells[3];
+            cell.text = cells[4];
+            cell.color = cells[5];
+            cell.link = cells[6];
+            cell.backgroundTex = cells[7];
+            cell.leftVerticalDrawing = cells[8];
+            cell.rightVerticalDrawing = cells[9];
+            cell.stop = cells[10];
+            cell.effect = cells[11];
+            cell.jump = cells[12];
+            textContent.textContent.Add(cell);
+        }
+
+        string json = JsonUtility.ToJson(textContent, true);
+        string filepath = Application.streamingAssetsPath + "/" + csv.name + ".json";
+
         using (StreamWriter streamWriter = new StreamWriter(filepath))
         {
             streamWriter.WriteLine(json);

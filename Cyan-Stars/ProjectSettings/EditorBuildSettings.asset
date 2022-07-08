@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/BundleRes/Scenes/Dark.unity
     guid: 162c9ad03afa17440ab443de3bce2c16
+  - enabled: 1
+    path: Assets/BundleRes/Scenes/Dialogue.unity
+    guid: cd810a091e41038409c0062fbd668c5a
   m_configObjects: {}
