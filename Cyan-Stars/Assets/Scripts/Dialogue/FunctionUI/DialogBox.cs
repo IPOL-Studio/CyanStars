@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Linq;
-using CyanStars.Framework.Dialogue;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace CyanStars.Gameplay.Dialogue
+namespace CyanStars.Dialogue
 {
     public static class Colors
     {
@@ -23,19 +22,38 @@ namespace CyanStars.Gameplay.Dialogue
     {
         private TMP_Text text;
         private Cell cell = new Cell();
+        private int index;
+        private bool inDialogue;
         protected override void Start()
         {
             text = GetComponentInChildren<TMP_Text>();
+            inDialogue = false;
+            index = 0;
             DialogueManager.Instance.switchDialog += SwitchDialog;
         }
 
-        public void SwitchDialog()
+        private void SwitchDialog(int startIndex)
         {
             text.text = string.Empty;
-            StartCoroutine(Dialogue());
+            if (inDialogue)
+            {
+                StopAllCoroutines();
+                text.text = string.Empty;
+                inDialogue = true;
+                index = startIndex;
+                StartCoroutine(DirectDisplayDialogue());
+            }
+            else
+            {
+                index = startIndex;
+                StartCoroutine(DisplayDialogue());
+            }
         }
 
-        public void SetColor()
+        /// <summary>
+        /// 设置富文本颜色前缀
+        /// </summary>
+        private void SetColor()
         {
             switch (cell.color)
             {
@@ -70,13 +88,14 @@ namespace CyanStars.Gameplay.Dialogue
         }
 
         /// <summary>
-        /// 切换对话的功能协程
+        /// 设置对话(有顿字)
         /// </summary>
         /// <returns></returns>
-        /// TODO:处理连续点击鼠标的问题
-        IEnumerator Dialogue()
+        private IEnumerator DisplayDialogue()
         {
-            cell = DialogueManager.Instance.dialogueContentCells[DialogueManager.Instance.dialogIndex];
+            inDialogue = true;
+
+            cell = DialogueManager.Instance.dialogueContentCells[index];
 
             if (cell.stop != 0)
             {
@@ -90,16 +109,44 @@ namespace CyanStars.Gameplay.Dialogue
             else
             {
                 SetColor();
-                text.text += cell.text;
+                text.text += cell.text + "</color>";
             }
 
-            DialogueManager.Instance.dialogIndex = cell.jump;
+            index = cell.jump;
 
             if ("是".Equals(cell.link))
             {
-                cell = DialogueManager.Instance.dialogueContentCells[DialogueManager.Instance.dialogIndex];
-                StartCoroutine(Dialogue());
+                cell = DialogueManager.Instance.dialogueContentCells[index];
+                yield return StartCoroutine(DisplayDialogue());
             }
+
+            DialogueManager.Instance.dialogIndex = index;
+            inDialogue = false;
+        }
+
+        /// <summary>
+        /// 设置对话(无顿字)
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator DirectDisplayDialogue()
+        {
+            inDialogue = true;
+
+            cell = DialogueManager.Instance.dialogueContentCells[index];
+
+            SetColor();
+            text.text += cell.text + "</color>";
+
+            index = cell.jump;
+
+            if ("是".Equals(cell.link))
+            {
+                cell = DialogueManager.Instance.dialogueContentCells[index];
+                yield return StartCoroutine(DirectDisplayDialogue());
+            }
+
+            DialogueManager.Instance.dialogIndex = index;
+            inDialogue = false;
         }
     }
 }

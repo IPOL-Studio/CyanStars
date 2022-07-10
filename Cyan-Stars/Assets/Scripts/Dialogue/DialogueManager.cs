@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CyanStars.Framework.Asset;
-using CyanStars.Gameplay.Dialogue;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace CyanStars.Framework.Dialogue
+namespace CyanStars.Dialogue
 {
     public class DialogueManager : MonoBehaviour
     {
@@ -19,11 +17,11 @@ namespace CyanStars.Framework.Dialogue
         public Dictionary<string, Sprite> spriteDictionary { get; private set; }
 
         /// <summary>
-        /// 当前章节的json数据，从选择章节的地方传入
+        /// 当前章节的数据，从选择章节的地方传入
         /// </summary>
         public List<Cell> dialogueContentCells { get; private set; }
 
-        public event UnityAction switchDialog;
+        public event UnityAction<int> switchDialog;
 
         public int dialogIndex { get; set; }
 
@@ -64,19 +62,19 @@ namespace CyanStars.Framework.Dialogue
             Init();
         }
 
-        private void Update()
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                switchDialog?.Invoke();
-            }
-        }
-
         private void Init()
         {
             GetTextContent();
             spriteDictionary = InitSpriteDictionary(spritesScriptObjectDataPath);
             dialogIndex = 0;
+        }
+
+        private void Update()
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                switchDialog?.Invoke(dialogIndex);
+            }
         }
 
         /// <summary>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-namespace CyanStars.Framework.Dialogue
+namespace CyanStars.Dialogue
 {
     [System.Serializable]
     public class Cell
