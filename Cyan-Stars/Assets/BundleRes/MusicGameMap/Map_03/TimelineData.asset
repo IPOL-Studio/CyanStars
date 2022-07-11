@@ -2345,19 +2345,39 @@ MonoBehaviour:
         Rotation: {x: 45, y: 0, z: 0}
         EasingType: 0
       - Time: 54364
-        Position: {x: 0, y: -2, z: 0}
-        Rotation: {x: 30, y: 0, z: 0}
+        Position: {x: 0, y: -1, z: -1}
+        Rotation: {x: 40, y: 0, z: 2}
+        EasingType: 3
+      - Time: 55364
+        Position: {x: 0, y: -1, z: -1}
+        Rotation: {x: 40, y: 0, z: 2}
+        EasingType: 3
+      - Time: 58945
+        Position: {x: 0, y: -1, z: -1}
+        Rotation: {x: 40, y: 0, z: -2}
+        EasingType: 3
+      - Time: 60000
+        Position: {x: 0, y: -1, z: -1}
+        Rotation: {x: 40, y: 0, z: -2}
+        EasingType: 3
+      - Time: 61461
+        Position: {x: 0, y: 0, z: 0}
+        Rotation: {x: 45, y: 0, z: 0}
+        EasingType: 3
+      - Time: 82751
+        Position: {x: 0, y: 0, z: 0}
+        Rotation: {x: 45, y: 0, z: 0}
         EasingType: 3
     EffectTrackData:
       BPM: 23.25
       KeyFrames:
       - Type: 0
-        Time: 128.25
+        Time: 100
         Index: 0
         Position: {x: 0, y: 0, z: 0}
         Rotation: {x: 0, y: 0, z: 0}
         ParticleCount: 0
-        Duration: 100000
+        Duration: 102900
         Color: {r: 1, g: 1, b: 1, a: 1}
         Intensity: 0.1
         Frequency: 0
