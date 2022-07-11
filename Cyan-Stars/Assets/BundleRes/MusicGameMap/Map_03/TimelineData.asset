@@ -2372,13 +2372,21 @@ MonoBehaviour:
         Position: {x: 0, y: -2, z: 0}
         Rotation: {x: 35, y: 0, z: 0}
         EasingType: 3
-      - Time: 92751
+      - Time: 95751
         Position: {x: 0, y: -2, z: 0}
         Rotation: {x: 35, y: 0, z: 0}
         EasingType: 3
       - Time: 102751
         Position: {x: 0, y: 0, z: 0}
         Rotation: {x: 45, y: 0, z: 0}
+        EasingType: 3
+      - Time: 114432
+        Position: {x: 0, y: 0, z: 0}
+        Rotation: {x: 45, y: 0, z: 0}
+        EasingType: 3
+      - Time: 135707
+        Position: {x: 0, y: -2, z: 0}
+        Rotation: {x: 40, y: 0, z: 0}
         EasingType: 3
     EffectTrackData:
       BPM: 23.25
