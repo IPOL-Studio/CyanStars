@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CyanStars.Framework.RefrencePool;
 using UnityEngine;
 
 namespace CyanStars.Framework.Event
@@ -120,7 +121,7 @@ namespace CyanStars.Framework.Event
         /// <summary>
         /// 派发事件
         /// </summary>
-        public void Dispatch<T>(string eventName, object sender, T eventArgs) where T : EventArgs
+        public void Dispatch<T>(string eventName, object sender, T eventArgs) where T : EventArgs,IReference
         {
             if (!eventHandlerDict.TryGetValue(eventName, out HashSet<EventHandler<EventArgs>> handlers))
             {
@@ -131,6 +132,7 @@ namespace CyanStars.Framework.Event
             {
                 handler(sender, eventArgs);
             }
+            ReferencePool.Release(eventArgs);
         }
     }
 }

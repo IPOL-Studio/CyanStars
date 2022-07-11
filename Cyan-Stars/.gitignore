@@ -78,3 +78,5 @@ crashlytics-build.properties
 /AssetBundles/StandaloneWindows64
 StreamingAssets/
 StreamingAssets.meta
+AssetBundles
+BuildPlayer
