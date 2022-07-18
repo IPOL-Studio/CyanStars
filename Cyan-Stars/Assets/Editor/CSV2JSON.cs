@@ -2,43 +2,95 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using CyanStars.Dialogue;
+
+// [System.Serializable]
+// class Cell
+// {
+//     public string sign;
+//     public string id;
+//     public string name;
+//     public string pos;
+//     public string text;
+//     public string color;
+//     public string link;
+//     public string backgroundTex;
+//     public string leftVerticalDrawing;
+//     public string rightVerticalDrawing;
+//     public string stop;
+//     public string effect;
+//     public string jump;
+// }
+
+[System.Serializable]
+class Identification
+{
+    public string sign;
+    public string id;
+    public string jump;
+}
+
+[System.Serializable]
+class TextContent
+{
+    public string name;
+    public string content;
+    public string link;
+    public string color;
+    public string stop;
+}
+
+[System.Serializable]
+class VerticalDrawing
+{
+    public string file;
+    public string effect;
+    public string time;
+}
+
+[System.Serializable]
+class Background
+{
+    public string file;
+}
+
+[System.Serializable]
+class Effect
+{
+    public string code;
+    public string parameter;
+}
 
 [System.Serializable]
 class Cell
 {
-    public string sign;
-    public string id;
-    public string name;
-    public string pos;
-    public string text;
-    public string color;
-    public string link;
-    public string backgroundTex;
-    public string leftVerticalDrawing;
-    public string rightVerticalDrawing;
-    public string stop;
-    public string effect;
-    public string jump;
+    public Identification identifications = new Identification();
+    public TextContent textContents = new TextContent();
+    public VerticalDrawing leftVerticalDrawings = new VerticalDrawing();
+    public VerticalDrawing rightVerticalDrawings = new VerticalDrawing();
+    public Background backgrounds = new Background();
+    public Effect effects = new Effect();
 }
+
 [System.Serializable]
-class TextContent
+class Dialogue
 {
-    public List<Cell> textContent = new List<Cell>();
+    public List<Cell> dialogue = new List<Cell>();
 }
 
 public class CSV2JSON : EditorWindow
 {
     public TextAsset csv;
-    private TextContent textContent = new TextContent();
+    private Dialogue dialogue = new Dialogue();
 
-    [MenuItem("临时位置/CSV转JSON")]
+    [MenuItem("CyanStars工具箱/CSV转JSON")]
     static void Init()
     {
         CSV2JSON window = (CSV2JSON)EditorWindow.GetWindow(typeof(CSV2JSON));
         window.Show();
     }
 
-    void OnGUI()
+    private void OnGUI()
     {
         EditorGUILayout.Space(10);
         GUILayout.Label("放入从Excel中导出的CSV", EditorStyles.boldLabel);
@@ -65,29 +117,52 @@ public class CSV2JSON : EditorWindow
 /// <param name="textAsset">传入UTF-8CSV</param>
     public void CreateJSON(TextAsset textAsset)
     {
-        textContent.textContent.Clear();
+        dialogue.dialogue.Clear();
         string[] rows = textAsset.text.Split('\n');
-        for(int i = 1; i < rows.Length - 1; i++)
+        for(int i = 2; i < rows.Length - 1; i++)
         {
             string[] cells = rows[i].Replace("\r", "").Split(',');
             Cell cell = new Cell();
-            cell.sign = cells[0];
-            cell.id = cells[1];
-            cell.name = cells[2];
-            cell.pos = cells[3];
-            cell.text = cells[4];
-            cell.color = cells[5];
-            cell.link = cells[6];
-            cell.backgroundTex = cells[7];
-            cell.leftVerticalDrawing = cells[8];
-            cell.rightVerticalDrawing = cells[9];
-            cell.stop = cells[10];
-            cell.effect = cells[11];
-            cell.jump = cells[12];
-            textContent.textContent.Add(cell);
+            Identification identification = new Identification();
+            TextContent textContent = new TextContent();
+            VerticalDrawing leftVerticalDrawing = new VerticalDrawing();
+            VerticalDrawing rightVerticalDrawing = new VerticalDrawing();
+            Background background = new Background();
+            Effect effect = new Effect();
+
+            identification.sign = cells[0];
+            identification.id = cells[1];
+            identification.jump = cells[2];
+            cell.identifications = identification;
+
+            textContent.name = cells[3];
+            textContent.content = cells[4];
+            textContent.link = cells[5];
+            textContent.color = cells[6];
+            textContent.stop = cells[7];
+            cell.textContents = textContent;
+
+            leftVerticalDrawing.file = cells[8];
+            leftVerticalDrawing.effect = cells[9];
+            leftVerticalDrawing.time = cells[10];
+            cell.leftVerticalDrawings = leftVerticalDrawing;
+
+            rightVerticalDrawing.file = cells[11];
+            rightVerticalDrawing.effect = cells[12];
+            rightVerticalDrawing.time = cells[13];
+            cell.rightVerticalDrawings = rightVerticalDrawing;
+
+            background.file = cells[14];
+            cell.backgrounds = background;
+
+            effect.code = cells[15];
+            effect.parameter = cells[16];
+            cell.effects = effect;
+
+            dialogue.dialogue.Add(cell);
         }
 
-        string json = JsonUtility.ToJson(textContent, true);
+        string json = JsonUtility.ToJson(dialogue, true);
         string filepath = Application.streamingAssetsPath + "/" + csv.name + ".json";
 
         using (StreamWriter streamWriter = new StreamWriter(filepath))

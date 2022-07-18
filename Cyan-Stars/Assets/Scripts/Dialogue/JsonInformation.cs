@@ -8,7 +8,7 @@ public class JsonInformation : MonoBehaviour
     private void Start()
     {
         DontDestroyOnLoad(this);
-        jsonDataFilePath = "/测试.json";
+        jsonDataFilePath = "/新格式.json";
         SceneManager.LoadScene("BundleRes/Scenes/Dialogue");
     }
 

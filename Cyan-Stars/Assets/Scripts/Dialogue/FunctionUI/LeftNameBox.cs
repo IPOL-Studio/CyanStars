@@ -19,8 +19,8 @@ namespace CyanStars.Dialogue
         public void SetName(int index)
         {
             if(DialogueManager.Instance.dialogueContentCells[index]
-                .name == "") return;
-            text.text = DialogueManager.Instance.dialogueContentCells[index].name;
+                .textContents.name == "") return;
+            text.text = DialogueManager.Instance.dialogueContentCells[index].textContents.name;
         }
     }
 }

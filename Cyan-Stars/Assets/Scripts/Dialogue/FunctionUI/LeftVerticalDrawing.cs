@@ -13,11 +13,8 @@ namespace CyanStars.Dialogue
 
         public void SetImage(int index)
         {
-            if(DialogueManager.Instance.dialogueContentCells[index]
-                .leftVerticalDrawing == "") return;
-            sprite = DialogueManager.Instance.spriteDictionary[
-                DialogueManager.Instance.dialogueContentCells[index]
-                    .leftVerticalDrawing];
+            if(DialogueManager.Instance.dialogueContentCells[index].leftVerticalDrawings.file == "") return;
+            sprite = DialogueManager.Instance.spriteDictionary[DialogueManager.Instance.dialogueContentCells[index].leftVerticalDrawings.file];
         }
     }
 }

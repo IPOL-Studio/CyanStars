@@ -55,7 +55,7 @@ namespace CyanStars.Dialogue
         /// </summary>
         private void SetColor()
         {
-            switch (cell.color)
+            switch (cell.textContents.color)
             {
                 case "White":
                     text.text += Colors.White;
@@ -97,24 +97,24 @@ namespace CyanStars.Dialogue
 
             cell = DialogueManager.Instance.dialogueContentCells[index];
 
-            if (cell.stop != 0)
+            if (cell.textContents.stop != 0)
             {
-                foreach (char c in cell.text)
+                foreach (char c in cell.textContents.content)
                 {
                     SetColor();
                     text.text += c + "</color>";
-                    yield return new WaitForSecondsRealtime(cell.stop / 1000f);
+                    yield return new WaitForSecondsRealtime(cell.textContents.stop / 1000f);
                 }
             }
             else
             {
                 SetColor();
-                text.text += cell.text + "</color>";
+                text.text += cell.textContents.content + "</color>";
             }
 
-            index = cell.jump;
+            index = cell.identifications.jump;
 
-            if ("是".Equals(cell.link))
+            if ("是".Equals(cell.textContents.link))
             {
                 cell = DialogueManager.Instance.dialogueContentCells[index];
                 yield return StartCoroutine(DisplayDialogue());
@@ -135,11 +135,11 @@ namespace CyanStars.Dialogue
             cell = DialogueManager.Instance.dialogueContentCells[index];
 
             SetColor();
-            text.text += cell.text + "</color>";
+            text.text += cell.textContents.content + "</color>";
 
-            index = cell.jump;
+            index = cell.identifications.jump;
 
-            if ("是".Equals(cell.link))
+            if ("是".Equals(cell.textContents.link))
             {
                 cell = DialogueManager.Instance.dialogueContentCells[index];
                 yield return StartCoroutine(DirectDisplayDialogue());
