@@ -8,6 +8,9 @@ TextureImporter:
   - first:
       213: 3999042974030746922
     second: Cover2_1
+  - first:
+      213: 5798604583022194468
+    second: Cover2_2
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -49,7 +52,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 0
+  spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
@@ -112,10 +115,10 @@ TextureImporter:
       name: Cover2_0
       rect:
         serializedVersion: 2
-        x: 39
-        y: 383
-        width: 1146
-        height: 716
+        x: 147
+        y: 989
+        width: 3032
+        height: 1702
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -133,10 +136,10 @@ TextureImporter:
       name: Cover2_1
       rect:
         serializedVersion: 2
-        x: 41
-        y: 39
-        width: 1144
-        height: 287
+        x: 3454
+        y: 1359
+        width: 1927
+        height: 1088
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -150,10 +153,31 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Cover2_2
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 256
+        width: 2632
+        height: 664
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42f6dfb5528c87050800000000000000
+      internalID: 5798604583022194468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
-    spriteID: f2629e5ba9a687645b0ee8a943df90a7
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
