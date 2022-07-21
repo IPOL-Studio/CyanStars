@@ -1366,7 +1366,6 @@ MonoBehaviour:
         Rotation: {x: 45, y: 0, z: 0}
         EasingType: 3
     EffectTrackData:
-      BPM: 20.5
       KeyFrames:
       - Type: 0
         Time: 5855
@@ -1380,6 +1379,7 @@ MonoBehaviour:
         Frequency: 80
         MaxAlpha: 1
         MinAlpha: 0
+        BPM: 20.5
       - Type: 2
         Time: 74213
         Index: 2
@@ -1392,6 +1392,7 @@ MonoBehaviour:
         Frequency: 80
         MaxAlpha: 0
         MinAlpha: 0
+        BPM: 0
       - Type: 2
         Time: 74213
         Index: 2
@@ -1404,6 +1405,7 @@ MonoBehaviour:
         Frequency: 80
         MaxAlpha: 0
         MinAlpha: 0
+        BPM: 0
       - Type: 2
         Time: 75213
         Index: 2
@@ -1416,6 +1418,7 @@ MonoBehaviour:
         Frequency: 80
         MaxAlpha: 0
         MinAlpha: 0
+        BPM: 0
       - Type: 2
         Time: 75213
         Index: 2
@@ -1428,6 +1431,7 @@ MonoBehaviour:
         Frequency: 80
         MaxAlpha: 0
         MinAlpha: 0
+        BPM: 0
       - Type: 2
         Time: 76213
         Index: 2
@@ -1440,6 +1444,7 @@ MonoBehaviour:
         Frequency: 80
         MaxAlpha: 0
         MinAlpha: 0
+        BPM: 0
       - Type: 2
         Time: 76213
         Index: 2
@@ -1452,6 +1457,7 @@ MonoBehaviour:
         Frequency: 80
         MaxAlpha: 0
         MinAlpha: 0
+        BPM: 0
       - Type: 2
         Time: 95000
         Index: 11
@@ -1464,6 +1470,7 @@ MonoBehaviour:
         Frequency: 80
         MaxAlpha: 0
         MinAlpha: 0
+        BPM: 0
       - Type: 2
         Time: 98861
         Index: 0
@@ -1476,3 +1483,4 @@ MonoBehaviour:
         Frequency: 80
         MaxAlpha: 0
         MinAlpha: 0
+        BPM: 0
