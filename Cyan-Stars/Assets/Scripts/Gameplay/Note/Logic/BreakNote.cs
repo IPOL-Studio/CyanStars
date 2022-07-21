@@ -42,7 +42,7 @@ namespace CyanStars.Gameplay.Note
                 ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
                 DestroySelf(false); //销毁
 
-                NoteJudger.BreakJudge(Data,Distance);
+                NoteJudger.BreakJudge(Data, 0); // Auto Mode 杂率为0
             }
         }
 
