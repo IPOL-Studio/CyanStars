@@ -25,6 +25,8 @@ namespace CyanStars.Dialogue
 
         public int dialogIndex { get; set; }
 
+        public RectTransform rectTransform;
+
         #region SingletonPattern
         private static DialogueManager _instance = null;
         public static DialogueManager Instance
@@ -95,6 +97,25 @@ namespace CyanStars.Dialogue
         {
             DialogueSpritesListObject dialogueSpritesListObject = AssetDatabase.LoadAssetAtPath<DialogueSpritesListObject>(dataPath);
             return dialogueSpritesListObject.sprites.ToDictionary(sprite => sprite.name);
+        }
+
+        public static class Colors
+        {
+            public const string White = "<color=white>";
+            public const string Red = "<color=red>";
+            public const string Yellow = "<color=yellow>";
+            public const string Blue = "<color=blue>";
+            public const string Green = "<color=green>";
+            public const string Purple = "<color=purple>";
+            public const string Gray = "<color=gray>";
+            public const string Black = "<color=black>";
+        }
+
+        public static class VerticalDrawingAnimation
+        {
+            public const string shake = "抖动";
+            public const string move = "移动";
+            public const string rotate = "旋转";
         }
     }
 }

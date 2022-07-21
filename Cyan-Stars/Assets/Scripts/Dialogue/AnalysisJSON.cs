@@ -49,6 +49,7 @@ public class TextContent
 public class VerticalDrawing
 {
     public string file;
+    public float xAxisMovement;
     public string effect;
     public string time;
 }

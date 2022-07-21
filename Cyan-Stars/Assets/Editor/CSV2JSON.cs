@@ -44,6 +44,7 @@ class TextContent
 class VerticalDrawing
 {
     public string file;
+    public string xAxisMovement;
     public string effect;
     public string time;
 }
@@ -143,20 +144,22 @@ public class CSV2JSON : EditorWindow
             cell.textContents = textContent;
 
             leftVerticalDrawing.file = cells[8];
-            leftVerticalDrawing.effect = cells[9];
-            leftVerticalDrawing.time = cells[10];
+            leftVerticalDrawing.xAxisMovement = cells[9];
+            leftVerticalDrawing.effect = cells[10];
+            leftVerticalDrawing.time = cells[11];
             cell.leftVerticalDrawings = leftVerticalDrawing;
 
-            rightVerticalDrawing.file = cells[11];
-            rightVerticalDrawing.effect = cells[12];
-            rightVerticalDrawing.time = cells[13];
+            rightVerticalDrawing.file = cells[12];
+            rightVerticalDrawing.xAxisMovement = cells[13];
+            rightVerticalDrawing.effect = cells[14];
+            rightVerticalDrawing.time = cells[15];
             cell.rightVerticalDrawings = rightVerticalDrawing;
 
-            background.file = cells[14];
+            background.file = cells[16];
             cell.backgrounds = background;
 
-            effect.code = cells[15];
-            effect.parameter = cells[16];
+            effect.code = cells[17];
+            effect.parameter = cells[18];
             cell.effects = effect;
 
             dialogue.dialogue.Add(cell);

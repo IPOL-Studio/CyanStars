@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace CyanStars.Dialogue
 {
-    public class Bg : Image, ISetSprites
+    public class Bg : Image, ISetVerticalDrawing
     {
         protected override void Start()
         {
@@ -15,6 +15,11 @@ namespace CyanStars.Dialogue
         {
             if (DialogueManager.Instance.dialogueContentCells[index].backgrounds.file == "") return;
             sprite = DialogueManager.Instance.spriteDictionary[DialogueManager.Instance.dialogueContentCells[index].backgrounds.file];
+        }
+
+        public void SetAnimation(int index)
+        {
+            
         }
     }
 }

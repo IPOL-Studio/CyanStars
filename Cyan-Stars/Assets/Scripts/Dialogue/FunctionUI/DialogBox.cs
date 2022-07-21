@@ -7,23 +7,13 @@ using UnityEngine.UI;
 
 namespace CyanStars.Dialogue
 {
-    public static class Colors
-    {
-        public const string White = "<color=white>";
-        public const string Red = "<color=red>";
-        public const string Yellow = "<color=yellow>";
-        public const string Blue = "<color=blue>";
-        public const string Green = "<color=green>";
-        public const string Purple = "<color=purple>";
-        public const string Gray = "<color=gray>";
-        public const string Black = "<color=black>";
-    }
+
     public class DialogBox : Image
     {
         private TMP_Text text;
         private Cell cell = new Cell();
         private int index;
-        private bool inDialogue;
+        private static bool inDialogue;
         protected override void Start()
         {
             text = GetComponentInChildren<TMP_Text>();
@@ -35,19 +25,21 @@ namespace CyanStars.Dialogue
         private void SwitchDialog(int startIndex)
         {
             text.text = string.Empty;
+            index = startIndex;
             if (inDialogue)
             {
                 StopAllCoroutines();
-                text.text = string.Empty;
-                inDialogue = true;
-                index = startIndex;
                 StartCoroutine(DirectDisplayDialogue());
             }
             else
             {
-                index = startIndex;
                 StartCoroutine(DisplayDialogue());
             }
+        }
+
+        public static bool IsInDialogue()
+        {
+            return inDialogue;
         }
 
         /// <summary>
@@ -58,31 +50,31 @@ namespace CyanStars.Dialogue
             switch (cell.textContents.color)
             {
                 case "White":
-                    text.text += Colors.White;
+                    text.text += DialogueManager.Colors.White;
                     break;
                 case "Red":
-                    text.text += Colors.Red;
+                    text.text += DialogueManager.Colors.Red;
                     break;
                 case "Yellow":
-                    text.text += Colors.Yellow;
+                    text.text += DialogueManager.Colors.Yellow;
                     break;
                 case "Blue":
-                    text.text += Colors.Blue;
+                    text.text += DialogueManager.Colors.Blue;
                     break;
                 case "Green":
-                    text.text += Colors.Green;
+                    text.text += DialogueManager.Colors.Green;
                     break;
                 case "Purple":
-                    text.text += Colors.Purple;
+                    text.text += DialogueManager.Colors.Purple;
                     break;
                 case "Gray":
-                    text.text += Colors.Gray;
+                    text.text += DialogueManager.Colors.Gray;
                     break;
                 case "Black":
-                    text.text += Colors.Black;
+                    text.text += DialogueManager.Colors.Black;
                     break;
                 default:
-                    text.text += Colors.White;
+                    text.text += DialogueManager.Colors.White;
                     break;
             }
         }
@@ -103,7 +95,7 @@ namespace CyanStars.Dialogue
                 {
                     SetColor();
                     text.text += c + "</color>";
-                    yield return new WaitForSecondsRealtime(cell.textContents.stop / 1000f);
+                    yield return new WaitForSecondsRealtime(cell.textContents.stop * 0.001f);
                 }
             }
             else
