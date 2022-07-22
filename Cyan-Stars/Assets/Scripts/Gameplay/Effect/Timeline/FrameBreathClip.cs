@@ -33,14 +33,20 @@ namespace CyanStars.Gameplay.Effect
         /// </summary>
         private float minAlpha;
 
+        /// <summary>
+        /// bpm
+        /// </summary>
+        private float bpm;
+
         public FrameBreathClip(float startTime, float endTime, EffectTrack owner, float duration, Color color,
-            float intensity, float maxAlpha, float minAlpha) : base(startTime, endTime, owner)
+            float intensity, float maxAlpha, float minAlpha, float bpm) : base(startTime, endTime, owner)
         {
             this.duration = duration;
             this.color = color;
             this.intensity = intensity;
             this.maxAlpha = maxAlpha;
             this.minAlpha = minAlpha;
+            this.bpm = bpm;
         }
 
         public override void OnEnter()
@@ -50,8 +56,7 @@ namespace CyanStars.Gameplay.Effect
         }
 
         public override void OnUpdate(float currentTime, float previousTime)
-        {
-            float bpm = Owner.BPM;
+        { 
             float alpha = (0.5f * Mathf.Cos(bpm * 2 * Mathf.PI * (currentTime - StartTime - 30 / bpm) / 60) + 0.5f) *
                 (maxAlpha - minAlpha) + minAlpha;
 

@@ -10,7 +10,6 @@ namespace CyanStars.Gameplay.Effect
     /// </summary>
     public class EffectTrack : BaseTrack
     {
-        public float BPM;
         public List<string> EffectNames;
         public Transform EffectParent;
         public Image ImgFrame;
@@ -34,7 +33,8 @@ namespace CyanStars.Gameplay.Effect
                 case EffectType.FrameBreath:
                     clip = new FrameBreathClip(time, time + duration, track, duration, keyFrame.Color,
                         keyFrame.Intensity,
-                        keyFrame.MaxAlpha, keyFrame.MinAlpha);
+                        keyFrame.MaxAlpha, keyFrame.MinAlpha,
+                        keyFrame.BPM);
                     break;
 
                 case EffectType.FrameOnce:
