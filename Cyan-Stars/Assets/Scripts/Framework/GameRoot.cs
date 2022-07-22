@@ -6,7 +6,8 @@ using CyanStars.Framework.FSM;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.GameObjectPool;
-using CyanStars.Gameplay;
+using CyanStars.Gameplay.MusicGame;
+
 
 namespace CyanStars.Framework
 {
