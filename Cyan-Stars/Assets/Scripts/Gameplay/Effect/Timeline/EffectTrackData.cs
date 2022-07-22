@@ -55,10 +55,10 @@ namespace CyanStars.Gameplay.Effect
 
             [Header("最小透明度(仅对frame有效)"), Range(0, 1)]
             public float MinAlpha;
-        }
 
-        [Header("BPM")]
-        public float BPM;
+            [Header("BPM(仅对frame有效)")]
+            public float BPM;
+        }
 
         [Header("关键帧")]
         public List<KeyFrame> KeyFrames;
