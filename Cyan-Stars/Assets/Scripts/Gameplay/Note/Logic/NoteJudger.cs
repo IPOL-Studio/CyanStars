@@ -25,15 +25,17 @@ namespace CyanStars.Gameplay.Note
 
             dataModule.MaxScore += data.GetFullScore(); //更新理论最高分
 
-            if (et != EvaluateType.Miss)
+            if (et != EvaluateType.Miss && et != EvaluateType.Bad) //Exact、Great、Right:加一combo，计算杂率
             {
                 dataModule.RefreshPlayingData(addCombo: 1,
                     addScore: EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
                     grade: et, currentDeviation: distance);
             }
-            else
+            else //Bad、Miss:断combo，不计算杂率
             {
-                dataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);
+                dataModule.RefreshPlayingData(-1,
+                    EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
+                    et, float.MaxValue);
             }
 
 
@@ -45,32 +47,21 @@ namespace CyanStars.Gameplay.Note
         public static EvaluateType HoldHeadJudge(NoteData data, float distance)
         {
             EvaluateType et = EvaluateHelper.GetTapEvaluate(distance);
-            if (et == EvaluateType.Bad || et == EvaluateType.Miss)
+            if (et == EvaluateType.Bad || et == EvaluateType.Miss) //Bad、Miss:断combo，不计算杂率
             {
                 //头判失败
                 LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(data, et));
-                dataModule.MaxScore += 2;
-                dataModule.RefreshPlayingData(-1, -1, et, float.MaxValue);
+                dataModule.MaxScore += data.GetFullScore();
+                dataModule.RefreshPlayingData(-1, EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
+                    et, float.MaxValue);
             }
-            else
+            else //Exact、Great、Right:不断combo，计算杂率
             {
                 //头判成功
                 LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(data, et));
                 dataModule.MaxScore++;
-                if (et == EvaluateType.Exact)
-                {
-                    dataModule.RefreshPlayingData(1, 1, et, distance);
-                }
-
-                else if (et == EvaluateType.Great)
-                {
-                    dataModule.RefreshPlayingData(1, 0.75f, et, distance);
-                }
-
-                else if (et == EvaluateType.Right)
-                {
-                    dataModule.RefreshPlayingData(1, 0.5f, et, distance);
-                }
+                dataModule.RefreshPlayingData(1, EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
+                    et, distance);
             }
 
             return et;
@@ -84,7 +75,7 @@ namespace CyanStars.Gameplay.Note
             LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Miss, 0, 0));
 
             dataModule.MaxScore += 2;
-            dataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);
+            dataModule.RefreshPlayingData(-1, 0, EvaluateType.Miss, float.MaxValue); // Miss：断combo，不计算杂率
         }
 
         /// <summary>
@@ -92,27 +83,20 @@ namespace CyanStars.Gameplay.Note
         /// </summary>
         public static void HoldTailJudge(NoteData data,float pressTimeLength, float value)
         {
-            EvaluateType et = EvaluateHelper.GetHoldEvaluate(value);
+            EvaluateType et = EvaluateHelper.GetHoldEvaluate(value); // 不判Bad
 
             LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(data, et, pressTimeLength, value));
 
             dataModule.MaxScore++;
-            if (et == EvaluateType.Exact)
+            if (et != EvaluateType.Miss) // Exact、Great、Right：不加combo，不计算杂率
             {
-                dataModule.RefreshPlayingData(0, 1, et, float.MaxValue);
+                dataModule.RefreshPlayingData(0, EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
+                    et, float.MaxValue);
             }
-            else if (et == EvaluateType.Great)
+            else // Miss：断combo，不计算杂率
             {
-                dataModule.RefreshPlayingData(0, 0.75f, et, float.MaxValue);
-            }
-
-            else if (et == EvaluateType.Right)
-            {
-                dataModule.RefreshPlayingData(0, 0.5f, et, float.MaxValue);
-            }
-            else
-            {
-                dataModule.RefreshPlayingData(-1, -1, et, float.MaxValue);
+                dataModule.RefreshPlayingData(-1, EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
+                    et, float.MaxValue);
             }
 
         }
@@ -131,13 +115,13 @@ namespace CyanStars.Gameplay.Note
 
             dataModule.MaxScore += data.GetFullScore();
 
-            if (!isMiss)
+            if (!isMiss) // Exact：加一combo、不计算杂率
             {
                 dataModule.RefreshPlayingData(addCombo: 1,
                     addScore: EvaluateHelper.GetScoreWithEvaluate(EvaluateType.Exact) * data.GetMagnification(),
                     grade: EvaluateType.Exact, currentDeviation: float.MaxValue);
             }
-            else
+            else // Miss：断combo、不计算杂率
             {
                 dataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue); //更新数据
             }
@@ -151,33 +135,21 @@ namespace CyanStars.Gameplay.Note
             EvaluateType et = EvaluateHelper.GetTapEvaluate(distance);
             dataModule.MaxScore += 1;
 
-            if (et != EvaluateType.Bad && et != EvaluateType.Miss)
+            if (et != EvaluateType.Bad && et != EvaluateType.Miss) // Exact、Great、Right：加一combo，计算杂率
             {
-                //头判成功
-                if (et == EvaluateType.Exact)
-                {
-                    dataModule.RefreshPlayingData(1, 1, et, distance);
-                }
+                dataModule.RefreshPlayingData(1, EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
+                    et, distance);
 
-                else if (et == EvaluateType.Great)
-                {
-                    dataModule.RefreshPlayingData(1, 0.75f, et, distance);
-                }
-
-                else if (et == EvaluateType.Right)
-                {
-                    dataModule.RefreshPlayingData(1, 0.5f, et, distance);
-                }
                 LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteHeadJudgeLogArgs(data, et));
             }
-            else
+            else // Bad、Miss：断combo，不计算杂率
             {
                 //头判失败直接销毁
 
                 LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteHeadJudgeLogArgs(data, et));
                 dataModule.MaxScore += 1;
-                dataModule.RefreshPlayingData(-1, -1, et,
-                    et == EvaluateType.Miss ? float.MaxValue : distance);
+                dataModule.RefreshPlayingData(-1, EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
+                    et, float.MaxValue);
             }
 
             return et;
@@ -191,7 +163,7 @@ namespace CyanStars.Gameplay.Note
             LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteJudgeLogArgs(data, EvaluateType.Miss, 0));
 
             dataModule.MaxScore += 2;
-            dataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);
+            dataModule.RefreshPlayingData(-1, 0, EvaluateType.Miss, float.MaxValue); // Miss：断combo，不计算杂率
         }
 
         /// <summary>
@@ -200,20 +172,13 @@ namespace CyanStars.Gameplay.Note
         public static void ClickTailJudge(NoteData data,float timeLength)
         {
             dataModule.MaxScore += 1;
-            EvaluateType evaluateType = EvaluateHelper.GetClickEvaluate(timeLength);
+            EvaluateType et = EvaluateHelper.GetClickEvaluate(timeLength);
 
             LoggerManager.GetOrCreateLogger<NoteLogger>()
-                .Log(new ClickNoteJudgeLogArgs(data, evaluateType, timeLength));
+                .Log(new ClickNoteJudgeLogArgs(data, et, timeLength));
 
-            if (evaluateType == EvaluateType.Exact)
-            {
-                dataModule.RefreshPlayingData(0, 1, evaluateType, float.MaxValue);
-            }
-
-            else
-            {
-                dataModule.RefreshPlayingData(0, 0.5f, evaluateType, float.MaxValue);
-            }
+            dataModule.RefreshPlayingData(0, EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
+                et, float.MaxValue);  // Exact、Out：不断combo，不计算杂率
         }
 
         /// <summary>
@@ -227,15 +192,15 @@ namespace CyanStars.Gameplay.Note
 
             dataModule.MaxScore += data.GetFullScore();
 
-            if (et != EvaluateType.Miss)
+            if (et != EvaluateType.Miss && et != EvaluateType.Bad) //Exact、Great、Right:加一combo，计算杂率
             {
                 dataModule.RefreshPlayingData(addCombo: 1,
                     addScore: EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
                     grade: et, currentDeviation: distance);
             }
-            else
+            else //Bad、Miss:断combo，不计算杂率
             {
-                dataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue);
+                dataModule.RefreshPlayingData(-1, 0, et, float.MaxValue);  
             }
         }
     }

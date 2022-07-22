@@ -1,4 +1,4 @@
-﻿using CyanStars.Framework.Logger;
+using CyanStars.Framework.Logger;
 using CyanStars.Gameplay.Data;
 using CyanStars.Gameplay.Input;
 using CyanStars.Gameplay.Logger;
@@ -114,7 +114,7 @@ namespace CyanStars.Gameplay.Note
                 headChecked = true;
                 ViewObject?.CreateEffectObj(NoteData.NoteWidth);
 
-                NoteJudger.HoldHeadJudge(Data, Distance);
+                NoteJudger.HoldHeadJudge(Data, 0); // Auto Mode 杂率为0
             }
 
             if (Distance < holdCheckInputEndDistance)

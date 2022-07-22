@@ -246,7 +246,6 @@ namespace CyanStars.Gameplay.Procedure
 
             //添加特效轨道
             EffectTrack effectTrack = timeline.AddTrack(data.EffectTrackData, EffectTrack.CreateClipFunc);
-            effectTrack.BPM = data.EffectTrackData.BPM;
             effectTrack.EffectNames = dataModule.EffectNames;
             effectTrack.EffectParent = ViewHelper.EffectRoot;
             effectTrack.ImgFrame = GameRoot.UI.GetUI<MusicGameMainPanel>().ImgFrame;
