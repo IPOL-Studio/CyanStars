@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using CyanStars.Gameplay.Data;
-using CyanStars.Gameplay.MapData;
-using CyanStars.Gameplay.Misc;
-using CyanStars.Gameplay.Note;
+using CyanStars.Gameplay.MusicGame;
 using UnityEngine;
 using UnityEditor;
 namespace CyanStars.Editor

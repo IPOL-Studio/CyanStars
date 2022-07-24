@@ -46,8 +46,6 @@ namespace CyanStars.Framework.UI
         {
             GameRoot.GameObjectPool.GetGameObject(uiData.UIPrefabName, UIRoot.transform, (go) =>
             {
-                //go.transform.SetParent(UIRoot.transform);
-
                 BaseUIPanel uiPanel = go.GetComponent<BaseUIPanel>();
                 uiPanels.Add(uiPanel);
 
@@ -108,6 +106,18 @@ namespace CyanStars.Framework.UI
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// 关闭此UI组的所有界面
+        /// </summary>
+        public void CloseAllPanel()
+        {
+            for (int i = uiPanels.Count - 1; i >= 0; i--)
+            {
+                BaseUIPanel uiPanel = uiPanels[i];
+                GameRoot.UI.CloseUIPanel(uiPanel);
+            }
         }
     }
 }
