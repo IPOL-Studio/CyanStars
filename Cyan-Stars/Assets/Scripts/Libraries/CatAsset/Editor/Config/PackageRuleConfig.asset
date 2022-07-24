@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: PackageRuleConfig
   m_EditorClassIdentifier: 
   Rules:
+  - Directory: Assets/BundleRes/Covers
+    Mode: 0
+    Group: Base
   - Directory: Assets/BundleRes/MusicGameMap
     Mode: 1
     Group: Base

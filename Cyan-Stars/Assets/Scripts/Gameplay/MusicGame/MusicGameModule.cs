@@ -64,9 +64,9 @@ namespace CyanStars.Gameplay.MusicGame
 
 #region 玩家游戏过程中的实时数据
 
-        public int Combo; //Combo数量
+        public int Combo = 0; //Combo数量
         public float Score = 0; //分数
-        public EvaluateType Grade; //评分
+        public EvaluateType Grade = default; //评分
         public float CurrentDeviation = 0; //当前精准度
         public List<float> DeviationList = new List<float>(); //各个音符的偏移
         public float MaxScore = 0; //理论最高分
@@ -75,7 +75,7 @@ namespace CyanStars.Gameplay.MusicGame
         public int RightNum = 0;
         public int BadNum = 0;
         public int MissNum = 0;
-        public float FullScore; //全谱总分
+        public float FullScore = 0; //全谱总分
 
 #endregion
 
@@ -129,6 +129,15 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         /// <summary>
+        /// 获取所有谱面清单
+        /// </summary>
+        /// <returns></returns>
+        public List<MapManifest> GetMaps()
+        {
+            return mapManifests;
+        }
+
+        /// <summary>
         /// 计算全谱总分
         /// </summary>
         public void CalFullScore(NoteTrackData noteTrackData)
@@ -144,6 +153,26 @@ namespace CyanStars.Gameplay.MusicGame
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// 重置玩家游戏中的数据
+        /// </summary>
+        public void ResetPlayingData()
+        {
+            RunningTimeline = null;
+            Combo = 0; //Combo数量
+            Score = 0; //分数
+            Grade = default; //评分
+            CurrentDeviation = 0; //当前精准度
+            DeviationList.Clear(); //各个音符的偏移
+            MaxScore = 0; //理论最高分
+            ExactNum = 0;
+            GreatNum = 0;
+            RightNum = 0;
+            BadNum = 0;
+            MissNum = 0;
+            FullScore = 0; //全谱总分
         }
 
         /// <summary>

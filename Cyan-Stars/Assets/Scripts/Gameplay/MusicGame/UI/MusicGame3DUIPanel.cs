@@ -35,6 +35,13 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnClose()
         {
+            TxtGrade.text = null;
+            TxtAccuracy.text = $"杂率:{0:F3}s";
+            TxtAccuracy.color = Color.yellow;
+            TxtScoreRatio.text = $"{0:F}%";
+            TxtScoreRatio.color = Color.cyan;
+            TxtVisibleScore.text = null;
+
             GameRoot.Event.RemoveListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
         }
 

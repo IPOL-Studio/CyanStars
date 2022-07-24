@@ -27,6 +27,11 @@ namespace CyanStars.Framework
         private static Dictionary<Type, BaseDataModule> dataModuleDict = new Dictionary<Type, BaseDataModule>();
 
         /// <summary>
+        /// 主相机
+        /// </summary>
+        public static Camera MainCamera;
+
+        /// <summary>
         /// 资源管理器
         /// </summary>
         public static AssetManager Asset;
@@ -56,12 +61,6 @@ namespace CyanStars.Framework
         /// </summary>
         private static FSM.FSM procedureFSM;
 
-        [Header("是否开启自动模式")]
-        public bool IsAutoMode;
-
-        [Header("谱面序号")]
-        public int MapIndex;
-
         private void Awake()
         {
             Application.targetFrameRate = 60;
@@ -69,6 +68,7 @@ namespace CyanStars.Framework
 
         private void Start()
         {
+            MainCamera = Camera.main;
             Asset = GetManager<AssetManager>();
             Event = GetManager<EventManager>();
             FSM = GetManager<FSMManager>();
@@ -86,11 +86,6 @@ namespace CyanStars.Framework
 
             //初始化数据模块
             InitDataModules(types);
-
-            //先暂时这样直接给参数
-            //TODO: 使用一种不需要引用GamePlay的写法
-            GetDataModule<MusicGameModule>().IsAutoMode = IsAutoMode;
-            GetDataModule<MusicGameModule>().MapIndex = MapIndex;
 
             //启动游戏流程
             GameProcedureStartUp(types);

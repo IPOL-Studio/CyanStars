@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CatLrcParser;
 using CyanStars.Framework;
 using CyanStars.Framework.Asset;
+using CyanStars.Framework.Event;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Timeline;
 
@@ -23,6 +24,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         //----场景物体与组件--------
         private GameObject sceneRoot;
+        private Transform sceneCameraTrans;
         private AudioSource audioSource;
         private KeyViewController keyViewController;
 
@@ -46,8 +48,14 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override async void OnEnter()
         {
+            GameRoot.MainCamera.gameObject.SetActive(false);
+
             //监听事件
             GameRoot.Event.AddListener(EventConst.MusicGameStartEvent, StartMusicGame);
+            GameRoot.Event.AddListener(EventConst.MusicGamePauseEvent, PauseMusicGame);
+            GameRoot.Event.AddListener(EventConst.MusicGameResumeEvent, ResumeMusicGame);
+            GameRoot.Event.AddListener(EventConst.MusicGameExitEvent, ExitMusicGame);
+
             GameRoot.Event.AddListener(InputEventArgs.EventName,OnInput);
 
             //打开游戏场景
@@ -67,11 +75,8 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
 
-
         public override void OnUpdate(float deltaTime)
         {
-
-
             if (isStartGame && timeline != null)
             {
                 CheckKeyboardInput();
@@ -81,10 +86,19 @@ namespace CyanStars.Gameplay.MusicGame
 
                 timeline.OnUpdate(timelineDeltaTime);
             }
+
+            //音游流程中 按下ESC打开暂停
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                GameRoot.UI.OpenUIPanel<MusicGamePausePanel>(null);
+            }
         }
 
         public override void OnExit()
         {
+            GameRoot.MainCamera.gameObject.SetActive(true);
+
+            sceneCameraTrans = null;
             sceneRoot = null;
             audioSource = null;
             keyViewController = null;
@@ -104,7 +118,13 @@ namespace CyanStars.Gameplay.MusicGame
             isStartGame = false;
 
             GameRoot.Event.RemoveListener(EventConst.MusicGameStartEvent, StartMusicGame);
+            GameRoot.Event.RemoveListener(EventConst.MusicGamePauseEvent, PauseMusicGame);
+            GameRoot.Event.RemoveListener(EventConst.MusicGameResumeEvent, ResumeMusicGame);
+            GameRoot.Event.RemoveListener(EventConst.MusicGameExitEvent, ExitMusicGame);
             GameRoot.Event.RemoveListener(InputEventArgs.EventName,OnInput);
+
+            CloseMusicGameUI();
+
             GameRoot.Asset.UnloadScene("Assets/BundleRes/Scenes/Dark.unity");
         }
 
@@ -117,6 +137,36 @@ namespace CyanStars.Gameplay.MusicGame
             CreateTimeline();
         }
 
+        /// <summary>
+        /// 暂停音游
+        /// </summary>
+        private void PauseMusicGame(object sender, EventArgs e)
+        {
+            isStartGame = false;
+            audioSource.Pause();
+        }
+
+        /// <summary>
+        /// 恢复音游
+        /// </summary>
+        private void ResumeMusicGame(object sender, EventArgs e)
+        {
+            isStartGame = true;
+            audioSource.UnPause();
+        }
+
+        /// <summary>
+        /// 退出音游
+        /// </summary>
+        private void ExitMusicGame(object sender, EventArgs e)
+        {
+            dataModule.ResetPlayingData();
+            GameRoot.ChangeProcedure<MainHomeProcedure>();
+        }
+
+        /// <summary>
+        /// 输入监听
+        /// </summary>
         private void OnInput(object sender, EventArgs e)
         {
             if (!isStartGame || timeline == null)
@@ -136,6 +186,7 @@ namespace CyanStars.Gameplay.MusicGame
             sceneRoot = GameObject.Find("SceneRoot");
             ViewHelper.ViewRoot = sceneRoot.transform.Find("ViewRoot");
             ViewHelper.EffectRoot = sceneRoot.transform.Find("EffectRoot");
+            sceneCameraTrans = sceneRoot.transform.Find("SceneCamera");
             audioSource = sceneRoot.GetComponent<AudioSource>();
             keyViewController = sceneRoot.transform.Find("KeyViewController").GetComponent<KeyViewController>();
 
@@ -184,6 +235,15 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         /// <summary>
+        /// 关闭音游UI
+        /// </summary>
+        private void CloseMusicGameUI()
+        {
+            GameRoot.UI.CloseUIPanel<MusicGameMainPanel>();
+            GameRoot.UI.CloseUIPanel<MusicGame3DUIPanel>();
+        }
+
+        /// <summary>
         /// 创建时间轴
         /// </summary>
         private void CreateTimeline()
@@ -196,7 +256,9 @@ namespace CyanStars.Gameplay.MusicGame
                 this.timeline = null;
                 isStartGame = false;
                 lastTime = -float.Epsilon;
-                Debug.Log("时间轴结束");
+                GameRoot.Event.Dispatch(EventConst.MusicGameEndEvent,this,EmptyEventArgs.Create());
+
+                Debug.Log("音游结束");
             };
 
             //添加音符轨道
@@ -209,14 +271,15 @@ namespace CyanStars.Gameplay.MusicGame
                 LrcTrackData lrcTrackData = new LrcTrackData { ClipDataList = lrc.TimeTagList };
 
                 LrcTrack lrcTrack = timeline.AddTrack(lrcTrackData, LrcTrack.CreateClipFunc);
-                lrcTrack.TxtLrc = GameRoot.UI.GetUI<MusicGameMainPanel>().TxtLrc;
+                lrcTrack.TxtLrc = GameRoot.UI.GetUIPanel<MusicGameMainPanel>().TxtLrc;
             }
 
             //添加相机轨道
             CameraTrack cameraTrack = timeline.AddTrack(data.CameraTrackData, CameraTrack.CreateClipFunc);
             cameraTrack.DefaultCameraPos = data.CameraTrackData.DefaultPosition;
             cameraTrack.oldRot = data.CameraTrackData.DefaultRotation;
-            cameraTrack.CameraTrans = UnityEngine.Camera.main.transform;
+            cameraTrack.CameraTrans = sceneCameraTrans.transform;
+
 
             //添加音乐轨道
             if (music)
@@ -238,7 +301,7 @@ namespace CyanStars.Gameplay.MusicGame
             EffectTrack effectTrack = timeline.AddTrack(data.EffectTrackData, EffectTrack.CreateClipFunc);
             effectTrack.EffectNames = dataModule.EffectNames;
             effectTrack.EffectParent = ViewHelper.EffectRoot;
-            effectTrack.ImgFrame = GameRoot.UI.GetUI<MusicGameMainPanel>().ImgFrame;
+            effectTrack.ImgFrame = GameRoot.UI.GetUIPanel<MusicGameMainPanel>().ImgFrame;
 
             this.timeline = timeline;
             dataModule.RunningTimeline = timeline;
@@ -293,8 +356,6 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void ReceiveInput(InputType inputType, InputMapData.Item item)
         {
-
-
             if (dataModule.IsAutoMode)
             {
                 return;

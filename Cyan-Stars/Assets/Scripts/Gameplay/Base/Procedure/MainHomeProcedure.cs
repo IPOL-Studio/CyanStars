@@ -1,7 +1,6 @@
 ﻿using CyanStars.Framework;
-using CyanStars.Framework.Asset;
 using CyanStars.Framework.FSM;
-using UnityEngine;
+using CyanStars.Framework.UI;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -11,19 +10,12 @@ namespace CyanStars.Gameplay.MusicGame
     [ProcedureState]
     public class MainHomeProcedure : BaseState
     {
-        private bool flag;
+
 
         public override async void OnEnter()
         {
-            if (!flag)
-            {
-                flag = true;
-                //加载内置谱面清单
-                await GameRoot.GetDataModule<MusicGameModule>().LoadInternalMaps();
-
-                //切换到音游流程
-                GameRoot.ChangeProcedure<MusicGameProcedure>();
-            }
+            //打开谱面选择界面
+            await GameRoot.UI.AwaitOpenUIPanel<MapSelectPanel>();
         }
 
         public override void OnUpdate(float deltaTime)
@@ -32,6 +24,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnExit()
         {
+            GameRoot.UI.CloseUIPanel<MapSelectPanel>();
         }
     }
 }

@@ -27,16 +27,16 @@ namespace CyanStars.Framework.UI
         }
 
         /// <summary>
-        /// 显示UIItem时调用
+        /// 获取UIItem时调用
         /// </summary>
-        public virtual void OnShow()
+        public virtual void OnGet()
         {
         }
 
         /// <summary>
-        /// 隐藏UIItem时调用
+        /// 释放UIItem时调用
         /// </summary>
-        public virtual void OnHide()
+        public virtual void OnRelease()
         {
         }
 
@@ -47,12 +47,5 @@ namespace CyanStars.Framework.UI
         {
         }
 
-
-        /// <summary>
-        /// 刷新Item
-        /// </summary>
-        public virtual void RefreshItem<T>(T data) where T : UIItemData
-        {
-        }
     }
 }

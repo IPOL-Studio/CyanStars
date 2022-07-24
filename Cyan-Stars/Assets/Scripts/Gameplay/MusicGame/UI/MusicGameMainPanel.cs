@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using CyanStars.Framework;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.UI;
+using UnityEngine;
 
 
 namespace CyanStars.Gameplay.MusicGame
@@ -21,6 +22,7 @@ namespace CyanStars.Gameplay.MusicGame
         public Image ImgFrame;
         public Button BtnStart;
         public TextMeshProUGUI TxtLrc;
+        public Button BtnPause;
 
         private MusicGameModule dataModule;
 
@@ -33,6 +35,11 @@ namespace CyanStars.Gameplay.MusicGame
                 GameRoot.Event.Dispatch(EventConst.MusicGameStartEvent, this, EmptyEventArgs.Create());
                 BtnStart.gameObject.SetActive(false);
             });
+
+            BtnPause.onClick.AddListener(() =>
+            {
+                GameRoot.UI.OpenUIPanel<MusicGamePausePanel>(null);
+            });
         }
 
         public override void OnOpen()
@@ -42,6 +49,15 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnClose()
         {
+            ImgProgress.fillAmount = 0;
+            TxtCombo.text = "0";
+            TxtScore.text = "SCORE(DEBUG):0";
+            BtnStart.gameObject.SetActive(true);
+            TxtLrc.text = null;
+            Color color = ImgFrame.color;
+            color.a = 0;
+            ImgFrame.color = color;
+
             GameRoot.Event.RemoveListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
         }
 
@@ -55,12 +71,16 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         /// <summary>
-        /// 音游数据刷新回调
+        /// 音游数据刷新监听
         /// </summary>
         private void OnMusicGameDataRefresh(object sender, EventArgs args)
         {
             TxtCombo.text = dataModule.Combo.ToString();
             TxtScore.text = "SCORE(DEBUG):" + dataModule.Score;
         }
+
+
+
+
     }
 }
