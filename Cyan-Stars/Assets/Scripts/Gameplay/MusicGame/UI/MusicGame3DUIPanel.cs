@@ -38,7 +38,7 @@ namespace CyanStars.Gameplay.MusicGame
             TxtAccuracy.color = Color.yellow;
             TxtScoreRatio.text = $"{0:F}%";
             TxtScoreRatio.color = Color.cyan;
-            TxtVisibleScore.text = null;
+            TxtVisibleScore.text = "000000";;
 
             GameRoot.Event.AddListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
         }

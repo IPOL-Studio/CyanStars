@@ -200,7 +200,14 @@ namespace CyanStars.Gameplay.MusicGame
             //输入映射数据
             InputMapSO inputMapSo = await GameRoot.Asset.AwaitLoadAsset<InputMapSO>(dataModule.InputMapDataName, sceneRoot);
             inputMapData = inputMapSo.InputMapData;
-            sceneRoot.transform.Find("TouchInputReceiverGenerator").GetComponent<TouchInputReceiverGenerator>().SetInputMapData(inputMapSo.InputMapData);
+
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                sceneRoot.transform.Find("TouchInputReceiverGenerator")
+                    .GetComponent<TouchInputReceiverGenerator>()
+                    .SetInputMapData(inputMapSo.InputMapData);
+            }
+
             //谱面清单
             mapManifest = dataModule.GetMap(dataModule.MapIndex);
 
