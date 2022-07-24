@@ -33,7 +33,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 谱面序号
         /// </summary>
-        public int MapIndex { get; set; }
+        public int MapIndex { get; set; } = 1;
 
         /// <summary>
         /// 当前运行中的时间轴

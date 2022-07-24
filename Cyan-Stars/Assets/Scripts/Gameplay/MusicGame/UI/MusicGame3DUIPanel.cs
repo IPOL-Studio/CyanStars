@@ -35,7 +35,10 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnClose()
         {
-            TxtGrade.text = null;
+            TxtGrade.text = "Ready?";
+            Color color = TxtGrade.color;
+            color.a = 1;
+            TxtGrade.color = color;
             TxtAccuracy.text = $"杂率:{0:F3}s";
             TxtAccuracy.color = Color.yellow;
             TxtScoreRatio.text = $"{0:F}%";
