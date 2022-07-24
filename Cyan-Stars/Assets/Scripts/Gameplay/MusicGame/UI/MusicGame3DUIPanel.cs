@@ -30,11 +30,6 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnOpen()
         {
-            GameRoot.Event.AddListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
-        }
-
-        public override void OnClose()
-        {
             TxtGrade.text = "Ready?";
             Color color = TxtGrade.color;
             color.a = 1;
@@ -45,6 +40,11 @@ namespace CyanStars.Gameplay.MusicGame
             TxtScoreRatio.color = Color.cyan;
             TxtVisibleScore.text = null;
 
+            GameRoot.Event.AddListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
+        }
+
+        public override void OnClose()
+        {
             GameRoot.Event.RemoveListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
         }
 

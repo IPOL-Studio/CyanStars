@@ -50,6 +50,10 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override async void OnOpen()
         {
+            ImgBg.sprite = null;
+            ImgCover.sprite = null;
+            VideoCover.clip = null;
+
             await RefreshMusicList();
 
             //默认选中上次选的谱面
@@ -61,9 +65,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnClose()
         {
-            ImgBg.sprite = null;
-            ImgCover.sprite = null;
-            VideoCover.clip = null;
+
 
             GameRoot.UI.ReleaseUIItems(mapItems);
             mapItems.Clear();

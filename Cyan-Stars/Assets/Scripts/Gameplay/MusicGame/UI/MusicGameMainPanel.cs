@@ -44,11 +44,6 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnOpen()
         {
-            GameRoot.Event.AddListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
-        }
-
-        public override void OnClose()
-        {
             ImgProgress.fillAmount = 0;
             TxtCombo.text = "0";
             TxtScore.text = "SCORE(DEBUG):0";
@@ -58,6 +53,11 @@ namespace CyanStars.Gameplay.MusicGame
             color.a = 0;
             ImgFrame.color = color;
 
+            GameRoot.Event.AddListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
+        }
+
+        public override void OnClose()
+        {
             GameRoot.Event.RemoveListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
         }
 

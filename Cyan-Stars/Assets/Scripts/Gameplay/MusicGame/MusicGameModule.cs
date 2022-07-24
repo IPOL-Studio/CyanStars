@@ -93,7 +93,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             EffectNames = new List<string>()
             {
-                //"Assets/BundleRes/Prefabs/Effect/VEG/MeteoriteEffect(VEG).prefab",  //640w面大烟花 
+                //"Assets/BundleRes/Prefabs/Effect/VEG/MeteoriteEffect(VEG).prefab",  //640w面大烟花
                 "Assets/BundleRes/Prefabs/Effect/VEG/FireworkEffect(VEG).prefab", //先用另一个代替
 
                 "Assets/BundleRes/Prefabs/Effect/VEG/Fiery_trees_and_silver_flowers_Effect(VEG).prefab",

@@ -29,10 +29,13 @@ namespace CyanStars.Gameplay.MusicGame
             });
         }
 
-        public override void OnRelease()
+        public override void OnGet()
         {
             ImgCover.sprite = null;
+        }
 
+        public override void OnRelease()
+        {
             if (Data != null)
             {
                 ReferencePool.Release(Data);
