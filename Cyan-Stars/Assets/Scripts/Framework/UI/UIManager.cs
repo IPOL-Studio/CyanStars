@@ -85,7 +85,7 @@ namespace CyanStars.Framework.UI
         /// <summary>
         /// 获取UI面板
         /// </summary>
-        public T GetUI<T>() where T : BaseUIPanel
+        public T GetUIPanel<T>() where T : BaseUIPanel
         {
             UIGroup uiGroup = GetUIGroup<T>(out UIDataAttribute uiData);
             return uiGroup.GetUIPanel<T>();
@@ -159,7 +159,7 @@ namespace CyanStars.Framework.UI
         private T OnGetUIItem<T>(Action<T> callback, GameObject go) where T : BaseUIItem
         {
             T item = go.GetComponent<T>();
-            item.OnShow();
+            item.OnGet();
             callback?.Invoke(item);
             return item;
         }
@@ -184,9 +184,9 @@ namespace CyanStars.Framework.UI
         /// </summary>
         public void ReleaseUIItem(BaseUIItem item)
         {
-            item.OnHide();
+            item.OnRelease();
 
-            if (string.IsNullOrEmpty(item.PrefabName))
+            if (!string.IsNullOrEmpty(item.PrefabName))
             {
                 GameRoot.GameObjectPool.ReleaseGameObject(item.PrefabName, item.gameObject);
             }
