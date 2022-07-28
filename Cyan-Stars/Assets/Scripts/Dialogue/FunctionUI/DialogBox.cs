@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using TMPro;
@@ -8,38 +9,36 @@ using UnityEngine.UI;
 namespace CyanStars.Dialogue
 {
 
-    public class DialogBox : Image
+    public class DialogBox : Image, IPointerClickHandler
     {
         private TMP_Text text;
         private Cell cell = new Cell();
         private int index;
-        private static bool inDialogue;
+        private bool inDialogue;
+
         protected override void Start()
         {
             text = GetComponentInChildren<TMP_Text>();
             inDialogue = false;
             index = 0;
-            DialogueManager.Instance.switchDialog += SwitchDialog;
+            DialogueManager.Instance.OnSwitchDialog += SwitchDialog;
+
+            DialogueManager.Instance.InvokeOnSwitchDialog(DialogueManager.Instance.dialogIndex);
+            if (inDialogue == false)
+            {
+                StartCoroutine(DisplayDialogue());
+            }
+            else
+            {
+                StopAllCoroutines();
+                DirectDisplayDialogue();
+            }
         }
 
         private void SwitchDialog(int startIndex)
         {
             text.text = string.Empty;
             index = startIndex;
-            if (inDialogue)
-            {
-                StopAllCoroutines();
-                StartCoroutine(DirectDisplayDialogue());
-            }
-            else
-            {
-                StartCoroutine(DisplayDialogue());
-            }
-        }
-
-        public static bool IsInDialogue()
-        {
-            return inDialogue;
         }
 
         /// <summary>
@@ -89,6 +88,8 @@ namespace CyanStars.Dialogue
 
             cell = DialogueManager.Instance.dialogueContentCells[index];
 
+            DialogueManager.Instance.InvokeOnAnimation(cell.identifications.id);
+
             if (cell.textContents.stop != 0)
             {
                 foreach (char c in cell.textContents.content)
@@ -106,7 +107,7 @@ namespace CyanStars.Dialogue
 
             index = cell.identifications.jump;
 
-            if ("是".Equals(cell.textContents.link))
+            if ("是".Equals(cell.textContents.link) && "是".Equals(DialogueManager.Instance.dialogueContentCells[index].textContents.link))
             {
                 cell = DialogueManager.Instance.dialogueContentCells[index];
                 yield return StartCoroutine(DisplayDialogue());
@@ -120,7 +121,7 @@ namespace CyanStars.Dialogue
         /// 设置对话(无顿字)
         /// </summary>
         /// <returns></returns>
-        private IEnumerator DirectDisplayDialogue()
+        private void DirectDisplayDialogue()
         {
             inDialogue = true;
 
@@ -131,14 +132,46 @@ namespace CyanStars.Dialogue
 
             index = cell.identifications.jump;
 
-            if ("是".Equals(cell.textContents.link))
+            // if ("是".Equals(cell.textContents.link))
+            // {
+            //     cell = DialogueManager.Instance.dialogueContentCells[index];
+            //     yield return StartCoroutine(DirectDisplayDialogue());
+            // }
+
+            // DialogueManager.Instance.InvokeOnSkipAnimation(cell.identifications.id);
+
+            while ("是".Equals(cell.textContents.link) && "是".Equals(DialogueManager.Instance.dialogueContentCells[index].textContents.link))
             {
                 cell = DialogueManager.Instance.dialogueContentCells[index];
-                yield return StartCoroutine(DirectDisplayDialogue());
+                SetColor();
+                text.text += cell.textContents.content + "</color>";
+                index = cell.identifications.jump;
             }
 
             DialogueManager.Instance.dialogIndex = index;
             inDialogue = false;
         }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (DialogueManager.Instance.stateCount != 0) return;
+            if (DialogueManager.Instance.dialogueContentCells[DialogueManager.Instance.dialogIndex].identifications
+                .sign == "&")
+            {
+                DialogueManager.Instance.InvokeOnCreateBranchUI(DialogueManager.Instance.dialogIndex);
+                return;
+            }
+            DialogueManager.Instance.InvokeOnSwitchDialog(DialogueManager.Instance.dialogIndex);
+            if (inDialogue == false)
+            {
+                StartCoroutine(DisplayDialogue());
+            }
+            else
+            {
+                StopAllCoroutines();
+                DirectDisplayDialogue();
+            }
+        }
+
     }
 }

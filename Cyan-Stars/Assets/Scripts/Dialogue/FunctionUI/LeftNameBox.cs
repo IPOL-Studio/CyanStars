@@ -13,7 +13,7 @@ namespace CyanStars.Dialogue
         protected override void Start()
         {
             text = GetComponentInChildren<TMP_Text>();
-            DialogueManager.Instance.switchDialog += SetName;
+            DialogueManager.Instance.OnSwitchDialog += SetName;
         }
 
         public void SetName(int index)

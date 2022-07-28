@@ -21,11 +21,29 @@ namespace CyanStars.Dialogue
         /// </summary>
         public List<Cell> dialogueContentCells { get; private set; }
 
-        public event UnityAction<int> switchDialog;
+        public event UnityAction<int> OnSwitchDialog;
 
-        public int dialogIndex { get; set; }
+        // public event UnityAction<int> OnSkipAnimation;
 
+        public event UnityAction<int> OnCreateBranchUI;
+
+        public event UnityAction<int> OnAnimation;
+
+        /// <summary>
+        /// 当前对话ID
+        /// </summary>
+        [HideInInspector]
+        public int dialogIndex;
+
+        /// <summary>
+        /// Canvas的RectTransform用于适配不同分辨率的立绘移动
+        /// </summary>
         public RectTransform rectTransform;
+
+        /// <summary>
+        /// 动画状态计数
+        /// </summary>
+        public int stateCount;
 
         #region SingletonPattern
         private static DialogueManager _instance = null;
@@ -57,10 +75,6 @@ namespace CyanStars.Dialogue
             {
                 Destroy(gameObject);
             }
-        }
-
-        private void Start()
-        {
             Init();
         }
 
@@ -69,14 +83,7 @@ namespace CyanStars.Dialogue
             GetTextContent();
             spriteDictionary = InitSpriteDictionary(spritesScriptObjectDataPath);
             dialogIndex = 0;
-        }
-
-        private void Update()
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                switchDialog?.Invoke(dialogIndex);
-            }
+            stateCount = 0;
         }
 
         /// <summary>
@@ -97,6 +104,26 @@ namespace CyanStars.Dialogue
         {
             DialogueSpritesListObject dialogueSpritesListObject = AssetDatabase.LoadAssetAtPath<DialogueSpritesListObject>(dataPath);
             return dialogueSpritesListObject.sprites.ToDictionary(sprite => sprite.name);
+        }
+
+        // public void InvokeOnSkipAnimation(int index)
+        // {
+        //     OnSkipAnimation?.Invoke(index);
+        // }
+
+        public void InvokeOnSwitchDialog(int index)
+        {
+            OnSwitchDialog?.Invoke(index);
+        }
+
+        public void InvokeOnAnimation(int index)
+        {
+            OnAnimation?.Invoke(index);
+        }
+
+        public void InvokeOnCreateBranchUI(int index)
+        {
+            OnCreateBranchUI?.Invoke(index);
         }
 
         public static class Colors

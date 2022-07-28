@@ -9,21 +9,21 @@ namespace CyanStars.Dialogue
     public class RightVerticalDrawing : Image, ISetVerticalDrawing
     {
         public RectTransform width;
+        private Tween tween;
         protected override void Start()
         {
             width = DialogueManager.Instance.rectTransform;
-            DialogueManager.Instance.switchDialog += SetImage;
-            DialogueManager.Instance.switchDialog += SetAnimation;
-            DialogueManager.Instance.switchDialog += SetXAxisMovement;
+            DialogueManager.Instance.OnAnimation += SetImage;
+            DialogueManager.Instance.OnAnimation += SetAnimation;
+            DialogueManager.Instance.OnAnimation += SetXAxisMovement;
+            // DialogueManager.Instance.OnSkipAnimation += SkipAnimation;
         }
 
         public void SetImage(int index)
         {
-            if(DialogueManager.Instance.dialogueContentCells[index]
-                .rightVerticalDrawings.file == "") return;
-            sprite = DialogueManager.Instance.spriteDictionary[
-                DialogueManager.Instance.dialogueContentCells[index]
-                    .rightVerticalDrawings.file];
+            if(DialogueManager.Instance.dialogueContentCells[index].rightVerticalDrawings.file == "") return;
+            sprite = DialogueManager.Instance.spriteDictionary[DialogueManager.Instance.dialogueContentCells[index]
+                .rightVerticalDrawings.file];
         }
 
         public void SetAnimation(int index)
@@ -32,24 +32,34 @@ namespace CyanStars.Dialogue
             switch (DialogueManager.Instance.dialogueContentCells[index].rightVerticalDrawings.effect)
             {
                 case "抖动":
-                    rectTransform.DOShakePosition(1, new Vector3(5, 5, 5), 50, 180f);
+                    rectTransform.DOShakeAnchorPos(0.3f, new Vector3(5, 5, 5), 50, 180f).OnPlay(() => DialogueManager.Instance.stateCount++).OnComplete(() => DialogueManager.Instance.stateCount--);
                     break;
                 case "旋转抖动":
-                    rectTransform.DOShakeRotation(1, new Vector3(5, 5, 5), 50, 180f);
+                    rectTransform.DOShakeRotation(0.3f, new Vector3(5, 5, 5), 50, 180f).OnPlay(() => DialogueManager.Instance.stateCount++).OnComplete(() => DialogueManager.Instance.stateCount--);
                     break;
                 case "缩放":
-                    rectTransform.DOShakeScale(1, 1);
+                    rectTransform.DOShakeScale(0.3f).OnPlay(() => DialogueManager.Instance.stateCount++).OnComplete(() => DialogueManager.Instance.stateCount--);
                     break;
                 default:
                     break;
             }
         }
 
+        public void DOAnchorPosXMove(float xAxisMovement, float duration)
+        {
+            tween = rectTransform.DOAnchorPosX(-width.sizeDelta.x * xAxisMovement, duration).OnPlay(() => DialogueManager.Instance.stateCount++).OnComplete(() => DialogueManager.Instance.stateCount--);
+        }
+
+        public void SkipAnimation(int index)
+        {
+            if (DialogueManager.Instance.dialogueContentCells[index].rightVerticalDrawings.xAxisMovement < 0) return;
+            DOAnchorPosXMove(DialogueManager.Instance.dialogueContentCells[index].rightVerticalDrawings.xAxisMovement, 0);
+        }
+
         public void SetXAxisMovement(int index)
         {
             if (DialogueManager.Instance.dialogueContentCells[index].rightVerticalDrawings.xAxisMovement < 0) return;
-            rectTransform.DOAnchorPosX(
-                -width.sizeDelta.x * DialogueManager.Instance.dialogueContentCells[index].rightVerticalDrawings.xAxisMovement, 1);
+            DOAnchorPosXMove(DialogueManager.Instance.dialogueContentCells[index].rightVerticalDrawings.xAxisMovement, 1);
         }
     }
 }

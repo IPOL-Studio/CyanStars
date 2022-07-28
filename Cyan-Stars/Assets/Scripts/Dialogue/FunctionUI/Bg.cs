@@ -1,4 +1,5 @@
 using TMPro;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -8,7 +9,7 @@ namespace CyanStars.Dialogue
     {
         protected override void Start()
         {
-            DialogueManager.Instance.switchDialog += SetImage;
+            DialogueManager.Instance.OnSwitchDialog += SetImage;
         }
 
         public void SetImage(int index)
@@ -19,7 +20,17 @@ namespace CyanStars.Dialogue
 
         public void SetAnimation(int index)
         {
-            
+
+        }
+
+        public void SkipAnimation(int index)
+        {
+
+        }
+
+        public void DOAnchorPosXMove(float xAxisMovement, float duration)
+        {
+
         }
     }
 }
