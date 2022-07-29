@@ -1,16 +1,16 @@
+using CyanStars.Framework;
+using UnityEngine;
+
 namespace CyanStars.Gameplay.MusicGame
 {
     public static class EvaluateHelper
     {
+        private static readonly EvaluateModule DataModule = GameRoot.GetDataModule<EvaluateModule>();
+
         /// <summary>
         /// 输入时间和判定时间的距离差大于此值，就不处理输入
         /// </summary>
         public const float CheckInputStartDistance = 0.201f;
-
-        /// <summary>
-        /// Tap Hold Click Tap音符逻辑层时间和判定时间的距离小于此值 就自动Miss
-        /// </summary>
-        public const float CheckInputEndDistance = -0.231f;
 
         /// <summary>
         /// Drag音符的判定时间距离范围
@@ -18,30 +18,35 @@ namespace CyanStars.Gameplay.MusicGame
         public const float DragJudgeDistanceRange = 0.1f;
 
         /// <summary>
+        /// Tap Hold Click Tap音符逻辑层时间和判定时间的距离小于此值 就自动Miss
+        /// </summary>
+        public static float CheckInputEndDistance => DataModule.Current.Miss;
+
+        /// <summary>
         /// 根据Tap音符命中时间和判定时间的距离获取评价类型
         /// </summary>
         public static EvaluateType GetTapEvaluate(float distance)
         {
-            //80
-            if (distance <= 0.08f && distance >= -0.08f)
+            float d = Mathf.Abs(distance);
+            var c = DataModule.Current;
+
+            if (d <= c.Exact)
             {
                 return EvaluateType.Exact;
             }
 
-            //81-140
-            if (distance <= 0.14f && distance >= -0.14f)
+            if (d <= c.Great)
             {
                 return EvaluateType.Great;
             }
 
-            //141-200（早）
-            if (distance <= 0.2f && distance >= 0)
+            if (distance <= c.Bad && distance >= 0)
             {
                 return EvaluateType.Bad;
             }
 
             //141-230（晚）
-            if (distance >= -0.23f)
+            if (distance >= c.Right)
             {
                 return EvaluateType.Right;
             }
