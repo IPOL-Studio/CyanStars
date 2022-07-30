@@ -45,7 +45,6 @@ namespace CyanStars.Gameplay.MusicGame
                 return EvaluateType.Bad;
             }
 
-            //141-230（晚）
             if (distance >= c.Right)
             {
                 return EvaluateType.Right;

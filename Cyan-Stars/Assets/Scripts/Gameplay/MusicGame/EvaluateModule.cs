@@ -13,7 +13,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnInit()
         {
-            normalRange = new EvaluateRange(0.08f, 0.014f, 0.2f, -0.23f, -0.231f);
+            normalRange = new EvaluateRange(0.08f, 0.14f, 0.2f, -0.23f, -0.231f);
             hardRange = new EvaluateRange(0.04f, 0.1f, 0.2f, -0.16f, -0.161f);
             easyRange = new EvaluateRange(0.12f, 0.18f, 0.2f, -0.23f, -0.231f);
 
