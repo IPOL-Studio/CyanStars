@@ -12,18 +12,13 @@
         public readonly float Great;
         public readonly float Bad;
         public readonly float Right;
-        /// <summary>
-        /// 见 <see cref="EvaluateHelper.CheckInputEndDistance"/>
-        /// </summary>
-        public readonly float Miss;
 
-        public EvaluateRange(float exact, float great, float bad, float right, float miss)
+        public EvaluateRange(float exact, float great, float bad, float right)
         {
             Exact = exact;
             Great = great;
             Bad = bad;
             Right = right;
-            Miss = miss;
         }
     }
 }

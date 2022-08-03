@@ -11,7 +11,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnUpdate(curLogicTime, curViewTime);
 
-            if (Distance < EvaluateHelper.CheckInputEndDistance) //没接住Miss
+            if (EvaluateHelper.IsMiss(Distance)) //没接住Miss
             {
                 DestroySelf(); //延迟销毁
 

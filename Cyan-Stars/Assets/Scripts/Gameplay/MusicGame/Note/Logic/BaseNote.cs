@@ -91,7 +91,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public virtual bool CanReceiveInput()
         {
-            return Distance <= EvaluateHelper.CheckInputStartDistance && Distance >= EvaluateHelper.CheckInputEndDistance;
+            return Distance <= EvaluateHelper.CheckInputStartDistance && !EvaluateHelper.IsMiss(Distance);
         }
 
         /// <summary>

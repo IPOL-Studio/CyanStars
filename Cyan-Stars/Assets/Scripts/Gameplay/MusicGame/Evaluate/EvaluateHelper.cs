@@ -18,11 +18,6 @@ namespace CyanStars.Gameplay.MusicGame
         public const float DragJudgeDistanceRange = 0.1f;
 
         /// <summary>
-        /// Tap Hold Click Tap音符逻辑层时间和判定时间的距离小于此值 就自动Miss
-        /// </summary>
-        public static float CheckInputEndDistance => DataModule.Current.Miss;
-
-        /// <summary>
         /// 根据Tap音符命中时间和判定时间的距离获取评价类型
         /// </summary>
         public static EvaluateType GetTapEvaluate(float distance)
@@ -81,12 +76,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static EvaluateType GetClickEvaluate(float value)
         {
-            if (value <= 0.125f)
-            {
-                return EvaluateType.Exact;
-            }
-
-            return EvaluateType.Out;
+            return value <= 0.125f ? EvaluateType.Exact : EvaluateType.Out;
         }
 
         /// <summary>
@@ -104,6 +94,15 @@ namespace CyanStars.Gameplay.MusicGame
                 EvaluateType.Miss => 0,
                 _ => throw new System.ArgumentException(nameof(et))
             };
+        }
+
+        /// <summary>
+        /// 音符是否应该判定为Miss
+        /// </summary>
+        /// <param name="distance">音符逻辑层时间和判定时间的距离</param>
+        public static bool IsMiss(float distance)
+        {
+            return distance < DataModule.Current.Right;
         }
     }
 }
