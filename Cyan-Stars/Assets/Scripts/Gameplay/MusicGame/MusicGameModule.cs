@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using CyanStars.Framework;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.Event;
-using CyanStars.Framework.Logger;
 using CyanStars.Framework.Timeline;
 
 
