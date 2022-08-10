@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Threading;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -16,6 +18,11 @@ namespace CyanStars.Dialogue
         private int index;
         private bool inDialogue;
 
+        protected override void Awake()
+        {
+            raycastTarget = false;
+        }
+
         protected override void Start()
         {
             text = GetComponentInChildren<TMP_Text>();
@@ -23,22 +30,42 @@ namespace CyanStars.Dialogue
             index = 0;
             DialogueManager.Instance.OnSwitchDialog += SwitchDialog;
 
+            StartCoroutine(FirstDialogue());
+        }
+
+        /// <summary>
+        /// 初始化后自动播放第一句
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator FirstDialogue()
+        {
+            while (!DialogueManager.Instance.initializationComplete)
+            {
+                yield return null;
+            }
+
             DialogueManager.Instance.InvokeOnSwitchDialog(DialogueManager.Instance.dialogIndex);
+            raycastTarget = true;
+        }
+
+        /// <summary>
+        /// 切换下一对话清空当前对话并设置开始id
+        /// </summary>
+        /// <param name="startIndex"></param>
+        private void SwitchDialog(int startIndex)
+        {
+            text.text = string.Empty;
+            index = startIndex;
             if (inDialogue == false)
             {
                 StartCoroutine(DisplayDialogue());
             }
             else
             {
+                //TODO:临时使用停止全部协程，之后看用了哪个停哪个
                 StopAllCoroutines();
                 DirectDisplayDialogue();
             }
-        }
-
-        private void SwitchDialog(int startIndex)
-        {
-            text.text = string.Empty;
-            index = startIndex;
         }
 
         /// <summary>
@@ -106,6 +133,11 @@ namespace CyanStars.Dialogue
                 text.text += cell.textContents.content + "</color>";
             }
 
+            while (DialogueManager.Instance.stateCount != 0)
+            {
+                yield return null;
+            }
+
             index = cell.identifications.jump;
 
             if ("是".Equals(cell.textContents.link) && "是".Equals(DialogueManager.Instance.dialogueContentCells[index].textContents.link))
@@ -114,6 +146,7 @@ namespace CyanStars.Dialogue
                 yield return StartCoroutine(DisplayDialogue());
             }
 
+            // DialogueManager.Instance.InvokeOnSkipAnimation(cell.identifications.id);
             DialogueManager.Instance.dialogIndex = index;
             inDialogue = false;
         }
@@ -149,13 +182,21 @@ namespace CyanStars.Dialogue
                 index = cell.identifications.jump;
             }
 
+            DialogueManager.Instance.InvokeOnSkipAnimation(cell.identifications.id);
             DialogueManager.Instance.dialogIndex = index;
             inDialogue = false;
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (DialogueManager.Instance.stateCount != 0) return;
+            if (DialogueManager.Instance.dialogueContentCells[DialogueManager.Instance.dialogIndex].identifications
+                .sign == "END")
+            {
+#if UNITY_EDITOR
+                if(EditorApplication.isPlaying)
+                    EditorApplication.isPlaying = false;
+#endif
+            }
             if (DialogueManager.Instance.dialogueContentCells[DialogueManager.Instance.dialogIndex].identifications
                 .sign == "&")
             {
@@ -163,16 +204,16 @@ namespace CyanStars.Dialogue
                 return;
             }
             DialogueManager.Instance.InvokeOnSwitchDialog(DialogueManager.Instance.dialogIndex);
-            if (inDialogue == false)
-            {
-                StartCoroutine(DisplayDialogue());
-            }
-            else
-            {
-                //TODO:临时使用停止全部协程，之后看用了哪个停哪个
-                StopAllCoroutines();
-                DirectDisplayDialogue();
-            }
+            // if (inDialogue == false)
+            // {
+            //     StartCoroutine(DisplayDialogue());
+            // }
+            // else
+            // {
+            //     //TODO:临时使用停止全部协程，之后看用了哪个停哪个
+            //     StopAllCoroutines();
+            //     DirectDisplayDialogue();
+            // }
         }
 
     }

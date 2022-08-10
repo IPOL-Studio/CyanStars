@@ -64,6 +64,7 @@ namespace CyanStars.Dialogue
         {
             DisableBranchUI();
             DialogueManager.Instance.dialogIndex = DialogueManager.Instance.dialogueContentCells[index].identifications.jump;
+            DialogueManager.Instance.InvokeOnSwitchDialog(DialogueManager.Instance.dialogIndex);
         }
     }
 }

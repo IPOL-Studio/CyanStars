@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -21,9 +22,11 @@ namespace CyanStars.Dialogue
         /// </summary>
         public List<Cell> dialogueContentCells { get; private set; }
 
+        public bool initializationComplete { get; private set; }
+
         public event UnityAction<int> OnSwitchDialog;
 
-        // public event UnityAction<int> OnSkipAnimation;
+        public event UnityAction<int> OnSkipAnimation;
 
         public event UnityAction<int> OnCreateBranchUI;
 
@@ -67,6 +70,7 @@ namespace CyanStars.Dialogue
 
         private void Awake()
         {
+            initializationComplete = false;
             if (_instance == null)
             {
                 _instance = this;
@@ -84,6 +88,13 @@ namespace CyanStars.Dialogue
             spriteDictionary = InitSpriteDictionary(spritesScriptObjectDataPath);
             dialogIndex = 0;
             stateCount = 0;
+            StartCoroutine(WaitForInitializationComplete());
+        }
+
+        private IEnumerator WaitForInitializationComplete()
+        {
+            yield return new WaitForFixedUpdate();
+            initializationComplete = true;
         }
 
         /// <summary>
@@ -124,6 +135,11 @@ namespace CyanStars.Dialogue
         public void InvokeOnCreateBranchUI(int index)
         {
             OnCreateBranchUI?.Invoke(index);
+        }
+
+        public void InvokeOnSkipAnimation(int index)
+        {
+            OnSkipAnimation?.Invoke(index);
         }
 
         public static class Colors

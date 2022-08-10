@@ -3,20 +3,29 @@ using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace CyanStars.Dialogue
 {
     public class LeftVerticalDrawing : Image, ISetVerticalDrawing
     {
-        public RectTransform width;
+        public RectTransform father_RectTransform;
+        private float width;
+        private float height;
+        private Tweener tweener;
+        private Tweener tweener2;
         protected override void Start()
         {
-            width = DialogueManager.Instance.rectTransform;
+            father_RectTransform = DialogueManager.Instance.rectTransform;
+            var rect = rectTransform.rect;
+            width = rect.width;
+            height = rect.height;
             DialogueManager.Instance.OnAnimation += SetImage;
             DialogueManager.Instance.OnAnimation += SetAnimation;
             DialogueManager.Instance.OnAnimation += SetXAxisMovement;
-            // DialogueManager.Instance.OnSkipAnimation += SkipAnimation;
+            DialogueManager.Instance.OnSkipAnimation += SkipXAxisMovement;
         }
 
         private void AddStateCount()
@@ -45,46 +54,46 @@ namespace CyanStars.Dialogue
                     switch (DialogueManager.Instance.dialogueContentCells[index].leftVerticalDrawings.curve)
                     {
                         case "线性":
-                            rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
+                            tweener2 = rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
                             break;
                         case "三次方加速":
-                            rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InCubic);
+                            tweener2 = rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InCubic);
                             break;
                         case "三次方减速":
-                            rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutCubic);
+                            tweener2 = rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutCubic);
                             break;
                         case "三次方加速减速":
-                            rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutCubic);
+                            tweener2 = rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutCubic);
                             break;
                         case "指数加速":
-                            rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InExpo);
+                            tweener2 = rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InExpo);
                             break;
                         case "指数减速":
-                            rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutExpo);
+                            tweener2 = rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutExpo);
                             break;
                         case "指数加速减速":
-                            rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutExpo);
+                            tweener2 = rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutExpo);
                             break;
                         case "超范围三次方加速缓动":
-                            rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBack);
+                            tweener2 = rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBack);
                             break;
                         case "超范围三次方减速缓动":
-                            rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBack);
+                            tweener2 = rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBack);
                             break;
                         case "超范围三次方加速减速缓动":
-                            rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBack);
+                            tweener2 = rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBack);
                             break;
                         case "指数衰减加速反弹缓动":
-                            rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBounce);
+                            tweener2 = rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBounce);
                             break;
                         case "指数衰减减速反弹缓动":
-                            rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBounce);
+                            tweener2 = rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBounce);
                             break;
                         case "指数衰减加速减速反弹缓动":
-                            rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBounce);
+                            tweener2 = rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBounce);
                             break;
                         default:
-                            rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
+                            tweener2 = rectTransform.DOShakeAnchorPos(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
                             break;
                     }
                     break;
@@ -92,46 +101,46 @@ namespace CyanStars.Dialogue
                     switch (DialogueManager.Instance.dialogueContentCells[index].leftVerticalDrawings.curve)
                     {
                         case "线性":
-                            rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
+                            tweener2 = rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
                             break;
                         case "三次方加速":
-                            rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InCubic);
+                            tweener2 = rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InCubic);
                             break;
                         case "三次方减速":
-                            rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutCubic);
+                            tweener2 = rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutCubic);
                             break;
                         case "三次方加速减速":
-                            rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutCubic);
+                            tweener2 = rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutCubic);
                             break;
                         case "指数加速":
-                            rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InExpo);
+                            tweener2 = rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InExpo);
                             break;
                         case "指数减速":
-                            rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutExpo);
+                            tweener2 = rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutExpo);
                             break;
                         case "指数加速减速":
-                            rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutExpo);
+                            tweener2 = rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutExpo);
                             break;
                         case "超范围三次方加速缓动":
-                            rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBack);
+                            tweener2 = rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBack);
                             break;
                         case "超范围三次方减速缓动":
-                            rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBack);
+                            tweener2 = rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBack);
                             break;
                         case "超范围三次方加速减速缓动":
-                            rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBack);
+                            tweener2 = rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBack);
                             break;
                         case "指数衰减加速反弹缓动":
-                            rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBounce);
+                            tweener2 = rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBounce);
                             break;
                         case "指数衰减减速反弹缓动":
-                            rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBounce);
+                            tweener2 = rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBounce);
                             break;
                         case "指数衰减加速减速反弹缓动":
-                            rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBounce);
+                            tweener2 = rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBounce);
                             break;
                         default:
-                            rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
+                            tweener2 = rectTransform.DOShakeRotation(duration, new Vector2(5, 5), 50, 180f).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
                             break;
                     }
                     break;
@@ -139,46 +148,46 @@ namespace CyanStars.Dialogue
                     switch (DialogueManager.Instance.dialogueContentCells[index].leftVerticalDrawings.curve)
                     {
                         case "线性":
-                            rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
+                            tweener2 = rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
                             break;
                         case "三次方加速":
-                            rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InCubic);
+                            tweener2 = rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InCubic);
                             break;
                         case "三次方减速":
-                            rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutCubic);
+                            tweener2 = rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutCubic);
                             break;
                         case "三次方加速减速":
-                            rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutCubic);
+                            tweener2 = rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutCubic);
                             break;
                         case "指数加速":
-                            rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InExpo);
+                            tweener2 = rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InExpo);
                             break;
                         case "指数减速":
-                            rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutExpo);
+                            tweener2 = rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutExpo);
                             break;
                         case "指数加速减速":
-                            rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutExpo);
+                            tweener2 = rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutExpo);
                             break;
                         case "超范围三次方加速缓动":
-                            rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBack);
+                            tweener2 = rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBack);
                             break;
                         case "超范围三次方减速缓动":
-                            rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBack);
+                            tweener2 = rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBack);
                             break;
                         case "超范围三次方加速减速缓动":
-                            rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBack);
+                            tweener2 = rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBack);
                             break;
                         case "指数衰减加速反弹缓动":
-                            rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBounce);
+                            tweener2 = rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBounce);
                             break;
                         case "指数衰减减速反弹缓动":
-                            rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBounce);
+                            tweener2 = rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBounce);
                             break;
                         case "指数衰减加速减速反弹缓动":
-                            rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBounce);
+                            tweener2 = rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBounce);
                             break;
                         default:
-                            rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
+                            tweener2 = rectTransform.DOShakeScale(duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
                             break;
                     }
                     break;
@@ -192,63 +201,79 @@ namespace CyanStars.Dialogue
             switch (curve)
             {
                 case "线性":
-                    rectTransform.DOAnchorPosX(width.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
+                    tweener = rectTransform.DOAnchorPosX(father_RectTransform.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
                     break;
                 case "三次方加速":
-                    rectTransform.DOAnchorPosX(width.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InCubic);
+                    tweener = rectTransform.DOAnchorPosX(father_RectTransform.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InCubic);
                     break;
                 case "三次方减速":
-                    rectTransform.DOAnchorPosX(width.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutCubic);
+                    tweener = rectTransform.DOAnchorPosX(father_RectTransform.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutCubic);
                     break;
                 case "三次方加速减速":
-                    rectTransform.DOAnchorPosX(width.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutCubic);
+                    tweener = rectTransform.DOAnchorPosX(father_RectTransform.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutCubic);
                     break;
                 case "指数加速":
-                    rectTransform.DOAnchorPosX(width.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InExpo);
+                    tweener = rectTransform.DOAnchorPosX(father_RectTransform.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InExpo);
                     break;
                 case "指数减速":
-                    rectTransform.DOAnchorPosX(width.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutExpo);
+                    tweener = rectTransform.DOAnchorPosX(father_RectTransform.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutExpo);
                     break;
                 case "指数加速减速":
-                    rectTransform.DOAnchorPosX(width.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutExpo);
+                    tweener = rectTransform.DOAnchorPosX(father_RectTransform.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutExpo);
                     break;
                 case "超范围三次方加速缓动":
-                    rectTransform.DOAnchorPosX(width.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBack);
+                    tweener = rectTransform.DOAnchorPosX(father_RectTransform.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBack);
                     break;
                 case "超范围三次方减速缓动":
-                    rectTransform.DOAnchorPosX(width.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBack);
+                    tweener = rectTransform.DOAnchorPosX(father_RectTransform.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBack);
                     break;
                 case "超范围三次方加速减速缓动":
-                    rectTransform.DOAnchorPosX(width.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBack);
+                    tweener = rectTransform.DOAnchorPosX(father_RectTransform.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBack);
                     break;
                 case "指数衰减加速反弹缓动":
-                    rectTransform.DOAnchorPosX(width.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBounce);
+                    tweener = rectTransform.DOAnchorPosX(father_RectTransform.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InBounce);
                     break;
                 case "指数衰减减速反弹缓动":
-                    rectTransform.DOAnchorPosX(width.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBounce);
+                    tweener = rectTransform.DOAnchorPosX(father_RectTransform.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.OutBounce);
                     break;
                 case "指数衰减加速减速反弹缓动":
-                    rectTransform.DOAnchorPosX(width.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBounce);
+                    tweener = rectTransform.DOAnchorPosX(father_RectTransform.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.InOutBounce);
                     break;
                 default:
-                    rectTransform.DOAnchorPosX(width.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
+                    tweener = rectTransform.DOAnchorPosX(father_RectTransform.sizeDelta.x * xAxisMovement, duration).OnPlay(AddStateCount).OnComplete(SubStateCount).SetEase(Ease.Linear);
                     break;
             }
         }
 
-        public void SkipAnimation(int index)
+        public void ResetSize()
         {
-            if (DialogueManager.Instance.dialogueContentCells[index].leftVerticalDrawings.xAxisMovement < 0) return;
-            DoAnchorPosXMove(DialogueManager.Instance.dialogueContentCells[index].leftVerticalDrawings.xAxisMovement, 0,
-                DialogueManager.Instance.dialogueContentCells[index].rightVerticalDrawings.curve);
+            rectTransform.DOScale(new Vector3(1, 1, 1), 0.1f);
+            rectTransform.DOSizeDelta(new Vector2(width, height), 0.1f);
+        }
+
+        public void SkipXAxisMovement(int index)
+        {
+            tweener2.Kill(true);
+            ResetSize();
+
+            if (DialogueManager.Instance.dialogueContentCells[index].leftVerticalDrawings.xAxisMovement < 0)
+            {
+                return;
+            }
+            else
+            {
+                tweener.Kill(true);
+                rectTransform.anchoredPosition = new Vector2(father_RectTransform.sizeDelta.x * DialogueManager.Instance.dialogueContentCells[index].leftVerticalDrawings.xAxisMovement, rectTransform.anchoredPosition.y);
+            }
+
         }
 
         public void SetXAxisMovement(int index)
         {
             if (DialogueManager.Instance.dialogueContentCells[index].leftVerticalDrawings.xAxisMovement < 0) return;
             DoAnchorPosXMove(DialogueManager.Instance.dialogueContentCells[index].leftVerticalDrawings.xAxisMovement,
-                DialogueManager.Instance.dialogueContentCells[index].rightVerticalDrawings.time,
-                DialogueManager.Instance.dialogueContentCells[index].rightVerticalDrawings.curve);
+                DialogueManager.Instance.dialogueContentCells[index].leftVerticalDrawings.time,
+                DialogueManager.Instance.dialogueContentCells[index].leftVerticalDrawings.curve);
         }
     }
 }
