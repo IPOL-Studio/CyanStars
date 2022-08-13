@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace CyanStars.Framework.RefrencePool
+namespace CyanStars.Framework.Pool
 {
     public static partial class ReferencePool
     {
@@ -9,7 +9,7 @@ namespace CyanStars.Framework.RefrencePool
         {
             private readonly List<IReference> list = new List<IReference>();
 
-            public T Get<T>() where T : IReference,new ()
+            public T Get<T>() where T : IReference, new()
             {
                 if (list.Count == 0)
                 {

@@ -1,4 +1,4 @@
-﻿namespace CyanStars.Framework.RefrencePool
+﻿namespace CyanStars.Framework.Pool
 {
     /// <summary>
     /// 引用池对象接口

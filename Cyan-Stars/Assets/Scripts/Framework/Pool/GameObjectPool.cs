@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CyanStars.Framework.GameObjectPool
+namespace CyanStars.Framework.Pool
 {
     /// <summary>
     /// 游戏对象池
