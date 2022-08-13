@@ -56,7 +56,7 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Event.AddListener(EventConst.MusicGameResumeEvent, ResumeMusicGame);
             GameRoot.Event.AddListener(EventConst.MusicGameExitEvent, ExitMusicGame);
 
-            GameRoot.Event.AddListener(InputEventArgs.EventName,OnInput);
+            GameRoot.Event.AddListener(InputEventArgs.EventName, OnInput);
 
             //打开游戏场景
             bool success = await GameRoot.Asset.AwaitLoadScene("Assets/BundleRes/Scenes/Dark.unity");
@@ -121,7 +121,7 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Event.RemoveListener(EventConst.MusicGamePauseEvent, PauseMusicGame);
             GameRoot.Event.RemoveListener(EventConst.MusicGameResumeEvent, ResumeMusicGame);
             GameRoot.Event.RemoveListener(EventConst.MusicGameExitEvent, ExitMusicGame);
-            GameRoot.Event.RemoveListener(InputEventArgs.EventName,OnInput);
+            GameRoot.Event.RemoveListener(InputEventArgs.EventName, OnInput);
 
             CloseMusicGameUI();
 
@@ -263,7 +263,7 @@ namespace CyanStars.Gameplay.MusicGame
                 this.timeline = null;
                 isStartGame = false;
                 lastTime = -float.Epsilon;
-                GameRoot.Event.Dispatch(EventConst.MusicGameEndEvent,this,EmptyEventArgs.Create());
+                GameRoot.Event.Dispatch(EventConst.MusicGameEndEvent, this,EmptyEventArgs.Create());
 
                 Debug.Log("音游结束");
             };

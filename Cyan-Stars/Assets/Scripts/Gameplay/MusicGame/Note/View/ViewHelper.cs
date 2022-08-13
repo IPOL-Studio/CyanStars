@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyanStars.Framework;
-using CyanStars.Framework.GameObjectPool;
+using CyanStars.Framework.Pool;
 
 using UnityEngine;
 
@@ -58,7 +58,6 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (data.Type == NoteType.Hold)
             {
-                //(view as HoldViewObject).SetMesh(1f, endTime - startTime);
                 float length = (data.HoldViewEndTime - data.ViewJudgeTime) / 1000f;
                 (view as HoldViewObject).SetLength(length);
             }
