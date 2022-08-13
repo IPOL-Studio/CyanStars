@@ -35,12 +35,12 @@ namespace CyanStars.Gameplay.MusicGame
             newPos = Owner.DefaultCameraPos + position;
             newRot = rotation;
             oldPos = camTrans.position;
-            oldRot = Owner.oldRot;
+            oldRot = Owner.OldRot;
         }
 
         public override void OnExit()
         {
-            Owner.oldRot = newRot;
+            Owner.OldRot = newRot;
             camTrans.position = newPos;
             camTrans.localEulerAngles = newRot;
         }

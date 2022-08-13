@@ -7,7 +7,7 @@ using CyanStars.Framework.Asset;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Timeline;
-
+using CyanStars.Gameplay.Base;
 using UnityEngine;
 using UInput = UnityEngine.Input;
 
@@ -284,7 +284,7 @@ namespace CyanStars.Gameplay.MusicGame
             //添加相机轨道
             CameraTrack cameraTrack = timeline.AddTrack(data.CameraTrackData, CameraTrack.CreateClipFunc);
             cameraTrack.DefaultCameraPos = data.CameraTrackData.DefaultPosition;
-            cameraTrack.oldRot = data.CameraTrackData.DefaultRotation;
+            cameraTrack.OldRot = data.CameraTrackData.DefaultRotation;
             cameraTrack.CameraTrans = sceneCameraTrans.transform;
 
 
@@ -294,7 +294,7 @@ namespace CyanStars.Gameplay.MusicGame
                 MusicTrackData musicTrackData = new MusicTrackData { ClipDataList = new List<AudioClip>() { music } };
 
                 MusicTrack musicTrack = timeline.AddTrack(musicTrackData, MusicTrack.CreateClipFunc);
-                musicTrack.audioSource = audioSource;
+                musicTrack.AudioSource = audioSource;
             }
 
             //添加提示音轨道

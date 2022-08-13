@@ -18,8 +18,8 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnEnter()
         {
-            Owner.audioSource.clip = music;
-            Owner.audioSource.Play();
+            Owner.AudioSource.clip = music;
+            Owner.AudioSource.Play();
         }
     }
 }

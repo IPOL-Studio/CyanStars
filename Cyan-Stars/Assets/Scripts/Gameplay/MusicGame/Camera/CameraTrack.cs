@@ -11,7 +11,7 @@ namespace CyanStars.Gameplay.MusicGame
     {
         public Vector3 DefaultCameraPos;
         public Transform CameraTrans;
-        public Vector3 oldRot;
+        public Vector3 OldRot;
 
         /// <summary>
         /// 片段创建方法
