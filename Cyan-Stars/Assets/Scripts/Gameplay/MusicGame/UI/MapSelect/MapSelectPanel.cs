@@ -5,6 +5,7 @@ using CyanStars.Framework;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.UI;
 using CyanStars.Framework.Utils;
+using CyanStars.Gameplay.Base;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;

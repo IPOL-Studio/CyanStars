@@ -1,8 +1,9 @@
 ﻿using CyanStars.Framework;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.UI;
+using CyanStars.Gameplay.MusicGame;
 
-namespace CyanStars.Gameplay.MusicGame
+namespace CyanStars.Gameplay.Base
 {
     /// <summary>
     /// 主界面流程
