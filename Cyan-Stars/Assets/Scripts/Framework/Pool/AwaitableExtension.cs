@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using UnityEngine;
 
-namespace CyanStars.Framework.GameObjectPool
+namespace CyanStars.Framework.Pool
 {
     /// <summary>
     /// 可等待扩展

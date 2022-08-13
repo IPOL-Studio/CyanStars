@@ -1,6 +1,6 @@
 using UnityEngine;
 using CyanStars.Framework;
-using CyanStars.Framework.GameObjectPool;
+using CyanStars.Framework.Pool;
 using CyanStars.Framework.Timeline;
 
 namespace CyanStars.Gameplay.MusicGame

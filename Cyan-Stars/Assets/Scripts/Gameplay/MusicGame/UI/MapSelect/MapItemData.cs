@@ -1,4 +1,4 @@
-﻿using CyanStars.Framework.RefrencePool;
+﻿using CyanStars.Framework.Pool;
 using CyanStars.Framework.UI;
 
 namespace CyanStars.Gameplay.MusicGame
