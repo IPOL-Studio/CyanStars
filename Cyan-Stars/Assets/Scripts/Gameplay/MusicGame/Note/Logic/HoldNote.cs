@@ -25,14 +25,14 @@ namespace CyanStars.Gameplay.MusicGame
         private bool headChecked;
 
         /// <summary>
-        /// 累计有效时长比例(0-1)
+        /// 头判命中时间
         /// </summary>
-        private float value;
+        private float headCheckTime;
 
         /// <summary>
-        /// 按住的按键数量
+        /// 是否有按住的输入
         /// </summary>
-        private int pressCount;
+        private bool isPressed;
 
         /// <summary>
         /// 累计有效时长值
@@ -40,9 +40,11 @@ namespace CyanStars.Gameplay.MusicGame
         private float pressTimeLength;
 
         /// <summary>
-        /// 首次按下时间
+        /// 累计有效时长比例(0-1)
         /// </summary>
-        private float firstPressTime;
+        private float value;
+
+
 
         public override void Init(NoteData data, NoteLayer layer)
         {
@@ -63,16 +65,26 @@ namespace CyanStars.Gameplay.MusicGame
 
             base.OnUpdate(curLogicTime, curViewTime);
 
-            if (pressCount > 0 && Distance <= 0 && Distance >= holdCheckInputEndDistance)
+            if (!isPressed)
             {
-                //只在hold音符区域内有按住时，累计有效时长
-                pressTimeLength += deltaTime;
+                //这里isPressed为false 就表示从上一次OnUpdate到这次OnUpdate之间没有Press类型的输入
+                ViewObject?.DestroyEffectObj();
+            }
+            else
+            {
+                //重置Press标记
+                isPressed = false;
+
+                if (Distance <= 0 && Distance >= holdCheckInputEndDistance)
+                {
+                    //只在hold音符区域内有按住时，累计有效时长
+                    pressTimeLength += deltaTime;
+                }
             }
 
             if (Distance < holdCheckInputEndDistance)
             {
                 //整条hold都跑完了
-
                 if (!headChecked)
                 {
                     //没进行过头判 被漏掉了 miss
@@ -81,32 +93,34 @@ namespace CyanStars.Gameplay.MusicGame
                 else
                 {
                     //进行过头判 计算按住比例
-                    ViewObject.DestroyEffectObj();
+                    //总长度默认为hold长度
+                    float allLength = holdLength;
+                    if (headCheckTime > JudgeTime)
+                    {
+                        //头判晚命中的情况下 以头判命中时间为起点计算总长度
+                        allLength = Data.HoldEndTime / 1000f - headCheckTime;
+                    }
 
-                    if (firstPressTime > JudgeTime)
-                    {
-                        //首次按下时间在判定时间之后的情况下 以首次按下时间为起点计算总长度
-                        value = pressTimeLength / (Data.HoldEndTime/1000f - firstPressTime);
-                    }
-                    else
-                    {
-                        //否则以hold长度作为总长度
-                        value = pressTimeLength / holdLength;
-                    }
+                    //修正因累加deltaTime可能导致的按住时长比总时长大的情况
+                    pressTimeLength = Mathf.Clamp(pressTimeLength, pressTimeLength, allLength);
+
+                    //计算按住比例
+                    value = pressTimeLength / allLength;
 
                     NoteJudger.HoldTailJudge(Data,pressTimeLength,value);
+
+                    ViewObject?.DestroyEffectObj();
                 }
-
-
                 DestroySelf();
             }
+
         }
 
         public override void OnUpdateInAutoMode(float curLogicTime,float curViewTime)
         {
             base.OnUpdateInAutoMode(curLogicTime, curViewTime);
 
-            if (EvaluateHelper.GetTapEvaluate(Distance) == EvaluateType.Exact && !headChecked)
+            if (!headChecked && EvaluateHelper.GetTapEvaluate(Distance) == EvaluateType.Exact)
             {
                 headChecked = true;
                 ViewObject?.CreateEffectObj(NoteData.NoteWidth);
@@ -131,41 +145,39 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 case InputType.Down:
 
-                    if (pressCount == 0)
+                    if (headChecked)
                     {
-                        ViewObject.CreateEffectObj(NoteData.NoteWidth);
-                        pressCount++;
+                        return;
                     }
 
+                    //头判处理
+                    EvaluateType et =  NoteJudger.HoldHeadJudge(Data, Distance);
+                    if (et == EvaluateType.Bad || et == EvaluateType.Miss)
+                    {
+                        //头判失败直接销毁
+                        DestroySelf(false);
+                    }
+                    else
+                    {
+                        //头判成功
+                        headChecked = true;
+                        headCheckTime = CurLogicTime;
+                        isPressed = true;
+                        ViewObject.CreateEffectObj(NoteData.NoteWidth);
+                    }
+
+                    break;
+
+                case InputType.Press:
 
                     if (!headChecked)
                     {
-                        headChecked = true;
-                        //头判处理
-
-                        EvaluateType et =  NoteJudger.HoldHeadJudge(Data, Distance);
-                        if (et == EvaluateType.Bad || et == EvaluateType.Miss)
-                        {
-                            //头判失败直接销毁
-                            ViewObject.DestroyEffectObj();
-                            DestroySelf(false);
-                        }
-                        else
-                        {
-                            //头判成功
-                            firstPressTime = CurLogicTime;
-                        }
-                    }
-                    break;
-
-                case InputType.Up:
-
-                    if (pressCount > 0)
-                    {
-                        pressCount--;
-                        if (pressCount == 0) ViewObject.DestroyEffectObj();
+                       return;
                     }
 
+                    //头判命中后 有Press输入 才开始计算命中时长
+                    isPressed = true;
+                    ViewObject.CreateEffectObj(NoteData.NoteWidth);
                     break;
             }
         }
