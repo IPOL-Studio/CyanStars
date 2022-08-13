@@ -27,12 +27,17 @@ namespace CyanStars.Framework.UI
         /// <summary>
         /// UI组名->UI组
         /// </summary>
-        private readonly Dictionary<string, UIGroup> uiGroupDict = new Dictionary<string, UIGroup>();
+        private readonly Dictionary<string, UIGroup> UIGroupDict = new Dictionary<string, UIGroup>();
 
         /// <summary>
         /// UI面板->UI面板数据
         /// </summary>
-        private readonly Dictionary<Type, UIDataAttribute> uiDataDict = new Dictionary<Type, UIDataAttribute>();
+        private readonly Dictionary<Type, UIDataAttribute> UIDataDict = new Dictionary<Type, UIDataAttribute>();
+
+        /// <summary>
+        /// 处于打开状态的UI面板 -> 打开的面板数量
+        /// </summary>
+        private readonly Dictionary<Type, int> OpenedUIDict = new Dictionary<Type, int>();
 
         /// <inheritdoc />
         public override int Priority { get; }
@@ -44,7 +49,7 @@ namespace CyanStars.Framework.UI
             for (int i = 0; i < UIGroups.Count; i++)
             {
                 UIGroup group = UIGroups[i];
-                uiGroupDict.Add(group.Name, group);
+                UIGroupDict.Add(group.Name, group);
 
                 group.Depth = i * UIGroupDepthStep;
             }
@@ -60,7 +65,14 @@ namespace CyanStars.Framework.UI
         public void OpenUIPanel<T>(Action<T> callback) where T : BaseUIPanel
         {
             UIGroup uiGroup = GetUIGroup<T>(out UIDataAttribute uiData);
+            bool uiPanelOpened = OpenedUIDict.TryGetValue(typeof(T), out int count);
+            if (!uiData.AllowMultiple && uiPanelOpened)
+            {
+                throw new Exception($"只允许打开UI面板{typeof(T).Name}的一个实例");
+            }
+
             uiGroup.OpenUIPanel(uiData, callback);
+            OpenedUIDict[typeof(T)] = count + 1;
         }
 
         /// <summary>
@@ -80,6 +92,17 @@ namespace CyanStars.Framework.UI
         {
             UIGroup uiGroup = GetUIGroup<T>(out UIDataAttribute uiData);
             uiGroup.CloseUIPanel(uiData, uiPanel);
+
+            if (!OpenedUIDict.TryGetValue(typeof(T), out int count)) return;
+            count--;
+            if (count == 0)
+            {
+                OpenedUIDict.Remove(typeof(T));
+            }
+            else
+            {
+                OpenedUIDict[typeof(T)] = count;
+            }
         }
 
         /// <summary>
@@ -98,7 +121,7 @@ namespace CyanStars.Framework.UI
         {
             uiData = GetOrAddUIPanelData<T>();
 
-            if (!uiGroupDict.TryGetValue(uiData.UIGroupName, out UIGroup group))
+            if (!UIGroupDict.TryGetValue(uiData.UIGroupName, out UIGroup group))
             {
                 throw new Exception($"UI面板{typeof(T).Name}的UI组{uiData.UIGroupName}未定义");
             }
@@ -112,7 +135,7 @@ namespace CyanStars.Framework.UI
         private UIDataAttribute GetOrAddUIPanelData<T>() where T : BaseUIPanel
         {
             Type type = typeof(T);
-            if (!uiDataDict.TryGetValue(type, out UIDataAttribute uiData))
+            if (!UIDataDict.TryGetValue(type, out UIDataAttribute uiData))
             {
                 Type attr = typeof(UIDataAttribute);
                 if (!Attribute.IsDefined(type, attr))
@@ -121,7 +144,7 @@ namespace CyanStars.Framework.UI
                 }
 
                 uiData = (UIDataAttribute)Attribute.GetCustomAttribute(type, attr);
-                uiDataDict.Add(type, uiData);
+                UIDataDict.Add(type, uiData);
             }
 
             return uiData;
