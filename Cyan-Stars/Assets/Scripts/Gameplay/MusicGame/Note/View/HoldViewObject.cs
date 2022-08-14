@@ -35,7 +35,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
-        public override void OpenFlicker()
+        public void OpenFlicker()
         {
             block.SetFloat(Flicker, 1.2f);
             if (meshRenderer)

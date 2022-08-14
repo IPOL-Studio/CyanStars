@@ -9,6 +9,5 @@ namespace CyanStars.Gameplay.MusicGame
         void DestroySelf(bool autoMove = true);
         void CreateEffectObj(float w);
         void DestroyEffectObj();
-        void OpenFlicker();
     }
 }

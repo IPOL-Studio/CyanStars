@@ -110,7 +110,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 headChecked = true;
 
-                ViewObject?.OpenFlicker();
+                (ViewObject as HoldViewObject)?.OpenFlicker();
 
                 ViewObject?.CreateEffectObj(NoteData.NoteWidth);
 
@@ -119,7 +119,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (Distance < holdCheckInputEndDistance)
             {
-                ViewObject.DestroyEffectObj();
+                ViewObject?.DestroyEffectObj();
                 DestroySelf();
 
                 NoteJudger.HoldTailJudge(Data,holdLength,1);
@@ -145,7 +145,7 @@ namespace CyanStars.Gameplay.MusicGame
                     {
                         headChecked = true;
                         //头判处理
-                        ViewObject?.OpenFlicker();
+                        (ViewObject as HoldViewObject)?.OpenFlicker();
 
                         EvaluateType et =  NoteJudger.HoldHeadJudge(Data, Distance);
                         if (et == EvaluateType.Bad || et == EvaluateType.Miss)
