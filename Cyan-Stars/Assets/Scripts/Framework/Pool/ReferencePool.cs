@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CyanStars.Framework.RefrencePool
+namespace CyanStars.Framework.Pool
 {
     /// <summary>
     /// 引用池

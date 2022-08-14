@@ -7,7 +7,7 @@ using CyanStars.Framework.Asset;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Timeline;
-
+using CyanStars.Gameplay.Base;
 using UnityEngine;
 using UInput = UnityEngine.Input;
 
@@ -56,7 +56,7 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Event.AddListener(EventConst.MusicGameResumeEvent, ResumeMusicGame);
             GameRoot.Event.AddListener(EventConst.MusicGameExitEvent, ExitMusicGame);
 
-            GameRoot.Event.AddListener(InputEventArgs.EventName,OnInput);
+            GameRoot.Event.AddListener(InputEventArgs.EventName, OnInput);
 
             //打开游戏场景
             bool success = await GameRoot.Asset.AwaitLoadScene("Assets/BundleRes/Scenes/Dark.unity");
@@ -121,7 +121,7 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Event.RemoveListener(EventConst.MusicGamePauseEvent, PauseMusicGame);
             GameRoot.Event.RemoveListener(EventConst.MusicGameResumeEvent, ResumeMusicGame);
             GameRoot.Event.RemoveListener(EventConst.MusicGameExitEvent, ExitMusicGame);
-            GameRoot.Event.RemoveListener(InputEventArgs.EventName,OnInput);
+            GameRoot.Event.RemoveListener(InputEventArgs.EventName, OnInput);
 
             CloseMusicGameUI();
 
@@ -263,7 +263,7 @@ namespace CyanStars.Gameplay.MusicGame
                 this.timeline = null;
                 isStartGame = false;
                 lastTime = -float.Epsilon;
-                GameRoot.Event.Dispatch(EventConst.MusicGameEndEvent,this,EmptyEventArgs.Create());
+                GameRoot.Event.Dispatch(EventConst.MusicGameEndEvent, this,EmptyEventArgs.Create());
 
                 Debug.Log("音游结束");
             };
@@ -284,7 +284,7 @@ namespace CyanStars.Gameplay.MusicGame
             //添加相机轨道
             CameraTrack cameraTrack = timeline.AddTrack(data.CameraTrackData, CameraTrack.CreateClipFunc);
             cameraTrack.DefaultCameraPos = data.CameraTrackData.DefaultPosition;
-            cameraTrack.oldRot = data.CameraTrackData.DefaultRotation;
+            cameraTrack.OldRot = data.CameraTrackData.DefaultRotation;
             cameraTrack.CameraTrans = sceneCameraTrans.transform;
 
 
@@ -294,7 +294,7 @@ namespace CyanStars.Gameplay.MusicGame
                 MusicTrackData musicTrackData = new MusicTrackData { ClipDataList = new List<AudioClip>() { music } };
 
                 MusicTrack musicTrack = timeline.AddTrack(musicTrackData, MusicTrack.CreateClipFunc);
-                musicTrack.audioSource = audioSource;
+                musicTrack.AudioSource = audioSource;
             }
 
             //添加提示音轨道

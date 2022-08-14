@@ -1,4 +1,4 @@
-﻿namespace CyanStars.Gameplay.MusicGame
+﻿namespace CyanStars.Gameplay.Base
 {
     public static class UIConst
     {

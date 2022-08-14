@@ -120,7 +120,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 计算当前视图层时间
         /// </summary>
-        private float CalCurViewTime(float currentTime,float mapSpeed)
+        private float CalCurViewTime(float currentTime, float mapSpeed)
         {
             NoteTimeAxisData curTimeAxis = layerData.TimeAxisDatas[curTimeAxisIndex];
             int timeLength = curTimeAxis.EndTime - curTimeAxis.StartTime;

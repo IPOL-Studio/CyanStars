@@ -8,7 +8,7 @@ namespace CyanStars.Framework.FSM
         /// <summary>
         /// 持有此状态的有限状态机
         /// </summary>
-        protected FSM owner;
+        protected FSM Owner;
 
 
         /// <summary>
@@ -16,7 +16,7 @@ namespace CyanStars.Framework.FSM
         /// </summary>
         public void SetOwner(FSM owner)
         {
-            this.owner = owner;
+            this.Owner = owner;
         }
 
         /// <summary>

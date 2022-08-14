@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using CyanStars.Framework;
 using CyanStars.Framework.UI;
+using CyanStars.Gameplay.Base;
 
 
 namespace CyanStars.Gameplay.MusicGame

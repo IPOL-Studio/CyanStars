@@ -31,6 +31,11 @@ namespace CyanStars.Gameplay.MusicGame
 
         public void CreateEffectObj(float w)
         {
+            if (effectObj != null)
+            {
+                return;
+            }
+
             effectObj = GameObject.Instantiate(effectPrefab,
                 transform.position + new Vector3(Endpoint.Instance.Length * w / 2, 0, 0), Quaternion.identity);
             effectObj.transform.SetParent(ViewHelper.EffectRoot);
@@ -43,12 +48,7 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
-            foreach (var particle in effectObj.GetComponent<NoteClickEffect>().ParticleSystemList)
-            {
-                particle.Stop();
-            }
-
-            Destroy(effectObj, 5);
+            Destroy(effectObj);
         }
 
         public void DestroySelf(bool autoMove = true)
