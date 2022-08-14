@@ -123,6 +123,9 @@ namespace CyanStars.Gameplay.MusicGame
             if (!headChecked && EvaluateHelper.GetTapEvaluate(Distance) == EvaluateType.Exact)
             {
                 headChecked = true;
+
+                (ViewObject as HoldViewObject)?.OpenFlicker();
+
                 ViewObject?.CreateEffectObj(NoteData.NoteWidth);
 
                 NoteJudger.HoldHeadJudge(Data, 0); // Auto Mode 杂率为0
@@ -130,7 +133,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (Distance < holdCheckInputEndDistance)
             {
-                ViewObject.DestroyEffectObj();
+                ViewObject?.DestroyEffectObj();
                 DestroySelf();
 
                 NoteJudger.HoldTailJudge(Data,holdLength,1);
@@ -164,6 +167,8 @@ namespace CyanStars.Gameplay.MusicGame
                         headCheckTime = CurLogicTime;
                         isPressed = true;
                         ViewObject.CreateEffectObj(NoteData.NoteWidth);
+                        //头判处理
+                        (ViewObject as HoldViewObject)?.OpenFlicker();
                     }
 
                     break;
