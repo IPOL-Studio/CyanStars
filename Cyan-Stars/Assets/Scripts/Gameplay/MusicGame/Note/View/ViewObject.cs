@@ -19,7 +19,6 @@ namespace CyanStars.Gameplay.MusicGame
         private GameObject effectObj;
         public string PrefabName;
 
-
         public void OnUpdate(float viewDistance)
         {
             viewDeltaTime = this.viewDistance - viewDistance;
