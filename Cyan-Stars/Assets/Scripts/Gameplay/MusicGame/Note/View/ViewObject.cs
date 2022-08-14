@@ -19,6 +19,10 @@ namespace CyanStars.Gameplay.MusicGame
         private GameObject effectObj;
         public string PrefabName;
 
+        /// <summary>
+        /// HOLD案件的开启效果函数，在HoldViewObject中实现
+        /// </summary>
+        public virtual void OpenFlicker() {}
 
         public void OnUpdate(float viewDistance)
         {

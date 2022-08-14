@@ -29,9 +29,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Flicker: 1
-    - _FlickerRate: 2
-    - _FlickerSpeed: 1.5
+    - _FlickerRate: 1
+    - _FlickerSpeed: 2.5
     m_Colors:
-    - _FlickerColor: {r: 0.3764706, g: 0.45490196, b: 0, a: 0}
+    - _FlickerColor: {r: 0.17254902, g: 0.20784314, b: 0, a: 0}
     - _MaskColor: {r: 0, g: 4, b: 0, a: 1}
   m_BuildTextureStacks: []

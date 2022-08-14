@@ -109,6 +109,9 @@ namespace CyanStars.Gameplay.MusicGame
             if (EvaluateHelper.GetTapEvaluate(Distance) == EvaluateType.Exact && !headChecked)
             {
                 headChecked = true;
+
+                ViewObject?.OpenFlicker();
+
                 ViewObject?.CreateEffectObj(NoteData.NoteWidth);
 
                 NoteJudger.HoldHeadJudge(Data, 0); // Auto Mode 杂率为0
@@ -142,6 +145,7 @@ namespace CyanStars.Gameplay.MusicGame
                     {
                         headChecked = true;
                         //头判处理
+                        ViewObject?.OpenFlicker();
 
                         EvaluateType et =  NoteJudger.HoldHeadJudge(Data, Distance);
                         if (et == EvaluateType.Bad || et == EvaluateType.Miss)
