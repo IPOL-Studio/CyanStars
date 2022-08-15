@@ -4,24 +4,6 @@ using UnityEditor;
 using System.IO;
 using CyanStars.Dialogue;
 
-// [System.Serializable]
-// class Cell
-// {
-//     public string sign;
-//     public string id;
-//     public string name;
-//     public string pos;
-//     public string text;
-//     public string color;
-//     public string link;
-//     public string backgroundTex;
-//     public string leftVerticalDrawing;
-//     public string rightVerticalDrawing;
-//     public string stop;
-//     public string effect;
-//     public string jump;
-// }
-
 [System.Serializable]
 class Identification
 {
@@ -43,11 +25,11 @@ class TextContent
 [System.Serializable]
 class VerticalDrawing
 {
-    public string file;
-    public string xAxisMovement;
-    public string effect;
-    public string curve;
-    public string time;
+    public string file = null;
+    public string xAxisMovement = null;
+    public string effect = null;
+    public string curve = null;
+    public string time = null;
 }
 
 [System.Serializable]
@@ -68,8 +50,7 @@ class Cell
 {
     public Identification identifications = new Identification();
     public TextContent textContents = new TextContent();
-    public VerticalDrawing leftVerticalDrawings = new VerticalDrawing();
-    public VerticalDrawing rightVerticalDrawings = new VerticalDrawing();
+    public List<VerticalDrawing> verticalDrawings = new List<VerticalDrawing>();
     public Background backgrounds = new Background();
     public Effect effects = new Effect();
 }
@@ -121,14 +102,21 @@ public class CSV2JSON : EditorWindow
     {
         dialogue.dialogue.Clear();
         string[] rows = textAsset.text.Split('\n');
+        int verticalDrawingCount = 0;
+        int index = 0;
+        while ((index=rows[0].IndexOf("立绘", index)) != -1)
+        {
+            verticalDrawingCount++;
+            index += 2;
+        }
+
         for(int i = 2; i < rows.Length - 1; i++)
         {
             string[] cells = rows[i].Replace("\r", "").Split(',');
             Cell cell = new Cell();
+            VerticalDrawing verticalDrawing = new VerticalDrawing();
             Identification identification = new Identification();
             TextContent textContent = new TextContent();
-            VerticalDrawing leftVerticalDrawing = new VerticalDrawing();
-            VerticalDrawing rightVerticalDrawing = new VerticalDrawing();
             Background background = new Background();
             Effect effect = new Effect();
 
@@ -144,25 +132,31 @@ public class CSV2JSON : EditorWindow
             textContent.stop = cells[7];
             cell.textContents = textContent;
 
-            leftVerticalDrawing.file = cells[8];
-            leftVerticalDrawing.xAxisMovement = cells[9];
-            leftVerticalDrawing.effect = cells[10];
-            leftVerticalDrawing.curve = cells[11];
-            leftVerticalDrawing.time = cells[12];
-            cell.leftVerticalDrawings = leftVerticalDrawing;
+            int temp = 8;
 
-            rightVerticalDrawing.file = cells[13];
-            rightVerticalDrawing.xAxisMovement = cells[14];
-            rightVerticalDrawing.effect = cells[15];
-            rightVerticalDrawing.curve = cells[16];
-            rightVerticalDrawing.time = cells[17];
-            cell.rightVerticalDrawings = rightVerticalDrawing;
+            for (int j = 0; j < verticalDrawingCount; j++)
+            {
+                verticalDrawing = new VerticalDrawing();
+                verticalDrawing.file = cells[temp];
+                temp++;
+                verticalDrawing.xAxisMovement = cells[temp];
+                temp++;
+                verticalDrawing.effect = cells[temp];
+                temp++;
+                verticalDrawing.curve = cells[temp];
+                temp++;
+                verticalDrawing.time = cells[temp];
+                temp++;
+                cell.verticalDrawings.Add(verticalDrawing);
+            }
 
-            background.file = cells[18];
+            background.file = cells[temp];
+            temp++;
             cell.backgrounds = background;
 
-            effect.code = cells[19];
-            effect.parameter = cells[20];
+            effect.code = cells[temp];
+            temp++;
+            effect.parameter = cells[temp];
             cell.effects = effect;
 
             dialogue.dialogue.Add(cell);

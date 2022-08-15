@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
@@ -12,6 +13,12 @@ namespace CyanStars.Dialogue
     {
         private const string spritesScriptObjectDataPath = "Assets/BundleRes/ScriptObjects/DialogueSprites/SpritesScriptObject.asset";
 
+        [SerializeField]
+        private GameObject verticalDrawingPerfab;
+
+        [SerializeField]
+        private RectTransform verticalDrawingSpawner;
+
         /// <summary>
         /// 精灵字典
         /// </summary>
@@ -21,6 +28,11 @@ namespace CyanStars.Dialogue
         /// 当前章节的数据，从选择章节的地方传入
         /// </summary>
         public List<Cell> dialogueContentCells { get; private set; }
+
+        /// <summary>
+        /// 所有的立绘，目前只在初始化的时候赋值并使用了，之后效果部分可能会用到
+        /// </summary>
+        public List<VerticalDrawingBase> verticalDrawingBases = new List<VerticalDrawingBase>();
 
         public bool initializationComplete { get; private set; }
 
@@ -89,6 +101,12 @@ namespace CyanStars.Dialogue
             dialogIndex = 0;
             stateCount = 0;
             StartCoroutine(WaitForInitializationComplete());
+
+            for (int i = 0; i < dialogueContentCells[0].verticalDrawings.Count; i++)
+            {
+                verticalDrawingBases.Add(Instantiate(verticalDrawingPerfab, verticalDrawingSpawner).GetComponent<VerticalDrawingBase>());
+                Instance.verticalDrawingBases[i].verticalDrawingID = i;
+            }
         }
 
         private IEnumerator WaitForInitializationComplete()
@@ -110,7 +128,7 @@ namespace CyanStars.Dialogue
         /// 初始化精灵表字典
         /// </summary>
         /// <param name="dataPath">精灵表地址</param>
-        /// TODO:通过读取的Json来获取精灵（如果图量很大的话）
+        /// TODO:通过读取的Json来获取精灵（每个故事需要的图都做成一个ScriptObject，一个故事对应一个ScriptObect中包含所用的精灵）
         private Dictionary<string, Sprite> InitSpriteDictionary(string dataPath)
         {
             DialogueSpritesListObject dialogueSpritesListObject = AssetDatabase.LoadAssetAtPath<DialogueSpritesListObject>(dataPath);
@@ -152,6 +170,41 @@ namespace CyanStars.Dialogue
             public const string Purple = "<color=purple>";
             public const string Gray = "<color=gray>";
             public const string Black = "<color=black>";
+        }
+
+        public static Ease AnimationEase(string curve)
+        {
+            switch (curve)
+            {
+                case "线性":
+                    return Ease.Linear;
+                case "三次方加速":
+                    return Ease.InCubic;
+                case "三次方减速":
+                    return Ease.OutCubic;
+                case "三次方加速减速":
+                    return Ease.InOutCubic;
+                case "指数加速":
+                    return Ease.InExpo;
+                case "指数减速":
+                    return Ease.OutExpo;
+                case "指数加速减速":
+                    return Ease.InOutExpo;
+                case "超范围三次方加速缓动":
+                    return Ease.InBack;
+                case "超范围三次方减速缓动":
+                    return Ease.OutBack;
+                case "超范围三次方加速减速缓动":
+                    return Ease.InOutBack;
+                case "指数衰减加速反弹缓动":
+                    return Ease.InBounce;
+                case "指数衰减减速反弹缓动":
+                    return Ease.OutBounce;
+                case "指数衰减加速减速反弹缓动":
+                    return Ease.InOutBounce;
+                default:
+                    return Ease.Linear;
+            }
         }
     }
 }

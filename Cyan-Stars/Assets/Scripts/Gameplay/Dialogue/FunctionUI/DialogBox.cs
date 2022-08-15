@@ -18,6 +18,9 @@ namespace CyanStars.Dialogue
         private int index;
         private bool inDialogue;
 
+        /// <summary>
+        /// 初始化完成前禁止对话框对点击的响应
+        /// </summary>
         protected override void Awake()
         {
             raycastTarget = false;
@@ -30,14 +33,14 @@ namespace CyanStars.Dialogue
             index = 0;
             DialogueManager.Instance.OnSwitchDialog += SwitchDialog;
 
-            StartCoroutine(FirstDialogue());
+            StartCoroutine(AutoShowFirstDialogue());
         }
 
         /// <summary>
         /// 初始化后自动播放第一句
         /// </summary>
         /// <returns></returns>
-        private IEnumerator FirstDialogue()
+        private IEnumerator AutoShowFirstDialogue()
         {
             while (!DialogueManager.Instance.initializationComplete)
             {
@@ -62,7 +65,7 @@ namespace CyanStars.Dialogue
             }
             else
             {
-                //TODO:临时使用停止全部协程，之后看用了哪个停哪个
+                //TODO:暂时使用停止全部协程，之后看用了哪个停哪个
                 StopAllCoroutines();
                 DirectDisplayDialogue();
             }
@@ -133,6 +136,7 @@ namespace CyanStars.Dialogue
                 text.text += cell.textContents.content + "</color>";
             }
 
+            //等待动画播放完毕
             while (DialogueManager.Instance.stateCount != 0)
             {
                 yield return null;
@@ -140,13 +144,13 @@ namespace CyanStars.Dialogue
 
             index = cell.identifications.jump;
 
+            //需要连接句子的情况
             if ("是".Equals(cell.textContents.link) && "是".Equals(DialogueManager.Instance.dialogueContentCells[index].textContents.link))
             {
                 cell = DialogueManager.Instance.dialogueContentCells[index];
                 yield return StartCoroutine(DisplayDialogue());
             }
 
-            // DialogueManager.Instance.InvokeOnSkipAnimation(cell.identifications.id);
             DialogueManager.Instance.dialogIndex = index;
             inDialogue = false;
         }
@@ -166,14 +170,7 @@ namespace CyanStars.Dialogue
 
             index = cell.identifications.jump;
 
-            // if ("是".Equals(cell.textContents.link))
-            // {
-            //     cell = DialogueManager.Instance.dialogueContentCells[index];
-            //     yield return StartCoroutine(DirectDisplayDialogue());
-            // }
-
-            // DialogueManager.Instance.InvokeOnSkipAnimation(cell.identifications.id);
-
+            //需要连接句子的情况
             while ("是".Equals(cell.textContents.link) && "是".Equals(DialogueManager.Instance.dialogueContentCells[index].textContents.link))
             {
                 cell = DialogueManager.Instance.dialogueContentCells[index];
@@ -189,31 +186,23 @@ namespace CyanStars.Dialogue
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (DialogueManager.Instance.dialogueContentCells[DialogueManager.Instance.dialogIndex].identifications
-                .sign == "END")
+
+            if (eventData.button != PointerEventData.InputButton.Left) return;
+            if ("END".Equals(DialogueManager.Instance.dialogueContentCells[DialogueManager.Instance.dialogIndex].identifications.sign))
             {
 #if UNITY_EDITOR
-                if(EditorApplication.isPlaying)
+                if (EditorApplication.isPlaying)
+                {
                     EditorApplication.isPlaying = false;
+                }
 #endif
             }
-            if (DialogueManager.Instance.dialogueContentCells[DialogueManager.Instance.dialogIndex].identifications
-                .sign == "&")
+            if ("&".Equals(DialogueManager.Instance.dialogueContentCells[DialogueManager.Instance.dialogIndex].identifications.sign))
             {
                 DialogueManager.Instance.InvokeOnCreateBranchUI(DialogueManager.Instance.dialogIndex);
                 return;
             }
             DialogueManager.Instance.InvokeOnSwitchDialog(DialogueManager.Instance.dialogIndex);
-            // if (inDialogue == false)
-            // {
-            //     StartCoroutine(DisplayDialogue());
-            // }
-            // else
-            // {
-            //     //TODO:临时使用停止全部协程，之后看用了哪个停哪个
-            //     StopAllCoroutines();
-            //     DirectDisplayDialogue();
-            // }
         }
 
     }
