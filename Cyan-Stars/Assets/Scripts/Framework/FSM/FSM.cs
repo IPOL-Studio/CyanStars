@@ -12,7 +12,7 @@ namespace CyanStars.Framework.FSM
         /// <summary>
         /// 状态字典
         /// </summary>
-        private Dictionary<Type, BaseState> stateDict = new Dictionary<Type, BaseState>();
+        private readonly Dictionary<Type, BaseState> StateDict = new Dictionary<Type, BaseState>();
 
         /// <summary>
         /// 当前状态
@@ -30,7 +30,7 @@ namespace CyanStars.Framework.FSM
             {
                 BaseState state = states[i];
                 state.SetOwner(this);
-                stateDict.Add(state.GetType(), state);
+                StateDict.Add(state.GetType(), state);
             }
         }
 
@@ -48,7 +48,7 @@ namespace CyanStars.Framework.FSM
         /// </summary>
         public void ChangeState(Type stateType)
         {
-            if (!stateDict.TryGetValue(stateType, out BaseState state))
+            if (!StateDict.TryGetValue(stateType, out BaseState state))
             {
                 throw new Exception($"状态切换失败，FSM的状态字典中没有此状态：{stateType}");
             }

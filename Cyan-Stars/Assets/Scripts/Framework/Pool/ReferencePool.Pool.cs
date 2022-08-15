@@ -7,19 +7,19 @@ namespace CyanStars.Framework.Pool
     {
         private class Pool
         {
-            private readonly List<IReference> list = new List<IReference>();
+            private readonly List<IReference> Refs = new List<IReference>();
 
             public T Get<T>() where T : IReference, new()
             {
-                if (list.Count == 0)
+                if (Refs.Count == 0)
                 {
                     T obj = new T();
                     //Debug.Log($"创建引用:{obj.GetType()}");
                     return obj;
                 }
 
-                IReference reference = list[list.Count - 1];
-                list.RemoveAt(list.Count - 1);
+                IReference reference = Refs[Refs.Count - 1];
+                Refs.RemoveAt(Refs.Count - 1);
 
                 //Debug.Log($"获取引用:{typeof(T).Name}");
                 return (T) reference;
@@ -29,7 +29,7 @@ namespace CyanStars.Framework.Pool
             {
                 //Debug.Log($"归还引用:{reference.GetType()}");
                 reference.Clear();
-                list.Add(reference);
+                Refs.Add(reference);
             }
         }
     }

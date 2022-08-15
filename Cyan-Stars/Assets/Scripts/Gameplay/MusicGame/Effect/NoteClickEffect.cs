@@ -10,16 +10,19 @@ namespace CyanStars.Gameplay.MusicGame
 
         public List<ParticleSystem> ParticleSystemList;
 
+        private Transform trans;
+
         void Start()
         {
             //Debug.Log(transform.position);
             if (WillDestroy) Destroy(gameObject, DestroyTime);
+            this.trans = transform;
         }
 
         void Update()
         {
-            var position = transform.position;
-            transform.position = new Vector3(position.x, position.y, 0);
+            var position = trans.position;
+            trans.position = new Vector3(position.x, position.y, 0);
         }
     }
 }
