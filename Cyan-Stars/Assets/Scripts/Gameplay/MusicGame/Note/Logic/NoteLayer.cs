@@ -73,14 +73,14 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 获取可接收输入且在输入映射范围内的音符列表
         /// </summary>
-        private List<BaseNote> GetValidNotes(InputMapData.Item item)
+        private List<BaseNote> GetValidNotes(InputEventArgs e)
         {
             cachedList.Clear();
 
             for (int i = 0; i < notes.Count; i++)
             {
                 BaseNote note = notes[i];
-                if (note.CanReceiveInput() && note.IsInInputRange(item.RangeMin, item.RangeMin + item.RangeWidth))
+                if (note.CanReceiveInput() && note.IsInInputRange(e.RangeMin, e.RangeMin + e.RangeWidth))
                 {
                     cachedList.Add(note);
                 }
@@ -134,14 +134,14 @@ namespace CyanStars.Gameplay.MusicGame
             return curViewTime / 1000f;
         }
 
-        public void OnInput(InputType inputType, InputMapData.Item item)
+        public void OnInput(InputEventArgs e)
         {
             if (notes.Count == 0)
             {
                 return;
             }
 
-            List<BaseNote> list = GetValidNotes(item);
+            List<BaseNote> list = GetValidNotes(e);
 
             if (list.Count == 0)
             {
@@ -165,7 +165,7 @@ namespace CyanStars.Gameplay.MusicGame
 
 
             //一次输入信号 只发给一个note处理 避免同时有多个note响应
-            list[0].OnInput(inputType);
+            list[0].OnInput(e.Type);
         }
     }
 }

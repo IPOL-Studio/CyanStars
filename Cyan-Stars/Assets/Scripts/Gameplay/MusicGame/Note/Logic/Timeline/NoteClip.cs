@@ -43,11 +43,11 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
-        public void OnInput(InputType inputType, InputMapData.Item item)
+        public void OnInput(InputEventArgs e)
         {
             for (int i = 0; i < layers.Count; i++)
             {
-                layers[i].OnInput(inputType, item);
+                layers[i].OnInput(e);
             }
         }
     }

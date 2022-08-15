@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using CyanStars.Framework;
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using CyanStars.Framework;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -18,6 +14,7 @@ namespace CyanStars.Gameplay.MusicGame
         private InputMapData.Item keyItem;
 
         private bool isTouchDown;
+        private int id;
 
         private void Awake()
         {
@@ -41,9 +38,10 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             isTouchDown = true;
+            id = eventData.pointerId;
             //Debug.Log("按下:" + keyItem.Key );
 
-            GameRoot.Event.Dispatch(InputEventArgs.EventName, this, InputEventArgs.Create(InputType.Down, keyItem));
+            Dispatch(InputType.Down);
         }
 
         public void OnPointerUp(PointerEventData eventData)
@@ -54,7 +52,8 @@ namespace CyanStars.Gameplay.MusicGame
             }
             //Debug.Log("抬起:" + keyItem.Key );
             isTouchDown = false;
-            GameRoot.Event.Dispatch(InputEventArgs.EventName, this, InputEventArgs.Create(InputType.Up, keyItem));
+            id = eventData.pointerId;
+            Dispatch(InputType.Up);
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -65,9 +64,10 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             isTouchDown = true;
+            id = eventData.pointerId;
             //Debug.Log("进入:" + keyItem.Key );
 
-            GameRoot.Event.Dispatch(InputEventArgs.EventName, this, InputEventArgs.Create(InputType.Down, keyItem));
+            Dispatch(InputType.Down);
         }
 
         public void OnPointerExit(PointerEventData eventData)
@@ -78,18 +78,22 @@ namespace CyanStars.Gameplay.MusicGame
             }
             //Debug.Log("离开:" + keyItem.Key );
             isTouchDown = false;
-            GameRoot.Event.Dispatch(InputEventArgs.EventName, this, InputEventArgs.Create(InputType.Up, keyItem));
+            id = eventData.pointerId;
+            Dispatch(InputType.Up);
         }
 
         private void Update()
         {
             if (isTouchDown)
             {
-                GameRoot.Event.Dispatch(InputEventArgs.EventName, this, InputEventArgs.Create(InputType.Press, keyItem));
+                Dispatch(InputType.Press);
             }
         }
 
-
+        private void Dispatch(InputType type)
+        {
+            GameRoot.Event.Dispatch(InputEventArgs.EventName, this, InputEventArgs.Create(id, type, keyItem.RangeMin, keyItem.RangeWidth));
+        }
     }
 }
 

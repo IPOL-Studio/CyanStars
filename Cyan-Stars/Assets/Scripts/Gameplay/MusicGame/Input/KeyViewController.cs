@@ -10,17 +10,19 @@ namespace CyanStars.Gameplay.MusicGame
         [Header("Key预制体"), SerializeField]
         private GameObject keyPrefab; //key预制体
 
-        public Dictionary<KeyCode, GameObject> KeyDict = new Dictionary<KeyCode, GameObject>(); //key列表
+        // ID -> GameObject
+        private readonly Dictionary<int, GameObject> KeyDict = new Dictionary<int, GameObject>();
 
-        public void KeyDown(InputMapData.Item item)
+        public void KeyDown(InputEventArgs e)
         {
             if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)
             {
                 return;
             }
 
-            if (item.Key == KeyCode.Space) return;
-            if (KeyDict.TryGetValue(item.Key, out var key))
+            if (e.RangeMin < 0 || e.RangeMin > 1) return;
+
+            if (KeyDict.TryGetValue(e.ID, out var key))
             {
                 key.SetActive(true);
             }
@@ -28,22 +30,22 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 key = Instantiate(keyPrefab);
                 var trans = key.transform;
-                trans.position = new Vector3(Endpoint.Instance.GetPosWithRatio(item.RangeMin), 0, 20);
-                trans.localScale = new Vector3(Endpoint.Instance.Length * item.RangeWidth, 0.1f, 10000);
+                trans.position = new Vector3(Endpoint.Instance.GetPosWithRatio(e.RangeMin), 0, 20);
+                trans.localScale = new Vector3(Endpoint.Instance.Length * e.RangeWidth, 0.1f, 10000);
                 trans.SetParent(transform);
-                key.name = item.Key.ToString();
-                KeyDict.Add(item.Key, key);
+                key.name = e.ID.ToString();
+                KeyDict.Add(e.ID, key);
             }
         }
 
-        public void KeyUp(InputMapData.Item item)
+        public void KeyUp(InputEventArgs e)
         {
             if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)
             {
                 return;
             }
 
-            if (KeyDict.TryGetValue(item.Key, out var key))
+            if (KeyDict.TryGetValue(e.ID, out var key))
             {
                 key.SetActive(false);
             }

@@ -63,7 +63,7 @@ namespace CyanStars.Gameplay.MusicGame
             return note;
         }
 
-        public void OnInput(InputType inputType, InputMapData.Item item)
+        public void OnInput(InputEventArgs e)
         {
             if (Clips.Count == 0)
             {
@@ -71,7 +71,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             NoteClip clip = (NoteClip)Clips[0];
-            clip.OnInput(inputType, item);
+            clip.OnInput(e);
         }
     }
 }

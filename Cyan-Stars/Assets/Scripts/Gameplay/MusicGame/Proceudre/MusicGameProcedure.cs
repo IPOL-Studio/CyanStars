@@ -9,7 +9,6 @@ using CyanStars.Framework.FSM;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Base;
 using UnityEngine;
-using UInput = UnityEngine.Input;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -29,7 +28,6 @@ namespace CyanStars.Gameplay.MusicGame
         private KeyViewController keyViewController;
 
         //----音游相关数据--------
-        private InputMapData inputMapData;
         private MapManifest mapManifest;
         private MapTimelineData timelineData;
         private string lrcText;
@@ -41,7 +39,6 @@ namespace CyanStars.Gameplay.MusicGame
         private List<NoteData> linearNoteData = new List<NoteData>();
 
         //----流程逻辑相关--------
-        private HashSet<KeyCode> pressedKeySet = new HashSet<KeyCode>();
         private float lastTime = -float.Epsilon;
         private bool isStartGame = false;
 
@@ -79,8 +76,6 @@ namespace CyanStars.Gameplay.MusicGame
         {
             if (isStartGame && timeline != null)
             {
-                CheckKeyboardInput();
-
                 float timelineDeltaTime = audioSource.time - lastTime;
                 lastTime = audioSource.time;
 
@@ -103,7 +98,6 @@ namespace CyanStars.Gameplay.MusicGame
             audioSource = null;
             keyViewController = null;
 
-            inputMapData = null;
             mapManifest = null;
             timelineData = null;
             lrcText = null;
@@ -113,7 +107,6 @@ namespace CyanStars.Gameplay.MusicGame
             noteTrack = null;
             linearNoteData.Clear();
 
-            pressedKeySet.Clear();
             lastTime = -float.Epsilon;
             isStartGame = false;
 
@@ -174,8 +167,7 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
-            InputEventArgs args = (InputEventArgs)e;
-            ReceiveInput(args.Type,args.Item);
+            ReceiveInput((InputEventArgs)e);
         }
 
         /// <summary>
@@ -199,9 +191,11 @@ namespace CyanStars.Gameplay.MusicGame
         {
             //输入映射数据
             InputMapSO inputMapSo = await GameRoot.Asset.AwaitLoadAsset<InputMapSO>(dataModule.InputMapDataName, sceneRoot);
-            inputMapData = inputMapSo.InputMapData;
+            sceneRoot.transform.Find("KeyboardInputReceiver")
+                .GetComponent<KeyboardInputReceiver>()
+                .SetInputMapData(inputMapSo.InputMapData);
 
-            if (Application.platform == RuntimePlatform.Android)
+            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
             {
                 sceneRoot.transform.Find("TouchInputReceiverGenerator")
                     .GetComponent<TouchInputReceiverGenerator>()
@@ -331,37 +325,9 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         /// <summary>
-        /// 检查键盘输入
-        /// </summary>
-        private void CheckKeyboardInput()
-        {
-            for (int i = 0; i < inputMapData.Items.Count; i++)
-            {
-                InputMapData.Item item = inputMapData.Items[i];
-                if (UInput.GetKeyDown(item.Key))
-                {
-                    pressedKeySet.Add(item.Key);
-                    ReceiveInput(InputType.Down, item);
-                    continue;
-                }
-
-                if (UInput.GetKey(item.Key))
-                {
-                    ReceiveInput(InputType.Press, item);
-                    continue;
-                }
-
-                if (pressedKeySet.Remove(item.Key))
-                {
-                    ReceiveInput(InputType.Up, item);
-                }
-            }
-        }
-
-        /// <summary>
         /// 接收输入
         /// </summary>
-        private void ReceiveInput(InputType inputType, InputMapData.Item item)
+        private void ReceiveInput(InputEventArgs e)
         {
             if (dataModule.IsAutoMode)
             {
@@ -374,20 +340,20 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
-            switch (inputType)
+            switch (e.Type)
             {
                 case InputType.Down:
-                    keyViewController.KeyDown(item);
+                    keyViewController.KeyDown(e);
                     break;
 
                 case InputType.Up:
-                    keyViewController.KeyUp(item);
+                    keyViewController.KeyUp(e);
                     break;
 
 
             }
 
-            noteTrack.OnInput(inputType, item);
+            noteTrack.OnInput(e);
         }
     }
 }
