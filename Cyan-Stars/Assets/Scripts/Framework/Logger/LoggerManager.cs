@@ -5,26 +5,26 @@ namespace CyanStars.Framework.Logger
 {
     public static class LoggerManager
     {
-        private static Dictionary<Type, LoggerBase> loggerDict = new Dictionary<Type, LoggerBase>();
+        private static readonly Dictionary<Type, LoggerBase> LoggerDict = new Dictionary<Type, LoggerBase>();
 
         public static T GetOrCreateLogger<T>() where T : LoggerBase, new()
         {
             var type = typeof(T);
-            if (loggerDict.TryGetValue(type, out var logger))
+            if (LoggerDict.TryGetValue(type, out var logger))
             {
                 return (T)logger;
             }
 
             logger = new T();
-            loggerDict.Add(type, logger);
+            LoggerDict.Add(type, logger);
             return (T)logger;
         }
 
-        public static T GetLogger<T>() where T : LoggerBase => (T)loggerDict[typeof(T)];
+        public static T GetLogger<T>() where T : LoggerBase => (T)LoggerDict[typeof(T)];
 
         public static bool TryGetLogger<T>(out T logger) where T : LoggerBase
         {
-            var isFound = loggerDict.TryGetValue(typeof(T), out var result);
+            var isFound = LoggerDict.TryGetValue(typeof(T), out var result);
             logger = isFound ? (T)result : default;
             return isFound;
         }
@@ -36,11 +36,11 @@ namespace CyanStars.Framework.Logger
                 throw new NullReferenceException(nameof(logger));
             }
 
-            loggerDict.Add(typeof(T), logger);
+            LoggerDict.Add(typeof(T), logger);
         }
 
-        public static bool RemoveLogger<T>() where T : LoggerBase => loggerDict.Remove(typeof(T));
+        public static bool RemoveLogger<T>() where T : LoggerBase => LoggerDict.Remove(typeof(T));
 
-        public static void Clear() => loggerDict.Clear();
+        public static void Clear() => LoggerDict.Clear();
     }
 }

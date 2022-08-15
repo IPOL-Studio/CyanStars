@@ -12,7 +12,7 @@ namespace CyanStars.Gameplay.MusicGame
         private Transform rightTrans; //右端点
 
         public Transform LeftTrans => leftTrans;
-        public Transform RightTrans => RightTrans;
+        public Transform RightTrans => rightTrans;
 
         /// <summary>
         /// 获取左端点的X坐标

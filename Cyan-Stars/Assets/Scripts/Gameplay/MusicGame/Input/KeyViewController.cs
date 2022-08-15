@@ -10,7 +10,7 @@ namespace CyanStars.Gameplay.MusicGame
         [Header("Key预制体"), SerializeField]
         private GameObject keyPrefab; //key预制体
 
-        public Dictionary<KeyCode, GameObject> KeyDict = new Dictionary<KeyCode, GameObject>(); //key列表
+        private readonly Dictionary<KeyCode, GameObject> KeyDict = new Dictionary<KeyCode, GameObject>(); //key列表
 
         public void KeyDown(InputMapData.Item item)
         {

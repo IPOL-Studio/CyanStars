@@ -11,6 +11,8 @@ namespace CyanStars.Gameplay.MusicGame
     {
         private static MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
 
+        private static NoteLogger logger = LoggerManager.GetOrCreateLogger<NoteLogger>();
+
          /// <summary>
         /// 处理tap音符判定
         /// </summary>
@@ -19,7 +21,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             EvaluateType et = EvaluateHelper.GetTapEvaluate(distance); //获取评价类型
 
-            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(data, et)); //Log
+            logger.Log(new DefaultNoteJudgeLogArgs(data, et)); //Log
 
             dataModule.MaxScore += data.GetFullScore(); //更新理论最高分
 
@@ -48,7 +50,7 @@ namespace CyanStars.Gameplay.MusicGame
             if (et == EvaluateType.Bad || et == EvaluateType.Miss) //Bad、Miss:断combo，不计算杂率
             {
                 //头判失败
-                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(data, et));
+                logger.Log(new HoldNoteHeadJudgeLogArgs(data, et));
                 dataModule.MaxScore += data.GetFullScore();
                 dataModule.RefreshPlayingData(-1, EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
                     et, float.MaxValue);
@@ -56,7 +58,7 @@ namespace CyanStars.Gameplay.MusicGame
             else //Exact、Great、Right:不断combo，计算杂率
             {
                 //头判成功
-                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteHeadJudgeLogArgs(data, et));
+                logger.Log(new HoldNoteHeadJudgeLogArgs(data, et));
                 dataModule.MaxScore++;
                 dataModule.RefreshPlayingData(1, EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
                     et, distance);
@@ -70,7 +72,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static void HoldMiss(NoteData data)
         {
-            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Miss, 0, 0));
+            logger.Log(new HoldNoteJudgeLogArgs(data, EvaluateType.Miss, 0, 0));
 
             dataModule.MaxScore += 2;
             dataModule.RefreshPlayingData(-1, 0, EvaluateType.Miss, float.MaxValue); // Miss：断combo，不计算杂率
@@ -83,7 +85,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             EvaluateType et = EvaluateHelper.GetHoldEvaluate(value); // 不判Bad
 
-            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new HoldNoteJudgeLogArgs(data, et, pressTimeLength, value));
+            logger.Log(new HoldNoteJudgeLogArgs(data, et, pressTimeLength, value));
 
             dataModule.MaxScore++;
             if (et != EvaluateType.Miss) // Exact、Great、Right：不加combo，不计算杂率
@@ -109,7 +111,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 et = EvaluateType.Miss;
             }
-            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(data,et));
+            logger.Log(new DefaultNoteJudgeLogArgs(data,et));
 
             dataModule.MaxScore += data.GetFullScore();
 
@@ -138,13 +140,13 @@ namespace CyanStars.Gameplay.MusicGame
                 dataModule.RefreshPlayingData(1, EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
                     et, distance);
 
-                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteHeadJudgeLogArgs(data, et));
+                logger.Log(new ClickNoteHeadJudgeLogArgs(data, et));
             }
             else // Bad、Miss：断combo，不计算杂率
             {
                 //头判失败直接销毁
 
-                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteHeadJudgeLogArgs(data, et));
+                logger.Log(new ClickNoteHeadJudgeLogArgs(data, et));
                 dataModule.MaxScore += 1;
                 dataModule.RefreshPlayingData(-1, EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
                     et, float.MaxValue);
@@ -158,7 +160,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static void ClickMiss(NoteData data)
         {
-            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteJudgeLogArgs(data, EvaluateType.Miss, 0));
+            logger.Log(new ClickNoteJudgeLogArgs(data, EvaluateType.Miss, 0));
 
             dataModule.MaxScore += 2;
             dataModule.RefreshPlayingData(-1, 0, EvaluateType.Miss, float.MaxValue); // Miss：断combo，不计算杂率
@@ -172,8 +174,7 @@ namespace CyanStars.Gameplay.MusicGame
             dataModule.MaxScore += 1;
             EvaluateType et = EvaluateHelper.GetClickEvaluate(timeLength);
 
-            LoggerManager.GetOrCreateLogger<NoteLogger>()
-                .Log(new ClickNoteJudgeLogArgs(data, et, timeLength));
+            logger.Log(new ClickNoteJudgeLogArgs(data, et, timeLength));
 
             dataModule.RefreshPlayingData(0, EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
                 et, float.MaxValue);  // Exact、Out：不断combo，不计算杂率
@@ -186,7 +187,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             EvaluateType et = EvaluateHelper.GetTapEvaluate(distance);
 
-            LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new DefaultNoteJudgeLogArgs(data, et));
+            logger.Log(new DefaultNoteJudgeLogArgs(data, et));
 
             dataModule.MaxScore += data.GetFullScore();
 
