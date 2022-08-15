@@ -9,7 +9,7 @@ namespace CyanStars.Gameplay.MusicGame
     public class TouchInputReceiverGenerator: MonoBehaviour
     {
 
-        private const float width = 30f;
+        private const float Width = 30f;
 
         private InputMapData inputMapData;
 
@@ -22,11 +22,11 @@ namespace CyanStars.Gameplay.MusicGame
 
             for (int i = 0; i < 12; i++)
             {
-                GameObject obj = GameObject.Instantiate(Prefab,default,default,Parent);
+                GameObject obj = Instantiate(Prefab,default,default,Parent);
 
                 InputMapData.Item item = inputMapData.Items[i];
                 Vector3 pos = default;
-                pos.x = item.RangeMin * width;
+                pos.x = item.RangeMin * Width;
                 obj.transform.localPosition = pos;
 
                 obj.GetComponent<TouchInputReceiver>().SetKeyItem(item);

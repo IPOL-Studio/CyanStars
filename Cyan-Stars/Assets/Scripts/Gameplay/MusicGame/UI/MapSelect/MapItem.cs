@@ -18,7 +18,7 @@ namespace CyanStars.Gameplay.MusicGame
         public TextMeshProUGUI TxtName;
         public Button BtnMap;
 
-        public MapItemData Data;
+        public MapItemData Data { get; private set; }
 
         public override void OnCreate()
         {
