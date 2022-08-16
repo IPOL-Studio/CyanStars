@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TimelineData
   m_EditorClassIdentifier: 
   Data:
-    Length: 148000
+    Length: 5000
     NoteTrackData:
       BaseSpeed: 4
       SpeedRate: 1
@@ -22,28 +22,20 @@ MonoBehaviour:
         - StartTime: 0
           EasingType: 0
           Coefficient: 20
-          EndTime: 148000
+          EndTime: 5000
           ViewStartTime: 0
-          ViewEndTime: 11840000
+          ViewEndTime: 400000
           NoteDatas:
           - Type: 0
             Pos: 0
-            JudgeTime: 5000
+            JudgeTime: 1000
             HoldEndTime: 0
             PromptToneType: 0
-            ViewJudgeTime: 400000
-            HoldViewEndTime: 0
-          - Type: 0
-            Pos: 0
-            JudgeTime: 5100
-            HoldEndTime: 0
-            PromptToneType: 0
-            ViewJudgeTime: 408000
+            ViewJudgeTime: 80000
             HoldViewEndTime: 0
     CameraTrackData:
       DefaultPosition: {x: 0, y: 0, z: 0}
       DefaultRotation: {x: 0, y: 0, z: 0}
       KeyFrames: []
     EffectTrackData:
-      BPM: 0
       KeyFrames: []

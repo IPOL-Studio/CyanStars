@@ -29,7 +29,6 @@ namespace CyanStars.Gameplay.MusicGame
         private GameObject sceneRoot;
         private Transform sceneCameraTrans;
         private AudioSource audioSource;
-        private KeyViewController keyViewController;
 
         //----音游相关数据--------
         private InputMapData inputMapData;
@@ -40,13 +39,11 @@ namespace CyanStars.Gameplay.MusicGame
 
         //----时间轴相关对象--------
         private Timeline timeline;
-        private NoteTrack noteTrack;
         private List<NoteData> linearNoteData = new List<NoteData>();
 
         //----流程逻辑相关--------
-        private HashSet<KeyCode> pressedKeySet = new HashSet<KeyCode>();
+        private BaseInputReceiver inputReceiver;
         private float lastTime = -float.Epsilon;
-        private bool isStartGame = false;
 
 
         public override async void OnEnter()
@@ -54,12 +51,10 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.MainCamera.gameObject.SetActive(false);
 
             //监听事件
-            GameRoot.Event.AddListener(EventConst.MusicGameStartEvent, StartMusicGame);
-            GameRoot.Event.AddListener(EventConst.MusicGamePauseEvent, PauseMusicGame);
-            GameRoot.Event.AddListener(EventConst.MusicGameResumeEvent, ResumeMusicGame);
-            GameRoot.Event.AddListener(EventConst.MusicGameExitEvent, ExitMusicGame);
-
-            GameRoot.Event.AddListener(InputEventArgs.EventName, OnInput);
+            GameRoot.Event.AddListener(EventConst.MusicGameStartEvent, OnMusicGameStart);
+            GameRoot.Event.AddListener(EventConst.MusicGamePauseEvent, OnMusicGamePause);
+            GameRoot.Event.AddListener(EventConst.MusicGameResumeEvent, OnMusicGameResume);
+            GameRoot.Event.AddListener(EventConst.MusicGameExitEvent, OnMusicGameExit);
 
             //打开游戏场景
             bool success = await GameRoot.Asset.AwaitLoadScene("Assets/BundleRes/Scenes/Dark.unity");
@@ -77,34 +72,19 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
-
         public override void OnUpdate(float deltaTime)
         {
-            if (isStartGame && timeline != null)
-            {
-                CheckKeyboardInput();
 
-                float timelineDeltaTime = audioSource.time - lastTime;
-                lastTime = audioSource.time;
-
-                timeline.OnUpdate(timelineDeltaTime);
-            }
-
-            //音游流程中 按下ESC打开暂停
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                GameRoot.UI.OpenUIPanel<MusicGamePausePanel>(null);
-            }
         }
+
 
         public override void OnExit()
         {
             GameRoot.MainCamera.gameObject.SetActive(true);
 
-            sceneCameraTrans = null;
             sceneRoot = null;
+            sceneCameraTrans = null;
             audioSource = null;
-            keyViewController = null;
 
             inputMapData = null;
             mapManifest = null;
@@ -113,18 +93,15 @@ namespace CyanStars.Gameplay.MusicGame
             music = null;
 
             timeline = null;
-            noteTrack = null;
             linearNoteData.Clear();
 
-            pressedKeySet.Clear();
+            inputReceiver = null;
             lastTime = -float.Epsilon;
-            isStartGame = false;
 
-            GameRoot.Event.RemoveListener(EventConst.MusicGameStartEvent, StartMusicGame);
-            GameRoot.Event.RemoveListener(EventConst.MusicGamePauseEvent, PauseMusicGame);
-            GameRoot.Event.RemoveListener(EventConst.MusicGameResumeEvent, ResumeMusicGame);
-            GameRoot.Event.RemoveListener(EventConst.MusicGameExitEvent, ExitMusicGame);
-            GameRoot.Event.RemoveListener(InputEventArgs.EventName, OnInput);
+            GameRoot.Event.RemoveListener(EventConst.MusicGameStartEvent, OnMusicGameStart);
+            GameRoot.Event.RemoveListener(EventConst.MusicGamePauseEvent, OnMusicGamePause);
+            GameRoot.Event.RemoveListener(EventConst.MusicGameResumeEvent, OnMusicGameResume);
+            GameRoot.Event.RemoveListener(EventConst.MusicGameExitEvent, OnMusicGameExit);
 
             CloseMusicGameUI();
 
@@ -132,53 +109,55 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         /// <summary>
-        /// 开始游戏
+        /// 开始音游
         /// </summary>
-        private void StartMusicGame(object sender, EventArgs args)
+        private void OnMusicGameStart(object sender, EventArgs args)
         {
-            isStartGame = true;
             CreateTimeline();
+            inputReceiver?.StartReceive();
         }
 
         /// <summary>
         /// 暂停音游
         /// </summary>
-        private void PauseMusicGame(object sender, EventArgs e)
+        private void OnMusicGamePause(object sender, EventArgs e)
         {
-            isStartGame = false;
+            if (timeline == null)
+            {
+                return;
+            }
+
             audioSource.Pause();
+            inputReceiver?.EndReceive();
         }
 
         /// <summary>
         /// 恢复音游
         /// </summary>
-        private void ResumeMusicGame(object sender, EventArgs e)
+        private void OnMusicGameResume(object sender, EventArgs e)
         {
-            isStartGame = true;
+            if (timeline == null)
+            {
+                return;
+            }
+
             audioSource.UnPause();
+            inputReceiver?.StartReceive();
         }
 
         /// <summary>
         /// 退出音游
         /// </summary>
-        private void ExitMusicGame(object sender, EventArgs e)
+        private void OnMusicGameExit(object sender, EventArgs e)
         {
-            dataModule.ResetPlayingData();
-            GameRoot.ChangeProcedure<MainHomeProcedure>();
-        }
-
-        /// <summary>
-        /// 输入监听
-        /// </summary>
-        private void OnInput(object sender, EventArgs e)
-        {
-            if (!isStartGame || timeline == null)
+            if (timeline != null)
             {
-                return;
+                //timeline运行中退出 需要先停掉运行中的timeline
+                StopTimeline();
             }
 
-            InputEventArgs args = (InputEventArgs)e;
-            ReceiveInput(args.Type,args.Item);
+            dataModule.ResetPlayingData();
+            GameRoot.ChangeProcedure<MainHomeProcedure>();
         }
 
         /// <summary>
@@ -191,7 +170,6 @@ namespace CyanStars.Gameplay.MusicGame
             ViewHelper.EffectRoot = sceneRoot.transform.Find("EffectRoot");
             sceneCameraTrans = sceneRoot.transform.Find("SceneCamera");
             audioSource = sceneRoot.GetComponent<AudioSource>();
-            keyViewController = sceneRoot.transform.Find("KeyViewController").GetComponent<KeyViewController>();
 
         }
 
@@ -204,12 +182,26 @@ namespace CyanStars.Gameplay.MusicGame
             InputMapSO inputMapSo = await GameRoot.Asset.AwaitLoadAsset<InputMapSO>(dataModule.InputMapDataName, sceneRoot);
             inputMapData = inputMapSo.InputMapData;
 
-            if (Application.platform == RuntimePlatform.Android)
+            if (!dataModule.IsAutoMode)
             {
-                sceneRoot.transform.Find("TouchInputReceiverGenerator")
-                    .GetComponent<TouchInputReceiverGenerator>()
-                    .SetInputMapData(inputMapSo.InputMapData);
+                if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+                {
+                    //使用触屏输入
+                    TouchInputReceiver touch = new TouchInputReceiver(inputMapData);
+
+                    GameObject prefab = sceneRoot.transform.Find("TouchInputReceiveObj").gameObject;
+                    Transform parent = sceneRoot.transform.Find("TouchInputParent");
+                    touch.CreateReceiveObj(prefab,parent);
+
+                    inputReceiver = touch;
+                }
+                else
+                {
+                    //使用键盘输入
+                    inputReceiver = new KeyboardInputReceiver(inputMapData);
+                }
             }
+
 
             //谱面清单
             mapManifest = dataModule.GetMap(dataModule.MapIndex);
@@ -260,19 +252,11 @@ namespace CyanStars.Gameplay.MusicGame
         {
             MapTimelineData data = timelineData;
 
-            Timeline timeline = new Timeline(data.Length/ 1000f);
-            timeline.OnStop += () =>
-            {
-                this.timeline = null;
-                isStartGame = false;
-                lastTime = -float.Epsilon;
-                GameRoot.Event.Dispatch(EventConst.MusicGameEndEvent, this,EmptyEventArgs.Create());
-
-                Debug.Log("音游结束");
-            };
+            timeline = new Timeline(data.Length/ 1000f);
+            timeline.OnStop += StopTimeline;
 
             //添加音符轨道
-            noteTrack = timeline.AddTrack(data.NoteTrackData, NoteTrack.CreateClipFunc);
+            timeline.AddTrack(data.NoteTrackData, NoteTrack.CreateClipFunc);
 
             if (!string.IsNullOrEmpty(lrcText) && settingsModule.EnableLyricTrack)
             {
@@ -305,22 +289,57 @@ namespace CyanStars.Gameplay.MusicGame
             //添加提示音轨道
             GetLinearNoteData();
             PromptToneTrackData promptToneTrackData = new PromptToneTrackData { ClipDataList = linearNoteData };
-
             PromptToneTrack promptToneTrack = timeline.AddTrack(promptToneTrackData, PromptToneTrack.CreateClipFunc);
             promptToneTrack.AudioSource = audioSource;
 
+            //添加特效轨道
             if (settingsModule.EnableEffectTrack)
             {
-                //添加特效轨道
                 EffectTrack effectTrack = timeline.AddTrack(data.EffectTrackData, EffectTrack.CreateClipFunc);
                 effectTrack.EffectNames = dataModule.EffectNames;
                 effectTrack.EffectParent = ViewHelper.EffectRoot;
                 effectTrack.ImgFrame = GameRoot.UI.GetUIPanel<MusicGameMainPanel>().ImgFrame;
             }
 
-            this.timeline = timeline;
             dataModule.RunningTimeline = timeline;
+
+            GameRoot.Timer.AddUpdateTimer(UpdateTimeline);
+
             Debug.Log("时间轴创建完毕");
+        }
+
+        /// <summary>
+        /// 更新时间轴
+        /// </summary>
+        private void UpdateTimeline(float deltaTime)
+        {
+            float timelineDeltaTime = audioSource.time - lastTime;
+            lastTime = audioSource.time;
+
+            timeline.OnUpdate(timelineDeltaTime);
+
+            //音游流程中 按下ESC打开暂停
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                GameRoot.UI.OpenUIPanel<MusicGamePausePanel>(null);
+            }
+        }
+
+        /// <summary>
+        /// 停止时间轴
+        /// </summary>
+        private void StopTimeline()
+        {
+            timeline = null;
+            lastTime = -float.Epsilon;
+            audioSource.clip = null;
+
+            GameRoot.Timer.RemoveUpdateTimer(UpdateTimeline);
+            inputReceiver?.EndReceive();
+
+            GameRoot.Event.Dispatch(EventConst.MusicGameEndEvent, this,EmptyEventArgs.Create());
+
+            Debug.Log("音游结束");
         }
 
         private void GetLinearNoteData()
@@ -338,64 +357,5 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
-        /// <summary>
-        /// 检查键盘输入
-        /// </summary>
-        private void CheckKeyboardInput()
-        {
-            for (int i = 0; i < inputMapData.Items.Count; i++)
-            {
-                InputMapData.Item item = inputMapData.Items[i];
-                if (UInput.GetKeyDown(item.Key))
-                {
-                    pressedKeySet.Add(item.Key);
-                    ReceiveInput(InputType.Down, item);
-                    continue;
-                }
-
-                if (UInput.GetKey(item.Key))
-                {
-                    ReceiveInput(InputType.Press, item);
-                    continue;
-                }
-
-                if (pressedKeySet.Remove(item.Key))
-                {
-                    ReceiveInput(InputType.Up, item);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 接收输入
-        /// </summary>
-        private void ReceiveInput(InputType inputType, InputMapData.Item item)
-        {
-            if (dataModule.IsAutoMode)
-            {
-                return;
-            }
-
-            if (noteTrack == null)
-            {
-                Debug.LogError("noteTrack为null");
-                return;
-            }
-
-            switch (inputType)
-            {
-                case InputType.Down:
-                    keyViewController.KeyDown(item);
-                    break;
-
-                case InputType.Up:
-                    keyViewController.KeyUp(item);
-                    break;
-
-
-            }
-
-            noteTrack.OnInput(inputType, item);
-        }
     }
 }

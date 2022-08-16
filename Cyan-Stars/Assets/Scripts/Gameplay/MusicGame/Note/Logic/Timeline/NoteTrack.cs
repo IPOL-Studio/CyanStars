@@ -59,19 +59,9 @@ namespace CyanStars.Gameplay.MusicGame
                 _ => null
             };
 
-            note.Init(noteData, layer);
+            note?.Init(noteData, layer);
             return note;
         }
 
-        public void OnInput(InputType inputType, InputMapData.Item item)
-        {
-            if (Clips.Count == 0)
-            {
-                return;
-            }
-
-            NoteClip clip = (NoteClip)Clips[0];
-            clip.OnInput(inputType, item);
-        }
     }
 }
