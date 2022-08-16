@@ -22,6 +22,9 @@ namespace CyanStars.Gameplay.MusicGame
         //----音游数据模块--------
         private MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
 
+        //----音游设置模块--------
+        private MusicGameSettingsModule settingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
+
         //----场景物体与组件--------
         private GameObject sceneRoot;
         private Transform sceneCameraTrans;
@@ -271,7 +274,7 @@ namespace CyanStars.Gameplay.MusicGame
             //添加音符轨道
             noteTrack = timeline.AddTrack(data.NoteTrackData, NoteTrack.CreateClipFunc);
 
-            if (!string.IsNullOrEmpty(lrcText))
+            if (!string.IsNullOrEmpty(lrcText) && settingsModule.EnableLyricTrack)
             {
                 //添加歌词轨道
                 Lyric lrc = LrcParser.Parse(lrcText);
@@ -281,12 +284,14 @@ namespace CyanStars.Gameplay.MusicGame
                 lrcTrack.TxtLrc = GameRoot.UI.GetUIPanel<MusicGameMainPanel>().TxtLrc;
             }
 
-            //添加相机轨道
-            CameraTrack cameraTrack = timeline.AddTrack(data.CameraTrackData, CameraTrack.CreateClipFunc);
-            cameraTrack.DefaultCameraPos = data.CameraTrackData.DefaultPosition;
-            cameraTrack.OldRot = data.CameraTrackData.DefaultRotation;
-            cameraTrack.CameraTrans = sceneCameraTrans.transform;
-
+            if (settingsModule.EnableCameraTrack)
+            {
+                //添加相机轨道
+                CameraTrack cameraTrack = timeline.AddTrack(data.CameraTrackData, CameraTrack.CreateClipFunc);
+                cameraTrack.DefaultCameraPos = data.CameraTrackData.DefaultPosition;
+                cameraTrack.OldRot = data.CameraTrackData.DefaultRotation;
+                cameraTrack.CameraTrans = sceneCameraTrans.transform;
+            }
 
             //添加音乐轨道
             if (music)
@@ -304,11 +309,14 @@ namespace CyanStars.Gameplay.MusicGame
             PromptToneTrack promptToneTrack = timeline.AddTrack(promptToneTrackData, PromptToneTrack.CreateClipFunc);
             promptToneTrack.AudioSource = audioSource;
 
-            //添加特效轨道
-            EffectTrack effectTrack = timeline.AddTrack(data.EffectTrackData, EffectTrack.CreateClipFunc);
-            effectTrack.EffectNames = dataModule.EffectNames;
-            effectTrack.EffectParent = ViewHelper.EffectRoot;
-            effectTrack.ImgFrame = GameRoot.UI.GetUIPanel<MusicGameMainPanel>().ImgFrame;
+            if (settingsModule.EnableEffectTrack)
+            {
+                //添加特效轨道
+                EffectTrack effectTrack = timeline.AddTrack(data.EffectTrackData, EffectTrack.CreateClipFunc);
+                effectTrack.EffectNames = dataModule.EffectNames;
+                effectTrack.EffectParent = ViewHelper.EffectRoot;
+                effectTrack.ImgFrame = GameRoot.UI.GetUIPanel<MusicGameMainPanel>().ImgFrame;
+            }
 
             this.timeline = timeline;
             dataModule.RunningTimeline = timeline;
