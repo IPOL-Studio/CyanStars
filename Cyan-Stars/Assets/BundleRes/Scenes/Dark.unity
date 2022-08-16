@@ -553,8 +553,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc9b8f66b43246d9897177d9dc534d54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
-  rangeMin: 0
+  id: 32
+  rangeMin: 2
   rangeWidth: 0
 --- !u!65 &263932708
 BoxCollider:
@@ -1609,8 +1609,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc9b8f66b43246d9897177d9dc534d54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
-  rangeMin: 0
+  id: 32
+  rangeMin: -1
   rangeWidth: 0
 --- !u!65 &1597060476
 BoxCollider:
