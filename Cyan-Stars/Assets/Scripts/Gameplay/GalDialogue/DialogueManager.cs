@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using DG.Tweening;
 using UnityEditor;
 using UnityEngine;
@@ -11,13 +12,15 @@ namespace CyanStars.Dialogue
 {
     public class DialogueManager : MonoBehaviour
     {
-        private const string spritesScriptObjectDataPath = "Assets/BundleRes/ScriptObjects/DialogueSprites/SpritesScriptObject.asset";
+        // private const string spritesScriptObjectDataPath = "Assets/BundleRes/ScriptObjects/DialogueSprites/SpritesScriptObject.asset";
 
         [SerializeField]
         private GameObject verticalDrawingPerfab;
 
         [SerializeField]
         private RectTransform verticalDrawingSpawner;
+
+        private DialogueHelper dialogueHelper;
 
         /// <summary>
         /// 精灵字典
@@ -82,6 +85,7 @@ namespace CyanStars.Dialogue
 
         private void Awake()
         {
+            dialogueHelper = FindObjectOfType<DialogueHelper>();
             initializationComplete = false;
             if (_instance == null)
             {
@@ -96,11 +100,12 @@ namespace CyanStars.Dialogue
 
         private void Init()
         {
+            StartCoroutine(WaitForInitializationComplete());
+
             GetTextContent();
-            spriteDictionary = InitSpriteDictionary(spritesScriptObjectDataPath);
+            GetSpriteDictionary();
             dialogIndex = 0;
             stateCount = 0;
-            StartCoroutine(WaitForInitializationComplete());
 
             for (int i = 0; i < dialogueContentCells[0].verticalDrawings.Count; i++)
             {
@@ -113,15 +118,16 @@ namespace CyanStars.Dialogue
         {
             yield return new WaitForFixedUpdate();
             initializationComplete = true;
+            Destroy(dialogueHelper);
         }
 
         /// <summary>
         /// 获取对话内容
         /// </summary>
-        /// TODO:如果会加载大量的文本，需要拆分，就一般来讲不会这么夸张吧（大概~~~）
+        /// TODO:如果会加载大量的文本，进行拆分？或者其它操作？，就一般来讲不会这么夸张吧（大概~~~）
         private void GetTextContent()
         {
-            dialogueContentCells = AnalysisJSON.LoadJson(FindObjectOfType<JsonInformation>().GetJsonDataFilePath());
+            dialogueContentCells = AnalysisJSON.LoadJson(dialogueHelper.GetJsonDataFilePath());
         }
 
         /// <summary>
@@ -129,10 +135,11 @@ namespace CyanStars.Dialogue
         /// </summary>
         /// <param name="dataPath">精灵表地址</param>
         /// TODO:通过读取的Json来获取精灵（每个故事需要的图都做成一个ScriptObject，一个故事对应一个ScriptObect中包含所用的精灵）
-        private Dictionary<string, Sprite> InitSpriteDictionary(string dataPath)
+        private void GetSpriteDictionary()
         {
-            DialogueSpritesListObject dialogueSpritesListObject = AssetDatabase.LoadAssetAtPath<DialogueSpritesListObject>(dataPath);
-            return dialogueSpritesListObject.sprites.ToDictionary(sprite => sprite.name);
+            // DialogueSpritesListObject dialogueSpritesListObject = AssetDatabase.LoadAssetAtPath<DialogueSpritesListObject>(dataPath);
+
+            spriteDictionary = dialogueHelper.GetSprites().ToDictionary(sprite => sprite.name);
         }
 
         // public void InvokeOnSkipAnimation(int index)

@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 745789615}
   - component: {fileID: 745789616}
   m_Layer: 0
-  m_Name: JsonInformation
+  m_Name: DialogueHelper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -163,7 +163,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 745789614}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1458bd8bc0af8a447ba780fe5fe65105, type: 3}
+  m_Script: {fileID: 11500000, guid: 52f222e412035f44ea3f8fafb38da019, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   jsonDataFilePath: 

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace CyanStars.Dialogue
 {
-    public class LeftNameBox : Image
+    public class NameBox : Image
     {
         private TMP_Text text;
 

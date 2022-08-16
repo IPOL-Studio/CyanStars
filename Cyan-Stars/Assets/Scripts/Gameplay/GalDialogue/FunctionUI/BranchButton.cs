@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace CyanStars.Dialogue
 {
-    public class ButtonGroup : MonoBehaviour
+    public class BranchButton : MonoBehaviour
     {
         private Button[] branchButton = new Button[5];
 

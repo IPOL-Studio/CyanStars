@@ -163,7 +163,7 @@ public class CSV2JSON : EditorWindow
         }
 
         string json = JsonUtility.ToJson(dialogue, true);
-        string filepath = Application.streamingAssetsPath + "/" + csv.name + ".json";
+        string filepath = Application.streamingAssetsPath + "/Json/" + csv.name + ".json";
 
         using (StreamWriter streamWriter = new StreamWriter(filepath))
         {
