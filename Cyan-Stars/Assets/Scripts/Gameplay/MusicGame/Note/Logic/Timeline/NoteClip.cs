@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using CyanStars.Framework;
 using CyanStars.Framework.Timeline;
 
 
@@ -34,6 +36,12 @@ namespace CyanStars.Gameplay.MusicGame
             layers.Add(layer);
         }
 
+        public override void OnEnter()
+        {
+            GameRoot.Event.AddListener(EventConst.MusicGameEndEvent,OnMusicGameEnd);
+            GameRoot.Event.AddListener(InputEventArgs.EventName,OnInput);
+        }
+
         public override void OnUpdate(float currentTime, float previousTime)
         {
             for (int i = 0; i < layers.Count; i++)
@@ -43,12 +51,21 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
-        public void OnInput(InputType inputType, InputMapData.Item item)
+        private void OnMusicGameEnd(object sender, EventArgs e)
         {
+            GameRoot.Event.RemoveListener(EventConst.MusicGameEndEvent,OnMusicGameEnd);
+            GameRoot.Event.RemoveListener(InputEventArgs.EventName,OnInput);
+        }
+
+        private void OnInput(object sender, EventArgs e)
+        {
+            InputEventArgs args = (InputEventArgs)e;
             for (int i = 0; i < layers.Count; i++)
             {
-                layers[i].OnInput(inputType, item);
+                layers[i].OnInput(args.Type,args.RangeMin,args.RangeWidth);
             }
         }
+
+
     }
 }
