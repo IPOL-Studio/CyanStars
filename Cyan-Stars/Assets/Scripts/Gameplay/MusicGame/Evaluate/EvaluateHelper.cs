@@ -5,7 +5,7 @@ namespace CyanStars.Gameplay.MusicGame
 {
     public static class EvaluateHelper
     {
-        private static readonly EvaluateModule DataModule = GameRoot.GetDataModule<EvaluateModule>();
+        private static readonly MusicGameSettingsModule DataModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
 
         /// <summary>
         /// 输入时间和判定时间的距离差大于此值，就不处理输入
@@ -23,7 +23,7 @@ namespace CyanStars.Gameplay.MusicGame
         public static EvaluateType GetTapEvaluate(float distance)
         {
             float d = Mathf.Abs(distance);
-            var c = DataModule.Current;
+            var c = DataModule.EvaluateRange;
 
             if (d <= c.Exact)
             {
@@ -102,7 +102,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <param name="distance">音符逻辑层时间和判定时间的距离</param>
         public static bool IsMiss(float distance)
         {
-            return distance < DataModule.Current.Right;
+            return distance < DataModule.EvaluateRange.Right;
         }
     }
 }

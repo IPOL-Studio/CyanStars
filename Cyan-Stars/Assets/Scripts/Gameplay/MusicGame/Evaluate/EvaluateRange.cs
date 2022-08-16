@@ -20,5 +20,10 @@
             Bad = bad;
             Right = right;
         }
+
+        public override string ToString()
+        {
+            return $"Exact ±{Exact}, Great ±{Great}, Bad {Bad}, Right {Right}";
+        }
     }
 }
