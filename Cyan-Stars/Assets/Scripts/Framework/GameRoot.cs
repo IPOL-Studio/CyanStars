@@ -6,6 +6,7 @@ using CyanStars.Framework.FSM;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.Pool;
+using CyanStars.Framework.Timer;
 using CyanStars.Gameplay.MusicGame;
 
 
@@ -19,42 +20,44 @@ namespace CyanStars.Framework
         /// <summary>
         /// 游戏管理器列表
         /// </summary>
-        private static List<BaseManager> managers = new List<BaseManager>();
+        private static readonly List<BaseManager> Managers = new List<BaseManager>();
 
         /// <summary>
         /// 数据模块字典
         /// </summary>
-        private static Dictionary<Type, BaseDataModule> dataModuleDict = new Dictionary<Type, BaseDataModule>();
+        private static readonly Dictionary<Type, BaseDataModule> DataModuleDict = new Dictionary<Type, BaseDataModule>();
 
         /// <summary>
         /// 主相机
         /// </summary>
-        public static Camera MainCamera;
+        public static Camera MainCamera { get; private set; }
 
         /// <summary>
         /// 资源管理器
         /// </summary>
-        public static AssetManager Asset;
+        public static AssetManager Asset { get; private set; }
 
         /// <summary>
         /// 事件管理器
         /// </summary>
-        public static EventManager Event;
+        public static EventManager Event { get; private set; }
 
         /// <summary>
         /// 有限状态机管理器
         /// </summary>
-        public static FSMManager FSM;
+        public static FSMManager FSM { get; private set; }
 
         /// <summary>
         /// 游戏对象池管理器
         /// </summary>
-        public static GameObjectPoolManager GameObjectPool;
+        public static GameObjectPoolManager GameObjectPool { get; private set; }
+
+        public static TimerManager Timer { get; private set; }
 
         /// <summary>
         /// UI管理器
         /// </summary>
-        public static UIManager UI;
+        public static UIManager UI { get; private set; }
 
         /// <summary>
         /// 流程状态机
@@ -73,13 +76,14 @@ namespace CyanStars.Framework
             Event = GetManager<EventManager>();
             FSM = GetManager<FSMManager>();
             GameObjectPool = GetManager<GameObjectPoolManager>();
+            Timer = GetManager<TimerManager>();
             UI = GetManager<UIManager>();
 
             //按优先级排序并初始化所有Manager
-            managers.Sort((x, y) => x.Priority.CompareTo(y.Priority));
-            for (int i = 0; i < managers.Count; i++)
+            Managers.Sort((x, y) => x.Priority.CompareTo(y.Priority));
+            for (int i = 0; i < Managers.Count; i++)
             {
-                managers[i].OnInit();
+                Managers[i].OnInit();
             }
 
             Type[] types = typeof(GameRoot).Assembly.GetTypes();
@@ -94,9 +98,9 @@ namespace CyanStars.Framework
         private void Update()
         {
             //轮询所有Manager
-            for (int i = 0; i < managers.Count; i++)
+            for (int i = 0; i < Managers.Count; i++)
             {
-                managers[i].OnUpdate(Time.deltaTime);
+                Managers[i].OnUpdate(Time.deltaTime);
             }
         }
 
@@ -105,7 +109,7 @@ namespace CyanStars.Framework
         /// </summary>
         public static void RegisterManager(BaseManager manager)
         {
-            managers.Add(manager);
+            Managers.Add(manager);
         }
 
         /// <summary>
@@ -114,11 +118,11 @@ namespace CyanStars.Framework
         public static T GetManager<T>() where T : BaseManager
         {
             Type type = typeof(T);
-            for (int i = 0; i < managers.Count; i++)
+            for (int i = 0; i < Managers.Count; i++)
             {
-                if (type == managers[i].GetType())
+                if (type == Managers[i].GetType())
                 {
-                    return (T)managers[i];
+                    return (T)Managers[i];
                 }
             }
 
@@ -136,7 +140,7 @@ namespace CyanStars.Framework
                 if (type.IsSubclassOf(typeof(BaseDataModule)))
                 {
                     BaseDataModule dataModule = (BaseDataModule)Activator.CreateInstance(type);
-                    dataModuleDict.Add(type, dataModule);
+                    DataModuleDict.Add(type, dataModule);
                     dataModule.OnInit();
                 }
             }
@@ -148,7 +152,7 @@ namespace CyanStars.Framework
         public static T GetDataModule<T>() where T : BaseDataModule
         {
             Type type = typeof(T);
-            if (!dataModuleDict.TryGetValue(type, out BaseDataModule dataModule))
+            if (!DataModuleDict.TryGetValue(type, out BaseDataModule dataModule))
             {
                 Debug.LogError($"要获取的数据模块不存在:{type.Name}");
                 return null;

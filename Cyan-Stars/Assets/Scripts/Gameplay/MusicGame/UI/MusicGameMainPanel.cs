@@ -55,16 +55,17 @@ namespace CyanStars.Gameplay.MusicGame
             ImgFrame.color = color;
 
             GameRoot.Event.AddListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
+            GameRoot.Timer.AddUpdateTimer(OnUpdate);
         }
 
         public override void OnClose()
         {
             GameRoot.Event.RemoveListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
+            GameRoot.Timer.RemoveUpdateTimer(OnUpdate);
         }
 
-        private void Update()
+        private void OnUpdate(float deltaTime)
         {
-            //先暂时这样，后面有了timerManager后再改
             if (dataModule.RunningTimeline != null)
             {
                 ImgProgress.fillAmount = dataModule.RunningTimeline.CurrentTime / dataModule.RunningTimeline.Length;
