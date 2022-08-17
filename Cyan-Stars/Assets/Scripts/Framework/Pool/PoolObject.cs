@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CyanStars.Framework.GameObjectPool
+namespace CyanStars.Framework.Pool
 {
     /// <summary>
     /// 池对象

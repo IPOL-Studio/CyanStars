@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using CyanStars.Framework;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.UI;
+using CyanStars.Gameplay.Base;
 using UnityEngine;
 
 

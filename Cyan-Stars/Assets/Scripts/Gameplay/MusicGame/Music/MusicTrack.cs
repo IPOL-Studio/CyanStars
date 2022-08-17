@@ -8,7 +8,7 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public class MusicTrack : BaseTrack
     {
-        public AudioSource audioSource;
+        public AudioSource AudioSource;
 
         /// <summary>
         /// 片段创建方法

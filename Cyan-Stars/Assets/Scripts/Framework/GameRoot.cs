@@ -5,7 +5,7 @@ using CyanStars.Framework.UI;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.Event;
-using CyanStars.Framework.GameObjectPool;
+using CyanStars.Framework.Pool;
 using CyanStars.Gameplay.MusicGame;
 
 
