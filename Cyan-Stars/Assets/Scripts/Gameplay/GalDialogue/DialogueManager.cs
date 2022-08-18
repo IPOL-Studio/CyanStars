@@ -1,14 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+using CyanStars.Framework;
 using DG.Tweening;
-using UnityEditor;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace CyanStars.Dialogue
+
+namespace CyanStars.Gameplay.Dialogue
 {
     public class DialogueManager : MonoBehaviour
     {
@@ -19,6 +19,9 @@ namespace CyanStars.Dialogue
 
         [SerializeField]
         private RectTransform verticalDrawingSpawner;
+
+        [SerializeField]
+        private TMP_Text nameBoxText;
 
         private DialogueHelper dialogueHelper;
 
@@ -95,6 +98,8 @@ namespace CyanStars.Dialogue
             {
                 Destroy(gameObject);
             }
+            OnSwitchDialog += SetName;
+            // GameRoot.Event.AddListener(DialogueEventConst.GalSwitchDialog, SetName);
             Init();
         }
 
@@ -127,7 +132,7 @@ namespace CyanStars.Dialogue
         /// TODO:如果会加载大量的文本，进行拆分？或者其它操作？，就一般来讲不会这么夸张吧（大概~~~）
         private void GetTextContent()
         {
-            dialogueContentCells = AnalysisJSON.LoadJson(dialogueHelper.GetJsonDataFilePath());
+            dialogueContentCells = dialogueHelper.GetDialogueContentCells();
         }
 
         /// <summary>
@@ -137,35 +142,41 @@ namespace CyanStars.Dialogue
         /// TODO:通过读取的Json来获取精灵（每个故事需要的图都做成一个ScriptObject，一个故事对应一个ScriptObect中包含所用的精灵）
         private void GetSpriteDictionary()
         {
-            // DialogueSpritesListObject dialogueSpritesListObject = AssetDatabase.LoadAssetAtPath<DialogueSpritesListObject>(dataPath);
-
-            spriteDictionary = dialogueHelper.GetSprites().ToDictionary(sprite => sprite.name);
+            spriteDictionary = dialogueHelper.GetSpritesDictionary();
         }
 
-        // public void InvokeOnSkipAnimation(int index)
-        // {
-        //     OnSkipAnimation?.Invoke(index);
-        // }
+        private void SetName(int index)
+        {
+            // DialogueEventArgs args = (DialogueEventArgs)e;
+            if(dialogueContentCells[index].textContents.name == "") return;
+            nameBoxText.text = dialogueContentCells[index].textContents.name;
+        }
 
         public void InvokeOnSwitchDialog(int index)
         {
             OnSwitchDialog?.Invoke(index);
+            // GameRoot.Event.Dispatch(DialogueEventConst.GalSwitchDialog, this, DialogueEventArgs.Create(index));
         }
 
         public void InvokeOnAnimation(int index)
         {
             OnAnimation?.Invoke(index);
+            // GameRoot.Event.Dispatch(DialogueEventConst.GalAnimation, this, DialogueEventArgs.Create(index));
         }
 
         public void InvokeOnCreateBranchUI(int index)
         {
             OnCreateBranchUI?.Invoke(index);
+            // GameRoot.Event.Dispatch(DialogueEventConst.GalCreateBranchUI, this, DialogueEventArgs.Create(index));
         }
 
         public void InvokeOnSkipAnimation(int index)
         {
             OnSkipAnimation?.Invoke(index);
+            // GameRoot.Event.Dispatch(DialogueEventConst.GalSkipAnimation, this, DialogueEventArgs.Create(index));
         }
+
+
 
         public static class Colors
         {
@@ -183,31 +194,31 @@ namespace CyanStars.Dialogue
         {
             switch (curve)
             {
-                case "线性":
+                case "Linear":
                     return Ease.Linear;
-                case "三次方加速":
+                case "InCubic":
                     return Ease.InCubic;
-                case "三次方减速":
+                case "OutCubic":
                     return Ease.OutCubic;
-                case "三次方加速减速":
+                case "InOutCubic":
                     return Ease.InOutCubic;
-                case "指数加速":
+                case "InExpo":
                     return Ease.InExpo;
-                case "指数减速":
+                case "OutExpo":
                     return Ease.OutExpo;
-                case "指数加速减速":
+                case "InOutExpo":
                     return Ease.InOutExpo;
-                case "超范围三次方加速缓动":
+                case "InBack":
                     return Ease.InBack;
-                case "超范围三次方减速缓动":
+                case "OutBack":
                     return Ease.OutBack;
-                case "超范围三次方加速减速缓动":
+                case "InOutBack":
                     return Ease.InOutBack;
-                case "指数衰减加速反弹缓动":
+                case "InBounce":
                     return Ease.InBounce;
-                case "指数衰减减速反弹缓动":
+                case "OutBounce":
                     return Ease.OutBounce;
-                case "指数衰减加速减速反弹缓动":
+                case "InOutBounce":
                     return Ease.InOutBounce;
                 default:
                     return Ease.Linear;

@@ -1,65 +1,8 @@
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
-using CyanStars.Dialogue;
-
-[System.Serializable]
-class Identification
-{
-    public string sign;
-    public string id;
-    public string jump;
-}
-
-[System.Serializable]
-class TextContent
-{
-    public string name;
-    public string content;
-    public string link;
-    public string color;
-    public string stop;
-}
-
-[System.Serializable]
-class VerticalDrawing
-{
-    public string file = null;
-    public string xAxisMovement = null;
-    public string effect = null;
-    public string curve = null;
-    public string time = null;
-}
-
-[System.Serializable]
-class Background
-{
-    public string file;
-}
-
-[System.Serializable]
-class Effect
-{
-    public string code;
-    public string parameter;
-}
-
-[System.Serializable]
-class Cell
-{
-    public Identification identifications = new Identification();
-    public TextContent textContents = new TextContent();
-    public List<VerticalDrawing> verticalDrawings = new List<VerticalDrawing>();
-    public Background backgrounds = new Background();
-    public Effect effects = new Effect();
-}
-
-[System.Serializable]
-class Dialogue
-{
-    public List<Cell> dialogue = new List<Cell>();
-}
+using Newtonsoft.Json;
 
 public class CSV2JSON : EditorWindow
 {
@@ -94,58 +37,61 @@ public class CSV2JSON : EditorWindow
         }
     }
 
-/// <summary>
-/// 创建JSON
-/// </summary>
-/// <param name="textAsset">传入UTF-8CSV</param>
-    public void CreateJSON(TextAsset textAsset)
+    /// <summary>
+    /// 创建JSON
+    /// </summary>
+    /// <param name="textAsset">传入UTF-8CSV</param>
+    private void CreateJSON(TextAsset textAsset)
     {
         dialogue.dialogue.Clear();
         string[] rows = textAsset.text.Split('\n');
         int verticalDrawingCount = 0;
         int index = 0;
-        while ((index=rows[0].IndexOf("立绘", index)) != -1)
+        while ((index = rows[0].IndexOf("立绘", index)) != -1)
         {
             verticalDrawingCount++;
             index += 2;
         }
 
-        for(int i = 2; i < rows.Length - 1; i++)
+        for (int i = 2; i < rows.Length - 1; i++)
         {
             string[] cells = rows[i].Replace("\r", "").Split(',');
             Cell cell = new Cell();
-            VerticalDrawing verticalDrawing = new VerticalDrawing();
             Identification identification = new Identification();
             TextContent textContent = new TextContent();
             Background background = new Background();
             Effect effect = new Effect();
 
             identification.sign = cells[0];
-            identification.id = cells[1];
-            identification.jump = cells[2];
+            if (identification.sign == "END")
+            {
+                break;
+            }
+            identification.id = int.Parse(cells[1]);
+            identification.jump = int.Parse(cells[2]);
             cell.identifications = identification;
 
             textContent.name = cells[3];
             textContent.content = cells[4];
             textContent.link = cells[5];
             textContent.color = cells[6];
-            textContent.stop = cells[7];
+            textContent.stop = int.Parse(cells[7]);
             cell.textContents = textContent;
 
             int temp = 8;
 
             for (int j = 0; j < verticalDrawingCount; j++)
             {
-                verticalDrawing = new VerticalDrawing();
+                VerticalDrawing verticalDrawing = new VerticalDrawing();
                 verticalDrawing.file = cells[temp];
                 temp++;
-                verticalDrawing.xAxisMovement = cells[temp];
+                verticalDrawing.xAxisMovement = float.Parse(cells[temp]);
                 temp++;
-                verticalDrawing.effect = cells[temp];
+                verticalDrawing.effect = EffectComparison(cells[temp]);
                 temp++;
-                verticalDrawing.curve = cells[temp];
+                verticalDrawing.curve = CurveComparison(cells[temp]);
                 temp++;
-                verticalDrawing.time = cells[temp];
+                verticalDrawing.time = float.Parse(cells[temp]);
                 temp++;
                 cell.verticalDrawings.Add(verticalDrawing);
             }
@@ -162,7 +108,7 @@ public class CSV2JSON : EditorWindow
             dialogue.dialogue.Add(cell);
         }
 
-        string json = JsonUtility.ToJson(dialogue, true);
+        string json = JsonConvert.SerializeObject(dialogue, Formatting.Indented);
         string filepath = Application.streamingAssetsPath + "/Json/" + csv.name + ".json";
 
         using (StreamWriter streamWriter = new StreamWriter(filepath))
@@ -171,6 +117,57 @@ public class CSV2JSON : EditorWindow
             streamWriter.Close();
             streamWriter.Dispose();
         }
+
         AssetDatabase.Refresh();
+    }
+
+    private string CurveComparison(string curve)
+    {
+        switch (curve)
+        {
+            case "线性":
+                return "Linear";
+            case "三次方加速":
+                return "InCubic";
+            case "三次方减速":
+                return "OutCubic";
+            case "三次方加速减速":
+                return "InOutCubic";
+            case "指数加速":
+                return "InExpo";
+            case "指数减速":
+                return "OutExpo";
+            case "指数加速减速":
+                return "InOutExpo";
+            case "超范围三次方加速缓动":
+                return "InBack";
+            case "超范围三次方减速缓动":
+                return "OutBack";
+            case "超范围三次方加速减速缓动":
+                return "InOutBack";
+            case "指数衰减加速反弹缓动":
+                return "InBounce";
+            case "指数衰减减速反弹缓动":
+                return "OutBounce";
+            case "指数衰减加速减速反弹缓动":
+                return "InOutBounce";
+            default:
+                return "Linear";
+        }
+    }
+
+    private string EffectComparison(string effect)
+    {
+        switch (effect)
+        {
+            case "抖动":
+                return "Shake";
+            case "旋转抖动":
+                return "ShakeRotation";
+            case "缩放":
+                return "ShakeScale";
+            default:
+                return null;
+        }
     }
 }

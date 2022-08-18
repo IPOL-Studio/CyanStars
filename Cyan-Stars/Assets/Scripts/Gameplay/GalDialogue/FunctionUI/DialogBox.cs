@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Threading;
+using CyanStars.Framework;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace CyanStars.Dialogue
+namespace CyanStars.Gameplay.Dialogue
 {
 
     public class DialogBox : Image, IPointerClickHandler
@@ -32,7 +33,7 @@ namespace CyanStars.Dialogue
             inDialogue = false;
             index = 0;
             DialogueManager.Instance.OnSwitchDialog += SwitchDialog;
-
+            // GameRoot.Event.AddListener(DialogueEventConst.GalSwitchDialog, SwitchDialog);
             StartCoroutine(AutoShowFirstDialogue());
         }
 
@@ -54,11 +55,11 @@ namespace CyanStars.Dialogue
         /// <summary>
         /// 切换下一对话清空当前对话并设置开始id
         /// </summary>
-        /// <param name="startIndex"></param>
-        private void SwitchDialog(int startIndex)
+        private void SwitchDialog(int index)
         {
+            // DialogueEventArgs args = (DialogueEventArgs)e;
             text.text = string.Empty;
-            index = startIndex;
+            index = index;
             if (inDialogue == false)
             {
                 StartCoroutine(DisplayDialogue());
@@ -196,6 +197,8 @@ namespace CyanStars.Dialogue
                     EditorApplication.isPlaying = false;
                 }
 #endif
+                //TODO:剧情播放完后的操作
+                return;
             }
             if ("&".Equals(DialogueManager.Instance.dialogueContentCells[DialogueManager.Instance.dialogIndex].identifications.sign))
             {

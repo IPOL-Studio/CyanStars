@@ -1,14 +1,10 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using CyanStars.Dialogue;
 using CyanStars.Framework;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 
-namespace CyanStars.Dialogue
+namespace CyanStars.Gameplay.Dialogue
 {
     public class BranchButton : MonoBehaviour
     {
@@ -22,6 +18,7 @@ namespace CyanStars.Dialogue
                 branchButton[i].gameObject.SetActive(false);
             }
             DialogueManager.Instance.OnCreateBranchUI += DisplayBranchUI;
+            // GameRoot.Event.AddListener(DialogueEventConst.GalCreateBranchUI, DisplayBranchUI);
         }
 
         /// <summary>
@@ -30,6 +27,7 @@ namespace CyanStars.Dialogue
         /// <param name="index"></param>
         public void DisplayBranchUI(int index)
         {
+            // DialogueEventArgs args = (DialogueEventArgs)e;
             for (int i = 0; i < 5; i++)
             {
                 if (DialogueManager.Instance.dialogueContentCells[index + i].identifications.sign != "&") continue;

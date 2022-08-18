@@ -922,7 +922,7 @@ GameObject:
   - component: {fileID: 1072421839}
   - component: {fileID: 1072421838}
   m_Layer: 5
-  m_Name: Bg
+  m_Name: DialogueBackGround
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1032,12 +1032,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1104959333}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13c8dbc81aeeb6247b4c37f8b418465f, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.64903307, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_Color: {r: 0.4669811, g: 0.7679612, b: 1, a: 1}
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1232,6 +1232,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   verticalDrawingPerfab: {fileID: 7510616245257442899, guid: 09d1b2cbd364c02408a15db2c520cded, type: 3}
   verticalDrawingSpawner: {fileID: 450806860}
+  nameBoxText: {fileID: 1326988523}
   verticalDrawingBases: []
   dialogIndex: 0
   rectTransform: {fileID: 798139124}
