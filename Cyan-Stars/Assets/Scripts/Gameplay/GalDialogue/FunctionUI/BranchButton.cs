@@ -1,0 +1,70 @@
+using System;
+using CyanStars.Framework;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace CyanStars.Gameplay.Dialogue
+{
+    public class BranchButton : MonoBehaviour
+    {
+        private Button[] branchButton = new Button[5];
+
+        private void Start()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                branchButton[i] = transform.GetChild(i).GetComponent<Button>();
+                branchButton[i].gameObject.SetActive(false);
+            }
+            // DialogueManager.Instance.OnCreateBranchUI += DisplayBranchUI;
+            GameRoot.Event.AddListener(DialogueEventConst.GalCreateBranchUI, DisplayBranchUI);
+        }
+
+        /// <summary>
+        /// 显示分支UI(最多显示5个)
+        /// </summary>
+        /// <param name="index"></param>
+        public void DisplayBranchUI(object sender, EventArgs e)
+        {
+            DialogueEventArgs args = (DialogueEventArgs)e;
+            for (int i = 0; i < 5; i++)
+            {
+                if (DialogueManager.Instance.dialogueContentCells[args.index + i].identifications.sign != "&") continue;
+
+                branchButton[i].GetComponentInChildren<TMP_Text>().text =
+                    DialogueManager.Instance.dialogueContentCells[args.index + i].textContents.content;
+
+                branchButton[i].onClick.RemoveAllListeners();
+                var i1 = i;
+                branchButton[i].onClick.AddListener(() => OnOptionClick(args.index + i1));
+
+                branchButton[i].gameObject.SetActive(true);
+            }
+        }
+
+        /// <summary>
+        /// 关闭分支UI
+        /// </summary>
+        public void DisableBranchUI()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                branchButton[i].gameObject.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// 分支按钮点击回调
+        /// </summary>
+        /// <param name="index"></param>
+        private void OnOptionClick(int index)
+        {
+            DisableBranchUI();
+            DialogueManager.Instance.dialogIndex = DialogueManager.Instance.dialogueContentCells[index].identifications.jump;
+            DialogueManager.Instance.InvokeOnSwitchDialog(DialogueManager.Instance.dialogIndex);
+        }
+    }
+}
+
+
