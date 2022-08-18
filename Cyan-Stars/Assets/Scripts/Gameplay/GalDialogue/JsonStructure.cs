@@ -15,7 +15,7 @@ public class TextContent
 {
     public string name;
     public string content;
-    public string link;
+    public byte link;
     public string color;
     public int stop;
 }

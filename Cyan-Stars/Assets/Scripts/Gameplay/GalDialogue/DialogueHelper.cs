@@ -55,7 +55,6 @@ namespace CyanStars.Gameplay.Dialogue
                 json = sr.ReadToEnd();
                 sr.Close();
             }
-            
             global::Dialogue dialogue = JsonConvert.DeserializeObject<global::Dialogue>(json);
             return dialogue?.dialogue;
         }

@@ -32,8 +32,8 @@ namespace CyanStars.Gameplay.Dialogue
             text = GetComponentInChildren<TMP_Text>();
             inDialogue = false;
             index = 0;
-            DialogueManager.Instance.OnSwitchDialog += SwitchDialog;
-            // GameRoot.Event.AddListener(DialogueEventConst.GalSwitchDialog, SwitchDialog);
+            // DialogueManager.Instance.OnSwitchDialog += SwitchDialog;
+            GameRoot.Event.AddListener(DialogueEventConst.GalSwitchDialog, SwitchDialog);
             StartCoroutine(AutoShowFirstDialogue());
         }
 
@@ -55,11 +55,12 @@ namespace CyanStars.Gameplay.Dialogue
         /// <summary>
         /// 切换下一对话清空当前对话并设置开始id
         /// </summary>
-        private void SwitchDialog(int index)
+        /// <param name="startIndex"></param>
+        private void SwitchDialog(object sender, EventArgs e)
         {
-            // DialogueEventArgs args = (DialogueEventArgs)e;
+            DialogueEventArgs args = (DialogueEventArgs)e;
             text.text = string.Empty;
-            index = index;
+            index = args.index;
             if (inDialogue == false)
             {
                 StartCoroutine(DisplayDialogue());
@@ -69,43 +70,6 @@ namespace CyanStars.Gameplay.Dialogue
                 //TODO:暂时使用停止全部协程，之后看用了哪个停哪个
                 StopAllCoroutines();
                 DirectDisplayDialogue();
-            }
-        }
-
-        /// <summary>
-        /// 设置富文本颜色前缀
-        /// </summary>
-        private void SetColor()
-        {
-            switch (cell.textContents.color)
-            {
-                case "White":
-                    text.text += DialogueManager.Colors.White;
-                    break;
-                case "Red":
-                    text.text += DialogueManager.Colors.Red;
-                    break;
-                case "Yellow":
-                    text.text += DialogueManager.Colors.Yellow;
-                    break;
-                case "Blue":
-                    text.text += DialogueManager.Colors.Blue;
-                    break;
-                case "Green":
-                    text.text += DialogueManager.Colors.Green;
-                    break;
-                case "Purple":
-                    text.text += DialogueManager.Colors.Purple;
-                    break;
-                case "Gray":
-                    text.text += DialogueManager.Colors.Gray;
-                    break;
-                case "Black":
-                    text.text += DialogueManager.Colors.Black;
-                    break;
-                default:
-                    text.text += DialogueManager.Colors.White;
-                    break;
             }
         }
 
@@ -126,15 +90,13 @@ namespace CyanStars.Gameplay.Dialogue
             {
                 foreach (char c in cell.textContents.content)
                 {
-                    SetColor();
-                    text.text += c + "</color>";
+                    text.text += $"<color={cell.textContents.color}>" + c + "</color>";
                     yield return new WaitForSecondsRealtime(cell.textContents.stop * 0.001f);
                 }
             }
             else
             {
-                SetColor();
-                text.text += cell.textContents.content + "</color>";
+                text.text += $"<color={cell.textContents.color}>" + cell.textContents.content + "</color>";
             }
 
             //等待动画播放完毕
@@ -146,7 +108,7 @@ namespace CyanStars.Gameplay.Dialogue
             index = cell.identifications.jump;
 
             //需要连接句子的情况
-            if ("是".Equals(cell.textContents.link) && "是".Equals(DialogueManager.Instance.dialogueContentCells[index].textContents.link))
+            if (cell.textContents.link == 1 && DialogueManager.Instance.dialogueContentCells[index].textContents.link == 1)
             {
                 cell = DialogueManager.Instance.dialogueContentCells[index];
                 yield return StartCoroutine(DisplayDialogue());
@@ -166,17 +128,15 @@ namespace CyanStars.Gameplay.Dialogue
 
             cell = DialogueManager.Instance.dialogueContentCells[index];
 
-            SetColor();
-            text.text += cell.textContents.content + "</color>";
+            text.text += $"<color={cell.textContents.color}>" + cell.textContents.content + "</color>";
 
             index = cell.identifications.jump;
 
             //需要连接句子的情况
-            while ("是".Equals(cell.textContents.link) && "是".Equals(DialogueManager.Instance.dialogueContentCells[index].textContents.link))
+            while (cell.textContents.link == 1 && DialogueManager.Instance.dialogueContentCells[index].textContents.link == 1)
             {
                 cell = DialogueManager.Instance.dialogueContentCells[index];
-                SetColor();
-                text.text += cell.textContents.content + "</color>";
+                text.text += $"<color={cell.textContents.color}>" + cell.textContents.content + "</color>";
                 index = cell.identifications.jump;
             }
 

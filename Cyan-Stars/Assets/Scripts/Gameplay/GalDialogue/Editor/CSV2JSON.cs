@@ -65,6 +65,9 @@ public class CSV2JSON : EditorWindow
             identification.sign = cells[0];
             if (identification.sign == "END")
             {
+                identification.sign = "END";
+                cell.identifications = identification;
+                dialogue.dialogue.Add(cell);
                 break;
             }
             identification.id = int.Parse(cells[1]);
@@ -73,7 +76,7 @@ public class CSV2JSON : EditorWindow
 
             textContent.name = cells[3];
             textContent.content = cells[4];
-            textContent.link = cells[5];
+            textContent.link = cells[5] == "是"?(byte)1:(byte)0;
             textContent.color = cells[6];
             textContent.stop = int.Parse(cells[7]);
             cell.textContents = textContent;

@@ -17,27 +17,27 @@ namespace CyanStars.Gameplay.Dialogue
                 branchButton[i] = transform.GetChild(i).GetComponent<Button>();
                 branchButton[i].gameObject.SetActive(false);
             }
-            DialogueManager.Instance.OnCreateBranchUI += DisplayBranchUI;
-            // GameRoot.Event.AddListener(DialogueEventConst.GalCreateBranchUI, DisplayBranchUI);
+            // DialogueManager.Instance.OnCreateBranchUI += DisplayBranchUI;
+            GameRoot.Event.AddListener(DialogueEventConst.GalCreateBranchUI, DisplayBranchUI);
         }
 
         /// <summary>
         /// 显示分支UI(最多显示5个)
         /// </summary>
         /// <param name="index"></param>
-        public void DisplayBranchUI(int index)
+        public void DisplayBranchUI(object sender, EventArgs e)
         {
-            // DialogueEventArgs args = (DialogueEventArgs)e;
+            DialogueEventArgs args = (DialogueEventArgs)e;
             for (int i = 0; i < 5; i++)
             {
-                if (DialogueManager.Instance.dialogueContentCells[index + i].identifications.sign != "&") continue;
+                if (DialogueManager.Instance.dialogueContentCells[args.index + i].identifications.sign != "&") continue;
 
                 branchButton[i].GetComponentInChildren<TMP_Text>().text =
-                    DialogueManager.Instance.dialogueContentCells[index + i].textContents.content;
+                    DialogueManager.Instance.dialogueContentCells[args.index + i].textContents.content;
 
                 branchButton[i].onClick.RemoveAllListeners();
                 var i1 = i;
-                branchButton[i].onClick.AddListener(() => OnOptionClick(index + i1));
+                branchButton[i].onClick.AddListener(() => OnOptionClick(args.index + i1));
 
                 branchButton[i].gameObject.SetActive(true);
             }

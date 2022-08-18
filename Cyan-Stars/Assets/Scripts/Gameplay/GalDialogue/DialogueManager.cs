@@ -42,13 +42,13 @@ namespace CyanStars.Gameplay.Dialogue
 
         public bool initializationComplete { get; private set; }
 
-        public event UnityAction<int> OnSwitchDialog;
-
-        public event UnityAction<int> OnSkipAnimation;
-
-        public event UnityAction<int> OnCreateBranchUI;
-
-        public event UnityAction<int> OnAnimation;
+        // public event UnityAction<int> OnSwitchDialog;
+        //
+        // public event UnityAction<int> OnSkipAnimation;
+        //
+        // public event UnityAction<int> OnCreateBranchUI;
+        //
+        // public event UnityAction<int> OnAnimation;
 
         /// <summary>
         /// 当前对话ID
@@ -98,8 +98,8 @@ namespace CyanStars.Gameplay.Dialogue
             {
                 Destroy(gameObject);
             }
-            OnSwitchDialog += SetName;
-            // GameRoot.Event.AddListener(DialogueEventConst.GalSwitchDialog, SetName);
+            // OnSwitchDialog += SetName;
+            GameRoot.Event.AddListener(DialogueEventConst.GalSwitchDialog, SetName);
             Init();
         }
 
@@ -145,84 +145,40 @@ namespace CyanStars.Gameplay.Dialogue
             spriteDictionary = dialogueHelper.GetSpritesDictionary();
         }
 
-        private void SetName(int index)
+        private void SetName(object sender, EventArgs e)
         {
-            // DialogueEventArgs args = (DialogueEventArgs)e;
-            if(dialogueContentCells[index].textContents.name == "") return;
-            nameBoxText.text = dialogueContentCells[index].textContents.name;
+            DialogueEventArgs args = (DialogueEventArgs)e;
+            if(dialogueContentCells[args.index].textContents.name == "") return;
+            nameBoxText.text = dialogueContentCells[args.index].textContents.name;
         }
 
         public void InvokeOnSwitchDialog(int index)
         {
-            OnSwitchDialog?.Invoke(index);
-            // GameRoot.Event.Dispatch(DialogueEventConst.GalSwitchDialog, this, DialogueEventArgs.Create(index));
+            // OnSwitchDialog?.Invoke(index);
+            GameRoot.Event.Dispatch(DialogueEventConst.GalSwitchDialog, this, DialogueEventArgs.Create(index));
         }
 
         public void InvokeOnAnimation(int index)
         {
-            OnAnimation?.Invoke(index);
-            // GameRoot.Event.Dispatch(DialogueEventConst.GalAnimation, this, DialogueEventArgs.Create(index));
+            // OnAnimation?.Invoke(index);
+            GameRoot.Event.Dispatch(DialogueEventConst.GalAnimation, this, DialogueEventArgs.Create(index));
         }
 
         public void InvokeOnCreateBranchUI(int index)
         {
-            OnCreateBranchUI?.Invoke(index);
-            // GameRoot.Event.Dispatch(DialogueEventConst.GalCreateBranchUI, this, DialogueEventArgs.Create(index));
+            // OnCreateBranchUI?.Invoke(index);
+            GameRoot.Event.Dispatch(DialogueEventConst.GalCreateBranchUI, this, DialogueEventArgs.Create(index));
         }
 
         public void InvokeOnSkipAnimation(int index)
         {
-            OnSkipAnimation?.Invoke(index);
-            // GameRoot.Event.Dispatch(DialogueEventConst.GalSkipAnimation, this, DialogueEventArgs.Create(index));
-        }
-
-
-
-        public static class Colors
-        {
-            public const string White = "<color=white>";
-            public const string Red = "<color=red>";
-            public const string Yellow = "<color=yellow>";
-            public const string Blue = "<color=blue>";
-            public const string Green = "<color=green>";
-            public const string Purple = "<color=purple>";
-            public const string Gray = "<color=gray>";
-            public const string Black = "<color=black>";
+            // OnSkipAnimation?.Invoke(index);
+            GameRoot.Event.Dispatch(DialogueEventConst.GalSkipAnimation, this, DialogueEventArgs.Create(index));
         }
 
         public static Ease AnimationEase(string curve)
         {
-            switch (curve)
-            {
-                case "Linear":
-                    return Ease.Linear;
-                case "InCubic":
-                    return Ease.InCubic;
-                case "OutCubic":
-                    return Ease.OutCubic;
-                case "InOutCubic":
-                    return Ease.InOutCubic;
-                case "InExpo":
-                    return Ease.InExpo;
-                case "OutExpo":
-                    return Ease.OutExpo;
-                case "InOutExpo":
-                    return Ease.InOutExpo;
-                case "InBack":
-                    return Ease.InBack;
-                case "OutBack":
-                    return Ease.OutBack;
-                case "InOutBack":
-                    return Ease.InOutBack;
-                case "InBounce":
-                    return Ease.InBounce;
-                case "OutBounce":
-                    return Ease.OutBounce;
-                case "InOutBounce":
-                    return Ease.InOutBounce;
-                default:
-                    return Ease.Linear;
-            }
+            return Enum.TryParse<Ease>(curve, out var result) ? result : Ease.Linear;
         }
     }
 }
