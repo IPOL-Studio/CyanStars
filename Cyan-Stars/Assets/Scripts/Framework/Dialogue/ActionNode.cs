@@ -6,16 +6,16 @@ namespace CyanStars.Framework.Dialogue
     [DialogueNode("Action")]
     public class ActionNode : BaseNode
     {
-        [JsonProperty("steps")]
-        public List<BaseStep> Steps { get; set; }
+        [JsonProperty("actions")]
+        public List<BaseActionUnit> Actions { get; set; }
 
         public override void OnInit()
         {
             int index = 0;
-            while (index < Steps.Count)
+            while (index < Actions.Count)
             {
-                Steps[index].OnInit();
-                index = CheckStepIsCompleted(index);
+                Actions[index].OnInit();
+                index = CheckActionIsCompleted(index);
             }
         }
 
@@ -25,10 +25,10 @@ namespace CyanStars.Framework.Dialogue
                 return;
 
             int index = 0;
-            while (index < Steps.Count)
+            while (index < Actions.Count)
             {
-                Steps[index].OnUpdate(deltaTime);
-                index = CheckStepIsCompleted(index);
+                Actions[index].OnUpdate(deltaTime);
+                index = CheckActionIsCompleted(index);
             }
 
             CheckCompleted();
@@ -36,15 +36,15 @@ namespace CyanStars.Framework.Dialogue
 
         private bool CheckCompleted()
         {
-            IsCompleted = Steps.Count == 0;
+            IsCompleted = Actions.Count == 0;
             return IsCompleted;
         }
 
-        private int CheckStepIsCompleted(int index)
+        private int CheckActionIsCompleted(int index)
         {
-            if (Steps[index].IsCompleted)
+            if (Actions[index].IsCompleted)
             {
-                Steps.RemoveAt(index);
+                Actions.RemoveAt(index);
             }
             else
             {

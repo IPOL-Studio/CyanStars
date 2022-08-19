@@ -5,8 +5,8 @@ using Newtonsoft.Json;
 
 namespace CyanStars.Gameplay.Dialogue
 {
-    [DialogueStep("SetName")]
-    public class NameStep : BaseStep
+    [DialogueActionUnit("SetName")]
+    public class NameAction : BaseActionUnit
     {
         [JsonProperty("text")]
         public string Text { get; set; }

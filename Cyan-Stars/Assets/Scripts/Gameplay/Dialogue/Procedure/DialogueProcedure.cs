@@ -21,7 +21,7 @@ namespace CyanStars.Gameplay.Dialogue
     {
         private const string ScenePath = ""; //TODO: Gal Scene
 
-        private static readonly HashSet<Type> TempStepSet = new HashSet<Type>();
+        private static readonly HashSet<Type> TempActionUnitSet = new HashSet<Type>();
 
         private readonly DialogueMetadataModule MetadataModule = GameRoot.GetDataModule<DialogueMetadataModule>();
         private readonly DialogueDataModule DataModule = GameRoot.GetDataModule<DialogueDataModule>();
@@ -124,7 +124,7 @@ namespace CyanStars.Gameplay.Dialogue
             {
                 return JsonConvert.DeserializeObject<DialogueData>(jsonAsset.text,
                     NodeDataConverter.Converter,
-                    StepConverter.Converter);
+                    ActionUnitConverter.Converter);
             });
 
             dialogueNodeDict = new Dictionary<int, BaseNode>(blackboard.Nodes.Count);
@@ -159,17 +159,17 @@ namespace CyanStars.Gameplay.Dialogue
             if (curNode is null)
                 return;
 
-            TempStepSet.Clear();
+            TempActionUnitSet.Clear();
 
             if (curNode is ActionNode node)
             {
-                foreach (var step in node.Steps)
+                foreach (var act in node.Actions)
                 {
-                    Type type = step.GetType();
-                    DialogueStepAttribute attr = MetadataModule.GetDialogueStepAttribute(type);
-                    if (!attr.AllowMultiple && !TempStepSet.Add(type))
+                    Type type = act.GetType();
+                    DialogueActionUnitAttribute attr = MetadataModule.GetDialogueActionUnitAttribute(type);
+                    if (!attr.AllowMultiple && !TempActionUnitSet.Add(type))
                     {
-                        throw new Exception($"在ID = {node.ID}的 Node 中发现了超过 1 个的Step: ${step.GetType()}");
+                        throw new Exception($"在ID = {node.ID}的 Node 中发现了超过 1 个的ActionUnit: ${act.GetType()}");
                     }
                 }
             }

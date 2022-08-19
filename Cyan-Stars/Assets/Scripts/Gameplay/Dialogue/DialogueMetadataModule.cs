@@ -8,13 +8,13 @@ namespace CyanStars.Gameplay.Dialogue
 {
     public class DialogueMetadataModule : BaseDataModule
     {
-        //Node type key => Node
+        //Node type key => Node Type
         private readonly Dictionary<string, Type> NodeDict = new Dictionary<string, Type>();
 
-        //Step type key => Step
-        private readonly Dictionary<string, Type> StepDict = new Dictionary<string, Type>();
+        //ActionUnit type key => ActionUnit Type
+        private readonly Dictionary<string, Type> ActionUnitDict = new Dictionary<string, Type>();
 
-        private readonly Dictionary<Type, DialogueStepAttribute> AttrDict = new Dictionary<Type, DialogueStepAttribute>();
+        private readonly Dictionary<Type, DialogueActionUnitAttribute> AttrDict = new Dictionary<Type, DialogueActionUnitAttribute>();
 
 
         public override void OnInit()
@@ -23,12 +23,12 @@ namespace CyanStars.Gameplay.Dialogue
 
             foreach (var type in types)
             {
-                if (type.IsSubclassOf(typeof(BaseStep)))
+                if (type.IsSubclassOf(typeof(BaseActionUnit)))
                 {
-                    var attr = type.GetCustomAttribute<DialogueStepAttribute>();
+                    var attr = type.GetCustomAttribute<DialogueActionUnitAttribute>();
                     if (attr != null)
                     {
-                        StepDict.Add(attr.StepType, type);
+                        ActionUnitDict.Add(attr.ActionType, type);
                         AttrDict.Add(type, attr);
                     }
                 }
@@ -43,17 +43,17 @@ namespace CyanStars.Gameplay.Dialogue
             }
         }
 
-        public Type GetStepType(string typeKey)
+        public Type GetActionUnitType(string typeKey)
         {
-            return StepDict.TryGetValue(typeKey, out var type) ? type : null;
+            return ActionUnitDict.TryGetValue(typeKey, out var type) ? type : null;
         }
 
-        public DialogueStepAttribute GetDialogueStepAttribute<T>() where T : BaseStep
+        public DialogueActionUnitAttribute GetDialogueActionUnitAttribute<T>() where T : BaseActionUnit
         {
-            return GetDialogueStepAttribute(typeof(T));
+            return GetDialogueActionUnitAttribute(typeof(T));
         }
 
-        public DialogueStepAttribute GetDialogueStepAttribute(Type type)
+        public DialogueActionUnitAttribute GetDialogueActionUnitAttribute(Type type)
         {
             return AttrDict.TryGetValue(type, out var attr) ? attr : null;
         }

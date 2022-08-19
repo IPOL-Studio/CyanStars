@@ -3,21 +3,21 @@
 namespace CyanStars.Framework.Dialogue
 {
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    public class DialogueStepAttribute : Attribute
+    public class DialogueActionUnitAttribute : Attribute
     {
         /// <summary>
         /// 在Json文件中使用的Type字段
         /// </summary>
-        public string StepType { get; }
+        public string ActionType { get; }
 
         /// <summary>
-        /// 是否允许同时执行多个Step
+        /// 是否允许同时执行多个ActionUnit
         /// </summary>
         public bool AllowMultiple { get; set; }
 
-        public DialogueStepAttribute(string stepType)
+        public DialogueActionUnitAttribute(string actionType)
         {
-            this.StepType = stepType;
+            this.ActionType = actionType;
         }
 
     }

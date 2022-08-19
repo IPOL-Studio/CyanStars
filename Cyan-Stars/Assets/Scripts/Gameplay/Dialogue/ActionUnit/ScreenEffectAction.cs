@@ -2,8 +2,8 @@ using CyanStars.Framework.Dialogue;
 
 namespace CyanStars.Gameplay.Dialogue
 {
-    [DialogueStep("ScreenEffect")]
-    public class ScreenEffectStep : BaseStep
+    [DialogueActionUnit("ScreenEffect")]
+    public class ScreenEffectAction : BaseActionUnit
     {
         public override void OnInit()
         {

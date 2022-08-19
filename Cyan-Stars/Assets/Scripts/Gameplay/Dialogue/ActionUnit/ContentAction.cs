@@ -7,15 +7,15 @@ using UnityEngine;
 
 namespace CyanStars.Gameplay.Dialogue
 {
-    [DialogueStep("Content")]
-    public class ContentStep : BaseStep
+    [DialogueActionUnit("Content")]
+    public class ContentAction : BaseActionUnit
     {
         private readonly DialogueDataModule DataModule = GameRoot.GetDataModule<DialogueDataModule>();
         private readonly DialogueSettingsModule SettingsModule = GameRoot.GetDataModule<DialogueSettingsModule>();
 
         [JsonProperty("type")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public ContentStepType Type { get; set; }
+        public ContentActionType Type { get; set; }
 
         [JsonProperty("inlines")]
         public List<InlineContent> Inlines { get; set; }
@@ -37,7 +37,7 @@ namespace CyanStars.Gameplay.Dialogue
 
         public override void OnInit()
         {
-            if (Type == ContentStepType.Overlay)
+            if (Type == ContentActionType.Overlay)
             {
                 DataModule.Content.Clear();
                 DataModule.IsContentDirty = true;
@@ -192,7 +192,7 @@ namespace CyanStars.Gameplay.Dialogue
         }
     }
 
-    public enum ContentStepType
+    public enum ContentActionType
     {
         Overlay,
         Append

@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace CyanStars.Framework.Dialogue
 {
-    public abstract class BaseStep
+    public abstract class BaseActionUnit
     {
         [JsonIgnore]
         public bool IsCompleted { get; protected set; }
