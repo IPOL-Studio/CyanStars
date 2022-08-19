@@ -6,7 +6,7 @@ namespace CyanStars.Gameplay.MusicGame
     /// <summary>
     /// 谱面选择item数据
     /// </summary>
-    public class MapItemData : UIItemData, IReference
+    public class MapItemData : IUIItemData, IReference
     {
         /// <summary>
         /// 索引
