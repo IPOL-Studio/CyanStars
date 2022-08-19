@@ -103,17 +103,24 @@ namespace CyanStars.Gameplay.Dialogue
         /// </summary>
         private void NextInline()
         {
-            curInlineIndex++;
-            curInlineInsertedCount = 0;
-
-            int insertIndex = Inlines[curInlineIndex].CreateContentAttribute(out var attrText);
-            curInsertIndex = insertIndex + DataModule.Content.Length;
-
-            if (insertIndex > 0)
+            do
             {
-                DataModule.Content.Append(attrText);
-                DataModule.IsContentDirty = true;
-            }
+                curInlineIndex++;
+                curInlineInsertedCount = 0;
+
+                if (CheckCompleted())
+                {
+                    return;
+                }
+
+                int insertIndex = Inlines[curInlineIndex].CreateContentAttribute(out var attrText);
+                curInsertIndex = insertIndex + DataModule.Content.Length;
+
+                if (insertIndex > 0)
+                {
+                    DataModule.Content.Append(attrText);
+                }
+            } while (string.IsNullOrEmpty(Inlines[curInlineIndex].Content));  // 跳过空内容的Inline
         }
 
         public class InlineContent
