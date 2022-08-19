@@ -23,6 +23,7 @@ namespace CyanStars.Gameplay.Dialogue
         [JsonProperty("stop")]
         public int Stop { get; set; }
 
+
         // 插入到目标StringBuilder的位置
         private int curInsertIndex;
 

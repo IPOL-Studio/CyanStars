@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CyanStars.Framework;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.Dialogue;
+using CyanStars.Framework.Event;
 using CyanStars.Framework.FSM;
 using Newtonsoft.Json;
 using TMPro;
@@ -20,6 +19,8 @@ namespace CyanStars.Gameplay.Dialogue
     [ProcedureState]
     public class DialogueProcedure : BaseState
     {
+        private const string ScenePath = ""; //TODO: Gal Scene
+
         private static readonly HashSet<Type> TempStepSet = new HashSet<Type>();
 
         private readonly DialogueMetadataModule MetadataModule = GameRoot.GetDataModule<DialogueMetadataModule>();
@@ -30,8 +31,6 @@ namespace CyanStars.Gameplay.Dialogue
 
         private Image avatarImage;
 
-        public StringBuilder ContentBuilder { get; set; } = new StringBuilder();
-
         private Dictionary<int, BaseNode> dialogueNodeDict;
 
         private BaseNode curNode;
@@ -40,7 +39,12 @@ namespace CyanStars.Gameplay.Dialogue
         {
             GameRoot.MainCamera.gameObject.SetActive(false);
 
-            bool success = await GameRoot.Asset.AwaitLoadScene(""); //TODO: Gal Scene
+            GameRoot.Event.AddListener(EventConst.SetNameTextEvent, OnSetNameText);
+            GameRoot.Event.AddListener(EventConst.SetAvatarEvent, OnSetAvatar);
+            GameRoot.Event.AddListener(EventConst.SetBackgroundImageEvent, OnSetBackground);
+            GameRoot.Event.AddListener(EventConst.PlaySoundEvent, OnPlaySound);
+
+            bool success = await GameRoot.Asset.AwaitLoadScene(ScenePath);
         }
 
         public override void OnUpdate(float deltaTime)
@@ -49,9 +53,15 @@ namespace CyanStars.Gameplay.Dialogue
 
             if (curNode.IsCompleted)
             {
-                curNode = dialogueNodeDict[curNode.NextNodeID];
+                NextNode();
                 CheckCurNode();
-                curNode.OnInit();
+                curNode?.OnInit();
+            }
+
+            if (curNode is null)
+            {
+                OnExit();
+                return;
             }
 
             curNode.OnUpdate(deltaTime);
@@ -68,6 +78,13 @@ namespace CyanStars.Gameplay.Dialogue
             avatarImage = null;
             dialogueNodeDict = null;
             curNode = null;
+
+            GameRoot.Event.RemoveListener(EventConst.SetNameTextEvent, OnSetNameText);
+            GameRoot.Event.RemoveListener(EventConst.SetAvatarEvent, OnSetAvatar);
+            GameRoot.Event.RemoveListener(EventConst.SetBackgroundImageEvent, OnSetBackground);
+            GameRoot.Event.RemoveListener(EventConst.PlaySoundEvent, OnPlaySound);
+
+            GameRoot.Asset.UnloadScene(ScenePath);
         }
 
         private void UpdateData()
@@ -79,9 +96,24 @@ namespace CyanStars.Gameplay.Dialogue
             }
         }
 
-        public void UpdateContent()
+        private void OnSetNameText(object sender, EventArgs e)
         {
-            contentText.text = ContentBuilder.ToString();
+            nameText.text = (e as SingleEventArgs<string>)?.Value;
+        }
+
+        private void OnSetAvatar(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnSetBackground(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnPlaySound(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task LoadDialogueData(string jsonFilePath)
@@ -115,6 +147,11 @@ namespace CyanStars.Gameplay.Dialogue
             {
                 throw new Exception("[Dialogue]没有找到入口节点");
             }
+
+            if (curNode.ID != 0)
+            {
+                throw new Exception("[Dialogue]入口节点的ID不为0");
+            }
         }
 
         private void CheckCurNode()
@@ -136,6 +173,12 @@ namespace CyanStars.Gameplay.Dialogue
                     }
                 }
             }
+        }
+
+        private void NextNode(bool skipEntry = true)
+        {
+            dialogueNodeDict.TryGetValue(curNode.NextNodeID, out var node);
+            curNode = node is EntryNode && skipEntry ? null : node;
         }
     }
 }
