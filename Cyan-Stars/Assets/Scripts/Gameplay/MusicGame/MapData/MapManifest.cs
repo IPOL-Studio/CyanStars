@@ -28,12 +28,21 @@ namespace CyanStars.Gameplay.MusicGame
         [Header("音乐文件名")]
         public string MusicFileName;
 
+        /// <summary>
+        /// 底图文件名
+        /// </summary>
         [Header("底图文件名")]
         public string BackgroundFileName;
 
+        /// <summary>
+        /// 曲绘文件名
+        /// </summary>
         [Header("曲绘文件名")]
         public string CoverFileName;
-        
+
+        /// <summary>
+        /// 裁剪曲绘文件名
+        /// </summary>
         [Header("裁剪曲绘文件名")]
         public string ClipCoverFileName;
 
