@@ -1,4 +1,4 @@
-Shader "NoteEffect/HoldNote"
+Shader "NoteShader/HoldNote"
 {
     Properties
     {

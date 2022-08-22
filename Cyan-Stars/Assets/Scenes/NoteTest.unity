@@ -362,18 +362,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15de306bda1968d439ad008035102942, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  holdNoteMaterialPropertyBlocks:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!4 &1260250789
 Transform:
   m_ObjectHideFlags: 0
