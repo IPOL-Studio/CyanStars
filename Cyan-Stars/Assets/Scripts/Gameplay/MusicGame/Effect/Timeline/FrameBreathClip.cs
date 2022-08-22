@@ -57,7 +57,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnUpdate(float currentTime, float previousTime)
         {
-            float alpha = Mathf.Abs(Mathf.Sin(((currentTime - StartTime) + 30 / bpm) * bpm * Mathf.PI / 60)) * (maxAlpha - minAlpha) + minAlpha;
+            float alpha = Mathf.Abs(Mathf.Sin((currentTime - StartTime) * bpm * Mathf.PI / 60)) * (maxAlpha - minAlpha) + minAlpha;
             color.a = alpha;
             Owner.ImgFrame.color = color;
         }
