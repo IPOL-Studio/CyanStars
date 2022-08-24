@@ -3,7 +3,7 @@
     /// <summary>
     /// UIItem数据接口
     /// </summary>
-    public interface UIItemData
+    public interface IUIItemData
     {
     }
 }
