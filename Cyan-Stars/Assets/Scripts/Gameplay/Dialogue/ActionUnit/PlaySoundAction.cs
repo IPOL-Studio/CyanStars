@@ -21,5 +21,10 @@ namespace CyanStars.Gameplay.Dialogue
         {
 
         }
+
+        public override void OnComplete()
+        {
+            IsCompleted = true;
+        }
     }
 }

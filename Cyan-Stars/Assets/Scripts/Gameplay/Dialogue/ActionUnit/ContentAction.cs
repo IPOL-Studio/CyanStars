@@ -10,7 +10,7 @@ namespace CyanStars.Gameplay.Dialogue
     [DialogueActionUnit("Content")]
     public class ContentAction : BaseActionUnit
     {
-        private readonly DialogueDataModule DataModule = GameRoot.GetDataModule<DialogueDataModule>();
+        private readonly DialogueModule DataModule = GameRoot.GetDataModule<DialogueModule>();
         private readonly DialogueSettingsModule SettingsModule = GameRoot.GetDataModule<DialogueSettingsModule>();
 
         [JsonProperty("type")]
@@ -37,7 +37,7 @@ namespace CyanStars.Gameplay.Dialogue
 
         public override void OnInit()
         {
-            if (Type == ContentActionType.Overlay)
+            if (Type == ContentActionType.Overwrite)
             {
                 DataModule.Content.Clear();
                 DataModule.IsContentDirty = true;
@@ -63,7 +63,7 @@ namespace CyanStars.Gameplay.Dialogue
                 NextInline();
             }
 
-            var stop = Stop > 0 ? Stop : SettingsModule.Stop;
+            var stop = (Stop > 0 ? Stop : SettingsModule.Stop) / 1000f;
             remainingDeltaTime += deltaTime;
 
             while (remainingDeltaTime > stop && !CheckCompleted())
@@ -76,6 +76,24 @@ namespace CyanStars.Gameplay.Dialogue
             }
 
             CheckCompleted();
+        }
+
+        public override void OnComplete()
+        {
+            if (CheckCompleted())
+            {
+                return;
+            }
+
+            DataModule.Content.Insert(curInsertIndex, Inlines[curInlineIndex].Content.Substring(curInlineInsertedCount));
+            NextInline();
+
+            while (!CheckCompleted())
+            {
+                var inline = Inlines[curInlineIndex];
+                DataModule.Content.Append($"{inline.GetLeftAttribute()}{inline.Content}{inline.GetRightAttribute()}");
+                NextInline();
+            }
         }
 
         /// <returns>当前inline内容是否已经全部插入</returns>
@@ -137,6 +155,14 @@ namespace CyanStars.Gameplay.Dialogue
             [JsonProperty("italic")]
             public bool Italic { get; set; }
 
+            private bool? isSupportColor = null;
+
+            public bool IsSupportColor()
+            {
+                isSupportColor ??= ColorUtility.TryParseHtmlString(Color, out _);
+                return isSupportColor.Value;
+            }
+
             public int CreateContentAttribute(out string text)
             {
                 if (string.IsNullOrEmpty(Content))
@@ -151,11 +177,18 @@ namespace CyanStars.Gameplay.Dialogue
                     return 0;
                 }
 
-                text = string.Empty;
+                text = GetLeftAttribute();
+                int insertPos = text.Length;
+                text += GetRightAttribute();
 
-                bool colorSupport = ColorUtility.TryParseHtmlString(Color, out _);
+                return insertPos;
+            }
 
-                if (colorSupport)
+            public string GetLeftAttribute()
+            {
+                var text = string.Empty;
+
+                if (IsSupportColor())
                 {
                     text += $"<color={Color}>";
                 }
@@ -170,7 +203,12 @@ namespace CyanStars.Gameplay.Dialogue
                     text += "<i>";
                 }
 
-                int insertPos = text.Length;
+                return text;
+            }
+
+            public string GetRightAttribute()
+            {
+                var text = string.Empty;
 
                 if (Italic)
                 {
@@ -182,19 +220,19 @@ namespace CyanStars.Gameplay.Dialogue
                     text += "</b>";
                 }
 
-                if (colorSupport)
+                if (IsSupportColor())
                 {
                     text += "</color>";
                 }
 
-                return insertPos;
+                return text;
             }
         }
     }
 
     public enum ContentActionType
     {
-        Overlay,
+        Overwrite,
         Append
     }
 }

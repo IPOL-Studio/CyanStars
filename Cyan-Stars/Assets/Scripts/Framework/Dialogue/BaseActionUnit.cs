@@ -9,5 +9,6 @@ namespace CyanStars.Framework.Dialogue
 
         public abstract void OnInit();
         public abstract void OnUpdate(float deltaTime);
+        public abstract void OnComplete();
     }
 }

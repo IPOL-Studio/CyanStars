@@ -20,5 +20,10 @@ namespace CyanStars.Gameplay.Dialogue
         public override void OnUpdate(float deltaTime)
         {
         }
+
+        public override void OnComplete()
+        {
+            IsCompleted = true;
+        }
     }
 }

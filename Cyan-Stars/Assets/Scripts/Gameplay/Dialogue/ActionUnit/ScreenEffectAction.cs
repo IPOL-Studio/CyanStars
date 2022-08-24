@@ -14,5 +14,10 @@ namespace CyanStars.Gameplay.Dialogue
         {
             throw new System.NotImplementedException();
         }
+
+        public override void OnComplete()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

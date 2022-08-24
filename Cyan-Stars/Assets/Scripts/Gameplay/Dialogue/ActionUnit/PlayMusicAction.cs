@@ -4,8 +4,8 @@ using Newtonsoft.Json;
 
 namespace CyanStars.Gameplay.Dialogue
 {
-    [DialogueActionUnit("Music")]
-    public class MusicAction : BaseActionUnit
+    [DialogueActionUnit("PlayMusic")]
+    public class PlayMusicAction : BaseActionUnit
     {
         [JsonProperty("filePath")]
         public string FilePath { get; set; }
@@ -16,16 +16,24 @@ namespace CyanStars.Gameplay.Dialogue
         [JsonProperty("fadeOutTime")]
         public float FadeOutTime { get; set; }
 
+        [JsonProperty("isCrossFading")]
+        public bool IsCrossFading { get; set; }
+
         public override void OnInit()
         {
-            GameRoot.Event.Dispatch(SetMusicEventArgs.EventName, this,
-                SetMusicEventArgs.Create(FilePath, FadeInTime, FadeOutTime));
+            GameRoot.Event.Dispatch(PlayMusicEventArgs.EventName, this,
+                PlayMusicEventArgs.Create(FilePath, FadeInTime, FadeOutTime, IsCrossFading));
 
             IsCompleted = true;
         }
 
         public override void OnUpdate(float deltaTime)
         {
+        }
+
+        public override void OnComplete()
+        {
+            IsCompleted = true;
         }
     }
 }

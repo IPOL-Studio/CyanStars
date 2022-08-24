@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace CyanStars.Framework.Dialogue
 {
     [DialogueNode("Action")]
-    public class ActionNode : BaseNode
+    public class ActionNode : BaseFlowNode
     {
         [JsonProperty("actions")]
         public List<BaseActionUnit> Actions { get; set; }
@@ -32,6 +32,17 @@ namespace CyanStars.Framework.Dialogue
             }
 
             CheckCompleted();
+        }
+
+        public override void OnComplete()
+        {
+            foreach (BaseActionUnit action in Actions)
+            {
+                if (!action.IsCompleted)
+                {
+                    action.OnComplete();
+                }
+            }
         }
 
         private bool CheckCompleted()

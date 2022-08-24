@@ -1,7 +1,7 @@
 ﻿namespace CyanStars.Framework.Dialogue
 {
-    [DialogueNode("Entry")]
-    public class EntryNode : BaseNode
+    [DialogueNode("FlowEntry")]
+    public class FlowEntryNode : BaseFlowNode, IEntryNode
     {
         public override void OnInit()
         {
@@ -10,6 +10,11 @@
 
         public override void OnUpdate(float deltaTime)
         {
+        }
+
+        public override void OnComplete()
+        {
+
         }
     }
 }

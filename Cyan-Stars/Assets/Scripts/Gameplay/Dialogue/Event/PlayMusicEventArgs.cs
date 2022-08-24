@@ -3,9 +3,9 @@ using CyanStars.Framework.Pool;
 
 namespace CyanStars.Gameplay.Dialogue
 {
-    public class SetMusicEventArgs : EventArgs, IReference
+    public class PlayMusicEventArgs : EventArgs, IReference
     {
-        public const string EventName = nameof(SetMusicEventArgs);
+        public const string EventName = nameof(PlayMusicEventArgs);
 
         public string FilePath { get; private set; }
 
@@ -13,14 +13,16 @@ namespace CyanStars.Gameplay.Dialogue
 
         public float FadeOutTime { get; private set; }
 
+        public bool IsCrossFading { get; private set; }
 
 
-        public static SetMusicEventArgs Create(string filePath, float fadeInTime, float fadeOutTime)
+        public static PlayMusicEventArgs Create(string filePath, float fadeInTime, float fadeOutTime, bool isCrossFading)
         {
-            SetMusicEventArgs eventArgs = ReferencePool.Get<SetMusicEventArgs>();
+            PlayMusicEventArgs eventArgs = ReferencePool.Get<PlayMusicEventArgs>();
             eventArgs.FilePath = filePath;
             eventArgs.FadeInTime = fadeInTime;
             eventArgs.FadeOutTime = fadeOutTime;
+            eventArgs.IsCrossFading = isCrossFading;
 
             return eventArgs;
         }
@@ -30,6 +32,7 @@ namespace CyanStars.Gameplay.Dialogue
             FilePath = default;
             FadeInTime = default;
             FadeOutTime = default;
+            IsCrossFading = default;
         }
     }
 }
