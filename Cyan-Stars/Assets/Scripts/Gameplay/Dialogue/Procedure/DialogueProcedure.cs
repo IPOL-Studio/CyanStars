@@ -55,6 +55,7 @@ namespace CyanStars.Gameplay.Dialogue
             GameRoot.Event.AddListener(EventConst.SetBackgroundImageEvent, OnSetBackground);
             GameRoot.Event.AddListener(EventConst.PlaySoundEvent, OnPlaySound);
             GameRoot.Event.AddListener(PlayMusicEventArgs.EventName, OnPlayMusic);
+            GameRoot.Event.AddListener(CreateBranchOptionsEventArgs.EventName, OnCreateBranchOptions);
 
             bool success = await GameRoot.Asset.AwaitLoadScene(ScenePath);
 
@@ -187,6 +188,7 @@ namespace CyanStars.Gameplay.Dialogue
             GameRoot.Event.RemoveListener(EventConst.SetBackgroundImageEvent, OnSetBackground);
             GameRoot.Event.RemoveListener(EventConst.PlaySoundEvent, OnPlaySound);
             GameRoot.Event.RemoveListener(PlayMusicEventArgs.EventName, OnPlayMusic);
+            GameRoot.Event.RemoveListener(CreateBranchOptionsEventArgs.EventName, OnCreateBranchOptions);
 
             DataModule.Reset();
 
@@ -236,6 +238,12 @@ namespace CyanStars.Gameplay.Dialogue
         private void OnPlayMusic(object sender, EventArgs e)
         {
             //TODO: Play Music Impl
+            throw new NotImplementedException();
+        }
+
+        private void OnCreateBranchOptions(object sender, EventArgs e)
+        {
+            //TODO: Show branch options impl
             throw new NotImplementedException();
         }
 

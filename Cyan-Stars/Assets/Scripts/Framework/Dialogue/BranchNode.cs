@@ -11,7 +11,7 @@ namespace CyanStars.Framework.Dialogue
 
         public override void OnInit()
         {
-            //TODO: 实现BranchNode
+            GameRoot.Event.Dispatch(CreateBranchOptionsEventArgs.EventName, this, CreateBranchOptionsEventArgs.Create(Options));
         }
 
         public override void OnUpdate(float deltaTime)
