@@ -1,15 +1,14 @@
-Shader "Unlit/holo"
+Shader "SceneShader/Holo"
 {
     Properties
     {
         _MainTex ("MainTex", 2d) = "white" {}
-        _Color("Color", Color) = (1, 1, 1, 1)
+        [HDR]_Color("Color", Color) = (1, 1, 1, 1)
         _HoloTex ("HoloTex", 2d) = "white" {}
-        _glitchRate ("glitchRate", float) = 0.2
     }
     SubShader
     {
-        Tags{"RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline"}
+        Tags{"RenderType" = "Transparent" "Queue" = "Transparent" "RenderPipeline" = "UniversalPipeline"}
 
         blend SrcAlpha OneMinusSrcAlpha
 
@@ -24,7 +23,6 @@ Shader "Unlit/holo"
             CBUFFER_START(UnityPerMaterial)
             float4 _Color;
             float4 _MainTex_ST;
-            float _glitchRate;
             CBUFFER_END
 
             TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
@@ -46,15 +44,29 @@ Shader "Unlit/holo"
             {
                 v2f o;
                 o.vertex = TransformObjectToHClip(v.vertex.xyz);
+                o.uv = v.uv;
                 return o;
+            }
+
+            float randomNoise(float x, float y)
+            {
+                return frac(sin(dot(float2(x, y), float2(12.9898, 78.233))) * 43758.5453);
+            }
+
+            float trunc(float x, float num_levels)
+            {
+                return floor(x * num_levels) / num_levels;
             }
 
             float4 frag (v2f i) : SV_Target
             {
-                float a = frac(_Time.y);
-                a = step(a, _glitchRate);
-                float4 holo =  SAMPLE_TEXTURE2D(_HoloTex, sampler_HoloTex, i.uv) * a;
-                return holo;
+                float truncTime = trunc(_Time.x, 150.0);
+                float uv_trunc = randomNoise(trunc(i.uv.y, 10) , 100.0 * truncTime);
+                float2 uv_blockLine = i.uv;
+                uv_blockLine = saturate(uv_blockLine + float2(0.05 * uv_trunc, 0));
+                float4 holo =  SAMPLE_TEXTURE2D(_HoloTex, sampler_HoloTex, float2(i.uv.x, i.uv.y + _Time.x * 2));
+                float4 col =  SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, abs(uv_blockLine)) * _Color;
+                return float4(col.xyz, holo.x);
             }
             ENDHLSL
         }
