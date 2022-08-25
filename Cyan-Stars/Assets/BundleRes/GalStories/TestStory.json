@@ -1,0 +1,86 @@
+{
+  "flowNodes": [
+    {
+      "type": "FlowEntry",
+      "node": {
+        "id": 0,
+        "nextNode": 1
+      }
+    },
+    {
+      "type": "Action",
+      "node": {
+        "actions": [
+          {
+            "type": "SetName",
+            "action": {
+              "text": "Test",
+              "color": null,
+              "bold": false,
+              "italic": false
+            }
+          },
+          {
+            "type": "Content",
+            "action": {
+              "type": "Overwrite",
+              "inlines": [
+                {
+                  "content": "This is a test content",
+                  "color": "white",
+                  "bold": false,
+                  "italic": false
+                }
+              ],
+              "stop": 100
+            }
+          }
+        ],
+        "id": 1,
+        "nextNode": 2
+      }
+    },
+    {
+      "type": "Action",
+      "node": {
+        "actions": [
+          {
+            "type": "Content",
+            "action": {
+              "type": "Append",
+              "inlines": [
+                {
+                  "content": "T",
+                  "color": "red",
+                  "bold": false,
+                  "italic": false
+                },
+                {
+                  "content": "E",
+                  "color": "orange",
+                  "bold": true,
+                  "italic": false
+                },
+                {
+                  "content": "S",
+                  "color": "yellow",
+                  "bold": false,
+                  "italic": true
+                },
+                {
+                  "content": "T",
+                  "color": "green",
+                  "bold": true,
+                  "italic": true
+                }
+              ],
+              "stop": 0
+            }
+          }
+        ],
+        "id": 2,
+        "nextNode": 0
+      }
+    }
+  ]
+}

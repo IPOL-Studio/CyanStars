@@ -28,3 +28,6 @@ MonoBehaviour:
   - Directory: Assets/BundleRes/ScriptObjects
     Mode: 1
     Group: Base
+  - Directory: Assets/BundleRes/GalStories
+    Mode: 1
+    Group: Base
