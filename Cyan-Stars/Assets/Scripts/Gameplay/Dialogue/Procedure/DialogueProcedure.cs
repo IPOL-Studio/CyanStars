@@ -29,10 +29,7 @@ namespace CyanStars.Gameplay.Dialogue
 
         private GameObject dialogueMainCanvas;
         private Image background;
-        private Image avatar;
         private AudioSource audioSource;  //TODO: 场景里放个AudioSource
-        private TextMeshProUGUI nameText;
-        private TextMeshProUGUI contentText;
         private CircleContractionController circleContractionController;
 
         private bool isInitNodesAllCompleted;
@@ -50,12 +47,9 @@ namespace CyanStars.Gameplay.Dialogue
         {
             GameRoot.MainCamera.gameObject.SetActive(false);
 
-            GameRoot.Event.AddListener(EventConst.SetNameTextEvent, OnSetNameText);
-            GameRoot.Event.AddListener(EventConst.SetAvatarEvent, OnSetAvatar);
             GameRoot.Event.AddListener(EventConst.SetBackgroundImageEvent, OnSetBackground);
             GameRoot.Event.AddListener(EventConst.PlaySoundEvent, OnPlaySound);
             GameRoot.Event.AddListener(PlayMusicEventArgs.EventName, OnPlayMusic);
-            GameRoot.Event.AddListener(CreateBranchOptionsEventArgs.EventName, OnCreateBranchOptions);
 
             bool success = await GameRoot.Asset.AwaitLoadScene(ScenePath);
 
@@ -97,7 +91,6 @@ namespace CyanStars.Gameplay.Dialogue
             }
 
             UpdateFlowNode(deltaTime);
-            UpdateData();
         }
 
         private void UpdateFlowNode(float deltaTime)
@@ -166,10 +159,7 @@ namespace CyanStars.Gameplay.Dialogue
 
             dialogueMainCanvas = null;
             background = null;
-            avatar = null;
             audioSource = null;
-            nameText = null;
-            contentText = null;
             circleContractionController = null;
 
             isInitNodesAllCompleted = false;
@@ -183,36 +173,13 @@ namespace CyanStars.Gameplay.Dialogue
 
             loaded = false;
 
-            GameRoot.Event.RemoveListener(EventConst.SetNameTextEvent, OnSetNameText);
-            GameRoot.Event.RemoveListener(EventConst.SetAvatarEvent, OnSetAvatar);
             GameRoot.Event.RemoveListener(EventConst.SetBackgroundImageEvent, OnSetBackground);
             GameRoot.Event.RemoveListener(EventConst.PlaySoundEvent, OnPlaySound);
             GameRoot.Event.RemoveListener(PlayMusicEventArgs.EventName, OnPlayMusic);
-            GameRoot.Event.RemoveListener(CreateBranchOptionsEventArgs.EventName, OnCreateBranchOptions);
 
             DataModule.Reset();
 
             GameRoot.Asset.UnloadScene(ScenePath);
-        }
-
-        private void UpdateData()
-        {
-            if (DataModule.IsContentDirty)
-            {
-                contentText.text = DataModule.Content.ToString();
-                DataModule.IsContentDirty = false;
-            }
-        }
-
-        private void OnSetNameText(object sender, EventArgs e)
-        {
-            nameText.text = (e as SingleEventArgs<string>)?.Value;
-        }
-
-        private async void OnSetAvatar(object sender, EventArgs e)
-        {
-            var filePath = (e as SingleEventArgs<string>)?.Value;
-            avatar.sprite = (await GameRoot.Asset.AwaitLoadAsset<Texture2D>(filePath, dialogueMainCanvas)).ConvertToSprite();
         }
 
         private async void OnSetBackground(object sender, EventArgs e)
@@ -241,29 +208,14 @@ namespace CyanStars.Gameplay.Dialogue
             throw new NotImplementedException();
         }
 
-        private void OnCreateBranchOptions(object sender, EventArgs e)
-        {
-            //TODO: Show branch options impl
-            throw new NotImplementedException();
-        }
-
         private void GetSceneObj()
         {
             dialogueMainCanvas = GameObject.Find("DialogueMainCanvas");
             var trans = dialogueMainCanvas.transform;
             background = trans.Find("Background").GetComponent<Image>();
 
-
-            var dialogBoxRoot = trans.Find("DialogBox");
-            avatar = dialogBoxRoot.Find("Avatar").GetComponent<Image>();
-            nameText = dialogBoxRoot.Find("NameText").GetComponent<TextMeshProUGUI>();
-            contentText = dialogBoxRoot.Find("ContentText").GetComponent<TextMeshProUGUI>();
-
             circleContractionController =
                 GameObject.Find("TransitionsCanvas").GetComponent<CircleContractionController>();
-
-            nameText.text = string.Empty;
-            contentText.text = string.Empty;
         }
 
         private async Task LoadDialogueData(string jsonFilePath)

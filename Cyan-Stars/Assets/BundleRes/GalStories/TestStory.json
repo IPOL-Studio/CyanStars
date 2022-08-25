@@ -41,6 +41,22 @@
       }
     },
     {
+      "type": "Branch",
+      "node": {
+        "options": [
+          {
+            "nextNode": 3,
+            "text": "Append Content"
+          },
+          {
+            "nextNode": 4,
+            "text": "Overwrite Content"
+          }
+        ],
+        "id": 2
+      }
+    },
+    {
       "type": "Action",
       "node": {
         "actions": [
@@ -72,13 +88,43 @@
                   "color": "green",
                   "bold": true,
                   "italic": true
+                },
+                {
+                  "content": ", Append Test",
+                  "color": null,
+                  "bold": false,
+                  "italic": false
                 }
               ],
               "stop": 0
             }
           }
         ],
-        "id": 2,
+        "id": 3,
+        "nextNode": 0
+      }
+    },
+    {
+      "type": "Action",
+      "node": {
+        "actions": [
+          {
+            "type": "Content",
+            "action": {
+              "type": "Overwrite",
+              "inlines": [
+                {
+                  "content": "Overwrite Test",
+                  "color": null,
+                  "bold": false,
+                  "italic": false
+                }
+              ],
+              "stop": 0
+            }
+          }
+        ],
+        "id": 4,
         "nextNode": 0
       }
     }
