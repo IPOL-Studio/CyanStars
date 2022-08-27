@@ -14,7 +14,6 @@ namespace CyanStars.Gameplay.Dialogue
 
         public override void WriteJson(JsonWriter writer, BaseActionUnit value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
         }
 
         public override BaseActionUnit ReadJson(JsonReader reader, Type objectType, BaseActionUnit existingValue, bool hasExistingValue,

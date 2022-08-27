@@ -11,7 +11,7 @@ namespace CyanStars.Gameplay.Dialogue
 {
     public class DialogBoxController : MonoBehaviour
     {
-        private readonly DialogueModule DataModule = GameRoot.GetDataModule<DialogueModule>();
+        private DialogueModule dataModule;
 
         [SerializeField]
         private Image avatar;
@@ -24,6 +24,7 @@ namespace CyanStars.Gameplay.Dialogue
 
         private void Awake()
         {
+            dataModule = GameRoot.GetDataModule<DialogueModule>();
             nameText.text = string.Empty;
             contentText.text = string.Empty;
 
@@ -52,10 +53,10 @@ namespace CyanStars.Gameplay.Dialogue
 
         private void Onupdate(float deltaTime)
         {
-            if (DataModule.IsContentDirty)
+            if (dataModule.IsContentDirty)
             {
-                contentText.text = DataModule.Content.ToString();
-                DataModule.IsContentDirty = false;
+                contentText.text = dataModule.Content.ToString();
+                dataModule.IsContentDirty = false;
             }
         }
     }

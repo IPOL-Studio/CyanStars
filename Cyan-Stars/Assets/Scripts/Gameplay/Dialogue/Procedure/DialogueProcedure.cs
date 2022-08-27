@@ -8,7 +8,6 @@ using CyanStars.Framework.Event;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Utils;
 using CyanStars.Gameplay.Base;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,7 +28,6 @@ namespace CyanStars.Gameplay.Dialogue
 
         private GameObject dialogueMainCanvas;
         private Image background;
-        private AudioSource audioSource;  //TODO: 场景里放个AudioSource
         private CircleContractionController circleContractionController;
 
         private bool isInitNodesAllCompleted;
@@ -48,8 +46,6 @@ namespace CyanStars.Gameplay.Dialogue
             GameRoot.MainCamera.gameObject.SetActive(false);
 
             GameRoot.Event.AddListener(EventConst.SetBackgroundImageEvent, OnSetBackground);
-            GameRoot.Event.AddListener(EventConst.PlaySoundEvent, OnPlaySound);
-            GameRoot.Event.AddListener(PlayMusicEventArgs.EventName, OnPlayMusic);
 
             bool success = await GameRoot.Asset.AwaitLoadScene(ScenePath);
 
@@ -99,7 +95,7 @@ namespace CyanStars.Gameplay.Dialogue
 
             if (curFlowNode.IsCompleted)
             {
-                if (canToNextFlowNode)
+                if (canToNextFlowNode || curFlowNode.GotoNextType == GotoNextNodeActionType.Direct)
                 {
                     canToNextFlowNode = false;
                     NextNode();
@@ -159,7 +155,6 @@ namespace CyanStars.Gameplay.Dialogue
 
             dialogueMainCanvas = null;
             background = null;
-            audioSource = null;
             circleContractionController = null;
 
             isInitNodesAllCompleted = false;
@@ -174,8 +169,6 @@ namespace CyanStars.Gameplay.Dialogue
             loaded = false;
 
             GameRoot.Event.RemoveListener(EventConst.SetBackgroundImageEvent, OnSetBackground);
-            GameRoot.Event.RemoveListener(EventConst.PlaySoundEvent, OnPlaySound);
-            GameRoot.Event.RemoveListener(PlayMusicEventArgs.EventName, OnPlayMusic);
 
             DataModule.Reset();
 
@@ -186,26 +179,6 @@ namespace CyanStars.Gameplay.Dialogue
         {
             var filePath = (e as SingleEventArgs<string>)?.Value;
             background.sprite = (await GameRoot.Asset.AwaitLoadAsset<Texture2D>(filePath, dialogueMainCanvas)).ConvertToSprite();
-        }
-
-        private void OnPlaySound(object sender, EventArgs e)
-        {
-            string path = (e as SingleEventArgs<string>)?.Value;
-
-            if (DataModule.TryGetSoundAudioClip(path, out var clip))
-            {
-                audioSource.PlayOneShot(clip);
-            }
-            else
-            {
-                Debug.LogError($"没有找到音效 ${path}");
-            }
-        }
-
-        private void OnPlayMusic(object sender, EventArgs e)
-        {
-            //TODO: Play Music Impl
-            throw new NotImplementedException();
         }
 
         private void GetSceneObj()
