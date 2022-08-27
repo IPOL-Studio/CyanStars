@@ -91,9 +91,14 @@ namespace CyanStars.Gameplay.Dialogue
             while (!CheckCompleted())
             {
                 var inline = Inlines[curInlineIndex];
-                DataModule.Content.Append($"{inline.GetLeftAttribute()}{inline.Content}{inline.GetRightAttribute()}");
+                DataModule.Content
+                    .Append(inline.GetLeftAttribute())
+                    .Append(inline.Content)
+                    .Append(inline.GetRightAttribute());
                 NextInline();
             }
+
+            DataModule.IsContentDirty = true;
         }
 
         /// <returns>当前inline内容是否已经全部插入</returns>
