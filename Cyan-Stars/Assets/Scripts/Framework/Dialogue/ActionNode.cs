@@ -9,12 +9,21 @@ namespace CyanStars.Framework.Dialogue
         [JsonProperty("actions")]
         public List<BaseActionUnit> Actions { get; set; }
 
+        private GotoNextNodeActionType gotoNextType = GotoNextNodeActionType.Direct;
+        public override GotoNextNodeActionType GotoNextType => gotoNextType;
+
         public override void OnInit()
         {
             int index = 0;
             while (index < Actions.Count)
             {
                 Actions[index].OnInit();
+
+                if (Actions[index] is IWaitActionUnit)
+                {
+                    gotoNextType = GotoNextNodeActionType.Wait;
+                }
+
                 index = CheckActionIsCompleted(index);
             }
         }
