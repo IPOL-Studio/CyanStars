@@ -278,19 +278,15 @@ namespace CyanStars.Gameplay.Dialogue
                     {
                         throw new Exception($"[Dialogue]找到多个{typeof(TE)}节点");
                     }
-
                     curNode = node;
                 }
+            }
 
-                if (curNode is null)
-                {
-                    throw new Exception($"[Dialogue]没有找到{typeof(TE)}节点");
-                }
+            _ = curNode ?? throw new Exception($"[Dialogue]没有找到{typeof(TE)}节点");
 
-                if (curNode.ID != 0)
-                {
-                    throw new Exception($"[Dialogue]找到了{typeof(TE)}节点，入口节点的ID只能为0，当前入口节点的ID为{curNode.ID}");
-                }
+            if (curNode.ID != 0)
+            {
+                throw new Exception($"[Dialogue]找到了{typeof(TE)}节点，入口节点的ID只能为0，当前入口节点的ID为{curNode.ID}");
             }
         }
 
