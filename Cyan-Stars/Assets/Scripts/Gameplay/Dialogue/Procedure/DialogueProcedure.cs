@@ -36,8 +36,8 @@ namespace CyanStars.Gameplay.Dialogue
         private Dictionary<int, BaseFlowNode> dialogueFlowNodeDict;
         private BaseInitNode curInitNode;
         private BaseFlowNode curFlowNode;
-        private bool canToNextFlowNode;
-        private bool waitFlowTimer;
+        private bool isWaitingCurNode;
+        private bool isWaitingFlowTimer;
 
         private bool loaded;
 
@@ -65,8 +65,6 @@ namespace CyanStars.Gameplay.Dialogue
                 }
 
                 loaded = true;
-
-                curFlowNode?.OnInit();
             }
         }
 
@@ -87,42 +85,85 @@ namespace CyanStars.Gameplay.Dialogue
             }
 
             UpdateFlowNode(deltaTime);
+
+            if (curFlowNode is null)
+            {
+                GameRoot.ChangeProcedure<MainHomeProcedure>();
+                Debug.Log("End");
+            }
         }
 
         private void UpdateFlowNode(float deltaTime)
         {
             if (curFlowNode is null) return;
 
-            if (curFlowNode.IsCompleted)
-            {
-                if (canToNextFlowNode || curFlowNode.GotoNextType == GotoNextNodeActionType.Direct)
-                {
-                    canToNextFlowNode = false;
-                    NextNode();
-                    CheckCurNode();
-                    curFlowNode?.OnInit();
-                }
-                else if (DataModule.IsAutoMode && !waitFlowTimer)
-                {
-                    waitFlowTimer = true;
-                    GameRoot.Timer.AddTimer(0.5f, () =>
-                    {
-                        waitFlowTimer = false;
-                        canToNextFlowNode = true;
-                    });
-                }
-            }
-
-            if (curFlowNode is null)
-            {
-                GameRoot.ChangeProcedure<MainHomeProcedure>();
-                Debug.Log("End");
-                return;
-            }
-
+            // 如果当前 node 还没有执行完毕
+            // 就更新当前 node，并重复检查是否执行完毕
             if (!curFlowNode.IsCompleted)
             {
                 curFlowNode.OnUpdate(deltaTime);
+
+                if (!curFlowNode.IsCompleted)
+                {
+                    return;
+                }
+
+                // 如果当前 node 需要等待 自动模式计时器 或 玩家交互
+                // 就进入等待交互状态
+                if (curFlowNode.GotoNextType == GotoNextNodeActionType.Wait)
+                {
+                    WaitCurNode();
+                }
+            }
+
+            // 还在等待 计时器 或 玩家交互
+            if (curFlowNode.GotoNextType == GotoNextNodeActionType.Wait && isWaitingCurNode)
+            {
+                return;
+            }
+
+            // 到这里时，已经执行完毕的node，要么是不需要等待交互的，要么已经完成了交互行为
+            // 所以直接设置 true 跑后续 node 的更新循环
+            bool canToNext = true;
+
+            while (canToNext)
+            {
+                if (!NextNode())
+                {
+                    return;
+                }
+                CheckCurNode();
+                curFlowNode.OnInit();
+
+                // 当前 node 不需要等待玩家交互，并且已经执行完毕
+                // 前进到下一个 node 并重复流程
+                canToNext = curFlowNode.GotoNextType == GotoNextNodeActionType.Direct && curFlowNode.IsCompleted;
+            }
+
+            // 经过上面的 node 更新循环后
+            // 当前的 node 已经执行完毕，但是需要等待交互
+            if (curFlowNode.IsCompleted)
+            {
+                WaitCurNode();
+            }
+        }
+
+        private void WaitCurNode()
+        {
+            isWaitingCurNode = true;
+            Debug.Log("node要求等待玩家操作");
+
+            if (DataModule.IsAutoMode && !isWaitingFlowTimer)
+            {
+                isWaitingFlowTimer = true;
+                GameRoot.Timer.AddTimer(0.5f, () =>
+                {
+                    if (DataModule.IsAutoMode)
+                    {
+                        isWaitingFlowTimer = false;
+                        isWaitingCurNode = false;
+                    }
+                });
             }
         }
 
@@ -163,8 +204,8 @@ namespace CyanStars.Gameplay.Dialogue
             dialogueFlowNodeDict = null;
             curInitNode = null;
             curFlowNode = null;
-            canToNextFlowNode = false;
-            waitFlowTimer = false;
+            isWaitingCurNode = false;
+            isWaitingFlowTimer = false;
 
             loaded = false;
 
@@ -268,22 +309,28 @@ namespace CyanStars.Gameplay.Dialogue
                     DialogueActionUnitAttribute attr = MetadataModule.GetDialogueActionUnitAttribute(type);
                     if (!attr.AllowMultiple && !TempActionUnitSet.Add(type))
                     {
-                        throw new Exception($"在ID = {node.ID}的 ActionNode 中发现了超过 1 个的ActionUnit: ${act.GetType()}");
+                        throw new Exception($"在ID = {node.ID}的 ActionNode 中发现了超过 1 个的ActionUnit: ${type}");
                     }
                 }
             }
         }
 
-        private void NextNode(bool skipEntry = true)
+        /// <returns>是否存在下一个可用的node，若存在返回true，否则返回false</returns>
+        private bool NextNode(bool skipEntry = true)
         {
             dialogueFlowNodeDict.TryGetValue(curFlowNode.NextNodeID, out var node);
             curFlowNode = node is FlowEntryNode && skipEntry ? null : node;
+            return !(curFlowNode is null);
         }
 
         private void CompleteInit()
         {
             isInitNodesAllCompleted = true;
-            circleContractionController.Exit(0.5f, () => isInitCompleted = true);
+            circleContractionController.Exit(0.5f, () =>
+            {
+                isInitCompleted = true;
+                curFlowNode?.OnInit();
+            });
         }
     }
 }
