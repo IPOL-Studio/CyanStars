@@ -11,7 +11,7 @@ namespace CyanStars.Gameplay.MusicGame
     {
         private static MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
 
-        private static NoteLogger logger = LoggerManager.GetOrCreateLogger<NoteLogger>();
+        private static NoteLogger logger = GameRoot.Logger.GetOrCreateLogger<NoteLogger>();
 
          /// <summary>
         /// 处理tap音符判定
