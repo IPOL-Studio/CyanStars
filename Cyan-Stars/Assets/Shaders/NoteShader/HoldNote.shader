@@ -9,6 +9,9 @@ Shader "NoteShader/HoldNote"
         _FlickerSpeed ("FlickerSpeed", float) = 0
         _FlickerRate ("FlickerRate", float) = 0
 
+        _SpecularColor ("SpecularColor", color) = (1, 1, 1, 1)
+        _Gloss ("Gloss", float) = 25
+
         [HDR] _FlickerColor ("FlickerColor", Color) = (0, 0, 0, 0)
         [HDR] _MaskColor ("MaskColor", Color) = (0, 0, 0, 0)
 
@@ -36,6 +39,9 @@ Shader "NoteShader/HoldNote"
             half _FlickerSpeed;
             half _FlickerRate;
 
+            float4 _SpecularColor;
+            float _Gloss;
+
             float4 _FlickerColor;
             float4 _MaskColor;
             // CBUFFER_END
@@ -51,6 +57,7 @@ Shader "NoteShader/HoldNote"
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                float3 normal : NORMAL;
                 // UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -58,6 +65,8 @@ Shader "NoteShader/HoldNote"
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
+                float3 worldPos : TEXCOORD1;
+                float3 worldNormal : TEXCOORD2;
                 // UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -68,14 +77,21 @@ Shader "NoteShader/HoldNote"
                 // UNITY_TRANSFER_INSTANCE_ID(v, o);
                 o.vertex = TransformObjectToHClip(v.vertex.xyz);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.worldPos = TransformObjectToWorld(v.vertex.xyz);
+                o.worldNormal = TransformObjectToWorldNormal(v.normal);
                 return o;
             }
 
-            half4 frag (v2f i) : SV_Target
+            float4 frag (v2f i) : SV_Target
             {
                 // UNITY_SETUP_INSTANCE_ID(i);
+                float3 viewDir = _WorldSpaceCameraPos.xyz - i.worldPos.xyz;
+                float3 worldLightDir = normalize(_MainLightPosition.xyz);
+                float3 h = normalize(viewDir + worldLightDir);
+                float3 NdotH = saturate(dot(i.worldNormal, h));
+                float3 specular = _MainLightColor.rgb * _SpecularColor.rgb * pow(NdotH, _Gloss);
                 half UV_Y = i.uv.y;
-                half4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+                float4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
                 if(i.uv.x < 0.4)
                 {
                     UV_Y = abs(UV_Y - 0.5) * _FlickerRate;
@@ -84,6 +100,7 @@ Shader "NoteShader/HoldNote"
                     col += col * (1 - UV_Y) * _FlickerColor * UNITY_ACCESS_INSTANCED_PROP(Props, _Flicker);
                 }
                 col += SAMPLE_TEXTURE2D(_Mask, sampler_Mask, i.uv) * _MaskColor;
+                col.rgb += specular;
                 return col;
             }
             ENDHLSL

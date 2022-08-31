@@ -4,11 +4,12 @@ Shader "SceneShader/Floor"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _Speed ("Speed", float) = 1
+        _Color ("Color", color) = (1, 1, 1, 1)
     }
     SubShader
     {
         Tags{"RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline"}
-
+Blend SrcAlpha OneMinusSrcAlpha
         Pass
         {
             HLSLPROGRAM
@@ -20,6 +21,7 @@ Shader "SceneShader/Floor"
             CBUFFER_START(UnityPerMaterial)
             float4 _MainTex_ST;
             float _Speed;
+            half4 _Color;
             CBUFFER_END
 
             TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
@@ -47,7 +49,7 @@ Shader "SceneShader/Floor"
             half4 frag (v2f i) : SV_Target
             {
                 half4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x, i.uv.y + _Time.y * _Speed));
-                return col;
+                return col * _Color;
             }
             ENDHLSL
         }

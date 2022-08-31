@@ -23,6 +23,7 @@ Shader "SceneShader/Holo"
             CBUFFER_START(UnityPerMaterial)
             float4 _Color;
             float4 _MainTex_ST;
+            float4 _HoloTex_ST;
             CBUFFER_END
 
             TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
@@ -37,14 +38,15 @@ Shader "SceneShader/Holo"
             struct v2f
             {
                 float4 vertex : SV_POSITION;
-                float2 uv : TEXCOORD0;
+                float4 uv : TEXCOORD0;
             };
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = TransformObjectToHClip(v.vertex.xyz);
-                o.uv = v.uv;
+                o.uv.xy = v.uv;
+                o.uv.zw = TRANSFORM_TEX(v.uv, _HoloTex);
                 return o;
             }
 
@@ -64,7 +66,7 @@ Shader "SceneShader/Holo"
                 float uv_trunc = randomNoise(trunc(i.uv.y, 10) , 100.0 * truncTime);
                 float2 uv_blockLine = i.uv;
                 uv_blockLine = saturate(uv_blockLine + float2(0.05 * uv_trunc, 0));
-                float4 holo =  SAMPLE_TEXTURE2D(_HoloTex, sampler_HoloTex, float2(i.uv.x, i.uv.y + _Time.x * 2));
+                float4 holo =  SAMPLE_TEXTURE2D(_HoloTex, sampler_HoloTex, float2(i.uv.z, i.uv.w + _Time.x * 2));
                 float4 col =  SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, abs(uv_blockLine)) * _Color;
                 return float4(col.xyz, holo.x);
             }
