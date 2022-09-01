@@ -110,14 +110,14 @@ namespace CyanStars.Gameplay.Dialogue
 
                 // 如果当前 node 需要等待 自动模式计时器 或 玩家交互
                 // 就进入等待交互状态
-                if (curFlowNode.GotoNextType == GotoNextNodeActionType.Wait)
+                if (curFlowNode is IPauseableNode { IsPause: true })
                 {
                     WaitCurNode();
                 }
             }
 
             // 还在等待 计时器 或 玩家交互
-            if (curFlowNode.GotoNextType == GotoNextNodeActionType.Wait && isWaitingCurNode)
+            if (curFlowNode is IPauseableNode { IsPause: true } && isWaitingCurNode)
             {
                 return;
             }
@@ -137,7 +137,7 @@ namespace CyanStars.Gameplay.Dialogue
 
                 // 当前 node 不需要等待玩家交互，并且已经执行完毕
                 // 前进到下一个 node 并重复流程
-                canToNext = curFlowNode.GotoNextType == GotoNextNodeActionType.Direct && curFlowNode.IsCompleted;
+                canToNext = !(curFlowNode is IPauseableNode { IsPause: true }) && curFlowNode.IsCompleted;
             }
 
             // 经过上面的 node 更新循环后

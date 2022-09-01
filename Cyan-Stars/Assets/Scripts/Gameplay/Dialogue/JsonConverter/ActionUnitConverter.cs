@@ -24,7 +24,7 @@ namespace CyanStars.Gameplay.Dialogue
 
             var type = GameRoot.GetDataModule<DialogueMetadataModule>().GetActionUnitType(typeKey);
 
-            return jo.GetValue("action").ToObject(type) as BaseActionUnit;
+            return jo.GetValue("action").ToObject(type, JsonSerializer.CreateDefault()) as BaseActionUnit;
         }
     }
 }

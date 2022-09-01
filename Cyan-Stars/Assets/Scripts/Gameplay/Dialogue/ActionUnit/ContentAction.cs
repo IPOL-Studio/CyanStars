@@ -8,7 +8,7 @@ using UnityEngine;
 namespace CyanStars.Gameplay.Dialogue
 {
     [DialogueActionUnit("Content")]
-    public class ContentAction : BaseActionUnit, IWaitActionUnit
+    public class ContentAction : BaseActionUnit
     {
         private readonly DialogueModule DataModule = GameRoot.GetDataModule<DialogueModule>();
         private readonly DialogueSettingsModule SettingsModule = GameRoot.GetDataModule<DialogueSettingsModule>();

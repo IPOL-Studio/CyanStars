@@ -4,13 +4,13 @@ using Newtonsoft.Json;
 namespace CyanStars.Framework.Dialogue
 {
     [DialogueNode("Action")]
-    public class ActionNode : BaseFlowNode
+    public class ActionNode : BaseFlowNode, IPauseableNode
     {
         [JsonProperty("actions")]
         public List<BaseActionUnit> Actions { get; set; }
 
-        private GotoNextNodeActionType gotoNextType = GotoNextNodeActionType.Direct;
-        public override GotoNextNodeActionType GotoNextType => gotoNextType;
+        [JsonProperty("isPause")]
+        public bool IsPause { get; set; }
 
         public override void OnInit()
         {
@@ -18,12 +18,6 @@ namespace CyanStars.Framework.Dialogue
             while (index < Actions.Count)
             {
                 Actions[index].OnInit();
-
-                if (Actions[index] is IWaitActionUnit)
-                {
-                    gotoNextType = GotoNextNodeActionType.Wait;
-                }
-
                 index = CheckActionIsCompleted(index);
             }
         }

@@ -19,7 +19,7 @@ namespace CyanStars.Gameplay.Dialogue
             var jo = JObject.Load(reader);
             var typeStr = jo.GetValue("type").Value<string>();
             var type = GameRoot.GetDataModule<DialogueMetadataModule>().GetNodeType(typeStr);
-            var node = serializer.Deserialize(jo.GetValue("node").CreateReader(), type) as T;
+            var node = jo.GetValue("node").ToObject(type, serializer) as T;
             return new NodeData<T>
             {
                 Type = typeStr,
