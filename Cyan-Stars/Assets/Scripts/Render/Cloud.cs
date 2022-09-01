@@ -4,7 +4,9 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-public class Cloud : ScriptableRendererFeature
+namespace CyanStars.Render
+{
+    public class Cloud : ScriptableRendererFeature
 {
     private class BlitPass : ScriptableRenderPass
     {
@@ -128,3 +130,5 @@ public class Cloud : ScriptableRendererFeature
         renderer.EnqueuePass(blitPass);
     }
 }
+}
+
