@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Rendering;
 
+//此脚本暂时没用上
 namespace CyanStars.Render
 {
     [Serializable]

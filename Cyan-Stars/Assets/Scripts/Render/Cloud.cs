@@ -1,9 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
+//此脚本暂时没用上
 namespace CyanStars.Render
 {
     public class Cloud : ScriptableRendererFeature
