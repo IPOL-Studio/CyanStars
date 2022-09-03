@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CyanStars.Framework;
 using CyanStars.Framework.Asset;
@@ -45,7 +46,7 @@ namespace CyanStars.Gameplay.Dialogue
         {
             GameRoot.MainCamera.gameObject.SetActive(false);
 
-            GameRoot.Event.AddListener(EventConst.SetBackgroundImageEvent, OnSetBackground);
+            GameRoot.Event.AddListener(EventConst.SetBackgroundEvent, OnSetBackground);
 
             bool success = await GameRoot.Asset.AwaitLoadScene(ScenePath);
 
@@ -110,14 +111,14 @@ namespace CyanStars.Gameplay.Dialogue
 
                 // 如果当前 node 需要等待 自动模式计时器 或 玩家交互
                 // 就进入等待交互状态
-                if (curFlowNode is IPauseableNode { IsPause: true })
+                if (!IsNodeAutoContinue(curFlowNode))
                 {
                     WaitCurNode();
                 }
             }
 
             // 还在等待 计时器 或 玩家交互
-            if (curFlowNode is IPauseableNode { IsPause: true } && isWaitingCurNode)
+            if (!IsNodeAutoContinue(curFlowNode) && isWaitingCurNode)
             {
                 return;
             }
@@ -137,7 +138,7 @@ namespace CyanStars.Gameplay.Dialogue
 
                 // 当前 node 不需要等待玩家交互，并且已经执行完毕
                 // 前进到下一个 node 并重复流程
-                canToNext = !(curFlowNode is IPauseableNode { IsPause: true }) && curFlowNode.IsCompleted;
+                canToNext = IsNodeAutoContinue(curFlowNode) && curFlowNode.IsCompleted;
             }
 
             // 经过上面的 node 更新循环后
@@ -146,6 +147,12 @@ namespace CyanStars.Gameplay.Dialogue
             {
                 WaitCurNode();
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsNodeAutoContinue(BaseNode node)
+        {
+            return !(node is IPauseableNode n) || n.IsAutoContinue;
         }
 
         private void WaitCurNode()
@@ -178,7 +185,7 @@ namespace CyanStars.Gameplay.Dialogue
             if (curInitNode.IsCompleted)
             {
                 var node = dialogueInitNodeDict.TryGetValue(curInitNode.NextNodeID, out var r) ? r : null;
-                if (node is null || node is InitEntryNode)
+                if (node is null || node is IEntryNode)
                 {
                     CompleteInit();
                 }
@@ -209,7 +216,7 @@ namespace CyanStars.Gameplay.Dialogue
 
             loaded = false;
 
-            GameRoot.Event.RemoveListener(EventConst.SetBackgroundImageEvent, OnSetBackground);
+            GameRoot.Event.RemoveListener(EventConst.SetBackgroundEvent, OnSetBackground);
 
             DataModule.Reset();
 
@@ -219,7 +226,9 @@ namespace CyanStars.Gameplay.Dialogue
         private async void OnSetBackground(object sender, EventArgs e)
         {
             var filePath = (e as SingleEventArgs<string>)?.Value;
-            background.sprite = (await GameRoot.Asset.AwaitLoadAsset<Texture2D>(filePath, dialogueMainCanvas)).ConvertToSprite();
+            background.sprite = string.IsNullOrEmpty(filePath) || string.IsNullOrWhiteSpace(filePath)
+                ? null
+                : (await GameRoot.Asset.AwaitLoadAsset<Texture2D>(filePath, dialogueMainCanvas)).ConvertToSprite();
         }
 
         private void GetSceneObj()
@@ -270,6 +279,12 @@ namespace CyanStars.Gameplay.Dialogue
             for (int i = 0; i < nodeDatas.Count; i++)
             {
                 T node = nodeDatas[i].Node;
+
+                if (node.ID < 0)
+                {
+                    throw new Exception("[Dialogue]找到 ID < 0 的节点，节点 ID 应大于等于0");
+                }
+
                 nodeDict.Add(node.ID, node);
 
                 if (node is TE)
@@ -315,7 +330,7 @@ namespace CyanStars.Gameplay.Dialogue
         private bool NextNode(bool skipEntry = true)
         {
             dialogueFlowNodeDict.TryGetValue(curFlowNode.NextNodeID, out var node);
-            curFlowNode = node is FlowEntryNode && skipEntry ? null : node;
+            curFlowNode = node is IEntryNode && skipEntry ? null : node;
             return !(curFlowNode is null);
         }
 

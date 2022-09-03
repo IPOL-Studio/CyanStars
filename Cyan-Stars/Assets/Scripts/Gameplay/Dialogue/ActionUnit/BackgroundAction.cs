@@ -5,15 +5,18 @@ using Newtonsoft.Json;
 
 namespace CyanStars.Gameplay.Dialogue
 {
-    [DialogueActionUnit("SetBackgroundImage")]
-    public class BackgroundImageAction : BaseActionUnit
+    [DialogueActionUnit("Background")]
+    public class BackgroundAction : BaseActionUnit
     {
         [JsonProperty("filePath")]
         public string FilePath { get; set; }
 
+        //Effect
+        //Time
+
         public override void OnInit()
         {
-            GameRoot.Event.Dispatch(EventConst.SetBackgroundImageEvent, this, SingleEventArgs<string>.Create(FilePath));
+            GameRoot.Event.Dispatch(EventConst.SetBackgroundEvent, this, SingleEventArgs<string>.Create(FilePath));
             IsCompleted = true;
         }
 

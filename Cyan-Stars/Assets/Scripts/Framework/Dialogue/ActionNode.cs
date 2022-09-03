@@ -9,8 +9,8 @@ namespace CyanStars.Framework.Dialogue
         [JsonProperty("actions")]
         public List<BaseActionUnit> Actions { get; set; }
 
-        [JsonProperty("isPause")]
-        public bool IsPause { get; set; }
+        [JsonProperty("autoContinue")]
+        public bool IsAutoContinue { get; set; }
 
         public override void OnInit()
         {

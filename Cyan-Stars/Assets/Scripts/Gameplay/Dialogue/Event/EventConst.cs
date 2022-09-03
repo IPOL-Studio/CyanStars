@@ -6,7 +6,7 @@
 
         public const string SetAvatarEvent = nameof(SetAvatarEvent);
 
-        public const string SetBackgroundImageEvent = nameof(SetBackgroundImageEvent);
+        public const string SetBackgroundEvent = nameof(SetBackgroundEvent);
 
         public const string PlaySoundEvent = nameof(PlaySoundEvent);
     }
