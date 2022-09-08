@@ -30,8 +30,8 @@ Material:
     m_Floats:
     - _AbsorptionTowardSun: 1.39
     - _LightAbsorption: 0.05
-    - _densityStrength: 0.44
+    - _densityStrength: 0.25
     m_Colors:
-    - _Color: {r: 0.2590057, g: 0.26415092, b: 0.19312921, a: 0}
+    - _Color: {r: 0.5471698, g: 0.48040822, b: 0.29681382, a: 0}
     - _phaseParams: {r: 1, g: 2.03, b: 2.28, a: 0.25}
   m_BuildTextureStacks: []
