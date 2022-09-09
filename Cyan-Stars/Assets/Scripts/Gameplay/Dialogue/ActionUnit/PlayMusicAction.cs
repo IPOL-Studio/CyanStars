@@ -1,6 +1,7 @@
 ﻿using CyanStars.Framework;
 using CyanStars.Framework.Dialogue;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.Dialogue
 {
@@ -21,8 +22,13 @@ namespace CyanStars.Gameplay.Dialogue
 
         public override void OnInit()
         {
+            CheckValues();
+
+            float fadeIn = Mathf.Clamp(FadeInTime, 0, float.MaxValue);
+            float fadeOut = Mathf.Clamp(FadeOutTime, 0, float.MaxValue);
+
             GameRoot.Event.Dispatch(PlayMusicEventArgs.EventName, this,
-                PlayMusicEventArgs.Create(FilePath, FadeInTime, FadeOutTime, IsCrossFading));
+                PlayMusicEventArgs.Create(FilePath, fadeIn, fadeOut, IsCrossFading));
 
             IsCompleted = true;
         }
@@ -34,6 +40,21 @@ namespace CyanStars.Gameplay.Dialogue
         public override void OnComplete()
         {
             IsCompleted = true;
+        }
+
+        private void CheckValues()
+        {
+            if (FadeInTime < 0)
+            {
+                Debug.LogError("fade in time should equal or great 0");
+                Debug.LogWarning("will set fade in time to 0");
+            }
+
+            if (FadeOutTime < 0)
+            {
+                Debug.LogError("fade out time should equal or great 0");
+                Debug.LogWarning("will set fade out time to 0");
+            }
         }
     }
 }

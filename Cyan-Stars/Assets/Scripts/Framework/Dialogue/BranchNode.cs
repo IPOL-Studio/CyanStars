@@ -31,5 +31,10 @@ namespace CyanStars.Framework.Dialogue
         {
 
         }
+
+        public override string ToString()
+        {
+            return $"ID: {ID}, Option count: {Options.Count}";
+        }
     }
 }

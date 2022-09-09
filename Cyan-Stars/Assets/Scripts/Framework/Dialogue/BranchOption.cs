@@ -14,5 +14,10 @@ namespace CyanStars.Framework.Dialogue
 
         [JsonIgnore]
         public bool IsSelected { get; set; }
+
+        public override string ToString()
+        {
+            return $"{nameof(NextNodeID)}: {NextNodeID}, {nameof(Text)}: {Text}";
+        }
     }
 }
