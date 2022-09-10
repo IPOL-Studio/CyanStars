@@ -33,7 +33,7 @@ Material:
     - _FlickerSpeed: 2.5
     - _Gloss: 20
     m_Colors:
-    - _FlickerColor: {r: 0.17254902, g: 0.20784314, b: 0, a: 0}
+    - _FlickerColor: {r: 0.123222195, g: 0.38679248, b: 0, a: 1}
     - _MaskColor: {r: 0, g: 4, b: 0, a: 1}
     - _SpecularColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 0}
   m_BuildTextureStacks: []
