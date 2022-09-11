@@ -1,3 +1,4 @@
+using CyanStars.Framework;
 using CyanStars.Framework.Logger;
 
 using UnityEngine;
@@ -55,7 +56,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 headChecked = true;
                 DataModule.MaxScore += 2;
-                LoggerManager.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteJudgeLogArgs(Data, EvaluateType.Exact, 0));
+                GameRoot.Logger.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteJudgeLogArgs(Data, EvaluateType.Exact, 0));
                 DataModule.RefreshPlayingData(1, 2, EvaluateType.Exact, 0); // Auto Mode 杂率为0
                 ViewObject.CreateEffectObj(NoteData.NoteWidth);
                 DestroySelf(false);
