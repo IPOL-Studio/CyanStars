@@ -3,11 +3,16 @@ using CyanStars.Framework.Logger;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public class NoteLogger : LoggerBase
+    public sealed class NoteLogger : ILogger
     {
+        public event LogCallback OnLog;
+
         public void Log<T>(T args) where T : struct, INoteJudgeLogArgs
         {
-            LogHelper.Log(args.GetJudgeInfo(), LogLevel);
+            string message = args.GetJudgeInfo();
+
+            OnLog?.Invoke(message, LogLevelType.Log);
+            LogHelper.Log(message, LogLevelType.Log);
         }
     }
 

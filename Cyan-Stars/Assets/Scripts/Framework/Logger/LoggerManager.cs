@@ -3,11 +3,23 @@ using System.Collections.Generic;
 
 namespace CyanStars.Framework.Logger
 {
-    public static class LoggerManager
+    public class LoggerManager : BaseManager
     {
-        private static readonly Dictionary<Type, LoggerBase> LoggerDict = new Dictionary<Type, LoggerBase>();
+        private readonly Dictionary<Type, ILogger> LoggerDict = new Dictionary<Type, ILogger>();
 
-        public static T GetOrCreateLogger<T>() where T : LoggerBase, new()
+        public override int Priority { get; }
+
+        /// <inheritdoc />
+        public override void OnInit()
+        {
+        }
+
+        /// <inheritdoc />
+        public override void OnUpdate(float deltaTime)
+        {
+        }
+
+        public T GetOrCreateLogger<T>() where T : ILogger, new()
         {
             var type = typeof(T);
             if (LoggerDict.TryGetValue(type, out var logger))
@@ -20,16 +32,16 @@ namespace CyanStars.Framework.Logger
             return (T)logger;
         }
 
-        public static T GetLogger<T>() where T : LoggerBase => (T)LoggerDict[typeof(T)];
+        public T GetLogger<T>() where T : ILogger => (T)LoggerDict[typeof(T)];
 
-        public static bool TryGetLogger<T>(out T logger) where T : LoggerBase
+        public bool TryGetLogger<T>(out T logger) where T : ILogger
         {
             var isFound = LoggerDict.TryGetValue(typeof(T), out var result);
             logger = isFound ? (T)result : default;
             return isFound;
         }
 
-        public static void AddLogger<T>(T logger) where T : LoggerBase
+        public void AddLogger<T>(T logger) where T : ILogger
         {
             if (logger is null)
             {
@@ -39,8 +51,6 @@ namespace CyanStars.Framework.Logger
             LoggerDict.Add(typeof(T), logger);
         }
 
-        public static bool RemoveLogger<T>() where T : LoggerBase => LoggerDict.Remove(typeof(T));
-
-        public static void Clear() => LoggerDict.Clear();
+        public bool RemoveLogger<T>() where T : ILogger => LoggerDict.Remove(typeof(T));
     }
 }
