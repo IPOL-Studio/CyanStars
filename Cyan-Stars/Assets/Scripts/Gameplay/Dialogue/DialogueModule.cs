@@ -8,7 +8,7 @@ namespace CyanStars.Gameplay.Dialogue
 {
     public class DialogueModule : BaseDataModule
     {
-        public StringBuilder Content { get; } = new StringBuilder(64);
+        public StringBuilder Content { get; } = new StringBuilder(256);
 
         /// <summary>
         /// 指示 Content 当前是否被修改过

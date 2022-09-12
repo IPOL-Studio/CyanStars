@@ -14,27 +14,41 @@ namespace CyanStars.Gameplay.Dialogue
         internal RichText(RichTextData data)
         {
             Text = data.Text;
+            bool isNoParse = data.Text.IndexOf('<') >= 0;
 
-            if ((data.Attributes?.Count ?? 0) <= 0) return;
+            if ((data.Attributes?.Count ?? 0) <= 0)
+            {
+                if (isNoParse)
+                {
+                    LeftAttributes = TextHelper.NoParseLeftAttr;
+                    RightAttributes = TextHelper.NoParseRightAttr;
+                }
+                return;
+            }
 
             var cache = GameRoot.GetDataModule<DialogueModule>().StringBuilderCache;
             var sb = cache.Get();
             var flags = new NativeArray<bool>(data.Attributes.Count, Allocator.Temp);
 
-            if (ParseLeftAttributes(data, sb, flags))
+            if (ParseLeftAttributes(data, sb, flags, isNoParse))
             {
                 LeftAttributes = sb.ToString();
                 sb.Clear();
 
-                ParseRightAttributes(data, sb, flags);
+                ParseRightAttributes(data, sb, flags, isNoParse);
                 RightAttributes = sb.ToString();
+            }
+            else if (isNoParse)
+            {
+                LeftAttributes = TextHelper.NoParseLeftAttr;
+                RightAttributes = TextHelper.NoParseRightAttr;
             }
 
             cache.Release(sb);
             flags.Dispose();
         }
 
-        private bool ParseLeftAttributes(RichTextData data, StringBuilder sb, NativeArray<bool> flags)
+        private bool ParseLeftAttributes(RichTextData data, StringBuilder sb, NativeArray<bool> flags, bool isNoParse)
         {
             bool isAppended = false;
 
@@ -62,19 +76,14 @@ namespace CyanStars.Gameplay.Dialogue
                 }
             }
 
-            if (isAppended)
-            {
-                sb.Append(TextHelper.NoParseLeftAttr);
-                return true;
-            }
-
-            return false;
+            sb.Append(isNoParse && isAppended ? TextHelper.NoParseLeftAttr : string.Empty);
+            return isAppended;
         }
 
-        private void ParseRightAttributes(RichTextData data, StringBuilder sb, NativeArray<bool> flags)
+        private void ParseRightAttributes(RichTextData data, StringBuilder sb, NativeArray<bool> flags, bool isNoParse)
         {
-            sb.Append(TextHelper.NoParseRightAttr);
-            for (int i = data.Attributes.Count - 1; i < 0; i--)
+            sb.Append(isNoParse ? TextHelper.NoParseRightAttr : string.Empty);
+            for (int i = data.Attributes.Count - 1; i >= 0; i--)
             {
                 if (flags[i])
                 {

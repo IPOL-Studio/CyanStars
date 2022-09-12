@@ -26,10 +26,13 @@
               "type": "Overwrite",
               "inlines": [
                 {
-                  "content": "This is a test content",
-                  "color": "white",
-                  "bold": false,
-                  "italic": false
+                  "text": "This is a test content",
+                  "attrs": [
+                    "color"
+                  ],
+                  "attrValues": {
+                    "color": "white"
+                  }
                 }
               ],
               "stop": 100
@@ -67,34 +70,47 @@
               "type": "Append",
               "inlines": [
                 {
-                  "content": "T",
-                  "color": "red",
-                  "bold": false,
-                  "italic": false
+                  "text": "T",
+                  "attrs": [
+                    "color"
+                  ],
+                  "attrValues": {
+                    "color": "red"
+                  }
                 },
                 {
-                  "content": "E",
-                  "color": "orange",
-                  "bold": true,
-                  "italic": false
+                  "text": "E",
+                  "attrs": [
+                    "color",
+                    "b"
+                  ],
+                  "attrValues": {
+                    "color": "orange"
+                  }
                 },
                 {
-                  "content": "S",
-                  "color": "yellow",
-                  "bold": false,
-                  "italic": true
+                  "text": "S",
+                  "attrs": [
+                    "color",
+                    "i"
+                  ],
+                  "attrValues": {
+                    "color": "yellow"
+                  }
                 },
                 {
-                  "content": "T",
-                  "color": "green",
-                  "bold": true,
-                  "italic": true
+                  "text": "T",
+                  "attrs": [
+                    "color",
+                    "b",
+                    "i"
+                  ],
+                  "attrValues": {
+                    "color": "green"
+                  }
                 },
                 {
-                  "content": ", Append Test",
-                  "color": null,
-                  "bold": false,
-                  "italic": false
+                  "text": ", Append Test"
                 }
               ],
               "stop": 0
@@ -114,10 +130,7 @@
               "type": "Overwrite",
               "inlines": [
                 {
-                  "content": "Overwrite Test",
-                  "color": null,
-                  "bold": false,
-                  "italic": false
+                  "text": "Overwrite Test"
                 }
               ],
               "stop": 0

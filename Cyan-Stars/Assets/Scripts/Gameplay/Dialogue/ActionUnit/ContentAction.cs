@@ -18,7 +18,7 @@ namespace CyanStars.Gameplay.Dialogue
         public ContentActionType Type { get; set; }
 
         [JsonProperty("inlines")]
-        public List<InlineContent> Inlines { get; set; }
+        public List<RichTextData> Inlines { get; set; }
 
         [JsonProperty("stop")]
         public int Stop { get; set; }
@@ -31,7 +31,9 @@ namespace CyanStars.Gameplay.Dialogue
 
         private float remainingDeltaTime;
 
-        private InlineContent CurInline => Inlines[curInlineIndex];
+
+        private RichText curRichText;
+
 
         public override void OnInit()
         {
@@ -55,7 +57,7 @@ namespace CyanStars.Gameplay.Dialogue
             if (curInlineIndex == -1)
             {
                 NextInline();
-                DataModule.Content.Append(CurInline.GetLeftAttribute());
+                DataModule.Content.Append(curRichText.LeftAttributes);
             }
 
             var stop = (Stop > 0 ? Stop : SettingsModule.Stop) / 1000f;
@@ -66,10 +68,11 @@ namespace CyanStars.Gameplay.Dialogue
                 remainingDeltaTime -= stop;
                 if (AppendContent())
                 {
-                    DataModule.Content.Append(CurInline.GetRightAttribute());
+                    DataModule.Content.Append(curRichText.RightAttributes);
+                    Debug.Log("Appended RightAttr");
                     if (NextInline())
                     {
-                        DataModule.Content.Append(CurInline.GetLeftAttribute());
+                        DataModule.Content.Append(curRichText.LeftAttributes);
                     }
                 }
             }
@@ -84,15 +87,15 @@ namespace CyanStars.Gameplay.Dialogue
                 return;
             }
 
-            DataModule.Content.Append(CurInline.Content.Substring(curInlineInsertedCount));
-            DataModule.Content.Append(CurInline.GetRightAttribute());
+            DataModule.Content.Append(curRichText.Text.Substring(curInlineInsertedCount));
+            DataModule.Content.Append(curRichText.RightAttributes);
 
             while (NextInline())
             {
                 DataModule.Content
-                    .Append(CurInline.GetLeftAttribute())
-                    .Append(CurInline.Content)
-                    .Append(CurInline.GetRightAttribute());
+                    .Append(curRichText.LeftAttributes)
+                    .Append(curRichText.Text)
+                    .Append(curRichText.RightAttributes);
             }
 
             DataModule.IsContentDirty = true;
@@ -105,15 +108,15 @@ namespace CyanStars.Gameplay.Dialogue
 
             while (isAppend)
             {
-                char c = CurInline.Content[curInlineInsertedCount];
+                char c = curRichText.Text[curInlineInsertedCount];
                 DataModule.Content.Append(c);
                 curInlineInsertedCount++;
-                isAppend = curInlineInsertedCount < CurInline.Content.Length && TextHelper.IsSkipChar(c);
+                isAppend = curInlineInsertedCount < curRichText.Text.Length && TextHelper.IsSkipChar(c);
             }
 
             DataModule.IsContentDirty = true;
 
-            return curInlineInsertedCount >= CurInline.Content.Length;
+            return curInlineInsertedCount >= curRichText.Text.Length;
         }
 
         private bool CheckCompleted()
@@ -135,78 +138,19 @@ namespace CyanStars.Gameplay.Dialogue
 
                 if (CheckCompleted())
                 {
+                    curRichText = null;
                     return false;
                 }
-            } while (string.IsNullOrEmpty(Inlines[curInlineIndex].Content));  // 跳过空内容的Inline
+            } while (string.IsNullOrEmpty(Inlines[curInlineIndex].Text));  // 跳过空内容的Inline
+
+            GenerateCurRichText();
 
             return true;
         }
 
-        public class InlineContent
+        private void GenerateCurRichText()
         {
-            [JsonProperty("content")]
-            public string Content { get; set; }
-
-            [JsonProperty("color")]
-            public string Color { get; set; }
-
-            [JsonProperty("bold")]
-            public bool Bold { get; set; }
-
-            [JsonProperty("italic")]
-            public bool Italic { get; set; }
-
-            private bool? isSupportColor = null;
-
-            public bool IsSupportColor()
-            {
-                isSupportColor ??= ColorUtility.TryParseHtmlString(Color, out _);
-                return isSupportColor.Value;
-            }
-
-            public string GetLeftAttribute()
-            {
-                var text = string.Empty;
-
-                if (IsSupportColor())
-                {
-                    text += $"<color={Color}>";
-                }
-
-                if (Bold)
-                {
-                    text += "<b>";
-                }
-
-                if (Italic)
-                {
-                    text += "<i>";
-                }
-
-                return text;
-            }
-
-            public string GetRightAttribute()
-            {
-                var text = string.Empty;
-
-                if (Italic)
-                {
-                    text += "</i>";
-                }
-
-                if (Bold)
-                {
-                    text += "</b>";
-                }
-
-                if (IsSupportColor())
-                {
-                    text += "</color>";
-                }
-
-                return text;
-            }
+            curRichText = new RichText(Inlines[curInlineIndex]);
         }
     }
 

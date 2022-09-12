@@ -45,7 +45,7 @@ namespace CyanStars.Gameplay.Dialogue
                 return false;
             }
 
-            sb.AppendFormat("<{0}=\"{1}\">", attr, value);
+            sb.AppendFormat("<{0}={1}>", attr, value);
             return true;
         }
 
