@@ -5,9 +5,9 @@ using CyanStars.Framework.UI;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.Event;
+using CyanStars.Framework.Logger;
 using CyanStars.Framework.Pool;
 using CyanStars.Framework.Timer;
-using CyanStars.Gameplay.MusicGame;
 
 
 namespace CyanStars.Framework
@@ -60,6 +60,11 @@ namespace CyanStars.Framework
         public static UIManager UI { get; private set; }
 
         /// <summary>
+        /// Logger管理器
+        /// </summary>
+        public static LoggerManager Logger { get; private set; }
+
+        /// <summary>
         /// 流程状态机
         /// </summary>
         private static FSM.FSM procedureFSM;
@@ -78,6 +83,7 @@ namespace CyanStars.Framework
             GameObjectPool = GetManager<GameObjectPoolManager>();
             Timer = GetManager<TimerManager>();
             UI = GetManager<UIManager>();
+            Logger = GetManager<LoggerManager>();
 
             //按优先级排序并初始化所有Manager
             Managers.Sort((x, y) => x.Priority.CompareTo(y.Priority));
