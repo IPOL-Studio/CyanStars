@@ -23,10 +23,6 @@ namespace CyanStars.Gameplay.Dialogue
         [JsonProperty("stop")]
         public int Stop { get; set; }
 
-
-        // 插入到目标StringBuilder的位置
-        private int curInsertIndex;
-
         // 当前正在使用的Inline
         private int curInlineIndex = -1;
 
@@ -35,16 +31,14 @@ namespace CyanStars.Gameplay.Dialogue
 
         private float remainingDeltaTime;
 
+        private InlineContent CurInline => Inlines[curInlineIndex];
+
         public override void OnInit()
         {
             if (Type == ContentActionType.Overwrite)
             {
                 DataModule.Content.Clear();
                 DataModule.IsContentDirty = true;
-            }
-            else
-            {
-                curInsertIndex = DataModule.Content.Length;
             }
 
             if (Inlines is null || Inlines.Count == 0)
@@ -61,6 +55,7 @@ namespace CyanStars.Gameplay.Dialogue
             if (curInlineIndex == -1)
             {
                 NextInline();
+                DataModule.Content.Append(CurInline.GetLeftAttribute());
             }
 
             var stop = (Stop > 0 ? Stop : SettingsModule.Stop) / 1000f;
@@ -71,7 +66,11 @@ namespace CyanStars.Gameplay.Dialogue
                 remainingDeltaTime -= stop;
                 if (AppendContent())
                 {
-                    NextInline();
+                    DataModule.Content.Append(CurInline.GetRightAttribute());
+                    if (NextInline())
+                    {
+                        DataModule.Content.Append(CurInline.GetLeftAttribute());
+                    }
                 }
             }
 
@@ -85,17 +84,15 @@ namespace CyanStars.Gameplay.Dialogue
                 return;
             }
 
-            DataModule.Content.Insert(curInsertIndex, Inlines[curInlineIndex].Content.Substring(curInlineInsertedCount));
-            NextInline();
+            DataModule.Content.Append(CurInline.Content.Substring(curInlineInsertedCount));
+            DataModule.Content.Append(CurInline.GetRightAttribute());
 
-            while (!CheckCompleted())
+            while (NextInline())
             {
-                var inline = Inlines[curInlineIndex];
                 DataModule.Content
-                    .Append(inline.GetLeftAttribute())
-                    .Append(inline.Content)
-                    .Append(inline.GetRightAttribute());
-                NextInline();
+                    .Append(CurInline.GetLeftAttribute())
+                    .Append(CurInline.Content)
+                    .Append(CurInline.GetRightAttribute());
             }
 
             DataModule.IsContentDirty = true;
@@ -104,15 +101,19 @@ namespace CyanStars.Gameplay.Dialogue
         /// <returns>当前inline内容是否已经全部插入</returns>
         private bool AppendContent()
         {
-            var inline = Inlines[curInlineIndex];
-            char c = inline.Content[curInlineInsertedCount];
-            DataModule.Content.Insert(curInsertIndex, c);
-            curInsertIndex++;
-            curInlineInsertedCount++;
+            bool isAppend = true;
+
+            while (isAppend)
+            {
+                char c = CurInline.Content[curInlineInsertedCount];
+                DataModule.Content.Append(c);
+                curInlineInsertedCount++;
+                isAppend = curInlineInsertedCount < CurInline.Content.Length && TextHelper.IsSkipChar(c);
+            }
 
             DataModule.IsContentDirty = true;
 
-            return curInlineInsertedCount >= inline.Content.Length;
+            return curInlineInsertedCount >= CurInline.Content.Length;
         }
 
         private bool CheckCompleted()
@@ -124,7 +125,8 @@ namespace CyanStars.Gameplay.Dialogue
         /// <summary>
         /// 切换到下一个Inline，并向最终文本插入额外标签
         /// </summary>
-        private void NextInline()
+        /// <returns>是否存在可以继续访问的Inline</returns>
+        private bool NextInline()
         {
             do
             {
@@ -133,17 +135,11 @@ namespace CyanStars.Gameplay.Dialogue
 
                 if (CheckCompleted())
                 {
-                    return;
-                }
-
-                int insertIndex = Inlines[curInlineIndex].CreateContentAttribute(out var attrText);
-                curInsertIndex = insertIndex + DataModule.Content.Length;
-
-                if (insertIndex > 0)
-                {
-                    DataModule.Content.Append(attrText);
+                    return false;
                 }
             } while (string.IsNullOrEmpty(Inlines[curInlineIndex].Content));  // 跳过空内容的Inline
+
+            return true;
         }
 
         public class InlineContent
@@ -166,27 +162,6 @@ namespace CyanStars.Gameplay.Dialogue
             {
                 isSupportColor ??= ColorUtility.TryParseHtmlString(Color, out _);
                 return isSupportColor.Value;
-            }
-
-            public int CreateContentAttribute(out string text)
-            {
-                if (string.IsNullOrEmpty(Content))
-                {
-                    text = null;
-                    return 0;
-                }
-
-                if (string.IsNullOrWhiteSpace(Content))
-                {
-                    text = Content;
-                    return 0;
-                }
-
-                text = GetLeftAttribute();
-                int insertPos = text.Length;
-                text += GetRightAttribute();
-
-                return insertPos;
             }
 
             public string GetLeftAttribute()

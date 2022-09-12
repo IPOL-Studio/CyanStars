@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using CyanStars.Framework;
+using CyanStars.Framework.Utils;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.Dialogue
@@ -23,6 +24,8 @@ namespace CyanStars.Gameplay.Dialogue
         /// TODO: 临时用于测试的剧本路径
         /// </summary>
         public string StoryDataPath { get; } = "Assets/BundleRes/GalStories/TestStory.json";
+
+        public StringBuilderCache StringBuilderCache { get; private set; } = new StringBuilderCache();
 
 
         // sound audio file path -> AudioClip
@@ -63,6 +66,7 @@ namespace CyanStars.Gameplay.Dialogue
             IsContentDirty = false;
             SoundClipDict.Clear();
             MusicClipDict.Clear();
+            StringBuilderCache = new StringBuilderCache();
         }
     }
 }
