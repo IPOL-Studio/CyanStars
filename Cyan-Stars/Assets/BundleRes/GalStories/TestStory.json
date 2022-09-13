@@ -28,10 +28,12 @@
                 {
                   "text": "This is a test content",
                   "attrs": [
-                    "color"
+                    "color",
+                    "u"
                   ],
                   "attrValues": {
-                    "color": "white"
+                    "color": "white",
+                    "uColor": "#66ccff"
                   }
                 }
               ],

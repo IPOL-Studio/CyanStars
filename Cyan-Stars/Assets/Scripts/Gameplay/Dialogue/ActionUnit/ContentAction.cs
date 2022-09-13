@@ -69,7 +69,6 @@ namespace CyanStars.Gameplay.Dialogue
                 if (AppendContent())
                 {
                     DataModule.Content.Append(curRichText.RightAttributes);
-                    Debug.Log("Appended RightAttr");
                     if (NextInline())
                     {
                         DataModule.Content.Append(curRichText.LeftAttributes);
@@ -150,7 +149,7 @@ namespace CyanStars.Gameplay.Dialogue
 
         private void GenerateCurRichText()
         {
-            curRichText = new RichText(Inlines[curInlineIndex]);
+            curRichText = RichText.FromRichTextData(Inlines[curInlineIndex]);
         }
     }
 
