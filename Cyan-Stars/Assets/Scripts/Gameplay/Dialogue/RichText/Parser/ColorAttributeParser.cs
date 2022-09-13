@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace CyanStars.Gameplay.Dialogue.Parser
+namespace CyanStars.Gameplay.Dialogue
 {
     public class ColorAttributeParser : IRichTextAttributeValueParser
     {

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using CyanStars.Gameplay.Dialogue.Parser;
 
 namespace CyanStars.Gameplay.Dialogue
 {
