@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using CyanStars.Framework.Utils;
 
 namespace CyanStars.Gameplay.Dialogue
 {
@@ -18,6 +16,8 @@ namespace CyanStars.Gameplay.Dialogue
             "i",  // italic
             "u",  // underline
             "s",  // strikethrough
+            "sub",
+            "sup",
             "color"
         };
 
