@@ -44,6 +44,9 @@ namespace CyanStars.Framework.Utils
 
             if (str.Length == 4)
             {
+                // 将 RGB 扩展为 RRGGBB
+                // 避免 TMP 部分标签不认 #RGB 的问题
+
                 // 在升级到支持 .net standard2.1 的 Unity 后
                 // 检查这里的 unsafe 并将 pointer 切换到 Span
                 unsafe
@@ -75,10 +78,10 @@ namespace CyanStars.Framework.Utils
 
             switch (str.Length)
             {
-                case 4:
+                case 4:  //#RGB
                     return IsHexColorChar(str[1]) && str[2] == str[1] && str[3] == str[1];
-                case 7:
-                case 9:
+                case 7:  //#RRGGBB
+                case 9:  //#RRGGBBAA
                 {
                     for (int i = 1; i < str.Length; i++)
                     {
