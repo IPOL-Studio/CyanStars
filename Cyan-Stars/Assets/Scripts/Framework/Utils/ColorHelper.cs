@@ -79,6 +79,7 @@ namespace CyanStars.Framework.Utils
             switch (str.Length)
             {
                 case 4:  //#RGB
+                    str = str.ToLower();
                     return IsHexColorChar(str[1]) && str[2] == str[1] && str[3] == str[1];
                 case 7:  //#RRGGBB
                 case 9:  //#RRGGBBAA
