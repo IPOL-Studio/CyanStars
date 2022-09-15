@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using CyanStars.Framework.Utils;
 
 namespace CyanStars.Gameplay.Dialogue
 {
@@ -10,9 +11,9 @@ namespace CyanStars.Gameplay.Dialogue
         public bool AppendAttributeTo(StringBuilder sb, Dictionary<string, string> attrValues)
         {
             if (attrValues.TryGetValue(RichTextAttributeValueKeys.Color, out var value) &&
-                !string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value))
+                ColorHelper.TryParseHtmlString(value, out var color))
             {
-                sb.AppendFormat("<color={0}>", value);
+                sb.AppendFormat("<color={0}>", color);
                 return true;
             }
 
