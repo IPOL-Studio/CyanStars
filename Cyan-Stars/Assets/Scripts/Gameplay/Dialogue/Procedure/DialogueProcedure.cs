@@ -27,7 +27,7 @@ namespace CyanStars.Gameplay.Dialogue
         private readonly DialogueMetadataModule MetadataModule = GameRoot.GetDataModule<DialogueMetadataModule>();
         private readonly DialogueModule DataModule = GameRoot.GetDataModule<DialogueModule>();
 
-        private GameObject dialogueMainCanvas;
+        private GameObject galContentCanvas;
         private Image background;
         private CircleContractionController circleContractionController;
 
@@ -201,7 +201,7 @@ namespace CyanStars.Gameplay.Dialogue
         {
             GameRoot.MainCamera.gameObject.SetActive(true);
 
-            dialogueMainCanvas = null;
+            galContentCanvas = null;
             background = null;
             circleContractionController = null;
 
@@ -228,13 +228,13 @@ namespace CyanStars.Gameplay.Dialogue
             var filePath = (e as SingleEventArgs<string>)?.Value;
             background.sprite = string.IsNullOrEmpty(filePath) || string.IsNullOrWhiteSpace(filePath)
                 ? null
-                : (await GameRoot.Asset.AwaitLoadAsset<Texture2D>(filePath, dialogueMainCanvas)).ConvertToSprite();
+                : (await GameRoot.Asset.AwaitLoadAsset<Texture2D>(filePath, galContentCanvas)).ConvertToSprite();
         }
 
         private void GetSceneObj()
         {
-            dialogueMainCanvas = GameObject.Find("DialogueMainCanvas");
-            var trans = dialogueMainCanvas.transform;
+            galContentCanvas = GameObject.Find("GalContentCanvas");
+            var trans = galContentCanvas.transform;
             background = trans.Find("Background").GetComponent<Image>();
 
             circleContractionController =

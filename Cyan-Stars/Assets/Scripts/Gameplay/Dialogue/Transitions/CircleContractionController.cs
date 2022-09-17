@@ -7,9 +7,11 @@ using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.Dialogue
 {
+    [ExecuteAlways]
     public class CircleContractionController : MonoBehaviour
     {
-        private static readonly int SliderID = Shader.PropertyToID("_Slider");
+        private static readonly int RadiusID = Shader.PropertyToID("_Radius");
+        private static readonly int RenderTargetSizeID = Shader.PropertyToID("_RenderTargetSize");
 
         public Image Image;
 
@@ -22,7 +24,13 @@ namespace CyanStars.Gameplay.Dialogue
 
         private void Awake()
         {
-            Image.material.SetFloat(SliderID, 0);
+#if UNITY_EDITOR
+            if (Application.isPlaying)
+                Image.material.SetFloat(RadiusID, 0);
+#else
+            Image.material.SetFloat(RadiusID, 0);
+#endif
+            Image.material.SetVector(RenderTargetSizeID, Image.rectTransform.sizeDelta);
         }
 
         //TODO: 中断当前并运行新动画
@@ -30,13 +38,13 @@ namespace CyanStars.Gameplay.Dialogue
         public void Enter(float duration, Action onComplete = null)
         {
             onCompleteCallback = onComplete;
-            tweener = Image.material.DOFloat(0, SliderID, duration).SetEase(Ease.InOutExpo).OnComplete(OnComplete);
+            tweener = Image.material.DOFloat(0, RadiusID, duration).SetEase(Ease.InOutExpo).OnComplete(OnComplete);
         }
 
         public void Exit(float duration, Action onComplete = null)
         {
             onCompleteCallback = onComplete;
-            tweener = Image.material.DOFloat(1, SliderID, duration).SetEase(Ease.InOutExpo).OnComplete(OnComplete);
+            tweener = Image.material.DOFloat(1, RadiusID, duration).SetEase(Ease.InOutExpo).OnComplete(OnComplete);
         }
 
         public void Complete()
