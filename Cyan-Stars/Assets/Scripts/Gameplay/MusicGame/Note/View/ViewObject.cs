@@ -1,6 +1,9 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using CyanStars.Framework;
+using CyanStars.Framework.GameObjectPool;
+using CyanStars.Framework.Timer;
 
 
 namespace CyanStars.Gameplay.MusicGame
@@ -10,14 +13,27 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public class ViewObject : MonoBehaviour, IView
     {
+
         [SerializeField]
-        private GameObject effectPrefab;
+        private NoteType noteType;
 
         private float viewDistance;
         private float viewDeltaTime;
 
-        private GameObject effectObj;
-        public string PrefabName;
+        private string notePrefabName;
+        private string hitEffectPrefabName;
+
+        private GameObject hitEffectObj;
+
+        private TimerCallback timerCallback;
+
+        protected virtual void Awake()
+        {
+            MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
+            notePrefabName = dataModule.NotePrefabNameDict[noteType];
+            hitEffectPrefabName = dataModule.HitEffectPrefabNameDict[noteType];
+            timerCallback = ReleaseHitEffectObj;
+        }
 
         public void OnUpdate(float viewDistance)
         {
@@ -28,34 +44,47 @@ namespace CyanStars.Gameplay.MusicGame
             transform.position = pos;
         }
 
-        public void CreateEffectObj(float w)
+        public async void CreateEffectObj(float w)
         {
-            if (effectObj != null)
+            if (hitEffectObj != null)
             {
                 return;
             }
 
-            effectObj = GameObject.Instantiate(effectPrefab,
-                transform.position + new Vector3(Endpoint.Instance.Length * w / 2, 0, 0), Quaternion.identity);
-            effectObj.transform.SetParent(ViewHelper.EffectRoot);
+            hitEffectObj = await GameRoot.GameObjectPool.AwaitGetGameObject(hitEffectPrefabName, null);
+            hitEffectObj.transform.position = new Vector3(transform.position.x + Endpoint.Instance.Length * w / 2, transform.position.y ,0);
+            hitEffectObj.transform.rotation = Quaternion.identity;
+            hitEffectObj.transform.SetParent(ViewHelper.EffectRoot);
+
+            NoteHitEffect hitEffect = hitEffectObj.GetComponent<NoteHitEffect>();
+            if (hitEffect.WillDestroy)
+            {
+                GameRoot.Timer.AddTimer(hitEffect.DestroyTime,timerCallback);
+            }
+        }
+
+        private void ReleaseHitEffectObj(object userdata)
+        {
+            GameRoot.GameObjectPool.ReleaseGameObject(hitEffectPrefabName,hitEffectObj);
+            hitEffectObj = null;
         }
 
         public void DestroyEffectObj()
         {
-            if (effectObj == null)
+            if (hitEffectObj == null)
             {
                 return;
             }
 
-            Destroy(effectObj);
+            ReleaseHitEffectObj(null);
+
         }
 
         public void DestroySelf(bool autoMove = true)
         {
             if (!autoMove)
             {
-                //Destroy(gameObject);
-                GameRoot.GameObjectPool.ReleaseGameObject(PrefabName, gameObject);
+                GameRoot.GameObjectPool.ReleaseGameObject(notePrefabName, gameObject);
                 return;
             }
 
@@ -81,7 +110,7 @@ namespace CyanStars.Gameplay.MusicGame
 
                 if (timer >= 1f)
                 {
-                    GameRoot.GameObjectPool.ReleaseGameObject(PrefabName, gameObject);
+                    GameRoot.GameObjectPool.ReleaseGameObject(notePrefabName, gameObject);
                     yield break;
                 }
             }

@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace CyanStars.Framework.Timer
 {
-    public delegate void TimerCallback();
-    public delegate void UpdateTimerCallback(float deltaTime);
+    public delegate void TimerCallback(object userdata);
+    public delegate void UpdateTimerCallback(float deltaTime,object userdata);
 
     /// <summary>
     /// 定时管理器
@@ -16,10 +16,10 @@ namespace CyanStars.Framework.Timer
         public override int Priority { get; }
 
 
-        private readonly List<UpdateTimerCallback> UpdateTimers = new List<UpdateTimerCallback>();
+        private readonly List<UpdateTimer> updateTimers = new List<UpdateTimer>();
 
-        private readonly LinkedList<Timer> RunningTimers = new LinkedList<Timer>();
-        private readonly List<Timer> WaitRemoveTimers = new List<Timer>();
+        private readonly LinkedList<Timer> runningTimers = new LinkedList<Timer>();
+        private readonly List<Timer> waitRemoveTimers = new List<Timer>();
 
         public override void OnInit()
         {
@@ -29,26 +29,26 @@ namespace CyanStars.Framework.Timer
         public override void OnUpdate(float deltaTime)
         {
             //处理Update定时器
-            if (UpdateTimers.Count > 0)
+            if (updateTimers.Count > 0)
             {
-                for (int i = UpdateTimers.Count - 1; i >= 0; i--)
+                for (int i = updateTimers.Count - 1; i >= 0; i--)
                 {
-                    UpdateTimerCallback timer = UpdateTimers[i];
-                    timer?.Invoke(deltaTime);
+                    UpdateTimer timer = updateTimers[i];
+                    timer.Callback?.Invoke(deltaTime,timer.Userdata);
                 }
             }
 
             //处理timer
-            if (RunningTimers.Count > 0)
+            if (runningTimers.Count > 0)
             {
-                LinkedListNode<Timer> current = RunningTimers.First;
+                LinkedListNode<Timer> current = runningTimers.First;
                 while (current != null)
                 {
                     if (Time.time >= current.Value.TargetTime)
                     {
                         //已到达目标时间 触发定时回调
                         Timer timer = current.Value;
-                        timer.Callback?.Invoke();
+                        timer.Callback?.Invoke(timer.Userdata);
                         timer.Counter--;
                         if (timer.Counter != 0)
                         {
@@ -57,7 +57,7 @@ namespace CyanStars.Framework.Timer
                         current.Value = timer;
 
                         //删掉旧的first timer
-                        RunningTimers.RemoveFirst();
+                        runningTimers.RemoveFirst();
 
                         if (current.Value.Counter != 0)
                         {
@@ -67,7 +67,7 @@ namespace CyanStars.Framework.Timer
                         }
 
                         //处理新的first node
-                        current = RunningTimers.First;
+                        current = runningTimers.First;
 
                     }
                     else
@@ -80,31 +80,31 @@ namespace CyanStars.Framework.Timer
             }
 
             //删除等待删除的timer
-            if (WaitRemoveTimers.Count > 0)
+            if (waitRemoveTimers.Count > 0)
             {
-                foreach (Timer waitRemoveTimer in WaitRemoveTimers)
+                foreach (Timer waitRemoveTimer in waitRemoveTimers)
                 {
-                    RunningTimers.Remove(waitRemoveTimer);
+                    runningTimers.Remove(waitRemoveTimer);
                 }
-                WaitRemoveTimers.Clear();
+                waitRemoveTimers.Clear();
             }
         }
 
         /// <summary>
         /// 添加定时器
         /// </summary>
-        public void AddTimer(float delay,TimerCallback callback,int count = 1)
+        public void AddTimer(float delay,TimerCallback callback,object userdata = null,int count = 1)
         {
-            Timer timer = new Timer(Time.time + delay, delay, count, callback);
+            Timer timer = new Timer(Time.time + delay, delay, count, callback,userdata);
 
-            if (RunningTimers.Contains(timer))
+            if (runningTimers.Contains(timer))
             {
                 Debug.LogError("重复添加了定时器");
                 return;
             }
 
 
-            WaitRemoveTimers.Remove(timer);
+            waitRemoveTimers.Remove(timer);
             InternalAddTimer(new LinkedListNode<Timer>(timer));
         }
 
@@ -113,19 +113,19 @@ namespace CyanStars.Framework.Timer
         /// </summary>
         private void InternalAddTimer(LinkedListNode<Timer> timerNode)
         {
-            if (RunningTimers.Count == 0)
+            if (runningTimers.Count == 0)
             {
-                RunningTimers.AddFirst(timerNode);
+                runningTimers.AddFirst(timerNode);
                 return;
             }
 
-            LinkedListNode<Timer> current = RunningTimers.First;
+            LinkedListNode<Timer> current = runningTimers.First;
             while (current != null)
             {
                 if (current.Value.TargetTime > timerNode.Value.TargetTime)
                 {
                     //插入到第一个目标时间比当前timer大的timer前
-                    RunningTimers.AddBefore(current,timerNode);
+                    runningTimers.AddBefore(current,timerNode);
                     return;
                 }
 
@@ -133,7 +133,7 @@ namespace CyanStars.Framework.Timer
             }
 
             //所有timer的目标时间都<=当前timer，就插入到最后
-            RunningTimers.AddLast(timerNode);
+            runningTimers.AddLast(timerNode);
 
         }
 
@@ -142,21 +142,22 @@ namespace CyanStars.Framework.Timer
         /// </summary>
         public void RemoveTimer(TimerCallback callback)
         {
-            WaitRemoveTimers.Add(new Timer(default,default,default,callback));
+            waitRemoveTimers.Add(new Timer(default,default,default,default,callback));
         }
 
 
         /// <summary>
         /// 添加Update定时器
         /// </summary>
-        public void AddUpdateTimer(UpdateTimerCallback callback)
+        public void AddUpdateTimer(UpdateTimerCallback callback,object userdata = null)
         {
-            if (UpdateTimers.Contains(callback))
+            UpdateTimer updateTimer = new UpdateTimer(callback, userdata);
+            if (updateTimers.Contains(updateTimer))
             {
                 Debug.LogError("重复添加了Update定时器");
                 return;
             }
-            UpdateTimers.Add(callback);
+            updateTimers.Add(updateTimer);
         }
 
         /// <summary>
@@ -164,7 +165,8 @@ namespace CyanStars.Framework.Timer
         /// </summary>
         public void RemoveUpdateTimer(UpdateTimerCallback callback)
         {
-            UpdateTimers.Remove(callback);
+            UpdateTimer updateTimer = new UpdateTimer(callback, null);
+            updateTimers.Remove(updateTimer);
         }
     }
 }

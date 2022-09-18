@@ -3,46 +3,27 @@
 namespace CyanStars.Framework.Timer
 {
     /// <summary>
-    /// 定时器
+    /// Update定时器
     /// </summary>
-    public struct Timer : IEquatable<Timer>
+    public readonly struct UpdateTimer : IEquatable<UpdateTimer>
     {
-        /// <summary>
-        /// 目标时间
-        /// </summary>
-        public float TargetTime;
-
-        /// <summary>
-        /// 间隔
-        /// </summary>
-        public readonly float Interval;
-
-        /// <summary>
-        /// 剩余次数
-        /// </summary>
-        public int Counter;
-
         /// <summary>
         /// 定时回调
         /// </summary>
-        public readonly TimerCallback Callback;
+        public readonly UpdateTimerCallback Callback;
 
         /// <summary>
         /// 用户自定义数据
         /// </summary>
         public readonly object Userdata;
 
-        public Timer(float targetTime,float interval, int counter, TimerCallback callback,object userdata)
+        public UpdateTimer(UpdateTimerCallback callback, object userdata)
         {
-            TargetTime = targetTime;
-            Interval = interval;
-            Counter = counter;
             Callback = callback;
             Userdata = userdata;
         }
 
-
-        public bool Equals(Timer other)
+        public bool Equals(UpdateTimer other)
         {
             return Callback == other.Callback;
         }

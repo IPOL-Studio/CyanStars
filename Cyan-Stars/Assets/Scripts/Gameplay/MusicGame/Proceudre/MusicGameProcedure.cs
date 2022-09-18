@@ -310,7 +310,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 更新时间轴
         /// </summary>
-        private void UpdateTimeline(float deltaTime)
+        private void UpdateTimeline(float deltaTime,object userdata)
         {
             float timelineDeltaTime = audioSource.time - lastTime;
             lastTime = audioSource.time;
