@@ -1,36 +1,29 @@
 # CyanStars
+
 Unity Version: [2020.3.28f1](https://unity3d.com/get-unity/download/archive)
 
 Unity Hub内下载链接: unityhub://2020.3.28f1/f5400f52e03f
 
-> **公告**
->
-> 项目成立初期，暂时限制交互
->
-> 主线部分将统一开发，开发完毕后会部分开源，欢迎加群参与
-
 ## CyanStars 项目简介
 
-CyanStars 中文译名暂定为“翠蓝星穹”，是一个非商业同人音乐游戏，计划将开源
+CyanStars 中文译名暂定为“翠蓝星穹”，游戏基础玩法为音游+RPG
 
-本游戏以Vsinger相关的虚拟歌手为基础进行展开
-
-项目尚处于早期阶段（在做了在做了）
+[游戏简介](https://www.yuque.com/cys-chenluan/wiki/ozl7f7)
 
 ---
 
-## 招募信息
+## 贡献规范与招募信息
 
-目前非常需要程序、PV师，来了包您吃好喝好呜呜呜
+您可以根据issue内容来完善此项目
 
-美术和文案也可以来试试看啦！
+由于剧情、曲目等有另外的策划方案，未经讨论通过请不要向仓库内推送此类pr，您可以[申请加入我们](http://chenluan.mikecrm.com/JeKq3DU)一起来讨论或在issue提出您的想法
 
-将来还需要曲师、翻译、谱师，欢迎提前联系！
-
-欢迎加入我们的QQ审核群（兼聊天群）[765489940](https://jq.qq.com/?_wv=1027&k=R1LqP8jd)
+我们会在游戏内为所有贡献者署名，如您不希望署名请联系我们
 
 ---
 
-## 开发组成员名单
+## 联系我们
 
-> 这里要更新了
+版权、安全性、商业问题、成员等重要问题请通过邮箱联系我们：chenluan@cyanstars.onaliyun.com
+
+一般性问题请开issue
