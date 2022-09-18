@@ -13,12 +13,12 @@ namespace CyanStars.Framework.FSM
         /// <summary>
         /// 所有有限状态机
         /// </summary>
-        private List<FSM> fsms = new List<FSM>();
+        private readonly List<FSM> FSMs = new List<FSM>();
 
         /// <summary>
         /// 等待销毁的状态机列表
         /// </summary>
-        private HashSet<FSM> waitRemoveFSMs = new HashSet<FSM>();
+        private readonly HashSet<FSM> WaitRemoveFSMs = new HashSet<FSM>();
 
         /// <inheritdoc />
         public override void OnInit()
@@ -29,9 +29,9 @@ namespace CyanStars.Framework.FSM
         public override void OnUpdate(float deltaTime)
         {
             //轮询所有状态机
-            for (int i = 0; i < fsms.Count; i++)
+            for (int i = 0; i < FSMs.Count; i++)
             {
-                FSM fsm = fsms[i];
+                FSM fsm = FSMs[i];
                 if (fsm.IsDestroyed)
                 {
                     continue;
@@ -41,17 +41,15 @@ namespace CyanStars.Framework.FSM
             }
 
             //移除等待移除的状态机
-            if (waitRemoveFSMs.Count == 0)
+            if (WaitRemoveFSMs.Count > 0)
             {
-                return;
-            }
+                foreach (FSM fsm in WaitRemoveFSMs)
+                {
+                    FSMs.Remove(fsm);
+                }
 
-            foreach (FSM fsm in waitRemoveFSMs)
-            {
-                fsms.Remove(fsm);
+                WaitRemoveFSMs.Clear();
             }
-
-            waitRemoveFSMs.Clear();
         }
 
 
@@ -61,7 +59,7 @@ namespace CyanStars.Framework.FSM
         public FSM CreateFSM(List<BaseState> states)
         {
             FSM fsm = new FSM(states);
-            fsms.Add(fsm);
+            FSMs.Add(fsm);
             return fsm;
         }
 
@@ -72,9 +70,9 @@ namespace CyanStars.Framework.FSM
         {
             fsm.OnDestroy();
 
-            //因为是正向遍历所有状态机调用OnUpdate的，所有要删除的话不能在这里删除
+            //因为是正向遍历所有状态机调用OnUpdate的，要删除的话不能在这里删除
             //否则在fsm.OnUpdate中销毁自身就会出问题
-            waitRemoveFSMs.Add(fsm);
+            WaitRemoveFSMs.Add(fsm);
         }
     }
 }

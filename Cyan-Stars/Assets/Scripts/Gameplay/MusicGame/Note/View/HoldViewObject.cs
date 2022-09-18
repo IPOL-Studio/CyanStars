@@ -19,12 +19,15 @@ namespace CyanStars.Gameplay.MusicGame
             t.localScale = s;
         }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             block = new MaterialPropertyBlock();
             block.SetFloat(Flicker, 0);
-            this.meshRenderer.SetPropertyBlock(block);
+            meshRenderer.SetPropertyBlock(block);
         }
+
+
 
         private void OnEnable()
         {

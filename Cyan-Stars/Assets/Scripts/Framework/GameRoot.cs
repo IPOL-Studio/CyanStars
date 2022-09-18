@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using CyanStars.Framework.UI;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.Event;
+using CyanStars.Framework.GameObjectPool;
 using CyanStars.Framework.Logger;
-using CyanStars.Framework.Pool;
 using CyanStars.Framework.Timer;
 
 
@@ -52,6 +53,9 @@ namespace CyanStars.Framework
         /// </summary>
         public static GameObjectPoolManager GameObjectPool { get; private set; }
 
+        /// <summary>
+        /// 定时器管理器
+        /// </summary>
         public static TimerManager Timer { get; private set; }
 
         /// <summary>
@@ -68,6 +72,12 @@ namespace CyanStars.Framework
         /// 流程状态机
         /// </summary>
         private static FSM.FSM procedureFSM;
+
+        /// <summary>
+        /// 需要注册到框架中的程序集列表
+        /// </summary>
+        [Header("需要注册到框架中的程序集列表")]
+        public List<string> RegisterAssemblies;
 
         private void Awake()
         {
@@ -92,13 +102,25 @@ namespace CyanStars.Framework
                 Managers[i].OnInit();
             }
 
-            Type[] types = typeof(GameRoot).Assembly.GetTypes();
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-            //初始化数据模块
-            InitDataModules(types);
+            List<Type> types = new List<Type>();
+            foreach (Assembly assembly in assemblies)
+            {
+                if (RegisterAssemblies.Contains(assembly.GetName().Name))
+                {
+                   types.AddRange(assembly.GetTypes());
+                }
+            }
 
-            //启动游戏流程
-            GameProcedureStartUp(types);
+            if (types.Count > 0)
+            {
+                //初始化数据模块
+                InitDataModules(types);
+
+                //启动游戏流程
+                GameProcedureStartUp(types);
+            }
         }
 
         private void Update()
@@ -139,7 +161,7 @@ namespace CyanStars.Framework
         /// <summary>
         /// 初始化数据模块
         /// </summary>
-        private static void InitDataModules(Type[] types)
+        private static void InitDataModules(List<Type> types)
         {
             foreach (Type type in types)
             {
@@ -170,7 +192,7 @@ namespace CyanStars.Framework
         /// <summary>
         /// 启动游戏流程
         /// </summary>
-        private static void GameProcedureStartUp(Type[] types)
+        private static void GameProcedureStartUp(List<Type> types)
         {
             List<BaseState> procedureStates = new List<BaseState>();
             Type entryProcedureType = null;
@@ -198,7 +220,7 @@ namespace CyanStars.Framework
                 }
             }
 
-            if (procedureStates == null)
+            if (procedureStates.Count == 0)
             {
                 throw new Exception("未指定入口流程，游戏启动失败");
             }

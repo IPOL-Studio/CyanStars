@@ -113,10 +113,10 @@ namespace CyanStars.Gameplay.MusicGame
             }
             else
             {
-                Texture2D texture2D =
-                    await GameRoot.Asset.AwaitLoadAsset<Texture2D>(mapItem.Data.MapManifest.BackgroundFileName,
+                Sprite sprite =
+                    await GameRoot.Asset.AwaitLoadAsset<Sprite>(mapItem.Data.MapManifest.BackgroundFileName,
                         gameObject);
-                ImgBg.sprite = texture2D.ConvertToSprite();
+                ImgBg.sprite = sprite;
             }
 
 
@@ -141,10 +141,10 @@ namespace CyanStars.Gameplay.MusicGame
                 }
                 else
                 {
-                    Texture2D texture2D =
-                        await GameRoot.Asset.AwaitLoadAsset<Texture2D>(mapItem.Data.MapManifest.CoverFileName,
+                    Sprite sprite =
+                        await GameRoot.Asset.AwaitLoadAsset<Sprite>(mapItem.Data.MapManifest.CoverFileName,
                             gameObject);
-                    ImgCover.sprite = texture2D.ConvertToSprite();
+                    ImgCover.sprite = sprite;
                     VideoCover.gameObject.SetActive(false);
                 }
             }

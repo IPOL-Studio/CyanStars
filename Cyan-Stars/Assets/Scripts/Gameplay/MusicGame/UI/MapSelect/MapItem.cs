@@ -1,8 +1,6 @@
-﻿using CyanStars.Framework;
-using CyanStars.Framework.Asset;
-using CyanStars.Framework.Pool;
+﻿using CatAsset.Runtime;
+using CyanStars.Framework;
 using CyanStars.Framework.UI;
-using CyanStars.Framework.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -54,8 +52,8 @@ namespace CyanStars.Gameplay.MusicGame
             TxtName.text = Data.MapManifest.Name;
             if (!string.IsNullOrEmpty(Data.MapManifest.ClipCoverFileName))
             {
-                Texture2D texture2D = await GameRoot.Asset.AwaitLoadAsset<Texture2D>(Data.MapManifest.ClipCoverFileName,gameObject);
-                ImgCover.sprite = texture2D.ConvertToSprite();
+                Sprite sprite = await GameRoot.Asset.AwaitLoadAsset<Sprite>(Data.MapManifest.ClipCoverFileName,gameObject);
+                ImgCover.sprite = sprite;
             }
             else
             {

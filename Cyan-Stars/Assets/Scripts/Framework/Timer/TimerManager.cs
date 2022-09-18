@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace CyanStars.Framework.Timer
 {
-    public delegate void TimerCallback();
-    public delegate void UpdateTimerCallback(float deltaTime);
+    public delegate void TimerCallback(object userdata);
+    public delegate void UpdateTimerCallback(float deltaTime,object userdata);
 
     /// <summary>
     /// 定时管理器
@@ -16,10 +16,10 @@ namespace CyanStars.Framework.Timer
         public override int Priority { get; }
 
 
-        private List<UpdateTimerCallback> updateTimers = new List<UpdateTimerCallback>();
+        private readonly List<UpdateTimer> updateTimers = new List<UpdateTimer>();
 
-        private LinkedList<Timer> runningTimers = new LinkedList<Timer>();
-        private List<Timer> waitRemoveTimers = new List<Timer>();
+        private readonly LinkedList<Timer> runningTimers = new LinkedList<Timer>();
+        private readonly List<Timer> waitRemoveTimers = new List<Timer>();
 
         public override void OnInit()
         {
@@ -33,8 +33,8 @@ namespace CyanStars.Framework.Timer
             {
                 for (int i = updateTimers.Count - 1; i >= 0; i--)
                 {
-                    UpdateTimerCallback timer = updateTimers[i];
-                    timer?.Invoke(deltaTime);
+                    UpdateTimer timer = updateTimers[i];
+                    timer.Callback?.Invoke(deltaTime,timer.Userdata);
                 }
             }
 
@@ -48,7 +48,7 @@ namespace CyanStars.Framework.Timer
                     {
                         //已到达目标时间 触发定时回调
                         Timer timer = current.Value;
-                        timer.Callback?.Invoke();
+                        timer.Callback?.Invoke(timer.Userdata);
                         timer.Counter--;
                         if (timer.Counter != 0)
                         {
@@ -93,9 +93,9 @@ namespace CyanStars.Framework.Timer
         /// <summary>
         /// 添加定时器
         /// </summary>
-        public void AddTimer(float delay,TimerCallback callback,int count = 1)
+        public void AddTimer(float delay,TimerCallback callback,object userdata = null,int count = 1)
         {
-            Timer timer = new Timer(Time.time + delay, delay, count, callback);
+            Timer timer = new Timer(Time.time + delay, delay, count, callback,userdata);
 
             if (runningTimers.Contains(timer))
             {
@@ -142,21 +142,22 @@ namespace CyanStars.Framework.Timer
         /// </summary>
         public void RemoveTimer(TimerCallback callback)
         {
-            waitRemoveTimers.Add(new Timer(default,default,default,callback));
+            waitRemoveTimers.Add(new Timer(default,default,default,default,callback));
         }
 
 
         /// <summary>
         /// 添加Update定时器
         /// </summary>
-        public void AddUpdateTimer(UpdateTimerCallback callback)
+        public void AddUpdateTimer(UpdateTimerCallback callback,object userdata = null)
         {
-            if (updateTimers.Contains(callback))
+            UpdateTimer updateTimer = new UpdateTimer(callback, userdata);
+            if (updateTimers.Contains(updateTimer))
             {
                 Debug.LogError("重复添加了Update定时器");
                 return;
             }
-            updateTimers.Add(callback);
+            updateTimers.Add(updateTimer);
         }
 
         /// <summary>
@@ -164,7 +165,8 @@ namespace CyanStars.Framework.Timer
         /// </summary>
         public void RemoveUpdateTimer(UpdateTimerCallback callback)
         {
-            updateTimers.Remove(callback);
+            UpdateTimer updateTimer = new UpdateTimer(callback, null);
+            updateTimers.Remove(updateTimer);
         }
     }
 }

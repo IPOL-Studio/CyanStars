@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CyanStars.Framework.Utils;
+﻿using CatAsset.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
 
