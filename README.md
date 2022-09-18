@@ -6,7 +6,7 @@ Unity Hub内下载链接: unityhub://2020.3.28f1/f5400f52e03f
 
 ## CyanStars 项目简介
 
-CyanStars 中文译名暂定为“翠蓝星穹”，游戏基础玩法为音游+RPG
+CyanStars 中文名《翠蓝星穹》，游戏基础玩法为音游+RPG
 
 [游戏简介](https://www.yuque.com/cys-chenluan/wiki/ozl7f7)
 
