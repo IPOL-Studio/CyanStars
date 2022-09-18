@@ -27,3 +27,5 @@ CyanStars 中文名《翠蓝星穹》，游戏基础玩法为音游+RPG
 版权、安全性、成员等重要问题请通过邮箱联系我们：chenluan@cyanstars.onaliyun.com
 
 bug报告、玩法优化等其他问题请通过 github issues 进行反馈
+
+对于 CyanStars 的QA等请通过 github discussions 进行询问与讨论
