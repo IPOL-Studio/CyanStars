@@ -12,7 +12,7 @@ CyanStars 中文译名暂定为“翠蓝星穹”，游戏基础玩法为音游+
 
 ---
 
-## 贡献规范与招募信息
+## 贡献规范
 
 您可以根据issue内容来完善此项目
 
@@ -24,6 +24,6 @@ CyanStars 中文译名暂定为“翠蓝星穹”，游戏基础玩法为音游+
 
 ## 联系我们
 
-版权、安全性、商业问题、成员等重要问题请通过邮箱联系我们：chenluan@cyanstars.onaliyun.com
+版权、安全性、成员等重要问题请通过邮箱联系我们：chenluan@cyanstars.onaliyun.com
 
 一般性问题请开issue
