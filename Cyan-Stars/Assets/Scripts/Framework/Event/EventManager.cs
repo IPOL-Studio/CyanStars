@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using CyanStars.Framework.Pool;
+using CatAsset.Runtime;
 using UnityEngine;
 
 namespace CyanStars.Framework.Event
@@ -20,16 +20,10 @@ namespace CyanStars.Framework.Event
             new Dictionary<string, HashSet<EventHandler<EventArgs>>>();
 
         /// <summary>
-        /// 等待添加的事件处理方法列表
+        /// 临时事件容器的池
         /// </summary>
-        private readonly List<ValueTuple<string, EventHandler<EventArgs>>> WaitAddHandlers =
-            new List<ValueTuple<string, EventHandler<EventArgs>>>();
-
-        /// <summary>
-        /// 等待删除的事件处理方法列表
-        /// </summary>
-        private readonly List<ValueTuple<string, EventHandler<EventArgs>>> WaitRemoveHandlers =
-            new List<ValueTuple<string, EventHandler<EventArgs>>>();
+        private readonly Queue<HashSet<EventHandler<EventArgs>>> TempHandlersPool =
+            new Queue<HashSet<EventHandler<EventArgs>>>();
 
 
         /// <inheritdoc />
@@ -40,29 +34,6 @@ namespace CyanStars.Framework.Event
         /// <inheritdoc />
         public override void OnUpdate(float deltaTime)
         {
-            //添加等待添加的事件处理方法
-            if (WaitAddHandlers.Count != 0)
-            {
-                for (int i = 0; i < WaitAddHandlers.Count; i++)
-                {
-                    (string eventName, EventHandler<EventArgs> handler) = WaitAddHandlers[i];
-                    InternalAddListener(eventName, handler);
-                }
-
-                WaitAddHandlers.Clear();
-            }
-
-            //移除等待移除的事件处理方法
-            if (WaitRemoveHandlers.Count != 0)
-            {
-                for (int i = 0; i < WaitRemoveHandlers.Count; i++)
-                {
-                    (string eventName, EventHandler<EventArgs> handler) = WaitRemoveHandlers[i];
-                    InternalRemoveListener(eventName, handler);
-                }
-
-                WaitRemoveHandlers.Clear();
-            }
         }
 
         /// <summary>
@@ -70,17 +41,7 @@ namespace CyanStars.Framework.Event
         /// </summary>
         public void AddListener(string eventName, EventHandler<EventArgs> handler)
         {
-            //防止在handler回调里添加handler导致报错，统一在onUpdate时再正式添加
-            ValueTuple<string, EventHandler<EventArgs>> tuple = (eventName, handler);
-            WaitAddHandlers.Add(tuple);
-        }
-
-        /// <summary>
-        /// 添加事件监听
-        /// </summary>
-        private void InternalAddListener(string eventName, EventHandler<EventArgs> handler)
-        {
-            if (!EventHandlerDict.TryGetValue(eventName, out var handlers))
+            if (!EventHandlerDict.TryGetValue(eventName, out HashSet<EventHandler<EventArgs>> handlers))
             {
                 handlers = new HashSet<EventHandler<EventArgs>>();
                 EventHandlerDict.Add(eventName, handlers);
@@ -88,29 +49,20 @@ namespace CyanStars.Framework.Event
 
             if (handlers.Contains(handler))
             {
-                Debug.LogError($"禁止重复添加事件处理函数：{eventName}");
+                Debug.LogError($"禁止重复添加事件处理方法：{eventName}");
                 return;
             }
 
             handlers.Add(handler);
         }
 
+
         /// <summary>
         /// 移除事件监听
         /// </summary>
         public void RemoveListener(string eventName, EventHandler<EventArgs> handler)
         {
-            //防止在handler回调里移除handler导致报错，统一在onUpdate时再正式移除
-            ValueTuple<string, EventHandler<EventArgs>> tuple = (eventName, handler);
-            WaitRemoveHandlers.Add(tuple);
-        }
-
-        /// <summary>
-        /// 移除事件监听
-        /// </summary>
-        private void InternalRemoveListener(string eventName, EventHandler<EventArgs> handler)
-        {
-            if (!EventHandlerDict.TryGetValue(eventName, out var handlers))
+            if (!EventHandlerDict.TryGetValue(eventName, out HashSet<EventHandler<EventArgs>> handlers))
             {
                 return;
             }
@@ -118,21 +70,54 @@ namespace CyanStars.Framework.Event
             handlers.Remove(handler);
         }
 
+
         /// <summary>
         /// 派发事件
         /// </summary>
-        public void Dispatch<T>(string eventName, object sender, T eventArgs) where T : EventArgs,IReference
+        public void Dispatch<T>(string eventName, object sender, T eventArgs) where T : EventArgs, IReference
         {
             if (!EventHandlerDict.TryGetValue(eventName, out HashSet<EventHandler<EventArgs>> handlers))
             {
                 return;
             }
 
+            //使用临时的事件容器进行事件派发，防止在事件派发过程中添加或移除监听导致报错
+            //因此添加或移除监听只有在下一次派发事件时才会发生效果
+            HashSet<EventHandler<EventArgs>> tempHandlers = GetTempHandlers();
             foreach (EventHandler<EventArgs> handler in handlers)
             {
-                handler(sender, eventArgs);
+                tempHandlers.Add(handler);
             }
+
+            foreach (EventHandler<EventArgs> handler in tempHandlers)
+            {
+                handler?.Invoke(sender, eventArgs);
+            }
+
+            ReleaseTempHandlers(tempHandlers);
             ReferencePool.Release(eventArgs);
+        }
+
+        /// <summary>
+        /// 获取临时事件容器
+        /// </summary>
+        private HashSet<EventHandler<EventArgs>> GetTempHandlers()
+        {
+            if (TempHandlersPool.Count == 0)
+            {
+                TempHandlersPool.Enqueue(new HashSet<EventHandler<EventArgs>>());
+            }
+
+            return TempHandlersPool.Dequeue();
+        }
+
+        /// <summary>
+        /// 归还临时事件容器
+        /// </summary>
+        private void ReleaseTempHandlers(HashSet<EventHandler<EventArgs>> tempHandlers)
+        {
+            tempHandlers.Clear();
+            TempHandlersPool.Enqueue(tempHandlers);
         }
     }
 }

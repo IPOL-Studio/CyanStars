@@ -27,12 +27,18 @@ namespace CyanStars.Framework.Timer
         /// </summary>
         public readonly TimerCallback Callback;
 
-        public Timer(float targetTime,float interval, int counter, TimerCallback callback)
+        /// <summary>
+        /// 用户自定义数据
+        /// </summary>
+        public readonly object Userdata;
+
+        public Timer(float targetTime,float interval, int counter, TimerCallback callback,object userdata)
         {
             TargetTime = targetTime;
             Interval = interval;
             Counter = counter;
             Callback = callback;
+            Userdata = userdata;
         }
 
 

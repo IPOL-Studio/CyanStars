@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine.Profiling;
 
 
 namespace CatJson
@@ -25,9 +26,16 @@ namespace CatJson
         private int endIndex;
 
         /// <summary>
+        /// 长度
+        /// </summary>
+        public int Length { get; }
+        
+        /// <summary>
         /// 哈希码
         /// </summary>
         private int hashCode;
+
+        public char this[int index] => source[startIndex + index];
 
         public RangeString(string source) : this(source,0,source.Length - 1)
         {
@@ -38,12 +46,12 @@ namespace CatJson
             this.source = source;
             this.startIndex = startIndex;
             this.endIndex = endIndex;
+            Length = (endIndex - startIndex) + 1;
             hashCode = 0;
         }
 
         public bool Equals(RangeString other)
         {
-            
             bool isSourceNullOrEmpty = string.IsNullOrEmpty(source);
             bool isOtherNullOrEmpty = string.IsNullOrEmpty(other.source);
 
@@ -56,9 +64,8 @@ namespace CatJson
             {
                 return false;
             }
-            int length = endIndex - startIndex + 1;
-            int otherLength = other.endIndex - other.startIndex + 1;
-            if (length != otherLength)
+
+            if (Length != other.Length)
             {
                 return false;
             }
@@ -70,10 +77,17 @@ namespace CatJson
                     return false;
                 }
             }
-
+            
             return true;
+            
+      
         }
 
+        public bool Equals(string str)
+        {
+            return Equals(new RangeString(str));
+        }
+        
         public override int GetHashCode()
         {
             if (hashCode == 0 && !string.IsNullOrEmpty(source))
@@ -88,6 +102,12 @@ namespace CatJson
         }
 
         public override string ToString()
+        {
+            string str = ToString(JsonParser.Default);
+            return str;
+        }
+
+        public string ToString(JsonParser parser)
         {
             if (endIndex - startIndex + 1 == 0)
             {
@@ -108,7 +128,7 @@ namespace CatJson
                 if (c != '\\')
                 {
                     //普通字符
-                    Util.CachedSB.Append(source[i]);
+                    parser.CachedSB.Append(source[i]);
                     continue;
                 }
 
@@ -125,33 +145,33 @@ namespace CatJson
                 switch (c)
                 {
                     case '"':
-                        Util.CachedSB.Append('\"');
+                        parser.CachedSB.Append('\"');
                         break;
                     case '\\':
-                        Util.CachedSB.Append('\\');
+                        parser.CachedSB.Append('\\');
                         break;
                     case '/':
-                        Util.CachedSB.Append('/');
+                        parser.CachedSB.Append('/');
                         break;
                     case 'b':
-                        Util.CachedSB.Append('\b');
+                        parser.CachedSB.Append('\b');
                         break;
                     case 'f':
-                        Util.CachedSB.Append('\f');
+                        parser.CachedSB.Append('\f');
                         break;
                     case 'n':
-                        Util.CachedSB.Append('\n');
+                        parser.CachedSB.Append('\n');
                         break;
                     case 'r':
-                        Util.CachedSB.Append('\r');
+                        parser.CachedSB.Append('\r');
                         break;
                     case 't':
-                        Util.CachedSB.Append('\t');
+                        parser.CachedSB.Append('\t');
                         break;
                     case 'u':
                         //unicode字符
-                        char codePoint = Util.GetUnicodeCodePoint(source[i + 1], source[i + 2], source[i + 3], source[i + 4]);
-                        Util.CachedSB.Append(codePoint);
+                        char codePoint = TextUtil.GetUnicodeCodePoint(source[i + 1], source[i + 2], source[i + 3], source[i + 4]);
+                        parser.CachedSB.Append(codePoint);
                         i += 4;
                         break;
                     default:
@@ -162,12 +182,140 @@ namespace CatJson
 
             }
 
-            string str = Util.CachedSB.ToString();
-            Util.CachedSB.Clear();
+            string str = parser.CachedSB.ToString();
+            parser.CachedSB.Clear();
 
             return str;
         }
-    
-       
+        
+#if UNITY_2021_2_OR_NEWER
+        public ReadOnlySpan<char> AsSpan()
+        {
+            ReadOnlySpan<char> span = source.AsSpan(startIndex, Length);
+            return span;
+        }
+
+        public byte AsByte()
+        {
+            return byte.Parse(AsSpan());
+        }
+        
+        public sbyte AsSByte()
+        {
+            return sbyte.Parse(AsSpan());
+        }
+
+        public short AsShort()
+        {
+            return short.Parse(AsSpan());
+        }
+        
+        public ushort AsUShort()
+        {
+            return ushort.Parse(AsSpan());
+        }
+        
+        public int AsInt()
+        {
+            return int.Parse(AsSpan());
+        }
+        
+        public uint AsUInt()
+        {
+            return uint.Parse(AsSpan());
+        }
+
+        public long AsLong()
+        {
+            return long.Parse(AsSpan());
+        }
+        
+        public ulong AsULong()
+        {
+            return ulong.Parse(AsSpan());
+        }
+        
+        public float AsFloat()
+        {
+            return float.Parse(AsSpan());
+        }
+
+        public double AsDouble()
+        {
+            return double.Parse(AsSpan());
+        }
+
+        public decimal AsDecimal()
+        {
+            return decimal.Parse(AsSpan());
+        }
+
+        public DateTime AsDateTime()
+        {
+            return DateTime.Parse(AsSpan());
+        }
+#else
+        public byte AsByte()
+        {
+            return byte.Parse(ToString());
+        }
+        
+        public sbyte AsSByte()
+        {
+            return sbyte.Parse(ToString());
+        }
+
+        public short AsShort()
+        {
+            return short.Parse(ToString());
+        }
+        
+        public ushort AsUShort()
+        {
+            return ushort.Parse(ToString());
+        }
+        
+        public int AsInt()
+        {
+            return int.Parse(ToString());
+        }
+        
+        public uint AsUInt()
+        {
+            return uint.Parse(ToString());
+        }
+
+        public long AsLong()
+        {
+            return long.Parse(ToString());
+        }
+        
+        public ulong AsULong()
+        {
+            return ulong.Parse(ToString());
+        }
+        
+        public float AsFloat()
+        {
+            return float.Parse(ToString());
+        }
+
+        public double AsDouble()
+        {
+            return double.Parse(ToString());
+        }
+
+        public decimal AsDecimal()
+        {
+            return decimal.Parse(ToString());
+        }
+
+        public DateTime AsDateTime()
+        {
+            return DateTime.Parse(ToString());
+        }
+#endif
+        
+        
     }
 }

@@ -64,7 +64,7 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Timer.RemoveUpdateTimer(OnUpdate);
         }
 
-        private void OnUpdate(float deltaTime)
+        private void OnUpdate(float deltaTime,object userdata)
         {
             if (dataModule.RunningTimeline != null)
             {

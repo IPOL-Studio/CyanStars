@@ -7,7 +7,7 @@ namespace CyanStars.Framework.UI
     /// <summary>
     /// UI管理器
     /// </summary>
-    public class UIManager : BaseManager
+    public partial class UIManager : BaseManager
     {
         [Header("UI相机")]
         public Camera UICamera;

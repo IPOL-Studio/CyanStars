@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using CyanStars.Framework;
-
+using CyanStars.Framework.Timer;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -35,7 +35,7 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Timer.RemoveUpdateTimer(OnUpdate);
         }
 
-        private void OnUpdate(float deltaTime)
+        private void OnUpdate(float deltaTime,object userdata)
         {
             if (isTouchDown)
             {

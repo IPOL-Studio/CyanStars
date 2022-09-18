@@ -289,5 +289,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44ce22602c0df954ea3cad4805156314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  effectPrefab: {fileID: 479875854288579027, guid: 205c12de98b8e024eac1a8706dd2b61e, type: 3}
-  PrefabName: 
+  noteType: 3
