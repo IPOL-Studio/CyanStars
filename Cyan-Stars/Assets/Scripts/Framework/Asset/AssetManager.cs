@@ -1,62 +1,50 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using CatAsset;
+using CatAsset.Runtime;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace CyanStars.Framework.Asset
 {
-    /// <summary>
+ /// <summary>
     /// 资源管理器
     /// </summary>
-    public class AssetManager : BaseManager
+    public partial class AssetManager : BaseManager
     {
         public override int Priority { get; }
 
-        /// <summary>
-        /// 运行模式
-        /// </summary>
         [Header("运行模式")]
-        public RunMode RunMode = RunMode.PackageOnly;
+        public RuntimeMode RuntimeMode = RuntimeMode.PackageOnly;
 
-        /// <summary>
-        /// 最大任务执行数量
-        /// </summary>
-        [Header("最大任务执行数量")]
-        public int MaxTaskExcuteCount = 10;
-
-        /// <summary>
-        /// 延迟卸载时间
-        /// </summary>
-        [Header("延迟卸载时间")]
-        public float UnloadDelayTime = 5;
-
-        /// <summary>
-        /// 是否开启编辑器资源模式
-        /// </summary>
-        [Header("是否开启编辑器资源模式")]
+        [Header("编辑器资源模式")]
         public bool IsEditorMode = true;
 
-        /// <summary>
-        /// 编辑器资源模式下最大随机延迟模拟时间
-        /// </summary>
-        [Header("编辑器资源模式下最大随机延迟模拟时间")]
-        public float EditorModeMaxDelay = 1;
+        [Header("资源包卸载延迟")]
+        public float UnloadDelayTime = 30f;
+
+        [Header("单帧最大任务运行数量")]
+        public int MaxTaskRunCount = 10;
 
         public override void OnInit()
         {
-            CatAssetManager.RunMode = RunMode;
-
-            CatAssetManager.MaxTaskExcuteCount = MaxTaskExcuteCount;
-            CatAssetManager.UnloadDelayTime = UnloadDelayTime;
-
+            CatAssetManager.RuntimeMode= RuntimeMode;
             CatAssetManager.IsEditorMode = IsEditorMode;
-            CatAssetManager.EditorModeMaxDelay = EditorModeMaxDelay;
+            CatAssetManager.UnloadDelayTime = UnloadDelayTime;
+            CatAssetManager.MaxTaskRunCount = MaxTaskRunCount;
         }
 
         public override void OnUpdate(float deltaTime)
         {
             CatAssetManager.Update();
+        }
+
+        /// <summary>
+        /// 注册自定义原生资源转换方法
+        /// </summary>
+        public void RegisterCustomRawAssetConverter(Type type, CustomRawAssetConverter converter)
+        {
+            CatAssetManager.RegisterCustomRawAssetConverter(type,converter);
         }
 
         /// <summary>
@@ -68,33 +56,85 @@ namespace CyanStars.Framework.Asset
         }
 
         /// <summary>
-        /// 加载Asset
+        /// 检查资源版本，可更新资源模式下专用
         /// </summary>
-        public void LoadAsset(string assetName, Action<bool, Object> loadedCallback)
+        public void CheckVersion(OnVersionChecked onVersionChecked)
         {
-            CatAssetManager.LoadAsset(assetName, loadedCallback);
+            CatAssetManager.CheckVersion(onVersionChecked);
         }
+
+        /// <summary>
+        /// 从外部导入内置资源
+        /// </summary>
+        public void ImportInternalAsset(string manifestPath, Action<bool> callback,
+            string bundleRelativePathPrefix = null)
+        {
+            CatAssetManager.ImportInternalAsset(manifestPath,callback,bundleRelativePathPrefix);
+        }
+
+        /// <summary>
+        /// 更新资源组
+        /// </summary>
+        public void UpdateGroup(string group, OnBundleUpdated callback)
+        {
+            CatAssetManager.UpdateGroup(group,callback);
+        }
+
+        /// <summary>
+        /// 暂停资源组更新
+        /// </summary>
+        public void PauseGroupUpdater(string group, bool isPause)
+        {
+            CatAssetManager.PauseGroupUpdater(group,isPause);
+        }
+
+        /// <summary>
+        /// 加载资源
+        /// </summary>
+        public int LoadAsset(string assetName, object userdata, LoadAssetCallback<object> callback,
+            TaskPriority priority = TaskPriority.Middle)
+        {
+            return CatAssetManager.LoadAsset(assetName, userdata, callback, priority);
+        }
+
+        /// <summary>
+        /// 加载资源
+        /// </summary>
+        public int LoadAsset<T>(string assetName, object userdata, LoadAssetCallback<T> callback,
+            TaskPriority priority = TaskPriority.Middle)
+        {
+            return CatAssetManager.LoadAsset<T>(assetName, userdata, callback, priority);
+        }
+
+                /// <summary>
+        /// 批量加载资源
+        /// </summary>
+        public int BatchLoadAsset(List<string> assetNames, object userdata, BatchLoadAssetCallback callback, TaskPriority priority = TaskPriority.Middle)
+                {
+                    return CatAssetManager.BatchLoadAsset(assetNames, userdata, callback);
+                }
 
         /// <summary>
         /// 加载场景
         /// </summary>
-        public void LoadScene(string sceneName, Action<bool, Object> loadedCallback)
+        public int LoadScene(string sceneName, object userdata, LoadSceneCallback callback,
+            TaskPriority priority = TaskPriority.Middle)
         {
-            CatAssetManager.LoadScene(sceneName, loadedCallback);
+            return CatAssetManager.LoadScene(sceneName, userdata, callback, priority);
         }
 
         /// <summary>
-        /// 批量加载Asset
+        /// 取消任务
         /// </summary>
-        public void LoadAssets(List<string> assetNames, Action<List<Object>> loadedCallback)
+        public void CancelTask(int guid)
         {
-            CatAssetManager.LoadAssets(assetNames, loadedCallback);
+            CatAssetManager.CancelTask(guid);
         }
 
         /// <summary>
-        /// 卸载Asset
+        /// 卸载资源
         /// </summary>
-        public void UnloadAsset(Object asset)
+        public void UnloadAsset(object asset)
         {
             CatAssetManager.UnloadAsset(asset);
         }
@@ -102,9 +142,49 @@ namespace CyanStars.Framework.Asset
         /// <summary>
         /// 卸载场景
         /// </summary>
-        public void UnloadScene(string sceneName)
+        public void UnloadScene(Scene scene)
         {
-            CatAssetManager.UnloadScene(sceneName);
+            CatAssetManager.UnloadScene(scene);
+        }
+
+        /// <summary>
+        /// 将资源绑定到游戏物体上，会在指定游戏物体销毁时卸载绑定的资源
+        /// </summary>
+        public void BindToGameObject(GameObject target, object asset)
+        {
+            CatAssetManager.BindToGameObject(target,asset);
+        }
+
+        /// <summary>
+        /// 将资源绑定到场景上，会在指定场景卸载时卸载绑定的资源
+        /// </summary>
+        public void BindToScene(Scene scene,object asset)
+        {
+            CatAssetManager.BindToScene(scene,asset);
+        }
+
+        /// <summary>
+        /// 获取资源组信息
+        /// </summary>
+        public GroupInfo GetGroupInfo(string group)
+        {
+            return CatAssetManager.GetGroupInfo(group);
+        }
+
+        /// <summary>
+        /// 获取所有资源组信息
+        /// </summary>
+        public List<GroupInfo> GetAllGroupInfo()
+        {
+            return CatAssetManager.GetAllGroupInfo();
+        }
+
+        /// <summary>
+        /// 获取指定资源组的更新器
+        /// </summary>
+        public GroupUpdater GetGroupUpdater(string group)
+        {
+            return CatAssetManager.GetGroupUpdater(group);
         }
     }
 }

@@ -16,10 +16,10 @@ namespace CyanStars.Framework.Timer
         public override int Priority { get; }
 
 
-        private List<UpdateTimerCallback> updateTimers = new List<UpdateTimerCallback>();
+        private readonly List<UpdateTimerCallback> UpdateTimers = new List<UpdateTimerCallback>();
 
-        private LinkedList<Timer> runningTimers = new LinkedList<Timer>();
-        private List<Timer> waitRemoveTimers = new List<Timer>();
+        private readonly LinkedList<Timer> RunningTimers = new LinkedList<Timer>();
+        private readonly List<Timer> WaitRemoveTimers = new List<Timer>();
 
         public override void OnInit()
         {
@@ -29,19 +29,19 @@ namespace CyanStars.Framework.Timer
         public override void OnUpdate(float deltaTime)
         {
             //处理Update定时器
-            if (updateTimers.Count > 0)
+            if (UpdateTimers.Count > 0)
             {
-                for (int i = updateTimers.Count - 1; i >= 0; i--)
+                for (int i = UpdateTimers.Count - 1; i >= 0; i--)
                 {
-                    UpdateTimerCallback timer = updateTimers[i];
+                    UpdateTimerCallback timer = UpdateTimers[i];
                     timer?.Invoke(deltaTime);
                 }
             }
 
             //处理timer
-            if (runningTimers.Count > 0)
+            if (RunningTimers.Count > 0)
             {
-                LinkedListNode<Timer> current = runningTimers.First;
+                LinkedListNode<Timer> current = RunningTimers.First;
                 while (current != null)
                 {
                     if (Time.time >= current.Value.TargetTime)
@@ -57,7 +57,7 @@ namespace CyanStars.Framework.Timer
                         current.Value = timer;
 
                         //删掉旧的first timer
-                        runningTimers.RemoveFirst();
+                        RunningTimers.RemoveFirst();
 
                         if (current.Value.Counter != 0)
                         {
@@ -67,7 +67,7 @@ namespace CyanStars.Framework.Timer
                         }
 
                         //处理新的first node
-                        current = runningTimers.First;
+                        current = RunningTimers.First;
 
                     }
                     else
@@ -80,13 +80,13 @@ namespace CyanStars.Framework.Timer
             }
 
             //删除等待删除的timer
-            if (waitRemoveTimers.Count > 0)
+            if (WaitRemoveTimers.Count > 0)
             {
-                foreach (Timer waitRemoveTimer in waitRemoveTimers)
+                foreach (Timer waitRemoveTimer in WaitRemoveTimers)
                 {
-                    runningTimers.Remove(waitRemoveTimer);
+                    RunningTimers.Remove(waitRemoveTimer);
                 }
-                waitRemoveTimers.Clear();
+                WaitRemoveTimers.Clear();
             }
         }
 
@@ -97,14 +97,14 @@ namespace CyanStars.Framework.Timer
         {
             Timer timer = new Timer(Time.time + delay, delay, count, callback);
 
-            if (runningTimers.Contains(timer))
+            if (RunningTimers.Contains(timer))
             {
                 Debug.LogError("重复添加了定时器");
                 return;
             }
 
 
-            waitRemoveTimers.Remove(timer);
+            WaitRemoveTimers.Remove(timer);
             InternalAddTimer(new LinkedListNode<Timer>(timer));
         }
 
@@ -113,19 +113,19 @@ namespace CyanStars.Framework.Timer
         /// </summary>
         private void InternalAddTimer(LinkedListNode<Timer> timerNode)
         {
-            if (runningTimers.Count == 0)
+            if (RunningTimers.Count == 0)
             {
-                runningTimers.AddFirst(timerNode);
+                RunningTimers.AddFirst(timerNode);
                 return;
             }
 
-            LinkedListNode<Timer> current = runningTimers.First;
+            LinkedListNode<Timer> current = RunningTimers.First;
             while (current != null)
             {
                 if (current.Value.TargetTime > timerNode.Value.TargetTime)
                 {
                     //插入到第一个目标时间比当前timer大的timer前
-                    runningTimers.AddBefore(current,timerNode);
+                    RunningTimers.AddBefore(current,timerNode);
                     return;
                 }
 
@@ -133,7 +133,7 @@ namespace CyanStars.Framework.Timer
             }
 
             //所有timer的目标时间都<=当前timer，就插入到最后
-            runningTimers.AddLast(timerNode);
+            RunningTimers.AddLast(timerNode);
 
         }
 
@@ -142,7 +142,7 @@ namespace CyanStars.Framework.Timer
         /// </summary>
         public void RemoveTimer(TimerCallback callback)
         {
-            waitRemoveTimers.Add(new Timer(default,default,default,callback));
+            WaitRemoveTimers.Add(new Timer(default,default,default,callback));
         }
 
 
@@ -151,12 +151,12 @@ namespace CyanStars.Framework.Timer
         /// </summary>
         public void AddUpdateTimer(UpdateTimerCallback callback)
         {
-            if (updateTimers.Contains(callback))
+            if (UpdateTimers.Contains(callback))
             {
                 Debug.LogError("重复添加了Update定时器");
                 return;
             }
-            updateTimers.Add(callback);
+            UpdateTimers.Add(callback);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace CyanStars.Framework.Timer
         /// </summary>
         public void RemoveUpdateTimer(UpdateTimerCallback callback)
         {
-            updateTimers.Remove(callback);
+            UpdateTimers.Remove(callback);
         }
     }
 }

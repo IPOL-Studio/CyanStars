@@ -1,12 +1,11 @@
-﻿using CyanStars.Framework.Pool;
-using CyanStars.Framework.UI;
+﻿using CatAsset.Runtime;
 
 namespace CyanStars.Gameplay.MusicGame
 {
     /// <summary>
     /// 谱面选择item数据
     /// </summary>
-    public class MapItemData : IUIItemData, IReference
+    public class MapItemData :  IReference
     {
         /// <summary>
         /// 索引
