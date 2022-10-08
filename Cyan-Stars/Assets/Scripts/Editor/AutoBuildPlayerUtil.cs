@@ -36,7 +36,8 @@ namespace CyanStars.Editor
 
         private static void BuildAssetBundle(BuildTarget buildTarget)
         {
-            BundleBuildConfigSO bundleBuildConfig =Util.GetConfigAsset<BundleBuildConfigSO>();
+            BundleBuildConfigSO bundleBuildConfig = Util.GetConfigAsset<BundleBuildConfigSO>();
+            bundleBuildConfig.RefreshBundleBuildInfos();
             CatAsset.Editor.BuildPipeline.BuildBundles(bundleBuildConfig, buildTarget);
         }
 

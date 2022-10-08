@@ -68,7 +68,8 @@ namespace CyanStars.Framework.UI
             bool uiPanelOpened = OpenedUIDict.TryGetValue(typeof(T), out int count);
             if (!uiData.AllowMultiple && uiPanelOpened)
             {
-                throw new Exception($"只允许打开UI面板{typeof(T).Name}的一个实例");
+                Debug.LogWarning($"只允许打开UI面板{typeof(T).Name}的一个实例");
+                return;
             }
 
             uiGroup.OpenUIPanel(uiData, callback);
