@@ -56,8 +56,14 @@ namespace CyanStars.Gameplay.Dialogue
 
             if (curInlineIndex == -1)
             {
-                NextInline();
-                DataModule.Content.Append(curRichText.LeftAttributes);
+                if (NextInline())
+                {
+                    DataModule.Content.Append(curRichText.LeftAttributes);
+                }
+                else
+                {
+                    return;
+                }
             }
 
             var stop = (Stop > 0 ? Stop : SettingsModule.Stop) / 1000f;
