@@ -59,7 +59,7 @@ namespace CyanStars.Gameplay.MusicGame
             NoteHitEffect hitEffect = hitEffectObj.GetComponent<NoteHitEffect>();
             if (hitEffect.WillDestroy)
             {
-                GameRoot.Timer.AddTimer(hitEffect.DestroyTime,timerCallback);
+                GameRoot.Timer.GetTimer<IntervalTimer>().Add(hitEffect.DestroyTime,timerCallback);
             }
         }
 
