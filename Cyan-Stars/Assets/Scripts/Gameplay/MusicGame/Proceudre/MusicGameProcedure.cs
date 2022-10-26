@@ -302,7 +302,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             dataModule.RunningTimeline = timeline;
 
-            GameRoot.Timer.AddUpdateTimer(UpdateTimeline);
+            GameRoot.Timer.UpdateTimer.Add(UpdateTimeline);
 
             Debug.Log("时间轴创建完毕");
         }
@@ -333,7 +333,7 @@ namespace CyanStars.Gameplay.MusicGame
             lastTime = -float.Epsilon;
             audioSource.clip = null;
 
-            GameRoot.Timer.RemoveUpdateTimer(UpdateTimeline);
+            GameRoot.Timer.UpdateTimer.Remove(UpdateTimeline);
             inputReceiver?.EndReceive();
 
             GameRoot.Event.Dispatch(EventConst.MusicGameEndEvent, this,EmptyEventArgs.Create());
