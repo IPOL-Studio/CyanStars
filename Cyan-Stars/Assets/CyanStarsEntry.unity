@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RuntimeMode: 0
-  IsEditorMode: 0
+  IsEditorMode: 1
   UnloadDelayTime: 60
   MaxTaskRunCount: 10
 --- !u!1 &773535207
