@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using UnityEditor;
+using UnityEngine;
 
 namespace CatAsset.Editor
 {
@@ -24,37 +25,43 @@ namespace CatAsset.Editor
         /// <summary>
         /// 将指定目录下所有资源分别构建为一个资源包
         /// </summary>
-        protected List<BundleBuildInfo> GetNAssetToNBundle(string targetDirectory,string ruleRegex,string group, bool isRaw)
+        protected List<BundleBuildInfo> GetNAssetToNBundle(string buildDirectory,string ruleRegex,string group, bool isRaw)
         {
-            //注意：targetDirectory在这里被假设为一个形如Assets/xxx/yyy....格式的目录
+            //注意：buildDirectory在这里被假设为一个形如Assets/xxx/yyy....格式的目录
             
             List<BundleBuildInfo> result = new List<BundleBuildInfo>();
            
-            if (Directory.Exists(targetDirectory))
+            if (Directory.Exists(buildDirectory))
             {
-                DirectoryInfo dirInfo = new DirectoryInfo(targetDirectory);
+                DirectoryInfo dirInfo = new DirectoryInfo(buildDirectory);
                 FileInfo[] files = dirInfo.GetFiles("*", SearchOption.AllDirectories);//递归获取所有文件
-             
-                
+
                 foreach (FileInfo file in files)
                 {
-                    if (Util.ExcludeSet.Contains(file.Extension))
+                    string assetDir = Util.FullNameToAssetName(file.Directory.FullName);//Assets/xxx/
+                    if (Util.IsChildDirectory(assetDir,buildDirectory))
                     {
+                        //跳过子构建目录
                         continue;
                     }
                     
                     string assetName = Util.FullNameToAssetName(file.FullName);//Assets/xxx/yyy.zz
+                    if (!Util.IsValidAsset(assetName))
+                    {
+                        continue;
+                    }
+                    
+                    
                     if (!string.IsNullOrEmpty(ruleRegex) && !Regex.IsMatch(assetName,ruleRegex))
                     {
                         continue;
                     }
                     
-                    string assetsDir = Util.FullNameToAssetName(file.Directory.FullName); //Assets/xxx
-                    string directoryName = assetsDir.Substring(assetsDir.IndexOf("/") + 1); //去掉Assets/
+                    string directoryName = assetDir.Substring(assetDir.IndexOf("/") + 1); //去掉Assets/
                     string bundleName;
                     if (!isRaw)
                     { 
-                        bundleName = file.Name.Replace('.','_').ToLower() + ".bundle"; 
+                        bundleName = file.Name.Replace('.','_') + ".bundle"; 
                     }
                     else
                     {

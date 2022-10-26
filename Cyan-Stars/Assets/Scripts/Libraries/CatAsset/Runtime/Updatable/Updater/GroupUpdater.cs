@@ -103,7 +103,7 @@ namespace CatAsset.Runtime
             {
                 //创建下载文件的任务
                 string localFilePath = Util.GetReadWritePath(info.RelativePath);
-                string downloadUri = Path.Combine(CatAssetUpdater.UpdateUriPrefix, info.RelativePath);
+                string downloadUri = Util.GetRegularPath(Path.Combine(CatAssetUpdater.UpdateUriPrefix, info.RelativePath));
                 CatAssetManager.DownloadBundle(this,info,downloadUri,localFilePath,onBundleDownloaded);
             }
             
@@ -119,7 +119,7 @@ namespace CatAsset.Runtime
             if (callbackCount == TotalCount)
             {
                 //所有需要下载的资源包都回调过 就将状态改为Free
-                //若此时有下载失败的资源包，导致UpdatedCount < TotalCount，则可通过重新启动此Updater来进行下载
+                //若此时有下载失败的资源包，导致UpdatedCount < TotalCount，则可通过重新启动此Updater来进行剩余资源包的下载
                 State = GroupUpdaterState.Free;
             }
 

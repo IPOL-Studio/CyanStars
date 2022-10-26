@@ -26,7 +26,7 @@ namespace CyanStars.Gameplay.Base
             }
 #endif
             //否则需要先检查资源清单
-            bool success = await GameRoot.Asset.AwaitCheckPackageManifest();
+            bool success = await GameRoot.Asset.CheckPackageManifest();
             if (success)
             {
                 //加载内置谱面清单

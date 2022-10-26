@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace CatAsset.Editor
 {
@@ -22,6 +23,9 @@ namespace CatAsset.Editor
         /// </summary>
         private readonly List<int> needRemoveDirectories = new List<int>();
         
+
+        
+
         /// <summary>
         /// 绘制资源包构建目录界面
         /// </summary>
@@ -41,8 +45,11 @@ namespace CatAsset.Editor
                     GUILayout.Label($"[{i}]", GUILayout.Width(20));
                     
                     //绘制目录名
-                    directory.DirectoryName = EditorGUILayout.TextField(directory.DirectoryName);
-
+                    EditorGUILayout.LabelField(directory.DirectoryName);
+                    EditorGUI.BeginDisabledGroup(true);
+                    EditorGUILayout.ObjectField(directory.DirectoryObj, typeof(Object),false);
+                    EditorGUI.EndDisabledGroup();
+                    
                     //绘制构建规则名
                     string[] ruleNames = GetRuleNames();
                     ruleNameDict.TryGetValue(directory.BuildRuleName, out int index);

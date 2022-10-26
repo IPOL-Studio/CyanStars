@@ -8,17 +8,25 @@ namespace CyanStars.Framework.GameObjectPool
         /// <summary>
         /// 从池中获取一个游戏对象（可等待）
         /// </summary>
-        public Task<GameObject> AwaitGetGameObject(string prefabName, Transform parent)
+        public Task<GameObject> GetGameObjectAsync(string prefabName, Transform parent)
         {
-            return CatAsset.Runtime.GameObjectPoolManager.AwaitGetGameObject(prefabName, parent);
+            return CatAsset.Runtime.GameObjectPoolManager.GetGameObjectAsync(prefabName, parent);
         }
 
         /// <summary>
         /// 从池中获取一个游戏对象（可等待）
         /// </summary>
-        public Task<GameObject> AwaitGetGameObject(GameObject template, Transform parent)
+        public Task<GameObject> GetGameObjectAsync(GameObject template, Transform parent)
         {
-            return CatAsset.Runtime.GameObjectPoolManager.AwaitGetGameObject(template, parent);
+            return CatAsset.Runtime.GameObjectPoolManager.GetGameObjectAsync(template, parent);
+        }
+
+        /// <summary>
+        /// 预热对象（可等待）
+        /// </summary>
+        public Task Prewarm(string prefabName, int count)
+        {
+            return CatAsset.Runtime.GameObjectPoolManager.Prewarm(prefabName, count);
         }
     }
 }

@@ -17,10 +17,10 @@ namespace CatAsset.Editor
         /// </summary>
         private List<BuildTarget> targetPlatforms = new List<BuildTarget>()
         {
-            BuildTarget.StandaloneWindows,
             BuildTarget.StandaloneWindows64,
             BuildTarget.Android,
             BuildTarget.iOS,
+            BuildTarget.WebGL,
         };
 
 
@@ -67,7 +67,7 @@ namespace CatAsset.Editor
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("选择资源包构建设置：");
             bundleBuildConfig.Options =
-                (BuildAssetBundleOptions) EditorGUILayout.EnumFlagsField(bundleBuildConfig.Options);
+                (BundleBuildOptions) EditorGUILayout.EnumFlagsField(bundleBuildConfig.Options);
 
             EditorGUILayout.Space();
             using (new EditorGUILayout.HorizontalScope())
@@ -138,8 +138,10 @@ namespace CatAsset.Editor
                             //仅构建原生资源包
                             BuildPipeline.BuildRawBundles(bundleBuildConfig,targetPlatform);
                         }
+
                     }
 
+                    //bundleBuildConfig.ManifestVersion++;
                     EditorUtility.SetDirty(bundleBuildConfig);
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();

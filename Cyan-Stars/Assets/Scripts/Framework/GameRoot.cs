@@ -5,6 +5,7 @@ using UnityEngine;
 using CyanStars.Framework.UI;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Asset;
+using CyanStars.Framework.Audio;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.GameObjectPool;
 using CyanStars.Framework.Logger;
@@ -37,6 +38,11 @@ namespace CyanStars.Framework
         /// 资源管理器
         /// </summary>
         public static AssetManager Asset { get; private set; }
+
+        /// <summary>
+        /// 音频管理器
+        /// </summary>
+        public static AudioManager Audio { get; private set; }
 
         /// <summary>
         /// 事件管理器
@@ -88,6 +94,7 @@ namespace CyanStars.Framework
         {
             MainCamera = Camera.main;
             Asset = GetManager<AssetManager>();
+            Audio = GetManager<AudioManager>();
             Event = GetManager<EventManager>();
             FSM = GetManager<FSMManager>();
             GameObjectPool = GetManager<GameObjectPoolManager>();

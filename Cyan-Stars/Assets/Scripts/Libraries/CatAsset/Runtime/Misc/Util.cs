@@ -22,11 +22,20 @@ namespace CatAsset.Runtime
         private static StringBuilder CachedSB = new StringBuilder();
 
         /// <summary>
+        /// 获取规范的路径
+        /// </summary>
+        public static string GetRegularPath(string path)
+        {
+            return path.Replace('\\', '/');
+        }
+
+
+        /// <summary>
         /// 获取在只读区下的完整路径
         /// </summary>
         public static string GetReadOnlyPath(string path)
         {
-            string result = Path.Combine(Application.streamingAssetsPath, path);
+            string result = GetRegularPath(Path.Combine(Application.streamingAssetsPath, path));
             return result;
         }
 
@@ -36,7 +45,7 @@ namespace CatAsset.Runtime
         /// </summary>
         public static string GetReadWritePath(string path)
         {
-            string result = Path.Combine(Application.persistentDataPath, path);
+            string result = GetRegularPath(Path.Combine(Application.persistentDataPath, path));
             return result;
         }
 
@@ -45,7 +54,7 @@ namespace CatAsset.Runtime
         /// </summary>
         public static string GetRemotePath(string path)
         {
-            string result = Path.Combine(CatAssetUpdater.UpdateUriPrefix, path);
+            string result = GetRegularPath(Path.Combine(CatAssetUpdater.UpdateUriPrefix, path));
             return result;
         }
 
@@ -75,14 +84,14 @@ namespace CatAsset.Runtime
         /// </summary>
         public static AssetCategory GetAssetCategoryWithEditorMode(string assetName, Type assetType)
         {
-            if (assetName.StartsWith("Assets/") || assetName.StartsWith("Packages/"))
+            if (assetName.StartsWith("Assets/"))
             {
-                //资源名以Assets/ 或 Packages/开头
+                //资源名以Assets/开头
                 if (typeof(UnityEngine.Object).IsAssignableFrom(assetType) || assetType == typeof(object))
                 {
                     //以UnityEngine.Object及其派生类型或object为加载类型
                     //都视为内置资源包资源进行加载
-                    return AssetCategory.InternalBundleAsset;
+                    return AssetCategory.InternalBundledAsset;
                 }
                 else
                 {
@@ -105,13 +114,14 @@ namespace CatAsset.Runtime
             if (!assetName.StartsWith("Assets/") && !assetName.StartsWith("Packages/"))
             {
                 //资源名不以Assets/ 和 Packages/开头 是外置原生资源
+                CatAssetDatabase.TryCreateExternalRawAssetRuntimeInfo(assetName);
                 return AssetCategory.ExternalRawAsset;
             }
 
             AssetRuntimeInfo assetRuntimeInfo = CatAssetDatabase.GetAssetRuntimeInfo(assetName);
             if (assetRuntimeInfo == null)
             {
-                Debug.LogError($"GetAssetCategory调用失败，资源{assetName}的AssetRuntimeInfo为空");
+                Debug.LogError($"GetAssetCategory调用失败，{assetName}的AssetRuntimeInfo为空，请检查资源名是否正确");
                 return default;
             }
 
@@ -122,7 +132,7 @@ namespace CatAsset.Runtime
             }
 
             //内置资源包资源
-            return AssetCategory.InternalBundleAsset;
+            return AssetCategory.InternalBundledAsset;
         }
 
         /// <summary>

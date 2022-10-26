@@ -52,7 +52,7 @@ namespace CyanStars.Gameplay.MusicGame
             TxtName.text = Data.MapManifest.Name;
             if (!string.IsNullOrEmpty(Data.MapManifest.ClipCoverFileName))
             {
-                Sprite sprite = await GameRoot.Asset.AwaitLoadAsset<Sprite>(Data.MapManifest.ClipCoverFileName,gameObject);
+                Sprite sprite = await GameRoot.Asset.LoadAssetAsync<Sprite>(Data.MapManifest.ClipCoverFileName,gameObject);
                 ImgCover.sprite = sprite;
             }
             else

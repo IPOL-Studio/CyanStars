@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 
@@ -52,15 +53,15 @@ namespace CatAsset.Editor
             BundleName = bundleName;
             Group = group;
             IsRaw = isRaw;
+
+            if (!isRaw)
+            {
+                //非原生资源 BundleName转为小写的
+                BundleName = BundleName.ToLower();
+            }
+
+            RelativePath = Runtime.Util.GetRegularPath(Path.Combine(DirectoryName, BundleName));
             
-            if (!string.IsNullOrEmpty(DirectoryName))
-            {
-                RelativePath = $"{DirectoryName.ToLower()}/{BundleName}";
-            }
-            else
-            {
-                RelativePath = BundleName;
-            }
         }
 
         /// <summary>
