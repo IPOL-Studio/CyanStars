@@ -18,7 +18,7 @@ namespace CyanStars.Framework.GameObjectPool
         /// 默认对象失效时间
         /// </summary>
         [Header("默认对象失效时间")]
-        public float DefaultObjectExpireTime = 30;
+        public float DefaultObjectExpireTime = 60;
 
         /// <summary>
         /// 默认对象池失效时间
