@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RuntimeMode: 0
-  IsEditorMode: 1
+  IsEditorMode: 0
   UnloadDelayTime: 60
   MaxTaskRunCount: 10
 --- !u!1 &773535207
@@ -868,7 +868,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Root: {fileID: 1883494368}
-  DefaultObjectExpireTime: 30
+  DefaultObjectExpireTime: 60
   DefaultPoolExpireTime: 60
   MaxInstantiateCount: 10
 --- !u!1 &1900656791

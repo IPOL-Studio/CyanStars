@@ -156,7 +156,7 @@ namespace CyanStars.Framework.UI
         /// </summary>
         public void GetUIItem<T>(string prefabName, Transform parent, Action<T> callback) where T : BaseUIItem
         {
-            GameRoot.GameObjectPool.GetGameObject(prefabName, parent, (go) =>
+            GameRoot.GameObjectPool.GetGameObjectAsync(prefabName, parent, (go) =>
             {
                 T item = OnGetUIItem(callback, go);
 
@@ -169,7 +169,7 @@ namespace CyanStars.Framework.UI
         /// </summary>
         public void GetUIItem<T>(GameObject itemTemplate, Transform parent, Action<T> callback) where T : BaseUIItem
         {
-            GameRoot.GameObjectPool.GetGameObject(itemTemplate, parent, (go) =>
+            GameRoot.GameObjectPool.GetGameObjectAsync(itemTemplate, parent, (go) =>
             {
                 T item = OnGetUIItem(callback, go);
 

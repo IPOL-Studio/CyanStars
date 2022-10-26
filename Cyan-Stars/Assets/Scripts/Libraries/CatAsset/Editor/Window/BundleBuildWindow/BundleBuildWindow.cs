@@ -22,23 +22,22 @@ namespace CatAsset.Editor
         /// </summary>
         private int selectedTab;
 
+        /// <summary>
+        /// 资源包构建配置
+        /// </summary>
         private BundleBuildConfigSO bundleBuildConfig;
 
         [MenuItem("CatAsset/打开资源包构建窗口", priority = 1)]
         private static void OpenWindow()
         {
             BundleBuildWindow window = GetWindow<BundleBuildWindow>(false, "资源包构建窗口");
-            window.minSize = new Vector2(800, 600);
-            window.bundleBuildConfig = Util.GetConfigAsset<BundleBuildConfigSO>();
-            if (window.bundleBuildConfig == null)
+            window.minSize = new Vector2(1200, 600);
+
+            if (BundleBuildConfigSO.Instance != null)
             {
-                EditorUtility.DisplayDialog("提示", "需要先创建BundleBuildConfig文件", "ok");
-            }
-            else
-            {
+                window.bundleBuildConfig = BundleBuildConfigSO.Instance;
                 window.Show();
             }
-
         }
 
 

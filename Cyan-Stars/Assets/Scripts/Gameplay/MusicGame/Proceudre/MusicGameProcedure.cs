@@ -57,7 +57,7 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Event.AddListener(EventConst.MusicGameExitEvent, OnMusicGameExit);
 
             //打开游戏场景
-            scene = await GameRoot.Asset.AwaitLoadScene("Assets/BundleRes/Scenes/Dark.unity");
+            scene = await GameRoot.Asset.LoadSceneAsync("Assets/BundleRes/Scenes/Dark.unity");
 
             if (scene != default)
             {
@@ -178,7 +178,7 @@ namespace CyanStars.Gameplay.MusicGame
         private async Task LoadDataFile()
         {
             //输入映射数据
-            InputMapSO inputMapSo = await GameRoot.Asset.AwaitLoadAsset<InputMapSO>(dataModule.InputMapDataName, sceneRoot);
+            InputMapSO inputMapSo = await GameRoot.Asset.LoadAssetAsync<InputMapSO>(dataModule.InputMapDataName, sceneRoot);
             InputMapData inputMapData = inputMapSo.InputMapData;
 
             if (!dataModule.IsAutoMode)
@@ -206,7 +206,7 @@ namespace CyanStars.Gameplay.MusicGame
             MapManifest mapManifest = dataModule.GetMap(dataModule.MapIndex);
 
             //时间轴数据
-            MapTimelineDataSO timelineDataSo = await GameRoot.Asset.AwaitLoadAsset<MapTimelineDataSO>(mapManifest.TimelineFileName, sceneRoot);
+            MapTimelineDataSO timelineDataSo = await GameRoot.Asset.LoadAssetAsync<MapTimelineDataSO>(mapManifest.TimelineFileName, sceneRoot);
             timelineData = timelineDataSo.Data;
             dataModule.CurTimelineLength = timelineData.Length / 1000f;
 
@@ -215,14 +215,14 @@ namespace CyanStars.Gameplay.MusicGame
             //歌词
             if (!string.IsNullOrEmpty(mapManifest.LrcFileName))
             {
-                TextAsset lrcAsset = await GameRoot.Asset.AwaitLoadAsset<TextAsset>(mapManifest.LrcFileName, sceneRoot);
+                TextAsset lrcAsset = await GameRoot.Asset.LoadAssetAsync<TextAsset>(mapManifest.LrcFileName, sceneRoot);
                 lrcText = lrcAsset.text;
             }
 
             //音乐
             if (!string.IsNullOrEmpty(mapManifest.MusicFileName))
             {
-                music = await GameRoot.Asset.AwaitLoadAsset<AudioClip>(mapManifest.MusicFileName, sceneRoot);
+                music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(mapManifest.MusicFileName, sceneRoot);
             }
         }
 

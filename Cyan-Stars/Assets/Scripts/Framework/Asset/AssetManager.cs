@@ -91,36 +91,36 @@ namespace CyanStars.Framework.Asset
         /// <summary>
         /// 加载资源
         /// </summary>
-        public int LoadAsset(string assetName, object userdata, LoadAssetCallback<object> callback,
+        public int LoadAssetAsync(string assetName, LoadAssetCallback<object> callback,
             TaskPriority priority = TaskPriority.Middle)
         {
-            return CatAssetManager.LoadAsset(assetName, userdata, callback, priority);
+            return CatAssetManager.LoadAssetAsync(assetName, callback, priority);
         }
 
         /// <summary>
         /// 加载资源
         /// </summary>
-        public int LoadAsset<T>(string assetName, object userdata, LoadAssetCallback<T> callback,
+        public int LoadAssetAsync<T>(string assetName, LoadAssetCallback<T> callback,
             TaskPriority priority = TaskPriority.Middle)
         {
-            return CatAssetManager.LoadAsset<T>(assetName, userdata, callback, priority);
+            return CatAssetManager.LoadAssetAsync<T>(assetName, callback, priority);
         }
 
                 /// <summary>
         /// 批量加载资源
         /// </summary>
-        public int BatchLoadAsset(List<string> assetNames, object userdata, BatchLoadAssetCallback callback, TaskPriority priority = TaskPriority.Middle)
+        public int BatchLoadAsset(List<string> assetNames, BatchLoadAssetCallback callback, TaskPriority priority = TaskPriority.Middle)
                 {
-                    return CatAssetManager.BatchLoadAsset(assetNames, userdata, callback);
+                    return CatAssetManager.BatchLoadAssetAsync(assetNames, callback);
                 }
 
         /// <summary>
         /// 加载场景
         /// </summary>
-        public int LoadScene(string sceneName, object userdata, LoadSceneCallback callback,
+        public int LoadSceneAsync(string sceneName, LoadSceneCallback callback,
             TaskPriority priority = TaskPriority.Middle)
         {
-            return CatAssetManager.LoadScene(sceneName, userdata, callback, priority);
+            return CatAssetManager.LoadSceneAsync(sceneName, callback, priority);
         }
 
         /// <summary>

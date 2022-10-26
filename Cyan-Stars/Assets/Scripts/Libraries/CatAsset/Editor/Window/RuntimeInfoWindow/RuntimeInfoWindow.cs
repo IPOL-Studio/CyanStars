@@ -26,9 +26,9 @@ namespace CatAsset.Editor
         private static void OpenWindow()
         {
             RuntimeInfoWindow window = GetWindow<RuntimeInfoWindow>(false, "运行时信息窗口");
-            window.minSize = new Vector2(800, 600);
+            window.minSize = new Vector2(1200, 600);
             window.Show();
-            
+
         }
 
         private void OnPlayModeChanged(PlayModeStateChange mode)
@@ -83,20 +83,20 @@ namespace CatAsset.Editor
                 case 1:
                     DrawTaskInfoView();
                     break;
-                
+
                 case 2:
                     DrawGroupInfoView();
                     break;
-                
+
                 case 3:
                     DrawGroupUpdaterInfoView();
                     break;
             }
 
             Repaint();
-            
+
         }
-        
+
 
 
 

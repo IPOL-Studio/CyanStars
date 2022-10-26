@@ -11,7 +11,7 @@ namespace CatAsset.Runtime
     {
         private BundleRuntimeInfo bundleRuntimeInfo;
         private float timer;
-
+        
         /// <inheritdoc />
         public override float Progress => timer / CatAssetManager.UnloadDelayTime;
 
@@ -22,13 +22,13 @@ namespace CatAsset.Runtime
 
         public override void Update()
         {
-            if (bundleRuntimeInfo.UsedAssets.Count > 0 || bundleRuntimeInfo.RefBundles.Count > 0)
+            if (bundleRuntimeInfo.UsingAssets.Count > 0 || bundleRuntimeInfo.DependencyLink.DownStream.Count > 0)
             {
                 //被重新使用了 不进行卸载了
                 State = TaskState.Finished;
                 return;
             }
-
+            
             timer += Time.deltaTime;
             if (timer < CatAssetManager.UnloadDelayTime)
             {
@@ -36,10 +36,10 @@ namespace CatAsset.Runtime
                 State = TaskState.Waiting;
                 return;
             }
-
+            
             //卸载时间到了
             State = TaskState.Finished;
-
+            
             //删除此资源包中已加载的资源与AssetRuntimeInfo的关联
             foreach (AssetManifestInfo assetManifestInfo in bundleRuntimeInfo.Manifest.Assets)
             {
@@ -51,26 +51,26 @@ namespace CatAsset.Runtime
                 }
             }
 
-            //删除依赖的其他资源包的被引用记录
-            foreach (BundleRuntimeInfo dependencyBundleInfo in bundleRuntimeInfo.DependencyBundles)
+            //删除此资源包在依赖链上的信息
+            //并检查上游资源包的生命周期
+            foreach (BundleRuntimeInfo upStreamBundle in bundleRuntimeInfo.DependencyLink.UpStream)
             {
-                dependencyBundleInfo.RemoveRefBundle(bundleRuntimeInfo);
-                if (dependencyBundleInfo.CanUnload())
-                {
-                    //依赖的其他资源包可以卸载了
-                    UnloadBundleTask task = Create(Owner,dependencyBundleInfo.Manifest.RelativePath,dependencyBundleInfo);
-                    Owner.AddTask(task, TaskPriority.Low);
-                }
+                upStreamBundle.RemoveDownStream(bundleRuntimeInfo);
+                upStreamBundle.CheckLifeCycle();
             }
-            bundleRuntimeInfo.DependencyBundles.Clear();
-
+            bundleRuntimeInfo.ClearUpStream();
+            
             //卸载资源包
+#if UNITY_2021_1_OR_NEWER
+            bundleRuntimeInfo.Bundle.UnloadAsync(true);
+#else
             bundleRuntimeInfo.Bundle.Unload(true);
+#endif
             bundleRuntimeInfo.Bundle = null;
-
+            
             Debug.Log($"已卸载资源包:{bundleRuntimeInfo.Manifest.RelativePath}");
         }
-
+        
         /// <summary>
         /// 创建资源包卸载任务的对象
         /// </summary>
@@ -80,10 +80,10 @@ namespace CatAsset.Runtime
             task.CreateBase(owner,name);
 
             task.bundleRuntimeInfo = bundleRuntimeInfo;
-
+            
             return task;
         }
-
+        
         /// <inheritdoc />
         public override void Clear()
         {

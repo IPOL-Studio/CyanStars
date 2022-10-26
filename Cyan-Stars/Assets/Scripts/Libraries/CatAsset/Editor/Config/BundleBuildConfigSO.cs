@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace CatAsset.Editor
 {
@@ -11,6 +14,27 @@ namespace CatAsset.Editor
     [CreateAssetMenu]
     public class BundleBuildConfigSO : ScriptableObject
     {
+        
+        private static BundleBuildConfigSO instance;
+        
+        public static BundleBuildConfigSO Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = Resources.Load<BundleBuildConfigSO>("BundleBuildConfig");
+                }
+
+                if (instance == null)
+                {
+                    EditorUtility.DisplayDialog("提示", "需要在Editor下的Resources目录下创建BundleBuildConfig文件", "ok");
+                }
+
+                return instance;
+            }
+        }
+        
         /// <summary>
         /// 资源清单版本号
         /// </summary>
@@ -24,9 +48,7 @@ namespace CatAsset.Editor
         /// <summary>
         /// 资源包构建设置
         /// </summary>
-        public BuildAssetBundleOptions Options = BuildAssetBundleOptions.ChunkBasedCompression
-                                                 | BuildAssetBundleOptions.DisableLoadAssetByFileName
-                                                 | BuildAssetBundleOptions.DisableLoadAssetByFileNameWithExtension;
+        public BundleBuildOptions Options = BundleBuildOptions.WriteLinkXML & BundleBuildOptions.ChunkBasedCompression;
 
         /// <summary>
         /// 资源包构建输出目录
@@ -64,76 +86,118 @@ namespace CatAsset.Editor
         private Dictionary<string, IBundleBuildRule> ruleDict = new Dictionary<string, IBundleBuildRule>();
 
         /// <summary>
+        /// 目录名 -> 构建目录对象
+        /// </summary>
+        public Dictionary<string, BundleBuildDirectory> DirectoryDict =new Dictionary<string, BundleBuildDirectory>();
+        
+        /// <summary>
+        /// 资源名 ->资源包构建信息
+        /// </summary>
+        public Dictionary<string, BundleBuildInfo> AssetToBundleDict = new Dictionary<string, BundleBuildInfo>();
+
+        /// <summary>
         /// 刷新资源包构建信息
         /// </summary>
         public void RefreshBundleBuildInfos()
         {
 
             Bundles.Clear();
+
             float stepNum = 6f;
+            int curStep = 1;
 
-            EditorUtility.DisplayProgressBar("刷新资源包构建信息","初始化资源包构建规则...",1/stepNum);
-            //初始化资源包构建规则
-            InitRuleDict();
-
-            EditorUtility.DisplayProgressBar("刷新资源包构建信息","初始化资源包构建信息...",2/stepNum);
-            //根据构建规则初始化资源包构建信息
-            InitBundleBuildInfo(false);
-
-            EditorUtility.DisplayProgressBar("刷新资源包构建信息","将隐式依赖都转换为显式构建资源...",3/stepNum);
-            //将隐式依赖都转换为显式构建资源
-            ImplicitDependencyToExplicitBuildAsset();
-
-            //上一步执行后可能出现同一个隐式依赖被转换为了不同资源包的显式构建资源
-            //因此可能出现了资源冗余的情况
-
-            if (IsRedundancyAnalyze)
+            void ProfileTime(Action action,Stopwatch sw,string name)
             {
-                EditorUtility.DisplayProgressBar("刷新资源包构建信息","进行冗余资源分析...",4/stepNum);
-                //进行冗余资源分析
-                RedundancyAssetAnalyze();
+                //sw.Restart();
+                action?.Invoke();
+                // sw.Stop();
+                // sw.Reset();
+                //Debug.Log($"{name}执行完毕，耗时：{sw.Elapsed.TotalSeconds}秒");
             }
+            
+            try
+            {
+                Stopwatch sw = new Stopwatch();
+                
+                //初始化资源包构建规则
+                EditorUtility.DisplayProgressBar("刷新资源包构建信息", "初始化资源包构建规则...", curStep / stepNum);
+                ProfileTime(InitRuleDict,sw,"初始化资源包构建规则");
+                curStep++;
 
-            EditorUtility.DisplayProgressBar("刷新资源包构建信息","分割场景资源包中的非场景资源...",5/stepNum);
-            //在将隐式依赖转换为显式构建资源后，可能出现场景资源和非场景资源被放进了同一个资源包的情况
-            //而这是Unity不允许的，会在BuildBundle时报错，所以需要在这一步将其拆开
-            SplitSceneBundle();
+                
+                //根据构建规则初始化资源包构建信息
+                EditorUtility.DisplayProgressBar("刷新资源包构建信息", "初始化资源包构建信息...", curStep / stepNum);
+                RefreshDirectoryDict();  //这里要在第一次调用InitBundleBuildInfo前刷新构建目录映射，因为会在判断子构建目录时使用
+                ProfileTime((() => {InitBundleBuildInfo(false);}),sw,"初始化资源包构建信息");
+                curStep++;
 
-            EditorUtility.DisplayProgressBar("刷新资源包构建信息","初始化原生资源包构建信息...",6/stepNum);
-            //根据构建规则初始化原生资源包构建信息
-            //如果出现普通资源包中的资源依赖原生资源，那么需要冗余一份原生资源到普通资源包中，因为本质上原生资源是没有资源包的
-            //所以这里将原生资源包的构建放到最后处理，这样通过前面的隐式依赖转换为显式构建资源这一步就可以达成原生资源在依赖它的普通资源包中的冗余了
-            InitBundleBuildInfo(true);
+                
+                //将隐式依赖都转换为显式构建资源
+                EditorUtility.DisplayProgressBar("刷新资源包构建信息", "将隐式依赖都转换为显式构建资源...", curStep / stepNum);
+                ProfileTime(ImplicitDependencyToExplicitBuildAsset,sw,"将隐式依赖都转换为显式构建资源");
+                curStep++;
 
+                //上一步执行后可能出现同一个隐式依赖被转换为了不同资源包的显式构建资源
+                //因此可能出现了资源冗余的情况
+                if (IsRedundancyAnalyze)
+                {
+                    //进行冗余资源分析
+                    EditorUtility.DisplayProgressBar("刷新资源包构建信息", "进行冗余资源分析...", curStep / stepNum);
+                    ProfileTime(RedundancyAssetAnalyze,sw,"进行冗余资源分析");
+
+                }
+                curStep++;
+
+                //在将隐式依赖转换为显式构建资源后，可能出现场景资源和非场景资源被放进了同一个资源包的情况
+                //而这是Unity不允许的，会在BuildBundle时报错，所以需要在这一步将其拆开
+                EditorUtility.DisplayProgressBar("刷新资源包构建信息", "分割场景资源包中的非场景资源...", curStep / stepNum);
+                ProfileTime(SplitSceneBundle,sw,"分割场景资源包中的非场景资源");
+                curStep++;
+
+
+                //根据构建规则初始化原生资源包构建信息
+                //如果出现普通资源包中的资源依赖原生资源，那么需要冗余一份原生资源到普通资源包中，因为本质上原生资源是没有资源包的
+                //所以这里将原生资源包的构建放到最后处理，这样通过前面的隐式依赖转换为显式构建资源这一步就可以达成原生资源在依赖它的普通资源包中的冗余了
+                EditorUtility.DisplayProgressBar("刷新资源包构建信息", "初始化原生资源包构建信息...", curStep / stepNum);
+                ProfileTime((() => { InitBundleBuildInfo(true);}),sw,"初始化原生资源包构建信息");
+
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
+            }
+            
+            //移除空资源包
+            RemoveEmptyBundle();
+            
             //刷新资源包的总资源长度
             RefreshBundleLength();
             
-            //最后给资源包列表排下序
-            Bundles.Sort();
+            //给资源包和资源列表排下序
+            SortBundles();
 
+            //刷新映射
+            RefreshAssetToBundleDict();
+            
             EditorUtility.SetDirty(this);
             AssetDatabase.SaveAssets();
 
-            EditorUtility.ClearProgressBar();
+
             Debug.Log("资源包构建信息刷新完毕");
-
-
         }
 
+        
         /// <summary>
         /// 初始化资源包构建规则字典
         /// </summary>
         private void InitRuleDict()
         {
-            Type[] types = typeof(BundleBuildConfigSO).Assembly.GetTypes();
+            ruleDict.Clear();
+            TypeCache.TypeCollection types = TypeCache.GetTypesDerivedFrom<IBundleBuildRule>();
             foreach (Type type in types)
             {
-                if (!type.IsInterface && typeof(IBundleBuildRule).IsAssignableFrom(type) &&
-                    !ruleDict.ContainsKey(type.Name))
-                {
-                    IBundleBuildRule rule = (IBundleBuildRule) Activator.CreateInstance(type);
-                    ruleDict.Add(type.Name, rule);
-                }
+                IBundleBuildRule rule = (IBundleBuildRule) Activator.CreateInstance(type);
+                ruleDict.Add(type.Name, rule);
             }
         }
 
@@ -149,10 +213,13 @@ namespace CatAsset.Editor
                 IBundleBuildRule rule = ruleDict[bundleBuildDirectory.BuildRuleName];
                 if (rule.IsRaw == isRaw)
                 {
+                    //获取根据构建规则形成的资源包构建信息列表
                     List<BundleBuildInfo> bundles = rule.GetBundleList(bundleBuildDirectory);
                     Bundles.AddRange(bundles);
                 }
             }
+
+
         }
 
         /// <summary>
@@ -171,7 +238,6 @@ namespace CatAsset.Editor
                 }
             }
 
-
             foreach (BundleBuildInfo bundleBuildInfo in Bundles)
             {
                 //隐式依赖集合
@@ -180,29 +246,30 @@ namespace CatAsset.Editor
 
                 foreach (AssetBuildInfo assetBuildInfo in bundleBuildInfo.Assets)
                 {
-                    string assetName = assetBuildInfo.Name;
-
                     //检查依赖列表
+                    string assetName = assetBuildInfo.Name;
                     List<string> dependencies = Util.GetDependencies(assetName);
-                    if (dependencies != null)
+                    
+                    foreach (string dependency in dependencies)
                     {
-                        foreach (string dependency in dependencies)
+                        if (!explicitBuildAssetSet.Contains(dependency))
                         {
-                            if (!explicitBuildAssetSet.Contains(dependency))
-                            {
-                                //被显式构建资源依赖，并且没有被显式构建的，就是隐式依赖
-                                implicitDependencies.Add(dependency);
-                            }
+                            //被显式构建资源依赖，并且没有被显式构建的，就是隐式依赖
+                            implicitDependencies.Add(dependency);
                         }
                     }
                 }
-
+                
                 //将隐式依赖转为显式构建资源
                 foreach (string implicitDependency in implicitDependencies)
                 {
                     bundleBuildInfo.Assets.Add(new AssetBuildInfo(implicitDependency));
                 }
+
             }
+
+            
+
         }
 
         /// <summary>
@@ -286,6 +353,21 @@ namespace CatAsset.Editor
         }
 
         /// <summary>
+        /// 移除空资源包
+        /// </summary>
+        private void RemoveEmptyBundle()
+        {
+            for (int i = Bundles.Count - 1; i >= 0; i--)
+            {
+                BundleBuildInfo bundleBuildInfo = Bundles[i];
+                if (bundleBuildInfo.Assets.Count == 0)
+                {
+                    Bundles.RemoveAt(i);
+                }
+            }
+        }
+        
+        /// <summary>
         /// 刷新资源包的总资源长度
         /// </summary>
         private void RefreshBundleLength()
@@ -295,7 +377,50 @@ namespace CatAsset.Editor
                 bundleBuildInfo.RefreshAssetsLength();
             }
         }
+
+        /// <summary>
+        /// 排序资源包列表
+        /// </summary>
+        private void SortBundles()
+        {
+            Bundles.Sort();
+            foreach (BundleBuildInfo bundleBuildInfo in Bundles)
+            {
+                bundleBuildInfo.Assets.Sort();
+            }
+        }
         
+        
+        /// <summary>
+        /// 刷新映射信息
+        /// </summary>
+        public void RefreshDict()
+        {
+            RefreshDirectoryDict();
+            RefreshAssetToBundleDict();
+        }
+
+        public void RefreshDirectoryDict()
+        {
+            DirectoryDict.Clear();
+            foreach (BundleBuildDirectory item in Directories)
+            {
+                DirectoryDict[item.DirectoryName] = item;
+            }
+        }
+
+        public void RefreshAssetToBundleDict()
+        {
+            AssetToBundleDict.Clear();
+            foreach (BundleBuildInfo bundleBuildInfo in Bundles)
+            {
+                foreach (AssetBuildInfo assetBuildInfo in bundleBuildInfo.Assets)
+                {
+                    AssetToBundleDict.Add(assetBuildInfo.Name,bundleBuildInfo);
+                }
+            }
+        }
+
         /// <summary>
         /// 检查资源包构建目录是否可被添加
         /// </summary>
@@ -324,6 +449,10 @@ namespace CatAsset.Editor
             foreach (BundleBuildInfo bundleBuildInfo in GetNormalBundleBuilds())
             {
                 AssetBundleBuild bundleBuild = bundleBuildInfo.GetAssetBundleBuild();
+                if (bundleBuild.assetNames.Length == 0)
+                {
+                    continue;
+                }
                 result.Add(bundleBuild);
             }
             return result;
@@ -362,6 +491,8 @@ namespace CatAsset.Editor
             return result;
         }
 
+        
+        
     }
 }
 

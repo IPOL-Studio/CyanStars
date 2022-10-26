@@ -114,7 +114,7 @@ namespace CyanStars.Gameplay.MusicGame
             else
             {
                 Sprite sprite =
-                    await GameRoot.Asset.AwaitLoadAsset<Sprite>(mapItem.Data.MapManifest.BackgroundFileName,
+                    await GameRoot.Asset.LoadAssetAsync<Sprite>(mapItem.Data.MapManifest.BackgroundFileName,
                         gameObject);
                 ImgBg.sprite = sprite;
             }
@@ -135,14 +135,14 @@ namespace CyanStars.Gameplay.MusicGame
                 if (mapItem.Data.MapManifest.CoverFileName.EndsWith(".mp4"))
                 {
                     VideoCover.clip =
-                        await GameRoot.Asset.AwaitLoadAsset<VideoClip>(mapItem.Data.MapManifest.CoverFileName,
+                        await GameRoot.Asset.LoadAssetAsync<VideoClip>(mapItem.Data.MapManifest.CoverFileName,
                             gameObject);
                     ImgCover.gameObject.SetActive(false);
                 }
                 else
                 {
                     Sprite sprite =
-                        await GameRoot.Asset.AwaitLoadAsset<Sprite>(mapItem.Data.MapManifest.CoverFileName,
+                        await GameRoot.Asset.LoadAssetAsync<Sprite>(mapItem.Data.MapManifest.CoverFileName,
                             gameObject);
                     ImgCover.sprite = sprite;
                     VideoCover.gameObject.SetActive(false);
