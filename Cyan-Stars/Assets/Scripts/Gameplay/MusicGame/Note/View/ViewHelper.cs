@@ -36,7 +36,7 @@ namespace CyanStars.Gameplay.MusicGame
             GameObject go = null;
             string prefabName = dataModule.NotePrefabNameDict[data.Type];
 
-            go = await GameRoot.GameObjectPool.AwaitGetGameObject(prefabName,ViewRoot);
+            go = await GameRoot.GameObjectPool.GetGameObjectAsync(prefabName,ViewRoot);
 
             //这里因为用了异步await，所以需要使用note在物体创建成功后这一刻的视图层时间作为viewCreateTime，否则位置会对不上
             go.transform.position = GetViewObjectPos(data,note.ViewDistance);

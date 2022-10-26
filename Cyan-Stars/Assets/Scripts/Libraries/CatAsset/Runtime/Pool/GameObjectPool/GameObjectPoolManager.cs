@@ -24,7 +24,7 @@ namespace CatAsset.Runtime
         /// 游戏对象池管理器的根节点
         /// </summary>
         public static Transform Root;
-        
+
         /// <summary>
         /// 默认对象失效时间
         /// </summary>
@@ -97,27 +97,27 @@ namespace CatAsset.Runtime
         /// <summary>
         /// 使用预制体名从池中获取一个游戏对象
         /// </summary>
-        public static void GetGameObject(string prefabName, Transform parent, Action<GameObject> callback)
+        public static void GetGameObjectAsync(string prefabName, Transform parent, Action<GameObject> callback)
         {
             if (loadedPrefabDict.ContainsKey(prefabName))
             {
-                GetGameObject(loadedPrefabDict[prefabName], parent, callback);
+                GetGameObjectAsync(loadedPrefabDict[prefabName], parent, callback);
                 return;
             }
-            
+
             //此prefab未加载过，先加载
-            CatAssetManager.LoadAsset<GameObject>(prefabName,null, (success,prefab, result, userdata) =>
+            CatAssetManager.LoadAssetAsync<GameObject>(prefabName, (prefab, result) =>
             {
-                if (!success)
+                if (prefab == null)
                 {
                     return;
                 }
-                
+
                 loadedPrefabDict[prefabName] = prefab;
-                
+
                 //这里要先调用GetGameObject 才能保证 poolDict[prefab] 不为空
-                GetGameObject(prefab, parent, callback);
-                
+                GetGameObjectAsync(prefab, parent, callback);
+
                 //进行资源绑定
                 GameObject root = poolDict[prefab].Root.gameObject;
                 CatAssetManager.BindToGameObject(root,prefab);
@@ -127,7 +127,7 @@ namespace CatAsset.Runtime
         /// <summary>
         /// 使用模板中从池中获取一个游戏对象
         /// </summary>
-        public static void GetGameObject(GameObject template, Transform parent, Action<GameObject> callback)
+        public static void GetGameObjectAsync(GameObject template, Transform parent, Action<GameObject> callback)
         {
             if (!poolDict.TryGetValue(template, out GameObjectPool pool))
             {
@@ -138,7 +138,7 @@ namespace CatAsset.Runtime
                 poolDict.Add(template, pool);
             }
 
-            pool.GetGameObject(parent, callback);
+            pool.GetGameObjectAsync(parent, callback);
         }
 
         /// <summary>
@@ -206,35 +206,31 @@ namespace CatAsset.Runtime
             waitInstantiateQueue.Enqueue((prefab, parent, callback));
         }
 
-        
+
         /// <summary>
         /// 预热对象
         /// </summary>
         public static void Prewarm(string prefabName,int count,Action callback)
         {
             List<GameObject> objects = new List<GameObject>(count);
-            
+
             Prewarm(prefabName,count,0,objects, () =>
             {
-                foreach (GameObject go in objects)
-                {
-                    ReleaseGameObject(prefabName,go);
-                }
-                
                 callback?.Invoke();
             });
         }
-        
+
         /// <summary>
         /// 递归预热对象
         /// </summary>
         private static void Prewarm(string prefabName,int count,int counter, List<GameObject> objects,Action callback)
         {
-            GetGameObject(prefabName,Root,(go =>
+            GetGameObjectAsync(prefabName,Root,(go =>
             {
+                ReleaseGameObject(prefabName,go);
+
                 counter++;
                 objects.Add(go);
-                
                 if (counter < count)
                 {
                     //预热未结束
@@ -248,8 +244,8 @@ namespace CatAsset.Runtime
                 }
             }));
         }
-        
-        
+
+
         /// <summary>
         /// 预热对象
         /// </summary>
@@ -260,13 +256,13 @@ namespace CatAsset.Runtime
                 callback?.Invoke();
             });
         }
-        
+
         /// <summary>
         /// 递归预热对象
         /// </summary>
         private static void Prewarm(GameObject template,int count,int counter,Action callback)
         {
-            GetGameObject(template,Root,(go =>
+            GetGameObjectAsync(template,Root,(go =>
             {
                 counter++;
                 ReleaseGameObject(template,go);

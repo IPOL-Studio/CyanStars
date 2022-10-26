@@ -132,7 +132,7 @@ namespace CyanStars.Gameplay.MusicGame
         public async Task LoadInternalMaps()
         {
             InternalMapListSO internalMapListSo =
-                await GameRoot.Asset.AwaitLoadAsset<InternalMapListSO>(InternalMapListName);
+                await GameRoot.Asset.LoadAssetAsync<InternalMapListSO>(InternalMapListName);
             mapManifests = internalMapListSo.InternalMaps;
             GameRoot.Asset.UnloadAsset(internalMapListSo);
         }

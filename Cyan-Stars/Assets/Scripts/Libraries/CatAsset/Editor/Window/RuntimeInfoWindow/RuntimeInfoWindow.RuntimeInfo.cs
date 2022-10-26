@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using CatAsset.Runtime;
-using Codice.Utils;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace CatAsset.Editor
 {
@@ -100,8 +97,8 @@ namespace CatAsset.Editor
                     }
 
 
-                    //没有资源在使用 也没被其他资源包依赖 不显示
-                    if (bundleRuntimeInfo.UsedAssets.Count == 0 && bundleRuntimeInfo.RefBundles.Count == 0)
+                    //没有资源在使用 也没上游资源包 不显示
+                    if (bundleRuntimeInfo.UsingAssets.Count == 0 && bundleRuntimeInfo.DependencyLink.DownStream.Count == 0)
                     {
                         continue;
                     }
@@ -111,9 +108,9 @@ namespace CatAsset.Editor
                         //仅显示主动加载的资源
                         //此资源包至少有一个主动加载的资源，才能显示
                         bool canShow = false;
-                        foreach (AssetRuntimeInfo assetRuntimeInfo in bundleRuntimeInfo.UsedAssets)
+                        foreach (AssetRuntimeInfo assetRuntimeInfo in bundleRuntimeInfo.UsingAssets)
                         {
-                            if (assetRuntimeInfo.RefCount != assetRuntimeInfo.RefAssets.Count)
+                            if (assetRuntimeInfo.RefCount != assetRuntimeInfo.DownStream.Count)
                             {
                                 canShow = true;
                                 break;
@@ -139,9 +136,9 @@ namespace CatAsset.Editor
                     {
                         EditorGUILayout.Space();
 
-                        foreach (AssetRuntimeInfo assetRuntimeInfo in bundleRuntimeInfo.UsedAssets)
+                        foreach (AssetRuntimeInfo assetRuntimeInfo in bundleRuntimeInfo.UsingAssets)
                         {
-                            if (isOnlyShowActiveLoad && assetRuntimeInfo.RefCount == assetRuntimeInfo.RefAssets.Count)
+                            if (isOnlyShowActiveLoad && assetRuntimeInfo.RefCount == assetRuntimeInfo.DownStream.Count)
                             {
                                 //只显示主动加载的资源 且此资源纯被依赖加载的 就跳过
                                 continue;
@@ -175,22 +172,22 @@ namespace CatAsset.Editor
                 }
 
                 EditorGUILayout.LabelField($"|  资源组：{bundleRuntimeInfo.Manifest.Group}" ,GUILayout.Width(100));
-                EditorGUILayout.LabelField($"|  使用中资源数：{bundleRuntimeInfo.UsedAssets.Count}/{bundleRuntimeInfo.Manifest.Assets.Count}" ,GUILayout.Width(150));
+                EditorGUILayout.LabelField($"|  使用中资源数：{bundleRuntimeInfo.UsingAssets.Count}/{bundleRuntimeInfo.Manifest.Assets.Count}" ,GUILayout.Width(150));
                 EditorGUILayout.LabelField($"|  文件长度：{Runtime.Util.GetByteLengthDesc(bundleRuntimeInfo.Manifest.Length)}",GUILayout.Width(150));
-                EditorGUILayout.LabelField($"|  引用资源包的数量：{bundleRuntimeInfo.RefBundles.Count}",GUILayout.Width(150));
-                if (GUILayout.Button("查看引用资源包", GUILayout.Width(100)))
+                EditorGUILayout.LabelField($"|  下游资源包数量：{bundleRuntimeInfo.DependencyLink.DownStream.Count}",GUILayout.Width(150));
+                if (GUILayout.Button("查看下游资源包", GUILayout.Width(100)))
                 {
-                    if (bundleRuntimeInfo.RefBundles.Count > 0)
+                    if (bundleRuntimeInfo.DependencyLink.DownStream.Count > 0)
                     {
-                        BundleListWindow.OpenWindow(this,bundleRuntimeInfo.RefBundles);
+                        BundleListWindow.OpenWindow(this,bundleRuntimeInfo.DependencyLink.DownStream);
                     }
                 }
-                EditorGUILayout.LabelField($"|  依赖的资源包数量：{bundleRuntimeInfo.DependencyBundles.Count}",GUILayout.Width(150));
-                if (GUILayout.Button("查看依赖资源包", GUILayout.Width(100)))
+                EditorGUILayout.LabelField($"|  上游资源包数量：{bundleRuntimeInfo.DependencyLink.UpStream.Count}",GUILayout.Width(150));
+                if (GUILayout.Button("查看下游资源包", GUILayout.Width(100)))
                 {
-                    if (bundleRuntimeInfo.DependencyBundles.Count > 0)
+                    if (bundleRuntimeInfo.DependencyLink.UpStream.Count > 0)
                     {
-                        BundleListWindow.OpenWindow(this,bundleRuntimeInfo.DependencyBundles);
+                        BundleListWindow.OpenWindow(this,bundleRuntimeInfo.DependencyLink.UpStream);
                     }
                 }
             }
@@ -240,10 +237,10 @@ namespace CatAsset.Editor
                 EditorGUILayout.LabelField($"|  长度：{Runtime.Util.GetByteLengthDesc(assetRuntimeInfo.AssetManifest.Length)}", GUILayout.Width(100));
                 EditorGUILayout.LabelField($"|  引用计数：{assetRuntimeInfo.RefCount}", GUILayout.Width(100));
 
-                EditorGUILayout.LabelField($"|  引用资源的数量：{assetRuntimeInfo.RefAssets.Count}", GUILayout.Width(150));
-                if (GUILayout.Button("查看引用资源", GUILayout.Width(100)))
+                EditorGUILayout.LabelField($"|  下游资源数量：{assetRuntimeInfo.DownStream.Count}", GUILayout.Width(150));
+                if (GUILayout.Button("查看下游资源", GUILayout.Width(100)))
                 {
-                    if (assetRuntimeInfo.RefAssets.Count > 0)
+                    if (assetRuntimeInfo.DownStream.Count > 0)
                     {
                         RefAssetListWindow.OpenWindow(this,assetRuntimeInfo);
                     }
@@ -320,7 +317,7 @@ namespace CatAsset.Editor
 
             private void DrawRefAssetList()
             {
-                foreach (AssetRuntimeInfo assetRuntimeInfo in assetRuntimeInfo.RefAssets)
+                foreach (AssetRuntimeInfo assetRuntimeInfo in assetRuntimeInfo.DownStream)
                 {
                     parent.DrawAssetRuntimeInfo(assetRuntimeInfo);
                 }

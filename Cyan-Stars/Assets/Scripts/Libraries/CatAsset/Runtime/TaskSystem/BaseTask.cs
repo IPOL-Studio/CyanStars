@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,17 +10,20 @@ namespace CatAsset.Runtime
     public abstract class BaseTask<T> : ITask where T : ITask
     {
         /// <inheritdoc />
-        public TaskRunner Owner { get; private set; }
+        public int ID { get; protected set; }
 
-        /// <inheritdoc />
-        public int GUID { get; protected set; }
-        
         /// <inheritdoc />
         public string Name { get; private set; }
 
         /// <inheritdoc />
+        public TaskRunner Owner { get; private set; }
+
+        /// <inheritdoc />
+        public TaskGroup Group { get; set; }
+
+        /// <inheritdoc />
         public TaskState State { get; set; }
-        
+
         /// <inheritdoc />
         public virtual float Progress { get; }
 
@@ -27,19 +31,19 @@ namespace CatAsset.Runtime
         /// 已合并的任务列表（同名的任务）
         /// </summary>
         protected List<T> MergedTasks = new List<T>();
-        
+
         /// <inheritdoc />
         public int MergedTaskCount => MergedTasks.Count;
-        
+
         /// <inheritdoc />
         public void MergeTask(ITask task)
         {
             MergedTasks.Add((T)task);
         }
-        
+
         /// <inheritdoc />
         public abstract void Run();
-        
+
         /// <inheritdoc />
         public abstract void Update();
 
@@ -53,25 +57,26 @@ namespace CatAsset.Runtime
         {
             return Name;
         }
-        
+
         /// <summary>
         /// 创建基类部分
         /// </summary>
         protected void CreateBase(TaskRunner owner,string name)
         {
             Owner = owner;
-            GUID = ++TaskRunner.GUIDFactory;
-            CatAssetManager.AddTaskGUID(this);
+            ID = ++TaskRunner.TaskIDFactory;
+            TaskRunner.TaskIDDict.Add(ID,this);
             Name = name;
         }
-        
+
         /// <inheritdoc />
         public virtual void Clear()
         {
-            Owner = default;
-            CatAssetManager.RemoveTaskGUID(this);
-            GUID = default;
+            TaskRunner.TaskIDDict.Remove(ID);
+            ID = default;
             Name = default;
+            Owner = default;
+            Group = default;
             State = default;
             foreach (T task in MergedTasks)
             {
