@@ -79,5 +79,13 @@ namespace CyanStars.Framework.GameObjectPool
         {
             CatAsset.Runtime.GameObjectPoolManager.ReleaseGameObject(template,go);
         }
+
+        /// <summary>
+        /// 预热对象
+        /// </summary>
+        public void Prewarm(string prefabName,int count,Action callback)
+        {
+            CatAsset.Runtime.GameObjectPoolManager.Prewarm(prefabName, count, callback);
+        }
     }
 }

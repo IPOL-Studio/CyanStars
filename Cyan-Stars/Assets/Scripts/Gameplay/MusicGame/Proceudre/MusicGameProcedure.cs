@@ -69,6 +69,9 @@ namespace CyanStars.Gameplay.MusicGame
 
                 //打开音游UI
                 OpenMusicGameUI();
+
+                //预热一些物体
+                Prewarm();
             }
         }
 
@@ -169,7 +172,6 @@ namespace CyanStars.Gameplay.MusicGame
             ViewHelper.EffectRoot = sceneRoot.transform.Find("EffectRoot");
             sceneCameraTrans = sceneRoot.transform.Find("SceneCamera");
             audioSource = sceneRoot.GetComponent<AudioSource>();
-
         }
 
         /// <summary>
@@ -242,6 +244,17 @@ namespace CyanStars.Gameplay.MusicGame
         {
             GameRoot.UI.CloseUIPanel<MusicGameMainPanel>();
             GameRoot.UI.CloseUIPanel<MusicGame3DUIPanel>();
+        }
+
+        /// <summary>
+        /// 预热一些物体
+        /// </summary>
+        private void Prewarm()
+        {
+            foreach (KeyValuePair<NoteType,string> pair in dataModule.HitEffectPrefabNameDict)
+            {
+                GameRoot.GameObjectPool.Prewarm(pair.Value, 10,null);
+            }
         }
 
         /// <summary>

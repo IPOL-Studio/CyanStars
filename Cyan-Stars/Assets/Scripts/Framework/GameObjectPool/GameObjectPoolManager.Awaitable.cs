@@ -20,5 +20,13 @@ namespace CyanStars.Framework.GameObjectPool
         {
             return CatAsset.Runtime.GameObjectPoolManager.GetGameObjectAsync(template, parent);
         }
+
+        /// <summary>
+        /// 预热对象（可等待）
+        /// </summary>
+        public Task Prewarm(string prefabName, int count)
+        {
+            return CatAsset.Runtime.GameObjectPoolManager.Prewarm(prefabName, count);
+        }
     }
 }
