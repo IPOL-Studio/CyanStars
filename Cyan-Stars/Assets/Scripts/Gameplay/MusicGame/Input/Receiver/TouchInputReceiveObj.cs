@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using CyanStars.Framework;
-
+﻿using CyanStars.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -27,15 +23,15 @@ namespace CyanStars.Gameplay.MusicGame
 
         private void Awake()
         {
-            GameRoot.Timer.AddUpdateTimer(OnUpdate);
+            GameRoot.Timer.UpdateTimer.Add(OnUpdate);
         }
 
         private void OnDestroy()
         {
-            GameRoot.Timer.RemoveUpdateTimer(OnUpdate);
+            GameRoot.Timer.UpdateTimer.Remove(OnUpdate);
         }
 
-        private void OnUpdate(float deltaTime)
+        private void OnUpdate(float deltaTime,object userdata)
         {
             if (isTouchDown)
             {

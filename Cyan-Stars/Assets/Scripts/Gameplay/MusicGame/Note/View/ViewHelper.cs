@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyanStars.Framework;
-using CyanStars.Framework.Pool;
 
 using UnityEngine;
 
@@ -35,26 +34,16 @@ namespace CyanStars.Gameplay.MusicGame
         {
             MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
             GameObject go = null;
-            string prefabName = data.Type switch
-            {
-                NoteType.Tap => dataModule.TapPrefabName,
-                NoteType.Hold => dataModule.HoldPrefabName,
-                NoteType.Drag => dataModule.DragPrefabName,
-                NoteType.Click => dataModule.ClickPrefabName,
-                NoteType.Break => dataModule.BreakPrefabName,
-                _ => null
-            };
+            string prefabName = dataModule.NotePrefabNameDict[data.Type];
 
             go = await GameRoot.GameObjectPool.AwaitGetGameObject(prefabName,ViewRoot);
-            //go.transform.SetParent(ViewRoot);
 
             //这里因为用了异步await，所以需要使用note在物体创建成功后这一刻的视图层时间作为viewCreateTime，否则位置会对不上
             go.transform.position = GetViewObjectPos(data,note.ViewDistance);
             go.transform.localScale = GetViewObjectScale(data);
             go.transform.localEulerAngles = GetViewObjectRotation(data);
 
-            var view = go.GetComponent<ViewObject>();
-            view.PrefabName = prefabName;
+            ViewObject view = go.GetComponent<ViewObject>();
 
             if (data.Type == NoteType.Hold)
             {

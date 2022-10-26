@@ -55,16 +55,16 @@ namespace CyanStars.Gameplay.MusicGame
             ImgFrame.color = color;
 
             GameRoot.Event.AddListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
-            GameRoot.Timer.AddUpdateTimer(OnUpdate);
+            GameRoot.Timer.UpdateTimer.Add(OnUpdate);
         }
 
         public override void OnClose()
         {
             GameRoot.Event.RemoveListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
-            GameRoot.Timer.RemoveUpdateTimer(OnUpdate);
+            GameRoot.Timer.UpdateTimer.Remove(OnUpdate);
         }
 
-        private void OnUpdate(float deltaTime)
+        private void OnUpdate(float deltaTime,object userdata)
         {
             if (dataModule.RunningTimeline != null)
             {

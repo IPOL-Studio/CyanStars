@@ -9,6 +9,7 @@ using CyanStars.Framework.FSM;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Base;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UInput = UnityEngine.Input;
 
 namespace CyanStars.Gameplay.MusicGame
@@ -26,13 +27,12 @@ namespace CyanStars.Gameplay.MusicGame
         private MusicGameSettingsModule settingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
 
         //----场景物体与组件--------
+        private Scene scene;
         private GameObject sceneRoot;
         private Transform sceneCameraTrans;
         private AudioSource audioSource;
 
         //----音游相关数据--------
-        private InputMapData inputMapData;
-        private MapManifest mapManifest;
         private MapTimelineData timelineData;
         private string lrcText;
         private AudioClip music;
@@ -57,9 +57,9 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Event.AddListener(EventConst.MusicGameExitEvent, OnMusicGameExit);
 
             //打开游戏场景
-            bool success = await GameRoot.Asset.AwaitLoadScene("Assets/BundleRes/Scenes/Dark.unity");
+            scene = await GameRoot.Asset.AwaitLoadScene("Assets/BundleRes/Scenes/Dark.unity");
 
-            if (success)
+            if (scene != default)
             {
                 //获取场景物体与组件
                 GetSceneObj();
@@ -86,8 +86,6 @@ namespace CyanStars.Gameplay.MusicGame
             sceneCameraTrans = null;
             audioSource = null;
 
-            inputMapData = null;
-            mapManifest = null;
             timelineData = null;
             lrcText = null;
             music = null;
@@ -105,7 +103,8 @@ namespace CyanStars.Gameplay.MusicGame
 
             CloseMusicGameUI();
 
-            GameRoot.Asset.UnloadScene("Assets/BundleRes/Scenes/Dark.unity");
+            GameRoot.Asset.UnloadScene(scene);
+            scene = default;
         }
 
         /// <summary>
@@ -180,7 +179,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             //输入映射数据
             InputMapSO inputMapSo = await GameRoot.Asset.AwaitLoadAsset<InputMapSO>(dataModule.InputMapDataName, sceneRoot);
-            inputMapData = inputMapSo.InputMapData;
+            InputMapData inputMapData = inputMapSo.InputMapData;
 
             if (!dataModule.IsAutoMode)
             {
@@ -204,7 +203,7 @@ namespace CyanStars.Gameplay.MusicGame
 
 
             //谱面清单
-            mapManifest = dataModule.GetMap(dataModule.MapIndex);
+            MapManifest mapManifest = dataModule.GetMap(dataModule.MapIndex);
 
             //时间轴数据
             MapTimelineDataSO timelineDataSo = await GameRoot.Asset.AwaitLoadAsset<MapTimelineDataSO>(mapManifest.TimelineFileName, sceneRoot);
@@ -303,7 +302,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             dataModule.RunningTimeline = timeline;
 
-            GameRoot.Timer.AddUpdateTimer(UpdateTimeline);
+            GameRoot.Timer.UpdateTimer.Add(UpdateTimeline);
 
             Debug.Log("时间轴创建完毕");
         }
@@ -311,7 +310,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 更新时间轴
         /// </summary>
-        private void UpdateTimeline(float deltaTime)
+        private void UpdateTimeline(float deltaTime,object userdata)
         {
             float timelineDeltaTime = audioSource.time - lastTime;
             lastTime = audioSource.time;
@@ -334,7 +333,7 @@ namespace CyanStars.Gameplay.MusicGame
             lastTime = -float.Epsilon;
             audioSource.clip = null;
 
-            GameRoot.Timer.RemoveUpdateTimer(UpdateTimeline);
+            GameRoot.Timer.UpdateTimer.Remove(UpdateTimeline);
             inputReceiver?.EndReceive();
 
             GameRoot.Event.Dispatch(EventConst.MusicGameEndEvent, this,EmptyEventArgs.Create());

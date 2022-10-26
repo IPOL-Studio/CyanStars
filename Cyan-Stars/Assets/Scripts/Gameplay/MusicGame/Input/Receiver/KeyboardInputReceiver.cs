@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CyanStars.Framework;
+using CyanStars.Framework.Timer;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
@@ -11,21 +12,23 @@ namespace CyanStars.Gameplay.MusicGame
     {
         private readonly HashSet<KeyCode> PressedKeySet = new HashSet<KeyCode>();
 
+
         public KeyboardInputReceiver(InputMapData data) : base(data)
         {
+
         }
 
         public override void StartReceive()
         {
-            GameRoot.Timer.AddUpdateTimer(OnUpdate);
+            GameRoot.Timer.UpdateTimer.Add(OnUpdate);
         }
 
         public override void EndReceive()
         {
-            GameRoot.Timer.RemoveUpdateTimer(OnUpdate);
+            GameRoot.Timer.UpdateTimer.Remove(OnUpdate);
         }
 
-        private void OnUpdate(float deltaTime)
+        private void OnUpdate(float deltaTime,object userdata)
         {
             foreach (InputMapData.Item item in InputMapData.Items)
             {

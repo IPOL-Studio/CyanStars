@@ -1,33 +1,31 @@
-﻿using CatJson;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
-using System.IO;
-namespace CatAsset
+using CatAsset.Runtime;
+
+namespace CatAsset.Runtime
 {
     /// <summary>
     /// CatAsset资源组件
     /// </summary>
     public class CatAssetComponent : MonoBehaviour
     {
-        public RunMode RunMode = RunMode.PackageOnly;
-        public int MaxTaskExcuteCount = 10;
-        public float UnloadDelayTime = 5;
+        [Header("运行模式")]
+        public RuntimeMode RuntimeMode = RuntimeMode.PackageOnly;
+        
+        [Header("编辑器资源模式")]
         public bool IsEditorMode = true;
-        public float EditorModeMaxDelay = 1;
 
+        [Header("资源包卸载延迟")]
+        public float UnloadDelayTime = 30f;
 
+        [Header("单帧最大任务运行数量")]
+        public int MaxTaskRunCount = 10;
+        
         private void Awake()
         {
-            CatAssetManager.RunMode = RunMode;
-          
-            CatAssetManager.MaxTaskExcuteCount = MaxTaskExcuteCount;
-            CatAssetManager.UnloadDelayTime = UnloadDelayTime;
-           
+            CatAssetManager.RuntimeMode= RuntimeMode;
             CatAssetManager.IsEditorMode = IsEditorMode;
-            CatAssetManager.EditorModeMaxDelay = EditorModeMaxDelay;
-
+            CatAssetManager.UnloadDelayTime = UnloadDelayTime;
+            CatAssetManager.MaxTaskRunCount = MaxTaskRunCount;
         }
 
         private void Update()
@@ -36,4 +34,3 @@ namespace CatAsset
         }
     }
 }
-

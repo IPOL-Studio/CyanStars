@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
+
 namespace CatJson
 {
     /// <summary>
@@ -10,13 +12,12 @@ namespace CatJson
     public class JsonLexer
     {
         private string json;
-        private int curIndex;
+        public int CurIndex { get; private set; }
+        public int CurLine { get; private set; }
 
         private bool hasNextTokenCache;
         private TokenType nextTokenType;
         private RangeString nextToken;
-
-        public static StringBuilder sb = new StringBuilder();
 
 
         /// <summary>
@@ -25,8 +26,20 @@ namespace CatJson
         public void SetJsonText(string json)
         {
             this.json = json;
-            curIndex = 0;
+            CurIndex = 0;
+            CurLine = 1;
             hasNextTokenCache = false;
+        }
+
+        
+        /// <summary>
+        /// 回滚
+        /// </summary>
+        public void Rollback(int index,int line, bool hasNext = false)
+        {
+            CurIndex = index;
+            CurLine = line;
+            hasNextTokenCache = hasNext;
         }
 
         /// <summary>
@@ -54,7 +67,16 @@ namespace CatJson
             RangeString token = GetNextToken(out TokenType resultType);
             if (type != resultType)
             {
-                throw new Exception($"NextTokenOfType调用失败，需求{type}但获取到的是{resultType}");
+                if (resultType == TokenType.Number || resultType == TokenType.String)
+                {
+                    ThrowLexerException($"NextTokenOfType调用失败，需求Token为{type}但获取到的是类型为{resultType}的{token}");
+                }
+                else
+                {
+                    ThrowLexerException($"NextTokenOfType调用失败，需求Token为{type}但获取到的是{resultType}");
+                }
+                
+                
             }
             return token;
         }
@@ -79,7 +101,7 @@ namespace CatJson
             //跳过空白字符
             SkipWhiteSpace();
 
-            if (curIndex >= json.Length)
+            if (CurIndex >= json.Length)
             {
                 //文本结束
                 type = TokenType.Eof;
@@ -87,7 +109,8 @@ namespace CatJson
             }
 
             //扫描字面量 分隔符
-            switch (json[curIndex])
+            char c = json[CurIndex];
+            switch (c)
             {
                 case 'n':
                     type = TokenType.Null;
@@ -128,22 +151,23 @@ namespace CatJson
             }
 
             //扫描数字
-            if (char.IsDigit(json[curIndex]) || json[curIndex] == '-')
+            if (char.IsDigit(c) || c == '-')
             {
-                string str = ScanNumber();
+                RangeString rs = ScanNumber();
                 type = TokenType.Number;
-                return new RangeString(str);
+                return rs;
             }
 
             //扫描字符串
-            if (json[curIndex] == '"')
+            if (c == '"')
             {
                 RangeString rs = ScanString();
                 type = TokenType.String;
                 return rs;
             }
-
-            throw new Exception("json解析失败，当前字符:" + json[curIndex]);
+            
+            ThrowLexerException($"json解析失败，当前字符:{c}");
+            return default;
         }
 
         /// <summary>
@@ -151,7 +175,7 @@ namespace CatJson
         /// </summary>
         private void Next(int n = 1)
         {
-            curIndex += n;
+            CurIndex += n;
         }
 
 
@@ -160,16 +184,25 @@ namespace CatJson
         /// </summary>
         private void SkipWhiteSpace()
         {
-            if (curIndex >= json.Length)
+            if (CurIndex >= json.Length)
             {
                 return;
             }
 
-            char c = json[curIndex];
-            while (!(curIndex >= json.Length) && (c == ' ' || c == '\t' || c == '\n' || c == '\r'))
+            char c = json[CurIndex];
+            while (!(CurIndex >= json.Length) && (c == ' ' || c == '\t' || c == '\n' || c == '\r'))
             {
-                Next();
-                c = json[curIndex];
+                if (IsPrefix(Environment.NewLine))
+                {
+                    CurLine++;
+                    Next(Environment.NewLine.Length);
+                }
+                else
+                {
+                    Next();
+                }
+                
+                c = json[CurIndex];
             }
         }
 
@@ -178,7 +211,7 @@ namespace CatJson
         /// </summary>
         private bool IsPrefix(string prefix)
         {
-            int tempCurIndex = curIndex;
+            int tempCurIndex = CurIndex;
             for (int i = 0; i < prefix.Length; i++, tempCurIndex++)
             {
                 if (json[tempCurIndex] != prefix[i])
@@ -202,33 +235,36 @@ namespace CatJson
                 Next(prefix.Length);
                 return;
             }
-
-            throw new Exception($"Json语法错误,{prefix}解析失败");
+            
+            ThrowLexerException($"Json语法错误,{prefix}解析失败");
         }
 
         /// <summary>
         /// 扫描数字
         /// </summary>
-        private string ScanNumber()
+        private RangeString ScanNumber()
         {
+            int startIndex = CurIndex;
+            
             //第一个字符是0-9或者-
-            sb.Append(json[curIndex]);
             Next();
 
             while (
-                !(curIndex >= json.Length)&&
+                !(CurIndex >= json.Length)&&
                 (
-                char.IsDigit(json[curIndex]) || json[curIndex] == '.' || json[curIndex] == '+'|| json[curIndex] == '-'|| json[curIndex] == 'e'|| json[curIndex] == 'E')
+                char.IsDigit(json[CurIndex]) || json[CurIndex] == '.' || json[CurIndex] == '+'|| json[CurIndex] == '-'|| json[CurIndex] == 'e'|| json[CurIndex] == 'E')
                 )
             {
-                sb.Append(json[curIndex]);
+
                 Next();
             }
 
-            string result = sb.ToString();
-            sb.Clear();
+            int endIndex = CurIndex - 1;
 
-            return result;
+            RangeString rs = new RangeString(json, startIndex, endIndex);
+
+            return rs;
+            
         }
 
         /// <summary>
@@ -240,19 +276,49 @@ namespace CatJson
             // 起始字符是 " 要跳过
             Next();
 
-            int startIndex = curIndex;
+            int startIndex = CurIndex;
 
-            while (!(curIndex >= json.Length) & json[curIndex] != '"')
+            char c = json[CurIndex];
+            while (!(CurIndex >= json.Length) & c != '"')
             {
-               
-                Next();
+                if ((c == '\r' || c =='\n') && IsPrefix(Environment.NewLine))
+                {
+                    CurLine++;
+                    Next(Environment.NewLine.Length);
+                }
+                else
+                {
+                    Next();
+                }
+
+                c = json[CurIndex];
+            }
+            
+            // 字符串中有转义\" 的需要继续
+            bool isNeedBack = false;
+            if (json[CurIndex-1] == '\\')
+            {
+                int index = 2;
+                while (CurIndex-index!=0 && json[CurIndex-index]=='\\' )
+                {
+                    index++;
+                }
+                if (index%2==0)
+                {
+                    ScanString();
+                    isNeedBack = true;
+                }
             }
 
-            int endIndex = curIndex - 1;
-
-            if (curIndex >= json.Length)
+            if (isNeedBack)
             {
-                throw new Exception("字符串扫描失败，不是以双引号结尾的");
+                Next(-1);
+            }
+            int endIndex = CurIndex - 1;
+
+            if (CurIndex >= json.Length)
+            {
+                ThrowLexerException("字符串扫描失败，不是以双引号结尾的");
             }
             else
             {
@@ -263,6 +329,11 @@ namespace CatJson
             RangeString rs = new RangeString(json, startIndex, endIndex);
 
             return rs;
+        }
+
+        private void ThrowLexerException(string error)
+        {
+            throw new Exception($"行数:{CurLine},异常信息:{error}");
         }
     }
 

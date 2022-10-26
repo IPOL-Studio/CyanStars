@@ -6,6 +6,7 @@ using System.Linq;
 using CatAsset.Editor;
 using UnityEditor;
 using UnityEngine;
+using BuildPipeline = UnityEditor.BuildPipeline;
 
 namespace CyanStars.Editor
 {
@@ -35,9 +36,9 @@ namespace CyanStars.Editor
 
         private static void BuildAssetBundle(BuildTarget buildTarget)
         {
-            Packager.ExecutePackagePipeline(PkgUtil.PkgCfg.OutputPath, PkgUtil.PkgCfg.Options,
-                buildTarget, PkgUtil.PkgCfg.ManifestVersion, PkgUtil.PkgCfg.IsAnalyzeRedundancy,
-                true, PkgUtil.PkgCfg.CopyGroup);
+            BundleBuildConfigSO bundleBuildConfig = Util.GetConfigAsset<BundleBuildConfigSO>();
+            bundleBuildConfig.RefreshBundleBuildInfos();
+            CatAsset.Editor.BuildPipeline.BuildBundles(bundleBuildConfig, buildTarget);
         }
 
 
@@ -56,7 +57,7 @@ namespace CyanStars.Editor
             EditorBuildSettingsScene[] targetScenes = new EditorBuildSettingsScene[1];
             targetScenes[0] = new EditorBuildSettingsScene("Assets/CyanStarsEntry.unity", true);
             BuildPipeline.BuildPlayer(targetScenes, path, buildTarget, BuildOptions.Development);
-            Debug.Log($"安装包构建完毕，路径:{path}");
+            Debug.Log($"安装包构建完毕，路径:{new FileInfo(path).FullName}");
         }
     }
 }

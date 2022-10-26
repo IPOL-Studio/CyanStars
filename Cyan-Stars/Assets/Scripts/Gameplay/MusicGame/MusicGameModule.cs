@@ -49,11 +49,15 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public string InternalMapListName { get; private set; }
 
-        public string TapPrefabName { get; private set; }
-        public string HoldPrefabName { get; private set; }
-        public string DragPrefabName { get; private set; }
-        public string ClickPrefabName { get; private set; }
-        public string BreakPrefabName { get; private set; }
+        /// <summary>
+        /// 音符类型 -> 音符预制体名称
+        /// </summary>
+        public Dictionary<NoteType,string> NotePrefabNameDict{ get; private set; }
+
+        /// <summary>
+        /// 音符类型 -> 音符打击特效预制体名称
+        /// </summary>
+        public Dictionary<NoteType,string> HitEffectPrefabNameDict{ get; private set; }
 
         /// <summary>
         /// 特效预制体名称列表
@@ -84,11 +88,23 @@ namespace CyanStars.Gameplay.MusicGame
             InputMapDataName = "Assets/BundleRes/ScriptObjects/InputMap/InputMapData.asset";
             InternalMapListName = "Assets/BundleRes/ScriptObjects/InternalMap/InternalMapList.asset";
 
-            TapPrefabName = "Assets/BundleRes/Prefabs/Notes/Tap.prefab";
-            HoldPrefabName = "Assets/BundleRes/Prefabs/Notes/Hold.prefab";
-            DragPrefabName = "Assets/BundleRes/Prefabs/Notes/Drag.prefab";
-            ClickPrefabName = "Assets/BundleRes/Prefabs/Notes/Click.prefab";
-            BreakPrefabName = "Assets/BundleRes/Prefabs/Notes/Break.prefab";
+            NotePrefabNameDict = new Dictionary<NoteType, string>()
+            {
+                {NoteType.Tap,"Assets/BundleRes/Prefabs/Notes/Tap.prefab"},
+                {NoteType.Hold,"Assets/BundleRes/Prefabs/Notes/Hold.prefab"},
+                {NoteType.Drag,"Assets/BundleRes/Prefabs/Notes/Drag.prefab"},
+                {NoteType.Click,"Assets/BundleRes/Prefabs/Notes/Click.prefab"},
+                {NoteType.Break,"Assets/BundleRes/Prefabs/Notes/Break.prefab"},
+            };
+
+            HitEffectPrefabNameDict = new Dictionary<NoteType, string>()
+            {
+                {NoteType.Tap,"Assets/BundleRes/Prefabs/Effect/TapHitEffect.prefab"},
+                {NoteType.Hold,"Assets/BundleRes/Prefabs/Effect/HoldHitEffect.prefab"},
+                {NoteType.Drag,"Assets/BundleRes/Prefabs/Effect/DragHitEffect.prefab"},
+                {NoteType.Click,"Assets/BundleRes/Prefabs/Effect/ClickHitEffect.prefab"},
+                {NoteType.Break,"Assets/BundleRes/Prefabs/Effect/BreakHitEffect.prefab"},
+            };
 
             EffectNames = new List<string>()
             {
