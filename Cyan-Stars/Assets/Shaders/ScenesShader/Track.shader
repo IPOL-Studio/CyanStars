@@ -3,7 +3,7 @@ Shader "SceneShader/Track"
     Properties
     {
         _Color ("Color", color) = (1, 1, 1, 1)
-        _Length ("Length", range(0.8, 1)) = 1
+        _Length ("Length", range(0, 1)) = 1
     }
     SubShader
     {
@@ -46,9 +46,9 @@ Shader "SceneShader/Track"
 
             half4 frag (v2f i) : SV_Target
             {
-                float alpha = _Length - i.uv.y;
-                alpha = smoothstep(0.4, 0.45, alpha);
-                return float4(_Color.xyz, alpha);
+                // float alpha = _Length - i.uv.y;
+                // alpha = smoothstep(0.4, 0.45, alpha);
+                return float4(_Color.xyz, _Length);
             }
             ENDHLSL
         }
