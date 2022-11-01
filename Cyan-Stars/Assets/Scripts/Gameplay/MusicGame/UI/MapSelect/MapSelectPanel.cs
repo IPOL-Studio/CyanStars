@@ -45,7 +45,8 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 //切换到音游流程
                 GameRoot.GetDataModule<MusicGameModule>().MapIndex = curSelectMapItem.Data.Index;
-                GameRoot.ChangeProcedure<MusicGameProcedure>();
+                //GameRoot.ChangeProcedure<MusicGameProcedure>();
+                GameRoot.ChangeProcedure<Dialogue.DialogueProcedure>();
             });
         }
 
