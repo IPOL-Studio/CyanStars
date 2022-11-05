@@ -38,7 +38,7 @@ namespace CyanStars.Gameplay.Dialogue
 
         public async Task SetAvatar(string filePath)
         {
-            avatar.sprite = (await GameRoot.Asset.AwaitLoadAsset<Sprite>(filePath, gameObject));
+            avatar.sprite = (await GameRoot.Asset.LoadAssetAsync<Sprite>(filePath, gameObject));
         }
     }
 }

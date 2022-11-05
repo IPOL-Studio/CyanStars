@@ -30,7 +30,7 @@ namespace CyanStars.Gameplay.Dialogue
         {
             var sprite = string.IsNullOrEmpty(filePath) || string.IsNullOrWhiteSpace(filePath)
                 ? null
-                : await GameRoot.Asset.AwaitLoadAsset<Sprite>(filePath, this.gameObject);
+                : await GameRoot.Asset.LoadAssetAsync<Sprite>(filePath, this.gameObject);
             background.sprite = sprite;
         }
     }

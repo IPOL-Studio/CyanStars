@@ -40,7 +40,7 @@ namespace CyanStars.Gameplay.Dialogue
         {
             GameRoot.MainCamera.gameObject.SetActive(false);
 
-            scene = await GameRoot.Asset.AwaitLoadScene(ScenePath);
+            scene = await GameRoot.Asset.LoadSceneAsync(ScenePath);
 
             if (scene != default)
             {
@@ -138,7 +138,7 @@ namespace CyanStars.Gameplay.Dialogue
         private async Task LoadDialogueData(string jsonFilePath)
         {
             // 目前还没有MOD实现，所以只考虑内置情况
-            var jsonAsset = await GameRoot.Asset.AwaitLoadAsset<TextAsset>(jsonFilePath);
+            var jsonAsset = await GameRoot.Asset.LoadAssetAsync<TextAsset>(jsonFilePath);
             DialogueData blackboard = await DialogueDataHelper.Deserialize(jsonAsset.text);
             LoadInitNodes(blackboard);
             LoadFlowNodes(blackboard);
