@@ -99,7 +99,7 @@ namespace CatAsset.Runtime
         /// <summary>
         /// 尝试创建外置原生资源的运行时信息
         /// </summary>
-        internal static AssetRuntimeInfo TryCreateExternalRawAssetRuntimeInfo(string assetName)
+        internal static void TryCreateExternalRawAssetRuntimeInfo(string assetName)
         {
             if (!assetRuntimeInfoDict.TryGetValue(assetName,out AssetRuntimeInfo assetRuntimeInfo))
             {
@@ -126,7 +126,6 @@ namespace CatAsset.Runtime
                 };
                 assetRuntimeInfo.BundleManifest = new BundleManifestInfo
                 {
-                    RelativePath = assetName,
                     Directory = dir,
                     BundleName = name,
                     Group = string.Empty,
@@ -144,8 +143,6 @@ namespace CatAsset.Runtime
                 };
                 bundleRuntimeInfoDict.Add(bundleRuntimeInfo.Manifest.RelativePath,bundleRuntimeInfo);
             }
-
-            return assetRuntimeInfo;
         }
         
         /// <summary>

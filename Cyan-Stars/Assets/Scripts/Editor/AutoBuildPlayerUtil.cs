@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using CatAsset.Editor;
 using UnityEditor;
 using UnityEngine;
 using BuildPipeline = UnityEditor.BuildPipeline;
+using Debug = UnityEngine.Debug;
 
 namespace CyanStars.Editor
 {
@@ -36,9 +38,8 @@ namespace CyanStars.Editor
 
         private static void BuildAssetBundle(BuildTarget buildTarget)
         {
-            BundleBuildConfigSO bundleBuildConfig = Util.GetConfigAsset<BundleBuildConfigSO>();
-            bundleBuildConfig.RefreshBundleBuildInfos();
-            CatAsset.Editor.BuildPipeline.BuildBundles(bundleBuildConfig, buildTarget);
+            BundleBuildConfigSO.Instance.RefreshBundleBuildInfos();
+            CatAsset.Editor.BuildPipeline.BuildBundles(BundleBuildConfigSO.Instance, buildTarget);
         }
 
 
@@ -57,7 +58,24 @@ namespace CyanStars.Editor
             EditorBuildSettingsScene[] targetScenes = new EditorBuildSettingsScene[1];
             targetScenes[0] = new EditorBuildSettingsScene("Assets/CyanStarsEntry.unity", true);
             BuildPipeline.BuildPlayer(targetScenes, path, buildTarget, BuildOptions.Development);
-            Debug.Log($"安装包构建完毕，路径:{new FileInfo(path).FullName}");
+            Open(new FileInfo(path).DirectoryName);
+        }
+
+        /// <summary>
+        /// 打开指定目录
+        /// </summary>
+        private static void Open(string directory)
+        {
+            directory = string.Format("\"{0}\"", directory);
+
+            if (Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                Process.Start("Explorer.exe", directory.Replace('/', '\\'));
+            }
+            else if (Application.platform == RuntimePlatform.OSXEditor)
+            {
+                Process.Start("open", directory);
+            }
         }
     }
 }

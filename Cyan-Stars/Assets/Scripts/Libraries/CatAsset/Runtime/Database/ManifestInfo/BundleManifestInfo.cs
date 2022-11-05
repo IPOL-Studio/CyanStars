@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace CatAsset.Runtime
@@ -8,12 +9,21 @@ namespace CatAsset.Runtime
     /// <summary>
     /// Bundle清单信息
     /// </summary>
+    [Serializable]
     public class BundleManifestInfo : IComparable<BundleManifestInfo>,IEquatable<BundleManifestInfo>
     {
+        private string relativePath;
+        
         /// <summary>
         /// 相对路径
         /// </summary>
-        public string RelativePath;
+        public string RelativePath{
+            get
+            {
+                relativePath = Util.GetRegularPath(Path.Combine(Directory, BundleName));
+                return relativePath;
+            }
+        }
         
         /// <summary>
         /// 目录名

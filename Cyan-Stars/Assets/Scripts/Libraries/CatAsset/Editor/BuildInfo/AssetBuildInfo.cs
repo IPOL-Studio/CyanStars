@@ -15,7 +15,6 @@ namespace CatAsset.Editor
         /// </summary>
         public string Name;
 
-
         private Type type;
         /// <summary>
         /// 资源类型

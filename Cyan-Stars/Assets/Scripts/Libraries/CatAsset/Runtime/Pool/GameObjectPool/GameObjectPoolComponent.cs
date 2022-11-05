@@ -15,12 +15,12 @@ namespace CatAsset.Runtime
         /// </summary>
         [Header("对象池根节点")]
         public Transform Root;
-        
+
         /// <summary>
         /// 默认对象失效时间
         /// </summary>
         [Header("默认对象失效时间")]
-        public float DefaultObjectExpireTime = 30;
+        public float DefaultObjectExpireTime = 60;
 
         /// <summary>
         /// 默认对象池失效时间
@@ -34,12 +34,12 @@ namespace CatAsset.Runtime
         [Header("单帧最大实例化数")]
         public int MaxInstantiateCount = 10;
 
-       
-        
+
+
         private void Awake()
         {
             GameObjectPoolManager.Root = Root;
-            
+
             GameObjectPoolManager.DefaultObjectExpireTime = DefaultObjectExpireTime;
             GameObjectPoolManager.DefaultPoolExpireTime = DefaultPoolExpireTime;
             GameObjectPoolManager.MaxInstantiateCount = MaxInstantiateCount;

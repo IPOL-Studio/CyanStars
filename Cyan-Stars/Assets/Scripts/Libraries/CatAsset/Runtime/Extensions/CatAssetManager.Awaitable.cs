@@ -13,7 +13,7 @@ namespace CatAsset.Runtime
         /// <summary>
         /// 检查安装包内资源清单,仅使用安装包内资源模式下专用（可等待）
         /// </summary>
-        public static Task<bool> AwaitCheckPackageManifest()
+        public static Task<bool> CheckPackageManifest()
         {
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
             CheckPackageManifest(success =>
@@ -26,12 +26,12 @@ namespace CatAsset.Runtime
         /// <summary>
         /// 加载资源（可等待）
         /// </summary>
-        public static Task<T> AwaitLoadAsset<T>(string assetName,GameObject target = null,TaskPriority priority = TaskPriority.Middle)
+        public static Task<T> LoadAssetAsync<T>(string assetName,GameObject target = null,TaskPriority priority = TaskPriority.Middle)
         {
             TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
-            LoadAsset<T>(assetName, null, (success, asset,result, userdata) =>
+            LoadAssetAsync<T>(assetName, (asset,result) =>
             {
-                if (success && target != null)
+                if (asset != null && target != null)
                 {
                     BindToGameObject(target, result.GetAsset());
                 }
@@ -45,12 +45,12 @@ namespace CatAsset.Runtime
         /// <summary>
         /// 加载资源（可等待）
         /// </summary>
-        public static Task<T> AwaitLoadAsset<T>(string assetName,Scene target = default,TaskPriority priority = TaskPriority.Middle)
+        public static Task<T> LoadAssetAsync<T>(string assetName,Scene target = default,TaskPriority priority = TaskPriority.Middle)
         {
             TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
-            LoadAsset(assetName, null, (success,asset, result, userdata) =>
+            LoadAssetAsync(assetName, (asset, result) =>
             {
-                if (success && target != default)
+                if (asset != null && target != default)
                 {
                     BindToScene(target,result.GetAsset());
                 }
@@ -63,10 +63,10 @@ namespace CatAsset.Runtime
         /// <summary>
         /// 批量加载资源(可等待)
         /// </summary>
-        public static Task<List<LoadAssetResult>> AwaitBatchLoadAsset(List<string> assetNames,GameObject target = null,TaskPriority priority = TaskPriority.Middle)
+        public static Task<List<LoadAssetResult>> BatchLoadAssetAsync(List<string> assetNames,GameObject target = null,TaskPriority priority = TaskPriority.Middle)
         {
             TaskCompletionSource<List<LoadAssetResult>> tcs = new TaskCompletionSource<List<LoadAssetResult>>();
-            BatchLoadAsset(assetNames, null, (assets, userdata) =>
+            BatchLoadAssetAsync(assetNames, (assets) =>
             {
                 if (target != null)
                 {
@@ -90,10 +90,10 @@ namespace CatAsset.Runtime
         /// <summary>
         /// 批量加载资源(可等待)
         /// </summary>
-        public static Task<List<LoadAssetResult>> AwaitBatchLoadAsset(List<string> assetNames,Scene target = default,TaskPriority priority = TaskPriority.Middle)
+        public static Task<List<LoadAssetResult>> BatchLoadAssetAsync(List<string> assetNames,Scene target = default,TaskPriority priority = TaskPriority.Middle)
         {
             TaskCompletionSource<List<LoadAssetResult>> tcs = new TaskCompletionSource<List<LoadAssetResult>>();
-            BatchLoadAsset(assetNames, null, (assets, userdata) =>
+            BatchLoadAssetAsync(assetNames, (assets) =>
             {
                 if (target != default)
                 {
@@ -116,14 +116,13 @@ namespace CatAsset.Runtime
         /// <summary>
         /// 加载场景(可等待)
         /// </summary>
-        public static Task<Scene> AwaitLoadScene(string sceneName)
+        public static Task<Scene> LoadSceneAsync(string sceneName)
         {
             TaskCompletionSource<Scene> tcs = new TaskCompletionSource<Scene>();
 
-            LoadScene(sceneName, tcs, (success, scene, userdata) =>
+            LoadSceneAsync(sceneName, (success, scene) =>
             {
-                TaskCompletionSource<Scene> localTcs = (TaskCompletionSource<Scene>)userdata;
-                localTcs.SetResult(scene);
+                tcs.SetResult(scene);
             });
             
             return tcs.Task;

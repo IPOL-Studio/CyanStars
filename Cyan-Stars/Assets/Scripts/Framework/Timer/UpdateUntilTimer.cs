@@ -83,6 +83,7 @@ namespace CyanStars.Framework.Timer
             if (runningTimers.Contains(timer))
             {
                 Debug.LogError("重复添加了UpdateUntil定时器");
+                return;
             }
 
             runningTimers.Add(timer);

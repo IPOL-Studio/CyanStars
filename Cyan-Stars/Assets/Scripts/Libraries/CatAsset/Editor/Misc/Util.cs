@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using CatAsset.Runtime;
 using UnityEditor;
 using UnityEngine;
@@ -16,46 +18,26 @@ namespace CatAsset.Editor
         /// <summary>
         /// 要排除的文件后缀名集合
         /// </summary>
-        public static readonly HashSet<string> ExcludeSet = new HashSet<string>();
+        public static readonly HashSet<string> ExcludeSet = new HashSet<string>()
+        {
+            ".meta",
+            ".cs",
+            ".asmdef",
+            ".giparams",
+            ".so",
+            ".dll",
+            ".cginc",
+        };
 
         /// <summary>
         /// 默认资源组
         /// </summary>
         public const string DefaultGroup = "Base";
-        
 
-        static Util()
-        {
-            ExcludeSet.Add(".meta");
-            ExcludeSet.Add(".cs");
-            ExcludeSet.Add(".asmdef");
-            ExcludeSet.Add(".giparams");
-        }
-
-        [MenuItem("CatAsset/将所有场景添加到BuildSetting中", priority = 2)]
-        private static void BuildAllScenes()
-        {
-            List<string> sceneNames = new List<string>();
-            string[] sceneGuids = AssetDatabase.FindAssets("t:Scene", new []{"Assets"});
-            foreach (string sceneGuid in sceneGuids)
-            {
-                string sceneName = AssetDatabase.GUIDToAssetPath(sceneGuid);
-                sceneNames.Add(sceneName);
-            }
-
-            List<EditorBuildSettingsScene> scenes = new List<EditorBuildSettingsScene>();
-            foreach (string sceneName in sceneNames)
-            {
-                scenes.Add(new EditorBuildSettingsScene(sceneName, true));
-            }
-
-            EditorBuildSettings.scenes = scenes.ToArray();
-        }
-        
         [MenuItem("CatAsset/打开目录/资源包构建输出根目录", priority = 3)]
         private static void OpenAssetBundleOutputPath()
         {
-            Open(GetConfigAsset<BundleBuildConfigSO>().OutputPath);
+            Open(BundleBuildConfigSO.Instance.OutputPath);
         }
         
 
@@ -70,9 +52,13 @@ namespace CatAsset.Editor
         {
             Open(Application.persistentDataPath);
         }
-
-
         
+        [MenuItem("CatAsset/打开教程文档", priority = 3)]
+        private static void OpenDoc()
+        {
+            Application.OpenURL("http://cathole.top/2022/08/30/catasset-guide/");
+        }
+
         /// <summary>
         /// 打开指定目录
         /// </summary>
@@ -93,7 +79,7 @@ namespace CatAsset.Editor
         [MenuItem("Assets/添加为资源包构建目录（可多选）", false)]
         private static void AddToBundleBuildDirectory()
         {
-            BundleBuildConfigSO config = GetConfigAsset<BundleBuildConfigSO>();
+            BundleBuildConfigSO config = BundleBuildConfigSO.Instance;
 
             foreach (string guid in Selection.assetGUIDs)
             {
@@ -125,31 +111,72 @@ namespace CatAsset.Editor
         }
         
         
+        [MenuItem("Assets/刷新资源包构建信息")]
+        private static void RefreshBundleBuildInfo()
+        {
+            if (BundleBuildConfigSO.Instance != null)
+            {
+                BundleBuildConfigSO.Instance.RefreshBundleBuildInfos();
+            }
+        }
+
         
         /// <summary>
-        /// 获取SO配置
+        /// 获取排除了自身和csharp代码文件的依赖资源列表
         /// </summary>
-        public static T GetConfigAsset<T>() where T : ScriptableObject
+        public static List<string> GetDependencies(string assetName,bool recursive = true)
         {
+            List<string> result  = new List<string>();
+            
+            string[] dependencies = AssetDatabase.GetDependencies(assetName,recursive);
 
-            string typeName = typeof(T).Name;
-            string[] paths = AssetDatabase.FindAssets("t:" + typeName);
-            if (paths.Length == 0)
+            if (dependencies.Length == 0)
             {
-                Debug.LogError("不存在" + typeName);
-                return null;
+                return result;
             }
-            if (paths.Length > 1)
+
+            for (int i = 0; i < dependencies.Length; i++)
             {
-                Debug.LogError(typeName + "数量大于1");
-                return null;
+                string dependencyName = dependencies[i];
+                if (dependencyName == assetName || dependencyName.EndsWith(".cs"))
+                {
+                    //过滤自身与cs代码文件
+                    continue;
+                }
 
+                result.Add(dependencyName);
             }
-            string path = AssetDatabase.GUIDToAssetPath(paths[0]);
-            T config = AssetDatabase.LoadAssetAtPath<T>(path);
 
-            return config;
+            return result;
         }
+
+
+        /// <summary>
+        /// 是否为有效资源
+        /// </summary>
+        public static bool IsValidAsset(string assetName)
+        {
+            string fileExtension = Path.GetExtension(assetName);
+            if (string.IsNullOrEmpty(fileExtension))
+            {
+                return false;
+            }
+
+            if (ExcludeSet.Contains(fileExtension))
+            {
+                return false;
+            }
+
+            Type type = AssetDatabase.GetMainAssetTypeAtPath(assetName);
+            if (type == typeof(LightingDataAsset))
+            {
+                return false;
+            }
+
+            return true;
+
+        }
+
 
         /// <summary>
         /// 将完整目录/文件名转换为Assets开头的目录/文件名
@@ -159,36 +186,6 @@ namespace CatAsset.Editor
             int assetsIndex = fullName.IndexOf("Assets\\");
             string assetsDir = fullName.Substring(assetsIndex).Replace('\\', '/');
             return assetsDir;
-        }
-        
-        /// <summary>
-        /// 获取排除了自身和csharp代码文件的依赖资源列表
-        /// </summary>
-        public static List<string> GetDependencies(string assetName,bool recursive = true)
-        {
-            List<string> result  = null;
-            
-            string[] dependencies = AssetDatabase.GetDependencies(assetName,recursive);
-
-            if (dependencies.Length == 0)
-            {
-                return result;
-            }
-
-            result = new List<string>();
-        
-            for (int i = 0; i < dependencies.Length; i++)
-            {
-                string dependencyName = dependencies[i];
-                if (dependencyName == assetName || dependencyName.EndsWith(".cs"))
-                {
-                    continue;
-                }
-
-                result.Add(dependencyName);
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -237,6 +234,34 @@ namespace CatAsset.Editor
             //删除自身
             dirInfo.Delete();
         }
+
+
+        /// <summary>
+        /// childDir是否为构建目录parentDir的子构建目录
+        /// </summary>
+        public static bool IsChildDirectory(string childDir,string parentDir)
+        {
+            if (childDir == parentDir)
+            {
+                //两个目录名一致 
+                return false;
+            }
+
+            if (!BundleBuildConfigSO.Instance.DirectoryDict.ContainsKey(childDir))
+            {
+                //childDir不是被指定的构建目录
+                return false;
+            }
+
+            if (childDir.StartsWith(parentDir))
+            {
+                //childDir是parentDir的子构建目录
+                return true;
+            }
+
+            return false;
+        }
+        
 
 
     }

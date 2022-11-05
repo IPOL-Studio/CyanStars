@@ -11,7 +11,7 @@ namespace CatAsset.Runtime
     public class AssetRuntimeInfo : IComparable<AssetRuntimeInfo>, IEquatable<AssetRuntimeInfo>
     {
         /// <summary>
-        /// 所在资源包清单信息
+        /// 所属资源包的清单信息
         /// </summary>
         public BundleManifestInfo BundleManifest;
 
@@ -31,25 +31,17 @@ namespace CatAsset.Runtime
         public int RefCount { get; private set; }
 
         /// <summary>
-        /// 引用了此资源的资源集合
+        /// 下游资源集合（依赖此资源的资源）
         /// </summary>
-        public HashSet<AssetRuntimeInfo> RefAssets { get; } = new HashSet<AssetRuntimeInfo>();
+        public readonly HashSet<AssetRuntimeInfo> DownStream = new HashSet<AssetRuntimeInfo>();
 
         /// <summary>
         /// 增加引用计数
         /// </summary>
         public void AddRefCount(int count = 1)
         {
-            if (IsUnused())
-            {
-                //引用计数从0变为1
-                //添加到资源包的已使用资源集合中
-                BundleRuntimeInfo bundleRuntimeInfo =
-                    CatAssetDatabase.GetBundleRuntimeInfo(BundleManifest.RelativePath);
-                bundleRuntimeInfo.StartUseAsset(this);
-            }
-            
             RefCount += count;
+            CheckLifeCycle();
         }
 
         /// <summary>
@@ -64,15 +56,7 @@ namespace CatAsset.Runtime
             }
 
             RefCount -= count;
-
-            if (IsUnused())
-            {
-                //引用计数从1变为0
-                //从资源包的已使用资源集合中删除
-                BundleRuntimeInfo bundleRuntimeInfo =
-                    CatAssetDatabase.GetBundleRuntimeInfo(BundleManifest.RelativePath);
-                bundleRuntimeInfo.EndUseAsset(this);
-            }
+            CheckLifeCycle();
         }
         
         /// <summary>
@@ -84,28 +68,46 @@ namespace CatAsset.Runtime
         }
 
         /// <summary>
-        /// 添加引用了此资源的资源
+        /// 检查资源生命周期
         /// </summary>
-        /// <param name="assetRuntimeInfo"></param>
-        public void AddRefAsset(AssetRuntimeInfo assetRuntimeInfo)
+        public void CheckLifeCycle()
         {
-            if (Asset == null)
+            BundleRuntimeInfo bundleRuntimeInfo =
+                CatAssetDatabase.GetBundleRuntimeInfo(BundleManifest.RelativePath);
+            
+            if (IsUnused())
             {
-                return;
+                //从资源包的使用中资源集合删除
+                bundleRuntimeInfo.RemoveUsingAsset(this);
             }
-            RefAssets.Add(assetRuntimeInfo);
+            else
+            {
+                bundleRuntimeInfo.AddUsingAsset(this);
+            }
         }
 
         /// <summary>
-        /// 移除引用了此资源的资源
+        /// 添加上游资源（依赖此资源的资源）
         /// </summary>
-        public void RemoveRefAsset(AssetRuntimeInfo assetRuntimeInfo)
+        public void AddDownStream(AssetRuntimeInfo assetRuntimeInfo)
         {
             if (Asset == null)
             {
                 return;
             }
-            RefAssets.Remove(assetRuntimeInfo);
+            DownStream.Add(assetRuntimeInfo);
+        }
+
+        /// <summary>
+        /// 移除上游资源（依赖此资源的资源）
+        /// </summary>
+        public void RemoveUpStream(AssetRuntimeInfo assetRuntimeInfo)
+        {
+            if (Asset == null)
+            {
+                return;
+            }
+            DownStream.Remove(assetRuntimeInfo);
         }
         
         public int CompareTo(AssetRuntimeInfo other)

@@ -51,37 +51,38 @@ namespace CatAsset.Runtime
         /// <summary>
         /// 当前使用中的资源集合，这里面的资源的引用计数都大于0
         /// </summary>
-        public HashSet<AssetRuntimeInfo> UsedAssets { get; } = new HashSet<AssetRuntimeInfo>();
+        public readonly HashSet<AssetRuntimeInfo> UsingAssets = new HashSet<AssetRuntimeInfo>();
 
         /// <summary>
-        /// 引用了此资源包的资源包集合
+        /// 资源包依赖链
         /// </summary>
-        public HashSet<BundleRuntimeInfo> RefBundles{ get; } = new HashSet<BundleRuntimeInfo>();
-        
-        /// <summary>
-        /// 此资源包依赖的资源包集合
-        /// </summary>
-        public HashSet<BundleRuntimeInfo> DependencyBundles { get; } = new HashSet<BundleRuntimeInfo>();
+        public readonly BundleDependencyLink DependencyLink = new BundleDependencyLink();
 
         /// <summary>
-        /// 开始使用资源
+        /// 添加使用中的资源
         /// </summary>
-        public void StartUseAsset(AssetRuntimeInfo assetRuntimeInfo)
+        public void AddUsingAsset(AssetRuntimeInfo assetRuntimeInfo)
         {
-            UsedAssets.Add(assetRuntimeInfo);
+            UsingAssets.Add(assetRuntimeInfo);
         }
         
         /// <summary>
-        /// 停止使用资源
+        /// 移除使用中的资源
         /// </summary>
-        public void EndUseAsset(AssetRuntimeInfo assetRuntimeInfo)
+        public void RemoveUsingAsset(AssetRuntimeInfo assetRuntimeInfo)
         {
-            UsedAssets.Remove(assetRuntimeInfo);
+            UsingAssets.Remove(assetRuntimeInfo);
+            CheckLifeCycle();
+        }
 
-            if (CanUnload())
+        /// <summary>
+        /// 检查资源包生命周期
+        /// </summary>
+        public void CheckLifeCycle()
+        {
+            if (UsingAssets.Count == 0 && DependencyLink.DownStream.Count == 0)
             {
-                //此资源包没有资源在使用中了 并且没有其他资源包引用它 卸载资源包
-                
+                //此资源包没有资源在使用中了 并且没有下游资源包 卸载资源包
                 if (!Manifest.IsRaw)
                 {
                     CatAssetManager.UnloadBundle(this);
@@ -89,6 +90,7 @@ namespace CatAsset.Runtime
                 else
                 {
                     //一个原生资源包只对应一个唯一的原生资源
+                    AssetRuntimeInfo assetRuntimeInfo = CatAssetDatabase.GetAssetRuntimeInfo(Manifest.Assets[0]);
                     CatAssetManager.UnloadRawAsset(this,assetRuntimeInfo);
                 }
                 
@@ -96,43 +98,35 @@ namespace CatAsset.Runtime
         }
 
         /// <summary>
-        /// 添加引用了此资源包的资源包
+        /// 添加下游资源包（依赖此资源包的资源包）
         /// </summary>
-        public void AddRefBundle(BundleRuntimeInfo bundleRuntimeInfo)
+        public void AddDownStream(BundleRuntimeInfo bundleRuntimeInfo)
         {
-            RefBundles.Add(bundleRuntimeInfo);
+            DependencyLink.DownStream.Add(bundleRuntimeInfo);
         }
 
         /// <summary>
-        /// 移除引用了此资源包的资源包
+        /// 移除下游资源包（依赖此资源包的资源包）
         /// </summary>
-        public void RemoveRefBundle(BundleRuntimeInfo bundleRuntimeInfo)
+        public void RemoveDownStream(BundleRuntimeInfo bundleRuntimeInfo)
         {
-            RefBundles.Remove(bundleRuntimeInfo);
+            DependencyLink.DownStream.Remove(bundleRuntimeInfo);
         }
 
         /// <summary>
-        /// 添加此资源包依赖的资源包
+        /// 添加上游资源包（此资源包依赖的资源包）
         /// </summary>
-        public void AddDependencyBundle(BundleRuntimeInfo bundleRuntimeInfo)
+        public void AddUpStream(BundleRuntimeInfo bundleRuntimeInfo)
         {
-            DependencyBundles.Add(bundleRuntimeInfo);
-        }
-
-        /// <summary>
-        /// 移除此资源包依赖的资源包
-        /// </summary>
-        public void RemoveDependencyBundle(BundleRuntimeInfo bundleRuntimeInfo)
-        {
-            DependencyBundles.Remove(bundleRuntimeInfo);
+            DependencyLink.UpStream.Add(bundleRuntimeInfo);
         }
         
         /// <summary>
-        /// 是否可卸载
+        /// 清空上游资源包（此资源包依赖的资源包）
         /// </summary>
-        public bool CanUnload()
+        public void ClearUpStream()
         {
-            return UsedAssets.Count == 0 && RefBundles.Count == 0;
+            DependencyLink.UpStream.Clear();
         }
 
         public int CompareTo(BundleRuntimeInfo other)
