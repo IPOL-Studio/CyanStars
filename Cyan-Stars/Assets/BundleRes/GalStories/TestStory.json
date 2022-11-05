@@ -12,10 +12,64 @@
       "node": {
         "actions": [
           {
+            "type": "Content",
+            "action": {
+              "type": "OverWrite",
+              "stop": 0,
+              "inlines": [
+                {
+                  "text": "歌声戛然而止，我从那片星海中苏醒。",
+                  "attrs": [
+                    "color"
+                  ],
+                  "attrValues": {
+                    "color": "#c8c8c8ff"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "id": 1,
+        "nextNode": 2
+      }
+    },
+    {
+      "type": "Action",
+      "node": {
+        "actions": [
+          {
+            "type": "Content",
+            "action": {
+              "type": "OverWrite",
+              "stop": 0,
+              "inlines": [
+                {
+                  "text": "我伸了个懒腰，从床上爬起来。窗外的风景依旧是冰雪，荒漠，一眼望不尽的冰雪和荒漠。",
+                  "attrs": [
+                    "color"
+                  ],
+                  "attrValues": {
+                    "color": "#c8c8c8ff"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "id": 2,
+        "nextNode": 3
+      }
+    },
+    {
+      "type": "Action",
+      "node": {
+        "actions": [
+          {
             "type": "SetName",
             "action": {
-              "text": "Test",
-              "color": null,
+              "text": "我",
+              "color": "#ffffffff",
               "bold": false,
               "italic": false
             }
@@ -23,43 +77,20 @@
           {
             "type": "Content",
             "action": {
-              "type": "Overwrite",
+              "type": "OverWrite",
+              "stop": 0,
               "inlines": [
                 {
-                  "text": "This is a test content",
-                  "attrs": [
-                    "color",
-                    "u"
-                  ],
-                  "attrValues": {
-                    "color": "white",
-                    "uColor": "#333"
-                  }
+                  "text": "果然只是做了个梦啊。",
+                  "attrs": [],
+                  "attrValues": {}
                 }
-              ],
-              "stop": 100
+              ]
             }
           }
         ],
-        "isPause": true,
-        "id": 1,
-        "nextNode": 2
-      }
-    },
-    {
-      "type": "Branch",
-      "node": {
-        "options": [
-          {
-            "nextNode": 3,
-            "text": "Append Content"
-          },
-          {
-            "nextNode": 4,
-            "text": "Overwrite Content"
-          }
-        ],
-        "id": 2
+        "id": 3,
+        "nextNode": 4
       }
     },
     {
@@ -67,59 +98,35 @@
       "node": {
         "actions": [
           {
+            "type": "SetName",
+            "action": {
+              "text": "",
+              "color": "#ffffffff",
+              "bold": false,
+              "italic": false
+            }
+          },
+          {
             "type": "Content",
             "action": {
-              "type": "Append",
+              "type": "OverWrite",
+              "stop": 0,
               "inlines": [
                 {
-                  "text": "T",
+                  "text": "我拍拍脑袋，让自己清醒了很多。",
                   "attrs": [
                     "color"
                   ],
                   "attrValues": {
-                    "color": "red"
+                    "color": "#c8c8c8ff"
                   }
-                },
-                {
-                  "text": "E",
-                  "attrs": [
-                    "color",
-                    "b"
-                  ],
-                  "attrValues": {
-                    "color": "orange"
-                  }
-                },
-                {
-                  "text": "S",
-                  "attrs": [
-                    "color",
-                    "i"
-                  ],
-                  "attrValues": {
-                    "color": "yellow"
-                  }
-                },
-                {
-                  "text": "T",
-                  "attrs": [
-                    "color",
-                    "b",
-                    "i"
-                  ],
-                  "attrValues": {
-                    "color": "green"
-                  }
-                },
-                {
-                  "text": ", Append Test"
                 }
-              ],
-              "stop": 0
+              ]
             }
           }
         ],
-        "id": 3
+        "id": 4,
+        "nextNode": 5
       }
     },
     {
@@ -129,17 +136,145 @@
           {
             "type": "Content",
             "action": {
-              "type": "Overwrite",
+              "type": "OverWrite",
+              "stop": 0,
               "inlines": [
                 {
-                  "text": "Overwrite Test"
+                  "text": "走廊上传来几声脚步，我打开门，刚好见到一个红色的身影，正哼着歌儿，悠悠的走。",
+                  "attrs": [
+                    "color"
+                  ],
+                  "attrValues": {
+                    "color": "#c8c8c8ff"
+                  }
                 }
-              ],
-              "stop": 0
+              ]
             }
           }
         ],
-        "id": 4
+        "id": 5,
+        "nextNode": 6
+      }
+    },
+    {
+      "type": "Action",
+      "node": {
+        "actions": [
+          {
+            "type": "SetName",
+            "action": {
+              "text": "我",
+              "color": "#ffffffff",
+              "bold": false,
+              "italic": false
+            }
+          },
+          {
+            "type": "Content",
+            "action": {
+              "type": "OverWrite",
+              "stop": 0,
+              "inlines": [
+                {
+                  "text": "早啊，阿绫。",
+                  "attrs": [],
+                  "attrValues": {}
+                }
+              ]
+            }
+          }
+        ],
+        "id": 6,
+        "nextNode": 7
+      }
+    },
+    {
+      "type": "Action",
+      "node": {
+        "actions": [
+          {
+            "type": "SetName",
+            "action": {
+              "text": "乐正绫",
+              "color": "#ffffffff",
+              "bold": false,
+              "italic": false
+            }
+          },
+          {
+            "type": "Content",
+            "action": {
+              "type": "OverWrite",
+              "stop": 0,
+              "inlines": [
+                {
+                  "text": "早啊",
+                  "attrs": [
+                    "color"
+                  ],
+                  "attrValues": {
+                    "color": "#ff4141ff"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "id": 7,
+        "nextNode": 8
+      }
+    },
+    {
+      "type": "Action",
+      "node": {
+        "actions": [
+          {
+            "type": "SetName",
+            "action": {
+              "text": "",
+              "color": "#ffffffff",
+              "bold": false,
+              "italic": false
+            }
+          },
+          {
+            "type": "Content",
+            "action": {
+              "type": "OverWrite",
+              "stop": 0,
+              "inlines": [
+                {
+                  "text": "眼前的女孩子，复姓乐正单名一个绫字，是在庇护所一起同居的女孩子，也是算上我后在这庇护所里生活的唯二的“ ",
+                  "attrs": [
+                    "color"
+                  ],
+                  "attrValues": {
+                    "color": "#c8c8c8ff"
+                  }
+                },
+                {
+                  "text": "留守者",
+                  "attrs": [
+                    "color"
+                  ],
+                  "attrValues": {
+                    "color": "#ffff41ff"
+                  }
+                },
+                {
+                  "text": "”。",
+                  "attrs": [
+                    "color"
+                  ],
+                  "attrValues": {
+                    "color": "#c8c8c8ff"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "id": 8
       }
     }
   ]
