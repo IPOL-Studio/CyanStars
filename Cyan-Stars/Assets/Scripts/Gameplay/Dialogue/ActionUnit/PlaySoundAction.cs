@@ -1,4 +1,5 @@
-﻿using CyanStars.Framework;
+﻿using System.Threading.Tasks;
+using CyanStars.Framework;
 using CyanStars.Framework.Dialogue;
 using CyanStars.Framework.Event;
 using Newtonsoft.Json;
@@ -11,20 +12,10 @@ namespace CyanStars.Gameplay.Dialogue
         [JsonProperty("filePath")]
         public string FilePath { get; set; }
 
-        public override void OnInit()
+        public override Task ExecuteAsync()
         {
-            GameRoot.Event.Dispatch(EventConst.PlaySoundEvent, this, SingleEventArgs<string>.Create(FilePath));
-            IsCompleted = true;
-        }
-
-        public override void OnUpdate(float deltaTime)
-        {
-
-        }
-
-        public override void OnComplete()
-        {
-            IsCompleted = true;
+            GameRoot.Dialogue.GetService<AudioManager>().PlaySound(FilePath);
+            return Task.CompletedTask;
         }
     }
 }

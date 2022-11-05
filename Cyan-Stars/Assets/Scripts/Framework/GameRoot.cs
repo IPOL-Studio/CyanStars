@@ -5,6 +5,7 @@ using UnityEngine;
 using CyanStars.Framework.UI;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Asset;
+using CyanStars.Framework.Dialogue;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.GameObjectPool;
 using CyanStars.Framework.Logger;
@@ -68,6 +69,8 @@ namespace CyanStars.Framework
         /// </summary>
         public static LoggerManager Logger { get; private set; }
 
+        public static DialogueServiceManager Dialogue { get; private set; }
+
         /// <summary>
         /// 流程状态机
         /// </summary>
@@ -94,6 +97,7 @@ namespace CyanStars.Framework
             Timer = GetManager<TimerManager>();
             UI = GetManager<UIManager>();
             Logger = GetManager<LoggerManager>();
+            Dialogue = GetManager<DialogueServiceManager>();
 
             //按优先级排序并初始化所有Manager
             Managers.Sort((x, y) => x.Priority.CompareTo(y.Priority));

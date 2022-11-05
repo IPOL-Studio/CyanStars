@@ -1,4 +1,5 @@
-﻿using CyanStars.Framework;
+﻿using System.Threading.Tasks;
+using CyanStars.Framework;
 using CyanStars.Framework.Dialogue;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -20,26 +21,20 @@ namespace CyanStars.Gameplay.Dialogue
         [JsonProperty("isCrossFading")]
         public bool IsCrossFading { get; set; }
 
-        public override void OnInit()
+        public override Task ExecuteAsync()
         {
             CheckValues();
 
             float fadeIn = Mathf.Clamp(FadeInTime, 0, float.MaxValue);
             float fadeOut = Mathf.Clamp(FadeOutTime, 0, float.MaxValue);
 
-            GameRoot.Event.Dispatch(PlayMusicEventArgs.EventName, this,
-                PlayMusicEventArgs.Create(FilePath, fadeIn, fadeOut, IsCrossFading));
+            var args = new PlayMusicArgs
+            {
+                FilePath = FilePath, FadeInTime = fadeIn, FadeOutTime = fadeOut, IsCrossFading = IsCrossFading
+            };
 
-            IsCompleted = true;
-        }
-
-        public override void OnUpdate(float deltaTime)
-        {
-        }
-
-        public override void OnComplete()
-        {
-            IsCompleted = true;
+            GameRoot.Dialogue.GetService<AudioManager>().PlayMusic(args);
+            return Task.CompletedTask;
         }
 
         private void CheckValues()

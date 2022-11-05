@@ -22,9 +22,7 @@ namespace CyanStars.Framework.Utils
 
         public static bool TryParseColor(string colorName, out string hex, bool isToLower = true)
         {
-            if (isToLower)
-                colorName = colorName.ToLower();
-            return ColorNameToHex.TryGetValue(colorName, out hex);
+            return ColorNameToHex.TryGetValue(isToLower ? colorName.ToLower() : colorName, out hex);
         }
 
         public static bool TryParseHtmlString(string str, out string hex)

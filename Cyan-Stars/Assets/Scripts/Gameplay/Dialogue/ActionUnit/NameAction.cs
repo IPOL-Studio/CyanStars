@@ -1,6 +1,6 @@
+using System.Threading.Tasks;
 using CyanStars.Framework;
 using CyanStars.Framework.Dialogue;
-using CyanStars.Framework.Event;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -21,19 +21,10 @@ namespace CyanStars.Gameplay.Dialogue
         [JsonProperty("italic")]
         public bool Italic { get; set; }
 
-        public override void OnInit()
+        public override Task ExecuteAsync()
         {
-            GameRoot.Event.Dispatch(EventConst.SetNameTextEvent, this, SingleEventArgs<string>.Create(CreateFinalText()));
-            IsCompleted = true;
-        }
-
-        public override void OnUpdate(float deltaTime)
-        {
-        }
-
-        public override void OnComplete()
-        {
-            IsCompleted = true;
+            GameRoot.Dialogue.GetService<CharacterInfoManager>().SetNameText(CreateFinalText());
+            return Task.CompletedTask;
         }
 
         private string CreateFinalText()
