@@ -925,6 +925,10 @@ MonoBehaviour:
     CameraTrackData:
       DefaultPosition: {x: 0, y: 0, z: 0}
       DefaultRotation: {x: 0, y: 0, z: 0}
-      KeyFrames: []
+      KeyFrames:
+      - Time: 0
+        Position: {x: 0, y: -5, z: 0}
+        Rotation: {x: 20, y: 0, z: 0}
+        EasingType: 0
     EffectTrackData:
       KeyFrames: []
