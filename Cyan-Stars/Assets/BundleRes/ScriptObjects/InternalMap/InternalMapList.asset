@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InternalMaps:
   - Name: "\u6D4B\u8BD5\u8C31"
-    LrcFileName: Assets/BundleRes/MusicGameMap/Map_01/LrcText.txt
-    MusicFileName: Assets/BundleRes/MusicGameMap/Map_01/Music.ogg
+    LrcFileName: 
+    MusicFileName: Assets/BundleRes/MusicGameMap/Map_00/Music.ogg
     BackgroundFileName: 
     CoverFileName: 
     ClipCoverFileName: 
