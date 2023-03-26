@@ -37,8 +37,8 @@ namespace CyanStars.Gameplay.MusicGame
             TxtGrade.color = color;
             TxtAccuracy.text = $"杂率:{0:F3}s";
             TxtAccuracy.color = Color.yellow;
-            TxtScoreRatio.text = $"{0:F}%";
-            TxtScoreRatio.color = Color.cyan;
+            TxtScoreRatio.text = $"{100:F}%";
+            TxtScoreRatio.color = Color.yellow;
             TxtVisibleScore.text = "000000";;
 
             GameRoot.Event.AddListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
