@@ -1,0 +1,16 @@
+{
+    "name": "MunNovel.SharpScript",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6e423125b0da7d14e887a6945bdc2cde"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
