@@ -1,6 +1,6 @@
 {
     "name": "MunNovel.SharpScript",
-    "rootNamespace": "",
+    "rootNamespace": "MunNovel.SharpScript",
     "references": [
         "GUID:6e423125b0da7d14e887a6945bdc2cde"
     ],
@@ -12,5 +12,5 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
-    "noEngineReferences": false
+    "noEngineReferences": true
 }
