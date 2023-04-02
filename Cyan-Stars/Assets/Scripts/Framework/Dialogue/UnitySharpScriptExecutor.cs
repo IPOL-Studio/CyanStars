@@ -82,13 +82,19 @@ namespace CyanStars.Framework.Dialogue
         public void Play()
         {
             if (State == ScriptExecuteState.NoScript)
+            {
                 throw new ScriptExecuteException("Not load Script");
-
-            if (State == ScriptExecuteState.Playing || State == ScriptExecuteState.Done)
-                return;
+            }
 
             if (State == ScriptExecuteState.Loading)
+            {
                 throw new ScriptExecuteException("Script loading");
+            }
+
+            if (State != ScriptExecuteState.Loaded)
+            {
+                return;
+            }
 
             State = ScriptExecuteState.Playing;
             Execute();
@@ -110,7 +116,7 @@ namespace CyanStars.Framework.Dialogue
             State = ScriptExecuteState.Done;
         }
 
-        private async void Pause(TaskCompletionSource<object> tcs, double time)
+        private void Pause(TaskCompletionSource<object> tcs, double time)
         {
             if (State != ScriptExecuteState.Playing)
             {
@@ -125,12 +131,22 @@ namespace CyanStars.Framework.Dialogue
             // time <= 0 时，将暂停script执行的控制权移交给外部实现
             if (time <= 0)
             {
-                await operationHandler.OnPause();
-                Resume();
-                return;
+                ThrowPause();
             }
+            else
+            {
+                Pause(tcs.Task, time);
+            }
+        }
 
-            // 来自script设置的暂停
+        private async void ThrowPause()
+        {
+            await operationHandler.OnPause();
+            Resume();
+        }
+
+        private void Pause(Task pauseTask, double time)
+        {
             void WaitPauseCallback(object userdata)
             {
                 var task = (Task)userdata;
@@ -142,7 +158,7 @@ namespace CyanStars.Framework.Dialogue
 
             CancellationTokenSource cts = new CancellationTokenSource();
             this.pauseContext.CancellationSource = cts;
-            GameRoot.Timer.GetTimer<IntervalTimer>().Add((float)time, WaitPauseCallback, tcs.Task, 1, cts.Token);
+            GameRoot.Timer.GetTimer<IntervalTimer>().Add((float)time, WaitPauseCallback, pauseTask, 1, cts.Token);
         }
 
         public void Resume()
