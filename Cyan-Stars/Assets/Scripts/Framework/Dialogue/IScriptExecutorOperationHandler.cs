@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace CyanStars.Framework.Dialogue
 {
-    public interface IScriptExecutorHandler
+    public interface IScriptExecutorOperationHandler
     {
         Task OnPause();
     }

@@ -32,7 +32,7 @@ namespace CyanStars.Framework.Dialogue
 
         private IScript script;
         private IScriptContext context;
-        private IScriptExecutorHandler actionHandler;
+        private IScriptExecutorOperationHandler operationHandler;
 
         private PauseContext pauseContext;
 
@@ -53,16 +53,16 @@ namespace CyanStars.Framework.Dialogue
         }
 
 
-        public UnitySharpScriptExecutor(IScriptExecutorHandler actionHandler)
+        public UnitySharpScriptExecutor(IScriptExecutorOperationHandler operationHandler)
         {
             context = new ScriptContext(new CommandBuffer(this));
-            this.actionHandler = actionHandler;
+            this.operationHandler = operationHandler;
         }
 
-        public UnitySharpScriptExecutor(IScriptContext context, IScriptExecutorHandler actionHandler)
+        public UnitySharpScriptExecutor(IScriptContext context, IScriptExecutorOperationHandler operationHandler)
         {
             this.context = context;
-            this.actionHandler = actionHandler;
+            this.operationHandler = operationHandler;
         }
 
         public async Task Load(IScript script, CancellationToken cancellationToken = default)
@@ -125,7 +125,7 @@ namespace CyanStars.Framework.Dialogue
             // time <= 0 时，将暂停script执行的控制权移交给外部实现
             if (time <= 0)
             {
-                await actionHandler.OnPause();
+                await operationHandler.OnPause();
                 Resume();
                 return;
             }
