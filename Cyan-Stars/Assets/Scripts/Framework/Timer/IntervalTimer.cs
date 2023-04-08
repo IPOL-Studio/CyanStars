@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 namespace CyanStars.Framework.Timer
@@ -35,13 +36,16 @@ namespace CyanStars.Framework.Timer
             /// </summary>
             public readonly object Userdata;
 
-            public Timer(float targetTime, float interval, int counter, TimerCallback callback, object userdata = null)
+            public readonly CancellationToken CancellationToken;
+
+            public Timer(float targetTime, float interval, int counter, TimerCallback callback, object userdata = null, CancellationToken cancellationToken = default)
             {
                 TargetTime = targetTime;
                 Interval = interval;
                 Counter = counter;
                 Callback = callback;
                 Userdata = userdata;
+                CancellationToken = cancellationToken;
             }
 
             public bool Equals(Timer other)
@@ -72,10 +76,16 @@ namespace CyanStars.Framework.Timer
                 LinkedListNode<Timer> current = runningTimers.First;
                 while (current != null)
                 {
-                    if (Time.time >= current.Value.TargetTime)
+                    Timer timer = current.Value;
+
+                    if (timer.CancellationToken.IsCancellationRequested)
+                    {
+                        waitRemoveTimers.Add(timer);
+                    }
+
+                    if (Time.time >= timer.TargetTime)
                     {
                         //已到达目标时间 触发定时回调
-                        Timer timer = current.Value;
                         timer.Callback?.Invoke(timer.Userdata);
                         timer.Counter--;
                         if (timer.Counter != 0)
@@ -119,9 +129,9 @@ namespace CyanStars.Framework.Timer
         /// <summary>
         /// 添加定时器
         /// </summary>
-        public void Add(float delay, TimerCallback callback, object userdata = null, int count = 1)
+        public void Add(float delay, TimerCallback callback, object userdata = null, int count = 1, CancellationToken cancellationToken = default)
         {
-            Timer timer = new Timer(Time.time + delay, delay, count, callback, userdata);
+            Timer timer = new Timer(Time.time + delay, delay, count, callback, userdata, cancellationToken);
             if (runningTimers.Contains(timer))
             {
                 Debug.LogError("重复添加了定时器");
