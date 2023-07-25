@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyanStars.Framework;
@@ -9,6 +9,8 @@ using CyanStars.Gameplay.Base;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using TMPro;
+using DG.Tweening;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -16,59 +18,77 @@ namespace CyanStars.Gameplay.MusicGame
     /// 音游谱面选择界面
     /// </summary>
     [UIData(UIGroupName = UIConst.UIGroupButtom,
-        UIPrefabName = "Assets/BundleRes/Prefabs/MapSelectUI/MapSelectPanel.prefab")]
-    public class MapSelectPanel : BaseUIPanel
+        UIPrefabName = "Assets/BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel.prefab")]
+    public class MapSelectionPanel : BaseUIPanel
     {
-        public Image ImgBg;
-        public Transform MapListContentParent;
+        [Header("MapItem模板对象")]
         public GameObject MapItemTemplate;
+
+        [Header("选曲圆环控件")]
+        public CircularLayout CircularMapList;
+
+        [Header("开始按钮")]
         public Button BtnStart;
-        public Image ImgCover;
-        public VideoPlayer VideoCover;
+
+        [Header("自动模式开关")]
         public Toggle ToggleAutoMode;
 
-        private MusicGameModule dataModule;
+        [Header("谱面标题")]
+        public TextMeshProUGUI TxtMapTitle;
+        
+        [Header("谱面曲绘图片")]
+        public Image ImgCover;
+
+        [Header("谱面曲绘视频")]
+        public VideoPlayer VideoCover;
+
+        /// <summary>
+        /// 音游数据模块
+        /// </summary>
+        private MusicGameModule musicGameDataModule;
+
         private List<BaseUIItem> mapItems = new List<BaseUIItem>();
-        private MapItem curSelectMapItem;
+
+        private MapItem curSelectedMapItem;
 
         protected override void OnCreate()
         {
-            dataModule = GameRoot.GetDataModule<MusicGameModule>();
+            musicGameDataModule = GameRoot.GetDataModule<MusicGameModule>();
 
             ToggleAutoMode.onValueChanged.AddListener((isOn =>
             {
                 //勾选了自动模式
-                dataModule.IsAutoMode = isOn;
+                musicGameDataModule.IsAutoMode = isOn;
             }));
 
             BtnStart.onClick.AddListener(() =>
             {
                 //切换到音游流程
-                GameRoot.GetDataModule<MusicGameModule>().MapIndex = curSelectMapItem.Data.Index;
+                GameRoot.GetDataModule<MusicGameModule>().MapIndex = curSelectedMapItem.Data.Index;
                 GameRoot.ChangeProcedure<MusicGameProcedure>();
             });
         }
 
         public override async void OnOpen()
         {
-            ImgBg.sprite = null;
+            // ImgBg.sprite = null;
             ImgCover.sprite = null;
             VideoCover.clip = null;
 
             await RefreshMusicList();
 
             //默认选中上次选的谱面
-            int selectedIndex = dataModule.MapIndex;
+            int selectedIndex = musicGameDataModule.MapIndex;
             OnSelectMap((MapItem)mapItems[selectedIndex]);
 
-            ToggleAutoMode.isOn = dataModule.IsAutoMode;
+            ToggleAutoMode.isOn = musicGameDataModule.IsAutoMode;
         }
 
         public override void OnClose()
         {
             GameRoot.UI.ReleaseUIItems(mapItems);
             mapItems.Clear();
-            curSelectMapItem = null;
+            curSelectedMapItem = null;
         }
 
         /// <summary>
@@ -76,12 +96,13 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private async Task RefreshMusicList()
         {
-            List<MapManifest> maps = dataModule.GetMaps();
+            List<MapManifest> maps = musicGameDataModule.GetMaps();
 
             for (int i = 0; i < maps.Count; i++)
             {
                 MapManifest map = maps[i];
-                MapItem mapItem = await GameRoot.UI.AwaitGetUIItem<MapItem>(MapItemTemplate, MapListContentParent);
+                MapItem mapItem = await GameRoot.UI.AwaitGetUIItem<MapItem>(MapItemTemplate, CircularMapList.transform);
+                CircularMapList.AddItem(mapItem);
                 mapItems.Add(mapItem);
 
                 MapItemData data = MapItemData.Create(i, map);
@@ -96,27 +117,34 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public async void OnSelectMap(MapItem mapItem)
         {
-            if (curSelectMapItem == mapItem)
+            if (curSelectedMapItem == mapItem)
             {
                 return;
             }
 
-            curSelectMapItem = mapItem;
+            curSelectedMapItem = mapItem;
 
             Debug.Log("当前选中:" + mapItem.Data.MapManifest.Name);
 
-            if (string.IsNullOrEmpty(mapItem.Data.MapManifest.BackgroundFileName))
-            {
-                ImgBg.sprite = null;
-            }
-            else
-            {
-                Sprite sprite =
-                    await GameRoot.Asset.LoadAssetAsync<Sprite>(mapItem.Data.MapManifest.BackgroundFileName,
-                        gameObject);
-                ImgBg.sprite = sprite;
-            }
+            TxtMapTitle.DOFade(0, 0.2f).OnComplete(
+                () =>
+                {
+                    TxtMapTitle.text = mapItem.Data.MapManifest.Name;
+                    TxtMapTitle.DOFade(1, 0.2f);
+                }
+            );
 
+            // if (string.IsNullOrEmpty(mapItem.Data.MapManifest.BackgroundFileName))
+            // {
+            //     ImgBg.sprite = null;
+            // }
+            // else
+            // {
+            //     Sprite sprite =
+            //         await GameRoot.Asset.LoadAssetAsync<Sprite>(mapItem.Data.MapManifest.BackgroundFileName,
+            //             gameObject);
+            //     ImgBg.sprite = sprite;
+            // }
 
             if (string.IsNullOrEmpty(mapItem.Data.MapManifest.CoverFileName))
             {

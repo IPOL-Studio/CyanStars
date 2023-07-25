@@ -22,7 +22,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             BtnMap.onClick.AddListener(() =>
             {
-                MapSelectPanel parent = GameRoot.UI.GetUIPanel<MapSelectPanel>();
+                MapSelectionPanel parent = GameRoot.UI.GetUIPanel<MapSelectionPanel>();
                 parent.OnSelectMap(this);
             });
         }
@@ -60,5 +60,13 @@ namespace CyanStars.Gameplay.MusicGame
                 ImgCover.sprite = null;
             }
         }
+
+        public void SetAlpha(float alpha)
+        {
+            // TODO
+            ImgCover.color = new Color(ImgCover.color.r, ImgCover.color.g, ImgCover.color.b, alpha);
+            TxtName.color = new Color(TxtName.color.r, TxtName.color.g, TxtName.color.b, alpha);
+        }
+
     }
 }
