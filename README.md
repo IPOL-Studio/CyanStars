@@ -34,5 +34,6 @@ Bug报告、玩法优化等其他问题请通过 GitHub Issue 进行反馈。
 | Qed | 程序 | 小鱼在家 | 美术 | 惊雨掠光 | 美术 | 布池鱼 | 美术 |
 | 斜日红狐泽 | 文案 | Koeri | 音乐 | RedStone_jun | 程序 美术 | mika | 美术 |
 | 万炯鸣 | 程序 | FFT行西 | 美术 | 热血西蓝花 | 美术 | KILLA凌忍 | 美术 |
+| 生生_XShengsheng | 文案 |
 
 项目组长期招人，非常欢迎任何人[申请加入我们](http://chenluan.mikecrm.com/JeKq3DU)。
