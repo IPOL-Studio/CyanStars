@@ -13,7 +13,7 @@ namespace CyanStars.Gameplay.MusicGame
     {
         public const float MaxPos = 1;
         public const float MiddlePos = MaxPos / 2;
-        public const float NoteWidth = 0.2f;
+        public const float NoteWidth = 0.25f;
 
         /// <summary>
         /// 音符类型
