@@ -8,6 +8,7 @@ Shader "NoteEffect/HoldNote"
         _Flicker ("Flicker", float) = 0
         _FlickerSpeed ("FlickerSpeed", float) = 0
         _FlickerRate ("FlickerRate", float) = 0
+        _BaseColorRate ("BaseColorRate", range(0, 1)) = 1
 
         [HDR] _FlickerColor ("FlickerColor", Color) = (0, 0, 0, 0)
         [HDR] _MaskColor ("MaskColor", Color) = (0, 0, 0, 0)
@@ -35,6 +36,7 @@ Shader "NoteEffect/HoldNote"
             // half _Flicker;
             half _FlickerSpeed;
             half _FlickerRate;
+            half _BaseColorRate;
 
             float4 _FlickerColor;
             float4 _MaskColor;
@@ -75,13 +77,13 @@ Shader "NoteEffect/HoldNote"
             {
                 // UNITY_SETUP_INSTANCE_ID(i);
                 half UV_Y = i.uv.y;
-                half4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
-                if(i.uv.x < 0.4)
+                half4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv) * _BaseColorRate;
+                if(i.uv.x < 0.4 && _Flicker > 0)
                 {
                     UV_Y = abs(UV_Y - 0.5) * _FlickerRate;
                     UV_Y = frac(_Time.y * _FlickerSpeed - UV_Y);
                     UV_Y = smoothstep(0.9, 1, cos(UV_Y - 0.5));
-                    col += col * (1 - UV_Y) * _FlickerColor * UNITY_ACCESS_INSTANCED_PROP(Props, _Flicker);
+                    col += col * (1 - UV_Y) * _FlickerColor * UNITY_ACCESS_INSTANCED_PROP(Props, _Flicker) * (1 - _BaseColorRate);
                 }
                 col += SAMPLE_TEXTURE2D(_Mask, sampler_Mask, i.uv) * _MaskColor;
                 return col;
