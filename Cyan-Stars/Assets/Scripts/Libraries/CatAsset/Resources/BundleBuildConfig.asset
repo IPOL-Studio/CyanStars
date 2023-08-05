@@ -65,10 +65,12 @@ MonoBehaviour:
     BundleName: map_00.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 1094
+    AssetsLength: 3466526
     Assets:
+    - Name: Assets/BundleRes/MusicGameMap/Map_00/Music.ogg
+      Length: 3439171
     - Name: Assets/BundleRes/MusicGameMap/Map_00/TimelineData.asset
-      Length: 1094
+      Length: 27355
   - RelativePath: BundleRes/MusicGameMap/map_01.bundle
     DirectoryName: BundleRes/MusicGameMap
     BundleName: map_01.bundle
@@ -109,7 +111,7 @@ MonoBehaviour:
     BundleName: effect.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 4936452
+    AssetsLength: 2628453
     Assets:
     - Name: Assets/BundleRes/Prefabs/Effect/BreakHitEffect.prefab
       Length: 246511
@@ -150,21 +152,19 @@ MonoBehaviour:
     - Name: Assets/BundleRes/Prefabs/Effect/VEG/VortexEffect(VEG).prefab
       Length: 3370
     - Name: Assets/Materials/Particle/Particle 1.mat
-      Length: 4320
+      Length: 4322
     - Name: Assets/Materials/Particle/Particle 2.mat
-      Length: 4317
+      Length: 4322
     - Name: Assets/Materials/Particle/Particle 3.mat
       Length: 4314
     - Name: Assets/Materials/Particle/Particle 4.mat
       Length: 4314
     - Name: Assets/Materials/Particle/Particle 5.mat
-      Length: 4321
+      Length: 4322
     - Name: Assets/Materials/Particle/Particle 6.mat
-      Length: 4316
+      Length: 4321
     - Name: Assets/Materials/PlayScene/GreenNote.mat
       Length: 3580
-    - Name: Assets/TextMeshPro/Examples & Extras/Textures/Gradient Diagonal (Color).jpg
-      Length: 11688
     - Name: Assets/VEG/BlockVFX.vfx
       Length: 93989
     - Name: Assets/VEG/CircleFireVFX.vfx
@@ -185,18 +185,10 @@ MonoBehaviour:
       Length: 66503
     - Name: Assets/VEG/UnnameedVFX2.vfx
       Length: 138191
-    - Name: "Assets/VEG/\u4E09\u89D2\u5F62.png"
-      Length: 919
-    - Name: "Assets/VEG/\u6F29\u6DA1\u901F\u5EA6\u77E2\u91CF.asset"
-      Length: 131964
     - Name: Packages/com.unity.render-pipelines.universal/Runtime/Materials/ParticlesUnlit.mat
       Length: 3607
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
       Length: 6958
-    - Name: Packages/com.unity.visualeffectgraph/Textures/SimpleSmoke.tga
-      Length: 65580
-    - Name: Packages/com.unity.visualeffectgraph/Textures/vectorfield.asset
-      Length: 2097861
   - RelativePath: BundleRes/Prefabs/mapselectui.bundle
     DirectoryName: BundleRes/Prefabs
     BundleName: mapselectui.bundle
@@ -225,7 +217,7 @@ MonoBehaviour:
     BundleName: musicgameui.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 42083877
+    AssetsLength: 44194180
     Assets:
     - Name: Assets/BundleRes/Prefabs/MusicGameUI/MusicGame3DUIPanel.prefab
       Length: 18250
@@ -247,13 +239,13 @@ MonoBehaviour:
       Length: 53056
     - Name: Assets/TextMeshPro/Examples & Extras/Resources/Fonts & Materials/Oswald
         Bold SDF.asset
-      Length: 8145
+      Length: 2118448
   - RelativePath: BundleRes/Prefabs/notes.bundle
     DirectoryName: BundleRes/Prefabs
     BundleName: notes.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 264395
+    AssetsLength: 264593
     Assets:
     - Name: Assets/BundleRes/Prefabs/Notes/Break.prefab
       Length: 12509
@@ -269,6 +261,8 @@ MonoBehaviour:
       Length: 9303
     - Name: Assets/Materials/ClickMat.mat
       Length: 3537
+    - Name: Assets/Materials/DarkScene/MI_NoteEffect_HoldNote.mat
+      Length: 1185
     - Name: Assets/Materials/DragMat.mat
       Length: 3577
     - Name: Assets/Materials/HoldMaterial.001.mat
@@ -296,11 +290,11 @@ MonoBehaviour:
     - Name: Assets/Model/v1.1/M_Note_Tap.fbx
       Length: 16156
     - Name: Assets/Model/v1.1/MI_Note_Break.mat
-      Length: 3688
-    - Name: Assets/Model/v1.1/MI_Note_Click.mat
-      Length: 3624
-    - Name: Assets/Model/v1.1/MI_Note_Key.mat
       Length: 3686
+    - Name: Assets/Model/v1.1/MI_Note_Click.mat
+      Length: 3615
+    - Name: Assets/Model/v1.1/MI_Note_Key.mat
+      Length: 3705
     - Name: Assets/Model/v1.1/T_Note_Break_Color.png
       Length: 26788
     - Name: Assets/Model/v1.1/T_Note_Break_Mask.png
@@ -316,43 +310,69 @@ MonoBehaviour:
     - Name: Assets/Model/v1.1/T_Note_Tap_Mask.png
       Length: 1547
     - Name: Assets/Shaders/HoldNote.shader
-      Length: 3380
-    - Name: Assets/Shaders/NoteEffect_HoldNote.mat
-      Length: 1144
+      Length: 3529
   - RelativePath: BundleRes/scenes.bundle
     DirectoryName: BundleRes
     BundleName: scenes.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 58066
+    AssetsLength: 125555
     Assets:
     - Name: Assets/BundleRes/Scenes/Dark.unity
-      Length: 58066
+      Length: 62621
+    - Name: Assets/BundleRes/Scenes/Warm.unity
+      Length: 62934
   - RelativePath: BundleRes/scenes_res.bundle
     DirectoryName: BundleRes
     BundleName: scenes_res.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 36954
+    AssetsLength: 1769781
     Assets:
     - Name: Assets/Audio/PromptTone/ns_ding.ogg
       Length: 8220
     - Name: Assets/Audio/PromptTone/ns_ka.ogg
       Length: 6614
     - Name: Assets/Materials/Black.mat
-      Length: 3533
+      Length: 3658
+    - Name: Assets/Materials/DarkScene/MI_ProceduralSkyBox.mat
+      Length: 6249
+    - Name: Assets/Materials/DarkScene/T_Moon.png
+      Length: 222945
+    - Name: Assets/Materials/DarkScene/T_RandomNoise.png
+      Length: 146133
+    - Name: Assets/Materials/DarkScene/T_Star.png
+      Length: 9078
+    - Name: Assets/Materials/DarkScene/T_Track.png
+      Length: 14535
     - Name: Assets/Materials/Light.mat
       Length: 3541
     - Name: Assets/Materials/Plane.mat
       Length: 3607
-    - Name: Assets/Materials/Skyboxs/DarkSkybox.mat
-      Length: 3886
+    - Name: Assets/Materials/Skyboxs/WarmSkybox.mat
+      Length: 4766
+    - Name: Assets/Materials/Skyboxs/WarmSkyWithoutSun.hdr
+      Length: 1113610
     - Name: Assets/Materials/Wall.mat
       Length: 3572
+    - Name: Assets/Model/M_Track.fbx
+      Length: 12220
     - Name: Assets/Scenes/Dark/Global Volume Profile.asset
-      Length: 3819
+      Length: 2467
+    - Name: Assets/Scenes/Warm/Global Volume Profile.asset
+      Length: 1568
+    - Name: Assets/Shaders/PlanarReflections.mat
+      Length: 1021
+    - Name: Assets/Shaders/PlanarReflections.shader
+      Length: 2057
+    - Name: Assets/Shaders/ProceduralSkyBox.shader
+      Length: 13512
+    - Name: Assets/Shaders/T_PerlinNoise.png
+      Length: 180722
     - Name: Assets/Sprites/Plane-32px.png
       Length: 162
+    - Name: Packages/com.unity.render-pipelines.universal/Shaders/Unlit.shader
+      Length: 9524
   - RelativePath: BundleRes/ScriptObjects/inputmap.bundle
     DirectoryName: BundleRes/ScriptObjects
     BundleName: inputmap.bundle
@@ -367,23 +387,21 @@ MonoBehaviour:
     BundleName: internalmap.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 1873
+    AssetsLength: 1825
     Assets:
     - Name: Assets/BundleRes/ScriptObjects/InternalMap/InternalMapList.asset
-      Length: 1873
+      Length: 1825
   - RelativePath: redundancy_0.bundle
     DirectoryName: 
     BundleName: redundancy_0.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 267372
+    AssetsLength: 234308
     Assets:
     - Name: Assets/Materials/HoldMat.mat
       Length: 3573
     - Name: Assets/Materials/PlayScene/KeyDown.mat
       Length: 3579
-    - Name: Assets/TextMeshPro/Examples & Extras/Textures/Wipe Pattern - Diagonal.psd
-      Length: 33064
     - Name: Assets/VEG/BlockRainVFX.vfx
       Length: 121641
     - Name: Assets/VEG/LineVFX.vfx

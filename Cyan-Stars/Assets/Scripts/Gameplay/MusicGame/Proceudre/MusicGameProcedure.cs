@@ -25,6 +25,9 @@ namespace CyanStars.Gameplay.MusicGame
 
         //----音游设置模块--------
         private MusicGameSettingsModule settingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
+        //----音游场景模块--------
+        private MusicGameSceneModule sceneModule = GameRoot.GetDataModule<MusicGameSceneModule>();
+        private MusicGameSceneInfo currentSceneInfo;
 
         //----场景物体与组件--------
         private Scene scene;
@@ -49,6 +52,7 @@ namespace CyanStars.Gameplay.MusicGame
         public override async void OnEnter()
         {
             GameRoot.MainCamera.gameObject.SetActive(false);
+            currentSceneInfo = sceneModule.CurrentScene;
 
             //监听事件
             GameRoot.Event.AddListener(EventConst.MusicGameStartEvent, OnMusicGameStart);
@@ -57,7 +61,7 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Event.AddListener(EventConst.MusicGameExitEvent, OnMusicGameExit);
 
             //打开游戏场景
-            scene = await GameRoot.Asset.LoadSceneAsync("Assets/BundleRes/Scenes/Dark.unity");
+            scene = await GameRoot.Asset.LoadSceneAsync(currentSceneInfo.ScenePath);
 
             if (scene != default)
             {
@@ -107,6 +111,7 @@ namespace CyanStars.Gameplay.MusicGame
             CloseMusicGameUI();
 
             GameRoot.Asset.UnloadScene(scene);
+            currentSceneInfo = null;
             scene = default;
         }
 
@@ -233,8 +238,10 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void OpenMusicGameUI()
         {
-            GameRoot.UI.OpenUIPanel<MusicGameMainPanel>(null);
-            GameRoot.UI.OpenUIPanel<MusicGame3DUIPanel>(null);
+            foreach (var uiInfo in this.currentSceneInfo.UIInfos)
+            {
+                uiInfo.Open(GameRoot.UI, null);
+            }
         }
 
         /// <summary>
@@ -242,8 +249,10 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void CloseMusicGameUI()
         {
-            GameRoot.UI.CloseUIPanel<MusicGameMainPanel>();
-            GameRoot.UI.CloseUIPanel<MusicGame3DUIPanel>();
+            foreach (var uiInfo in this.currentSceneInfo.UIInfos)
+            {
+                uiInfo.Close(GameRoot.UI);
+            }
         }
 
         /// <summary>
