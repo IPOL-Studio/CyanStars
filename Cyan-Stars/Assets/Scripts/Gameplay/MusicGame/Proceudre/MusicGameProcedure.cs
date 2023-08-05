@@ -89,8 +89,6 @@ namespace CyanStars.Gameplay.MusicGame
         {
             GameRoot.MainCamera.gameObject.SetActive(true);
 
-            currentSceneInfo = null;
-
             sceneRoot = null;
             sceneCameraTrans = null;
             audioSource = null;
@@ -113,6 +111,7 @@ namespace CyanStars.Gameplay.MusicGame
             CloseMusicGameUI();
 
             GameRoot.Asset.UnloadScene(scene);
+            currentSceneInfo = null;
             scene = default;
         }
 
