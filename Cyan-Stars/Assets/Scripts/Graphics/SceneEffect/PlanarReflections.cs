@@ -1,3 +1,6 @@
+// Unity Companion License
+// Boat Attack copyright © 2018 Unity Technologies ApS
+// https://github.com/Unity-Technologies/BoatAttack/blob/master/Packages/com.verasl.water-system/Scripts/Rendering/PlanarReflections.cs
 using System;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Serialization;
