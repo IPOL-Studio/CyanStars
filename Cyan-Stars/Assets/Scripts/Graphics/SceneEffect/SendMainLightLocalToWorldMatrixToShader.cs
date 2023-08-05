@@ -7,8 +7,8 @@ namespace CyanStars.Graphics.SceneEffect
     {
         public Transform DirectionalLight;
         public Material SkyBoxMaterial;
-        private Matrix4x4 LtoW_Matrix = Matrix4x4.identity;
-        private static readonly int LtoW = Shader.PropertyToID("_LtoW");
+        private Matrix4x4 localToWorldMatrix = Matrix4x4.identity;
+        private static readonly int LtoWID = Shader.PropertyToID("_LtoW");
 
         [Range(1, 64)]
         public int SampleCount = 16;
@@ -36,8 +36,8 @@ namespace CyanStars.Graphics.SceneEffect
 
         private void Update()
         {
-            LtoW_Matrix = DirectionalLight.localToWorldMatrix;
-            SkyBoxMaterial.SetMatrix(LtoW, LtoW_Matrix);
+            localToWorldMatrix = DirectionalLight.localToWorldMatrix;
+            SkyBoxMaterial.SetMatrix(LtoWID, localToWorldMatrix);
 
             SkyBoxMaterial.SetFloat("_AtmosphereHeight", AtmosphereHeight);
             SkyBoxMaterial.SetFloat("_PlanetRadius", PlanetRadius);

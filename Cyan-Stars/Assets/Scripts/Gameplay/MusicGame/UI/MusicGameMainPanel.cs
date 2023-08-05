@@ -77,7 +77,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void OnMusicGameDataRefresh(object sender, EventArgs args)
         {
-            TxtCombo.text = dataModule.Combo.ToString();
+            TxtCombo.text = dataModule.Combo < 2 ? string.Empty : dataModule.Combo.ToString();
             TxtScore.text = "SCORE(DEBUG):" + dataModule.Score;
         }
 
