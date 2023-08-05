@@ -1345,7 +1345,6 @@ GameObject:
   - component: {fileID: 1338802227}
   - component: {fileID: 1338802226}
   - component: {fileID: 1338802225}
-  - component: {fileID: 1338802229}
   - component: {fileID: 1338802230}
   m_Layer: 0
   m_Name: ReflectionPlane
@@ -1431,27 +1430,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!114 &1338802229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1338802224}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86274cf974ecf8f428a9a997ab391d05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_settings:
-    m_ResolutionMultiplier: 2
-    m_ClipPlaneOffset: 0.07
-    m_ReflectLayers:
-      serializedVersion: 2
-      m_Bits: 4294967295
-    m_Shadows: 0
-  target: {fileID: 0}
-  m_planeOffset: 0
 --- !u!114 &1338802230
 MonoBehaviour:
   m_ObjectHideFlags: 0
