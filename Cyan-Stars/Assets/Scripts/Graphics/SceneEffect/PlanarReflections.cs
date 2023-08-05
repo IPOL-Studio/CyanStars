@@ -251,6 +251,10 @@ namespace UnityEngine.Rendering.Universal
             if (camera.cameraType == CameraType.Reflection || camera.cameraType == CameraType.Preview)
                 return;
 
+            // dont render planar reflections in overlay cameras
+            if (camera.GetUniversalAdditionalCameraData().renderType == CameraRenderType.Overlay)
+                return;
+
             UpdateReflectionCamera(camera); // create reflected camera
             PlanarReflectionTexture(camera); // create and assign RenderTexture
 
