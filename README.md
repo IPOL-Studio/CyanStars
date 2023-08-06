@@ -6,7 +6,7 @@ Unity Hub 内下载链接: unityhub://2020.3.28f1/f5400f52e03f
 
 ## CyanStars 项目简介
 
-CyanStars（翠蓝星穹），是一个VC同人非商业音乐游戏。
+CyanStars（翠蓝星穹），是一个 VC 同人非商业音乐游戏。
 
 ## 贡献规范
 
@@ -21,7 +21,7 @@ CyanStars（翠蓝星穹），是一个VC同人非商业音乐游戏。
 
 版权、安全性、成员等重要问题请通过邮箱联系我们：<chenluan@cyanstars.onaliyun.com>
 
-Bug报告、玩法优化等其他问题请通过 GitHub Issue 进行反馈。
+Bug 报告、玩法优化等其他问题请通过 GitHub Issue 进行反馈。
 
 对于 CyanStars 的 Q&A 等请通过 GitHub Discussion 进行询问与讨论。
 
