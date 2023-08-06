@@ -1,36 +1,38 @@
 # CyanStars
+
 Unity Version: [2020.3.28f1](https://unity3d.com/get-unity/download/archive)
 
-Unity Hub内下载链接: unityhub://2020.3.28f1/f5400f52e03f
-
-> **公告**
->
-> 项目成立初期，暂时限制交互
->
-> 主线部分将统一开发，开发完毕后会部分开源，欢迎加群参与
+Unity Hub 内下载链接: unityhub://2020.3.28f1/f5400f52e03f
 
 ## CyanStars 项目简介
 
-CyanStars 中文译名暂定为“翠蓝星穹”，是一个非商业同人音乐游戏，计划将开源
+CyanStars（翠蓝星穹），是一个VC同人非商业音乐游戏。
 
-本游戏以Vsinger相关的虚拟歌手为基础进行展开
+## 贡献规范
 
-项目尚处于早期阶段（在做了在做了）
+您可以根据 GitHub Issue 内容来完善此项目
 
----
+**由于剧情、曲目等有另外的策划方案，未经讨论通过请不要向仓库内推送此类 pr，您可以[申请加入我们](http://chenluan.mikecrm.com/JeKq3DU)一起来讨论或在 GitHub Issue 提出您的想法。**
 
-## 招募信息
+我们会在游戏内为所有贡献者署名，如您不希望署名请联系我们。
 
-目前非常需要程序、PV师，来了包您吃好喝好呜呜呜
 
-美术和文案也可以来试试看啦！
+## 联系我们
 
-将来还需要曲师、翻译、谱师，欢迎提前联系！
+版权、安全性、成员等重要问题请通过邮箱联系我们：<chenluan@cyanstars.onaliyun.com>
 
-欢迎加入我们的QQ审核群（兼聊天群）[765489940](https://jq.qq.com/?_wv=1027&k=R1LqP8jd)
+Bug报告、玩法优化等其他问题请通过 GitHub Issue 进行反馈。
 
----
+对于 CyanStars 的 Q&A 等请通过 GitHub Discussion 进行询问与讨论。
 
 ## 开发组成员名单
 
-> 这里要更新了
+| 成员 | 职责 | 成员 | 职责 | 成员 | 职责 | 成员 | 职责 |
+| ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| 晨峦 | 策划 | memorydream | 程序 | 自然妙有猫仙人 | 程序 | Ybr | 程序 |
+| 阿鹄 | 美术 | SunTrIce | 文案 | 棗兒花卷 | 文案 | Qed | 程序 |
+| 小鱼在家 | 美术 | 惊雨掠光 | 美术 | 斜日红狐泽 | 文案 | Koeri | 音乐 |
+| RedStone_jun | 程序 美术 | mika | 美术 | 万炯鸣 | 程序 | FFT行西 | 美术 |
+| 热血西蓝花 | 美术 | KILLA凌忍 | 美术 | 生生_XShengsheng | 文案 |
+
+项目组长期招人，非常欢迎任何人[申请加入我们](http://chenluan.mikecrm.com/JeKq3DU)。
