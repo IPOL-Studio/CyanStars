@@ -47,8 +47,14 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private MusicGameModule musicGameDataModule;
 
-        private List<BaseUIItem> mapItems = new List<BaseUIItem>();
+        /// <summary>
+        /// 谱面item列表
+        /// </summary>
+        private readonly List<BaseUIItem> MapItems = new List<BaseUIItem>();
 
+        /// <summary>
+        /// 当前被选中的谱面item
+        /// </summary>
         private MapItem curSelectedMapItem;
 
         protected override void OnCreate()
@@ -67,6 +73,8 @@ namespace CyanStars.Gameplay.MusicGame
                 GameRoot.GetDataModule<MusicGameModule>().MapIndex = curSelectedMapItem.Data.Index;
                 GameRoot.ChangeProcedure<MusicGameProcedure>();
             });
+
+            BtnStart.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
         }
 
         public override async void OnOpen()
@@ -74,20 +82,21 @@ namespace CyanStars.Gameplay.MusicGame
             // ImgBg.sprite = null;
             ImgCover.sprite = null;
             VideoCover.clip = null;
+            CircularMapList.Reset();
 
             await RefreshMusicList();
 
             //默认选中上次选的谱面
             int selectedIndex = musicGameDataModule.MapIndex;
-            OnSelectMap((MapItem)mapItems[selectedIndex]);
+            OnSelectMap((MapItem)MapItems[selectedIndex]);
 
             ToggleAutoMode.isOn = musicGameDataModule.IsAutoMode;
         }
 
         public override void OnClose()
         {
-            GameRoot.UI.ReleaseUIItems(mapItems);
-            mapItems.Clear();
+            GameRoot.UI.ReleaseUIItems(MapItems);
+            MapItems.Clear();
             curSelectedMapItem = null;
         }
 
@@ -103,7 +112,7 @@ namespace CyanStars.Gameplay.MusicGame
                 MapManifest map = maps[i];
                 MapItem mapItem = await GameRoot.UI.AwaitGetUIItem<MapItem>(MapItemTemplate, CircularMapList.transform);
                 CircularMapList.AddItem(mapItem);
-                mapItems.Add(mapItem);
+                MapItems.Add(mapItem);
 
                 MapItemData data = MapItemData.Create(i, map);
                 mapItem.RefreshItem(data);
@@ -134,45 +143,39 @@ namespace CyanStars.Gameplay.MusicGame
                 }
             );
 
-            // if (string.IsNullOrEmpty(mapItem.Data.MapManifest.BackgroundFileName))
-            // {
-            //     ImgBg.sprite = null;
-            // }
-            // else
-            // {
-            //     Sprite sprite =
-            //         await GameRoot.Asset.LoadAssetAsync<Sprite>(mapItem.Data.MapManifest.BackgroundFileName,
-            //             gameObject);
-            //     ImgBg.sprite = sprite;
-            // }
-
             if (string.IsNullOrEmpty(mapItem.Data.MapManifest.CoverFileName))
             {
                 ImgCover.sprite = null;
                 VideoCover.clip = null;
-                ImgCover.gameObject.SetActive(true);
+                ImgCover.gameObject.SetActive(false);
                 VideoCover.gameObject.SetActive(false);
             }
             else
             {
-                ImgCover.gameObject.SetActive(true);
-                VideoCover.gameObject.SetActive(true);
-
                 if (mapItem.Data.MapManifest.CoverFileName.EndsWith(".mp4"))
                 {
-                    VideoCover.clip =
+                    VideoClip clip = 
                         await GameRoot.Asset.LoadAssetAsync<VideoClip>(mapItem.Data.MapManifest.CoverFileName,
                             gameObject);
-                    ImgCover.gameObject.SetActive(false);
+                    VideoCover.clip = clip;
+
+                    RawImage videoRawImage = VideoCover.GetComponent<RawImage>();
+                    videoRawImage.DOFade(1, 0.2f).SetEase(Ease.InSine);
+                    ImgCover.DOFade(0, 0.3f).SetEase(Ease.InSine).OnComplete(()=>{ImgCover.gameObject.SetActive(false);});
+                    VideoCover.gameObject.SetActive(true);
                 }
                 else
                 {
                     Sprite sprite =
-                        await GameRoot.Asset.LoadAssetAsync<Sprite>(mapItem.Data.MapManifest.CoverFileName,
-                            gameObject);
+                        await GameRoot.Asset.LoadAssetAsync<Sprite>(mapItem.Data.MapManifest.CoverFileName, gameObject);
                     ImgCover.sprite = sprite;
-                    VideoCover.gameObject.SetActive(false);
+
+                    RawImage videoRawImage = VideoCover.GetComponent<RawImage>();
+                    ImgCover.DOFade(1, 0.2f).SetEase(Ease.InSine);
+                    videoRawImage.DOFade(0, 0.3f).SetEase(Ease.InSine).OnComplete(()=>{VideoCover.gameObject.SetActive(false);});
+                    ImgCover.gameObject.SetActive(true);
                 }
+                
             }
         }
     }
