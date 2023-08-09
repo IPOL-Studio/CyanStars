@@ -12,6 +12,8 @@ namespace CyanStars.Gameplay.MusicGame
     {
         public AudioSource AudioSource;
 
+        protected override ClipProcessMode Mode => ClipProcessMode.Point;
+
         /// <summary>
         /// 片段创建方法
         /// </summary>

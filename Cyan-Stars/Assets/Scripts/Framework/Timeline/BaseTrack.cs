@@ -21,6 +21,12 @@ namespace CyanStars.Framework.Timeline
             /// 每次都处理所有片段（适合片段会重叠的情况）
             /// </summary>
             All,
+            
+            /// <summary>
+            /// 将片段视为一个时间点（适合Clip只有OnEnter的情况）
+            /// </summary>
+            Point,
+            
         }
 
         /// <summary>
@@ -75,6 +81,8 @@ namespace CyanStars.Framework.Timeline
                 return;
             }
 
+            IClip clip;
+
             switch (Mode)
             {
                 case ClipProcessMode.Single:
@@ -85,7 +93,7 @@ namespace CyanStars.Framework.Timeline
                     }
 
                     //只处理当前的片段
-                    IClip clip = Clips[CurClipIndex];
+                    clip = Clips[CurClipIndex];
 
                     if (currentTime >= clip.StartTime && previousTime < clip.StartTime)
                     {
@@ -135,6 +143,30 @@ namespace CyanStars.Framework.Timeline
                             //离开片段
                             clip.OnExit();
                         }
+                    }
+
+                    break;
+
+                case ClipProcessMode.Point:
+
+                    if (CurClipIndex == Clips.Count)
+                    {
+                        return;
+                    }
+
+                    // 只处理当前的片段
+                    clip = Clips[CurClipIndex];
+
+                    if (currentTime >= clip.StartTime && previousTime < clip.StartTime)
+                    {
+                        // 进入片段
+                        clip.OnEnter();
+
+                        // 进入片段后立刻将index加一，放弃对clip的OnUpdate的调用和OnExit的等待
+                        CurClipIndex ++;
+
+                        // CurClipIndex更新了 需要重新Update一遍 保证不漏掉新clip的enter
+                        OnUpdate(currentTime, previousTime);
                     }
 
                     break;
