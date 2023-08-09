@@ -87,34 +87,32 @@ namespace CyanStars.Framework.Timeline
             {
                 case ClipProcessMode.Single:
 
-                    if (CurClipIndex == Clips.Count)
+                    //只处理当前的片
+                    while (CurClipIndex < Clips.Count)
                     {
-                        return;
-                    }
+                        clip = Clips[CurClipIndex];
 
-                    //只处理当前的片段
-                    clip = Clips[CurClipIndex];
+                        if (currentTime >= clip.StartTime && previousTime < clip.StartTime)
+                        {
+                            // 进入片段
+                            clip.OnEnter();
+                        }
 
-                    if (currentTime >= clip.StartTime && previousTime < clip.StartTime)
-                    {
-                        //进入片段
-                        clip.OnEnter();
-                    }
+                        if (currentTime >= clip.StartTime && currentTime <= clip.EndTime)
+                        {
+                            // 更新片段
+                            clip.OnUpdate(currentTime, previousTime);
+                        }
 
-                    if (currentTime >= clip.StartTime && currentTime <= clip.EndTime)
-                    {
-                        //更新片段
-                        clip.OnUpdate(currentTime, previousTime);
-                    }
+                        if (currentTime > clip.EndTime && previousTime <= clip.EndTime)
+                        {
+                            // 离开片段
+                            clip.OnExit();
+                            CurClipIndex ++;
+                            continue;
+                        }
 
-                    if (currentTime > clip.EndTime && previousTime <= clip.EndTime)
-                    {
-                        //离开片段
-                        clip.OnExit();
-                        CurClipIndex++;
-
-                        //clipIndex更新了 需要重新Update一遍 保证不漏掉新clip的enter和exit
-                        OnUpdate(currentTime, previousTime);
+                        break;
                     }
 
                     break;
@@ -148,25 +146,21 @@ namespace CyanStars.Framework.Timeline
                     break;
 
                 case ClipProcessMode.Point:
-
-                    if (CurClipIndex == Clips.Count)
+                
+                    while (CurClipIndex < Clips.Count)
                     {
-                        return;
-                    }
+                        clip = Clips[CurClipIndex];
 
-                    // 只处理当前的片段
-                    clip = Clips[CurClipIndex];
+                        if (currentTime >= clip.StartTime && previousTime < clip.StartTime)
+                        {
+                            clip.OnEnter();
+                            CurClipIndex ++;
 
-                    if (currentTime >= clip.StartTime && previousTime < clip.StartTime)
-                    {
-                        // 进入片段
-                        clip.OnEnter();
+                            continue;
+                        }
 
-                        // 进入片段后立刻将index加一，放弃对clip的OnUpdate的调用和OnExit的等待
-                        CurClipIndex ++;
+                        break;
 
-                        // CurClipIndex更新了 需要重新Update一遍 保证不漏掉新clip的enter
-                        OnUpdate(currentTime, previousTime);
                     }
 
                     break;
