@@ -14,9 +14,6 @@ namespace CyanStars.Gameplay.MusicGame
         public Transform EffectParent;
         public Image ImgFrame;
 
-        //因为边框呼吸特效的clip持续时间覆盖到了粒子特效的clip，如果想正确播放粒子特效需要使用All模式来处理
-        protected override ClipProcessMode Mode => ClipProcessMode.All;
-
         /// <summary>
         /// 片段创建方法
         /// </summary>
