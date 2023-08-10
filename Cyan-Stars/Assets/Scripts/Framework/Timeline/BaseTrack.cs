@@ -22,11 +22,6 @@ namespace CyanStars.Framework.Timeline
         protected List<IClip> Clips = new List<IClip>();
 
         /// <summary>
-        /// 当前运行片段的索引
-        /// </summary>
-        protected int CurClipIndex;
-
-        /// <summary>
         /// 轨道是否被启用
         /// </summary>
         public bool Enabled { get; set; } = true;
