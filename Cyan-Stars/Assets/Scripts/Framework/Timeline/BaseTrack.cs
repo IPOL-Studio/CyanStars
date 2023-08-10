@@ -57,15 +57,6 @@ namespace CyanStars.Framework.Timeline
                 return;
             }
 
-            if (GetType() == typeof(PromptToneTrack))
-            {
-
-                if (currentTime >= 2.2f)
-                {
-                    int x = 1;
-                }
-            }
-
             for (int i = 0; i < Clips.Count; i++)
             {
                 IClip clip = Clips[i];
