@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using CyanStars.Gameplay.MusicGame;
-using UnityEngine;
 
 namespace CyanStars.Framework.Timeline
 {
@@ -14,7 +12,6 @@ namespace CyanStars.Framework.Timeline
         /// 持有此轨道的时间轴
         /// </summary>
         public Timeline Owner { get; set; }
-
 
         /// <summary>
         /// 片段列表
