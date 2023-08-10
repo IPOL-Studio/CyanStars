@@ -40,6 +40,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnExit()
         {
+            base.OnExit();
             Owner.OldRot = newRot;
             camTrans.position = newPos;
             camTrans.localEulerAngles = newRot;

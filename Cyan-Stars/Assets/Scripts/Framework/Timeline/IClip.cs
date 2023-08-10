@@ -21,6 +21,11 @@ namespace CyanStars.Framework.Timeline
         public float EndTime { get; }
 
         /// <summary>
+        /// 是否有效
+        /// </summary>
+        public bool Valid { get;}
+
+        /// <summary>
         /// 进入此片段
         /// </summary>
         public void OnEnter();
