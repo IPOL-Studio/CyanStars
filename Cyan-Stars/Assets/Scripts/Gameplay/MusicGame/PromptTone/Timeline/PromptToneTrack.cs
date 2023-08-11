@@ -13,15 +13,15 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 片段创建方法
         /// </summary>
-        public static readonly CreateKeyClipFunc<PromptToneTrack, PromptToneTrackData, PromptToneDataCollection, PromptToneClip> CreateClipFunc =
+        public static readonly CreateKeyClipFunc<PromptToneTrack, PromptToneTrackData, PromptToneClipData, PromptToneClip> CreateClipFunc =
             CreateClip;
 
         public static readonly CreateKeyFunc<PromptToneClip, NoteData, PromptToneKey> CreateKeyFunc = CreateKey;
 
         private static PromptToneClip CreateClip(PromptToneTrack track, PromptToneTrackData trackData,
-            int curIndex, PromptToneDataCollection collection)
+            int curIndex, PromptToneClipData data)
         {
-            var lastData = collection.KeyDataList[collection.KeyCount - 1];
+            var lastData = data.KeyDataList[data.KeyCount - 1];
             AudioClip lastPromptTone = PromptToneHelper.Instance.GetAudioClipWithType(lastData.PromptToneType);
 
             return new PromptToneClip(0, lastData.JudgeTime / 1000f + lastPromptTone.length, track);

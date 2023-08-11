@@ -7,14 +7,14 @@ namespace CyanStars.Gameplay.MusicGame
     /// <summary>
     /// 提示音轨道数据
     /// </summary>
-    public class PromptToneTrackData : ITrackData<PromptToneDataCollection>
+    public class PromptToneTrackData : ITrackData<PromptToneClipData>
     {
         public int ClipCount => 1;
-        public List<PromptToneDataCollection> ClipDataList { get; set; }
+        public List<PromptToneClipData> ClipDataList { get; set; }
 
-        public PromptToneTrackData(PromptToneDataCollection clipDataList)
+        public PromptToneTrackData(PromptToneClipData clipClipDataList)
         {
-            ClipDataList = new List<PromptToneDataCollection> { clipDataList };
+            ClipDataList = new List<PromptToneClipData> { clipClipDataList };
         }
     }
 }
