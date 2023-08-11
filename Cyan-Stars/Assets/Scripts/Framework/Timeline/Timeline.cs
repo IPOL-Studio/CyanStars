@@ -146,7 +146,7 @@ namespace CyanStars.Framework.Timeline
             where TTrackData : ITrackData<TClipData>
             where TClipData : IKeyClipData<TKeyData>
         {
-            var creator = new AnonymousBaseKeyClipCreator<TTrack, TClip, TKey, TTrackData, TClipData, TKeyData>(trackData, clipCreator, keyCreator);
+            var creator = new AnonymousKeyClipCreator<TTrack, TClip, TKey, TTrackData, TClipData, TKeyData>(trackData, clipCreator, keyCreator);
             return timeline.AddTrack(creator, trackData.ClipCount);
         }
     }

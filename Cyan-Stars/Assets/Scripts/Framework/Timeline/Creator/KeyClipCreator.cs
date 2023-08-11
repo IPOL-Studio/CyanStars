@@ -54,7 +54,7 @@
     /// <summary>
     /// Key clip 匿名创建者
     /// </summary>
-    internal sealed class AnonymousBaseKeyClipCreator<TTrack, TClip, TKey, TTrackData, TClipData, TKeyData> :
+    internal sealed class AnonymousKeyClipCreator<TTrack, TClip, TKey, TTrackData, TClipData, TKeyData> :
         BaseKeyClipCreator<TTrack, TClip, TTrackData, TClipData, TKeyData>
         where TTrack : BaseTrack, new()
         where TClip : IClip<TTrack>, IKeyableClip
@@ -65,7 +65,7 @@
         public CreateKeyClipFunc<TTrack, TTrackData, TClipData, TClip> ClipCreator { get; set; }
         public CreateKeyFunc<TClip, TKeyData, TKey> KeyCreator { get; set; }
 
-        public AnonymousBaseKeyClipCreator(TTrackData trackData,
+        public AnonymousKeyClipCreator(TTrackData trackData,
             CreateKeyClipFunc<TTrack, TTrackData, TClipData, TClip> clipCreator = null,
             CreateKeyFunc<TClip, TKeyData, TKey> keyCreator = null) : base(trackData)
         {
