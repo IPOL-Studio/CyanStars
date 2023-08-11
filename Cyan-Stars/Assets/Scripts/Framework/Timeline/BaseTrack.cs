@@ -24,6 +24,11 @@ namespace CyanStars.Framework.Timeline
         public bool Enabled { get; set; } = true;
 
         /// <summary>
+        /// 更新时遍历clip的开始索引，从上次更新时最前面的有效clip开始
+        /// </summary>
+        private int startIndex;
+
+        /// <summary>
         /// 添加片段
         /// </summary>
         public virtual void AddClip(IClip clip)
@@ -49,7 +54,9 @@ namespace CyanStars.Framework.Timeline
                 return;
             }
 
-            for (int i = 0; i < Clips.Count; i++)
+            bool flag = false;
+
+            for (int i = startIndex; i < Clips.Count; i++)
             {
                 IClip clip = Clips[i];
 
@@ -84,7 +91,16 @@ namespace CyanStars.Framework.Timeline
                 {
                     return;
                 }
+                else
+                {
+                    if (!flag)
+                    {
+                        flag = true;
 
+                        //将下次update的startIndex设置为本次最前面的有效clip
+                        startIndex = i;
+                    }
+                }
             }
         }
     }
