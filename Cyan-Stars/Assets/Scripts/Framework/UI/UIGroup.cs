@@ -40,21 +40,38 @@ namespace CyanStars.Framework.UI
         }
 
         /// <summary>
-        /// 打开UI
+        /// 打开UI面板
         /// </summary>
         public void OpenUIPanel<T>(UIDataAttribute uiData, Action<T> callback) where T : BaseUIPanel
         {
             GameRoot.GameObjectPool.GetGameObjectAsync(uiData.UIPrefabName, UIRoot.transform, (go) =>
             {
-                BaseUIPanel uiPanel = go.GetComponent<BaseUIPanel>();
-                uiPanels.Add(uiPanel);
-
-                uiPanel.Depth = Depth + (uiPanels.Count * UIPanelDepthStep); //重新计算深度
-
-                uiPanel.OnOpen();
-
+                BaseUIPanel uiPanel = InternalOpenUIPanel(go);
                 callback?.Invoke((T)uiPanel);
             });
+        }
+
+        /// <summary>
+        /// 打开UI面板
+        /// </summary>
+        public void OpenUIPanel(UIDataAttribute uiData, Action<BaseUIPanel> callback)
+        {
+            GameRoot.GameObjectPool.GetGameObjectAsync(uiData.UIPrefabName, UIRoot.transform, (go) =>
+            {
+                BaseUIPanel uiPanel = InternalOpenUIPanel(go);
+                callback?.Invoke(uiPanel);
+            });
+        }
+
+        private BaseUIPanel InternalOpenUIPanel(GameObject go)
+        {
+            BaseUIPanel uiPanel = go.GetComponent<BaseUIPanel>();
+            uiPanels.Add(uiPanel);
+
+            uiPanel.Depth = Depth + (uiPanels.Count * UIPanelDepthStep); //重新计算深度
+
+            uiPanel.OnOpen();
+            return uiPanel;
         }
 
         /// <summary>
@@ -96,12 +113,20 @@ namespace CyanStars.Framework.UI
         /// </summary>
         public T GetUIPanel<T>() where T : BaseUIPanel
         {
+            return (T)GetUIPanel(typeof(T));
+        }
+
+        /// <summary>
+        /// 获取UI
+        /// </summary>
+        public BaseUIPanel GetUIPanel(Type type)
+        {
             for (int i = 0; i < uiPanels.Count; i++)
             {
                 BaseUIPanel uiPanel = uiPanels[i];
-                if (uiPanel.GetType() == typeof(T))
+                if (uiPanel.GetType() == type)
                 {
-                    return (T)uiPanel;
+                    return uiPanel;
                 }
             }
 
