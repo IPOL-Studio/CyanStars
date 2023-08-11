@@ -1,5 +1,8 @@
 ﻿namespace CyanStars.Framework.Timeline
 {
+    /// <summary>
+    /// Clip 创建者基类
+    /// </summary>
     public abstract class BaseClipCreator<TTrack, TTrackData, TClipData> : IClipCreator<TTrack>
         where TTrack : BaseTrack, new()
         where TTrackData : ITrackData<TClipData>
@@ -16,15 +19,21 @@
             TrackData = trackData;
         }
 
+        /// <inheritdoc />
         public IClip<TTrack> Create(TTrack track, int curIndex)
         {
             return Create(track, curIndex, TrackData.ClipDataList[curIndex]);
         }
 
+        /// <inheritdoc cref="Create" />
+        /// <param name="clipData">当前创建片段对应的片段数据</param>
         protected abstract IClip<TTrack> Create(TTrack track, int curIndex, TClipData clipData);
     }
 
-    public sealed class AnonymousClipCreator<TTrack, TTrackData, TClipData> : BaseClipCreator<TTrack, TTrackData, TClipData>
+    /// <summary>
+    /// Clip 匿名创建者
+    /// </summary>
+    internal sealed class AnonymousClipCreator<TTrack, TTrackData, TClipData> : BaseClipCreator<TTrack, TTrackData, TClipData>
         where TTrack : BaseTrack, new()
         where TTrackData : ITrackData<TClipData>
     {

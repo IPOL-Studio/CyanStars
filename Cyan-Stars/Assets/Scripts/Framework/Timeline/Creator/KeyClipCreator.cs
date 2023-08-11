@@ -1,6 +1,9 @@
 ﻿namespace CyanStars.Framework.Timeline
 {
-    public abstract class KeyClipCreator<TTrack, TClip, TTrackData, TClipData, TKeyData> :
+    /// <summary>
+    /// Key clip 创建者基类
+    /// </summary>
+    public abstract class BaseKeyClipCreator<TTrack, TClip, TTrackData, TClipData, TKeyData> :
         IClipCreator<TTrack>
         where TTrack : BaseTrack, new()
         where TClip : IClip<TTrack>, IKeyableClip
@@ -9,16 +12,17 @@
     {
         public TTrackData TrackData { get; set; }
 
-        protected KeyClipCreator()
+        protected BaseKeyClipCreator()
         {
 
         }
 
-        protected KeyClipCreator(TTrackData trackData)
+        protected BaseKeyClipCreator(TTrackData trackData)
         {
             TrackData = trackData;
         }
 
+        /// <inheritdoc />
         public IClip<TTrack> Create(TTrack track, int curIndex)
         {
             var clipData = TrackData.ClipDataList[curIndex];
@@ -34,13 +38,24 @@
             return clip;
         }
 
+        /// <inheritdoc cref="Create" />
+        /// <param name="clipData">当前创建片段对应的片段数据</param>
         protected abstract TClip CreateClip(TTrack track, int curIndex, TClipData clipData);
 
+        /// <summary>
+        /// 创建 clip key
+        /// </summary>
+        /// <param name="owner">目标 clip</param>
+        /// <param name="data">当前创建 key 对应的数据</param>
+        /// <returns></returns>
         protected abstract IKey CreateKey(TClip owner, TKeyData data);
     }
 
-    public class AnonymousKeyClipCreator<TTrack, TClip, TKey, TTrackData, TClipData, TKeyData> :
-        KeyClipCreator<TTrack, TClip, TTrackData, TClipData, TKeyData>
+    /// <summary>
+    /// Key clip 匿名创建者
+    /// </summary>
+    internal sealed class AnonymousBaseKeyClipCreator<TTrack, TClip, TKey, TTrackData, TClipData, TKeyData> :
+        BaseKeyClipCreator<TTrack, TClip, TTrackData, TClipData, TKeyData>
         where TTrack : BaseTrack, new()
         where TClip : IClip<TTrack>, IKeyableClip
         where TKey : IKey<TClip>
@@ -50,12 +65,7 @@
         public CreateKeyClipFunc<TTrack, TTrackData, TClipData, TClip> ClipCreator { get; set; }
         public CreateKeyFunc<TClip, TKeyData, TKey> KeyCreator { get; set; }
 
-        public AnonymousKeyClipCreator()
-        {
-
-        }
-
-        public AnonymousKeyClipCreator(TTrackData trackData,
+        public AnonymousBaseKeyClipCreator(TTrackData trackData,
             CreateKeyClipFunc<TTrack, TTrackData, TClipData, TClip> clipCreator = null,
             CreateKeyFunc<TClip, TKeyData, TKey> keyCreator = null) : base(trackData)
         {

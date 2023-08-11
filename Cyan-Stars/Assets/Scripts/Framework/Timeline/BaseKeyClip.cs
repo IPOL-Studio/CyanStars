@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 namespace CyanStars.Framework.Timeline
 {
+    /// <summary>
+    /// 可添加 Key 的时间轴片段基类
+    /// </summary>
     public abstract class BaseKeyClip<T> : BaseClip<T>, IKeyableClip
         where T : BaseTrack
     {

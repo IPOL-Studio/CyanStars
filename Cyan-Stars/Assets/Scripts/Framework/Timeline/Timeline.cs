@@ -120,6 +120,9 @@ namespace CyanStars.Framework.Timeline
 
     public static class TimelineExtension
     {
+        /// <summary>
+        /// 添加轨道
+        /// </summary>
         public static TTrack AddTrack<TTrack, TTrackData, TClipData>(this Timeline timeline,
             TTrackData trackData,
             CreateClipFunc<TTrack, TTrackData, TClipData> clipCreator)
@@ -130,6 +133,9 @@ namespace CyanStars.Framework.Timeline
             return timeline.AddTrack(creator, trackData.ClipCount);
         }
 
+        /// <summary>
+        /// 添加轨道
+        /// </summary>
         public static TTrack AddTrack<TTrack, TClip, TKey, TTrackData, TClipData, TKeyData>(this Timeline timeline,
             TTrackData trackData,
             CreateKeyClipFunc<TTrack, TTrackData, TClipData, TClip> clipCreator,
@@ -140,7 +146,7 @@ namespace CyanStars.Framework.Timeline
             where TTrackData : ITrackData<TClipData>
             where TClipData : IKeyClipData<TKeyData>
         {
-            var creator = new AnonymousKeyClipCreator<TTrack, TClip, TKey, TTrackData, TClipData, TKeyData>(trackData, clipCreator, keyCreator);
+            var creator = new AnonymousBaseKeyClipCreator<TTrack, TClip, TKey, TTrackData, TClipData, TKeyData>(trackData, clipCreator, keyCreator);
             return timeline.AddTrack(creator, trackData.ClipCount);
         }
     }
