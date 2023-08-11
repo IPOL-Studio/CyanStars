@@ -43,12 +43,10 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 添加轨道
         /// </summary>
-        public TTrack AddTrack<TTrack, TTrackData, TClipData>(TTrackData trackData,
-            CreateClipFunc<TTrack, TTrackData, TClipData> creator)
+        public TTrack AddTrack<TTrack>(IClipCreator<TTrack> creator, int clipCount)
             where TTrack : BaseTrack, new()
-            where TTrackData : ITrackData<TClipData>
         {
-            TTrack track = TrackBuilder<TTrack, TTrackData, TClipData>.Build(trackData, creator);
+            TTrack track = TrackBuilder<TTrack>.Build(clipCount, creator);
 
             track.Owner = this;
             tracks.Add(track);
@@ -117,6 +115,33 @@ namespace CyanStars.Framework.Timeline
             {
                 OnStop?.Invoke();
             }
+        }
+    }
+
+    public static class TimelineExtension
+    {
+        public static TTrack AddTrack<TTrack, TTrackData, TClipData>(this Timeline timeline,
+            TTrackData trackData,
+            CreateClipFunc<TTrack, TTrackData, TClipData> clipCreator)
+            where TTrack : BaseTrack, new()
+            where TTrackData : ITrackData<TClipData>
+        {
+            var creator = new AnonymousClipCreator<TTrack, TTrackData, TClipData>(trackData, clipCreator);
+            return timeline.AddTrack(creator, trackData.ClipCount);
+        }
+
+        public static TTrack AddTrack<TTrack, TClip, TKey, TTrackData, TClipData, TKeyData>(this Timeline timeline,
+            TTrackData trackData,
+            CreateKeyClipFunc<TTrack, TTrackData, TClipData, TClip> clipCreator,
+            CreateKeyFunc<TClip, TKeyData, TKey> keyCreator)
+            where TTrack : BaseTrack, new()
+            where TClip : IClip<TTrack>, IKeyableClip
+            where TKey : IKey<TClip>
+            where TTrackData : ITrackData<TClipData>
+            where TClipData : IKeyClipData<TKeyData>
+        {
+            var creator = new AnonymousKeyClipCreator<TTrack, TClip, TKey, TTrackData, TClipData, TKeyData>(trackData, clipCreator, keyCreator);
+            return timeline.AddTrack(creator, trackData.ClipCount);
         }
     }
 }

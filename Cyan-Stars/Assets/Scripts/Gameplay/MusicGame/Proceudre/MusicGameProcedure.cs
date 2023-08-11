@@ -309,8 +309,8 @@ namespace CyanStars.Gameplay.MusicGame
 
             //添加提示音轨道
             GetLinearNoteData();
-            PromptToneTrackData promptToneTrackData = new PromptToneTrackData { ClipDataList = linearNoteData };
-            PromptToneTrack promptToneTrack = timeline.AddTrack(promptToneTrackData, PromptToneTrack.CreateClipFunc);
+            PromptToneTrackData promptToneTrackData = new PromptToneTrackData(new PromptToneDataCollection(linearNoteData));
+            PromptToneTrack promptToneTrack = timeline.AddTrack(promptToneTrackData, PromptToneTrack.CreateClipFunc, PromptToneTrack.CreateKeyFunc);
             promptToneTrack.AudioSource = audioSource;
 
             //添加特效轨道

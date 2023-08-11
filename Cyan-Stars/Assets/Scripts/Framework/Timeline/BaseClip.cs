@@ -3,7 +3,7 @@ namespace CyanStars.Framework.Timeline
     /// <summary>
     /// 时间轴片段基类
     /// </summary>
-    public abstract class BaseClip<T> : IClip where T : BaseTrack
+    public abstract class BaseClip<T> : IClip<T> where T : BaseTrack
     {
         protected BaseClip(float startTime, float endTime, T owner)
         {

@@ -1,7 +1,5 @@
 using UnityEngine;
-using System.Collections.Generic;
 using CyanStars.Framework.Timeline;
-
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -15,19 +13,28 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 片段创建方法
         /// </summary>
-        public static readonly CreateClipFunc<PromptToneTrack, PromptToneTrackData, NoteData> CreateClipFunc =
+        public static readonly CreateKeyClipFunc<PromptToneTrack, PromptToneTrackData, PromptToneDataCollection, PromptToneClip> CreateClipFunc =
             CreateClip;
 
-        private static BaseClip<PromptToneTrack> CreateClip(PromptToneTrack track, PromptToneTrackData trackData,
-            int curIndex, NoteData noteData)
+        public static readonly CreateKeyFunc<PromptToneClip, NoteData, PromptToneKey> CreateKeyFunc = CreateKey;
+
+        private static PromptToneClip CreateClip(PromptToneTrack track, PromptToneTrackData trackData,
+            int curIndex, PromptToneDataCollection collection)
         {
-            AudioClip promptTone = PromptToneHelper.Instance.GetAudioClipWithType(noteData.PromptToneType);
+            var lastData = collection.KeyDataList[collection.KeyCount - 1];
+            AudioClip lastPromptTone = PromptToneHelper.Instance.GetAudioClipWithType(lastData.PromptToneType);
 
-            if (promptTone == null) return new PromptToneClip(0, 0, track, promptTone);
+            return new PromptToneClip(0, lastData.JudgeTime / 1000f + lastPromptTone.length, track);
+        }
 
-            PromptToneClip clip = new PromptToneClip(noteData.JudgeTime / 1000f,
-                noteData.JudgeTime / 1000f + promptTone.length, track, promptTone);
-            return clip;
+        private static PromptToneKey CreateKey(PromptToneClip owner, NoteData data)
+        {
+            AudioClip promptTone = PromptToneHelper.Instance.GetAudioClipWithType(data.PromptToneType);
+
+            if (promptTone == null) return null;
+
+            PromptToneKey key = new PromptToneKey(owner, data.JudgeTime / 1000f, promptTone);
+            return key;
         }
     }
 }

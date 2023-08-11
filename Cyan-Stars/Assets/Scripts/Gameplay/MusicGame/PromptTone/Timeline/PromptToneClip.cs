@@ -1,24 +1,18 @@
-using UnityEngine;
 using CyanStars.Framework.Timeline;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
     /// <summary>
     /// 提示音片段
     /// </summary>
-    public class PromptToneClip : BaseClip<PromptToneTrack>
+    public class PromptToneClip : BaseKeyClip<PromptToneTrack>
     {
-        private AudioClip promptTone;
+        public AudioSource AudioSource => Owner.AudioSource;
 
-        public PromptToneClip(float startTime, float endTime, PromptToneTrack owner, AudioClip promptTone) :
+        public PromptToneClip(float startTime, float endTime, PromptToneTrack owner) :
             base(startTime, endTime, owner)
         {
-            this.promptTone = promptTone;
-        }
-
-        public override void OnEnter()
-        {
-            Owner.AudioSource.PlayOneShot(promptTone);
         }
     }
 }
