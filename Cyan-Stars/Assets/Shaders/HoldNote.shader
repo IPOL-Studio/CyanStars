@@ -2,8 +2,8 @@ Shader "NoteEffect/HoldNote"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
-        _Mask ("Mask", 2D) = "white" {}
+        [NoScaleOffset]_MainTex ("Texture", 2D) = "white" {}
+        [NoScaleOffset]_Mask ("Mask", 2D) = "white" {}
 
         _Flicker ("Flicker", float) = 0
         _FlickerSpeed ("FlickerSpeed", float) = 0
@@ -30,8 +30,6 @@ Shader "NoteEffect/HoldNote"
             //使用 GPU 实例化无法有效处理具有少量顶点的网格，因为 GPU 无法以充分利用 GPU 资源的方式分配工作。这种处理效率低下会对性能产生不利影响。开始效率低下的阈值取决于 GPU，但作为一般规则，不要对顶点数少于 256 的网格使用 GPU 实例化。
             //注释掉了CBUFFER是因为SRP Batches优先级比较高会阻止GPUInstancing
             // CBUFFER_START(UnityPerMaterial)
-            float4 _MainTex_ST;
-            float4 _Mask_ST;
             // half _Flicker;
             half _FlickerSpeed;
             half _FlickerRate;
@@ -67,7 +65,7 @@ Shader "NoteEffect/HoldNote"
                 // UNITY_SETUP_INSTANCE_ID(v);
                 // UNITY_TRANSFER_INSTANCE_ID(v, o);
                 o.vertex = TransformObjectToHClip(v.vertex.xyz);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.uv = v.uv;
                 return o;
             }
 
@@ -83,7 +81,7 @@ Shader "NoteEffect/HoldNote"
                     UV_Y = smoothstep(0.9, 1, cos(UV_Y - 0.5));
                     col += col * (1 - UV_Y) * _FlickerColor * UNITY_ACCESS_INSTANCED_PROP(Props, _Flicker);
                 }
-                col += SAMPLE_TEXTURE2D(_Mask, sampler_Mask, i.uv) * _MaskColor;
+                col += SAMPLE_TEXTURE2D(_Mask, sampler_Mask, i.uv).r * _MaskColor;
                 return col;
             }
             ENDHLSL
