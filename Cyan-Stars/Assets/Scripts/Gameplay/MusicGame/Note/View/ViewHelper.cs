@@ -69,15 +69,15 @@ namespace CyanStars.Gameplay.MusicGame
                 if (Mathf.Abs(data.Pos - (-1)) < float.Epsilon)
                 {
                     //左侧break
-                    pos.x = -15;
+                    pos.x = -19;
                 }
                 else
                 {
                     //右侧break
-                    pos.x = 15;
+                    pos.x = 19;
                 }
 
-                pos.y = 4;
+                pos.y = 2.8f;
             }
             else
             {
