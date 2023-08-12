@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    /// <summary>s
+    /// <summary>
     /// Break音符
     /// </summary>
     public class BreakNote : BaseNote
