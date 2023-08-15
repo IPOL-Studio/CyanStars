@@ -19,7 +19,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnInit()
         {
-            var uiInfoCollection = new MusicGameSceneUIInfoCollection()
+            var uiInfoCollection = new MusicGameSceneUICollection()
                 .Register<MusicGameMainPanel>()
                 .Register<MusicGame3DUIPanel>();
 

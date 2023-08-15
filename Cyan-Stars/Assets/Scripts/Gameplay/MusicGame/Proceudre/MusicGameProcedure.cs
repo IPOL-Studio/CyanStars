@@ -238,9 +238,9 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void OpenMusicGameUI()
         {
-            foreach (var uiInfo in this.currentSceneInfo.UIInfos)
+            foreach (var type in this.currentSceneInfo.UITypes)
             {
-                uiInfo.Open(GameRoot.UI, null);
+                GameRoot.UI.OpenUIPanel(type, null);
             }
         }
 
@@ -249,9 +249,9 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void CloseMusicGameUI()
         {
-            foreach (var uiInfo in this.currentSceneInfo.UIInfos)
+            foreach (var type in this.currentSceneInfo.UITypes)
             {
-                uiInfo.Close(GameRoot.UI);
+                GameRoot.UI.CloseUIPanel(type);
             }
         }
 
