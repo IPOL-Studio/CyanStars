@@ -9,54 +9,32 @@ namespace CyanStars.Gameplay.MusicGame
     {
         public readonly string SceneName;
         public readonly string ScenePath;
-        public readonly MusicGameSceneUIInfoCollection UIInfos;
+        public readonly MusicGameSceneUICollection UITypes;
 
-        public MusicGameSceneInfo(string sceneName, string scenePath, MusicGameSceneUIInfoCollection uiInfos)
+        public MusicGameSceneInfo(string sceneName, string scenePath, MusicGameSceneUICollection ui)
         {
             SceneName = sceneName;
             ScenePath = scenePath;
-            UIInfos = uiInfos ?? MusicGameSceneUIInfoCollection.Empty;
+            UITypes = ui ?? MusicGameSceneUICollection.Empty;
         }
     }
 
-    public sealed class MusicGameSceneUIInfoCollection : IReadOnlyCollection<IMusicGameSceneUIPanelInfo>
+    public sealed class MusicGameSceneUICollection : IReadOnlyCollection<Type>
     {
-        public static readonly MusicGameSceneUIInfoCollection Empty = new MusicGameSceneUIInfoCollection();
+        public static readonly MusicGameSceneUICollection Empty = new MusicGameSceneUICollection();
 
-        private List<IMusicGameSceneUIPanelInfo> uiPanels = new List<IMusicGameSceneUIPanelInfo>();
+        private List<Type> uiPanels = new List<Type>();
 
         public int Count => uiPanels.Count;
 
-        public IEnumerator<IMusicGameSceneUIPanelInfo> GetEnumerator() => uiPanels.GetEnumerator();
+        public IEnumerator<Type> GetEnumerator() => uiPanels.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public MusicGameSceneUIInfoCollection Register<T>() where T : BaseUIPanel
+        public MusicGameSceneUICollection Register<T>() where T : BaseUIPanel
         {
-            uiPanels.Add(new MusicGameSceneUIPanelInfo<T>());
+            uiPanels.Add(typeof(T));
             return this;
-        }
-    }
-
-    public interface IMusicGameSceneUIPanelInfo
-    {
-        public Type PanelType { get; }
-        public void Open(UIManager manager, Action<BaseUIPanel> callback);
-        public void Close(UIManager manager);
-    }
-
-    internal sealed class MusicGameSceneUIPanelInfo<T> : IMusicGameSceneUIPanelInfo where T : BaseUIPanel
-    {
-        public Type PanelType { get; } = typeof(T);
-
-        public void Open(UIManager manager, Action<BaseUIPanel> callback)
-        {
-            manager.OpenUIPanel<T>(callback);
-        }
-
-        public void Close(UIManager manager)
-        {
-            manager.CloseUIPanel<T>();
         }
     }
 }
