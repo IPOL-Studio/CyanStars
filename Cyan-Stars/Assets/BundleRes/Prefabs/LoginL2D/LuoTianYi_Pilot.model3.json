@@ -1,21 +1,21 @@
 {
 	"Version": 3,
 	"FileReferences": {
-		"Moc": "LoginL2D.moc3",
+		"Moc": "LuoTianYi_Pilot.moc3",
 		"Textures": [
-			"LoginL2D.4096/texture_00.png"
+			"LuoTianYi_Pilot.8192/texture_00.png"
 		],
-		"DisplayInfo": "LoginL2D.cdi3.json"
+		"DisplayInfo": "LuoTianYi_Pilot.cdi3.json"
 	},
 	"Groups": [
 		{
 			"Target": "Parameter",
-			"Name": "EyeBlink",
+			"Name": "LipSync",
 			"Ids": []
 		},
 		{
 			"Target": "Parameter",
-			"Name": "LipSync",
+			"Name": "EyeBlink",
 			"Ids": []
 		}
 	]
