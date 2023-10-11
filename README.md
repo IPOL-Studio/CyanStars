@@ -1,12 +1,23 @@
 # CyanStars
 
-Unity Version: [2020.3.28f1](https://unity3d.com/get-unity/download/archive)
 
-Unity Hub 内下载链接: unityhub://2020.3.28f1/f5400f52e03f
+## 在 Unity 中开发
+
+### 下载 Unity 编辑器
+
+若您已安装 Unity Hub，可将此链接复制到浏览器，调起 Unity Hub 内下载: unityhub://2020.3.28f1/f5400f52e03f
+
+（不推荐）或从官网手动下载对应版本的 Unity 编辑器: [2020.3.28f1](https://unity3d.com/get-unity/download/archive)
+
+### 下载其他必要资源
+
+[Live2D Cubism SDK for Unity](https://www.live2d.com/zh-CHS/sdk/download/unity/) - 一个第三方 Unity 包，用于在 Unity 项目中播放 Live2D 资源。同意协议、下载后拖动到 Unity 编辑器内导入，并重启编辑器。
+
 
 ## CyanStars 项目简介
 
 CyanStars（翠蓝星穹），是一个 VC 同人非商业音乐游戏。
+
 
 ## 贡献规范
 
@@ -24,6 +35,7 @@ CyanStars（翠蓝星穹），是一个 VC 同人非商业音乐游戏。
 Bug 报告、玩法优化等其他问题请通过 GitHub Issue 进行反馈。
 
 对于 CyanStars 的 Q&A 等请通过 GitHub Discussion 进行询问与讨论。
+
 
 ## 开发组成员名单
 
