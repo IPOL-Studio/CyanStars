@@ -2,7 +2,7 @@
 name: 提交Bug
 about: 看上去哪里不大对劲
 title: ''
-labels: bug 漏洞
+labels: '♢ 漏洞 Bug, ♢ 待审阅 To be reviewed'
 assignees: ''
 
 ---
