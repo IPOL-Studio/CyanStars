@@ -18,6 +18,7 @@ namespace CyanStars.Framework.Logging
 
     public sealed class LoggerManager : BaseManager
     {
+        [HideInStackTrace]
         private sealed class UnityLoggerHandler : ILogHandler
         {
             private readonly ICysLogger Logger;

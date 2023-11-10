@@ -11,10 +11,10 @@ namespace CyanStars.Framework.Logging
 
         public LogEntry(LogLevel logLevel, DateTime timestamp, T state, UnityEngine.Object context = null)
         {
-            LogLevel      = logLevel;
-            Timestamp     = timestamp;
-            State         = state;
-            Context       = context;
+            LogLevel  = logLevel;
+            Timestamp = timestamp;
+            State     = state;
+            Context   = context;
         }
     }
 }
