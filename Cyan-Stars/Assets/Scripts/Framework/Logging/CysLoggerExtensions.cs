@@ -50,10 +50,10 @@ namespace CyanStars.Framework.Logging
         private static LogEntry<TState> CreateLogEntry<TState>(LogLevel logLevel, TState state, UnityEngine.Object context = null)
         {
             return new LogEntry<TState>(
-                logLevel:      logLevel,
-                timestamp:     DateTime.Now,
-                state:         state,
-                context:       context
+                logLevel:  logLevel,
+                timestamp: DateTime.Now,
+                state:     state,
+                context:   context
             );
         }
     }

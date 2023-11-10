@@ -236,7 +236,9 @@ namespace CyanStars.Framework.Logging
             }
             else
             {
-                //TODO: 泛型输出，目前走 CSharp 的 ToString() 输出
+                // TODO: 泛型输出，目前走 CSharp 的 ToString() 输出
+                // 与 Unity Debug 的输出不太一样
+
                 sb.Append(GetParameterTypeString(type));
             }
         }
