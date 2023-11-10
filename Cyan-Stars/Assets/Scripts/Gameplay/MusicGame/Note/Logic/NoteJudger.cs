@@ -201,6 +201,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
+        [HideInStackTrace]
         public static void LogJudgedInfo<T>(T info) where T : INoteJudgedInfo
         {
             dataModule.Logger.LogInfo(info.GetJudgeMessage());
