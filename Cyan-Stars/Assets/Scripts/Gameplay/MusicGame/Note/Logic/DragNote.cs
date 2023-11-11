@@ -1,4 +1,4 @@
-using CyanStars.Framework.Logger;
+using CyanStars.Framework.Logging;
 
 
 namespace CyanStars.Gameplay.MusicGame

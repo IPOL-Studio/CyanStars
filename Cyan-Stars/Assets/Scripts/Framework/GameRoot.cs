@@ -8,7 +8,7 @@ using CyanStars.Framework.Asset;
 using CyanStars.Framework.Audio;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.GameObjectPool;
-using CyanStars.Framework.Logger;
+using CyanStars.Framework.Logging;
 using CyanStars.Framework.Timer;
 
 
