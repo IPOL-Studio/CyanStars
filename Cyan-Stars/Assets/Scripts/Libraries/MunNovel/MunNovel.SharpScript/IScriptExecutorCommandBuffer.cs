@@ -1,7 +1,3 @@
-using System.Threading;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MunNovel.Command;
 
@@ -12,9 +8,7 @@ namespace MunNovel.SharpScript
         bool CanExecute { get; }
 
         void AddCommand(ICommand command);
-
-        Task Execute();
-
-        Task Pause(double time = -1);
+        ValueTask Execute();
+        ValueTask Pause(double time = -1);
     }
 }

@@ -1,33 +1,26 @@
-using System.Collections.ObjectModel;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using MunNovel.Attributes;
-using MunNovel.Command;
-using System.Collections.Generic;
 using System.Text;
+using MunNovel.Command;
+using MunNovel.Metadata;
 
 namespace MunNovel.Utils
 {
     public static partial class CommandUtils
     {
-        private static readonly ReadOnlyDictionary<string, CommandParameterMetadata> EmptyCommandPropMetadata =
-            new ReadOnlyDictionary<string, CommandParameterMetadata>(new Dictionary<string, CommandParameterMetadata>(0));
-
         public static string[] GetCommandNames(Type commandType)
         {
-            if (commandType == null)
-            {
-                throw new ArgumentNullException(nameof(commandType));
-            }
+            _ = commandType ?? throw new ArgumentNullException(nameof(commandType));
 
-            if (!IsCommmand(commandType))
+            if (!IsCommand(commandType))
             {
                 throw new ArgumentException($"{commandType.FullName} not assignable from ICommand", nameof(commandType));
             }
 
             var alias = GetAlias(commandType);
-            return alias == null
+            return alias == null || alias == commandType.FullName
                 ? new string[] { commandType.FullName }
                 : new string[]
                 {
@@ -37,102 +30,75 @@ namespace MunNovel.Utils
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
-        /// <param name="commandType"></param>
-        /// <returns>paramater name map to parameter metadatas or empty dict(not null)</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
-        public static ReadOnlyDictionary<string, CommandParameterMetadata> GetCommandParameters(Type commandType)
+        internal static void FillCommandParameters(ref CommandMetadataBuilder builder)
         {
-            if (commandType == null)
-            {
-                throw new ArgumentNullException(nameof(commandType));
-            }
-
-            if (!IsCommmand(commandType))
-            {
-                throw new ArgumentException($"{commandType.FullName} not assignable from ICommand", nameof(commandType));
-            }
+            var commandType = builder.CommandType ?? throw new ArgumentNullException(nameof(builder.CommandType));
 
             var props = commandType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty);
-            Dictionary<string, CommandParameterMetadata> dict = null;
-
-            if (props != null && props.Length > 0)
-            {
-                dict = new Dictionary<string, CommandParameterMetadata>(props.Length);
-                GetPropertyCommandParameter(props, dict);
-            }
+            AddPropertyCommandParameters(ref builder, props);
 
             var fields = commandType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetField);
-            if (fields != null && fields.Length > 0)
-            {
-                if (dict == null)
-                    dict = new Dictionary<string, CommandParameterMetadata>(fields.Length);
-                GetFieldCommandParameter(fields, dict);
-            }
-
-            return dict == null
-                ? EmptyCommandPropMetadata
-                : new ReadOnlyDictionary<string, CommandParameterMetadata>(dict);
+            AddFieldCommandParameters(ref builder, fields);
         }
 
-        // 获取以 property 形式声明的 parameters
+        // 写入以 property 形式声明的 parameters
         // property 需要具有 set 访问器(可写)
         // property 需要 [CommandParameterAttribute]，或 set 为 public
-        private static void GetPropertyCommandParameter(PropertyInfo[] props, Dictionary<string, CommandParameterMetadata> dict)
+        private static void AddPropertyCommandParameters(ref CommandMetadataBuilder builder, PropertyInfo[] props)
         {
             for (int i = 0; i < props.Length; i++)
             {
                 // 属性不可写，跳过
                 if (!props[i].CanWrite)
-                {
                     continue;
-                }
 
                 // 没有CommandParameterAttribute做标记，并且set不是public的，跳过
-                if (!props[i].IsDefined(typeof(CommandParameterAttribute), false) && // isDefinedAttr
-                    props[i].GetSetMethod(false) == null)                            // isPublicSetter
-                {
+                if (!props[i].HasCommandParameterAttribute() && props[i].GetSetMethod(false) == null)
                     continue;
-                }
 
-                var metadata = new CommandParameterMetadata(props[i]);
-                dict.Add(metadata.Name, metadata);
+                builder.AddParameter(CommandParameterMetadata.Create(props[i]));
             }
         }
 
-        // 获取以 field 形式声明的 parameters
+        // 写入以 field 形式声明的 parameters
         // field 需要 [CommandParameterAttribute]，且非 readonly
-        private static void GetFieldCommandParameter(FieldInfo[] fields,  Dictionary<string, CommandParameterMetadata> dict)
+        private static void AddFieldCommandParameters(ref CommandMetadataBuilder builder, FieldInfo[] fields)
         {
             for (int i = 0; i < fields.Length; i++)
             {
-                if (fields[i].IsDefined(typeof(CommandParameterAttribute), false) && !fields[i].IsInitOnly)
+                if (fields[i].HasCommandParameterAttribute() && !fields[i].IsInitOnly)
                 {
-                    var metadata = new CommandParameterMetadata(fields[i]);
-                    dict.Add(metadata.Name, metadata);
+                    var metadata = CommandParameterMetadata.Create(fields[i]);
+                    builder.AddParameter(metadata);
                 }
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsCommmand(Type type)
-        {
-            return typeof(ICommand).IsAssignableFrom(type);
-        }
+        private static bool HasCommandParameterAttribute(this MemberInfo member) =>
+            member.IsDefined(typeof(CommandParameterAttribute), false);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static string GetAlias(Type type)
-        {
-            var alias = type.GetCustomAttribute<CommandAliasAttribute>();
-            return alias?.Value;
-        }
+        public static bool IsCommand(Type type) => typeof(ICommand).IsAssignableFrom(type);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool HasEmptyConstructor(Type type) => type.GetConstructor(Type.EmptyTypes) != null;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string GetAlias(Type type) => type.GetCustomAttribute<CommandAliasAttribute>()?.Value;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ICommandCreator GetCustomCreator(Type type) =>
+            type.GetCustomAttribute<CustomCommandCreatorAttribute>()?.Creator;
     }
 
     public static partial class CommandUtils
     {
-        private static readonly HashSet<char> CantValidSet = new HashSet<char>
+        private static readonly HashSet<char> InvalidCharSet = new HashSet<char>
         {
             ' ',
             '=',
@@ -147,7 +113,7 @@ namespace MunNovel.Utils
                 if (_invalidChars == null)
                 {
                     var sb = new StringBuilder();
-                    foreach (var item in CantValidSet)
+                    foreach (var item in InvalidCharSet)
                     {
                         sb.Append('\'').Append(item).Append("\'  ");
                     }
@@ -168,7 +134,7 @@ namespace MunNovel.Utils
 
             for (int i = 0; i < alias.Length; i++)
             {
-                if (CantValidSet.Contains(alias[i]))
+                if (InvalidCharSet.Contains(alias[i]))
                 {
                     return true;
                 }
