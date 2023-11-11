@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using MunNovel.Command;
 using MunNovel.SharpScript;
+using MunNovel.Utils;
 
 namespace CyanStars.Framework.Dialogue
 {
@@ -30,7 +31,7 @@ namespace CyanStars.Framework.Dialogue
                 waitExecuteCommands.Enqueue(command);
             }
 
-            public async Task Execute()
+            public async ValueTask Execute()
             {
                 if (!CanExecute)
                     return;
@@ -45,7 +46,7 @@ namespace CyanStars.Framework.Dialogue
                 isExecuting = false;
             }
 
-            private async Task Execute(List<Task> executing)
+            private async ValueTask Execute(List<ValueTask> executing)
             {
                 double? pauseTime = null;
                 CancellationToken cancelToken = executor.CommandCancelToken;
@@ -54,20 +55,22 @@ namespace CyanStars.Framework.Dialogue
                 {
                     ICommand cmd = waitExecuteCommands.Dequeue();
                     executingCommands.Add(cmd);
-                    executing.Add(cmd.ExecuteAsync(cancelToken));
+                    executing.Add(cmd.ExecuteAsync(executor.executionContext, cancelToken));
 
-                    bool isPause = typeof(IPauseableCommand).IsAssignableFrom(cmd.GetType());
-
-                    if (waitExecuteCommands.Count == 0 || isPause)
+                    if (cmd.IsPauseable())
                     {
-                        if (isPause)
-                            pauseTime = ((IPauseableCommand)cmd).PauseTime;
-
-                        break;
+                        IPauseableCommand pauseCmd = (IPauseableCommand)cmd;
+                        if (pauseCmd.IsPause)
+                        {
+                            pauseTime = pauseCmd.PauseTime;
+                        }
                     }
+
+                    if (waitExecuteCommands.Count == 0 || pauseTime.HasValue)
+                        break;
                 }
 
-                await Task.WhenAll(executing);
+                await ValueTaskUtils.WhenAll(executing);
 
                 executor.CommandsExecuted(executingCommands);
                 executing.Clear();
@@ -76,11 +79,11 @@ namespace CyanStars.Framework.Dialogue
                     await Pause(pauseTime.Value);
             }
 
-            public Task Pause(double time = -1d)
+            public ValueTask Pause(double time = -1d)
             {
                 TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
                 executor.Pause(tcs, time);
-                return tcs.Task;
+                return new ValueTask(tcs.Task);
             }
         }
     }
