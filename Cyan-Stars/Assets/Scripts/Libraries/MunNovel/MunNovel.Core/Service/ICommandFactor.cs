@@ -1,15 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MunNovel.Command;
 
 namespace MunNovel.Service
 {
-    public interface ICommandFactor : IService
+    public interface ICommandFactor
     {
-        ICommand CreateCommand(string commandName, Dictionary<string, object> param);
+        ICommand CreateCommand<T>(string commandName, ref T parameters) where T : ICommandParameterProvider;
 
-        ICommand CreateCommand(Type commandType, Dictionary<string, object> param);
+        ICommand CreateCommand<T>(Type commandType, ref T parameters) where T : ICommandParameterProvider;
     }
 }

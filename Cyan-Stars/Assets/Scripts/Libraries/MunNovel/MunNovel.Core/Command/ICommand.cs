@@ -5,6 +5,6 @@ namespace MunNovel.Command
 {
     public interface ICommand
     {
-        Task ExecuteAsync(CancellationToken cancellationToken = default);
+        ValueTask ExecuteAsync(IExecutionContext ctx, CancellationToken cancellationToken = default);
     }
 }

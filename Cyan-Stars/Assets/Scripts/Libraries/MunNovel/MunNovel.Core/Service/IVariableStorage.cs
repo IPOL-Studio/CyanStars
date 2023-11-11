@@ -2,7 +2,7 @@ using MunNovel.Storage;
 
 namespace MunNovel.Service
 {
-    public interface IVariableStorage : IService
+    public interface IVariableStorage
     {
         IVariableScope CreateScope(string name);
         bool RemoveScope(string name);

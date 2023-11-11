@@ -1,47 +1,45 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-
-using ParameterMemberTypes = MunNovel.Command.CommandParameterMetadata.ParameterMemberTypes;
+using System.Runtime.CompilerServices;
+using MunNovel.Service;
+using MunNovel.Metadata;
 
 namespace MunNovel.Command
 {
-    public class DefaultCommandCreator : ICommandCreator
+    public sealed class DefaultCommandCreator : ICommandCreator
     {
-        public ICommand Create(Type commandType, Dictionary<string, object> param)
+        public ICommand Create<T>(ICommandMetadataProvider metadataProvider, Type commandType, ref T parameters) where T : ICommandParameterProvider
         {
-            var metadata = ServiceManager.CommandManager.GetCommandMetadata(commandType);
-            if (metadata == null)
+            var metadata = metadataProvider.GetCommandMetadata(commandType);
+            _ = metadata ?? throw new ArgumentException($"command {commandType} is not register");
+
+            if (!(metadata.CustomCreator is null))
             {
-                throw new ArgumentException($"command type {commandType} is not register");
+                return metadata.CustomCreator.Create(metadataProvider, commandType, ref parameters);
             }
 
-            if (metadata.CustomCreator != null)
-            {
-                return metadata.CustomCreator.Create(commandType, param);
-            }
- 
             if (!metadata.HasEmptyConstructor)
             {
-                throw new ArgumentException($"command type {commandType} can not be construct");
+                throw new ArgumentException($"command {commandType} can not be construct");
             }
 
-            var command = Activator.CreateInstance(commandType) as ICommand;
+            return Create(commandType, metadata, ref parameters);
+        }
 
-            foreach (var inputParam in param)
+        private static ICommand Create<T>(Type commandType, CommandMetadata metadata, ref T parameters) where T : ICommandParameterProvider
+        {
+            var command = (ICommand)Activator.CreateInstance(commandType);
+
+            if (parameters is null || parameters.Count == 0)
             {
-                if (metadata.CommandParameters.TryGetValue(inputParam.Key, out var prop) && IsAssignable(prop.Type, inputParam.Value))
+                return command;
+            }
+
+            foreach (var (name, value) in parameters)
+            {
+                if (metadata.CommandParameters.TryGetValue(name, out var parameter) && IsAssignable(parameter.Type, value))
                 {
-                    if (prop.MemberType == ParameterMemberTypes.Field)
-                    {
-                        (prop.Member as FieldInfo).SetValue(command, inputParam.Value);
-                    }
-                    else if (prop.MemberType == ParameterMemberTypes.Property)
-                    {
-                        (prop.Member as PropertyInfo).SetValue(command, inputParam.Value);
-                    }
+                    parameter.SetValue(command, value);
                 }
             }
 
@@ -50,12 +48,18 @@ namespace MunNovel.Command
 
         private static bool IsAssignable(Type target, object value)
         {
-            if (value == null)
+            if (value is null)
             {
-                return !target.IsValueType || target == typeof(Nullable<>);
+                return !target.IsValueType || IsNullable(target);
             }
 
             return target.IsAssignableFrom(value.GetType());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsNullable(Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
     }
 }

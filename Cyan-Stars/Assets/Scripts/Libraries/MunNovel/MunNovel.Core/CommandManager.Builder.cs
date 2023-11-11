@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using MunNovel.Attributes;
-using MunNovel.Command;
+using MunNovel.Metadata;
 using MunNovel.Utils;
 
 namespace MunNovel
@@ -11,14 +10,7 @@ namespace MunNovel
     {
         public sealed class Builder
         {
-            private ServiceManager _serviceManager;
-
-            public Builder(ServiceManager serviceManager)
-            {
-                _serviceManager = serviceManager;
-            }
-
-            public CommandManager Build() 
+            public CommandManager Build()
             {
                 var commands = CollectCommands();
                 var manager = new CommandManager();
@@ -32,7 +24,6 @@ namespace MunNovel
                     }
                 }
 
-                _serviceManager.Register(manager);
                 return manager;
             }
 
@@ -58,7 +49,7 @@ namespace MunNovel
 
             private bool CanCreateCommand(Type type)
             {
-                if (type.IsAbstract || type.IsInterface || type.IsNested || !type.IsClass || !type.IsPublic || !CommandUtils.IsCommmand(type))
+                if (type.IsAbstract || type.IsInterface || type.IsNested || !type.IsClass || !type.IsPublic || !CommandUtils.IsCommand(type))
                     return false;
 
                 var creatorAttr = type.GetCustomAttribute<CustomCommandCreatorAttribute>();
