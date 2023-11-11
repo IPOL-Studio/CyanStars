@@ -25,6 +25,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         //----音游设置模块--------
         private MusicGameSettingsModule settingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
+
         //----音游场景模块--------
         private MusicGameSceneModule sceneModule = GameRoot.GetDataModule<MusicGameSceneModule>();
         private MusicGameSceneInfo currentSceneInfo;
@@ -70,6 +71,9 @@ namespace CyanStars.Gameplay.MusicGame
 
                 //加载数据文件
                 await LoadDataFile();
+
+                //初始化音游相关 Logger
+                InitLogger();
 
                 //打开音游UI
                 OpenMusicGameUI();
@@ -231,6 +235,15 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(mapManifest.MusicFileName, sceneRoot);
             }
+        }
+
+        /// <summary>
+        /// 初始化音游相关 Logger
+        /// </summary>
+        private void InitLogger()
+        {
+            var mapData = dataModule.GetMap(dataModule.MapIndex);
+            dataModule.InitLogger($"MusicGame - {mapData.Name}");
         }
 
         /// <summary>
