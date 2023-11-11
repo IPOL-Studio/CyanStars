@@ -7,10 +7,12 @@ namespace MunNovel.SharpScript
     public class ScriptContext : IScriptContext
     {
         private IScriptExecutorCommandBuffer _buffer;
+        public IExecutionContext ExecutionContext { get; }
 
-        public ScriptContext(IScriptExecutorCommandBuffer buffer)
+        public ScriptContext(IScriptExecutorCommandBuffer buffer, IExecutionContext executionContext)
         {
             _buffer = buffer;
+            ExecutionContext = executionContext;
         }
 
         public IScriptContext Execute(ICommand command)
@@ -20,12 +22,12 @@ namespace MunNovel.SharpScript
             return this;
         }
 
-        public async Task Submit()
+        public async ValueTask Submit()
         {
             await _buffer.Execute();
         }
 
-        public Task Pause(double time = -1)
+        public ValueTask Pause(double time = -1)
         {
             return _buffer.Pause(time);
         }

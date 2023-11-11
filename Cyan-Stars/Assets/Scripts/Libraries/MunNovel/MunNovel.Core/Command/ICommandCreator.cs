@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
+using MunNovel.Service;
 
 namespace MunNovel.Command
 {
     public interface ICommandCreator
     {
-        ICommand Create(Type commandType, Dictionary<string, object> param);
+        ICommand Create<T>(ICommandMetadataProvider metadataProvider, Type commandType, ref T parameters) where T : ICommandParameterProvider;
     }
 }
