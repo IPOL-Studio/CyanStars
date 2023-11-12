@@ -88,13 +88,26 @@ namespace CyanStars.Gameplay.MusicGame
                         Mathf.Cos(curItemAngle * Mathf.Deg2Rad) * Radius,
                         0
                     );
+
+                    float centerAngle = (StartAngle + EndAngle) / 2;
+                    float distanceToCenter = Mathf.Abs(curItemAngle - centerAngle);
+                    float alpha;
+                    if (Mathf.Abs(distanceToCenter) < 20)
+                    {
+                        alpha = 1;
+                    }
+                    else  // distanceToCenter in [20, centerAngle - StartAngle]
+                    {
+                        alpha = 1 - Mathf.Pow((distanceToCenter - 20) / (centerAngle - StartAngle - 20), 0.5f);
+                    }
+                    Items[i].SetAlpha(alpha);
                 }
 
                 curItemAngle += paddingAngle;
             }
 
-            // Time.deltaTime * 5：滚动时间阈值，超过这个时间鼠标滚轮没有滚动则进行中央吸附
-            if (!anchored && !isDragging && (float.IsNaN(lastScrollTime) || Time.time - lastScrollTime > Time.deltaTime * 5))
+            // Time.deltaTime * 10：滚动时间阈值，超过这个时间鼠标滚轮没有滚动则进行中央吸附
+            if (!anchored && !isDragging && (float.IsNaN(lastScrollTime) || Time.time - lastScrollTime > Time.deltaTime * 10))
             {
                 AnchorCentralItem();
             }

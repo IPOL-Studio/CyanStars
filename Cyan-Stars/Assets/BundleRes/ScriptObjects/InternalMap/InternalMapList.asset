@@ -14,30 +14,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InternalMaps:
   - Name: "\u6D4B\u8BD5\u8C31"
+    StaffInfo: 
     LrcFileName: 
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_00/Music.ogg
-    BackgroundFileName: 
     CoverFileName: 
-    ClipCoverFileName: 
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_00/TimelineData.asset
   - Name: "\u6DF1\u7A7A\u65C1\u767D"
+    StaffInfo: "\u6D1B\u5929\u4F9D | \u6F14\u5531\nAfterLight\u4F59\u6656 | \u4F5C\u7F16\u6DF7\u8C03\u8BCD\u7ED8\n\u9B4E\u5929\u9752
+      | \u89C6\u9891"
     LrcFileName: Assets/BundleRes/MusicGameMap/Map_01/LrcText.txt
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_01/Music.ogg
-    BackgroundFileName: Assets/BundleRes/Covers/Music_01/Bg.png
-    CoverFileName: Assets/BundleRes/Covers/Music_01/Cover.png
-    ClipCoverFileName: Assets/BundleRes/Covers/Music_01/ClipCover.png
+    CoverFileName: Assets/BundleRes/Covers/Music_01/ClipCover.png
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_01/TimelineData.asset
   - Name: "\u5E7D\u7075\u5C11\u5973"
+    StaffInfo: "\u6D1B\u5929\u4F9D | \u6F14\u5531\r\r\n\u5929\u5929\u51C9\u51C9\u8C46
+      | \u8C03\u6821\n\u9038\u606C\u6E05 | \u6DF7\u97F3\n\u795E\u5154\u5C0FP | \u4F5C\u66F2
+      \n\u795E\u5154\u5C0FP | \u7F16\u66F2\nJackdaw\u7941\u6E90 | \u4F5C\u8BCD\n\u6DF1\u8C37-shintani
+      | \u66F2\u7ED8 \r\r\n\u89C2\u6708\u666F | \u89C6\u9891\n\u65F6\u5C1A | \u7B56\u5212"
     LrcFileName: 
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_02/Music.ogg
-    BackgroundFileName: 
     CoverFileName: 
-    ClipCoverFileName: 
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_02/TimelineData.asset
   - Name: "\u6EE1\u5929\u661F"
+    StaffInfo: "\u6B4C\u59EC\uFF1A\u4E50\u6B63\u7EEB\n\u4F5C\u8BCD\uFF1A\u8363\u7109lava\n\u66F2\u7F16\u8C03\u6DF7\u5F71\uFF1A\u661F\u8475\n\u539F\u66F2\u7ED8\uFF1A\u6D0B\u828B
+      SuyaTrace\n\u539F\u5C01\u9762/Logo/\u89C6\u9891\u534F\u529B\uFF1A\u7D84\u98CE"
     LrcFileName: 
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_03/Music.ogg
-    BackgroundFileName: Assets/BundleRes/Covers/Music_03/Bg.png
-    CoverFileName: Assets/BundleRes/Covers/Music_03/Cover.mp4
-    ClipCoverFileName: Assets/BundleRes/Covers/Music_03/ClipCover.png
+    CoverFileName: Assets/BundleRes/Covers/Music_03/Cover.png
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_03/TimelineData.asset

@@ -35,12 +35,9 @@ namespace CyanStars.Gameplay.MusicGame
 
         [Header("谱面标题")]
         public TextMeshProUGUI TxtMapTitle;
-        
-        [Header("谱面曲绘图片")]
-        public Image ImgCover;
 
-        [Header("谱面曲绘视频")]
-        public VideoPlayer VideoCover;
+        [Header("Staff信息")]
+        public TextMeshProUGUI StaffInfoDisplay;
 
         /// <summary>
         /// 音游数据模块
@@ -79,9 +76,6 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override async void OnOpen()
         {
-            // ImgBg.sprite = null;
-            ImgCover.sprite = null;
-            VideoCover.clip = null;
             CircularMapList.Reset();
 
             await RefreshMusicList();
@@ -113,6 +107,7 @@ namespace CyanStars.Gameplay.MusicGame
                 MapItem mapItem = await GameRoot.UI.AwaitGetUIItem<MapItem>(MapItemTemplate, CircularMapList.transform);
                 CircularMapList.AddItem(mapItem);
                 MapItems.Add(mapItem);
+                mapItem.Index = i;
 
                 MapItemData data = MapItemData.Create(i, map);
                 mapItem.RefreshItem(data);
@@ -124,8 +119,11 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 选中谱面Item
         /// </summary>
-        public async void OnSelectMap(MapItem mapItem)
+        public void OnSelectMap(MapItem mapItem)
         {
+            // 将选中的谱面移到圆环中央，即使当前已经选中也执行
+            CircularMapList.MoveToItemAt(mapItem.Index);
+
             if (curSelectedMapItem == mapItem)
             {
                 return;
@@ -135,6 +133,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             Debug.Log("当前选中:" + mapItem.Data.MapManifest.Name);
 
+            // 标题和Staff信息渐变动画
             TxtMapTitle.DOFade(0, 0.2f).OnComplete(
                 () =>
                 {
@@ -142,41 +141,13 @@ namespace CyanStars.Gameplay.MusicGame
                     TxtMapTitle.DOFade(1, 0.2f);
                 }
             );
-
-            if (string.IsNullOrEmpty(mapItem.Data.MapManifest.CoverFileName))
-            {
-                ImgCover.sprite = null;
-                VideoCover.clip = null;
-                ImgCover.gameObject.SetActive(false);
-                VideoCover.gameObject.SetActive(false);
-            }
-            else
-            {
-                if (mapItem.Data.MapManifest.CoverFileName.EndsWith(".mp4"))
+            StaffInfoDisplay.DOFade(0, 0.2f).OnComplete(
+                () =>
                 {
-                    VideoClip clip = 
-                        await GameRoot.Asset.LoadAssetAsync<VideoClip>(mapItem.Data.MapManifest.CoverFileName,
-                            gameObject);
-                    VideoCover.clip = clip;
-
-                    RawImage videoRawImage = VideoCover.GetComponent<RawImage>();
-                    videoRawImage.DOFade(1, 0.2f).SetEase(Ease.InSine);
-                    ImgCover.DOFade(0, 0.3f).SetEase(Ease.InSine).OnComplete(()=>{ImgCover.gameObject.SetActive(false);});
-                    VideoCover.gameObject.SetActive(true);
+                    StaffInfoDisplay.text = mapItem.Data.MapManifest.StaffInfo;
+                    StaffInfoDisplay.DOFade(1, 0.2f);
                 }
-                else
-                {
-                    Sprite sprite =
-                        await GameRoot.Asset.LoadAssetAsync<Sprite>(mapItem.Data.MapManifest.CoverFileName, gameObject);
-                    ImgCover.sprite = sprite;
-
-                    RawImage videoRawImage = VideoCover.GetComponent<RawImage>();
-                    ImgCover.DOFade(1, 0.2f).SetEase(Ease.InSine);
-                    videoRawImage.DOFade(0, 0.3f).SetEase(Ease.InSine).OnComplete(()=>{VideoCover.gameObject.SetActive(false);});
-                    ImgCover.gameObject.SetActive(true);
-                }
-                
-            }
+            );
         }
     }
 }

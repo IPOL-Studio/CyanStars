@@ -1,4 +1,5 @@
-﻿using System;
+﻿// TODO: TO
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyanStars.Framework;
@@ -105,17 +106,17 @@ namespace CyanStars.Gameplay.MusicGame
 
             Debug.Log("当前选中:" + mapItem.Data.MapManifest.Name);
 
-            if (string.IsNullOrEmpty(mapItem.Data.MapManifest.BackgroundFileName))
-            {
-                ImgBg.sprite = null;
-            }
-            else
-            {
-                Sprite sprite =
-                    await GameRoot.Asset.LoadAssetAsync<Sprite>(mapItem.Data.MapManifest.BackgroundFileName,
-                        gameObject);
-                ImgBg.sprite = sprite;
-            }
+            // if (string.IsNullOrEmpty(mapItem.Data.MapManifest.BackgroundFileName))
+            // {
+            //     ImgBg.sprite = null;
+            // }
+            // else
+            // {
+            //     Sprite sprite =
+            //         await GameRoot.Asset.LoadAssetAsync<Sprite>(mapItem.Data.MapManifest.BackgroundFileName,
+            //             gameObject);
+            //     ImgBg.sprite = sprite;
+            // }
 
 
             if (string.IsNullOrEmpty(mapItem.Data.MapManifest.CoverFileName))
