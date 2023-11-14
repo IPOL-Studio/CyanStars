@@ -44,6 +44,7 @@ namespace CyanStars.Framework.Logging
             cachedResult = Builder.ToString();
             return cachedResult;
         }
+
         private void AppendException(Exception exception, int level)
         {
             if (exception is null || level >= MaxLevel)
