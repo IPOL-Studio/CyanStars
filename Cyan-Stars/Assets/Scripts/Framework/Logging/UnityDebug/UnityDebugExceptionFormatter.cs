@@ -51,10 +51,9 @@ namespace CyanStars.Framework.Logging
                 return;
 
             if (level > 0)
+            {
                 Builder.Append('\n');
 
-            if (level > 0)
-            {
                 // 被嵌套缩进的 exception 使用 "--->" 来做标记与分割
                 Builder.Append('-', level * IndentCount - 1).Append('>');
             }
