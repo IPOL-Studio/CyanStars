@@ -43,18 +43,14 @@ namespace CyanStars.Framework.Logging
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Log_Internal<TState>(this ICysLogger logger, LogLevel logLevel, TState state, UnityEngine.Object context = null)
         {
-            logger.Log(logLevel, CreateLogEntry(logLevel, state, context));
+            logger.Log(logLevel, CreateLogEntry(state, context));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static LogEntry<TState> CreateLogEntry<TState>(LogLevel logLevel, TState state, UnityEngine.Object context = null)
-        {
-            return new LogEntry<TState>(
-                logLevel:  logLevel,
-                timestamp: DateTime.Now,
-                state:     state,
-                context:   context
-            );
-        }
+        private static LogEntry<TState> CreateLogEntry<TState>(TState state, UnityEngine.Object context = null) => new LogEntry<TState>(
+            timestamp: DateTime.Now,
+            state: state,
+            context: context
+        );
     }
 }
