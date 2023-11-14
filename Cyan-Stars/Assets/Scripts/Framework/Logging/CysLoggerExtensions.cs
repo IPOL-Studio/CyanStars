@@ -49,8 +49,8 @@ namespace CyanStars.Framework.Logging
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static LogEntry<TState> CreateLogEntry<TState>(TState state, UnityEngine.Object context = null) => new LogEntry<TState>(
             timestamp: DateTime.Now,
-            state: state,
-            context: context
+            state:     state,
+            context:   context
         );
     }
 }
