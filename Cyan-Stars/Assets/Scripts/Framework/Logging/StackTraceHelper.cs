@@ -37,11 +37,11 @@ namespace CyanStars.Framework.Logging
             };
         }
 
-        public static string GetStackTraceString(StackTrace stackTrace) =>
-            GetStackTraceString(stackTrace, DefaultHideFlags, new StackTraceResolver().ResolveFrame);
+        public static string GetStackTraceString(StackTrace stackTrace, bool isAppendFirstFrameFilePath = false, int indent = 0) =>
+            GetStackTraceString(stackTrace, DefaultHideFlags, new StackTraceResolver(isAppendFirstFrameFilePath, indent).ResolveFrame);
 
-        public static string GetStackTraceString(StackTrace stackTrace, HideStackTraceFlags hideFlags) =>
-            GetStackTraceString(stackTrace, hideFlags, new StackTraceResolver().ResolveFrame);
+        public static string GetStackTraceString(StackTrace stackTrace, HideStackTraceFlags hideFlags, bool isAppendFirstFrameFilePath = false, int indent = 0) =>
+            GetStackTraceString(stackTrace, hideFlags, new StackTraceResolver(isAppendFirstFrameFilePath, indent).ResolveFrame);
 
         public static string GetStackTraceString(StackTrace stackTrace, HideStackTraceFlags hideFlags, Action<StackFrame, StringBuilder> resolveFrameAction)
         {
@@ -62,10 +62,10 @@ namespace CyanStars.Framework.Logging
             return StringBuilderCache.GetStringAndRelease(sb);
         }
 
-        public static void AppendStackTraceString(StackTrace stackTrace, StringBuilder sb) =>
-            AppendStackTraceString(stackTrace, sb, DefaultHideFlags, new StackTraceResolver().ResolveFrame);
-        public static void AppendStackTraceString(StackTrace stackTrace, StringBuilder sb, HideStackTraceFlags hideFlags) =>
-            AppendStackTraceString(stackTrace, sb, hideFlags, new StackTraceResolver().ResolveFrame);
+        public static void AppendStackTraceString(StackTrace stackTrace, StringBuilder sb, bool isAppendFirstFrameFilePath = false, int indent = 0) =>
+            AppendStackTraceString(stackTrace, sb, DefaultHideFlags, new StackTraceResolver(isAppendFirstFrameFilePath, indent).ResolveFrame);
+        public static void AppendStackTraceString(StackTrace stackTrace, StringBuilder sb, HideStackTraceFlags hideFlags, bool isAppendFirstFrameFilePath = false, int indent = 0) =>
+            AppendStackTraceString(stackTrace, sb, hideFlags, new StackTraceResolver(isAppendFirstFrameFilePath, indent).ResolveFrame);
 
         public static void AppendStackTraceString(StackTrace stackTrace, StringBuilder sb, HideStackTraceFlags hideFlags, Action<StackFrame, StringBuilder> resolveFrameAction)
         {
@@ -78,8 +78,6 @@ namespace CyanStars.Framework.Logging
 
         private static void AppendStackTraceString_Internal(StackTrace stackTrace, HideStackTraceFlags hideFlags, StringBuilder sb, Action<StackFrame, StringBuilder> resolveFrameAction)
         {
-            sb.Clear();
-
             var frames = stackTrace.GetFrames();
 
             for (int i = 0; i < frames.Length; i++)
@@ -153,49 +151,9 @@ namespace CyanStars.Framework.Logging
                 ;
         }
 
-        private static bool TryConvertFileNameToUnityAssetsFormat(string fileName, out int startIndex, out int length)
-        {
-            startIndex = -1;
-            length = -1;
-
-            if (!Application.isEditor || fileName.Length < 8)
-                return false;
-
-            var index = fileName.IndexOf("Assets/", StringComparison.Ordinal);
-            if (index <= 0)
-            {
-                index = fileName.IndexOf("Library/PackageCache/", StringComparison.Ordinal);
-
-                if (index <= 0)
-                    return false;
-            }
-
-            startIndex = index;
-            length = fileName.Length - index;
-            return true;
-        }
-
         private static string GetParameterTypeString(Type type)
         {
             return ParameterNames.TryGetValue(type, out string name) ? name : type.ToString();
-        }
-
-        private static void AppendMethodDesc(StringBuilder sb, MethodBase method)
-        {
-            sb.Append(method.Name);
-
-            sb.Append('(');
-            string s = string.Empty;
-
-            var parameters = method.GetParameters();
-            for (int i = 0; i < parameters.Length; i++)
-            {
-                sb.Append(s);
-                AppendParameter(sb, parameters[i]);
-                s = ", ";
-            }
-
-            sb.Append(')');
         }
 
         private static void AppendParameter(StringBuilder sb, ParameterInfo parameter)
@@ -243,7 +201,25 @@ namespace CyanStars.Framework.Logging
             }
         }
 
-        private static void AppendFileLink(StringBuilder sb, string fileName, int fileNameStart, int fileNameLength, int lineNumber)
+        internal static void AppendMethodDesc(StringBuilder sb, MethodBase method)
+        {
+            sb.Append(method.Name);
+
+            sb.Append('(');
+            string s = string.Empty;
+
+            var parameters = method.GetParameters();
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                sb.Append(s);
+                AppendParameter(sb, parameters[i]);
+                s = ", ";
+            }
+
+            sb.Append(')');
+        }
+
+        internal static void AppendFileLink(StringBuilder sb, string fileName, int fileNameStart, int fileNameLength, int lineNumber)
         {
             sb.Append("<a href=").Append('"').Append(fileName, fileNameStart, fileNameLength).Append('"')
               .Append(" line=").Append('"').Append(lineNumber).Append('"')
@@ -252,9 +228,38 @@ namespace CyanStars.Framework.Logging
               .Append("</a>");
         }
 
+        internal static bool TryConvertFileNameToUnityAssetsFormat(string fileName, out int startIndex, out int length)
+        {
+            startIndex = -1;
+            length = -1;
+
+            if (!Application.isEditor || fileName.Length < 8)
+                return false;
+
+            var index = fileName.IndexOf("Assets/", StringComparison.Ordinal);
+            if (index <= 0)
+            {
+                index = fileName.IndexOf("Library/PackageCache/", StringComparison.Ordinal);
+
+                if (index <= 0)
+                    return false;
+            }
+
+            startIndex = index;
+            length = fileName.Length - index;
+            return true;
+        }
+
         private struct StackTraceResolver
         {
-            private bool isFirstFrameAppended;
+            private bool isAppendFrameFileLink;
+            private int indent;
+
+            public StackTraceResolver(bool isAppendFirstFrameFilePath, int indent)
+            {
+                this.isAppendFrameFileLink = isAppendFirstFrameFilePath;
+                this.indent = indent > 0 ? indent : 0;
+            }
 
             public void ResolveFrame(StackFrame frame, StringBuilder sb)
             {
@@ -268,12 +273,13 @@ namespace CyanStars.Framework.Logging
                     TryConvertFileNameToUnityAssetsFormat(fileName, out fileNameStart, out fileNameLength);
                 }
 
-                sb.Append(frame.GetMethod().DeclaringType.ToString())
+                sb.Append(' ', indent)
+                  .Append(frame.GetMethod().DeclaringType.ToString())
                   .Append(':');
 
                 AppendMethodDesc(sb, frame.GetMethod());
 
-                if (!string.IsNullOrEmpty(fileName) && isFirstFrameAppended)
+                if (!string.IsNullOrEmpty(fileName) && isAppendFrameFileLink)
                 {
                     sb.Append(" (at ");
                     AppendFileLink(sb, fileName, fileNameStart, fileNameLength, frame.GetFileLineNumber());
@@ -282,7 +288,7 @@ namespace CyanStars.Framework.Logging
 
                 sb.Append('\n');
 
-                isFirstFrameAppended = true;
+                isAppendFrameFileLink = true;
             }
         }
     }
