@@ -31,14 +31,13 @@ namespace CyanStars.Framework.Logging
 
             if (logEntry.State is Exception e)
             {
-                message = e.Message;
-                stackTrace = IsTraceStack(LogLevel.Exception) ? CreateStackTraceString(new StackTrace(e, true)) : null;
-                logLevel = LogLevel.Exception;
+                message = CreateExceptionString(e, IsTraceStack(logLevel));
+                stackTrace = null;
             }
             else
             {
                 message = logEntry.State.ToString();
-                stackTrace = CreateStackTraceString(IsTraceStack(logEntry.LogLevel) ? new StackTrace(1, true) : null);
+                stackTrace = IsTraceStack(logLevel) ? CreateStackTraceString(new StackTrace(1, true)) : null;
             }
 
             LoggerHack.LogFormat(
@@ -61,7 +60,26 @@ namespace CyanStars.Framework.Logging
 
             try
             {
-                StackTraceHelper.AppendStackTraceString(stackTrace, sb);
+                StackTraceHelper.AppendStackTraceString(stackTrace, sb, false);
+            }
+            catch (Exception e)
+            {
+                StringBuilderCache.Release(sb);
+                this.unityLogger.LogException(new InvalidOperationException("Failed to create stack trace string.", e));
+                return null;
+            }
+
+            return StringBuilderCache.GetStringAndRelease(sb);
+        }
+
+        private string CreateExceptionString(Exception exception, bool isTraceStack)
+        {
+            var sb = StringBuilderCache.Acquire();
+
+            try
+            {
+                var formatter = new UnityDebugExceptionFormatter(exception, sb, isTraceStack);
+                formatter.FillString();
             }
             catch (Exception e)
             {
