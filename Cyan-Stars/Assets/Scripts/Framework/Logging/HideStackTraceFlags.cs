@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace CyanStars.Framework.Logging
 {
+    [System.Flags]
     public enum HideStackTraceFlags
     {
         None = 0,
