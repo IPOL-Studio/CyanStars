@@ -40,4 +40,9 @@ namespace CyanStars.Framework.Timeline
         /// </summary>
         public void OnExit();
     }
+
+    public interface IClip<out T> : IClip where T : BaseTrack
+    {
+        public new T Owner { get; }
+    }
 }
