@@ -38,12 +38,6 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private float bpm;
 
-        public static float EaseOutQuart(float t, float b, float c, float d)
-        {
-            float a = -c * ((t = t / d - 1) * t * t * t - 1) + b;
-            return a;
-        }
-
         public FrameOnceClip(float startTime, float endTime, EffectTrack owner, Color color,
             float intensity, int frequency, float maxAlpha, float minAlpha, float bpm) : base(startTime, endTime, owner)
         {
@@ -64,7 +58,7 @@ namespace CyanStars.Gameplay.MusicGame
         public override void OnUpdate(float currentTime, float previousTime)
         {
             float t = currentTime % (60 / bpm);
-            float alpha = EaseOutQuart(t, maxAlpha, minAlpha - maxAlpha, 60 / bpm);
+            float alpha = EasingFunction.EaseOutQuart(maxAlpha, minAlpha - maxAlpha, t, 60 / bpm);
             color.a = alpha;
             Owner.ImgFrame.color = color;
         }
