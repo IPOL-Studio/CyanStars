@@ -50,7 +50,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnUpdateInAutoMode(curLogicTime, curViewTime);
 
-            if (EvaluateHelper.GetTapEvaluate(Distance) == EvaluateType.Exact && !headChecked)
+            if (Distance <= 0 && !headChecked)
             {
                 headChecked = true;
                 DataModule.MaxScore += 2;

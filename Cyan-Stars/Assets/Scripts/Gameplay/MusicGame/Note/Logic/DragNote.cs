@@ -38,7 +38,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnUpdateInAutoMode(curLogicTime,curViewTime);
 
-            if (CanReceiveInput() && !isHit)
+            if (Distance <= 0)
             {
                 isHit = true;
 

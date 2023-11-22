@@ -34,7 +34,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnUpdateInAutoMode(curLogicTime, curViewTime);
 
-            if (EvaluateHelper.GetTapEvaluate(Distance) == EvaluateType.Exact)
+            if (Distance <= 0)
             {
                 ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
                 DestroySelf(false); //销毁

@@ -120,7 +120,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnUpdateInAutoMode(curLogicTime, curViewTime);
 
-            if (!headChecked && EvaluateHelper.GetTapEvaluate(Distance) == EvaluateType.Exact)
+            if (!headChecked && Distance <= 0)
             {
                 headChecked = true;
 
