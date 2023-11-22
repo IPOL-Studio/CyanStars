@@ -1217,7 +1217,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nsKa: {fileID: 8300000, guid: a540c468fb4b24143b988316415511e9, type: 3}
-  naDing: {fileID: 8300000, guid: f1fbe14f0384b7145ade582b22d0f5f5, type: 3}
+  nsDing: {fileID: 8300000, guid: f1fbe14f0384b7145ade582b22d0f5f5, type: 3}
+  nsTambourine: {fileID: 8300000, guid: 30af4757b1af66647ba182d96688e578, type: 3}
 --- !u!1 &1334202026
 GameObject:
   m_ObjectHideFlags: 0
