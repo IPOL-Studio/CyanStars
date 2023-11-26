@@ -21,7 +21,7 @@ namespace CyanStars.Framework.Logging
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            return unityLogger.IsLogTypeAllowed(LogUtils.ConvertToUnityLogType(logLevel));
+            return unityLogger.IsLogTypeAllowed(LogLevelConverter.ToUnityLogType(logLevel));
         }
 
         public void Log<TState>(LogLevel logLevel, in LogEntry<TState> logEntry)
@@ -42,11 +42,11 @@ namespace CyanStars.Framework.Logging
 
             LoggerHack.LogFormat(
                 logger: unityLogger,
-                logType: LogUtils.ConvertToUnityLogType(logLevel),
+                logType: LogLevelConverter.ToUnityLogType(logLevel),
                 logOptions: LogOption.NoStacktrace,
                 context: logEntry.Context,
                 format: stackTrace == null ? "[{0} / {1}] {2}" : "[{0} / {1}] {2}\n{3}",
-                this.categoryName, logLevel.ToUpperString(), message, stackTrace);
+                this.categoryName, logLevel.ToUpperName(), message, stackTrace);
         }
 
         private bool IsTraceStack(LogLevel logLevel) => logLevel >= this.minTraceLevel;

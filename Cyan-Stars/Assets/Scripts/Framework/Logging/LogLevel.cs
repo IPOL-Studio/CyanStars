@@ -17,7 +17,7 @@
 
     public static class LogLevelExtensions
     {
-        public static string ToUpperString(this LogLevel logLevel, bool isIgnoreUnknown = false) => logLevel switch
+        public static string ToUpperName(this LogLevel logLevel, bool isIgnoreUnknown = false) => logLevel switch
         {
                 LogLevel.Debug     => "DEBUG",
                 LogLevel.Info      => "INFO",

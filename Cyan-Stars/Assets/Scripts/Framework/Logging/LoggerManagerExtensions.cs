@@ -35,5 +35,13 @@ namespace CyanStars.Framework.Logging
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ICysLogger GetLogger<T>(this LoggerManager self) =>
             self.GetLogger(typeof(T).FullName);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryGetUnityDebugLogger(this LoggerManager self, out ICysLogger logger) =>
+            self.TryGetLogger(LoggerManager.UnityDebugToCysLoggerName, out logger);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ICysLogger GetUnityDebugLogger(this LoggerManager self) =>
+            self.GetLogger(LoggerManager.UnityDebugToCysLoggerName);
     }
 }
