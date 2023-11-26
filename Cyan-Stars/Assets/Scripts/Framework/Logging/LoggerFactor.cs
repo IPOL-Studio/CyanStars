@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using CyanStars.Framework.Utils;
 
 namespace CyanStars.Framework.Logging
 {
