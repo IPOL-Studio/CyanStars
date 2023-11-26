@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CatLrcParser;
 using CyanStars.Framework;
-using CyanStars.Framework.Asset;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Base;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UInput = UnityEngine.Input;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -40,6 +38,7 @@ namespace CyanStars.Gameplay.MusicGame
         private MapTimelineData timelineData;
         private string lrcText;
         private AudioClip music;
+        private PromptToneCollection promptToneCollection;
 
         //----时间轴相关对象--------
         private Timeline timeline;
@@ -69,11 +68,14 @@ namespace CyanStars.Gameplay.MusicGame
                 //获取场景物体与组件
                 GetSceneObj();
 
-                //加载数据文件
-                await LoadDataFile();
-
                 //初始化音游相关 Logger
                 InitLogger();
+
+                //加载打击音效
+                await LoadPromptTone();
+
+                //加载数据文件
+                await LoadDataFile();
 
                 //打开音游UI
                 OpenMusicGameUI();
@@ -96,6 +98,7 @@ namespace CyanStars.Gameplay.MusicGame
             sceneRoot = null;
             sceneCameraTrans = null;
             audioSource = null;
+            promptToneCollection = null;
 
             timelineData = null;
             lrcText = null;
@@ -247,6 +250,23 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         /// <summary>
+        /// 加载打击音效
+        /// </summary>
+        private async Task LoadPromptTone()
+        {
+            var builtin = new Dictionary<string, AudioClip>();
+            var builtinPath = settingsModule.BuiltInPromptTones;
+
+            foreach (var (name, path) in builtinPath)
+            {
+                var clip = await GameRoot.Asset.LoadAssetAsync<AudioClip>(path, sceneRoot);
+                builtin.Add(name, clip);
+            }
+
+            promptToneCollection = new PromptToneCollection(builtin, dataModule.Logger);
+        }
+
+        /// <summary>
         /// 打开音游UI
         /// </summary>
         private void OpenMusicGameUI()
@@ -322,7 +342,11 @@ namespace CyanStars.Gameplay.MusicGame
 
             //添加提示音轨道
             GetLinearNoteData();
-            PromptToneTrackData promptToneTrackData = new PromptToneTrackData { ClipDataList = linearNoteData };
+            PromptToneTrackData promptToneTrackData = new PromptToneTrackData
+            {
+                ClipDataList = linearNoteData,
+                PromptToneCollection = promptToneCollection
+            };
             PromptToneTrack promptToneTrack = timeline.AddTrack(promptToneTrackData, PromptToneTrack.CreateClipFunc);
             promptToneTrack.AudioSource = audioSource;
 

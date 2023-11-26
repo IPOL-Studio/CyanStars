@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
 using CyanStars.Framework.Timeline;
 
 
@@ -21,7 +20,7 @@ namespace CyanStars.Gameplay.MusicGame
         private static BaseClip<PromptToneTrack> CreateClip(PromptToneTrack track, PromptToneTrackData trackData,
             int curIndex, NoteData noteData)
         {
-            AudioClip promptTone = PromptToneHelper.Instance.GetAudioClipWithType(noteData.PromptToneType);
+            AudioClip promptTone = trackData.PromptToneCollection.GetValueOr(noteData.PromptToneType, null);
 
             if (promptTone == null) return new PromptToneClip(0, 0, track, promptTone);
 
