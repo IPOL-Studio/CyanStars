@@ -82,9 +82,9 @@ namespace CyanStars.Gameplay.MusicGame
 
             BuiltInPromptTones = new Dictionary<string, string>()
             {
-                { "NsKa", "Assets/BundleRes/Audio/PromptTone/ns_ka.ogg" },
-                { "NsDing", "Assets/BundleRes/Audio/PromptTone/ns_ding.ogg" },
-                { "NsTambourine", "Assets/BundleRes/Audio/PromptTone/ns_tambourine.ogg" }
+                { nameof(PromptToneType.NsKa), "Assets/BundleRes/Audio/PromptTone/ns_ka.ogg" },
+                { nameof(PromptToneType.NsDing), "Assets/BundleRes/Audio/PromptTone/ns_ding.ogg" },
+                { nameof(PromptToneType.NsTambourine), "Assets/BundleRes/Audio/PromptTone/ns_tambourine.ogg" }
             };
         }
 
