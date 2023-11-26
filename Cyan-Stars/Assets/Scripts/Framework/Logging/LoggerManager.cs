@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using CyanStars.EditorExtension;
-using CyanStars.Framework.Utils;
 using UnityEngine;
 
 namespace CyanStars.Framework.Logging
