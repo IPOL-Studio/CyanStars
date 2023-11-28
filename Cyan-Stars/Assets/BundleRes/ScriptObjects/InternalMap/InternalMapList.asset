@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: InternalMapList
   m_EditorClassIdentifier: 
   InternalMaps:
-  - Name: "\u6D4B\u8BD5\u8C31"
+  - Name: "\u5E7D\u7075\u5C11\u5973"
     LrcFileName: 
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_00/Music.ogg
     BackgroundFileName: 
@@ -21,23 +21,23 @@ MonoBehaviour:
     ClipCoverFileName: 
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_00/TimelineData.asset
   - Name: "\u6DF1\u7A7A\u65C1\u767D"
-    LrcFileName: Assets/BundleRes/MusicGameMap/Map_01/LrcText.txt
+    LrcFileName: 
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_01/Music.ogg
-    BackgroundFileName: Assets/BundleRes/Covers/Music_01/Bg.png
-    CoverFileName: Assets/BundleRes/Covers/Music_01/Cover.png
+    BackgroundFileName: 
+    CoverFileName: 
     ClipCoverFileName: Assets/BundleRes/Covers/Music_01/ClipCover.png
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_01/TimelineData.asset
-  - Name: "\u5E7D\u7075\u5C11\u5973"
+  - Name: "\u76DB\u5178"
     LrcFileName: 
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_02/Music.ogg
     BackgroundFileName: 
     CoverFileName: 
     ClipCoverFileName: 
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_02/TimelineData.asset
-  - Name: "\u6EE1\u5929\u661F"
+  - Name: "\u4E91\u4E0E\u8BD7"
     LrcFileName: 
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_03/Music.ogg
-    BackgroundFileName: Assets/BundleRes/Covers/Music_03/Bg.png
-    CoverFileName: Assets/BundleRes/Covers/Music_03/Cover.mp4
-    ClipCoverFileName: Assets/BundleRes/Covers/Music_03/ClipCover.png
+    BackgroundFileName: 
+    CoverFileName: 
+    ClipCoverFileName: 
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_03/TimelineData.asset
