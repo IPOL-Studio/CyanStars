@@ -47,8 +47,10 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
          public static Vector3 EaseOutQuart(Vector3 b, Vector3 e, float t, float dt)
          {
-            return -e * ((t = t / dt - 1) * t * t * t - 1) + b;
-         }
+            t /= dt;
+            t--;
+            return -(e - b) * (t * t * t * t - 1) + b;
+        }
 
         ///<summary>
         /// 超过范围的三次方缓动（(s+1)*t^3 – s*t^2）
@@ -104,8 +106,10 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
          public static float EaseOutQuart(float b, float e, float t, float dt)
          {
-            return -e * ((t = t / dt - 1) * t * t * t - 1) + b;
-         }
+            t /= dt;
+            t--;
+            return -(e - b) * (t * t * t * t - 1) + b;
+        }
 
         ///<summary>
         /// 超过范围的三次方缓动（(s+1)*t^3 – s*t^2）

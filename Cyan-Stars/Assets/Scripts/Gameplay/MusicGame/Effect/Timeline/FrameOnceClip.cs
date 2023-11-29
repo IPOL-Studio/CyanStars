@@ -58,7 +58,7 @@ namespace CyanStars.Gameplay.MusicGame
         public override void OnUpdate(float currentTime, float previousTime)
         {
             float t = currentTime % (60 / bpm);
-            float alpha = EasingFunction.EaseOutQuart(maxAlpha, minAlpha - maxAlpha, t, 60 / bpm);
+            float alpha = EasingFunction.EaseOutQuart(maxAlpha, minAlpha, t, 60 / bpm);
             color.a = alpha;
             Owner.ImgFrame.color = color;
         }
