@@ -42,6 +42,17 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         ///<summary>
+        /// 四次函数的缓动
+        /// <para>先快后慢</para>
+        /// </summary>
+         public static Vector3 EaseOutQuart(Vector3 b, Vector3 e, float t, float dt)
+         {
+            t /= dt;
+            t--;
+            return -(e - b) * (t * t * t * t - 1) + b;
+        }
+
+        ///<summary>
         /// 超过范围的三次方缓动（(s+1)*t^3 – s*t^2）
         /// <para>从0开始加速的缓动，也就是先慢后快</para>
         /// </summary>
@@ -87,6 +98,17 @@ namespace CyanStars.Gameplay.MusicGame
             SinFunctionEaseInOut(float b, float e, float t, float dt)
         {
             return -(e - b) / 2 * (Mathf.Cos(Mathf.PI * t / dt) - 1) + b;
+        }
+
+        ///<summary>
+        /// 四次函数的缓动
+        /// <para>先快后慢</para>
+        /// </summary>
+         public static float EaseOutQuart(float b, float e, float t, float dt)
+         {
+            t /= dt;
+            t--;
+            return -(e - b) * (t * t * t * t - 1) + b;
         }
 
         ///<summary>
