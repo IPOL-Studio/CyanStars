@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using CyanStars.EditorExtension;
-using CyanStars.Framework.Utils;
 using UnityEngine;
 
 namespace CyanStars.Framework.Logging
@@ -18,6 +17,8 @@ namespace CyanStars.Framework.Logging
 
     public sealed class LoggerManager : BaseManager
     {
+        public const string UnityDebugToCysLoggerName = "UnityDebugLog";
+
         [HideInStackTrace]
         private sealed class UnityLoggerHandler : ILogHandler
         {
@@ -35,7 +36,7 @@ namespace CyanStars.Framework.Logging
 
             public void LogFormat(LogType logType, UnityEngine.Object context, string format, params object[] args)
             {
-                Logger.Log(LogUtils.ConvertToLogLevel(logType), string.Format(format, args), context);
+                Logger.Log(LogLevelConverter.ToLogLevel(logType), string.Format(format, args), context);
             }
         }
 
@@ -51,7 +52,7 @@ namespace CyanStars.Framework.Logging
         /// <summary>
         /// 基于 Unity Logger 的 Unity Console Logger
         /// </summary>
-        private ILogger UnityConsoleLogger { get; set; }
+        internal ILogger UnityConsoleLogger { get; private set; }
 
         /// <inheritdoc />
         public override void OnInit()
@@ -66,7 +67,7 @@ namespace CyanStars.Framework.Logging
 
             if (isHandleUnityDebug)
             {
-                var logger = LoggerFactor.GetOrCreateLogger("UnityDebugLog");
+                var logger = LoggerFactor.GetOrCreateLogger(UnityDebugToCysLoggerName);
                 Debug.unityLogger.logHandler = new UnityLoggerHandler(logger);
             }
 

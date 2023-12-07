@@ -1,10 +1,8 @@
-using CyanStars.Framework.Logging;
-
-namespace CyanStars.Framework.Utils
+namespace CyanStars.Framework.Logging
 {
-    public class LogUtils
+    public static class LogLevelConverter
     {
-        public static LogLevel ConvertToLogLevel(UnityEngine.LogType logType)
+        public static LogLevel ToLogLevel(UnityEngine.LogType logType)
         {
             return logType switch
             {
@@ -17,7 +15,7 @@ namespace CyanStars.Framework.Utils
             };
         }
 
-        public static UnityEngine.LogType ConvertToUnityLogType(LogLevel logLevel)
+        public static UnityEngine.LogType ToUnityLogType(LogLevel logLevel)
         {
             return logLevel switch
             {

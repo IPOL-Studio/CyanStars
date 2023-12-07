@@ -23,6 +23,8 @@ namespace CyanStars.Gameplay.MusicGame
         {
             float time = keyFrame.Time / 1000f;
             float duration = keyFrame.Duration / 1000f;
+            float bpm = keyFrame.BPM;
+            int frequency = keyFrame.Frequency;
 
             BaseClip<EffectTrack> clip = null;
             switch (keyFrame.Type)
@@ -35,7 +37,10 @@ namespace CyanStars.Gameplay.MusicGame
                     break;
 
                 case EffectType.FrameOnce:
-                    Debug.LogError("EffectType.FrameOnce 没实现捏");
+                    clip = new FrameOnceClip(time, time + 60 / bpm * frequency, track, keyFrame.Color,
+                        keyFrame.Intensity,keyFrame.Frequency,
+                        keyFrame.MaxAlpha, keyFrame.MinAlpha,
+                        keyFrame.BPM);
                     break;
 
                 case EffectType.Particle:
