@@ -33,6 +33,9 @@ namespace CyanStars.Gameplay.MusicGame
         [Header("水平缩放（非1时为椭圆）")]
         public float ScaleX = 1;
 
+        [Header("使用滚轮切换的冷却时间")]
+        public float SelectByScrollingDelta = 0.5f;
+
         private ScrollRect scrollRect;
 
         /// <summary>
@@ -46,26 +49,28 @@ namespace CyanStars.Gameplay.MusicGame
         private bool isDragging = false;
 
         /// <summary>
-        /// 最后一次被鼠标滚轮滚动的时间（为NaN时代表从未被鼠标滚轮轮动过）
-        /// </summary>
-        private float lastScrollTime = float.NaN;
-
-        /// <summary>
         /// 是否已经吸附
         /// </summary>
         private bool anchored = true;
 
+        private float lastMoveTIme = Mathf.Infinity;
+
+        private float lastScrollTime = -Mathf.Infinity;
+
         void Awake()
         {
             scrollRect = transform.GetComponent<ScrollRect>();
+            scrollRect.scrollSensitivity = 0;  // 禁用鼠标滚轮
+
             curFirstItemAngle = OffsetAngle;
 
             float paddingAngle = (Radius != 0) ? (Padding / (2 * Mathf.PI * Radius) * 360) : 0;
             
-            scrollRect.onValueChanged.AddListener((Vector2 value) => {
+            scrollRect.onValueChanged.AddListener((Vector2 value) => {                
                 float itemsTotalAngle = (Items.Count - 1) * paddingAngle;   // 所有item整体所占的角度
                 float centerAngle = (StartAngle + EndAngle) / 2;            // 圆环中央的角度
                 curFirstItemAngle = centerAngle - (1 - value.y) * itemsTotalAngle;
+                lastMoveTIme = Time.unscaledTime;
             });
         }
 
@@ -106,9 +111,9 @@ namespace CyanStars.Gameplay.MusicGame
                 curItemAngle += paddingAngle;
             }
 
-            // Time.deltaTime * 10：滚动时间阈值，超过这个时间鼠标滚轮没有滚动则进行中央吸附
-            if (!anchored && !isDragging && (float.IsNaN(lastScrollTime) || Time.time - lastScrollTime > Time.deltaTime * 10))
+            if (!anchored && !isDragging && Time.unscaledTime - lastMoveTIme > Time.unscaledDeltaTime)
             {
+                scrollRect.StopMovement();
                 AnchorCentralItem();
             }
         }
@@ -119,7 +124,7 @@ namespace CyanStars.Gameplay.MusicGame
         public void AddItem(MapItem item)
         {
             Items.Add(item);
-            // content.height和Items.Count成正比，以保证
+            // content.height和Items.Count成正比，以保证滚动速率不表
             scrollRect.content.sizeDelta = new Vector2(60, 100 * Items.Count);
         }
 
@@ -132,12 +137,8 @@ namespace CyanStars.Gameplay.MusicGame
             Items.Clear();
         }
 
-        /// <summary>
-        /// 吸附到最靠近圆环中央的item
-        /// </summary>
-        public void AnchorCentralItem()
+        public int GetCurrentCentralItemIndex()
         {
-            anchored = true;
             float centerAngle = (StartAngle + EndAngle) / 2;  // 计算出圆环中心的角度
             float paddingAngle = (Radius != 0) ? (Padding / (2 * Mathf.PI * Radius) * 360) : 0;  // 计算item之间的角度间隔
             // 计算当前最靠近圆环中心的item的index
@@ -145,9 +146,16 @@ namespace CyanStars.Gameplay.MusicGame
             使用Mathf.Max和Mathf.Min将index约束到[0, Items.Count - 1]
             防止index在ScrollRect的Movement Type为Elastic（允许在滑动到尽头时有一定的弹性）时index取值不合法
             */
-            int curCentralItemIndex = 
-                Mathf.Max(Mathf.Min(Mathf.RoundToInt((centerAngle - curFirstItemAngle) / paddingAngle), Items.Count - 1), 0);
+            return Mathf.Max(Mathf.Min(Mathf.RoundToInt((centerAngle - curFirstItemAngle) / paddingAngle), Items.Count - 1), 0);
+        }
 
+        /// <summary>
+        /// 吸附到最靠近圆环中央的item
+        /// </summary>
+        public void AnchorCentralItem()
+        {
+            anchored = true;
+            int curCentralItemIndex = GetCurrentCentralItemIndex();
             MoveToItemAt(curCentralItemIndex);            
         }
 
@@ -159,8 +167,6 @@ namespace CyanStars.Gameplay.MusicGame
             float targetPositionY = 
                 (scrollRect.content.sizeDelta.y - GetComponent<RectTransform>().sizeDelta.y) * 
                 targetItemIndex / (Items.Count - 1);
-
-            Debug.Log($"{targetItemIndex} {scrollRect.content.anchoredPosition.y} {targetPositionY}");
 
             // 如果item是第一个或最后一个，并且当前content的PosY超出了合法范围，则会自动回弹，不需要再启动MoveTo
             if ((targetItemIndex == 0 && scrollRect.content.anchoredPosition.y <= targetPositionY) ||
@@ -201,10 +207,14 @@ namespace CyanStars.Gameplay.MusicGame
 
         public void OnScroll(PointerEventData pointEventData)
         {
-            lastScrollTime = Time.time;
-            anchored = false;
+            if (Time.unscaledTime - lastScrollTime < SelectByScrollingDelta) return;
+            
+            lastScrollTime = Time.unscaledTime;
+            int newMapIndex = GetCurrentCentralItemIndex() - (int)Mathf.Max(Mathf.Min(pointEventData.scrollDelta.y, 1), -1);
+            if (0 <= newMapIndex && newMapIndex < Items.Count)
+            {
+                Items[newMapIndex].OnSelect();
+            }
         }
-
     }
-
 }

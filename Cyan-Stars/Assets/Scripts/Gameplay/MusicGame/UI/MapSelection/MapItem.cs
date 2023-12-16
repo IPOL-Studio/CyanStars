@@ -24,11 +24,13 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnCreate()
         {
-            BtnMap.onClick.AddListener(() =>
-            {
-                MapSelectionPanel parent = GameRoot.UI.GetUIPanel<MapSelectionPanel>();
-                parent.OnSelectMap(this);
-            });
+            BtnMap.onClick.AddListener(OnSelect);
+        }
+
+        public void OnSelect()
+        {
+            MapSelectionPanel parent = GameRoot.UI.GetUIPanel<MapSelectionPanel>();
+            parent.OnSelectMap(this);
         }
 
         public override void OnGet()
