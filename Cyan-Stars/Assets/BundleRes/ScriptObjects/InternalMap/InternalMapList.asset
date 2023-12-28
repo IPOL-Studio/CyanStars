@@ -15,29 +15,29 @@ MonoBehaviour:
   InternalMaps:
   - Name: "\u5E7D\u7075\u5C11\u5973"
     LrcFileName: 
-    MusicFileName: Assets/BundleRes/MusicGameMap/Map_00/Music.ogg
+    MusicFileName: Assets/BundleRes/MusicGameMap/Map_0/Music.ogg
     BackgroundFileName: 
     CoverFileName: 
     ClipCoverFileName: 
-    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_00/TimelineData.asset
+    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_0/TimelineData.asset
   - Name: "\u6DF1\u7A7A\u65C1\u767D"
     LrcFileName: 
-    MusicFileName: Assets/BundleRes/MusicGameMap/Map_01/Music.ogg
+    MusicFileName: Assets/BundleRes/MusicGameMap/Map_1/Music.ogg
     BackgroundFileName: 
     CoverFileName: 
-    ClipCoverFileName: Assets/BundleRes/Covers/Music_01/ClipCover.png
-    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_01/TimelineData.asset
+    ClipCoverFileName: 
+    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_1/TimelineData.asset
   - Name: "\u76DB\u5178"
     LrcFileName: 
-    MusicFileName: Assets/BundleRes/MusicGameMap/Map_02/Music.ogg
+    MusicFileName: Assets/BundleRes/MusicGameMap/Map_2/Music.ogg
     BackgroundFileName: 
     CoverFileName: 
     ClipCoverFileName: 
-    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_02/TimelineData.asset
+    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_2/TimelineData.asset
   - Name: "\u4E91\u4E0E\u8BD7"
     LrcFileName: 
-    MusicFileName: Assets/BundleRes/MusicGameMap/Map_03/Music.ogg
+    MusicFileName: Assets/BundleRes/MusicGameMap/Map_3/Music.ogg
     BackgroundFileName: 
     CoverFileName: 
     ClipCoverFileName: 
-    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_03/TimelineData.asset
+    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_3/TimelineData.asset
