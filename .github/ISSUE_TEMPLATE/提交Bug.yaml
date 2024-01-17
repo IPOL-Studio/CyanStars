@@ -1,0 +1,53 @@
+name: Bug Report
+description: 提交漏洞 Bug Report
+labels: ["♢ 漏洞 Bug","♢ 待审阅 To be reviewed"]
+body:
+- type: markdown
+  attributes:
+    value: "## 这里是 Bug 反馈模版"
+- type: markdown
+  attributes:
+    value: |
+      感谢提出 Bug，请花一点时间完善以下内容，以便我们更快排查问题，非常感谢！
+      如果您的反馈不涉及代码更改，而是玩法建议或者讨论，请前往 [Discussions](https://github.com/IPOL-Studio/CyanStars/discussions) 版块。
+      若涉及到安全问题，请前往 [Security](https://github.com/IPOL-Studio/CyanStars/security) 版块。
+- type: checkboxes
+  attributes:
+    label: 我的问题可能涉及代码，而非单纯的玩法建议。
+    required: true
+- type: dropdown
+  attributes:
+    label: 此 Bug 出现的平台是
+    options:
+      - Windows 10
+      - Windows 11
+      - 其他平台（请在下方完善）
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: 详情
+    description: "在进行了什么操作之后，发生了什么？原本预期的结果是什么样的？有没有什么可参考的解决方案？"
+    value: |
+      **经过以下操作后...**
+      1. 
+      2. 
+      3. 
+
+      **出现了这些问题...**
+      1. 
+      2. 
+      3. 
+
+      **预期结果是这样...**
+      1. 
+      2. 
+      3. 
+
+      **有一些可能的解决方案...**
+      1. 
+      2. 
+      3. 
+    render: bash
+  validations:
+    required: true
