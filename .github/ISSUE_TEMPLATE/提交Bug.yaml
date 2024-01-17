@@ -13,8 +13,10 @@ body:
       若涉及到安全问题，请前往 [Security](https://github.com/IPOL-Studio/CyanStars/security) 版块。
 - type: checkboxes
   attributes:
-    label: 我的问题可能涉及代码，而非单纯的玩法建议。
-    required: true
+    label: 请确认：
+    options:
+      - label: 我的问题可能涉及代码，而非单纯的玩法建议。不涉及安全性问题。
+        required: true
 - type: dropdown
   attributes:
     label: 此 Bug 出现的平台是
