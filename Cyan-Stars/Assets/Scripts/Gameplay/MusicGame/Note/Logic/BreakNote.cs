@@ -1,11 +1,11 @@
 using System;
-using CyanStars.Framework.Logger;
+using CyanStars.Framework.Logging;
 
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    /// <summary>s
+    /// <summary>
     /// Break音符
     /// </summary>
     public class BreakNote : BaseNote
@@ -34,7 +34,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnUpdateInAutoMode(curLogicTime, curViewTime);
 
-            if (EvaluateHelper.GetTapEvaluate(Distance) == EvaluateType.Exact)
+            if (Distance <= 0)
             {
                 ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
                 DestroySelf(false); //销毁

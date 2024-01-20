@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
-using MunNovel.Command;
+using MunNovel.Metadata;
+using MunNovel.Service;
 
 namespace MunNovel
 {
-    public partial class CommandManager : ICommandManager
+    public partial class CommandManager : ICommandMetadataProvider
     {
         private readonly Dictionary<string, CommandMetadata> NameToMetadataDict = new Dictionary<string, CommandMetadata>();
         private readonly Dictionary<Type, CommandMetadata> TypeToMetadataDict = new Dictionary<Type, CommandMetadata>();
@@ -23,23 +24,17 @@ namespace MunNovel
         {
             if (string.IsNullOrEmpty(commandName) || string.IsNullOrWhiteSpace(commandName))
             {
-                throw new ArgumentException("command name invalid", nameof(commandName));
+                throw new ArgumentException($"command name \"{commandName}\" invalid", nameof(commandName));
             }
 
-            if (metadata == null)
-            {
-                throw new ArgumentNullException(nameof(metadata));
-            }
+            _ = metadata ?? throw new ArgumentNullException(nameof(metadata));
 
             if (NameToMetadataDict.ContainsKey(commandName))
             {
-                throw new ArgumentException("command name is contains", nameof(commandName));
+                throw new ArgumentException($"command name \"{commandName}\" is contains", nameof(commandName));
             }
 
-            if (!TypeToMetadataDict.ContainsKey(metadata.CommandType))
-            {
-                TypeToMetadataDict.Add(metadata.CommandType, metadata);
-            }
+            TypeToMetadataDict.TryAdd(metadata.CommandType, metadata);
             NameToMetadataDict.Add(commandName, metadata);
         }
 
@@ -50,15 +45,8 @@ namespace MunNovel
 
         public void AddCommandMetadata(CommandMetadata metadata)
         {
-            if (metadata == null)
-            {
-                throw new ArgumentNullException(nameof(metadata));
-            }
-
-            if (!TypeToMetadataDict.ContainsKey(metadata.CommandType))
-            {
-                TypeToMetadataDict.Add(metadata.CommandType, metadata);
-            }
+            _ = metadata ?? throw new ArgumentNullException(nameof(metadata));
+            TypeToMetadataDict.TryAdd(metadata.CommandType, metadata);
         }
 
         public bool IsExistsCommand(string commandName)

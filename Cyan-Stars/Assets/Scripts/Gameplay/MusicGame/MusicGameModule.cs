@@ -5,6 +5,7 @@ using CyanStars.Framework;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.Timeline;
+using CyanStars.Framework.Logging;
 
 
 namespace CyanStars.Gameplay.MusicGame
@@ -63,6 +64,9 @@ namespace CyanStars.Gameplay.MusicGame
         /// 特效预制体名称列表
         /// </summary>
         public List<string> EffectNames { get; private set; }
+
+        private string loggerCategoryName;
+        public ICysLogger Logger { get; private set; }
 
 
 #region 玩家游戏过程中的实时数据
@@ -137,6 +141,12 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Asset.UnloadAsset(internalMapListSo);
         }
 
+        public void InitLogger(string categoryName)
+        {
+            loggerCategoryName = categoryName;
+            Logger = GameRoot.Logger.GetOrCreateLogger(loggerCategoryName);
+        }
+
         /// <summary>
         /// 获取谱面清单
         /// </summary>
@@ -178,6 +188,10 @@ namespace CyanStars.Gameplay.MusicGame
         public void ResetPlayingData()
         {
             RunningTimeline = null;
+            Logger = null;
+            GameRoot.Logger.RemoveLogger(loggerCategoryName);
+            loggerCategoryName = null;
+
             Combo = 0; //Combo数量
             Score = 0; //分数
             Grade = default; //评分

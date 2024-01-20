@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
+using CyanStars.Framework.Logging;
 using MunNovel;
-using UnityEngine;
 
 namespace CyanStars.Framework.Dialogue
 {
@@ -9,21 +7,32 @@ namespace CyanStars.Framework.Dialogue
     {
         public override int Priority { get; }
 
-        public ServiceManager ServiceManager { get; private set; }
-
 
         public override void OnInit()
         {
-            ServiceManager = new ServiceManager();
-            ServiceManager.SetInstanceProvider(() => ServiceManager);
-
-            CommandManager commandManager = new CommandManager();
-            ServiceManager.Register(commandManager);
+            MunNovelRoot.Init();
         }
 
         public override void OnUpdate(float deltaTime)
         {
 
+        }
+
+        public IExecutionContextBuilder CreateSimpleBuilder(string loggerCategoryName = null)
+        {
+            var builder = MunNovelRoot.CreateSimpleBuilder();
+            if (!string.IsNullOrEmpty(loggerCategoryName) && !string.IsNullOrWhiteSpace(loggerCategoryName))
+            {
+                builder.ConfigureLogger(() =>
+                    new MunNovelLoggerProxy(
+                        loggerCategoryName,
+                        GameRoot.Logger.GetOrCreateLogger,
+                        categoryName => GameRoot.Logger.RemoveLogger(categoryName)
+                    )
+                );
+            }
+
+            return builder;
         }
     }
 }

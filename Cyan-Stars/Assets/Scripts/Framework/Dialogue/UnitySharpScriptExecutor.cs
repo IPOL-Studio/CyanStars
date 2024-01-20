@@ -6,6 +6,7 @@ using MunNovel.Command;
 using MunNovel.Executor;
 using MunNovel.SharpScript;
 using CyanStars.Framework.Timer;
+using MunNovel;
 
 namespace CyanStars.Framework.Dialogue
 {
@@ -30,13 +31,15 @@ namespace CyanStars.Framework.Dialogue
             }
         }
 
+        private IExecutionContext executionContext;
+
         private IScript script;
-        private IScriptContext context;
+        private IScriptContext scriptContext;
         private IScriptExecutorOperationHandler operationHandler;
 
         private PauseContext pauseContext;
 
-        private readonly List<Task> ExecutingTasks = new List<Task>(10);
+        private readonly List<ValueTask> ExecutingTasks = new List<ValueTask>(10);
         public readonly List<ICommand> ExecutedCommands = new List<ICommand>(10);
 
         private CancellationTokenSource cancelCommandCts;
@@ -53,29 +56,25 @@ namespace CyanStars.Framework.Dialogue
         }
 
 
-        public UnitySharpScriptExecutor(IScriptExecutorOperationHandler operationHandler)
+        public UnitySharpScriptExecutor(IExecutionContext executionContext, IScriptExecutorOperationHandler operationHandler)
         {
-            context = new ScriptContext(new CommandBuffer(this));
-            this.operationHandler = operationHandler;
-        }
-
-        public UnitySharpScriptExecutor(IScriptContext context, IScriptExecutorOperationHandler operationHandler)
-        {
-            this.context = context;
-            this.operationHandler = operationHandler;
+            this.executionContext = executionContext ?? throw new ArgumentNullException(nameof(executionContext));
+            this.operationHandler = operationHandler ?? throw new ArgumentNullException(nameof(operationHandler));
         }
 
         public async Task Load(IScript script, CancellationToken cancellationToken = default)
         {
-            if (script is null)
+            if (State != ScriptExecuteState.NoScript && State != ScriptExecuteState.Done)
             {
-                throw new ArgumentNullException(nameof(script));
+                throw new ScriptExecuteException("Script is loaded or playing");
             }
 
-            this.script = script;
+            this.script = script ?? throw new ArgumentNullException(nameof(script));
             State = ScriptExecuteState.Loading;
 
+            this.scriptContext = new ScriptContext(new CommandBuffer(this), this.executionContext);
             await script.PreLoad(cancellationToken);
+
             State = ScriptExecuteState.Loaded;
         }
 
@@ -112,7 +111,7 @@ namespace CyanStars.Framework.Dialogue
 
         private async void Execute()
         {
-            await script.Execute(context);
+            await script.Execute(scriptContext);
             State = ScriptExecuteState.Done;
         }
 

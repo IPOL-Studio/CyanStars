@@ -2,9 +2,9 @@ using System.Threading.Tasks;
 
 namespace MunNovel.Service
 {
-    public interface ITextPrinter : IService
+    public interface ITextPrinter
     {
         void SetSpeed(int value);
-        Task Print(string text, bool isAppend = false);
+        ValueTask Print(string text, bool isAppend = false);
     }
 }

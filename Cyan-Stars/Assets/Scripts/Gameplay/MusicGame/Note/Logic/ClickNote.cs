@@ -1,7 +1,5 @@
 using CyanStars.Framework;
-using CyanStars.Framework.Logger;
-
-using UnityEngine;
+using CyanStars.Framework.Logging;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -52,12 +50,14 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnUpdateInAutoMode(curLogicTime, curViewTime);
 
-            if (EvaluateHelper.GetTapEvaluate(Distance) == EvaluateType.Exact && !headChecked)
+            if (Distance <= 0 && !headChecked)
             {
                 headChecked = true;
                 DataModule.MaxScore += 2;
-                GameRoot.Logger.GetOrCreateLogger<NoteLogger>().Log(new ClickNoteJudgeLogArgs(Data, EvaluateType.Exact, 0));
                 DataModule.RefreshPlayingData(1, 2, EvaluateType.Exact, 0); // Auto Mode 杂率为0
+
+                NoteJudger.LogJudgedInfo(new ClickNoteJudgedInfo(Data, EvaluateType.Exact, 0));
+
                 ViewObject.CreateEffectObj(NoteData.NoteWidth);
                 DestroySelf(false);
             }

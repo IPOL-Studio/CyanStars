@@ -7,27 +7,11 @@ namespace CyanStars.Framework.Timeline
     /// </summary>
     public abstract class BaseTrack
     {
-        /// <summary>
-        /// 片段处理模式
-        /// </summary>
-        protected enum ClipProcessMode
-        {
-            /// <summary>
-            /// 每次只处理一个片段（适合片段不会重叠的情况）
-            /// </summary>
-            Single,
-
-            /// <summary>
-            /// 每次都处理所有片段（适合片段会重叠的情况）
-            /// </summary>
-            All,
-        }
 
         /// <summary>
         /// 持有此轨道的时间轴
         /// </summary>
         public Timeline Owner { get; set; }
-
 
         /// <summary>
         /// 片段列表
@@ -35,19 +19,14 @@ namespace CyanStars.Framework.Timeline
         protected List<IClip> Clips = new List<IClip>();
 
         /// <summary>
-        /// 当前运行片段的索引
-        /// </summary>
-        protected int CurClipIndex;
-
-        /// <summary>
         /// 轨道是否被启用
         /// </summary>
         public bool Enabled { get; set; } = true;
 
         /// <summary>
-        /// 片段更新模式
+        /// 更新时遍历clip的开始索引，从上次更新时最前面的有效clip开始
         /// </summary>
-        protected virtual ClipProcessMode Mode => ClipProcessMode.Single;
+        private int startIndex;
 
         /// <summary>
         /// 添加片段
@@ -75,69 +54,53 @@ namespace CyanStars.Framework.Timeline
                 return;
             }
 
-            switch (Mode)
+            bool flag = false;
+
+            for (int i = startIndex; i < Clips.Count; i++)
             {
-                case ClipProcessMode.Single:
+                IClip clip = Clips[i];
 
-                    if (CurClipIndex == Clips.Count)
+                if (!clip.Valid)
+                {
+                    //已经exit过了
+                    continue;
+                }
+
+                bool needEnter = currentTime >= clip.StartTime && previousTime < clip.StartTime;
+                if (needEnter)
+                {
+                    //进入片段
+                    clip.OnEnter();
+                }
+
+                bool needUpdate = currentTime >= clip.StartTime && currentTime <= clip.EndTime;
+                if (needUpdate)
+                {
+                    //更新片段
+                    clip.OnUpdate(currentTime, previousTime);
+                }
+
+                bool needExit = currentTime > clip.EndTime && previousTime <= clip.EndTime;
+                if (needExit)
+                {
+                    //退出片段
+                    clip.OnExit();
+                }
+
+                if (!needEnter && !needUpdate && !needExit)
+                {
+                    return;
+                }
+                else
+                {
+                    if (!flag)
                     {
-                        return;
+                        flag = true;
+
+                        //将下次update的startIndex设置为本次最前面的有效clip
+                        startIndex = i;
                     }
-
-                    //只处理当前的片段
-                    IClip clip = Clips[CurClipIndex];
-
-                    if (currentTime >= clip.StartTime && previousTime < clip.StartTime)
-                    {
-                        //进入片段
-                        clip.OnEnter();
-                    }
-
-                    if (currentTime >= clip.StartTime && currentTime <= clip.EndTime)
-                    {
-                        //更新片段
-                        clip.OnUpdate(currentTime, previousTime);
-                    }
-
-                    if (currentTime > clip.EndTime && previousTime <= clip.EndTime)
-                    {
-                        //离开片段
-                        clip.OnExit();
-                        CurClipIndex++;
-
-                        //clipIndex更新了 需要重新Update一遍 保证不漏掉新clip的enter和exit
-                        OnUpdate(currentTime, previousTime);
-                    }
-
-                    break;
-
-
-                case ClipProcessMode.All:
-
-                    for (int i = 0; i < Clips.Count; i++)
-                    {
-                        clip = Clips[i];
-
-                        if (currentTime >= clip.StartTime && previousTime < clip.StartTime)
-                        {
-                            //进入片段
-                            clip.OnEnter();
-                        }
-
-                        if (currentTime >= clip.StartTime && currentTime <= clip.EndTime)
-                        {
-                            //更新片段
-                            clip.OnUpdate(currentTime, previousTime);
-                        }
-
-                        if (currentTime > clip.EndTime && previousTime <= clip.EndTime)
-                        {
-                            //离开片段
-                            clip.OnExit();
-                        }
-                    }
-
-                    break;
+                }
             }
         }
     }

@@ -9,12 +9,16 @@ namespace CyanStars.Gameplay.MusicGame
         private AudioClip nsKa;
 
         [SerializeField]
-        private AudioClip naDing;
+        private AudioClip nsDing;
+
+        [SerializeField]
+        private AudioClip nsTambourine;
 
         public AudioClip GetAudioClipWithType(PromptToneType type) => type switch
         {
             PromptToneType.NsKa => nsKa,
-            PromptToneType.NaDing => naDing,
+            PromptToneType.NsDing => nsDing,
+            PromptToneType.NsTambourine => nsTambourine,
             _ => null
         };
     }

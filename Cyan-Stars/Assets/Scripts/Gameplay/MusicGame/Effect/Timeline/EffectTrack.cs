@@ -14,9 +14,6 @@ namespace CyanStars.Gameplay.MusicGame
         public Transform EffectParent;
         public Image ImgFrame;
 
-        //因为边框呼吸特效的clip持续时间覆盖到了粒子特效的clip，如果想正确播放粒子特效需要使用All模式来处理
-        protected override ClipProcessMode Mode => ClipProcessMode.All;
-
         /// <summary>
         /// 片段创建方法
         /// </summary>
@@ -26,6 +23,8 @@ namespace CyanStars.Gameplay.MusicGame
         {
             float time = keyFrame.Time / 1000f;
             float duration = keyFrame.Duration / 1000f;
+            float bpm = keyFrame.BPM;
+            int frequency = keyFrame.Frequency;
 
             BaseClip<EffectTrack> clip = null;
             switch (keyFrame.Type)
@@ -38,7 +37,10 @@ namespace CyanStars.Gameplay.MusicGame
                     break;
 
                 case EffectType.FrameOnce:
-                    Debug.LogError("EffectType.FrameOnce 没实现捏");
+                    clip = new FrameOnceClip(time, time + 60 / bpm * frequency, track, keyFrame.Color,
+                        keyFrame.Intensity,keyFrame.Frequency,
+                        keyFrame.MaxAlpha, keyFrame.MinAlpha,
+                        keyFrame.BPM);
                     break;
 
                 case EffectType.Particle:

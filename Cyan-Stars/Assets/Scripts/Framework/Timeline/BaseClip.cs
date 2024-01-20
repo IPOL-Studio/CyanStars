@@ -10,8 +10,8 @@ namespace CyanStars.Framework.Timeline
             StartTime = startTime;
             EndTime = endTime;
             Owner = owner;
+            Valid = true;
         }
-
 
         /// <summary>
         /// 持有此片段的轨道
@@ -33,6 +33,10 @@ namespace CyanStars.Framework.Timeline
         /// </summary>
         public float EndTime { get; }
 
+        /// <summary>
+        /// 是否有效
+        /// </summary>
+        public bool Valid { get; private set; }
 
         /// <summary>
         /// 进入此片段时调用
@@ -46,6 +50,7 @@ namespace CyanStars.Framework.Timeline
         /// </summary>
         public virtual void OnExit()
         {
+            Valid = false;
         }
 
         /// <summary>
