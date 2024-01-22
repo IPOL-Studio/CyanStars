@@ -7,14 +7,14 @@ body:
     label: "详情 Details"
     description: "现有的元素有什么瑕疵？预计应当如何？这么做有什么好处？可以怎么做到？What flaws exist in the current elements? What is the expected outcome? What are the benefits of doing so? How can this be achieved?"
     value: |
-      **我认为这写内容存在瑕疵...**
-      **I believe there are flaws in this content...**
+      **我认为这些内容存在瑕疵...**
+      **I believe there are flaws in these aspects...**
       1. 
       2. 
       3. 
 
-      **这写内容可以改成这样...**
-      **This content can be modified as follows...**
+      **这些内容可以改成这样...**
+      **These elements can be modified to...**
       1. 
       2. 
       3. 
