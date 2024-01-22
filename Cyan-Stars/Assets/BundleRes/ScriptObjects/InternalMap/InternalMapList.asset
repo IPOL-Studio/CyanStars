@@ -13,44 +13,34 @@ MonoBehaviour:
   m_Name: InternalMapList
   m_EditorClassIdentifier: 
   InternalMaps:
+  - Name: "\u6D4B\u8BD5\u8C31"
+    StaffInfo: 
+    LrcFileName: 
+    MusicFileName: Assets/BundleRes/MusicGameMap/Map_00/Music.ogg
+    CoverFileName: 
+    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_00/TimelineData.asset
+  - Name: "\u6DF1\u7A7A\u65C1\u767D"
+    StaffInfo: "\u6D1B\u5929\u4F9D | \u6F14\u5531\nAfterLight\u4F59\u6656 | \u4F5C\u7F16\u6DF7\u8C03\u8BCD\u7ED8\n\n\u9B4E\u5929\u9752
+      | \u89C6\u9891\n\nmika | \u6E38\u620F\u66F2\u7ED8\n\u6668\u5CE6 | \u8C31\u9762\u8BBE\u8BA1"
+    LrcFileName: Assets/BundleRes/MusicGameMap/Map_01/LrcText.txt
+    MusicFileName: Assets/BundleRes/MusicGameMap/Map_01/Music.ogg
+    CoverFileName: Assets/BundleRes/Covers/Music_01/ClipCover.png
+    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_01/TimelineData.asset
   - Name: "\u5E7D\u7075\u5C11\u5973"
     StaffInfo: "\u6D1B\u5929\u4F9D | \u6F14\u5531\r\r\n\u5929\u5929\u51C9\u51C9\u8C46
-      | \u8C03\u6821\n\u65F6\u5C1A | \u7B56\u5212\n\u795E\u5154\u5C0FP | \u4F5C\u66F2\n\u795E\u5154\u5C0FP
-      | \u7F16\u66F2\n\u9038\u606C\u6E05 | \u6DF7\u97F3\nJackdaw\u7941\u6E90 | \u4F5C\u8BCD\n\u6DF1\u8C37-shintani
-      | \u66F2\u7ED8 \r\r\n\u89C2\u6708\u666F | \u89C6\u9891\n\nXXXX | \u6E38\u620F\u66F2\u7ED8\n\u6668\u5CE6
+      | \u8C03\u6821\n\n\u65F6\u5C1A | \u7B56\u5212\n\u795E\u5154\u5C0FP | \u4F5C\u7F16\n\u9038\u606C\u6E05
+      | \u6DF7\u97F3\nJackdaw\u7941\u6E90 | \u4F5C\u8BCD\n\u6DF1\u8C37-shintani |
+      \u66F2\u7ED8 \r\r\n\u89C2\u6708\u666F | \u89C6\u9891\n\nXXXX | \u6E38\u620F\u66F2\u7ED8\n\u6668\u5CE6
       | \u8C31\u9762\u8BBE\u8BA1"
     LrcFileName: 
-    MusicFileName: Assets/BundleRes/MusicGameMap/Map_0/Music.ogg
+    MusicFileName: Assets/BundleRes/MusicGameMap/Map_02/Music.ogg
     CoverFileName: 
-    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_0/TimelineData.asset
-  - Name: "\u6DF1\u7A7A\u65C1\u767D"
-    StaffInfo: "\u6D1B\u5929\u4F9D | \u6F14\u5531\nAfterLight\u4F59\u6656 | \u4F5C\u66F2\nAfterLight\u4F59\u6656
-      | \u7F16\u66F2\nAfterLight\u4F59\u6656 | \u66F2\u7ED8\nAfterLight\u4F59\u6656
-      | \u5C01\u9762\nAfterLight\u4F59\u6656 | \u6DF7\u97F3\nAfterLight\u4F59\u6656
-      | \u8C03\u6821\nAfterLight\u4F59\u6656 | \u4F5C\u8BCD\n\u9B4E\u5929\u9752 |
-      \u89C6\u9891\n\nmika | \u6E38\u620F\u66F2\u7ED8\n\u6668\u5CE6 | \u8C31\u9762\u8BBE\u8BA1"
+    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_02/TimelineData.asset
+  - Name: "\u6EE1\u5929\u661F"
+    StaffInfo: "\u4E50\u6B63\u7EEB | \u6F14\u5531\n\u661F\u8475 | \u4F5C\u7F16\u6DF7\u8C03\u5F71\n\n\u8363\u7109lava
+      | \u4F5C\u8BCD\n\u6D0B\u828B SuyaTrace | \u66F2\u7ED8\n\u7D84\u98CE | \u5C01\u9762\n\n\u592A\u8352
+      FFT\u884C\u897F | \u6E38\u620F\u66F2\u7ED8\n\u6668\u5CE6 | \u8C31\u9762\u8BBE\u8BA1"
     LrcFileName: 
-    MusicFileName: Assets/BundleRes/MusicGameMap/Map_1/Music.ogg
-    CoverFileName: 
-    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_1/TimelineData.asset
-  - Name: "\u76DB\u5178"
-    StaffInfo: "\u6D1B\u5929\u4F9D | \u6F14\u5531\nQGRay | \u4F5C\u8BCD\nQGRay |
-      \u4F5C\u66F2\nQGRay | \u7F16\u66F2\nQGRay | \u6DF7\u97F3\nQGRay | \u8C03\u6821\nQGRay
-      | \u89C6\u9891\nQGRay | \u66F2\u7ED8\n\n\u5BFB\u4ED9\u4ED9 | \u6E38\u620F\u66F2\u7ED8\n\u6668\u5CE6
-      | \u8C31\u9762\u8BBE\u8BA1"
-    LrcFileName: 
-    MusicFileName: Assets/BundleRes/MusicGameMap/Map_2/Music.ogg
-    CoverFileName: 
-    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_2/TimelineData.asset
-  - Name: "\u76DB\u5178"
-    StaffInfo: "\u6D1B\u5929\u4F9D | \u6F14\u5531\n\u6D1B\u6625\u57CE \u7206\u97F3\u5E38\u5B89
-      | \u4F5C\u8BCD\r\n\u7206\u97F3\u5E38\u5B89 \u9F99\u7FBD\u51CC | \u4F5C\u66F2\r\n\u7206\u97F3\u5E38\u5B89
-      \u9F99\u7FBD\u51CC | \u7F16\u66F2\r\n\u7206\u97F3\u5E38\u5B89 | \u8C03\u53C2\r\nAnasynth
-      | \u6DF7\u97F3\r\n\u5E7B\u4E91\u6587\u521B\u56E2\u961F | \u5236\u4F5C\r\n\u9F99\u7FBD\u51CC
-      | \u76D1\u5236\r\n\u963F\u4E39 | \u5C01\u9762\r\nCloud of illusion\u5E7B\u4E91\u6587\u521B
-      | \u4F01\u5212\r\nCloud of illusion\u5E7B\u4E91\u6587\u521B | \u53D1\u884C\n\n\u5B9E\u5FC3\u9910\u6905
-      | \u6E38\u620F\u66F2\u7ED8\n\u6668\u5CE6 | \u8C31\u9762\u8BBE\u8BA1"
-    LrcFileName: 
-    MusicFileName: Assets/BundleRes/MusicGameMap/Map_3/Music.ogg
-    CoverFileName: 
-    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_3/TimelineData.asset
+    MusicFileName: Assets/BundleRes/MusicGameMap/Map_03/Music.ogg
+    CoverFileName: Assets/BundleRes/Covers/Music_03/Cover.png
+    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_03/TimelineData.asset
