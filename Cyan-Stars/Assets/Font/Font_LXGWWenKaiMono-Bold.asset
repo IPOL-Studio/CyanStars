@@ -2263,6 +2263,26 @@ MonoBehaviour:
     m_Unicode: 124
     m_GlyphIndex: 95
     m_Scale: 1
+  - m_ElementType: 1
+    m_Unicode: 20113
+    m_GlyphIndex: 3158
+    m_Scale: 1
+  - m_ElementType: 1
+    m_Unicode: 19982
+    m_GlyphIndex: 3036
+    m_Scale: 1
+  - m_ElementType: 1
+    m_Unicode: 35799
+    m_GlyphIndex: 18673
+    m_Scale: 1
+  - m_ElementType: 1
+    m_Unicode: 30427
+    m_GlyphIndex: 13354
+    m_Scale: 1
+  - m_ElementType: 1
+    m_Unicode: 20856
+    m_GlyphIndex: 3894
+    m_Scale: 1
   m_AtlasTextures:
   - {fileID: -5524206282460580260}
   m_AtlasTextureIndex: 0
