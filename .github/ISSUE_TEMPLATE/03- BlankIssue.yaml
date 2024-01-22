@@ -1,0 +1,9 @@
+name: "空白问题 Blank Issue"
+description: "上文没有适合的模板 No suitable template above"
+labels: ["♢ 待审阅 To be reviewed"]
+body:
+- type: textarea
+  attributes:
+    label: "详情 Details"
+  validations:
+    required: true
