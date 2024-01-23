@@ -31,7 +31,7 @@ MonoBehaviour:
       \u89C6\u9891\n\nmika | \u6E38\u620F\u66F2\u7ED8\n\u6668\u5CE6 | \u8C31\u9762\u8BBE\u8BA1"
     LrcFileName: 
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_1/Music.ogg
-    CoverFileName: 
+    CoverFileName: Assets/BundleRes/Covers/1.png
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_1/TimelineData.asset
   - Name: "\u76DB\u5178"
     StaffInfo: "\u6D1B\u5929\u4F9D | \u6F14\u5531\nQGRay | \u4F5C\u8BCD\nQGRay |
@@ -40,9 +40,9 @@ MonoBehaviour:
       | \u8C31\u9762\u8BBE\u8BA1"
     LrcFileName: 
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_2/Music.ogg
-    CoverFileName: 
+    CoverFileName: Assets/BundleRes/Covers/2.png
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_2/TimelineData.asset
-  - Name: "\u76DB\u5178"
+  - Name: "\u4E91\u4E0E\u8BD7"
     StaffInfo: "\u6D1B\u5929\u4F9D | \u6F14\u5531\n\u6D1B\u6625\u57CE \u7206\u97F3\u5E38\u5B89
       | \u4F5C\u8BCD\r\n\u7206\u97F3\u5E38\u5B89 \u9F99\u7FBD\u51CC | \u4F5C\u66F2\r\n\u7206\u97F3\u5E38\u5B89
       \u9F99\u7FBD\u51CC | \u7F16\u66F2\r\n\u7206\u97F3\u5E38\u5B89 | \u8C03\u53C2\r\nAnasynth
@@ -52,5 +52,5 @@ MonoBehaviour:
       | \u6E38\u620F\u66F2\u7ED8\n\u6668\u5CE6 | \u8C31\u9762\u8BBE\u8BA1"
     LrcFileName: 
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_3/Music.ogg
-    CoverFileName: 
+    CoverFileName: Assets/BundleRes/Covers/3.png
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_3/TimelineData.asset
