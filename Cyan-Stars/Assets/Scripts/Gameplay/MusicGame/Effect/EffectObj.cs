@@ -24,7 +24,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
-        IEnumerator DestroySelf()
+       IEnumerator DestroySelf()
         {
             yield return new WaitForSeconds(DestroyTime);
             VisualEffect.SendEvent("Stop");

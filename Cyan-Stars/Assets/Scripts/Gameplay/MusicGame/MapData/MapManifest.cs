@@ -16,6 +16,10 @@ namespace CyanStars.Gameplay.MusicGame
         [Header("歌曲名")]
         public string Name;
 
+        [Header("Staff信息")]
+        [Multiline(10)]
+        public string StaffInfo;
+
         /// <summary>
         /// 歌词文件名
         /// </summary>
@@ -29,22 +33,10 @@ namespace CyanStars.Gameplay.MusicGame
         public string MusicFileName;
 
         /// <summary>
-        /// 底图文件名
-        /// </summary>
-        [Header("底图文件名")]
-        public string BackgroundFileName;
-
-        /// <summary>
         /// 曲绘文件名
         /// </summary>
         [Header("曲绘文件名")]
         public string CoverFileName;
-
-        /// <summary>
-        /// 裁剪曲绘文件名
-        /// </summary>
-        [Header("裁剪曲绘文件名")]
-        public string ClipCoverFileName;
 
         /// <summary>
         /// 时间轴文件名(目前内置谱面的为.asset，外置谱面的为.json)
