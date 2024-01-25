@@ -1,0 +1,22 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "LuoTianYi_Pilot.moc3",
+		"Textures": [
+			"LuoTianYi_Pilot.8192/texture_00.png"
+		],
+		"DisplayInfo": "LuoTianYi_Pilot.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		}
+	]
+}
