@@ -11,5 +11,7 @@ namespace CyanStars.Gameplay.MusicGame
     {
         public int ClipCount => ClipDataList.Count;
         public List<NoteData> ClipDataList { get; set; }
+
+        public PromptToneCollection PromptToneCollection { get; set; }
     }
 }

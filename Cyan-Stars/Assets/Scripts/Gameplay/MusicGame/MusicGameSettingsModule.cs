@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CyanStars.Framework;
 using UnityEngine;
 
@@ -69,9 +70,22 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public bool EnableEffectTrack { get; set; } = true;
 
+        /// <summary>
+        /// 要使用的默认打击音效
+        /// <para>prompt name -> prompt asset path</para>
+        /// </summary>
+        public IReadOnlyDictionary<string, string> BuiltInPromptTones { get; private set; }
+
         public override void OnInit()
         {
             UpdateEvaluateMode(EvaluateMode.Normal);
+
+            BuiltInPromptTones = new Dictionary<string, string>()
+            {
+                { nameof(PromptToneType.NsKa), "Assets/BundleRes/Audio/PromptTone/ns_ka.ogg" },
+                { nameof(PromptToneType.NsDing), "Assets/BundleRes/Audio/PromptTone/ns_ding.ogg" },
+                { nameof(PromptToneType.NsTambourine), "Assets/BundleRes/Audio/PromptTone/ns_tambourine.ogg" }
+            };
         }
 
         private void UpdateEvaluateMode(EvaluateMode mode)
