@@ -63,7 +63,7 @@ MonoBehaviour:
     BundleName: covers.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 4978328
+    AssetsLength: 5317058
     Assets:
     - Name: Assets/BundleRes/Covers/Music_01/Bg.png
       Length: 494232
@@ -74,8 +74,10 @@ MonoBehaviour:
     - Name: Assets/BundleRes/Covers/Music_03/Bg.png
       Length: 302546
     - Name: Assets/BundleRes/Covers/Music_03/ClipCover.png
+      Length: 338730
+    - Name: Assets/BundleRes/Covers/Music_03/ClipCover_old.png
       Length: 414671
-    - Name: Assets/BundleRes/Covers/Music_03/Cover.mp4
+    - Name: Assets/BundleRes/Covers/Music_03/Cover_old.mp4
       Length: 2412070
   - RelativePath: BundleRes/MusicGameMap/map_00.bundle
     DirectoryName: BundleRes/MusicGameMap
@@ -211,24 +213,12 @@ MonoBehaviour:
     BundleName: mapselectui.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 2697962
+    AssetsLength: 248440
     Assets:
     - Name: Assets/BundleRes/Prefabs/MapSelectUI/MapSelectPanel.prefab
       Length: 247580
-    - Name: Assets/Font/Font_LXGWWenKaiMono-Bold.asset
-      Length: 2137302
     - Name: Assets/RenderTextures/CoverVideoRT.renderTexture
       Length: 860
-    - Name: Assets/Sprites/MapSelectPanel/Mask.png
-      Length: 268953
-    - Name: Assets/Sprites/MapSelectPanel/Sp/G0.png
-      Length: 10777
-    - Name: Assets/Sprites/MapSelectPanel/Sp/G1.png
-      Length: 10863
-    - Name: Assets/Sprites/MapSelectPanel/Sp/G2.png
-      Length: 10814
-    - Name: Assets/Sprites/MapSelectPanel/Sp/G3.png
-      Length: 10813
   - RelativePath: BundleRes/Prefabs/musicgameui.bundle
     DirectoryName: BundleRes/Prefabs
     BundleName: musicgameui.bundle
@@ -424,8 +414,10 @@ MonoBehaviour:
     BundleName: redundancy_1.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 50018241
+    AssetsLength: 52470467
     Assets:
+    - Name: Assets/Font/Font_LXGWWenKaiMono-Bold.asset
+      Length: 2140006
     - Name: Assets/Font/LXGWWenKaiMono-Bold.ttf
       Length: 15455768
     - Name: Assets/Font/LXGWWenKaiMono-Light.ttf
@@ -436,6 +428,16 @@ MonoBehaviour:
       Length: 139
     - Name: Assets/Sprites/Fream-16px.png
       Length: 153
+    - Name: Assets/Sprites/MapSelectPanel/Mask.png
+      Length: 268953
+    - Name: Assets/Sprites/MapSelectPanel/Sp/G0.png
+      Length: 10777
+    - Name: Assets/Sprites/MapSelectPanel/Sp/G1.png
+      Length: 10863
+    - Name: Assets/Sprites/MapSelectPanel/Sp/G2.png
+      Length: 10814
+    - Name: Assets/Sprites/MapSelectPanel/Sp/G3.png
+      Length: 10813
     - Name: Assets/TextMeshPro/Shaders/TMP_SDF.shader
       Length: 10917
     - Name: Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Font Asset

@@ -1,0 +1,42 @@
+{
+	"Version": 3,
+	"Parameters": [
+		{
+			"Id": "ParamBreath",
+			"GroupId": "",
+			"Name": "呼吸"
+		},
+		{
+			"Id": "ParamHairBangs",
+			"GroupId": "",
+			"Name": "摇动 刘海"
+		},
+		{
+			"Id": "ParamHairFront",
+			"GroupId": "",
+			"Name": "摇动 前发"
+		},
+		{
+			"Id": "ParamHairSide",
+			"GroupId": "",
+			"Name": "摇动 侧发"
+		},
+		{
+			"Id": "ParamHairBackR",
+			"GroupId": "",
+			"Name": "摇动 右后发"
+		},
+		{
+			"Id": "ParamHairBackL",
+			"GroupId": "",
+			"Name": "摇动 左后发"
+		}
+	],
+	"ParameterGroups": [],
+	"Parts": [
+		{
+			"Id": "PartSketch0",
+			"Name": "[ 参考图 ]"
+		}
+	]
+}

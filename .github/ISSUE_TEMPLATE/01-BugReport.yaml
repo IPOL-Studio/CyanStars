@@ -1,0 +1,61 @@
+name: "提交漏洞 Bug Report"
+description: "提交一个代码或玩法错误 Submit a code or gameplay error"
+labels: ["♢ 漏洞 Bug","♢ 待审阅 To be reviewed"]
+body:
+- type: markdown
+  attributes:
+    value: "## 这里是 Bug 反馈模版 Here is the bug feedback template"
+- type: markdown
+  attributes:
+    value: |
+      感谢提出 Bug，请花一点时间完善以下内容，以便我们更快排查问题，非常感谢！
+      如果您的反馈不涉及代码更改，而是玩法建议或者讨论，请前往 [Discussions](https://github.com/IPOL-Studio/CyanStars/discussions) 版块。
+      若涉及到安全问题，请前往 [Security](https://github.com/IPOL-Studio/CyanStars/security) 版块。
+      Thank you for reporting the bug. Please take a moment to provide additional details to help us troubleshoot the issue more efficiently. Your cooperation is greatly appreciated!
+      If your feedback does not involve code changes and is instead related to gameplay suggestions or discussions, please visit the [Discussions](https://github.com/IPOL-Studio/CyanStars/discussions) section.
+      If it concerns security issues, please visit the [Security](https://github.com/IPOL-Studio/CyanStars/security) section.
+- type: checkboxes
+  attributes:
+    label: "请确认 Please confirm："
+    options:
+      - label: "我的问题可能涉及代码，而非单纯的玩法建议。不涉及安全性问题。My issue may involve code rather than just gameplay advice. No security issues involved."
+        required: true
+- type: dropdown
+  attributes:
+    label: "此 Bug 出现的平台是 The platform where this bug appears is"
+    options:
+      - "Windows 10"
+      - "Windows 11"
+      - "其他平台（请在下方完善）Other (Please improve below)"
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: "详情 Details"
+    description: "在进行了什么操作之后，发生了什么？原本预期的结果是什么样的？有没有什么可参考的解决方案？After what action was taken, what happened? What was the expected outcome originally? Are there any solutions to refer to?"
+    value: |
+      **经过以下操作后...**
+      **After the following operations...**
+      1. 
+      2. 
+      3. 
+
+      **出现了这些问题...**
+      **These issues have arisen...**
+      1. 
+      2. 
+      3. 
+
+      **预期结果是这样...**
+      **The expected outcome is as follows...**
+      1. 
+      2. 
+      3. 
+
+      **有一些可能的解决方案...**
+      **There are some possible solutions...**
+      1. 
+      2. 
+      3. 
+  validations:
+    required: true
