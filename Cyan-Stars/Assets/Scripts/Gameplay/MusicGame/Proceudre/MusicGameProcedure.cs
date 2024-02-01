@@ -6,6 +6,7 @@ using CyanStars.Framework;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Timeline;
+using CyanStars.Framework.Logging;
 using CyanStars.Gameplay.Base;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,6 +19,8 @@ namespace CyanStars.Gameplay.MusicGame
     [ProcedureState]
     public class MusicGameProcedure : BaseState
     {
+        private const double StartDspDelayTime = 1;
+
         //----音游数据模块--------
         private MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
 
@@ -46,7 +49,10 @@ namespace CyanStars.Gameplay.MusicGame
 
         //----流程逻辑相关--------
         private BaseInputReceiver inputReceiver;
-        private float lastTime = -float.Epsilon;
+
+        private DefaultMusicGameTimer gameTimer = new DefaultMusicGameTimer();
+        private double lastTime = -double.Epsilon;
+        private bool isRunning;
 
 
         public override async void OnEnter()
@@ -108,7 +114,9 @@ namespace CyanStars.Gameplay.MusicGame
             linearNoteData.Clear();
 
             inputReceiver = null;
-            lastTime = -float.Epsilon;
+            lastTime = -double.Epsilon;
+            gameTimer.Stop();
+            isRunning = false;
 
             GameRoot.Event.RemoveListener(EventConst.MusicGameStartEvent, OnMusicGameStart);
             GameRoot.Event.RemoveListener(EventConst.MusicGamePauseEvent, OnMusicGamePause);
@@ -128,7 +136,10 @@ namespace CyanStars.Gameplay.MusicGame
         private void OnMusicGameStart(object sender, EventArgs args)
         {
             CreateTimeline();
+            ScheduleMusic();
             inputReceiver?.StartReceive();
+            isRunning = true;
+            lastTime = 0;
         }
 
         /// <summary>
@@ -136,13 +147,16 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void OnMusicGamePause(object sender, EventArgs e)
         {
-            if (timeline == null)
+            if (!isRunning || timeline == null)
             {
+                dataModule.Logger.LogError("已暂停或不存在timeline，pause fail");
                 return;
             }
 
             audioSource.Pause();
+            gameTimer.Pause();
             inputReceiver?.EndReceive();
+            isRunning = false;
         }
 
         /// <summary>
@@ -150,13 +164,17 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void OnMusicGameResume(object sender, EventArgs e)
         {
-            if (timeline == null)
+            if (isRunning || timeline == null)
             {
+                dataModule.Logger.LogError("正在运行或不存在timeline，resume fail");
                 return;
             }
 
+            Debug.Log($"on resume, time={audioSource.time} samples={audioSource.timeSamples} freq={audioSource.clip.frequency}");
             audioSource.UnPause();
+            gameTimer.Start();
             inputReceiver?.StartReceive();
+            isRunning = true;
         }
 
         /// <summary>
@@ -299,6 +317,19 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
+        private void ScheduleMusic()
+        {
+            if (music == null)
+            {
+                return;
+            }
+
+            audioSource.clip = music;
+            audioSource.PlayScheduled(AudioSettings.dspTime + StartDspDelayTime);
+            gameTimer.Reset();
+            gameTimer.Start(StartDspDelayTime);
+        }
+
         /// <summary>
         /// 创建时间轴
         /// </summary>
@@ -306,7 +337,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             MapTimelineData data = timelineData;
 
-            timeline = new Timeline(data.Length/ 1000f);
+            timeline = new Timeline(data.Length / 1000f);
             timeline.OnStop += StopTimeline;
 
             //添加音符轨道
@@ -331,14 +362,14 @@ namespace CyanStars.Gameplay.MusicGame
                 cameraTrack.CameraTrans = sceneCameraTrans.transform;
             }
 
-            //添加音乐轨道
-            if (music)
-            {
-                MusicTrackData musicTrackData = new MusicTrackData { ClipDataList = new List<AudioClip>() { music } };
+            // //添加音乐轨道
+            // if (music)
+            // {
+            //     MusicTrackData musicTrackData = new MusicTrackData { ClipDataList = new List<AudioClip>() { music } };
 
-                MusicTrack musicTrack = timeline.AddTrack(musicTrackData, MusicTrack.CreateClipFunc);
-                musicTrack.AudioSource = audioSource;
-            }
+            //     MusicTrack musicTrack = timeline.AddTrack(musicTrackData, MusicTrack.CreateClipFunc);
+            //     musicTrack.AudioSource = audioSource;
+            // }
 
             //添加提示音轨道
             GetLinearNoteData();
@@ -371,10 +402,21 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void UpdateTimeline(float deltaTime,object userdata)
         {
-            float timelineDeltaTime = audioSource.time - lastTime;
-            lastTime = audioSource.time;
+            if (!isRunning)
+                return;
 
-            timeline.OnUpdate(timelineDeltaTime);
+            // var musicTime = audioSource.timeSamples / (double)audioSource.clip.frequency;
+            var evaluateTimeData = gameTimer.Evaluate();
+            // var totalTime = evaluateTimeData.TotalSeconds;
+            // dataModule.Logger.LogInfo($"last: {lastTime}, timer: {totalTime}, music: {musicTime}");
+            // dataModule.Logger.LogInfo($"delay: {totalTime - musicTime}");
+
+            if (evaluateTimeData.TotalMilliseconds > 0 && lastTime < evaluateTimeData.TotalSeconds)
+            {
+                float timelineDeltaTime = (float)(evaluateTimeData.TotalSeconds - evaluateTimeData.LastTotalSeconds);
+                lastTime = evaluateTimeData.TotalSeconds;
+                timeline.OnUpdate(timelineDeltaTime);
+            }
 
             //音游流程中 按下ESC打开暂停
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -389,7 +431,7 @@ namespace CyanStars.Gameplay.MusicGame
         private void StopTimeline()
         {
             timeline = null;
-            lastTime = -float.Epsilon;
+            lastTime = -double.Epsilon;
             audioSource.clip = null;
 
             GameRoot.Timer.UpdateTimer.Remove(UpdateTimeline);
