@@ -1,6 +1,6 @@
 name: "优化建议 Enhancement Suggestions"
 description: "提交一个代码或玩法建议 Submit a code or gameplay suggestion"
-labels: ["♢ 优化 Enhancement","♢ 待审阅 To be reviewed"]
+labels: ["◆ 优化 Enhancement","♢ 待审阅 To be reviewed"]
 body:
 - type: textarea
   attributes:
