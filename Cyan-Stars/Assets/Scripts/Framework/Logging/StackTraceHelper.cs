@@ -263,23 +263,14 @@ namespace CyanStars.Framework.Logging
 
             public void ResolveFrame(StackFrame frame, StringBuilder sb)
             {
-                var fileName = frame.GetFileName();
-                int fileNameStart = -1;
-                int fileNameLength = -1;
-
-                if (!string.IsNullOrEmpty(fileName))
-                {
-                    fileName = fileName.Replace('\\', '/');
-                    TryConvertFileNameToUnityAssetsFormat(fileName, out fileNameStart, out fileNameLength);
-                }
-
                 sb.Append(' ', indent)
                   .Append(frame.GetMethod().DeclaringType.ToString())
                   .Append(':');
 
                 AppendMethodDesc(sb, frame.GetMethod());
 
-                if (!string.IsNullOrEmpty(fileName) && isAppendFrameFileLink)
+                if (isAppendFrameFileLink && 
+                    TryResolveFrameFileLink(frame, out string fileName, out int fileNameStart, out int fileNameLength))
                 {
                     sb.Append(" (at ");
                     AppendFileLink(sb, fileName, fileNameStart, fileNameLength, frame.GetFileLineNumber());
@@ -289,6 +280,21 @@ namespace CyanStars.Framework.Logging
                 sb.Append('\n');
 
                 isAppendFrameFileLink = true;
+            }
+
+            private static bool TryResolveFrameFileLink(StackFrame frame, out string fileName, out int startIndex, out int length)
+            {
+                fileName = frame.GetFileName();
+                startIndex = -1;
+                length = -1;
+
+                if (!string.IsNullOrEmpty(fileName))
+                {
+                    fileName = fileName.Replace('\\', '/');
+                    return TryConvertFileNameToUnityAssetsFormat(fileName, out startIndex, out length);
+                }
+
+                return false;
             }
         }
     }
