@@ -20,7 +20,7 @@ Issues 页仅接受 **可能涉及到代码更改的问题**，请不要在此�
 
 ### 协助处理 Issue
 
-如果您在 Issues 内发现了无受理人、且您希望协助处理（Fix）的 Issue，直接评论即可，维护成员在确认后会将此问题分配给您。
+如果您在 Issues 内发现了无受理人（Assignees）、且您希望协助处理（Fix）的 Issue，直接评论即可，维护成员在确认后会将此问题分配给您。
 
 - `Draft` 标签下的 Issue 暂时不需要处理。
 - `Platform-android` `Enhancement` `Low` 标签下的 Issue 优先级较低，可能需要更长的时间被合并。
