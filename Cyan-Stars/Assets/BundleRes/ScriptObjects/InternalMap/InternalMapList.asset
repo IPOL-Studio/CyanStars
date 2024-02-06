@@ -17,11 +17,11 @@ MonoBehaviour:
     StaffInfo: "\u6D1B\u5929\u4F9D | \u6F14\u5531\r\r\n\u5929\u5929\u51C9\u51C9\u8C46
       | \u8C03\u6821\n\u65F6\u5C1A | \u7B56\u5212\n\u795E\u5154\u5C0FP | \u4F5C\u66F2\n\u795E\u5154\u5C0FP
       | \u7F16\u66F2\n\u9038\u606C\u6E05 | \u6DF7\u97F3\nJackdaw\u7941\u6E90 | \u4F5C\u8BCD\n\u6DF1\u8C37-shintani
-      | \u66F2\u7ED8 \r\r\n\u89C2\u6708\u666F | \u89C6\u9891\n\nXXXX | \u6E38\u620F\u66F2\u7ED8\n\u6668\u5CE6
-      | \u8C31\u9762\u8BBE\u8BA1"
+      | \u66F2\u7ED8 \r\r\n\u89C2\u6708\u666F | \u89C6\u9891\n\n\u80D6\u5934\u9C7C
+      | \u6E38\u620F\u66F2\u7ED8\n\u6668\u5CE6 | \u8C31\u9762\u8BBE\u8BA1"
     LrcFileName: 
     MusicFileName: Assets/BundleRes/MusicGameMap/Map_0/Music.ogg
-    CoverFileName: 
+    CoverFileName: Assets/BundleRes/Covers/0.png
     TimelineFileName: Assets/BundleRes/MusicGameMap/Map_0/TimelineData.asset
   - Name: "\u6DF1\u7A7A\u65C1\u767D"
     StaffInfo: "\u6D1B\u5929\u4F9D | \u6F14\u5531\nAfterLight\u4F59\u6656 | \u4F5C\u66F2\nAfterLight\u4F59\u6656
