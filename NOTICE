@@ -1,2 +1,76 @@
-翠蓝星穹CyanStars
-Copyright 2022 无圻寻光开发组
+翠蓝星穹(CyanStars)
+Copyright 2022-2024 无圻寻光开发组(IPOL-Studio)
+
+---
+
+多媒体文件使用规范
+此仓库的多媒体文件（音乐作品、美术图像、Live2D文件）不遵循 LICENSE，而遵循下列协议：
+
+授权主体
+多媒体文件授权仅适用于适用于个人和非营利性团体，不适用于商业主体。
+
+授权内容
+版权方已免费、永久和不可撤销地授权被授权人以下内容：
+1. 授权的作品为：已在 “CyanStars” 仓库内或仓库提到如何获取的多媒体作品，包括音乐作品、美术图像、Live2D文件，但不包含源代码（源代码遵循 LICENSE 中的规范）。
+2. 您可以自由地下载和分发这些作品，并在下文提到的限制范围内使用和二次创作。
+3. 您可以在直播或视频中随游戏画面展示作品，并以此盈利。
+
+使用限制
+为了保护作者的权益，您在使用作品时需要遵守以下限制：
+1. 您不得将作品直接用于任何商业目的。
+2. 任何使用作品的项目都不得用于盈利，但小规模商业行为以补偿支出为目的的除外。
+3. 您只能在《CyanStars》游戏内、游戏衍生作品以及游戏宣传中使用作品，不得用于其他无关项目。
+4. 制作《CyanStars》游戏相关衍生作品时还须符合法律法规与社区准则，并遵循与本文所述的相同许可，并禁止对作品本身进行大幅度改动（如对美术画面进行大规模改动，或对音乐进行改词、更改旋律）。
+5. 您必须在明显位置完整署名作品作者信息。
+6. 您必须在明显位置添加作品链接。
+
+免责声明
+作者和项目维护团队不对贡献者可能产生的任何因超出许可范围而造成的损失或损害承担责任。
+
+---
+
+多媒体文件贡献规范
+非常感谢您有兴趣参与贡献，如果您对此仓库的贡献中包含多媒体文件，为保障维护者和社区成员能够更好地规范使用您的贡献，您还需遵循此规范：
+1. 您已确认此作品不存在与第三方冲突的约定（如独家授权或排他性授权等）。
+2. 您作为版权方，或在获取版权方的许可的情况下进行贡献。
+3. 您确认您的贡献不会侵犯任何第三方的知识产权或其他合法权益，并承担可能由此造成的损失的后果。
+
+您的贡献的授权范围和针对被授权人的限制，与上文“多媒体文件使用规范”中所述相同。
+
+---
+
+Specification for Multimedia File Usage
+
+Multimedia files in this repository (including musical works, artistic images, Live2D files) do not adhere to the LICENSE, but follow the protocols outlined below:
+
+Authorized Parties
+Multimedia file authorization applies only to individuals and non-profit entities and is not applicable to commercial entities.
+
+Authorization Content
+The copyright holder hereby grants, free of charge, permanently, and irrevocably, to the authorized party the following:
+1. The authorized works are those already present in the "CyanStars" repository or mentioned in the repository on how to obtain multimedia works, including musical works, artistic images, Live2D files, excluding source code (source code follows the specifications in the LICENSE).
+2. You are free to download, distribute, use, and create derivative works within the limitations mentioned below.
+3. You may showcase the works during live streams or videos alongside gameplay and profit from it.
+Usage Restrictions
+
+To protect the rights of the author, you must adhere to the following restrictions when using the works:
+1. You may not directly use the works for any commercial purposes.
+2. Projects using the works may not be used for profit, except for minor commercial activities intended to offset expenses.
+3. You may only use the works in "CyanStars" games, game derivatives, and game promotions and may not be used for other unrelated projects.
+4. When creating derivative works related to the "CyanStars" game, you must also comply with laws and community guidelines, follow the same license as described in this document, and refrain from making significant alterations to the works themselves (such as major modifications to artistic images or altering lyrics or melodies of the music).
+5. You must provide full attribution to the author of the works in a prominent position.
+6. You must add a link to the works in a prominent position.
+
+Disclaimer
+The authors and project maintenance team are not liable for any losses or damages incurred by contributors beyond the scope of the license.
+
+---
+
+Multimedia File Contribution Guidelines
+
+Thank you very much for your interest in contributing. If your contributions to this repository include multimedia files, to ensure better regulation of the use of your contributions by maintainers and community members, you also need to adhere to these guidelines:
+1. You have confirmed that this work does not conflict with any third-party agreements (such as exclusive or proprietary licenses).
+2. You, as the copyright holder, or with permission from the copyright holder, are contributing.
+3. You confirm that your contribution will not infringe upon any third-party intellectual property rights or other legal rights and accept the consequences of any resulting losses.
+
+The scope of authorization for your contribution and the restrictions on the authorized party are the same as described in the "Specification for Multimedia File Usage" above.
