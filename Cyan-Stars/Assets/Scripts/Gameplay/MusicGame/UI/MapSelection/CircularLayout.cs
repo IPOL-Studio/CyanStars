@@ -131,7 +131,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 重置
         /// </summary>
-        public void Reset()
+        public void ResetItems()
         {
             curFirstItemAngle = OffsetAngle;
             Items.Clear();
