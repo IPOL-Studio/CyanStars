@@ -76,7 +76,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override async void OnOpen()
         {
-            CircularMapList.Reset();
+            CircularMapList.ResetItems();
 
             await RefreshMusicList();
 
