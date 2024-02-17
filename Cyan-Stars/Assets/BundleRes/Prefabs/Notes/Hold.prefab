@@ -129,6 +129,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   noteType: 1
   meshRenderer: {fileID: 6664786436042441321}
+  Pressed: 0
 --- !u!1 &6784043714968123631
 GameObject:
   m_ObjectHideFlags: 0
