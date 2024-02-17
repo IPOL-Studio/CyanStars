@@ -14,7 +14,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 是否被按下（在判定线上截断）
         /// </summary>
-        public bool Pressed = false;
+        private bool pressed = false;
 
         /// <summary>
         /// 记录上一次截断时Hold的实际的Distance，在松开时将distance减去这个值修正位置
@@ -24,7 +24,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public void SetPressed(bool pressed)
         {
-            this.Pressed = pressed;
+            this.pressed = pressed;
             OnUpdate(ViewDistance);
         }
 
@@ -34,7 +34,7 @@ namespace CyanStars.Gameplay.MusicGame
             this.ViewDistance = viewDistance;
             Vector3 pos = transform.position;
 
-            if (Pressed)
+            if (pressed)
             {
                 // 视觉上的distance被设置为0（截断）
                 pos.z = viewDistance > 0 ? ViewDistance : 0;
@@ -68,6 +68,9 @@ namespace CyanStars.Gameplay.MusicGame
 
         private void OnEnable()
         {
+            pressed = false;
+            lastDistanceWhenPressed = 0;
+
             block.SetFloat(Flicker, 0);
             if (meshRenderer)
             {
@@ -82,14 +85,6 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 this.meshRenderer.SetPropertyBlock(block);
             }
-        }
-
-        public override void DestroySelf(bool autoMove = true)
-        {
-            // 将对象归还到对象池之前重置为未按下状态
-            Pressed = false;
-            lastDistanceWhenPressed = 0;
-            base.DestroySelf(autoMove);
         }
     }
 }

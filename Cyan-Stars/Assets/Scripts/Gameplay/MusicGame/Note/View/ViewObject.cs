@@ -80,7 +80,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         }
 
-        public virtual void DestroySelf(bool autoMove = true)
+        public void DestroySelf(bool autoMove = true)
         {
             if (!autoMove)
             {
