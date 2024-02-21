@@ -7,8 +7,9 @@ namespace CyanStars.Gameplay.MusicGame
     {
         private Stopwatch sw;
 
-        public double Time { get; private set; }
-        public int Milliseconds { get; private set; }
+        public GameTimeSpan Time { get; private set; }
+
+        private GameTimeSpan rawTime;
 
         private double delay;
         private int millisecondsDelay;
@@ -19,7 +20,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 if (sw.IsRunning)
                     return MusicGameTimerState.Running;
-                else if (Time > 0)
+                else if (Time.TotalSeconds > 0)
                     return MusicGameTimerState.Pause;
                 else
                     return MusicGameTimerState.None;
@@ -37,13 +38,12 @@ namespace CyanStars.Gameplay.MusicGame
                 throw new InvalidOperationException("Can't reset game timer when it's running.");
 
             sw.Reset();
-            Time = 0;
-            Milliseconds = 0;
+            Time = default;
             delay = 0;
             millisecondsDelay = 0;
         }
 
-        public bool Start(double delay = 0)
+        public bool Start(MusicGameTimeData data, double delay = 0)
         {
             if (!sw.IsRunning)
             {
@@ -55,54 +55,56 @@ namespace CyanStars.Gameplay.MusicGame
             return false;
         }
 
-        public bool Pause()
+        public bool Pause(MusicGameTimeData data)
         {
             bool ret = sw.IsRunning;
             sw.Stop();
             return ret;
         }
 
+        public bool UnPause(MusicGameTimeData data)
+        {
+            if (State != MusicGameTimerState.Pause)
+                return false;
+
+            sw.Start();
+            return true;
+        }
+
         public void Stop()
         {
-            Pause();
+            sw.Stop();
             Reset();
         }
 
-        public TimerEvaluateData Evaluate()
+        public TimerEvaluateData Evaluate(MusicGameTimeData data)
         {
             var state = State;
             if (state == MusicGameTimerState.None)
                 return default;
 
-            double time;
-            double lastTime;
-            int milliseconds;
-            int lastMilliseconds;
+            var elapsed = sw.Elapsed;
 
-            if (state == MusicGameTimerState.Pause || (int)sw.ElapsedMilliseconds - Milliseconds < 8)
+            if (state == MusicGameTimerState.Pause || elapsed.TotalMilliseconds - rawTime.TotalMilliseconds < 8)
             {
-                time = Time - delay;
-                milliseconds = Milliseconds - millisecondsDelay;
-                lastTime = time;
-                lastMilliseconds = milliseconds;
+                return new TimerEvaluateData
+                {
+                    Elapsed = Time,
+                    LastElapsed = Time
+                };
             }
-            else
-            {
-                lastTime = Time;
-                lastMilliseconds = Milliseconds;
 
-                var elapsed = sw.Elapsed;
-                Time = elapsed.TotalSeconds;
-                Milliseconds = (int)elapsed.TotalMilliseconds;
+            var newRawTime = GameTimeSpan.FromTimeSpan(elapsed);
+            var lastTime = Time;
+            var newTime = new GameTimeSpan(newRawTime.TotalSeconds - delay, newRawTime.TotalMilliseconds - millisecondsDelay);
 
-                time = Time - delay;
-                milliseconds = Milliseconds - millisecondsDelay;
-            }
+            rawTime = newRawTime;
+            Time = newTime;
 
             return new TimerEvaluateData
             {
-                TotalSeconds = time, LastTotalSeconds = lastTime,
-                TotalMilliseconds = milliseconds, LastTotalMilliseconds = lastMilliseconds
+                Elapsed = newTime,
+                LastElapsed = lastTime
             };
         }
     }

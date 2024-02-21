@@ -1,12 +1,10 @@
 using System;
-using UnityEngine;
+using AudioSettings = UnityEngine.AudioSettings;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public class DspTimer : IMusicGameTimer
+    public partial class DspTimer : IMusicGameTimer
     {
-        private readonly bool UseGameTimeCompensation;
-
         private double delay;
 
         private double lastDspTime;
@@ -15,23 +13,39 @@ namespace CyanStars.Gameplay.MusicGame
         private double finalDspTime;
         private double nonFixedTime;
 
-        public double Time { get; private set; }
-        public int Milliseconds => (int)(Time * 1000);
+        private ITimeCompensator timeCompensator;
+        private readonly GameTimeCompensationMode CompensationMode;
+
+        public GameTimeSpan Time { get; private set; }
 
         public MusicGameTimerState State { get; private set; }
 
-        public DspTimer(bool useGameTimeCompensation = false)
+        public DspTimer(GameTimeCompensationMode compensationMode = GameTimeCompensationMode.None)
         {
-            UseGameTimeCompensation = useGameTimeCompensation;
+            CompensationMode = compensationMode;
         }
 
-        public bool Pause()
+        public bool Pause(MusicGameTimeData data)
         {
             if (State != MusicGameTimerState.Running)
                 return false;
 
             pauseDspTime = AudioSettings.dspTime;
             State = MusicGameTimerState.Pause;
+            return true;
+        }
+
+        public bool UnPause(MusicGameTimeData data)
+        {
+            if (State != MusicGameTimerState.Pause)
+                return false;
+
+            double dspTime = AudioSettings.dspTime;
+            double dt = pauseDspTime - lastDspTime;
+            lastDspTime = dspTime;
+            finalDspTime += dt;
+            timeCompensator?.GetCompensationTime(data);
+            State = MusicGameTimerState.Running;
             return true;
         }
 
@@ -45,60 +59,44 @@ namespace CyanStars.Gameplay.MusicGame
             pauseDspTime = 0;
             finalDspTime = 0;
             nonFixedTime = 0;
-            Time = 0;
+            Time = default;
             State = MusicGameTimerState.None;
         }
 
         public void Stop()
         {
-            Pause();
+            Pause(default);
             Reset();
         }
 
-        public bool Start(double delay = 0)
+        public bool Start(MusicGameTimeData data, double delay = 0)
         {
-            if (State == MusicGameTimerState.None)
-            {
-                lastDspTime = AudioSettings.dspTime;
-                this.delay = delay;
-            }
-            else if (State == MusicGameTimerState.Pause)
-            {
-                this.delay += delay;
-                double dspTime = AudioSettings.dspTime;
-                double dt = pauseDspTime - lastDspTime;
-                lastDspTime = dspTime;
-                finalDspTime += dt;
-            }
-            else
-            {
+            if (State != MusicGameTimerState.None)
                 return false;
-            }
 
+            lastDspTime = AudioSettings.dspTime;
+            this.delay = delay;
             State = MusicGameTimerState.Running;
+            ResetTimeCompensator(data);
             return true;
         }
 
-        public TimerEvaluateData Evaluate()
+        public TimerEvaluateData Evaluate(MusicGameTimeData data)
         {
             if (State == MusicGameTimerState.None)
                 return default;
 
             double dspTime = AudioSettings.dspTime;
+            double compensationTime = timeCompensator?.GetCompensationTime(data) ?? 0;
             bool isDspTimeChanged = Math.Abs(dspTime - lastDspTime) > 0.00001;
-            if (State == MusicGameTimerState.Pause || (!UseGameTimeCompensation && !isDspTimeChanged))
+            if (State == MusicGameTimerState.Pause || (timeCompensator is null && !isDspTimeChanged))
             {
-                double time = Time;
-                int ms = Milliseconds;
                 return new TimerEvaluateData
                 {
-                    TotalSeconds = time, LastTotalSeconds = time,
-                    TotalMilliseconds = ms, LastTotalMilliseconds = ms
+                    Elapsed = Time,
+                    LastElapsed = Time,
                 };
             }
-
-            double lastTime = Time;
-            int lastMilliseconds = Milliseconds;
 
             if (isDspTimeChanged)
             {
@@ -108,16 +106,65 @@ namespace CyanStars.Gameplay.MusicGame
             }
             else
             {
-                nonFixedTime += UnityEngine.Time.unscaledDeltaTime;
+                nonFixedTime += compensationTime;
             }
 
-            Time = nonFixedTime - delay;
+            var lastTime = Time;
+            var newTime = GameTimeSpan.FromSeconds(nonFixedTime - delay);
+            Time = newTime;
 
             return new TimerEvaluateData
             {
-                TotalSeconds = Time, LastTotalSeconds = lastTime,
-                TotalMilliseconds = Milliseconds, LastTotalMilliseconds = lastMilliseconds
+                Elapsed = newTime,
+                LastElapsed = lastTime,
             };
+        }
+
+        private void ResetTimeCompensator(MusicGameTimeData data)
+        {
+            timeCompensator = CompensationMode switch
+            {
+                GameTimeCompensationMode.DeltaTime => new DeltaTimeCompensator(),
+                GameTimeCompensationMode.Realtime => new RealtimeDeltaCompensator(data),
+                _ => null
+            };
+        }
+    }
+
+    partial class DspTimer
+    {
+        public enum GameTimeCompensationMode
+        {
+            None,
+            DeltaTime,
+            Realtime
+        }
+
+        private interface ITimeCompensator
+        {
+            double GetCompensationTime(MusicGameTimeData data);
+        }
+
+        private class DeltaTimeCompensator : ITimeCompensator
+        {
+            public double GetCompensationTime(MusicGameTimeData data) => data.UnscaledDeltaTime;
+        }
+
+        private class RealtimeDeltaCompensator : ITimeCompensator
+        {
+            private double lastRealtime;
+
+            public RealtimeDeltaCompensator(MusicGameTimeData data)
+            {
+                lastRealtime = data.RealtimeSinceStartup;
+            }
+
+            public double GetCompensationTime(MusicGameTimeData data)
+            {
+                var deltaTime = data.RealtimeSinceStartup - lastRealtime;
+                lastRealtime = data.RealtimeSinceStartup;
+                return deltaTime;
+            }
         }
     }
 }

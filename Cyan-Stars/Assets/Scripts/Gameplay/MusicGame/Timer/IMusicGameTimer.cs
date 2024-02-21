@@ -2,14 +2,14 @@ namespace CyanStars.Gameplay.MusicGame
 {
     public interface IMusicGameTimer
     {
-        double Time { get; }
-        int Milliseconds { get; }
+        GameTimeSpan Time { get; }
         MusicGameTimerState State { get; }
 
         void Reset();
-        bool Start(double delay = 0);
-        bool Pause();
+        bool Start(MusicGameTimeData data, double delay = 0);
+        bool Pause(MusicGameTimeData data);
+        bool UnPause(MusicGameTimeData data);
         void Stop();
-        TimerEvaluateData Evaluate();
+        TimerEvaluateData Evaluate(MusicGameTimeData data);
     }
 }

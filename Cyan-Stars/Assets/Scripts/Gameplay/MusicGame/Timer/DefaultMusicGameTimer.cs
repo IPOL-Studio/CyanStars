@@ -11,16 +11,15 @@ namespace CyanStars.Gameplay.MusicGame
         private TimerEvaluateData[] tempEvaluateDatas;
         private int[] evaluateDataKeepCounts;
 
-        public double Time { get; private set; }
-        public int Milliseconds { get; private set; }
+        public GameTimeSpan Time { get; private set; }
         public MusicGameTimerState State { get; private set; }
 
         public DefaultMusicGameTimer()
         {
             timers = new IMusicGameTimer[TimerCount]
             {
-                new DspTimer(true),
-                new StopWatchTimer()
+                new RealtimeSliceStartupTimer(),
+                new DspTimer(DspTimer.GameTimeCompensationMode.Realtime),
             };
 
             lastEvaluateDatas = new TimerEvaluateData[TimerCount];
@@ -36,31 +35,45 @@ namespace CyanStars.Gameplay.MusicGame
             Reset_Internal();
         }
 
-        public bool Start(double delay = 0)
+        public bool Start(MusicGameTimeData data, double delay = 0)
         {
             if (State == MusicGameTimerState.Running)
                 return false;
 
             for (int i = 0; i < TimerCount; i++)
             {
-                timers[i].Start(delay);
+                timers[i].Start(data, delay);
             }
 
             State = MusicGameTimerState.Running;
             return true;
         }
 
-        public bool Pause()
+        public bool Pause(MusicGameTimeData data)
         {
             if (State != MusicGameTimerState.Running)
                 return false;
 
             for (int i = 0; i < TimerCount; i++)
             {
-                timers[i].Pause();
+                timers[i].Pause(data);
             }
 
             State = MusicGameTimerState.Pause;
+            return true;
+        }
+
+        public bool UnPause(MusicGameTimeData data)
+        {
+            if (State != MusicGameTimerState.Pause)
+                return false;
+
+            for (int i = 0; i < TimerCount; i++)
+            {
+                timers[i].UnPause(data);
+            }
+
+            State = MusicGameTimerState.Running;
             return true;
         }
 
@@ -77,17 +90,17 @@ namespace CyanStars.Gameplay.MusicGame
             Reset_Internal();
         }
 
-        public TimerEvaluateData Evaluate()
+        public TimerEvaluateData Evaluate(MusicGameTimeData data)
         {
             if (State == MusicGameTimerState.None)
                 return default;
 
-            if (State == MusicGameTimerState.Pause || !UpdateAllTimer())
+            if (State == MusicGameTimerState.Pause || !UpdateAllTimer(data))
             {
                 return new TimerEvaluateData
                 {
-                    TotalSeconds = Time, LastTotalSeconds = Time,
-                    TotalMilliseconds = Milliseconds, LastTotalMilliseconds = Milliseconds
+                    Elapsed = Time,
+                    LastElapsed = Time
                 };
             }
 
@@ -97,22 +110,21 @@ namespace CyanStars.Gameplay.MusicGame
                 timeCount += evaluateDataKeepCounts[i];
             }
 
-            double lastTime = Time;
-            int lastMilliseconds = Milliseconds;
+            var lastTime = Time;
 
-            double time = 0;
+            double seconds = 0;
             int milliseconds = 0;
 
             for (int i = 0; i < TimerCount; i++)
             {
                 double rate = 1.0 - (double)evaluateDataKeepCounts[i] / timeCount;
                 // UnityEngine.Debug.Log($"Timer[{i}] keepCount: {evaluateDataKeepCounts[i]}, rate: {rate}.");
-                time += tempEvaluateDatas[i].TotalSeconds * rate;
-                milliseconds += (int)(tempEvaluateDatas[i].TotalMilliseconds * rate);
+                seconds += tempEvaluateDatas[i].Elapsed.TotalSeconds * rate;
+                milliseconds += (int)(tempEvaluateDatas[i].Elapsed.TotalMilliseconds * rate);
             }
 
-            Time = time;
-            Milliseconds = milliseconds;
+            var newTime = new GameTimeSpan(seconds, milliseconds);
+            Time = newTime;
 
             for (int i = 0; i < TimerCount; i++)
             {
@@ -121,18 +133,18 @@ namespace CyanStars.Gameplay.MusicGame
 
             return new TimerEvaluateData
             {
-                TotalSeconds = time, LastTotalSeconds = lastTime,
-                TotalMilliseconds = milliseconds, LastTotalMilliseconds = lastMilliseconds
+                Elapsed = newTime,
+                LastElapsed = lastTime
             };
         }
 
         /// <returns> Is any timer value has been valid update </returns>
-        private bool UpdateAllTimer()
+        private bool UpdateAllTimer(MusicGameTimeData data)
         {
             for (int i = 0; i < TimerCount; i++)
             {
-                tempEvaluateDatas[i] = timers[i].Evaluate();
-                // UnityEngine.Debug.Log($"Timer[{i}]: {tempEvaluateDatas[i].TotalSeconds}.");
+                tempEvaluateDatas[i] = timers[i].Evaluate(data);
+                //UnityEngine.Debug.Log($"Timer[{i}]: {tempEvaluateDatas[i].Elapsed.TotalSeconds}.");
             }
 
             bool isAnyUpdated = false;
@@ -154,7 +166,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         private bool IsModified(TimerEvaluateData newData, TimerEvaluateData oldData)
         {
-            return newData.TotalMilliseconds > oldData.TotalMilliseconds;
+            return newData.Elapsed.TotalMilliseconds > oldData.Elapsed.TotalMilliseconds;
         }
 
         private void Reset_Internal()
@@ -167,8 +179,7 @@ namespace CyanStars.Gameplay.MusicGame
                 evaluateDataKeepCounts[i] = 0;
             }
 
-            Time = 0;
-            Milliseconds = 0;
+            Time = default;
             State = MusicGameTimerState.None;
         }
     }

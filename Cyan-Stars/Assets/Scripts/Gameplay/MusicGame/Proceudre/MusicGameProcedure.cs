@@ -154,7 +154,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             audioSource.Pause();
-            gameTimer.Pause();
+            gameTimer.Pause(MusicGameTimeData.Create());
             inputReceiver?.EndReceive();
             isRunning = false;
         }
@@ -170,9 +170,11 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
-            Debug.Log($"on resume, time={audioSource.time} samples={audioSource.timeSamples} freq={audioSource.clip.frequency}");
+            Debug.Log($"on resume, time={audioSource.time} samples={audioSource.timeSamples} freq={audioSource.clip.frequency}, timer={gameTimer.Time.TotalSeconds}");
+            audioSource.timeSamples = (int)(audioSource.clip.frequency * gameTimer.Time.TotalSeconds);
+            Debug.Log($"after: {audioSource.time}");
             audioSource.UnPause();
-            gameTimer.Start();
+            gameTimer.UnPause(MusicGameTimeData.Create());
             inputReceiver?.StartReceive();
             isRunning = true;
         }
@@ -327,7 +329,7 @@ namespace CyanStars.Gameplay.MusicGame
             audioSource.clip = music;
             audioSource.PlayScheduled(AudioSettings.dspTime + StartDspDelayTime);
             gameTimer.Reset();
-            gameTimer.Start(StartDspDelayTime);
+            gameTimer.Start(MusicGameTimeData.Create(), StartDspDelayTime);
         }
 
         /// <summary>
@@ -405,16 +407,18 @@ namespace CyanStars.Gameplay.MusicGame
             if (!isRunning)
                 return;
 
+            var data = MusicGameTimeData.Create();
+            var evaluateTimeData = gameTimer.Evaluate(data);
+
             // var musicTime = audioSource.timeSamples / (double)audioSource.clip.frequency;
-            var evaluateTimeData = gameTimer.Evaluate();
             // var totalTime = evaluateTimeData.TotalSeconds;
             // dataModule.Logger.LogInfo($"last: {lastTime}, timer: {totalTime}, music: {musicTime}");
             // dataModule.Logger.LogInfo($"delay: {totalTime - musicTime}");
 
-            if (evaluateTimeData.TotalMilliseconds > 0 && lastTime < evaluateTimeData.TotalSeconds)
+            if (evaluateTimeData.Elapsed.TotalMilliseconds > 0 && lastTime < evaluateTimeData.Elapsed.TotalSeconds)
             {
-                float timelineDeltaTime = (float)(evaluateTimeData.TotalSeconds - evaluateTimeData.LastTotalSeconds);
-                lastTime = evaluateTimeData.TotalSeconds;
+                float timelineDeltaTime = (float)(evaluateTimeData.Elapsed.TotalSeconds - evaluateTimeData.LastElapsed.TotalSeconds);
+                lastTime = evaluateTimeData.Elapsed.TotalSeconds;
                 timeline.OnUpdate(timelineDeltaTime);
             }
 
