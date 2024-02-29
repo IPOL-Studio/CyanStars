@@ -20,7 +20,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 841ceedfff7e7594e94eeaf7020cb0c1, type: 3}
+        m_Texture: {fileID: 2800000, guid: 74da28c2265e7bb4981cd730e83641ba, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Mask:
@@ -28,11 +28,13 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _BaseColorRate: 0.6
+    - _BaseColorRate: 1
     - _Flicker: 1
-    - _FlickerRate: 1
-    - _FlickerSpeed: 2.5
+    - _FlickerRate: 0.7
+    - _FlickerSpeed: 2
     m_Colors:
-    - _FlickerColor: {r: 0.40656534, g: 0.5, b: 0.099999994, a: 0}
+    - _BaseColor: {r: 0.51096314, g: 0.608, b: 0.276032, a: 0}
+    - _BloomColor: {r: 0.57123137, g: 1.0648196, b: 0.21629149, a: 0}
+    - _FlickerColor: {r: 1.0745099, g: 0.76509607, b: 0, a: 0}
     - _MaskColor: {r: 0, g: 3.9999995, b: 0, a: 1}
   m_BuildTextureStacks: []
