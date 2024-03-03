@@ -9,13 +9,13 @@ namespace CyanStars.Gameplay.MusicGame
     {
         public readonly string SceneName;
         public readonly string ScenePath;
-        public readonly MusicGameSceneUICollection UITypes;
+        public readonly MusicGameSceneUICollection UICollection;
 
-        public MusicGameSceneInfo(string sceneName, string scenePath, MusicGameSceneUICollection ui)
+        public MusicGameSceneInfo(string sceneName, string scenePath, MusicGameSceneUICollection uiCollection)
         {
             SceneName = sceneName;
             ScenePath = scenePath;
-            UITypes = ui ?? MusicGameSceneUICollection.Empty;
+            UICollection = uiCollection ?? MusicGameSceneUICollection.Empty;
         }
     }
 

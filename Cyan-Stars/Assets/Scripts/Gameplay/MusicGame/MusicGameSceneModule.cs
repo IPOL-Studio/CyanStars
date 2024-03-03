@@ -19,19 +19,19 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnInit()
         {
-            var uiInfoCollection = new MusicGameSceneUICollection()
+            var uiCollection = new MusicGameSceneUICollection()
                 .Register<MusicGameMainPanel>()
                 .Register<MusicGame3DUIPanel>();
 
             scenes.Add(new MusicGameSceneInfo(
                 "Warm",
                 "Assets/BundleRes/Scenes/Warm.unity",
-                uiInfoCollection));
+                uiCollection));
 
             scenes.Add(new MusicGameSceneInfo(
                 "Dark",
                 "Assets/BundleRes/Scenes/Dark.unity",
-                uiInfoCollection
+                uiCollection
             ));
 
             Fallback = scenes[0];

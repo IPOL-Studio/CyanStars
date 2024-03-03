@@ -65,6 +65,8 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public List<string> EffectNames { get; private set; }
 
+        public MusicGameSceneConfigure SceneConfigure { get; set; }
+
         private string loggerCategoryName;
         public ICysLogger Logger { get; private set; }
 
@@ -188,6 +190,7 @@ namespace CyanStars.Gameplay.MusicGame
         public void ResetPlayingData()
         {
             RunningTimeline = null;
+            SceneConfigure = null;
             Logger = null;
             GameRoot.Logger.RemoveLogger(loggerCategoryName);
             loggerCategoryName = null;
