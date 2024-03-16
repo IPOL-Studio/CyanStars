@@ -50,6 +50,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             foreach (TouchInputReceiveObj obj in objs)
             {
+                obj.ResetTouch();
                 obj.gameObject.SetActive(false);
             }
         }
