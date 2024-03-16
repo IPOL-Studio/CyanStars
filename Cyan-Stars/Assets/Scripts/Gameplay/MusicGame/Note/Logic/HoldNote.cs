@@ -79,6 +79,10 @@ namespace CyanStars.Gameplay.MusicGame
                 {
                     //只在hold音符区域内有按住时，累计有效时长
                     pressTimeLength += deltaTime;
+                    
+                    // 按下时根据已经经过的视图层时间比例计算Hold长度
+                    float length = Data.HoldViewEndTime / 1000f - curViewTime;
+                    (ViewObject as HoldViewObject).SetLength(length);
                 }
             }
 
@@ -109,7 +113,7 @@ namespace CyanStars.Gameplay.MusicGame
 
                     NoteJudger.HoldTailJudge(Data,pressTimeLength,value);
 
-                    ViewObject?.DestroyEffectObj();
+                    ViewObject.DestroyEffectObj();
                 }
                 DestroySelf();
             }
@@ -120,15 +124,26 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnUpdateInAutoMode(curLogicTime, curViewTime);
 
+            var holdViewObject = ViewObject as HoldViewObject;
+
             if (!headChecked && Distance <= 0)
             {
                 headChecked = true;
 
-                (ViewObject as HoldViewObject)?.OpenFlicker();
+                holdViewObject.OpenFlicker();
 
-                ViewObject?.CreateEffectObj(NoteData.NoteWidth);
+                ViewObject.CreateEffectObj(NoteData.NoteWidth);
 
                 NoteJudger.HoldHeadJudge(Data, 0); // Auto Mode 杂率为0
+
+                holdViewObject.SetPressed(true);
+            }
+
+            if (headChecked)
+            {
+                // 按下时根据已经经过的视图层时间比例计算Hold长度
+                float length = Data.HoldViewEndTime / 1000f - curViewTime;
+                holdViewObject.SetLength(length);
             }
 
             if (Distance < holdCheckInputEndDistance)
@@ -144,10 +159,10 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnInput(inputType);
 
+            var holdViewObject = ViewObject as HoldViewObject;
             switch (inputType)
             {
                 case InputType.Down:
-
                     if (headChecked)
                     {
                         return;
@@ -166,15 +181,17 @@ namespace CyanStars.Gameplay.MusicGame
                         headChecked = true;
                         headCheckTime = CurLogicTime;
                         isPressed = true;
+                        // 按键按下，开始截断
+                        holdViewObject.SetPressed(true);
+
                         ViewObject.CreateEffectObj(NoteData.NoteWidth);
                         //头判处理
-                        (ViewObject as HoldViewObject)?.OpenFlicker();
+                        holdViewObject.OpenFlicker();
                     }
 
                     break;
 
                 case InputType.Press:
-
                     if (!headChecked)
                     {
                        return;
@@ -182,7 +199,16 @@ namespace CyanStars.Gameplay.MusicGame
 
                     //头判命中后 有Press输入 才开始计算命中时长
                     isPressed = true;
+                    // 按键按下，开始截断
+                    holdViewObject.SetPressed(true);
+
                     ViewObject.CreateEffectObj(NoteData.NoteWidth);
+                    break;
+
+                case InputType.Up:
+                    // 按键抬起，取消截断
+                    holdViewObject.SetPressed(false);
+                    
                     break;
             }
         }
