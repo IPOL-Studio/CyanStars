@@ -13,10 +13,14 @@ namespace CyanStars.Gameplay.MusicGame
 
         private readonly Dictionary<int, GameObject> KeyDict = new Dictionary<int, GameObject>(); //key列表
 
+        private MusicGameModule dataModule;
+
         private void Awake()
         {
             GameRoot.Event.AddListener(InputEventArgs.EventName,OnInput);
             GameRoot.Event.AddListener(EventConst.MusicGameEndEvent,OnMusicGameEnd);
+
+            dataModule = GameRoot.GetDataModule<MusicGameModule>();
         }
 
         private void OnDestroy()
@@ -64,8 +68,9 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 key = Instantiate(keyPrefab);
                 var trans = key.transform;
-                trans.position = new Vector3(Endpoint.Instance.GetPosWithRatio(args.RangeMin), 0, 20);
-                trans.localScale = new Vector3(Endpoint.Instance.Length * args.RangeWidth, 0.1f, 10000);
+                var mainTrackBounds = dataModule.SceneConfigure.MainTrackBounds;
+                trans.position = new Vector3(mainTrackBounds.GetPosWithRatio(args.RangeMin), 0, 20);
+                trans.localScale = new Vector3(mainTrackBounds.Length * args.RangeWidth, 0.1f, 10000);
                 trans.SetParent(transform);
                 KeyDict.Add(args.ID, key);
             }

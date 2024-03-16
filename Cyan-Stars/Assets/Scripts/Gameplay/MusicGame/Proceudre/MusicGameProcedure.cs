@@ -26,7 +26,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         //----音游场景模块--------
         private MusicGameSceneModule sceneModule = GameRoot.GetDataModule<MusicGameSceneModule>();
-        private MusicGameSceneInfo currentSceneInfo;
+        private MusicGameSceneInfo currentScene;
 
         //----场景物体与组件--------
         private Scene scene;
@@ -52,7 +52,7 @@ namespace CyanStars.Gameplay.MusicGame
         public override async void OnEnter()
         {
             GameRoot.MainCamera.gameObject.SetActive(false);
-            currentSceneInfo = sceneModule.CurrentScene;
+            currentScene = sceneModule.CurrentScene;
 
             //监听事件
             GameRoot.Event.AddListener(EventConst.MusicGameStartEvent, OnMusicGameStart);
@@ -61,7 +61,7 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Event.AddListener(EventConst.MusicGameExitEvent, OnMusicGameExit);
 
             //打开游戏场景
-            scene = await GameRoot.Asset.LoadSceneAsync(currentSceneInfo.ScenePath);
+            scene = await GameRoot.Asset.LoadSceneAsync(currentScene.ScenePath);
 
             if (scene != default)
             {
@@ -118,7 +118,7 @@ namespace CyanStars.Gameplay.MusicGame
             CloseMusicGameUI();
 
             GameRoot.Asset.UnloadScene(scene);
-            currentSceneInfo = null;
+            currentScene = null;
             scene = default;
         }
 
@@ -184,6 +184,7 @@ namespace CyanStars.Gameplay.MusicGame
             ViewHelper.EffectRoot = sceneRoot.transform.Find("EffectRoot");
             sceneCameraTrans = sceneRoot.transform.Find("SceneCamera");
             audioSource = sceneRoot.GetComponent<AudioSource>();
+            dataModule.SceneConfigure = sceneRoot.GetComponent<MusicGameSceneConfigure>();
         }
 
         /// <summary>
@@ -271,7 +272,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void OpenMusicGameUI()
         {
-            foreach (var type in this.currentSceneInfo.UITypes)
+            foreach (var type in this.currentScene.UICollection)
             {
                 GameRoot.UI.OpenUIPanel(type, null);
             }
@@ -282,7 +283,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void CloseMusicGameUI()
         {
-            foreach (var type in this.currentSceneInfo.UITypes)
+            foreach (var type in this.currentScene.UICollection)
             {
                 GameRoot.UI.CloseUIPanel(type);
             }
