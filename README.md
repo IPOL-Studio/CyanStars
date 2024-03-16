@@ -41,10 +41,14 @@
 
 ### 下载 Unity 编辑器
 
-若您已安装 Unity Hub，可将此链接复制到浏览器，调起 Unity Hub 内下载: `unityhub://2020.3.28f1/f5400f52e03f`。
+若您已安装 Unity Hub，可将此链接复制到浏览器，调起 Unity Hub 内下载：`unityhub://2020.3.28f1/f5400f52e03f`。
 
 或从 [Unity 官网](https://unity3d.com/get-unity/download/archive) 手动下载 `2020.3.28f1` 版本的编辑器。
 
 ### 下载其他必要资源
 
 [Live2D Cubism SDK for Unity](https://www.live2d.com/zh-CHS/sdk/download/unity/) - 一个第三方 Unity 包，用于在 Unity 项目中播放 Live2D 资源。在同意协议后、下载并拖动到 Unity 编辑器内导入，然后重启一次编辑器。
+
+### 构建安装包
+
+从 Unity 编辑器上方菜单中选中 `CyanStars 工具箱` 进行构建。
