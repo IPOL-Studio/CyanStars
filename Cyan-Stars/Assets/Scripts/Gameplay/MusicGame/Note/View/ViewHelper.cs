@@ -97,8 +97,8 @@ namespace CyanStars.Gameplay.MusicGame
             if (data.Type != NoteType.Break)
             {
                 //非Break音符需要缩放宽度
-                scale.x = NoteData.NoteWidth * Endpoint.Instance.Length;
-                scale.y = 2;
+                // scale.x = NoteData.NoteWidth * Endpoint.Instance.Length;
+                // scale.y = 2;
             }
             else
             {

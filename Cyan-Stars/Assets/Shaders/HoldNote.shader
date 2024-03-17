@@ -66,11 +66,11 @@ Shader "NoteShader/Hold"
             float4 frag(v2f i) : SV_Target
             {
                 float UV_Y = i.uv.y;
+                float UVMask = step(i.uv.x, 0.5) * step(i.uv.y, 0.75);
 
-                UV_Y = abs(UV_Y - 0.5);
                 UV_Y = frac(_Time.y * _FlickerSpeed - UV_Y);
                 UV_Y = smoothstep(_FlickerRate, 1, cos(UV_Y - 0.5));
-                float flicker = (1 - UV_Y) * UNITY_ACCESS_INSTANCED_PROP(Props, _Flicker) * step(i.uv.x, 0.4);
+                float flicker = (1 - UV_Y) * UNITY_ACCESS_INSTANCED_PROP(Props, _Flicker) * UVMask;
 
                 float4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
                 col.rgb += _FlickerColor.rgb * flicker;
