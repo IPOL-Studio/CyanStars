@@ -50,6 +50,8 @@ namespace CyanStars.Gameplay.MusicGame
         {
             foreach (TouchInputReceiveObj obj in objs)
             {
+                // TODO: 实现input层的抽象统一不同平台行为
+                obj.ResetTouch();
                 obj.gameObject.SetActive(false);
             }
         }
