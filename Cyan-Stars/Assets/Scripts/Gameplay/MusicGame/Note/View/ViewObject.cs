@@ -1,8 +1,6 @@
-using System;
 using UnityEngine;
 using System.Collections;
 using CyanStars.Framework;
-using CyanStars.Framework.GameObjectPool;
 using CyanStars.Framework.Timer;
 
 
@@ -27,9 +25,11 @@ namespace CyanStars.Gameplay.MusicGame
 
         private TimerCallback timerCallback;
 
+        private MusicGameModule dataModule;
+
         protected virtual void Awake()
         {
-            MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
+            dataModule = GameRoot.GetDataModule<MusicGameModule>();
             notePrefabName = dataModule.NotePrefabNameDict[noteType];
             hitEffectPrefabName = dataModule.HitEffectPrefabNameDict[noteType];
             timerCallback = ReleaseHitEffectObj;
@@ -52,9 +52,13 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             hitEffectObj = await GameRoot.GameObjectPool.GetGameObjectAsync(hitEffectPrefabName, null);
-            hitEffectObj.transform.position = new Vector3(transform.position.x + Endpoint.Instance.Length * w / 2, transform.position.y ,0);
-            hitEffectObj.transform.rotation = Quaternion.identity;
-            hitEffectObj.transform.SetParent(ViewHelper.EffectRoot);
+            Transform hitEffectTrans = hitEffectObj.transform;
+
+            Vector3 pos = transform.position;
+            pos.x += dataModule.SceneConfigure.MainTrackBounds.Length * w / 2;
+            pos.z = 0;
+            hitEffectTrans.SetPositionAndRotation(pos, Quaternion.identity);
+            hitEffectTrans.SetParent(ViewHelper.EffectRoot);
 
             NoteHitEffect hitEffect = hitEffectObj.GetComponent<NoteHitEffect>();
             if (hitEffect.WillDestroy)
