@@ -90,6 +90,11 @@ namespace CyanStars.Gameplay.MusicGame
             Dispatch(InputType.Up);
         }
 
+        public void ResetTouch()
+        {
+            isTouchDown = false;
+            Dispatch(InputType.Up);
+        }
 
         private void Dispatch(InputType type)
         {
