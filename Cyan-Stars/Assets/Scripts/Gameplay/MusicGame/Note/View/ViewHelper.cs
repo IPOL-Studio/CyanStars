@@ -43,7 +43,8 @@ namespace CyanStars.Gameplay.MusicGame
 
             //这里因为用了异步await，所以需要使用note在物体创建成功后这一刻的视图层时间作为viewCreateTime，否则位置会对不上
             trans.position = GetViewObjectPos(data,note.ViewDistance, sceneConfigure);
-            trans.localScale = GetViewObjectScale(data, sceneConfigure.MainTrackBounds.Length);
+            //目前的Note模型规范了大小，不需要调整大小了。
+            // trans.localScale = GetViewObjectScale(data, sceneConfigure.MainTrackBounds.Length);
             trans.localEulerAngles = GetViewObjectRotation(data, sceneConfigure);
 
             ViewObject view = go.GetComponent<ViewObject>();
