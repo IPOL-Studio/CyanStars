@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3317085444713651216}
   - component: {fileID: 1441188949672114466}
   - component: {fileID: 3184656074913678425}
+  - component: {fileID: 195067547413544476}
   m_Layer: 5
   m_Name: Star
   m_TagString: Untagged
@@ -34,7 +35,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.6208267, y: -0.3058777}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1441188949672114466
@@ -75,3 +76,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &195067547413544476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4251766181810322849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7898cc6f156b657408ce7b81181a14fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  XPos: 0
+  YPos: 0
+  Alpha: 0
+  Size: 0
+  Parallax: 0
