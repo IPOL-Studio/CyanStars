@@ -53,7 +53,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             hitEffectObj = await GameRoot.GameObjectPool.GetGameObjectAsync(hitEffectPrefabName, null);
             hitEffectObj.transform.position = new Vector3(transform.position.x + Endpoint.Instance.Length * w / 2, transform.position.y ,0);
-            hitEffectObj.transform.rotation = Quaternion.identity;
+            hitEffectObj.transform.rotation = transform.rotation;
             hitEffectObj.transform.SetParent(ViewHelper.EffectRoot);
 
             NoteHitEffect hitEffect = hitEffectObj.GetComponent<NoteHitEffect>();
