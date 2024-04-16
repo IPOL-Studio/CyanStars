@@ -28,7 +28,7 @@ namespace CyanStars.Gameplay.MusicGame
         public CircularLayout CircularMapList;
 
         [Header("开始按钮")]
-        public Button BtnStart;
+        public Button StartButton;
 
         [Header("自动模式开关")]
         public Toggle ToggleAutoMode;
@@ -64,14 +64,14 @@ namespace CyanStars.Gameplay.MusicGame
                 musicGameDataModule.IsAutoMode = isOn;
             }));
 
-            BtnStart.onClick.AddListener(() =>
+            StartButton.onClick.AddListener(() =>
             {
                 //切换到音游流程
                 GameRoot.GetDataModule<MusicGameModule>().MapIndex = curSelectedMapItem.Data.Index;
                 GameRoot.ChangeProcedure<MusicGameProcedure>();
             });
 
-            BtnStart.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+            StartButton.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
         }
 
         public override async void OnOpen()

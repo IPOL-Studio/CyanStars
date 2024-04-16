@@ -39,6 +39,11 @@ public class StarsGenerator : MonoBehaviour
 
     void Start()
     {
+        GenerateStars();
+    }
+
+    void GenerateStars()
+    {
         // 生成 Star 预制体
         starNum = Random.Range(MinStarNum, MaxStarNum);
         for (int i = 0; i < starNum; i++)
@@ -46,12 +51,13 @@ public class StarsGenerator : MonoBehaviour
             // 随机生成位置、透明度、大小、视差灵敏度，并传递给每一个 Star 预制体
             GameObject newStarObject = Instantiate(StarPrefab, transform);
             Star newStar = newStarObject.GetComponent<Star>();
-            newStar.XPos = Random.Range(0f, 2f);    // 横向范围为两倍，用于动画时从镜头外向左过渡到镜头内
-            newStar.YPos = Random.Range(0f, 1f);
-            newStar.Alpha = Random.Range(MinStarAlpha, MaxStarAlpha);
-            newStar.Size = Random.Range(MinStarSize, MaxStarSize);
-            newStar.Parallax = Random.Range(MinStarParallax, MaxStarParallax);
-            newStar.Panel = Panel;
+            GameObject panel = Panel;
+            float xPos = Random.Range(0f, 2f);    // 横向范围为两倍，用于动画时从镜头外向左过渡到镜头内
+            float yPos = Random.Range(0f, 1f);
+            float alpha = Random.Range(MinStarAlpha, MaxStarAlpha);
+            float size = Random.Range(MinStarSize, MaxStarSize);
+            float parallax = Random.Range(MinStarParallax, MaxStarParallax);
+            newStar.InitializeProperties(panel, xPos, yPos, alpha, size, parallax);     // 将生成的值传给每一个预制体，这些值之后不会再修改
         }
     }
 }
