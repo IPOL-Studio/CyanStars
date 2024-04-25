@@ -36,7 +36,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (Distance <= 0)
             {
-                ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
+                ViewObject.CreateEffectObj(0); //生成特效，BreakNote宽度设定为0
                 DestroySelf(false); //销毁
 
                 NoteJudger.BreakJudge(Data, 0); // Auto Mode 杂率为0
