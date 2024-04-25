@@ -5,15 +5,12 @@ using UnityEngine;
 // StarsGenerator 用于控制选曲面板背景星星和 Staff 信息的生成、移动。
 public class StarsGenerator : MonoBehaviour
 {
+    #region 策划参数
     [Header("图像配置 Image settings")]
     [Tooltip("星星预制体")]
     public GameObject StarPrefab;
-    [Tooltip("准星图像")]
-    public GameObject SightPrefab;
 
     [Header("数值与UI配置 Value & UI settings")]
-    [Tooltip("用作基准缩放长宽的 Panel")]
-    public GameObject Panel;
     [Tooltip("至少生成几个星星")]
     public int MinStarNum;
     [Tooltip("至多生成几个星星")]
@@ -36,28 +33,27 @@ public class StarsGenerator : MonoBehaviour
     [SerializeField]
     [Tooltip("实际生成的星星数量")]
     private int starNum;
+    #endregion
 
-    void Start()
+    /// <summary>
+    /// 按照在 Unity 中配置的参数开始生成星星预制体
+    /// </summary>
+    public void GenerateStars()
     {
-        GenerateStars();
-    }
-
-    void GenerateStars()
-    {
-        // 生成 Star 预制体
         starNum = Random.Range(MinStarNum, MaxStarNum);
         for (int i = 0; i < starNum; i++)
         {
             // 随机生成位置、透明度、大小、视差灵敏度，并传递给每一个 Star 预制体
             GameObject newStarObject = Instantiate(StarPrefab, transform);
             Star newStar = newStarObject.GetComponent<Star>();
-            GameObject panel = Panel;
             float xPos = Random.Range(0f, 2f);    // 横向范围为两倍，用于动画时从镜头外向左过渡到镜头内
             float yPos = Random.Range(0f, 1f);
-            float alpha = Random.Range(MinStarAlpha, MaxStarAlpha);
+            newStar.PosRatio = new Vector3(xPos, yPos, 1f);
+            newStar.Alpha = Random.Range(MinStarAlpha, MaxStarAlpha);
             float size = Random.Range(MinStarSize, MaxStarSize);
+            newStar.Size = new Vector3(size, size, 1f);
             float parallax = Random.Range(MinStarParallax, MaxStarParallax);
-            newStar.InitializeProperties(panel, xPos, yPos, alpha, size, parallax);     // 将生成的值传给每一个预制体，这些值之后不会再修改
+            newStar.Parallax = parallax;
         }
     }
 }

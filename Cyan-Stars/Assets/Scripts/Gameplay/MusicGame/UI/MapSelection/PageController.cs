@@ -2,80 +2,116 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using CyanStars.Gameplay.MusicGame;
 
 public class PageController : MonoBehaviour
 {
+    #region 变量
     /// <summary>
     /// 用于控制选曲UI的页面状态（在选曲页/Staff页？）
-    /// 并管理各元素随页面状态的位置、透明度等属性
-    /// 并更新每个Star实例的相关变量
     /// </summary>
-
     [Header("下一步按钮")]
     public Button NextStepButton;
-
     [Header("上一步按钮")]
     public Button BackButton;
+    [Header("Panel 组件")]
+    public GameObject Panel;
+    [Header("StarsGenerator 组件")]
+    public StarsGenerator Generator;
 
-    [Header("星星生成器组件")]
-    public GameObject StarsGenerator;
 
     /// <summary>
     /// 目标页面进度
     /// 1或2，1=选曲页，2=Staff页
-    /// CurrentPageProgress将会缓动趋近TargetPageProgress
+    /// currentPage将会缓动趋近targetPage
     /// <summary>
-    int targetPageProgress;
+    int targetPage = 1;
 
     /// <summary>
     /// 当前页面进度
     /// 一个介于1-2之间的小数
     /// <summary>
-    float currentPageProgress;
+    float currentPage = 1;
 
     /// <summary>
-    /// 缓动速度
+    /// 缓动相关变量
+    /// </summary>
+    const float Dt = 1.2f;    // 缓动持续时间
+    float sp;           // 缓动开始时的页面进度
+    float st;           // 缓动开始时间，当 targetPage 变动时请将它设为 Time.time
+    #endregion
+
     /// <summary>
-    float speed = 0.05f;
+    /// 获取到的 PageControlAble 组件
+    /// </summary>
+    PageControlAble[] pageControlAbles;
 
-
-    private void Start()
+    void Start()
     {
-        targetPageProgress = 1;
-        currentPageProgress = 1;
-
         NextStepButton.onClick.AddListener(() =>
         {
-            targetPageProgress++;
+            st = Time.time;
+            sp = currentPage;
+            targetPage++;
         });
-
         BackButton.onClick.AddListener(() =>
         {
-            if (targetPageProgress == 1)
+            if (targetPage == 1)
             {
                 //  ToDo:退出选曲界面，返回游戏主页
                 Debug.LogWarning("返回主页的功能尚未实现，如果你有兴趣可以加入我们一起设计和开发，我们的链接是..[系统屏蔽广告信息]");
             }
             else
             {
-                targetPageProgress--;
+                st = Time.time;
+                sp = currentPage;
+                targetPage--;
             }
         });
+        Generator.GenerateStars();  // 先生成星星预制体
+        SetPageControlAbles();      // 再更新 PageControlAbles 列表
+        RefreshPanelSize();
     }
 
-    private void Update()
+    void Update()
     {
-        currentPageProgress += (targetPageProgress - currentPageProgress) * speed;
-
-        // 遍历StarsGenerator下每一个Star实例，将currentPageProgress储存于Star同名变量中
-        Star[] stars = StarsGenerator.GetComponentsInChildren<Star>();
-        if (targetPageProgress != currentPageProgress)
+        // 根据缓动函数计算 currentPage，并传递给 pageControlAbles
+        if ((Time.time < st + Dt) && (targetPage != currentPage))
         {
-            foreach (Star star in stars)
+            currentPage = EasingFunction.SinFunctionEaseOut(sp, targetPage, Time.time - st, Dt);
+            foreach (PageControlAble pageControlAble in pageControlAbles)
             {
-                star.RefreshPageVariable(currentPageProgress);
+                pageControlAble.CurrentPage = currentPage;
             }
         }
     }
 
+    /// <summary>
+    /// 获取当前组件下子节点中的 PageControlAble
+    /// </summary>
+    public void SetPageControlAbles()
+    {
+        pageControlAbles = GetComponentsInChildren<PageControlAble>();
+    }
+
+    void OnRectTransformDimensionsChange()
+    {
+        RefreshPanelSize();
+    }
+
+    /// <summary>
+    /// Start() 或屏幕大小变化时，将新的 PanelSize 传给 PageControlAble
+    /// </summary>
+    void RefreshPanelSize()
+    {
+        // 将 Panel 宽高传给每一个 PageControlAble
+        if (pageControlAbles == null)
+        { return; }
+
+        RectTransform rectTransform = Panel.GetComponent<RectTransform>();
+        foreach (PageControlAble pageControlAble in pageControlAbles)
+        {
+            pageControlAble.PanelSize = new Vector2(rectTransform.rect.width, rectTransform.rect.height);
+        }
+    }
 }
