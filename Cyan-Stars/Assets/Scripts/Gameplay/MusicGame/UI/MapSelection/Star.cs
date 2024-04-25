@@ -67,7 +67,7 @@ public class Star : MonoBehaviour
     {
         // 确定最终在屏幕上的位置
         RectTransform rectTransform = this.GetComponent<RectTransform>();
-        float screenXPos = xPos * panelWidth - parallax * (currentPageProgress * panelWidth - 1);
+        float screenXPos = xPos * panelWidth - parallax * ((currentPageProgress - 1) * panelWidth);
         float screenYPos = yPos * panelHeight;
         rectTransform.localPosition = new Vector3(screenXPos, screenYPos);
     }
