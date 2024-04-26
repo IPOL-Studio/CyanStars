@@ -155,13 +155,14 @@ public class PageControlAble : MonoBehaviour
 
         if (TextMeshes.Length != 0)
         {
-            Debug.Log("1");
             foreach (TMP_Text textMesh in TextMeshes)
             {
                 textMesh.alpha = Alpha - AlphaParallax * dp;
             }
         }
     }
+
+   
 
     public virtual void ChangeSize(float dp)
     {

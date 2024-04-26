@@ -70,8 +70,6 @@ namespace CyanStars.Gameplay.MusicGame
                 GameRoot.GetDataModule<MusicGameModule>().MapIndex = curSelectedMapItem.Data.Index;
                 GameRoot.ChangeProcedure<MusicGameProcedure>();
             });
-
-            StartButton.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
         }
 
         public override async void OnOpen()
@@ -85,6 +83,8 @@ namespace CyanStars.Gameplay.MusicGame
             OnSelectMap((MapItem)MapItems[selectedIndex]);
 
             ToggleAutoMode.isOn = musicGameDataModule.IsAutoMode;
+
+            GetComponentInChildren<PageController>().OnOpen();
         }
 
         public override void OnClose()

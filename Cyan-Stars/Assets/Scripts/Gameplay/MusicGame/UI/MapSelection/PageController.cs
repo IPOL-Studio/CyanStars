@@ -46,7 +46,7 @@ public class PageController : MonoBehaviour
     /// </summary>
     PageControlAble[] pageControlAbles;
 
-    void Start()
+    public void Start()
     {
         NextStepButton.onClick.AddListener(() =>
         {
@@ -70,7 +70,7 @@ public class PageController : MonoBehaviour
         });
         Generator.GenerateStars();  // 先生成星星预制体
         SetPageControlAbles();      // 再更新 PageControlAbles 列表
-        RefreshPanelSize();
+        OnRectTransformDimensionsChange();
     }
 
     void Update()
@@ -86,6 +86,17 @@ public class PageController : MonoBehaviour
         }
     }
 
+    public void OnOpen()
+    {
+        currentPage = 1;
+        targetPage = 1;
+        PageControlAble[] pageControlAbles = GetComponentsInChildren<PageControlAble>();
+        foreach (PageControlAble pageControlAble in pageControlAbles)
+        {
+            pageControlAble.CurrentPage = 1f;
+        }
+    }
+
     /// <summary>
     /// 获取当前组件下子节点中的 PageControlAble
     /// </summary>
@@ -94,15 +105,10 @@ public class PageController : MonoBehaviour
         pageControlAbles = GetComponentsInChildren<PageControlAble>();
     }
 
-    void OnRectTransformDimensionsChange()
-    {
-        RefreshPanelSize();
-    }
-
     /// <summary>
     /// Start() 或屏幕大小变化时，将新的 PanelSize 传给 PageControlAble
     /// </summary>
-    void RefreshPanelSize()
+    void OnRectTransformDimensionsChange()
     {
         // 将 Panel 宽高传给每一个 PageControlAble
         if (pageControlAbles == null)
