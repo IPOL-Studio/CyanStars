@@ -52,8 +52,8 @@ public class StarsGenerator : MonoBehaviour
             newStar.Alpha = Random.Range(MinStarAlpha, MaxStarAlpha);
             float size = Random.Range(MinStarSize, MaxStarSize);
             newStar.Size = new Vector3(size, size, 1f);
-            float parallax = Random.Range(MinStarParallax, MaxStarParallax);
-            newStar.Parallax = parallax;
+            float parallax = - Random.Range(MinStarParallax, MaxStarParallax);
+            newStar.PosParallax = new Vector3(parallax, 0f, 0f);
         }
     }
 }

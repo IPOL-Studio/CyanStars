@@ -9,14 +9,17 @@ using UnityEngine.UI;
 /// </summary>
 public class Star : PageControlAble
 {
-    /// <summary>
-    /// 视差灵敏度
-    /// </summary>
-    public float Parallax;
+    public override void Start()
+    {
+        CurrentPage = 1f;
+        RectTransform = GetComponent<RectTransform>();
+        RectTransform.localScale = Size;
+        Image = GetComponent<Image>();
+    }
 
     public override void Update()
     {
-        float xPos = (PosRatio.x - (CurrentPage - 1) * Parallax) * PanelSize.x;
+        float xPos = (PosRatio.x + (CurrentPage - 1) * PosParallax.x) * PanelSize.x;
         float yPos = PosRatio.y * PanelSize.y;
         RectTransform.localPosition = new Vector3(xPos, yPos, PosRatio.z);
     }
