@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -77,16 +78,18 @@ public class PageControlAble : MonoBehaviour
     public RectTransform RectTransform;
 
     /// <summary>
-    /// 自身的 Image 组件
+    /// 自身及子节点的 Image 组件
     /// </summary>
     [HideInInspector]
-    public Image Image;
+    public Image[] Images;
 
     /// <summary>
-    /// 自身的 Button 组件
+    /// 自身及子节点的 Button 组件
     /// </summary>
     [HideInInspector]
-    public Button Button;
+    public Button[] Buttons;
+
+    public TMP_Text[] TextMeshes;
     #endregion
 
     public virtual void Start()
@@ -94,15 +97,15 @@ public class PageControlAble : MonoBehaviour
         CurrentPage = 1f;
         RectTransform = GetComponent<RectTransform>();
         RectTransform.localScale = Size;
-        Image = GetComponent<Image>();
-        Button = GetComponent<Button>();
+        Images = GetComponentsInChildren<Image>();
+        Buttons = GetComponentsInChildren<Button>();
+        TextMeshes = GetComponentsInChildren<TMP_Text>();
         if (!SpecifytPos)
         {
             float x = RectTransform.localPosition.x / PanelSize.x;
             float y = RectTransform.localPosition.y / PanelSize.y;
             float z = RectTransform.localPosition.z;
             PosRatio = new Vector3(x, y, z);
-            Debug.Log(PosRatio);
         }
     }
 
@@ -125,21 +128,37 @@ public class PageControlAble : MonoBehaviour
     public virtual void ChangeAlpha(float dp)
     {
         gameObject.SetActive(true);
-        if (Image)
+        if (Images.Length != 0)
         {
-            Color color = Image.color;
-            color.a = Alpha - AlphaParallax * dp;
-            Image.color = color;
-        }
-        if (Button)
-        {
-            if(Alpha - AlphaParallax * dp <=0.01f)
+            foreach (Image image in Images)
             {
-                Button.interactable = false;
+                Color color = image.color;
+                color.a = Alpha - AlphaParallax * dp;
+                image.color = color;
             }
-            else
+        }
+
+        if (Buttons.Length != 0)
+        {
+            foreach (Button button in Buttons)
             {
-                Button.interactable = true;
+                if (Alpha - AlphaParallax * dp <= 0.01f)
+                {
+                    button.interactable = false;
+                }
+                else
+                {
+                    button.interactable = true;
+                }
+            }
+        }
+
+        if (TextMeshes.Length != 0)
+        {
+            Debug.Log("1");
+            foreach (TMP_Text textMesh in TextMeshes)
+            {
+                textMesh.alpha = Alpha - AlphaParallax * dp;
             }
         }
     }

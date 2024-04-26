@@ -14,7 +14,7 @@ public class Star : PageControlAble
         CurrentPage = 1f;
         RectTransform = GetComponent<RectTransform>();
         RectTransform.localScale = Size;
-        Image = GetComponent<Image>();
+        Images = GetComponentsInChildren<Image>();
     }
 
     public override void Update()

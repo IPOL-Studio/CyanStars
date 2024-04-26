@@ -624,19 +624,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AblePage: 1
-  OverridePos: 0
+  SpecifytPos: 0
   PosRatio: {x: 0, y: 0, z: 0}
   PosParallax: {x: 0, y: 0, z: 0}
   Alpha: 1
-  AlphaParallax: 1
+  AlphaParallax: 1.5
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
   CurrentPage: 0
   IsAble: 0
   PanelSize: {x: 0, y: 0}
   RectTransform: {fileID: 0}
-  Image: {fileID: 0}
-  Button: {fileID: 0}
+  Images: []
+  Buttons: []
+  TextMeshes: []
 --- !u!1 &1832535889440736913
 GameObject:
   m_ObjectHideFlags: 0
@@ -962,19 +963,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AblePage: 1
-  OverridePos: 0
+  SpecifytPos: 0
   PosRatio: {x: -0.5, y: 0, z: 0}
   PosParallax: {x: -0.25, y: 0, z: 0}
   Alpha: 1
-  AlphaParallax: 0
+  AlphaParallax: 1
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
   CurrentPage: 0
   IsAble: 0
   PanelSize: {x: 0, y: 0}
   RectTransform: {fileID: 0}
-  Image: {fileID: 0}
-  Button: {fileID: 0}
+  Images: []
+  Buttons: []
+  TextMeshes: []
 --- !u!1 &2677890324430501354
 GameObject:
   m_ObjectHideFlags: 0
@@ -1259,7 +1261,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AblePage: 2
-  OverridePos: 0
+  SpecifytPos: 0
   PosRatio: {x: 0, y: 0, z: 0}
   PosParallax: {x: 0, y: 0, z: 0}
   Alpha: 1
@@ -1270,8 +1272,9 @@ MonoBehaviour:
   IsAble: 0
   PanelSize: {x: 0, y: 0}
   RectTransform: {fileID: 0}
-  Image: {fileID: 0}
-  Button: {fileID: 0}
+  Images: []
+  Buttons: []
+  TextMeshes: []
 --- !u!1 &4544554131463537264
 GameObject:
   m_ObjectHideFlags: 0
@@ -2516,7 +2519,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AblePage: 1
-  OverridePos: 0
+  SpecifytPos: 0
   PosRatio: {x: 0, y: 0, z: 0}
   PosParallax: {x: 0, y: 0, z: 0}
   Alpha: 0
@@ -2527,8 +2530,9 @@ MonoBehaviour:
   IsAble: 0
   PanelSize: {x: 0, y: 0}
   RectTransform: {fileID: 0}
-  Image: {fileID: 0}
-  Button: {fileID: 0}
+  Images: []
+  Buttons: []
+  TextMeshes: []
 --- !u!1 &7109194521425275813
 GameObject:
   m_ObjectHideFlags: 0
@@ -2793,7 +2797,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3269459029844263376}
   - component: {fileID: 5509438760958287447}
-  - component: {fileID: 3763640996082464221}
+  - component: {fileID: 3475324590000182263}
   m_Layer: 5
   m_Name: ScoreImage
   m_TagString: Untagged
@@ -2828,7 +2832,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7543169991168908995}
   m_CullTransparentMesh: 1
---- !u!114 &3763640996082464221
+--- !u!114 &3475324590000182263
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2837,7 +2841,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7543169991168908995}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -2848,13 +2852,16 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: bc0966b644b51514096a18583b5218cf, type: 3}
-  m_UVRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
+  m_Sprite: {fileID: 21300000, guid: bc0966b644b51514096a18583b5218cf, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &7660736234126148127
 GameObject:
   m_ObjectHideFlags: 0
@@ -3447,7 +3454,7 @@ GameObject:
   m_Component:
   - component: {fileID: 79720066410810955}
   - component: {fileID: 8481788155905765663}
-  - component: {fileID: 8387057730274330880}
+  - component: {fileID: 6989780474417572354}
   m_Layer: 5
   m_Name: ImpurityImage
   m_TagString: Untagged
@@ -3482,7 +3489,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8600649264126430948}
   m_CullTransparentMesh: 1
---- !u!114 &8387057730274330880
+--- !u!114 &6989780474417572354
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3491,7 +3498,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8600649264126430948}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -3502,13 +3509,16 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 57a2f8ae8c52f0144b7731302c20eb5c, type: 3}
-  m_UVRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
+  m_Sprite: {fileID: 21300000, guid: 57a2f8ae8c52f0144b7731302c20eb5c, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &9092745822297049298
 GameObject:
   m_ObjectHideFlags: 0
@@ -3739,7 +3749,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AblePage: 1
-  OverridePos: 0
+  SpecifytPos: 0
   PosRatio: {x: 0, y: 0, z: 0}
   PosParallax: {x: 0, y: 0, z: 0}
   Alpha: 1
@@ -3750,8 +3760,9 @@ MonoBehaviour:
   IsAble: 0
   PanelSize: {x: 0, y: 0}
   RectTransform: {fileID: 0}
-  Image: {fileID: 0}
-  Button: {fileID: 0}
+  Images: []
+  Buttons: []
+  TextMeshes: []
 --- !u!222 &1765977755989000042
 CanvasRenderer:
   m_ObjectHideFlags: 0
