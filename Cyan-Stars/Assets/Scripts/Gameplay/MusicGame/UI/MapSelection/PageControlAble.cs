@@ -16,10 +16,10 @@ public class PageControlAble : MonoBehaviour
     public int AblePage;
 
     /// <summary>
-    /// 手动指定位置
+    /// 用 PosRatio 覆盖 RectTransform 位置
     /// 若 False，则自动获取当前位置
     /// </summary>
-    public bool SpecifytPos = false;
+    public bool OverridePos = false;
 
     /// <summary>
     /// 该组件在可用页时的位置比例（以左下为原点，相对于PanelWidth）
@@ -100,7 +100,7 @@ public class PageControlAble : MonoBehaviour
         Images = GetComponentsInChildren<Image>();
         Buttons = GetComponentsInChildren<Button>();
         TextMeshes = GetComponentsInChildren<TMP_Text>();
-        if (!SpecifytPos)
+        if (!OverridePos)
         {
             float x = RectTransform.localPosition.x / PanelSize.x;
             float y = RectTransform.localPosition.y / PanelSize.y;
