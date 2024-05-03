@@ -16,8 +16,6 @@ public class PageController : MonoBehaviour
     public Button BackButton;
     [Header("Panel 组件")]
     public GameObject Panel;
-    [Header("StarsGenerator 组件")]
-    public StarsGenerator Generator;
 
 
     /// <summary>
@@ -68,8 +66,7 @@ public class PageController : MonoBehaviour
                 targetPage--;
             }
         });
-        Generator.GenerateStars();  // 先生成星星预制体
-        SetPageControlAbles();      // 再更新 PageControlAbles 列表
+        SetPageControlAbles();      // 更新 PageControlAbles 列表
         OnRectTransformDimensionsChange();
     }
 
@@ -78,7 +75,7 @@ public class PageController : MonoBehaviour
         // 根据缓动函数计算 currentPage，并传递给 pageControlAbles
         if ((Time.time < st + Dt) && (targetPage != currentPage))
         {
-            currentPage = EasingFunction.SinFunctionEaseOut(sp, targetPage, Time.time - st, Dt);
+            currentPage = EasingFunction.EaseOutQuart(sp, targetPage, Time.time - st, Dt);
             foreach (PageControlAble pageControlAble in pageControlAbles)
             {
                 pageControlAble.CurrentPage = currentPage;

@@ -39,6 +39,9 @@ namespace CyanStars.Gameplay.MusicGame
         [Header("Staff信息")]
         public TextMeshProUGUI StaffInfoDisplay;
 
+        [Header("StarsGenerator 组件")]
+        public StarsGenerator Generator;
+
         /// <summary>
         /// 音游数据模块
         /// </summary>
@@ -77,6 +80,8 @@ namespace CyanStars.Gameplay.MusicGame
             CircularMapList.ResetItems();
 
             await RefreshMusicList();
+
+            Generator.GenerateStars();
 
             //默认选中上次选的谱面
             int selectedIndex = musicGameDataModule.MapIndex;
@@ -141,13 +146,16 @@ namespace CyanStars.Gameplay.MusicGame
                     TxtMapTitle.DOFade(1, 0.2f);
                 }
             );
-            StaffInfoDisplay.DOFade(0, 0.2f).OnComplete(
-                () =>
-                {
-                    StaffInfoDisplay.text = mapItem.Data.MapManifest.StaffInfo;
-                    StaffInfoDisplay.DOFade(1, 0.2f);
-                }
-            );
+            //StaffInfoDisplay.DOFade(0, 0.2f).OnComplete(
+            //    () =>
+            //    {
+            //        StaffInfoDisplay.text = mapItem.Data.MapManifest.StaffInfo;
+            //        StaffInfoDisplay.DOFade(1, 0.2f);
+            //    }
+            //);
+
+            // 将原始Staff文本传递给StarsGenerator以进一步处理
+            GetComponentInChildren<StarsGenerator>().GenerateStaffLabels(mapItem.Data.MapManifest.StaffInfo);
         }
     }
 }

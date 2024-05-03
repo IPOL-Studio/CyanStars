@@ -104,11 +104,11 @@ RectTransform:
   m_Children:
   - {fileID: 4385571131471477306}
   m_Father: {fileID: 7684346640419335621}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -388.04004, y: -76.829834}
+  m_AnchoredPosition: {x: -310, y: -60}
   m_SizeDelta: {x: 532.29004, y: 74.570984}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &315570602245256619
@@ -262,13 +262,13 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
+  m_enableVertexGradient: 1
+  m_colorMode: 2
   m_fontColorGradient:
     topLeft: {r: 1, g: 1, b: 1, a: 1}
     topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 0.29803923}
+    bottomRight: {r: 1, g: 1, b: 1, a: 0.29803923}
   m_fontColorGradientPreset: {fileID: 0}
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
@@ -426,7 +426,7 @@ RectTransform:
   - {fileID: 7779645285599007328}
   - {fileID: 7679390049121817707}
   m_Father: {fileID: 7684346640419335621}
-  m_RootOrder: 7
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -516,7 +516,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -892.1, y: 460.45996}
+  m_AnchoredPosition: {x: -892.1, y: 477.2898}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5278456668963985014
@@ -608,7 +608,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 571.95996, y: 201}
+  m_AnchoredPosition: {x: 652.04004, y: 188.79}
   m_SizeDelta: {x: 532.2864, y: 377.5869}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2666871375267035800
@@ -626,7 +626,7 @@ MonoBehaviour:
   AblePage: 1
   OverridePos: 0
   PosRatio: {x: 0, y: 0, z: 0}
-  PosParallax: {x: 0, y: 0, z: 0}
+  PosParallax: {x: 0.04, y: 0, z: 0}
   Alpha: 1
   AlphaParallax: 1.5
   Size: {x: 1, y: 1, z: 1}
@@ -743,14 +743,13 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 2661472344270000386}
   - {fileID: 2014162670722032210}
   - {fileID: 7552160359719566376}
   - {fileID: 7765821653658339475}
   - {fileID: 3070858436877548757}
-  - {fileID: 6044465275352855248}
   - {fileID: 6294291388184212512}
   - {fileID: 4081198930887588419}
+  - {fileID: 6044465275352855248}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -815,6 +814,7 @@ MonoBehaviour:
   ToggleAutoMode: {fileID: 4097670280894602664}
   TxtMapTitle: {fileID: 3565460447651151929}
   StaffInfoDisplay: {fileID: 1381392722377289914}
+  Generator: {fileID: 8360420235931265965}
 --- !u!1 &2455576900092241871
 GameObject:
   m_ObjectHideFlags: 0
@@ -852,7 +852,7 @@ RectTransform:
   - {fileID: 4969718844913574389}
   - {fileID: 3477766129637642959}
   m_Father: {fileID: 7684346640419335621}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -874,7 +874,6 @@ MonoBehaviour:
   NextStepButton: {fileID: 8408836180437408259}
   BackButton: {fileID: 1504483744899517298}
   Panel: {fileID: 2069720032756744626}
-  Generator: {fileID: 8360420235931265965}
 --- !u!1 &2604238561112503617
 GameObject:
   m_ObjectHideFlags: 0
@@ -1311,7 +1310,7 @@ MonoBehaviour:
   PosRatio: {x: 0, y: 0, z: 0}
   PosParallax: {x: 0.3, y: 0, z: 0}
   Alpha: 1
-  AlphaParallax: 10
+  AlphaParallax: 4
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
   CurrentPage: 0
@@ -1899,7 +1898,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7684346640419335621}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -2033,7 +2032,7 @@ RectTransform:
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_Children: []
   m_Father: {fileID: 7684346640419335621}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -2137,81 +2136,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!1 &6398265396234878836
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2661472344270000386}
-  - component: {fileID: 8850913484478691738}
-  - component: {fileID: 6608701930914098257}
-  m_Layer: 5
-  m_Name: "\u53C2\u8003\u56FE"
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &2661472344270000386
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6398265396234878836}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 7684346640419335621}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1920, y: 1080}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &8850913484478691738
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6398265396234878836}
-  m_CullTransparentMesh: 1
---- !u!114 &6608701930914098257
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6398265396234878836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.79295975, b: 0.73018867, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e0a4108de47715547a555b994511b32a, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &6431979423917298300
 GameObject:
   m_ObjectHideFlags: 0
@@ -2537,13 +2461,13 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
+  m_enableVertexGradient: 1
+  m_colorMode: 2
   m_fontColorGradient:
     topLeft: {r: 1, g: 1, b: 1, a: 1}
     topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 0.29803923}
+    bottomRight: {r: 1, g: 1, b: 1, a: 0.29803923}
   m_fontColorGradientPreset: {fileID: 0}
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
@@ -2630,7 +2554,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -421.79993, y: 463.17407}
+  m_AnchoredPosition: {x: -421.79993, y: 480.0039}
   m_SizeDelta: {x: 820.1993, y: 74.5707}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4429621615675813745
@@ -2788,7 +2712,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7684346640419335621}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -2953,13 +2877,13 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
+  m_enableVertexGradient: 1
+  m_colorMode: 2
   m_fontColorGradient:
     topLeft: {r: 1, g: 1, b: 1, a: 1}
     topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 0.29803923}
+    bottomRight: {r: 1, g: 1, b: 1, a: 0.29803923}
   m_fontColorGradientPreset: {fileID: 0}
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
@@ -3119,7 +3043,7 @@ RectTransform:
   - {fileID: 6668218362477107565}
   - {fileID: 8384884421144748873}
   m_Father: {fileID: 7684346640419335621}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3199,6 +3123,7 @@ GameObject:
   - component: {fileID: 5971607898781238917}
   - component: {fileID: 7038393039554691656}
   - component: {fileID: 2826093339167092183}
+  - component: {fileID: 7930795161419316945}
   m_Layer: 5
   m_Name: MusicInfoButton
   m_TagString: Untagged
@@ -3303,7 +3228,32 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7038393039554691656}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7930795161419316945}
+        m_TargetAssemblyTypeName: MusicInfoButton, Assembly-CSharp
+        m_MethodName: OpenURL
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &7930795161419316945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7732012633273531701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7c90d892997cdf4991833802d0c16e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  URL: https://ipol-studio.github.io/CyanStars_Docs/database/list-of-included-music/
 --- !u!1 &7796580124906776768
 GameObject:
   m_ObjectHideFlags: 0
@@ -3525,15 +3475,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   StarPrefab: {fileID: 4251766181810322849, guid: a78225697459fb444b47db5a7c1f7c7e, type: 3}
-  MinStarNum: 500
-  MaxStarNum: 500
+  MinStarNum: 300
+  MaxStarNum: 300
   MinStarAlpha: 0.5
   MaxStarAlpha: 1
-  MinStarSize: 0.001
-  MaxStarSize: 0.025
-  MinStarParallax: 0
+  MinStarSize: 0.01
+  MaxStarSize: 0.04
+  MinStarParallax: 0.2
   MaxStarParallax: 1
-  starNum: 0
 --- !u!1 &8380107763412443757
 GameObject:
   m_ObjectHideFlags: 0
@@ -3601,8 +3550,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u66F2\u76EE\u6807\u9898"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1ae133de2b82a0b469f651b76008267c, type: 2}
-  m_sharedMaterial: {fileID: -1220958912127469571, guid: 1ae133de2b82a0b469f651b76008267c, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 6eae5abb9636a4546973bd943d519581, type: 2}
+  m_sharedMaterial: {fileID: -7882071970826037997, guid: 6eae5abb9636a4546973bd943d519581, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3610,13 +3559,13 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
+  m_enableVertexGradient: 1
+  m_colorMode: 2
   m_fontColorGradient:
     topLeft: {r: 1, g: 1, b: 1, a: 1}
     topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 0.29803923}
+    bottomRight: {r: 1, g: 1, b: 1, a: 0.29803923}
   m_fontColorGradientPreset: {fileID: 0}
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
@@ -3626,8 +3575,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 32
+  m_fontSizeBase: 32
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3985,7 +3934,7 @@ MonoBehaviour:
   PosRatio: {x: 0, y: 0, z: 0}
   PosParallax: {x: 0.3, y: 0, z: 0}
   Alpha: 1
-  AlphaParallax: 10
+  AlphaParallax: 4
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
   CurrentPage: 0

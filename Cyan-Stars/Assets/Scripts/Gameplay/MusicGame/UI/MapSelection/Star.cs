@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,12 +10,21 @@ using UnityEngine.UI;
 /// </summary>
 public class Star : PageControlAble
 {
+    /// <summary>
+    /// 这个星星可以显示 Staff 标签吗？
+    /// </summary>
+    public bool CanShowStaff { get; set; }
+
+    public GameObject ImageObj;
+    public GameObject StaffLabelObj;
+
     public override void Start()
     {
         CurrentPage = 1f;
         RectTransform = GetComponent<RectTransform>();
-        RectTransform.localScale = Size;
+        ImageObj.GetComponent<RectTransform>().localScale = Size;
         Images = GetComponentsInChildren<Image>();
+        TextMeshes = GetComponentsInChildren<TMP_Text>();
     }
 
     public override void Update()
@@ -22,5 +32,7 @@ public class Star : PageControlAble
         float xPos = (PosRatio.x + (CurrentPage - 1) * PosParallax.x) * PanelSize.x;
         float yPos = PosRatio.y * PanelSize.y;
         RectTransform.localPosition = new Vector3(xPos, yPos, PosRatio.z);
+        float deltaPage = Mathf.Abs(CurrentPage - AblePage);
+        ChangeAlpha(deltaPage);
     }
 }

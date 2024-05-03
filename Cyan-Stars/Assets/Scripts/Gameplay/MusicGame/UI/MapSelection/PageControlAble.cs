@@ -89,6 +89,10 @@ public class PageControlAble : MonoBehaviour
     [HideInInspector]
     public Button[] Buttons;
 
+    /// <summary>
+    /// 自身及子节点的 TMP(Text) 组件
+    /// </summary>
+    [HideInInspector]
     public TMP_Text[] TextMeshes;
     #endregion
 
