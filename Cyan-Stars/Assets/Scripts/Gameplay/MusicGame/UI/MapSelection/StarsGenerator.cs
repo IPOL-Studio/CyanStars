@@ -71,76 +71,65 @@ public class StarsGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// 为特定Star配置和显示StaffLabel
+    /// 配置和显示StaffLabel
     /// </summary>
     public void GenerateStaffLabels(string rawStaffText)
     {
-        // 先禁用所有已显示的 Label，并清除分组
+        // 先禁止所有的StaffLabel渲染
+        DisableAllStaffLabels();
+
+        // 将原始Staff信息拆成每一行
+        string[] staffTexts = rawStaffText.Split('\n');
+
+        // 传入参数，尝试生成，如果在组内没有碰撞，则正式生成，并分配组号
+        foreach (string staffText in staffTexts)
+        {
+            AssignGroupAndCheckOverlap(staffText);
+        }
+
+        // 展示Staff
+        // ToDo：改为根据时间轮播每一组
+        ShowAssignedStaffLabels();
+    }
+
+    /// <summary>
+    /// 禁用所有StaffLabel
+    /// </summary>
+    private void DisableAllStaffLabels()
+    {
         foreach (Star star in canShowStaffList)
         {
             StaffLabel staffLabel = star.GetComponentInChildren<StaffLabel>();
             staffLabel.SetRender(false);
             staffLabel.Group = 0;
         }
-
-        string[] staffTexts = rawStaffText.Split('\n');
-        if (canShowStaffList.Count < staffTexts.Length)
-        {
-            // 目前的可用星星大约是生成量的10%
-            Debug.LogError("可用星星数量不足以展示所有Staff，这会导致Staff显示不全");
-            // 至于怎么解决……还没想过
-        }
-
-
-        // 为每一行 Staff 分配一个可用的星星，并顺序分组
-        foreach (string staffText in staffTexts)
-        {
-            DistributionStar(staffText);
-        }
-
-        // 这里的明天再改，写个管理组件按时间在Group之间轮播
-        foreach (Star star in canShowStaffList)
-        {
-            if (star.StaffLabelObj.GetComponent<StaffLabel>().Group != 0)
-            {
-                star.StaffLabelObj.GetComponent<StaffLabel>().SetRender(true);
-            }
-        }
     }
 
     /// <summary>
-    /// 找到一个可用且组内不重叠的星星，并分组
+    /// 为Staff分配组并检查碰撞
     /// </summary>
-    void DistributionStar(string staffText)
+    private void AssignGroupAndCheckOverlap(string staffText)
     {
-        bool flag = false;
         int group = 1;
-        int tryTime = 0;
-        while (flag == false && tryTime < canShowStaffList.Count)
+        foreach (Star star in canShowStaffList)
         {
-            tryTime++;
-            foreach (Star star in canShowStaffList)
+            StaffLabel staffLabel = star.GetComponentInChildren<StaffLabel>();
+
+            if (staffLabel.Group != 0) // 如果星星已被分配，则跳过
+                continue;
+
+            // 分配StaffLabel
+            string duty = staffText.Split(' ')[0];
+            staffLabel.DutyTextObj.GetComponent<TMP_Text>().text = duty;
+            string name = staffText.Split(' ')[1];
+            staffLabel.NameTextObj.GetComponent<TMP_Text>().text = name;
+            staffLabel.RefreshLength();
+
+            // 检查碰撞
+            if (!CheckOverlapInGroup(star, group))
             {
-                StaffLabel staffLabel = star.GetComponentInChildren<StaffLabel>();
-
-                // 当前星星已被分配
-                if (staffLabel.Group != 0)
-                { continue; }
-
-                // 尝试写入Staff信息并判断是否碰撞
-                string duty = staffText.Split(' ')[0];
-                staffLabel.DutyTextObj.GetComponent<TMP_Text>().text = duty;
-                string name = staffText.Split(' ')[1];
-                staffLabel.NameTextObj.GetComponent<TMP_Text>().text = name;
-                staffLabel.RefreshLength();
-
-                // 如果碰撞则不继续，这颗星星不展示，之后可以被重新写入
-                if (CheckOverlapInList(star, group))
-                { continue; }
-
-                // 否则分配展示组
                 staffLabel.Group = group;
-                flag = true;
+                Debug.Log(group);
                 break;
             }
             group++;
@@ -148,44 +137,51 @@ public class StarsGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// 获取当前Star下StaffLabel的xywh
+    /// 检查分组内是否有碰撞
     /// </summary>
-    Vector4 GetStaffLabelVector4FromStar(Star star)
-    {
-        RectTransform staffLabelRectTransform = star.StaffLabelObj.GetComponent<RectTransform>();
-        RectTransform panelRectTransform = star.GetComponentInParent<PageController>().Panel.GetComponent<RectTransform>();
-        float x = (star.PosRatio.x + star.PosParallax.x) * panelRectTransform.rect.width;
-        float y = (star.PosRatio.y + star.PosParallax.y) * panelRectTransform.rect.height;
-        float w = staffLabelRectTransform.rect.width;
-        float h = staffLabelRectTransform.rect.height;
-        Debug.Log(new Vector4(x, y, w, h));
-        return new Vector4(x, y, w, h);
-    }
-
-    /// <summary>
-    /// 检查传入的星星是在指定组内是否有碰撞
-    /// </summary>
-    bool CheckOverlapInList(Star star, int group)
+    private bool CheckOverlapInGroup(Star star, int group)
     {
         foreach (Star s in canShowStaffList)
         {
-            // 不和自己比较
-            if (s.gameObject == star.gameObject)
-            { continue; }
+            if (s.gameObject == star.gameObject || s.GetComponentInChildren<StaffLabel>().Group != group)
+                continue;
 
-            // 不和不同组比较
-            if (s.GetComponentInChildren<StaffLabel>().Group != star.GetComponentInChildren<StaffLabel>().Group)
-            { continue; }
+            Rect rect1 = GetStaffLabelRect(star);
+            Rect rect2 = GetStaffLabelRect(s);
 
-            Vector4 rect1 = GetStaffLabelVector4FromStar(star);
-            Vector4 rect2 = GetStaffLabelVector4FromStar(s);
-            Rect rectangle1 = new Rect(rect1.x, rect1.y, rect1.z, rect1.w);
-            Rect rectangle2 = new Rect(rect2.x, rect2.y, rect2.z, rect2.w);
-            // 在同组内发生了碰撞
-            if (rectangle1.Overlaps(rectangle2))
-            { return true; }
+            if (rect1.Overlaps(rect2))
+                return true;
         }
         return false;
     }
 
+    /// <summary>
+    /// 获取StaffLabel的矩形区域
+    /// </summary>
+    private Rect GetStaffLabelRect(Star star)
+    {
+        RectTransform staffLabelRectTransform = star.StaffLabelObj.GetComponent<RectTransform>();
+        RectTransform panelRectTransform = star.GetComponentInParent<PageController>().Panel.GetComponent<RectTransform>();
+
+        float x = (star.PosRatio.x + star.PosParallax.x) * panelRectTransform.rect.width;
+        float y = (star.PosRatio.y + star.PosParallax.y) * panelRectTransform.rect.height;
+        float w = staffLabelRectTransform.rect.width;
+        float h = staffLabelRectTransform.rect.height;
+
+        return new Rect(x, y, w, h);
+    }
+
+    /// <summary>
+    /// 显示已分配的StaffLabel
+    /// </summary>
+    private void ShowAssignedStaffLabels()
+    {
+        foreach (Star star in canShowStaffList)
+        {
+            StaffLabel staffLabel = star.GetComponentInChildren<StaffLabel>();
+
+            if (staffLabel.Group != 0)
+                staffLabel.SetRender(true);
+        }
+    }
 }
