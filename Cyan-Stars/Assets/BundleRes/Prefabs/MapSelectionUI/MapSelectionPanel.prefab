@@ -632,7 +632,6 @@ MonoBehaviour:
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
   CurrentPage: 0
-  IsAble: 0
   PanelSize: {x: 0, y: 0}
   RectTransform: {fileID: 0}
   Images: []
@@ -874,6 +873,7 @@ MonoBehaviour:
   NextStepButton: {fileID: 8408836180437408259}
   BackButton: {fileID: 1504483744899517298}
   Panel: {fileID: 2069720032756744626}
+  StarsGenerator: {fileID: 8084591909757941303}
 --- !u!1 &2604238561112503617
 GameObject:
   m_ObjectHideFlags: 0
@@ -971,7 +971,6 @@ MonoBehaviour:
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
   CurrentPage: 0
-  IsAble: 0
   PanelSize: {x: 0, y: 0}
   RectTransform: {fileID: 0}
   Images: []
@@ -1314,7 +1313,6 @@ MonoBehaviour:
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
   CurrentPage: 0
-  IsAble: 0
   PanelSize: {x: 0, y: 0}
   RectTransform: {fileID: 0}
   Images: []
@@ -1827,7 +1825,6 @@ MonoBehaviour:
   Size: {x: 6, y: 6, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
   CurrentPage: 0
-  IsAble: 0
   PanelSize: {x: 0, y: 0}
   RectTransform: {fileID: 0}
   Images: []
@@ -2675,7 +2672,6 @@ MonoBehaviour:
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
   CurrentPage: 0
-  IsAble: 0
   PanelSize: {x: 0, y: 0}
   RectTransform: {fileID: 0}
   Images: []
@@ -3938,7 +3934,6 @@ MonoBehaviour:
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
   CurrentPage: 0
-  IsAble: 0
   PanelSize: {x: 0, y: 0}
   RectTransform: {fileID: 0}
   Images: []

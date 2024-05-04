@@ -23,8 +23,7 @@ public class Star : PageControlAble
         CurrentPage = 1f;
         RectTransform = GetComponent<RectTransform>();
         ImageObj.GetComponent<RectTransform>().localScale = Size;
-        Images = GetComponentsInChildren<Image>();
-        TextMeshes = GetComponentsInChildren<TMP_Text>();
+        Images = ImageObj.GetComponentsInChildren<Image>();
     }
 
     public override void Update()

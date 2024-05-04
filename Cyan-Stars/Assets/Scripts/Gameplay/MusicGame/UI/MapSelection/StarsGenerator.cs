@@ -33,6 +33,23 @@ public class StarsGenerator : MonoBehaviour
     public float MaxStarParallax;
     #endregion
 
+    float timer = 0;
+    int maxGroup = 1;
+    int nowGroup = 1;
+
+    float targetPage;
+    public float TargetPage
+    {
+        get { return targetPage; }
+        set
+        {
+            targetPage = value;
+            timer = 0;
+            nowGroup = 1;
+            RefreshStaffLabelRender();
+        }
+    }
+
     List<Star> canShowStaffList = new List<Star>();
 
     /// <summary>
@@ -77,19 +94,18 @@ public class StarsGenerator : MonoBehaviour
     {
         // 先禁止所有的StaffLabel渲染
         DisableAllStaffLabels();
+        maxGroup = 1;
 
         // 将原始Staff信息拆成每一行
         string[] staffTexts = rawStaffText.Split('\n');
+        if (staffTexts.Length > canShowStaffList.Count)
+        { Debug.LogError("当前星星数量不足以展示全部Staff"); }   // 这是bug，下次等我捋清楚逻辑再修（
 
         // 传入参数，尝试生成，如果在组内没有碰撞，则正式生成，并分配组号
         foreach (string staffText in staffTexts)
         {
             AssignGroupAndCheckOverlap(staffText);
         }
-
-        // 展示Staff
-        // ToDo：改为根据时间轮播每一组
-        ShowAssignedStaffLabels();
     }
 
     /// <summary>
@@ -100,15 +116,15 @@ public class StarsGenerator : MonoBehaviour
         foreach (Star star in canShowStaffList)
         {
             StaffLabel staffLabel = star.GetComponentInChildren<StaffLabel>();
-            staffLabel.SetRender(false);
             staffLabel.Group = 0;
+            staffLabel.SetRender(false);
         }
     }
 
     /// <summary>
     /// 为Staff分配组并检查碰撞
     /// </summary>
-    private void AssignGroupAndCheckOverlap(string staffText)
+    private void AssignGroupAndCheckOverlap(string staffText)    // 生成星星的逻辑存在Bug，下次修
     {
         int group = 1;
         foreach (Star star in canShowStaffList)
@@ -116,7 +132,7 @@ public class StarsGenerator : MonoBehaviour
             StaffLabel staffLabel = star.GetComponentInChildren<StaffLabel>();
 
             if (staffLabel.Group != 0) // 如果星星已被分配，则跳过
-                continue;
+            { continue; }
 
             // 分配StaffLabel
             string duty = staffText.Split(' ')[0];
@@ -129,7 +145,7 @@ public class StarsGenerator : MonoBehaviour
             if (!CheckOverlapInGroup(star, group))
             {
                 staffLabel.Group = group;
-                Debug.Log(group);
+                maxGroup = Mathf.Max(maxGroup, group);
                 break;
             }
             group++;
@@ -144,13 +160,13 @@ public class StarsGenerator : MonoBehaviour
         foreach (Star s in canShowStaffList)
         {
             if (s.gameObject == star.gameObject || s.GetComponentInChildren<StaffLabel>().Group != group)
-                continue;
+            { continue; }
 
             Rect rect1 = GetStaffLabelRect(star);
             Rect rect2 = GetStaffLabelRect(s);
 
             if (rect1.Overlaps(rect2))
-                return true;
+            { return true; }
         }
         return false;
     }
@@ -171,17 +187,33 @@ public class StarsGenerator : MonoBehaviour
         return new Rect(x, y, w, h);
     }
 
-    /// <summary>
-    /// 显示已分配的StaffLabel
-    /// </summary>
-    private void ShowAssignedStaffLabels()
+    void RefreshStaffLabelRender()
     {
         foreach (Star star in canShowStaffList)
         {
             StaffLabel staffLabel = star.GetComponentInChildren<StaffLabel>();
+            bool value = (TargetPage == 2) && (nowGroup == staffLabel.Group) && (staffLabel.Group != 0);
+            staffLabel.SetRender(value);
+        }
+    }
 
-            if (staffLabel.Group != 0)
-                staffLabel.SetRender(true);
+    void Update()
+    {
+        const float StayTime = 3f;
+
+        // 只有一组，不需要轮播
+        if (maxGroup == 1)
+        { return; }
+
+        timer += Time.deltaTime;
+        if (timer >= StayTime)
+        {
+            timer -= StayTime;
+            if (nowGroup >= maxGroup)
+            { nowGroup = 1; }
+            else
+            { nowGroup++; }
+            RefreshStaffLabelRender();
         }
     }
 }

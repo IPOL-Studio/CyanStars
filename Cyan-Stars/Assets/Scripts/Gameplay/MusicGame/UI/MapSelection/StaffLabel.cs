@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StaffLabel : PageControlAble
+public class StaffLabel : MonoBehaviour
 {
     public GameObject DutyTextObj;
     public GameObject NameTextObj;
@@ -14,7 +15,12 @@ public class StaffLabel : PageControlAble
     public GameObject DutyFrame;
     public GameObject NameFrame;
 
-    public int Group { get; set; }
+    public Image[] Images;
+    public TMP_Text[] TextMeshes;
+
+    public float GradientTime;
+
+    public int Group;
 
     public void RefreshLength()
     {
@@ -76,29 +82,45 @@ public class StaffLabel : PageControlAble
     /// </summary>
     public void SetRender(bool b)
     {
+        if (b)
+        {
+            foreach (var item in Images)
+            {
+                item.enabled = true;
+                item.DOFade(1, GradientTime).SetEase(Ease.OutQuart);
+            }
+            foreach (var item in TextMeshes)
+            {
+                item.enabled = true;
+                item.DOFade(1, GradientTime).SetEase(Ease.OutQuart);
+            }
+        }
+        else
+        {
+            foreach (var item in Images)
+            {
+                item.DOFade(0, GradientTime).SetEase(Ease.OutQuart).OnComplete(() =>
+                {
+                    item.enabled = false;
+                });
+            }
+            foreach (var item in TextMeshes)
+            {
+                item.DOFade(0, GradientTime).SetEase(Ease.OutQuart).OnComplete(() =>
+                {
+                    item.enabled = false;
+                });
+            }
+        }
+    }
+
+    void Start()
+    {
         Images = GetComponentsInChildren<Image>();
         TextMeshes = GetComponentsInChildren<TMP_Text>();
         foreach (var item in Images)
-        {
-            item.enabled = b;
-        }
+        { item.enabled = false; }
         foreach (var item in TextMeshes)
-        {
-            item.enabled = b;
-        }
-    }
-
-    public override void Start()
-    {
-        CurrentPage = 1f;
-        RectTransform = GetComponent<RectTransform>();
-    }
-
-    public override void Update()
-    {
-        //InfoFrame.GetComponent<RectTransform>().sizeDelta = new Vector2(DutyFrame.GetComponent<RectTransform>().sizeDelta.x + NameFrame.GetComponent<RectTransform>().sizeDelta.x, InfoFrame.GetComponent<RectTransform>().sizeDelta.y);
-        //this.GetComponent<RectTransform>().sizeDelta = new Vector2(QuasiFrame.GetComponent<RectTransform>().sizeDelta.x + InfoFrame.GetComponent<RectTransform>().sizeDelta.x, this.GetComponent<RectTransform>().sizeDelta.y);
-        float deltaPage = Mathf.Abs(CurrentPage - AblePage);
-        ChangeAlpha(deltaPage);
+        { item.enabled = false; }
     }
 }

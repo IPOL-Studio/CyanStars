@@ -129,7 +129,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &392550605620995157
 RectTransform:
   m_ObjectHideFlags: 0
@@ -148,7 +148,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 959.995, y: -540}
-  m_SizeDelta: {x: 474.73, y: 80}
+  m_SizeDelta: {x: 474.73, y: 60}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &9220462689943219752
 MonoBehaviour:
@@ -162,26 +162,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8a36fc47fba45c4d8e8fb8ea7c32eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AblePage: 2
-  OverridePos: 0
-  PosRatio: {x: 0, y: 0, z: 0}
-  PosParallax: {x: 0, y: 0, z: 0}
-  Alpha: 1
-  AlphaParallax: 1.3
-  Size: {x: 1, y: 1, z: 1}
-  SizeParallax: {x: 0, y: 0, z: 0}
-  CurrentPage: 0
-  PanelSize: {x: 0, y: 0}
-  RectTransform: {fileID: 0}
-  Images: []
-  Buttons: []
-  TextMeshes: []
   DutyTextObj: {fileID: 3819933864285700109}
   NameTextObj: {fileID: 6268713435782879177}
   QuasiFrame: {fileID: 864356988594085234}
   InfoFrame: {fileID: 8991500747182219635}
   DutyFrame: {fileID: 6192898911066564667}
   NameFrame: {fileID: 6163455902233542036}
+  Images: []
+  TextMeshes: []
+  GradientTime: 0.5
 --- !u!1 &3819933864285700109
 GameObject:
   m_ObjectHideFlags: 0

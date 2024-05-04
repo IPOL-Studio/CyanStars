@@ -160,8 +160,6 @@ public class PageControlAble : MonoBehaviour
         }
     }
 
-   
-
     public virtual void ChangeSize(float dp)
     {
         float x = Size.x + SizeParallax.x * dp;

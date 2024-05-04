@@ -16,6 +16,8 @@ public class PageController : MonoBehaviour
     public Button BackButton;
     [Header("Panel 组件")]
     public GameObject Panel;
+    [Header("StarsGenerator 组件")]
+    public GameObject StarsGenerator;
 
 
     /// <summary>
@@ -51,6 +53,7 @@ public class PageController : MonoBehaviour
             st = Time.time;
             sp = currentPage;
             targetPage++;
+            StarsGenerator.GetComponent<StarsGenerator>().TargetPage = targetPage;
         });
         BackButton.onClick.AddListener(() =>
         {
@@ -64,6 +67,7 @@ public class PageController : MonoBehaviour
                 st = Time.time;
                 sp = currentPage;
                 targetPage--;
+                StarsGenerator.GetComponent<StarsGenerator>().TargetPage = targetPage;
             }
         });
         SetPageControlAbles();      // 更新 PageControlAbles 列表
