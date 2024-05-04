@@ -34,7 +34,6 @@ public class StarsGenerator : MonoBehaviour
     #endregion
 
     List<Star> canShowStaffList = new List<Star>();
-    List<Vector4> staffLabelPosList = new List<Vector4>();    // 用于记录启用的StaffLabel的2D位置以避免重叠，x(page2时) y 宽 高
 
     /// <summary>
     /// 按照在 Unity 中配置的参数开始生成星星预制体
@@ -110,7 +109,7 @@ public class StarsGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// 找到一个可用且组内不重叠的星星，传入参数
+    /// 找到一个可用且组内不重叠的星星，并分组
     /// </summary>
     void DistributionStar(string staffText)
     {
@@ -120,7 +119,6 @@ public class StarsGenerator : MonoBehaviour
         while (flag == false && tryTime < canShowStaffList.Count)
         {
             tryTime++;
-            staffLabelPosList.Clear();
             foreach (Star star in canShowStaffList)
             {
                 StaffLabel staffLabel = star.GetComponentInChildren<StaffLabel>();
@@ -137,7 +135,7 @@ public class StarsGenerator : MonoBehaviour
                 staffLabel.RefreshLength();
 
                 // 如果碰撞则不继续，这颗星星不展示，之后可以被重新写入
-                if (CheckOverlapInList(GetStaffLabelVector4FromStar(star)))
+                if (CheckOverlapInList(star, group))
                 { continue; }
 
                 // 否则分配展示组
@@ -155,34 +153,37 @@ public class StarsGenerator : MonoBehaviour
     Vector4 GetStaffLabelVector4FromStar(Star star)
     {
         RectTransform staffLabelRectTransform = star.StaffLabelObj.GetComponent<RectTransform>();
-        float x = (star.PosRatio.x + star.PosParallax.x) * Screen.width;
-        float y = (star.PosRatio.y + star.PosParallax.y) * Screen.height;
+        RectTransform panelRectTransform = star.GetComponentInParent<PageController>().Panel.GetComponent<RectTransform>();
+        float x = (star.PosRatio.x + star.PosParallax.x) * panelRectTransform.rect.width;
+        float y = (star.PosRatio.y + star.PosParallax.y) * panelRectTransform.rect.height;
         float w = staffLabelRectTransform.rect.width;
         float h = staffLabelRectTransform.rect.height;
+        Debug.Log(new Vector4(x, y, w, h));
         return new Vector4(x, y, w, h);
     }
 
     /// <summary>
-    /// 检查传入的坐标是否与列表中已有的坐标碰撞
+    /// 检查传入的星星是在指定组内是否有碰撞
     /// </summary>
-    bool CheckOverlapInList(Vector4 v)
+    bool CheckOverlapInList(Star star, int group)
     {
-        if (staffLabelPosList.Count == 0)
+        foreach (Star s in canShowStaffList)
         {
-            return false;
-        }
-        float rect1Right = v.x + v.z;
-        float rect1Bottom = v.y + v.w;
-        foreach (var item in staffLabelPosList)
-        {
-            float rect2Right = item.x + item.z;
-            float rect2Bottom = item.y + item.w;
-            bool xOverlap = item.x < rect1Right && rect2Right > v.x;
-            bool yOverlap = item.y < rect1Bottom && rect2Bottom > v.y;
-            if (xOverlap && yOverlap)
-            {
-                return true;
-            }
+            // 不和自己比较
+            if (s.gameObject == star.gameObject)
+            { continue; }
+
+            // 不和不同组比较
+            if (s.GetComponentInChildren<StaffLabel>().Group != star.GetComponentInChildren<StaffLabel>().Group)
+            { continue; }
+
+            Vector4 rect1 = GetStaffLabelVector4FromStar(star);
+            Vector4 rect2 = GetStaffLabelVector4FromStar(s);
+            Rect rectangle1 = new Rect(rect1.x, rect1.y, rect1.z, rect1.w);
+            Rect rectangle2 = new Rect(rect2.x, rect2.y, rect2.z, rect2.w);
+            // 在同组内发生了碰撞
+            if (rectangle1.Overlaps(rectangle2))
+            { return true; }
         }
         return false;
     }

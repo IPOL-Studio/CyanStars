@@ -9,6 +9,7 @@ public class StaffLabel : PageControlAble
     public GameObject DutyTextObj;
     public GameObject NameTextObj;
 
+    public GameObject QuasiFrame;
     public GameObject InfoFrame;
     public GameObject DutyFrame;
     public GameObject NameFrame;
@@ -17,8 +18,11 @@ public class StaffLabel : PageControlAble
 
     public void RefreshLength()
     {
+        RectTransform rectTransform = GetComponent<RectTransform>();
         RectTransform dutyFrameRectTransform = DutyFrame.GetComponent<RectTransform>();
         RectTransform nameFrameRectTransform = NameFrame.GetComponent<RectTransform>();
+        RectTransform infoFrameRectTransform = InfoFrame.GetComponent<RectTransform>();
+        RectTransform quasiFrameRectTransform = QuasiFrame.GetComponent<RectTransform>();
 
         float x, y;
 
@@ -30,12 +34,13 @@ public class StaffLabel : PageControlAble
         y = nameFrameRectTransform.sizeDelta.y;
         nameFrameRectTransform.sizeDelta = new Vector2(x, y);
 
-        // 很神奇，计算是正确的，但是在Unity显示的时候值并没有完成赋值，所以将这一步对InfoFrame的赋值操作放在了Update()
-        // 我觉得这是Unity的问题（心虚
-        //RectTransform infoFrameRectTransform = InfoFrame.GetComponent<RectTransform>();
-        //x = dutyFrameRectTransform.sizeDelta.x + nameFrameRectTransform.sizeDelta.x;
-        //y = infoFrameRectTransform.sizeDelta.y;
-        //infoFrameRectTransform.sizeDelta = new Vector2(x, y);
+        x = dutyFrameRectTransform.sizeDelta.x + nameFrameRectTransform.sizeDelta.x;
+        y = infoFrameRectTransform.sizeDelta.y;
+        infoFrameRectTransform.sizeDelta = new Vector2(x, y);
+
+        x = infoFrameRectTransform.sizeDelta.x + quasiFrameRectTransform.sizeDelta.x;
+        y = rectTransform.sizeDelta.y;
+        rectTransform.sizeDelta = new Vector2(x, y);
     }
 
     int CalculateStringWidth(string rawText)
@@ -91,7 +96,8 @@ public class StaffLabel : PageControlAble
 
     public override void Update()
     {
-        InfoFrame.GetComponent<RectTransform>().sizeDelta = new Vector2(DutyFrame.GetComponent<RectTransform>().sizeDelta.x + NameFrame.GetComponent<RectTransform>().sizeDelta.x, InfoFrame.GetComponent<RectTransform>().sizeDelta.y);
+        //InfoFrame.GetComponent<RectTransform>().sizeDelta = new Vector2(DutyFrame.GetComponent<RectTransform>().sizeDelta.x + NameFrame.GetComponent<RectTransform>().sizeDelta.x, InfoFrame.GetComponent<RectTransform>().sizeDelta.y);
+        //this.GetComponent<RectTransform>().sizeDelta = new Vector2(QuasiFrame.GetComponent<RectTransform>().sizeDelta.x + InfoFrame.GetComponent<RectTransform>().sizeDelta.x, this.GetComponent<RectTransform>().sizeDelta.y);
         float deltaPage = Mathf.Abs(CurrentPage - AblePage);
         ChangeAlpha(deltaPage);
     }

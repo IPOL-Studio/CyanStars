@@ -60,12 +60,6 @@ public class PageControlAble : MonoBehaviour
     public float CurrentPage;
 
     /// <summary>
-    /// 这个组件目前是否可用？
-    /// </summary>
-    [HideInInspector]
-    public bool IsAble;
-
-    /// <summary>
     /// 当前游戏分辨率宽高
     /// </summary>
     [HideInInspector]
