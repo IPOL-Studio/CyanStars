@@ -15,6 +15,11 @@ public class Star : PageControlAble
     /// </summary>
     public bool CanShowStaff { get; set; }
 
+    /// <summary>
+    /// 这个星星在第几组显示？
+    /// </summary>
+    public int Group { get; set; }
+
     public GameObject ImageObj;
     public GameObject StaffLabelObj;
 

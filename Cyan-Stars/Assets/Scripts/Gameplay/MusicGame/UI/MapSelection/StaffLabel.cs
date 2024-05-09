@@ -20,8 +20,9 @@ public class StaffLabel : MonoBehaviour
 
     public float GradientTime;
 
-    public int Group;
-
+    /// <summary>
+    /// 刷新各UI元素的大小
+    /// </summary>
     public void RefreshLength()
     {
         RectTransform rectTransform = GetComponent<RectTransform>();
@@ -66,7 +67,9 @@ public class StaffLabel : MonoBehaviour
         return sunWidth;
     }
 
-    // 判断字符是否类似于英文
+    /// <summary>
+    /// 判断字符是否类似于英文
+    /// </summary>
     bool IsEnglishLike(char c)
     {
         // 根据需求扩展英文字符集
@@ -78,35 +81,41 @@ public class StaffLabel : MonoBehaviour
     }
 
     /// <summary>
-    /// 启用或禁用StaffLabel的渲染
+    /// 启用或禁用 StaffLabel 的渲染
     /// </summary>
-    public void SetRender(bool b)
+    ///<param name="isAble">是渐显(Alpha -> 1)还是渐隐(alpha -> 0)</param>
+    ///<param name="isForce">不播放平滑动画，瞬间消失</param>
+    public void SetRender(bool isAble, bool isForce = false)
     {
-        if (b)
+        float gradientTime = GradientTime;
+        if (isForce)
+        { gradientTime = 0; }
+
+        if (isAble)
         {
             foreach (var item in Images)
             {
                 item.enabled = true;
-                item.DOFade(1, GradientTime).SetEase(Ease.OutQuart);
+                item.DOFade(1, gradientTime).SetEase(Ease.OutQuart);
             }
             foreach (var item in TextMeshes)
             {
                 item.enabled = true;
-                item.DOFade(1, GradientTime).SetEase(Ease.OutQuart);
+                item.DOFade(1, gradientTime).SetEase(Ease.OutQuart);
             }
         }
         else
         {
             foreach (var item in Images)
             {
-                item.DOFade(0, GradientTime).SetEase(Ease.OutQuart).OnComplete(() =>
+                item.DOFade(0, gradientTime).SetEase(Ease.OutQuart).OnComplete(() =>
                 {
                     item.enabled = false;
                 });
             }
             foreach (var item in TextMeshes)
             {
-                item.DOFade(0, GradientTime).SetEase(Ease.OutQuart).OnComplete(() =>
+                item.DOFade(0, gradientTime).SetEase(Ease.OutQuart).OnComplete(() =>
                 {
                     item.enabled = false;
                 });

@@ -31,12 +31,45 @@ public class StarsGenerator : MonoBehaviour
     public float MinStarParallax;
     [Tooltip("由视差引起的位移至多为（以1倍屏幕宽度为单位）")]
     public float MaxStarParallax;
+
+    [Header("Staff 相关配置 Staff related settings")]
+    [Tooltip("每轮 Staff 标签的展示时间（秒）")]
+    public float KeepShowTime;
     #endregion
 
-    float timer = 0;
-    int maxGroup = 1;
-    int nowGroup = 1;
+    /// <summary>
+    /// 计时器
+    /// </summary>
+    float t = 0;
 
+    /// <summary>
+    /// 用于分组时的组数
+    /// </summary>
+    int Group { get; set; }
+
+    /// <summary>
+    /// 当前展示的组数
+    /// </summary>
+    int ShowGroup { get; set; }
+
+    /// <summary>
+    /// 最大组数
+    /// </summary>
+    int MaxGroup { get; set; }
+
+    /// <summary>
+    /// 适合挂载 StaffLabel 的 Star 的列表
+    /// </summary>
+    List<Star> canShowStaffs = new List<Star>();
+
+    /// <summary>
+    /// 已挂载 StaffLabel 的 Star 列表
+    /// </summary>
+    List<Star> haveSetStaffs = new List<Star>();
+
+    /// <summary>
+    /// 传入的目标页面（详见 PageController 类）
+    /// </summary>
     float targetPage;
     public float TargetPage
     {
@@ -44,17 +77,17 @@ public class StarsGenerator : MonoBehaviour
         set
         {
             targetPage = value;
-            timer = 0;
-            nowGroup = 1;
-            RefreshStaffLabelRender();
+            ShowGroup = 1;
+            t = 0;
+            RefreshStaffLabelRender(false);
         }
     }
 
-    List<Star> canShowStaffList = new List<Star>();
+    // --------------------
 
     /// <summary>
     /// 按照在 Unity 中配置的参数开始生成星星预制体
-    /// 并将适合展示 Staff 的星星添加到列表内
+    /// 并将适合展示 Staff 的星星记录到 canShowStaffList 列表内
     /// </summary>
     public void GenerateStars()
     {
@@ -80,101 +113,113 @@ public class StarsGenerator : MonoBehaviour
                 // 这个星星够大，够亮，位置也正好
                 // 可以在这颗星星上生成 Staff 信息
                 newStar.CanShowStaff = true;
-                canShowStaffList.Add(newStar);
+                canShowStaffs.Add(newStar);
                 newStar.StaffLabelObj.SetActive(true);
             }
         }
-        Debug.Log($"随机生成了{starNum}颗星星，其中{canShowStaffList.Count}颗可以显示Staff");
+        Debug.Log($"随机生成了{starNum}颗星星，其中{canShowStaffs.Count}颗可以显示Staff");
     }
 
     /// <summary>
-    /// 配置和显示StaffLabel
+    /// 切换了曲目，为每一个 Staff 重新分组
     /// </summary>
-    public void GenerateStaffLabels(string rawStaffText)
+    public void SetGroup(string rawStaffText)
     {
-        // 先禁止所有的StaffLabel渲染
-        DisableAllStaffLabels();
-        maxGroup = 1;
-
-        // 将原始Staff信息拆成每一行
         string[] staffTexts = rawStaffText.Split('\n');
-        if (staffTexts.Length > canShowStaffList.Count)
-        { Debug.LogError("当前星星数量不足以展示全部Staff"); }   // 这是bug，下次等我捋清楚逻辑再修（
 
-        // 传入参数，尝试生成，如果在组内没有碰撞，则正式生成，并分配组号
-        foreach (string staffText in staffTexts)
+        if (staffTexts.Length > canShowStaffs.Count)
         {
-            AssignGroupAndCheckOverlap(staffText);
+            Debug.LogError($"Staff数量过多，最多{canShowStaffs.Count}个，目前{staffTexts.Length}个。请尝试设置更多的星星生成数量来临时解决这个问题");    // ToFix
+            return;     // 如果继续执行下去好像会导致死循环
+        }
+
+        HideAllStaffLabel();
+        haveSetStaffs.Clear();
+        Group = 1;
+        MaxGroup = 1;
+        ShowGroup = 1;
+
+        foreach (var item in staffTexts)
+        {
+            string duty = item.Split(' ')[0];
+            string name = item.Split(' ')[1];
+            SetGroup(duty, name);
         }
     }
 
     /// <summary>
-    /// 禁用所有StaffLabel
+    /// 为单个 StaffLabel 找到一颗星星并分组
     /// </summary>
-    private void DisableAllStaffLabels()
+    void SetGroup(string duty, string name)
     {
-        foreach (Star star in canShowStaffList)
+        while (true)
         {
-            StaffLabel staffLabel = star.GetComponentInChildren<StaffLabel>();
-            staffLabel.Group = 0;
-            staffLabel.SetRender(false);
-        }
-    }
-
-    /// <summary>
-    /// 为Staff分配组并检查碰撞
-    /// </summary>
-    private void AssignGroupAndCheckOverlap(string staffText)    // 生成星星的逻辑存在Bug，下次修
-    {
-        int group = 1;
-        foreach (Star star in canShowStaffList)
-        {
-            StaffLabel staffLabel = star.GetComponentInChildren<StaffLabel>();
-
-            if (staffLabel.Group != 0) // 如果星星已被分配，则跳过
-            { continue; }
-
-            // 分配StaffLabel
-            string duty = staffText.Split(' ')[0];
-            staffLabel.DutyTextObj.GetComponent<TMP_Text>().text = duty;
-            string name = staffText.Split(' ')[1];
-            staffLabel.NameTextObj.GetComponent<TMP_Text>().text = name;
-            staffLabel.RefreshLength();
-
-            // 检查碰撞
-            if (!CheckOverlapInGroup(star, group))
+            // 查找一颗空的星星
+            foreach (Star thisStar in canShowStaffs)
             {
-                staffLabel.Group = group;
-                maxGroup = Mathf.Max(maxGroup, group);
-                break;
+                // 跳过已被占用的星星
+                if (thisStar.Group != 0)
+                { continue; }   // 换一颗星星吧
+
+                // 找到空的星星，传入文本并刷新物体长度
+                StaffLabel staffLabel = thisStar.GetComponentInChildren<StaffLabel>();
+                staffLabel.DutyTextObj.GetComponentInChildren<TMP_Text>().text = duty;
+                staffLabel.NameTextObj.GetComponentInChildren<TMP_Text>().text = name;
+                staffLabel.RefreshLength();
+
+                // 检查找到的星星是否与其他同组星星碰撞
+                if (CheckCollision(thisStar, Group))
+                { continue; }   // 换一颗星星吧
+                else
+                {
+                    // 成功，这颗星星没有在组内碰撞
+                    MaxGroup = Mathf.Max(MaxGroup, Group);
+                    haveSetStaffs.Add(thisStar);
+                    thisStar.Group = Group;
+                    return;
+                }
             }
-            group++;
+            // 在这一组内没有合适的位置生成星星
+            Group++;
         }
     }
 
     /// <summary>
-    /// 检查分组内是否有碰撞
+    /// 检查是否在指定组内发生碰撞
     /// </summary>
-    private bool CheckOverlapInGroup(Star star, int group)
+    bool CheckCollision(Star thisStar, int group)
     {
-        foreach (Star s in canShowStaffList)
+        foreach (Star otherStar in haveSetStaffs)
         {
-            if (s.gameObject == star.gameObject || s.GetComponentInChildren<StaffLabel>().Group != group)
+            if (thisStar == otherStar || group != otherStar.Group)
             { continue; }
 
-            Rect rect1 = GetStaffLabelRect(star);
-            Rect rect2 = GetStaffLabelRect(s);
-
-            if (rect1.Overlaps(rect2))
+            Rect thisRect = GetStaffLabelRect(thisStar);
+            Rect otherRect = GetStaffLabelRect(otherStar);
+            if (thisRect.Overlaps(otherRect))
             { return true; }
         }
         return false;
     }
 
     /// <summary>
+    /// 隐藏所有的 StaffLabel
+    /// </summary>
+    /// <param name="force">不播放渐隐动画，瞬间消失</param>
+    void HideAllStaffLabel(bool force = false)
+    {
+        foreach (Star star in canShowStaffs)
+        {
+            star.Group = 0;
+            StaffLabel staffLabel = star.GetComponentInChildren<StaffLabel>();
+            staffLabel.SetRender(false, false);
+        }
+    }
+
+    /// <summary>
     /// 获取StaffLabel的矩形区域
     /// </summary>
-    private Rect GetStaffLabelRect(Star star)
+    Rect GetStaffLabelRect(Star star)
     {
         RectTransform staffLabelRectTransform = star.StaffLabelObj.GetComponent<RectTransform>();
         RectTransform panelRectTransform = star.GetComponentInParent<PageController>().Panel.GetComponent<RectTransform>();
@@ -187,32 +232,31 @@ public class StarsGenerator : MonoBehaviour
         return new Rect(x, y, w, h);
     }
 
-    void RefreshStaffLabelRender()
+    /// <summary>
+    /// 刷新 StaffLabel 渲染状态
+    /// </summary>
+    /// <param name="force">不进行透明度的缓动效果</param>
+    void RefreshStaffLabelRender(bool force = false)
     {
-        foreach (Star star in canShowStaffList)
+        foreach (Star star in haveSetStaffs)
         {
-            StaffLabel staffLabel = star.GetComponentInChildren<StaffLabel>();
-            bool value = (TargetPage == 2) && (nowGroup == staffLabel.Group) && (staffLabel.Group != 0);
-            staffLabel.SetRender(value);
+            if (star.Group == ShowGroup && targetPage == 2)
+            { star.GetComponentInChildren<StaffLabel>().SetRender(true, force); }
+            else
+            { star.GetComponentInChildren<StaffLabel>().SetRender(false, force); }
         }
     }
 
     void Update()
     {
-        const float StayTime = 3f;
-
-        // 只有一组，不需要轮播
-        if (maxGroup == 1)
-        { return; }
-
-        timer += Time.deltaTime;
-        if (timer >= StayTime)
+        t += Time.deltaTime;
+        if (t >= KeepShowTime)
         {
-            timer -= StayTime;
-            if (nowGroup >= maxGroup)
-            { nowGroup = 1; }
+            t -= KeepShowTime;
+            if (ShowGroup >= MaxGroup)
+            { ShowGroup = 1; }
             else
-            { nowGroup++; }
+            { ShowGroup++; }
             RefreshStaffLabelRender();
         }
     }

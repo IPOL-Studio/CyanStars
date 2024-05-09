@@ -154,8 +154,11 @@ namespace CyanStars.Gameplay.MusicGame
             //    }
             //);
 
-            // 将原始Staff文本传递给StarsGenerator以进一步处理
-            GetComponentInChildren<StarsGenerator>().GenerateStaffLabels(mapItem.Data.MapManifest.StaffInfo);
+            // 将原始 Staff 文本传递给 StarsGenerator 以进一步处理
+            if (mapItem.Data.MapManifest.StaffInfo == "")
+            { Debug.LogWarning("没有设置 Staff 文本"); }
+            else
+            { GetComponentInChildren<StarsGenerator>().SetGroup(mapItem.Data.MapManifest.StaffInfo); }
         }
     }
 }
