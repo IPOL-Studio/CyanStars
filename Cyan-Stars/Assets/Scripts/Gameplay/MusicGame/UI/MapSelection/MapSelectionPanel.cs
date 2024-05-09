@@ -158,7 +158,7 @@ namespace CyanStars.Gameplay.MusicGame
             if (mapItem.Data.MapManifest.StaffInfo == "")
             { Debug.LogWarning("没有设置 Staff 文本"); }
             else
-            { GetComponentInChildren<StarsGenerator>().SetGroup(mapItem.Data.MapManifest.StaffInfo); }
+            { GetComponentInChildren<StarsGenerator>().ResetAllStaffGroup(mapItem.Data.MapManifest.StaffInfo); }
         }
     }
 }

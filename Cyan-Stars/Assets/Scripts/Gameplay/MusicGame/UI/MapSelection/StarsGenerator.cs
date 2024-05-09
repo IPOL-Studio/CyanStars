@@ -123,7 +123,7 @@ public class StarsGenerator : MonoBehaviour
     /// <summary>
     /// 切换了曲目，为每一个 Staff 重新分组
     /// </summary>
-    public void SetGroup(string rawStaffText)
+    public void ResetAllStaffGroup(string rawStaffText)
     {
         string[] staffTexts = rawStaffText.Split('\n');
 
