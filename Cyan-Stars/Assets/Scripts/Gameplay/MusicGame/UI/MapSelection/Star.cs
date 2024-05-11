@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SyanStars.Gameplay.MapSelection
+namespace CyanStars.Gameplay.MusicGame
 {
     /// <summary>
     /// 用于控制每个星星预制体的属性和运动

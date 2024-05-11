@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using CyanStars.Gameplay.MusicGame;
 
-namespace SyanStars.Gameplay.MapSelection
+namespace CyanStars.Gameplay.MusicGame
 {
     /// <summary>
     /// 用于控制选曲UI的页面状态（在选曲页/Staff页？）

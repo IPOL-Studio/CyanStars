@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SyanStars.Gameplay.MapSelection
+namespace CyanStars.Gameplay.MusicGame
 {
     /// <summary>
     /// 可被 PageController 常规控制的组件
@@ -158,10 +158,7 @@ namespace SyanStars.Gameplay.MapSelection
 
         public virtual void ChangeSize(float dp)
         {
-            float x = Size.x + SizeParallax.x * dp;
-            float y = Size.y + SizeParallax.y * dp;
-            float z = Size.z + SizeParallax.z * dp;
-            RectTransform.localScale = new Vector3(x, y, z);
+            RectTransform.localScale = Size + SizeParallax * dp;
         }
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-namespace SyanStars.Gameplay.MapSelection
+namespace CyanStars.Gameplay.MusicGame
 {
     /// <summary>
     /// 用于控制选曲面板背景星星和 Staff 信息的生成、移动。

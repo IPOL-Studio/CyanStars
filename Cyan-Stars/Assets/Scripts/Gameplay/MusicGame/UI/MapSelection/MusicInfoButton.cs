@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SyanStars.Gameplay.MapSelection
+namespace CyanStars.Gameplay.MusicGame
 {
     public class MusicInfoButton : MonoBehaviour
     {

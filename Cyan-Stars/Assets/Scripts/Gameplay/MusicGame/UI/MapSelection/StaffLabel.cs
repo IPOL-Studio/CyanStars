@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SyanStars.Gameplay.MapSelection
+namespace CyanStars.Gameplay.MusicGame
 {
     public class StaffLabel : MonoBehaviour
     {
@@ -21,8 +21,8 @@ namespace SyanStars.Gameplay.MapSelection
         [SerializeField]
         RectTransform nameFrameRectTransform;
 
-        List<Image> images = new List<Image>();
-        List<TMP_Text> textMeshes = new List<TMP_Text>();
+        private Image[] images;
+        private TMP_Text[] textMeshes;
 
         [SerializeField]
         float gradientTime;
@@ -90,6 +90,8 @@ namespace SyanStars.Gameplay.MapSelection
         ///<param name="isForce">不播放平滑动画，瞬间消失</param>
         public void SetRender(bool isAble, bool isForce = false)
         {
+            images = GetComponentsInChildren<Image>();
+            textMeshes = GetComponentsInChildren<TMP_Text>();
             float _gradientTime = gradientTime;
             if (isForce)
             {
@@ -130,8 +132,8 @@ namespace SyanStars.Gameplay.MapSelection
 
         void Start()
         {
-            images = new List<Image>(GetComponentsInChildren<Image>());
-            textMeshes = new List<TMP_Text>(GetComponentsInChildren<TMP_Text>());
+            images = GetComponentsInChildren<Image>();
+            textMeshes = GetComponentsInChildren<TMP_Text>();
             foreach (var item in images)
             {
                 item.enabled = false;
