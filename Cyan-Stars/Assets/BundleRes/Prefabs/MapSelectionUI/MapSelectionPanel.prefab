@@ -3449,7 +3449,8 @@ MonoBehaviour:
   MaxStarSize: 0.04
   MinStarParallax: 0.2
   MaxStarParallax: 1
-  KeepShowTime: 5
+  KeepShowTime: 3
+  MaxStaffLabelNumInGroup: 6
 --- !u!1 &8380107763412443757
 GameObject:
   m_ObjectHideFlags: 0

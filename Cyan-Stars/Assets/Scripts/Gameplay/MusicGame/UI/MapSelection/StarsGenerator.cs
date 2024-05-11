@@ -37,6 +37,8 @@ namespace CyanStars.Gameplay.MusicGame
         [Header("Staff 相关配置 Staff related settings")]
         [Tooltip("每轮 Staff 标签的展示时间（秒）")]
         public float KeepShowTime;
+        [Tooltip("每组最多展示的 Staff 标签数量")]
+        public int MaxStaffLabelNumInGroup;
         #endregion
 
         /// <summary>
@@ -53,6 +55,11 @@ namespace CyanStars.Gameplay.MusicGame
         /// 当前展示的组数
         /// </summary>
         int ShowGroup { get; set; }
+
+        /// <summary>
+        /// 当前组内已生成的 Staff 数量
+        /// </summary>
+        int StaffLabelNumInGroup { get; set; }
 
         /// <summary>
         /// 最大组数
@@ -127,6 +134,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public void ResetAllStaffGroup(string rawStaffText)
         {
+            StaffLabelNumInGroup = 0;
             string[] staffTexts = rawStaffText.Split('\n');
 
             if (staffTexts.Length > canShowStaffs.Count)
@@ -171,8 +179,8 @@ namespace CyanStars.Gameplay.MusicGame
                     staffLabel.NameText.text = name;
                     staffLabel.RefreshLength();
 
-                    // 检查找到的星星是否与其他同组星星碰撞
-                    if (CheckCollision(thisStar, Group))
+                    // 检查找到的星星是否与其他同组星星碰撞或达到上限
+                    if (CheckCollision(thisStar, Group) || StaffLabelNumInGroup >= MaxStaffLabelNumInGroup)
                     {
                         continue;    // 换一颗星星吧
                     }
@@ -182,11 +190,13 @@ namespace CyanStars.Gameplay.MusicGame
                         MaxGroup = Mathf.Max(MaxGroup, Group);
                         haveSetStaffs.Add(thisStar);
                         thisStar.Group = Group;
+                        StaffLabelNumInGroup++;
                         return;
                     }
                 }
-                // 在这一组内没有合适的位置生成星星
+                // 在这一组内没有合适的位置生成星星或已达到数量上限
                 Group++;
+                StaffLabelNumInGroup = 0;
             }
         }
 
