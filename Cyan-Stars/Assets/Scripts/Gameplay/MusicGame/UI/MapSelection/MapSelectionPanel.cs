@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using UnityEngine.Video;
 using TMPro;
 using DG.Tweening;
+using SyanStars.Gameplay.MapSelection;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -156,9 +157,13 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 将原始 Staff 文本传递给 StarsGenerator 以进一步处理
             if (mapItem.Data.MapManifest.StaffInfo == "")
-            { Debug.LogWarning("没有设置 Staff 文本"); }
+            {
+                Debug.LogWarning("没有设置 Staff 文本");
+            }
             else
-            { GetComponentInChildren<StarsGenerator>().ResetAllStaffGroup(mapItem.Data.MapManifest.StaffInfo); }
+            {
+                GetComponentInChildren<StarsGenerator>().ResetAllStaffGroup(mapItem.Data.MapManifest.StaffInfo);
+            }
         }
     }
 }

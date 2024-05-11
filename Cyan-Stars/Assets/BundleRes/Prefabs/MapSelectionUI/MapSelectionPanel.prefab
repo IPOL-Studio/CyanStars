@@ -631,12 +631,6 @@ MonoBehaviour:
   AlphaParallax: 1.5
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
-  CurrentPage: 0
-  PanelSize: {x: 0, y: 0}
-  RectTransform: {fileID: 0}
-  Images: []
-  Buttons: []
-  TextMeshes: []
 --- !u!1 &1832535889440736913
 GameObject:
   m_ObjectHideFlags: 0
@@ -870,10 +864,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1d274473bd54d44482c8699c90c2bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NextStepButton: {fileID: 8408836180437408259}
-  BackButton: {fileID: 1504483744899517298}
-  Panel: {fileID: 2069720032756744626}
-  StarsGenerator: {fileID: 8084591909757941303}
+  nextStepButton: {fileID: 8408836180437408259}
+  backButton: {fileID: 1504483744899517298}
+  PanelRectTransform: {fileID: 7684346640419335621}
+  starsGenerator: {fileID: 8360420235931265965}
 --- !u!1 &2604238561112503617
 GameObject:
   m_ObjectHideFlags: 0
@@ -970,12 +964,6 @@ MonoBehaviour:
   AlphaParallax: 1
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
-  CurrentPage: 0
-  PanelSize: {x: 0, y: 0}
-  RectTransform: {fileID: 0}
-  Images: []
-  Buttons: []
-  TextMeshes: []
 --- !u!1 &2677890324430501354
 GameObject:
   m_ObjectHideFlags: 0
@@ -1312,12 +1300,6 @@ MonoBehaviour:
   AlphaParallax: 4
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
-  CurrentPage: 0
-  PanelSize: {x: 0, y: 0}
-  RectTransform: {fileID: 0}
-  Images: []
-  Buttons: []
-  TextMeshes: []
 --- !u!1 &4544554131463537264
 GameObject:
   m_ObjectHideFlags: 0
@@ -1824,12 +1806,6 @@ MonoBehaviour:
   AlphaParallax: 2
   Size: {x: 6, y: 6, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
-  CurrentPage: 0
-  PanelSize: {x: 0, y: 0}
-  RectTransform: {fileID: 0}
-  Images: []
-  Buttons: []
-  TextMeshes: []
 --- !u!1 &5500140087823770535
 GameObject:
   m_ObjectHideFlags: 0
@@ -2671,12 +2647,6 @@ MonoBehaviour:
   AlphaParallax: 2
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
-  CurrentPage: 0
-  PanelSize: {x: 0, y: 0}
-  RectTransform: {fileID: 0}
-  Images: []
-  Buttons: []
-  TextMeshes: []
 --- !u!1 &7109194521425275813
 GameObject:
   m_ObjectHideFlags: 0
@@ -3934,12 +3904,6 @@ MonoBehaviour:
   AlphaParallax: 4
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
-  CurrentPage: 0
-  PanelSize: {x: 0, y: 0}
-  RectTransform: {fileID: 0}
-  Images: []
-  Buttons: []
-  TextMeshes: []
 --- !u!1 &9191063463516469222
 GameObject:
   m_ObjectHideFlags: 0

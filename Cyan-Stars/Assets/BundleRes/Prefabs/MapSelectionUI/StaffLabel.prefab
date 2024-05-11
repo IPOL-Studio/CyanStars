@@ -162,15 +162,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8a36fc47fba45c4d8e8fb8ea7c32eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DutyTextObj: {fileID: 3819933864285700109}
-  NameTextObj: {fileID: 6268713435782879177}
-  QuasiFrame: {fileID: 864356988594085234}
-  InfoFrame: {fileID: 8991500747182219635}
-  DutyFrame: {fileID: 6192898911066564667}
-  NameFrame: {fileID: 6163455902233542036}
-  Images: []
-  TextMeshes: []
-  GradientTime: 0.5
+  DutyText: {fileID: 4072395803086207104}
+  NameText: {fileID: 1804128329180464030}
+  quasiFrameRectTransform: {fileID: 3249258939796664645}
+  infoFrameRectTransform: {fileID: 1114237545002126070}
+  dutyFrameRectTransform: {fileID: 7543479200539111383}
+  nameFrameRectTransform: {fileID: 3349152674473642836}
+  gradientTime: 0.5
 --- !u!1 &3819933864285700109
 GameObject:
   m_ObjectHideFlags: 0
