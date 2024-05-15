@@ -67,12 +67,6 @@ MonoBehaviour:
   AlphaParallax: 0
   Size: {x: 1, y: 1, z: 1}
   SizeParallax: {x: 0, y: 0, z: 0}
-  CurrentPage: 0
-  PanelSize: {x: 0, y: 0}
-  RectTransform: {fileID: 0}
-  Images: []
-  Buttons: []
-  TextMeshes: []
   ImageObj: {fileID: 8208788398588523577}
   StaffLabelObj: {fileID: 520617683804801256}
 --- !u!1 &8208788398588523577

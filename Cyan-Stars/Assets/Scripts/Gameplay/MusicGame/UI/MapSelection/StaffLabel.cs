@@ -11,6 +11,7 @@ namespace CyanStars.Gameplay.MusicGame
     {
         public TMP_Text DutyText;
         public TMP_Text NameText;
+        public RectTransform CollisionArea;
 
         [SerializeField]
         RectTransform quasiFrameRectTransform;

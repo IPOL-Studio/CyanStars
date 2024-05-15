@@ -237,11 +237,11 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         /// <summary>
-        /// 获取StaffLabel的矩形区域
+        /// 获取 StaffLabel 的碰撞区域的矩形
         /// </summary>
         Rect GetStaffLabelRect(Star star)
         {
-            RectTransform staffLabelRectTransform = star.StaffLabelObj.GetComponent<RectTransform>();
+            RectTransform staffLabelRectTransform = star.StaffLabelObj.GetComponent<StaffLabel>().CollisionArea;
             RectTransform panelRectTransform = star.GetComponentInParent<PageController>().PanelRectTransform;
 
             float x = (star.PosRatio.x + star.PosParallax.x) * panelRectTransform.rect.width;
