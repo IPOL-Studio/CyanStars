@@ -1,3 +1,6 @@
+| **中文** | [English](README_en.md) |
+
+
 # CyanStars
 
 > 音乐，是宇宙的共通语言。
