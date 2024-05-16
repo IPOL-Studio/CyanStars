@@ -116,17 +116,11 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 foreach (var item in images)
                 {
-                    item.DOFade(0, _gradientTime).SetEase(Ease.OutQuart).OnComplete(() =>
-                    {
-                        item.enabled = false;
-                    });
+                    item.DOFade(0, _gradientTime).SetEase(Ease.OutQuart);
                 }
                 foreach (var item in textMeshes)
                 {
-                    item.DOFade(0, _gradientTime).SetEase(Ease.OutQuart).OnComplete(() =>
-                    {
-                        item.enabled = false;
-                    });
+                    item.DOFade(0, _gradientTime).SetEase(Ease.OutQuart);
                 }
             }
         }

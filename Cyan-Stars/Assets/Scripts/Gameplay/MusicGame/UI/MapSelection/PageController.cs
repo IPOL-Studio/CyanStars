@@ -45,7 +45,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 缓动相关变量
         /// </summary>
-        const float Dt = 1.2f;    // 缓动持续时间
+        const float Dt = 1.5f;    // 缓动持续时间
         float sp;           // 缓动开始时的页面进度
         float st;           // 缓动开始时间，当 targetPage 变动时请将它设为 Time.time
         #endregion
