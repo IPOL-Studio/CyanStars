@@ -39,6 +39,9 @@ namespace CyanStars.Gameplay.MusicGame
         [Header("Staff信息")]
         public TextMeshProUGUI StaffInfoDisplay;
 
+        [Header("PageController 组件")]
+        public PageController PageController;
+
         [Header("StarsGenerator 组件")]
         public StarsGenerator Generator;
 
@@ -82,6 +85,9 @@ namespace CyanStars.Gameplay.MusicGame
             await RefreshMusicList();
 
             Generator.GenerateStars();
+            
+            PageController.OnOpen();
+            
 
             //默认选中上次选的谱面
             int selectedIndex = musicGameDataModule.MapIndex;
@@ -89,7 +95,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             ToggleAutoMode.isOn = musicGameDataModule.IsAutoMode;
 
-            GetComponentInChildren<PageController>().OnOpen();
+
         }
 
         public override void OnClose()
@@ -161,7 +167,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
             else
             {
-                GetComponentInChildren<StarsGenerator>().ResetAllStaffGroup(mapItem.Data.MapManifest.StaffInfo);
+                Generator.ResetAllStaffGroup(mapItem.Data.MapManifest.StaffInfo);
             }
         }
     }

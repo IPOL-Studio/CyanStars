@@ -21,7 +21,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// 用 PosRatio 覆盖 RectTransform 位置
         /// 若 False，则自动获取当前位置
         /// </summary>
-        public bool OverridePos = false;
+        public bool OverridePos;
 
         /// <summary>
         /// 该组件在可用页时的位置比例（以左下为原点，相对于PanelWidth）
@@ -46,7 +46,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 该组件在可用页的大小
         /// </summary>
-        public Vector3 Size = new Vector3(1f, 1f, 1f);
+        public Vector3 Size = Vector3.one;
 
         /// <summary>
         /// 大小灵敏度
@@ -58,7 +58,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 当前页面进度
         /// </summary>
-        public float CurrentPage { get; set; }
+        public float CurrentPageProgress { get; set; }
 
         /// <summary>
         /// 当前游戏分辨率宽高
@@ -88,24 +88,24 @@ namespace CyanStars.Gameplay.MusicGame
 
         public virtual void Start()
         {
-            CurrentPage = 1f;
-            RectTransform = GetComponent<RectTransform>();
+            CurrentPageProgress = 1f;
+            RectTransform = transform as RectTransform;
             RectTransform.localScale = Size;
             Images = GetComponentsInChildren<Image>();
             Buttons = GetComponentsInChildren<Button>();
             TextMeshes = GetComponentsInChildren<TMP_Text>();
             if (!OverridePos)
             {
-                float x = RectTransform.localPosition.x / PanelSize.x;
-                float y = RectTransform.localPosition.y / PanelSize.y;
-                float z = RectTransform.localPosition.z;
-                PosRatio = new Vector3(x, y, z);
+                Vector3 localPosition = RectTransform.localPosition;
+                float x = localPosition.x / PanelSize.x;
+                float y = localPosition.y / PanelSize.y;
+                PosRatio = new Vector3(x, y, localPosition.z);
             }
         }
 
         public virtual void Update()
         {
-            float deltaPage = Mathf.Abs(CurrentPage - AblePage);
+            float deltaPage = Mathf.Abs(CurrentPageProgress - AblePage);
             ChangePos(deltaPage);
             ChangeAlpha(deltaPage);
             ChangeSize(deltaPage);

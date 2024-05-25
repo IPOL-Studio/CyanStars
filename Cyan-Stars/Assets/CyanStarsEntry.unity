@@ -1057,7 +1057,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4aa3b268dc2560478c3e7c38aaa2f0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useCysConsoleLogger: 1
+  useCysConsoleLogger: 0
 --- !u!1 &1883494367
 GameObject:
   m_ObjectHideFlags: 0

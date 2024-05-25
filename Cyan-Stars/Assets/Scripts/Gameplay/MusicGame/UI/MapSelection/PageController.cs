@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using CyanStars.Gameplay.MusicGame;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -14,53 +13,52 @@ namespace CyanStars.Gameplay.MusicGame
         #region
         [SerializeField]
         [Header("下一步按钮")]
-        Button nextStepButton;
+        private Button nextStepButton;
 
         [SerializeField]
         [Header("上一步按钮")]
-        Button backButton;
-
-        [SerializeField]
-        [Header("Panel.RectTransform 组件")]
-        public RectTransform PanelRectTransform;
+        private Button backButton;
 
         [SerializeField]
         [Header("StarsGenerator 组件")]
-        StarsGenerator starsGenerator;
+        private StarsGenerator starsGenerator;
 
+        [Header("Panel.RectTransform 组件")]
+        public RectTransform PanelRectTransform;
 
         /// <summary>
         /// 目标页面进度
-        /// 1或2，1=选曲页，2=Staff页
-        /// currentPage将会缓动趋近targetPage
-        /// <summary>
-        int targetPage = 1;
+        /// <para>1或2，1=选曲页，2=Staff页</para>
+        /// <para>currentPage将会缓动趋近targetPage</para>
+        /// </summary>
+        private int targetPage = 1;
 
         /// <summary>
         /// 当前页面进度
-        /// 一个介于1-2之间的小数
-        /// <summary>
-        float currentPage = 1;
+        /// <para>一个介于1-2之间的小数</para>
+        /// </summary>
+        private float currentPage = 1;
 
         /// <summary>
         /// 缓动相关变量
         /// </summary>
-        const float Dt = 1.5f;    // 缓动持续时间
-        float sp;           // 缓动开始时的页面进度
-        float st;           // 缓动开始时间，当 targetPage 变动时请将它设为 Time.time
-        #endregion
+        private const float FadeTime = 1.5f;    // 缓动持续时间
+        private float startPageNum;           // 缓动开始时的页面进度
+        private float startTime;           // 缓动开始时间，当 targetPage 变动时请将它设为 Time.time
 
         /// <summary>
         /// 获取到的 PageControlAble 组件
         /// </summary>
-        PageControlAble[] pageControlAbles;
+        private PageControlAble[] pageControlAbles;
+        #endregion
 
-        public void Start()
+
+        private void Start()
         {
             nextStepButton.onClick.AddListener(() =>
             {
-                st = Time.time;
-                sp = currentPage;
+                startTime = Time.time;
+                startPageNum = currentPage;
                 targetPage++;
                 starsGenerator.TargetPage = targetPage;
             });
@@ -73,8 +71,8 @@ namespace CyanStars.Gameplay.MusicGame
                 }
                 else
                 {
-                    st = Time.time;
-                    sp = currentPage;
+                    startTime = Time.time;
+                    startPageNum = currentPage;
                     targetPage--;
                     starsGenerator.TargetPage = targetPage;
                 }
@@ -83,15 +81,15 @@ namespace CyanStars.Gameplay.MusicGame
             OnRectTransformDimensionsChange();
         }
 
-        void Update()
+        private void Update()
         {
             // 根据缓动函数计算 currentPage，并传递给 pageControlAbles
-            if ((Time.time < st + Dt) && (targetPage != currentPage))
+            if ((Time.time < startTime + FadeTime) && (targetPage != currentPage))
             {
-                currentPage = EasingFunction.EaseOutQuart(sp, targetPage, Time.time - st, Dt);
+                currentPage = EasingFunction.EaseOutQuart(startPageNum, targetPage, Time.time - startTime, FadeTime);
                 foreach (PageControlAble pageControlAble in pageControlAbles)
                 {
-                    pageControlAble.CurrentPage = currentPage;
+                    pageControlAble.CurrentPageProgress = currentPage;
                 }
             }
         }
@@ -103,14 +101,14 @@ namespace CyanStars.Gameplay.MusicGame
             PageControlAble[] pageControlAbles = GetComponentsInChildren<PageControlAble>();
             foreach (PageControlAble pageControlAble in pageControlAbles)
             {
-                pageControlAble.CurrentPage = 1f;
+                pageControlAble.CurrentPageProgress = 1f;
             }
         }
 
         /// <summary>
         /// 获取当前组件下子节点中的 PageControlAble
         /// </summary>
-        public void SetPageControlAbles()
+        private void SetPageControlAbles()
         {
             pageControlAbles = GetComponentsInChildren<PageControlAble>();
         }
@@ -118,7 +116,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// Start() 或屏幕大小变化时，将新的 PanelSize 传给 PageControlAble
         /// </summary>
-        void OnRectTransformDimensionsChange()
+        private void OnRectTransformDimensionsChange()
         {
             // 将 Panel 宽高传给每一个 PageControlAble
             if (pageControlAbles == null)

@@ -27,7 +27,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void Start()
         {
-            CurrentPage = 1f;
+            CurrentPageProgress = 1f;
             RectTransform = GetComponent<RectTransform>();
             ImageObj.GetComponent<RectTransform>().localScale = Size;
             Images = ImageObj.GetComponentsInChildren<Image>();
@@ -35,10 +35,10 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void Update()
         {
-            float xPos = (PosRatio.x + (CurrentPage - 1) * PosParallax.x) * PanelSize.x;
+            float xPos = (PosRatio.x + (CurrentPageProgress - 1) * PosParallax.x) * PanelSize.x;
             float yPos = PosRatio.y * PanelSize.y;
             RectTransform.localPosition = new Vector3(xPos, yPos, PosRatio.z);
-            float deltaPage = Mathf.Abs(CurrentPage - AblePage);
+            float deltaPage = Mathf.Abs(CurrentPageProgress - AblePage);
             ChangeAlpha(deltaPage);
         }
     }
