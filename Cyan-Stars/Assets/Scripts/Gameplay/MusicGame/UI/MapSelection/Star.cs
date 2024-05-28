@@ -12,6 +12,11 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public class Star : PageControlAble
     {
+        [SerializeField]
+        private GameObject imageObj;
+        [SerializeField]
+        private GameObject staffLabelObj;
+
         /// <summary>
         /// 这个星星可以显示 Staff 标签吗？
         /// </summary>
@@ -22,15 +27,16 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public int Group { get; set; }
 
-        public GameObject ImageObj;
-        public GameObject StaffLabelObj;
+        public StaffLabel StaffLabel { get; private set; }
 
         public override void Start()
         {
             CurrentPageProgress = 1f;
             RectTransform = GetComponent<RectTransform>();
-            ImageObj.GetComponent<RectTransform>().localScale = Size;
-            Images = ImageObj.GetComponentsInChildren<Image>();
+            imageObj.GetComponent<RectTransform>().localScale = Size;
+            Images = imageObj.GetComponentsInChildren<Image>();
+
+            StaffLabel = staffLabelObj.GetComponent<StaffLabel>();
         }
 
         public override void Update()
@@ -40,6 +46,11 @@ namespace CyanStars.Gameplay.MusicGame
             RectTransform.localPosition = new Vector3(xPos, yPos, PosRatio.z);
             float deltaPage = Mathf.Abs(CurrentPageProgress - AblePage);
             ChangeAlpha(deltaPage);
+        }
+
+        public void SetStaffLabelActive(bool active)
+        {
+            staffLabelObj.SetActive(active);
         }
     }
 }

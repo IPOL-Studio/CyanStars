@@ -123,7 +123,7 @@ namespace CyanStars.Gameplay.MusicGame
                     // 可以在这颗星星上生成 Staff 信息
                     newStar.CanShowStaff = true;
                     canShowStaffs.Add(newStar);
-                    newStar.StaffLabelObj.SetActive(true);
+                    newStar.SetStaffLabelActive(true);
                 }
             }
             Debug.Log($"随机生成了{starNum}颗星星，其中{canShowStaffs.Count}颗可以显示Staff");
@@ -241,7 +241,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         Rect GetStaffLabelRect(Star star)
         {
-            RectTransform staffLabelRectTransform = star.StaffLabelObj.GetComponent<StaffLabel>().CollisionArea;
+            RectTransform staffLabelRectTransform = star.StaffLabel.CollisionArea;
             RectTransform panelRectTransform = star.GetComponentInParent<PageController>().PanelRectTransform;
 
             float x = (star.PosRatio.x + star.PosParallax.x) * panelRectTransform.rect.width;

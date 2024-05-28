@@ -124,7 +124,7 @@ MonoBehaviour:
     BundleName: effect.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 6753428
+    AssetsLength: 4412352
     Assets:
     - Name: Assets/BundleRes/Prefabs/Effect/BreakHitEffect.prefab
       Length: 490286
@@ -200,10 +200,6 @@ MonoBehaviour:
       Length: 232
     - Name: Assets/Sprites/triangular particles.png
       Length: 1514
-    - Name: Assets/TextMeshPro/Examples & Extras/Textures/Gradient Diagonal (Color).jpg
-      Length: 11688
-    - Name: Assets/TextMeshPro/Examples & Extras/Textures/Wipe Pattern - Diagonal.psd
-      Length: 33064
     - Name: Assets/VEG/BlockRainVFX.vfx
       Length: 121641
     - Name: Assets/VEG/BlockVFX.vfx
@@ -228,10 +224,6 @@ MonoBehaviour:
       Length: 66503
     - Name: Assets/VEG/UnnameedVFX2.vfx
       Length: 138191
-    - Name: "Assets/VEG/\u4E09\u89D2\u5F62.png"
-      Length: 919
-    - Name: "Assets/VEG/\u6F29\u6DA1\u901F\u5EA6\u77E2\u91CF.asset"
-      Length: 131964
     - Name: Packages/com.unity.render-pipelines.core/Runtime/Debugging/Prefabs/Textures/White1px.png
       Length: 927
     - Name: Packages/com.unity.render-pipelines.universal/Runtime/Materials/ParticlesUnlit.mat
@@ -240,10 +232,6 @@ MonoBehaviour:
       Length: 6958
     - Name: Packages/com.unity.shadergraph/Editor/Resources/Shaders/FallbackError.shader
       Length: 1053
-    - Name: Packages/com.unity.visualeffectgraph/Textures/SimpleSmoke.tga
-      Length: 65580
-    - Name: Packages/com.unity.visualeffectgraph/Textures/vectorfield.asset
-      Length: 2097861
   - RelativePath: BundleRes/Prefabs/loginui.bundle
     DirectoryName: BundleRes/Prefabs
     BundleName: loginui.bundle
@@ -270,14 +258,20 @@ MonoBehaviour:
     BundleName: mapselectionui.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 132955050
+    AssetsLength: 131968751
     Assets:
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel.prefab
-      Length: 121609
+      Length: 122280
+    - Name: Assets/BundleRes/Prefabs/MapSelectionUI/MapSelectionPanelRework.prefab
+      Length: 119785
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/StaffLabel.prefab
-      Length: 22020
+      Length: 24682
+    - Name: Assets/BundleRes/Prefabs/MapSelectionUI/StaffLabelR.prefab
+      Length: 24230
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/Star.prefab
-      Length: 7690
+      Length: 9258
+    - Name: Assets/BundleRes/Prefabs/MapSelectionUI/StarR.prefab
+      Length: 9186
     - Name: Assets/Font/SourceHanSerifCN/Heavy/SourceHanSerifCN-Heavy-4.otf
       Length: 11304840
     - Name: "Assets/Font/SourceHanSerifCN/Heavy/\u601D\u6E90\u5B8B\u4F53Heavy.asset"
@@ -314,14 +308,12 @@ MonoBehaviour:
       Length: 663036
     - Name: Assets/Sprites/MapSelectionPanel/TrackStartButton.png
       Length: 53567
-    - Name: "Assets/Sprites/MapSelectionPanel/\u53C2\u8003\u56FE.png"
-      Length: 1144401
   - RelativePath: BundleRes/Prefabs/musicgameui.bundle
     DirectoryName: BundleRes/Prefabs
     BundleName: musicgameui.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 37454423
+    AssetsLength: 37449416
     Assets:
     - Name: Assets/BundleRes/Prefabs/MusicGameUI/MusicGame3DUIPanel.prefab
       Length: 18250
@@ -345,13 +337,13 @@ MonoBehaviour:
       Length: 53056
     - Name: Assets/TextMeshPro/Examples & Extras/Resources/Fonts & Materials/Oswald
         Bold SDF.asset
-      Length: 2118320
+      Length: 2113313
   - RelativePath: BundleRes/Prefabs/notes.bundle
     DirectoryName: BundleRes/Prefabs
     BundleName: notes.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 16895652
+    AssetsLength: 16895707
     Assets:
     - Name: Assets/BundleRes/Prefabs/Notes/Break.prefab
       Length: 4442
@@ -360,7 +352,7 @@ MonoBehaviour:
     - Name: Assets/BundleRes/Prefabs/Notes/Drag.prefab
       Length: 3816
     - Name: Assets/BundleRes/Prefabs/Notes/Hold.prefab
-      Length: 8719
+      Length: 8774
     - Name: Assets/BundleRes/Prefabs/Notes/Key.prefab
       Length: 3351
     - Name: Assets/BundleRes/Prefabs/Notes/Tap.prefab
@@ -465,10 +457,10 @@ MonoBehaviour:
     BundleName: internalmap.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 3360
+    AssetsLength: 2778
     Assets:
     - Name: Assets/BundleRes/ScriptObjects/InternalMap/InternalMapList.asset
-      Length: 3360
+      Length: 2778
   - RelativePath: redundancy_0.bundle
     DirectoryName: 
     BundleName: redundancy_0.bundle

@@ -33,7 +33,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public void RefreshLength()
         {
-            RectTransform rectTransform = GetComponent<RectTransform>();
+            RectTransform rectTransform = transform as RectTransform;
 
             float x, y;
 

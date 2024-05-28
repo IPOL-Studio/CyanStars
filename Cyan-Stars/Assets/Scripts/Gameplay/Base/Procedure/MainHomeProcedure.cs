@@ -18,7 +18,7 @@ namespace CyanStars.Gameplay.Base
         public override async void OnEnter()
         {
             //打开谱面选择界面
-            await GameRoot.UI.AwaitOpenUIPanel<MapSelectionPanel>();
+            await GameRoot.UI.AwaitOpenUIPanel<MapSelectionPanelR>();
         }
 
         public override void OnUpdate(float deltaTime)
@@ -27,7 +27,7 @@ namespace CyanStars.Gameplay.Base
 
         public override void OnExit()
         {
-            GameRoot.UI.CloseUIPanel<MapSelectionPanel>();
+            GameRoot.UI.CloseUIPanel<MapSelectionPanelR>();
         }
     }
 }

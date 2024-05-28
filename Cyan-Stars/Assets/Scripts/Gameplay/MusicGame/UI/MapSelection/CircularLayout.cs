@@ -65,8 +65,8 @@ namespace CyanStars.Gameplay.MusicGame
             curFirstItemAngle = OffsetAngle;
 
             float paddingAngle = (Radius != 0) ? (Padding / (2 * Mathf.PI * Radius) * 360) : 0;
-            
-            scrollRect.onValueChanged.AddListener((Vector2 value) => {                
+
+            scrollRect.onValueChanged.AddListener((Vector2 value) => {
                 float itemsTotalAngle = (Items.Count - 1) * paddingAngle;   // 所有item整体所占的角度
                 float centerAngle = (StartAngle + EndAngle) / 2;            // 圆环中央的角度
                 curFirstItemAngle = centerAngle - (1 - value.y) * itemsTotalAngle;
@@ -142,7 +142,7 @@ namespace CyanStars.Gameplay.MusicGame
             float centerAngle = (StartAngle + EndAngle) / 2;  // 计算出圆环中心的角度
             float paddingAngle = (Radius != 0) ? (Padding / (2 * Mathf.PI * Radius) * 360) : 0;  // 计算item之间的角度间隔
             // 计算当前最靠近圆环中心的item的index
-            /* 
+            /*
             使用Mathf.Max和Mathf.Min将index约束到[0, Items.Count - 1]
             防止index在ScrollRect的Movement Type为Elastic（允许在滑动到尽头时有一定的弹性）时index取值不合法
             */
@@ -156,7 +156,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             anchored = true;
             int curCentralItemIndex = GetCurrentCentralItemIndex();
-            MoveToItemAt(curCentralItemIndex);            
+            MoveToItemAt(curCentralItemIndex);
         }
 
         /// <summary>
@@ -164,8 +164,8 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public void MoveToItemAt(int targetItemIndex)
         {
-            float targetPositionY = 
-                (scrollRect.content.sizeDelta.y - GetComponent<RectTransform>().sizeDelta.y) * 
+            float targetPositionY =
+                (scrollRect.content.sizeDelta.y - GetComponent<RectTransform>().sizeDelta.y) *
                 targetItemIndex / (Items.Count - 1);
 
             // 如果item是第一个或最后一个，并且当前content的PosY超出了合法范围，则会自动回弹，不需要再启动MoveTo
@@ -179,7 +179,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             StartCoroutine(MoveTo(targetPosition));
         }
-        
+
         IEnumerator MoveTo(Vector2 targetPosition)
         {
             Vector2 deltaPosition = targetPosition - scrollRect.content.anchoredPosition;
@@ -208,12 +208,12 @@ namespace CyanStars.Gameplay.MusicGame
         public void OnScroll(PointerEventData pointEventData)
         {
             if (Time.unscaledTime - lastScrollTime < SelectByScrollingDelta) return;
-            
+
             lastScrollTime = Time.unscaledTime;
             int newMapIndex = GetCurrentCentralItemIndex() - (int)Mathf.Max(Mathf.Min(pointEventData.scrollDelta.y, 1), -1);
             if (0 <= newMapIndex && newMapIndex < Items.Count)
             {
-                Items[newMapIndex].OnSelect();
+                Items[newMapIndex].Select();
             }
         }
     }

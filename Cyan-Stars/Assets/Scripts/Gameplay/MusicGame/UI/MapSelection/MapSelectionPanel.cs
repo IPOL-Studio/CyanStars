@@ -85,9 +85,9 @@ namespace CyanStars.Gameplay.MusicGame
             await RefreshMusicList();
 
             Generator.GenerateStars();
-            
+
             PageController.OnOpen();
-            
+
 
             //默认选中上次选的谱面
             int selectedIndex = musicGameDataModule.MapIndex;
@@ -122,6 +122,7 @@ namespace CyanStars.Gameplay.MusicGame
 
                 MapItemData data = MapItemData.Create(i, map);
                 mapItem.RefreshItem(data);
+                mapItem.OnSelect += OnSelectMap;
             }
 
             MapItemTemplate.SetActive(false);
