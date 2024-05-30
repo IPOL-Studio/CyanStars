@@ -6,7 +6,7 @@ namespace CyanStars.Gameplay.MusicGame
     {
         // b:开始值  e:结束值 t:当前时间，dt:持续时间
 
-#region 对Vector3类型的缓动
+        #region 对Vector3类型的缓动
 
         /// <summary>线性匀速运动效果</summary>
         public static Vector3 LinearFunction(Vector3 b, Vector3 e, float t, float dt)
@@ -45,8 +45,8 @@ namespace CyanStars.Gameplay.MusicGame
         /// 四次函数的缓动
         /// <para>先快后慢</para>
         /// </summary>
-         public static Vector3 EaseOutQuart(Vector3 b, Vector3 e, float t, float dt)
-         {
+        public static Vector3 EaseOutQuart(Vector3 b, Vector3 e, float t, float dt)
+        {
             t /= dt;
             t--;
             return -(e - b) * (t * t * t * t - 1) + b;
@@ -62,9 +62,9 @@ namespace CyanStars.Gameplay.MusicGame
             return (e - b) * (t /= dt) * t * ((s + 1) * t - s) + b;
         }
 
-#endregion
+        #endregion
 
-#region 对float类型的缓动
+        #region 对float类型的缓动
 
         ///<summary>线性匀速运动效果</summary>
         public static float LinearFunction(float b, float e, float t, float dt)
@@ -104,8 +104,8 @@ namespace CyanStars.Gameplay.MusicGame
         /// 四次函数的缓动
         /// <para>先快后慢</para>
         /// </summary>
-         public static float EaseOutQuart(float b, float e, float t, float dt)
-         {
+        public static float EaseOutQuart(float b, float e, float t, float dt)
+        {
             t /= dt;
             t--;
             return -(e - b) * (t * t * t * t - 1) + b;
@@ -120,7 +120,7 @@ namespace CyanStars.Gameplay.MusicGame
             return (e - b) * (t /= dt) * t * ((s + 1) * t - s) + b;
         }
 
-#endregion
+        #endregion
 
         //特殊函数
         public static float CubicFunction(float b, float e, float t, float dt)
@@ -131,7 +131,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 计算时轴目标时间对应的缓动函数结果值
         /// </summary>
-        public static int CalTimeAxisEasingValue(EasingFunctionType type,float coefficient,int targetTime,int timeLength)
+        public static int CalTimeAxisEasingValue(EasingFunctionType type, float coefficient, int targetTime, int timeLength)
         {
             int value = 0;
             switch (type)
