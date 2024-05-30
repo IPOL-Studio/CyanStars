@@ -28,7 +28,7 @@ namespace CyanStars.Gameplay.MusicGame
         public CircularLayout CircularMapList;
 
         [Header("开始按钮")]
-        public Button BtnStart;
+        public Button StartButton;
 
         [Header("自动模式开关")]
         public Toggle ToggleAutoMode;
@@ -38,6 +38,12 @@ namespace CyanStars.Gameplay.MusicGame
 
         [Header("Staff信息")]
         public TextMeshProUGUI StaffInfoDisplay;
+
+        [Header("PageController 组件")]
+        public PageController PageController;
+
+        [Header("StarsGenerator 组件")]
+        public StarsGenerator Generator;
 
         /// <summary>
         /// 音游数据模块
@@ -64,14 +70,12 @@ namespace CyanStars.Gameplay.MusicGame
                 musicGameDataModule.IsAutoMode = isOn;
             }));
 
-            BtnStart.onClick.AddListener(() =>
+            StartButton.onClick.AddListener(() =>
             {
                 //切换到音游流程
                 GameRoot.GetDataModule<MusicGameModule>().MapIndex = curSelectedMapItem.Data.Index;
                 GameRoot.ChangeProcedure<MusicGameProcedure>();
             });
-
-            BtnStart.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
         }
 
         public override async void OnOpen()
@@ -80,11 +84,18 @@ namespace CyanStars.Gameplay.MusicGame
 
             await RefreshMusicList();
 
+            Generator.GenerateStars();
+            
+            PageController.OnOpen();
+            
+
             //默认选中上次选的谱面
             int selectedIndex = musicGameDataModule.MapIndex;
             OnSelectMap((MapItem)MapItems[selectedIndex]);
 
             ToggleAutoMode.isOn = musicGameDataModule.IsAutoMode;
+
+
         }
 
         public override void OnClose()
@@ -141,13 +152,23 @@ namespace CyanStars.Gameplay.MusicGame
                     TxtMapTitle.DOFade(1, 0.2f);
                 }
             );
-            StaffInfoDisplay.DOFade(0, 0.2f).OnComplete(
-                () =>
-                {
-                    StaffInfoDisplay.text = mapItem.Data.MapManifest.StaffInfo;
-                    StaffInfoDisplay.DOFade(1, 0.2f);
-                }
-            );
+            //StaffInfoDisplay.DOFade(0, 0.2f).OnComplete(
+            //    () =>
+            //    {
+            //        StaffInfoDisplay.text = mapItem.Data.MapManifest.StaffInfo;
+            //        StaffInfoDisplay.DOFade(1, 0.2f);
+            //    }
+            //);
+
+            // 将原始 Staff 文本传递给 StarsGenerator 以进一步处理
+            if (string.IsNullOrEmpty(mapItem.Data.MapManifest.StaffInfo) || string.IsNullOrWhiteSpace(mapItem.Data.MapManifest.StaffInfo))
+            {
+                Debug.LogWarning("没有设置 Staff 文本");
+            }
+            else
+            {
+                Generator.ResetAllStaffGroup(mapItem.Data.MapManifest.StaffInfo);
+            }
         }
     }
 }
