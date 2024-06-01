@@ -1,3 +1,4 @@
+using System.Collections;
 using CyanStars.Framework;
 using DG.Tweening;
 using UnityEngine;
@@ -11,11 +12,24 @@ namespace CyanStars.Gameplay.MusicGame
         [SerializeField]
         private Button startButton;
 
+        [SerializeField]
+        private float staffGroupKeepTime = 3f;
+        private float lastStaffGroupKeepTime = -1;
+
+        private WaitForSeconds staffCarouseInterval;
+
         private CanvasGroup canvasGroup;
         private Tween runningTween;
 
+        private MapSelectionPanelR owner;
+
+        private Coroutine staffCarouseCor;
+
+
         public void OnInit(MapSelectionPanelR owner)
         {
+            this.owner = owner;
+
             startButton.onClick.AddListener(() =>
             {
                 GameRoot.GetDataModule<MusicGameModule>().MapIndex = owner.CurrentSelectedMap.Index;
@@ -40,6 +54,8 @@ namespace CyanStars.Gameplay.MusicGame
                                       .SetEase(args.AnimationEase)
                                       .OnComplete(() => canvasGroup.interactable = true)
                                       .OnKill(() => runningTween = null);
+
+            staffCarouseCor = StartCoroutine(CarouselStaffStarsCor());
         }
 
         public void OnExit(MapSelectionPageChangeArgs args)
@@ -49,6 +65,13 @@ namespace CyanStars.Gameplay.MusicGame
                 runningTween.Kill(true);
             }
 
+            if (staffCarouseCor != null)
+            {
+                StopCoroutine(staffCarouseCor);
+                owner.StarController.ResetShowingGroup();
+                staffCarouseCor = null;
+            }
+
             canvasGroup.alpha = 1;
             canvasGroup.interactable = false;
 
@@ -56,6 +79,25 @@ namespace CyanStars.Gameplay.MusicGame
                                       .SetEase(args.AnimationEase)
                                       .OnComplete(() => gameObject.SetActive(false))
                                       .OnKill(() => runningTween = null);
+        }
+
+        private IEnumerator CarouselStaffStarsCor()
+        {
+            while (true)
+            {
+                owner.StarController.ShowNextStaffGroup();
+
+                if (staffGroupKeepTime <= 0)
+                    staffGroupKeepTime = 3f;
+
+                if (lastStaffGroupKeepTime != staffGroupKeepTime || staffCarouseInterval == null)
+                {
+                    lastStaffGroupKeepTime = staffGroupKeepTime;
+                    staffCarouseInterval = new WaitForSeconds(staffGroupKeepTime);
+                }
+
+                yield return staffCarouseInterval;
+            }
         }
     }
 }

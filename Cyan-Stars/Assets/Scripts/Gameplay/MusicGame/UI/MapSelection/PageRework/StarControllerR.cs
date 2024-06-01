@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
@@ -34,6 +35,8 @@ namespace CyanStars.Gameplay.MusicGame
 
         private Dictionary<int, int> staffLabelCountInGroupDict = new Dictionary<int, int>();
 
+        private float baseRatio = 1f;
+
         public void GenerateStars()
         {
             if (this.stars != null)
@@ -45,6 +48,10 @@ namespace CyanStars.Gameplay.MusicGame
             int starCount = Random.Range(minStarCount, maxStarCount + 1);
             var stars = new StarR[starCount];
             var trans = transform;
+
+            var panelWidth = panelRectTransform.rect.width;
+            float minStarLabelX = panelWidth * 0.2f;
+            float maxStarLabelX = panelWidth * 0.7f;
 
             for (int i = 0; i < starCount; i++)
             {
@@ -58,13 +65,17 @@ namespace CyanStars.Gameplay.MusicGame
                 var size = Random.Range(minStarSize, maxStarSize);
                 star.EnabledSize = new Vector3(size, size, 1f);
 
+                var starPos2 = star.CalculatePosFormScreenRatio(panelRectTransform, baseRatio + 1);
+
                 if (star.EnabledAlpha >= 0.6f && size >= 0.02f &&
-                    star.PosRatio.x + star.PosParallax.x >= 0.2f && star.PosRatio.x + star.PosParallax.x <= 0.7f &&
+                    starPos2.x >= minStarLabelX &&
+                    starPos2.x <= maxStarLabelX &&
                     star.PosRatio.y >= 0.2f && star.PosRatio.y <= 0.9f)
                 {
                     star.CanShowStaff = true;
                     canShowStaffStars.Add(star);
                     star.SetStaffLabelActive(true);
+                    starObj.transform.SetSiblingIndex(0);
                 }
 
                 star.UpdateFromScreenRatio(panelRectTransform, 1);
@@ -102,6 +113,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             HideAllStaffLabel(false);
             staffShowingStars.Clear();
+            staffLabelCountInGroupDict.Clear();
 
             if (staffs is null || staffs.Length == 0)
             {
@@ -125,7 +137,8 @@ namespace CyanStars.Gameplay.MusicGame
                 }
             }
 
-            currentShowingGroupId = 1;
+            currentShowingGroupId = 0;
+            Debug.Log($"Staff分组完成，共{groupCount}组");
         }
 
         public void ShowNextStaffGroup()
@@ -136,17 +149,38 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
-            int next = currentShowingGroupId + 1;
-            currentShowingGroupId = next > groupCount ? 1 : next;
+            if (groupCount == 1)
+            {
+                if (currentShowingGroupId == 0)
+                {
+                    currentShowingGroupId = staffShowingStars.First().GroupId;
+                    RefreshStaffLabelRender(true, true);
+                }
 
-            RefreshStaffLabelRender(true, true);
+                return;
+            }
+            else
+            {
+                int next = currentShowingGroupId + 1;
+                currentShowingGroupId = next > groupCount ? 1 : next;
+
+                RefreshStaffLabelRender(true, true);
+            }
+
         }
 
-        public void ResetShowingGroup() => currentShowingGroupId = groupCount == 0 ? 0 : 1;
-
-        public void OnUpdate()
+        public void ResetShowingGroup()
         {
+            currentShowingGroupId = 0;
+            RefreshStaffLabelRender(false, true);
+        }
 
+        public void OnUpdate(float ratio)
+        {
+            foreach (var star in stars)
+            {
+                star.UpdateFromScreenRatio(panelRectTransform, ratio);
+            }
         }
 
         private bool SetGroup(string duty, string name, int groupId)
@@ -207,7 +241,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private Rect GetStaffLabelRect(StarR star)
         {
-            var pos = (star.PosRatio + star.PosParallax) * panelRectTransform.rect.size;
+            var pos = star.CalculatePosFormScreenRatio(panelRectTransform, 2);
             var size = star.StaffLabel.CollisionArea.rect.size;
 
             return new Rect(pos, size);

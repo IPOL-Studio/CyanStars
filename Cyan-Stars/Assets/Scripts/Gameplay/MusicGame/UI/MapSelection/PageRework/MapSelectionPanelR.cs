@@ -23,6 +23,9 @@ namespace CyanStars.Gameplay.MusicGame
         private Dictionary<Type, IMapSelectionPage> pageDict;
         private Stack<IMapSelectionPage> pageStack = new Stack<IMapSelectionPage>();
 
+        private float pageRatio;
+        private Tween starTween;
+
         public MapItemData CurrentSelectedMap { get; set; }
 
         public void ChangePage<T>() where T : IMapSelectionPage
@@ -40,6 +43,14 @@ namespace CyanStars.Gameplay.MusicGame
             };
 
             var currentPage = pageStack.Count > 0 ? pageStack.Peek() : null;
+
+            if (starTween?.IsPlaying() ?? false)
+                starTween.Kill(false);
+
+            starTween = DOTween.To(() => pageRatio, x => pageRatio = x, pageRatio + 1, args.FadeTime)
+                .SetEase(args.AnimationEase)
+                .OnUpdate(() => StarController.OnUpdate(pageRatio))
+                .OnComplete(() =>starTween = null);
 
             currentPage?.OnExit(args);
 
@@ -76,18 +87,11 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 if (pageStack.Count > 1)
                 {
-                    var args = new MapSelectionPageChangeArgs()
-                    {
-                        FadeTime = 1.5f,
-                        AnimationEase = Ease.OutQuart
-                    };
-
-                    pageStack.Pop().OnExit(args);
-                    pageStack.Peek().OnEnter(args);
+                    BackToPrePage();
                 }
                 else if (pageStack.Count == 1)
                 {
-
+                    // TODO: 返回到上一个页面
                 }
             });
         }
@@ -98,9 +102,24 @@ namespace CyanStars.Gameplay.MusicGame
             StarController.GenerateStars();
         }
 
-        private void Update()
+        private void BackToPrePage()
         {
-            StarController.OnUpdate();
+            var args = new MapSelectionPageChangeArgs()
+            {
+                FadeTime = 1.5f,
+                AnimationEase = Ease.OutQuart
+            };
+
+            if (starTween?.IsPlaying() ?? false)
+                starTween.Kill(false);
+
+            starTween = DOTween.To(() => pageRatio, x => pageRatio = x, pageRatio - 1, args.FadeTime)
+                .SetEase(args.AnimationEase)
+                .OnUpdate(() => StarController.OnUpdate(pageRatio))
+                .OnComplete(() =>starTween = null);
+
+            pageStack.Pop().OnExit(args);
+            pageStack.Peek().OnEnter(args);
         }
     }
 

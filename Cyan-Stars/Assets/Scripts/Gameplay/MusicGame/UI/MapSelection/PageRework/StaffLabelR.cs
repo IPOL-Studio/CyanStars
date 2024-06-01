@@ -28,6 +28,7 @@ namespace CyanStars.Gameplay.MusicGame
 
 
         private CanvasGroup canvasGroup;
+        private Tween tween;
 
         public string DutyText
         {
@@ -69,13 +70,18 @@ namespace CyanStars.Gameplay.MusicGame
 
         public void SetRender(bool isAble, bool isFade)
         {
+            if (tween?.IsPlaying() ?? false)
+                tween.Kill(false);
+
             if (isAble)
             {
-                gameObject.SetActive(true);
+                canvasGroup.interactable = true;
                 if (isFade)
                 {
                     canvasGroup.alpha = 0;
-                    canvasGroup.DOFade(1, gradientTime).SetEase(Ease.OutQuart);
+                    tween = canvasGroup.DOFade(1, gradientTime)
+                                       .SetEase(Ease.OutQuart)
+                                       .OnComplete(() => tween = null);
                 }
                 else
                 {
@@ -86,12 +92,18 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 if (isFade)
                 {
-                    canvasGroup.DOFade(0, gradientTime).SetEase(Ease.OutQuart).OnComplete(() => gameObject.SetActive(false));
+                    tween = canvasGroup.DOFade(0, gradientTime)
+                                       .SetEase(Ease.OutQuart)
+                                       .OnComplete(() =>
+                                        {
+                                            tween = null;
+                                            canvasGroup.interactable = false;
+                                        });
                 }
                 else
                 {
                     canvasGroup.alpha = 0;
-                    gameObject.SetActive(false);
+                    canvasGroup.interactable = false;
                 }
             }
         }
@@ -99,6 +111,8 @@ namespace CyanStars.Gameplay.MusicGame
         private void Awake()
         {
             canvasGroup = GetComponent<CanvasGroup>();
+            canvasGroup.alpha = 0;
+            canvasGroup.interactable = false;
             gameObject.SetActive(false);
         }
 
@@ -108,7 +122,8 @@ namespace CyanStars.Gameplay.MusicGame
         private bool IsEnglishLike(char c)
         {
             // 根据需求扩展英文字符集
-            return char.IsLetterOrDigit(c) || char.IsUpper(c) || // 英文字母或数字
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || // 英文字母
+                   (c >= '0' && c <= '9') || // 数字
                    (c >= '\u0020' && c <= '\u007E') || // 基本符号
                    (c >= '\u2000' && c <= '\u206F') || // 常用标点
                    (c >= '\u3000' && c <= '\u303F');   // CJK标点

@@ -1,3 +1,4 @@
+using CyanStars.EditorExtension;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
@@ -47,14 +48,10 @@ namespace CyanStars.Gameplay.MusicGame
         public float AlphaParallax { get; set; }
 
         /// <summary>
-        /// 大小灵敏度
-        /// </summary>
-        public Vector3 SizeParallax { get; set; }
-
-        /// <summary>
         /// 该组件在可用页时的位置比例（以左下为原点，相对于PanelWidth）
         /// </summary>
-        public Vector3 PosRatio { get; set; }
+        [Active(ActiveMode.Edit)]
+        public Vector3 PosRatio;
 
         public float EnabledAlpha { get; set; } = 1f;
 
@@ -85,8 +82,8 @@ namespace CyanStars.Gameplay.MusicGame
 
         public void UpdateFromScreenRatio(RectTransform root, float ratio)
         {
-            UpdatePos(root, ratio);
-            UpdateAlpha(ratio);
+            rectTransform.localPosition = CalculatePosFormScreenRatio(root, ratio);
+            Alpha = CalculateAlpha(ratio);
 
             if (Alpha <= 0.1f)
             {
@@ -94,17 +91,18 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
-        private void UpdatePos(RectTransform root, float ratio)
+        public Vector3 CalculatePosFormScreenRatio(RectTransform root, float ratio)
         {
-            float x = (PosRatio.x + ratio * PosParallax.x) * root.sizeDelta.x;
-            float y = PosRatio.y * root.sizeDelta.y;
+            var panelSize = root.rect.size;
+            float x = (PosRatio.x + ratio * PosParallax.x) * panelSize.x;
+            float y = PosRatio.y * panelSize.y;
 
-            rectTransform.localPosition = new Vector3(x, y, PosRatio.z);
+            return new Vector3(x, y, PosRatio.z);
         }
 
-        private void UpdateAlpha(float ratio)
+        public float CalculateAlpha(float ratio)
         {
-            Alpha = EnabledAlpha - AlphaParallax * ratio;
+            return EnabledAlpha - AlphaParallax * ratio;
         }
     }
 }
