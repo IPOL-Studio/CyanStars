@@ -11,21 +11,21 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private const int IntervalTime = 6;
         /// <summary>
-        /// 每个条带初始&最小高度，高度样式待修改
+        /// 每个条带初始&最小高度比例，高度样式待修改
         /// </summary>
-        private const float MinHeight = 10f;
+        private const float MinHeight = 0f;
         /// <summary>
-        /// 限定每个条带的最大高度，样式待修改
+        /// 限定每个条带的最大高度比例，样式待修改
         /// </summary>
-        private const float MaxHeighe = 50f;
+        private const float MaxHeighe = 1f;
         /// <summary>
-        /// 每次判定增加这个高度，高度样式待修改
+        /// 每次判定增加这个高度比例，高度样式待修改
         /// </summary>
-        private const float AddF = 5f;
+        private const float AddF = 0.25f;
         /// <summary>
-        /// 每帧都逐渐减少高度，每秒钟总共减少这个高度，高度样式待修改
+        /// 每帧都逐渐减少高度比例，每秒钟总共减少这个高度，高度样式待修改
         /// </summary>
-        private const float ReduceF = 5f;
+        private const float ReduceF = 0.1f;
 
         /// <summary>
         /// 左右边界代表最大的时间范围（单位ms）
@@ -72,8 +72,8 @@ namespace CyanStars.Gameplay.MusicGame
         public static void AddHeight(float distanceTime)
         {
             int index;
-            distanceTime = -distanceTime;   //这里是由于distanceTime正负与其他代码不一致引起的，待修改 https://github.com/IPOL-Studio/CyanStars/issues/231
-            distanceTime *= 1000;   //将s转换为ms
+            distanceTime = -distanceTime;   // 这里是由于distanceTime正负与其他代码不一致引起的，ToFix https://github.com/IPOL-Studio/CyanStars/issues/231
+            distanceTime *= 1000;   // 将s转换为ms
             if (distanceTime <= -rangeTime)
             {
                 // 超出下界时选择最左边的一条条带
