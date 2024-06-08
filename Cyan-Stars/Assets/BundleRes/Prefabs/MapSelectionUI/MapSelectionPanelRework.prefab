@@ -874,7 +874,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc27d4e74a66dac46a9380f40f4585ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RelativeExitTargetPos: {x: -400, y: 0, z: 0}
+  RelativeExitTargetPos: {x: -400, y: 0}
 --- !u!1 &2571504490415700784
 GameObject:
   m_ObjectHideFlags: 0
@@ -1614,7 +1614,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 358.00003}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &5391506938459659443
@@ -1758,7 +1758,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc27d4e74a66dac46a9380f40f4585ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RelativeExitTargetPos: {x: -400, y: 0, z: 0}
+  RelativeExitTargetPos: {x: -400, y: 0}
 --- !u!1 &5391506939126287166
 GameObject:
   m_ObjectHideFlags: 0
@@ -3587,6 +3587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startButton: {fileID: 7036043425659756973}
+  staffGroupKeepTime: 3
 --- !u!1 &8553509113708968173
 GameObject:
   m_ObjectHideFlags: 0

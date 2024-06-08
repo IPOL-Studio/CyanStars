@@ -135,6 +135,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             curFirstItemAngle = OffsetAngle;
             Items.Clear();
+            scrollRect.content.anchoredPosition = new Vector2(0, 0);
         }
 
         public int GetCurrentCentralItemIndex()

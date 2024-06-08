@@ -1,4 +1,4 @@
-﻿// TODO: TO DE DELETED
+﻿// TODO: TO BE DELETED
 using System;
 using CatAsset.Runtime;
 
