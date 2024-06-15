@@ -71,6 +71,9 @@ namespace CyanStars.Gameplay.MusicGame
                 //初始化音游相关 Logger
                 InitLogger();
 
+                //初始化误差条数据
+                InitDistanceBarData();
+
                 //加载打击音效
                 await LoadPromptTone();
 
@@ -250,6 +253,14 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         /// <summary>
+        /// 初始化误差条数据
+        /// </summary>
+        private void InitDistanceBarData()
+        {
+            dataModule.InitDistanceBarData(settingsModule.EvaluateRange);
+        }
+
+        /// <summary>
         /// 加载打击音效
         /// </summary>
         private async Task LoadPromptTone()
@@ -375,6 +386,7 @@ namespace CyanStars.Gameplay.MusicGame
             lastTime = audioSource.time;
 
             timeline.OnUpdate(timelineDeltaTime);
+            dataModule.DistanceBarData.ReduceHeight(deltaTime);
 
             //音游流程中 按下ESC打开暂停
             if (Input.GetKeyDown(KeyCode.Escape))

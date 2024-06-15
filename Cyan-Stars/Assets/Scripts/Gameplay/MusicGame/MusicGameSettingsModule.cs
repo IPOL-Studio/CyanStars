@@ -100,7 +100,6 @@ namespace CyanStars.Gameplay.MusicGame
             };
 
             Debug.Log($"Update evaluate mode succeed, current evaluate range: {EvaluateRange}");
-            DistanceBar.CreateBar(EvaluateRange);
         }
     }
 }

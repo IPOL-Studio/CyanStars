@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public static class DistanceBar
+    public class DistanceBarData
     {
         /// <summary>
         /// 每个条带占据的误差时间（单位ms）
@@ -30,22 +30,28 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 左右边界代表最大的时间范围（单位ms）
         /// </summary>
-        private static float rangeTime;
+        private float rangeTime;
         /// <summary>
         /// 最中间一条条带的 Index
         /// </summary>
-        private static int centerIndex;
+        private int centerIndex;
         /// <summary>
         /// 用数组表示条带组中每个条带对应的高度
         /// </summary>
-        public static float[] BarsHeight;
+        public float[] BarsHeight;
+
+        /// <summary>
+        /// 下一帧是否需要更新条带高度
+        /// </summary>
+        public bool HasHeightChangedFlag { get; private set; }
+
 
 
         /// <summary>
         /// 根据判定区间创建条带
         /// </summary>
         /// <param name="evaluateRange">当前判定区间</param>
-        public static void CreateBar(EvaluateRange evaluateRange)
+        public DistanceBarData(EvaluateRange evaluateRange)
         {
             // 以 Bad 或 Right 两者中绝对值较小的一个作为边界
             rangeTime = Mathf.Min(Mathf.Abs(evaluateRange.Bad), Mathf.Abs(evaluateRange.Right)) * 1000;
@@ -62,6 +68,8 @@ namespace CyanStars.Gameplay.MusicGame
                 BarsHeight[i] = MinHeight;
             }
 
+            HasHeightChangedFlag = true;
+
             Debug.Log($"根据分割时间{IntervalTime}，创建了{barsNum}个条带");
         }
 
@@ -69,7 +77,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// 根据传入的误差时间，增加对应条带的高度
         /// </summary>
         /// <param name="distanceTime">误差时间（单位s）</param>
-        public static void AddHeight(float distanceTime)
+        public void AddHeight(float distanceTime)
         {
             int index;
             distanceTime = -distanceTime;   // 这里是由于distanceTime正负与其他代码不一致引起的，ToFix https://github.com/IPOL-Studio/CyanStars/issues/231
@@ -90,6 +98,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             BarsHeight[index] = Mathf.Min(BarsHeight[index] + AddF, MaxHeighe);
+            HasHeightChangedFlag = true;
 
             Debug.Log($"条带组长度更新：{BarsHeight}");
         }
@@ -97,7 +106,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// （方法重载）不传入误差时间，而作为Miss判定处理
         /// </summary>
-        public static void AddHeight()
+        public void AddHeight()
         {
             int index;
 
@@ -105,6 +114,7 @@ namespace CyanStars.Gameplay.MusicGame
             index = BarsHeight.Length - 1;
 
             BarsHeight[index] = Mathf.Min(BarsHeight[index] + AddF, MaxHeighe);
+            HasHeightChangedFlag = true;
 
             Debug.Log($"条带组长度更新：{BarsHeight}");
         }
@@ -113,7 +123,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// 根据时间回落条带高度
         /// </summary>
         /// <param name="deltaTime">经过的时间</param>
-        public static void ReduceHeight(float deltaTime)
+        public void ReduceHeight(float deltaTime)
         {
             for (int i = 0; i < BarsHeight.Length; i++)
             {
@@ -122,7 +132,19 @@ namespace CyanStars.Gameplay.MusicGame
 
                 BarsHeight[i] -= ReduceF * deltaTime;
                 BarsHeight[i] = Mathf.Max(BarsHeight[i], MinHeight);    // BarsHeight[i] 必须大于 RawHeight
+                HasHeightChangedFlag = true;
             }
+        }
+
+        /// <summary>
+        /// 查询是否需要更新条带，并重置flag
+        /// </summary>
+        /// <returns>需要更新条带</returns>
+        public bool GetAndResetChangeFlag()
+        {
+            bool rawHasHeightChanged = HasHeightChangedFlag;
+            HasHeightChangedFlag = false;
+            return rawHasHeightChanged;
         }
     }
 }
