@@ -29,12 +29,18 @@ namespace CyanStars.Graphics
 
             public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
             {
+                if (renderingData.cameraData.cameraType == CameraType.SceneView)
+                    return;
+
                 cameraColor = renderingData.cameraData.renderer.cameraColorTarget;
                 cmd.GetTemporaryRT(tempRT.id, renderingData.cameraData.cameraTargetDescriptor);
             }
 
             public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
             {
+                if (renderingData.cameraData.cameraType == CameraType.SceneView)
+                    return;
+
                 CommandBuffer cmd = CommandBufferPool.Get(profilerTag);
                 using (new ProfilingScope(cmd, new ProfilingSampler(profilerTag)))
                 {
