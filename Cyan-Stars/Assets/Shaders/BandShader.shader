@@ -4,13 +4,11 @@ Shader "Shaders/BandShader"
     {
         _Size ("整体大小", int) = 10
         _Aspect ("条带数", float) = 5
-        _YSizeOffset ("误差值", float) = 0
         _XOffset ("左右偏移", float) = 0
         _YOffset ("上下偏移", float) = 0
         _Width ("条带左右范围限制", float) = 0
         _Color ("条带颜色", color) = (1, 1, 1, 1)
         _GeadientColor ("渐变颜色", color) = (1, 1, 1, 1)
-        _Seed ("随机种", float) = 0
         _GeadientOffset ("渐变长度", float) = 0
     }
     SubShader
@@ -33,14 +31,13 @@ Shader "Shaders/BandShader"
 
             float _Size;
             float _Aspect;
-            float _YSizeOffset;
             float _XOffset;
             float _YOffset;
             float _Width;
             float4 _Color;
             float4 _GeadientColor;
-            float _Seed;
             float _GeadientOffset;
+            StructuredBuffer<float> grid;
 
             struct appdata
             {
@@ -62,13 +59,6 @@ Shader "Shaders/BandShader"
                 return o;
             }
 
-            float hash12(float2 p)
-            {
-                float3 p3 = frac(float3(p.xyx) * .1031);
-                p3 += dot(p3, p3.yzx + 33.33);
-                return frac((p3.x + p3.y) * p3.z);
-            }
-
             float4 frag(v2f i) : SV_Target
             {
                 float2 aspect = float2(_Aspect, 1);
@@ -78,21 +68,20 @@ Shader "Shaders/BandShader"
                 float2 gridID = float2(floor(uv));
                 float2 GridCount = aspect * _Size;
 
-                float ySize = 0.5 - abs((gridID.x + 1) / GridCount.x - 0.5);
                 float yMask = step(gridID.y, GridCount.y - 1) - step(gridID.y, GridCount.y - 2);
-                float gridNoise = hash12(gridID + _Seed) * 0.1;
+                float gridGrow = grid[gridID.x];
 
                 float x = step(abs(gridUV.x), 0.2);
                 float yBase = step(abs(gridUV.y), 0.01);
-                float y = saturate(step(abs(gridUV.y), clamp(0, 0.5, ySize + _YSizeOffset * 0.1 + gridNoise)) + yBase);
+                float y = saturate(step(abs(gridUV.y), clamp(0, 0.5, gridGrow)) + yBase);
                 y *= step(abs(i.uv.x - 0.5), _Width * 0.1);
 
                 float mask = x * y * yMask;
                 float gradient = smoothstep(1.1, 0.9 + _GeadientOffset * 0.01, i.uv.y);
 
-                float4 col = SAMPLE_TEXTURE2D(_ColorTexture, sampler_ColorTexture, i.uv.xy);
-                col.rgb = col.rgb * gradient + _GeadientColor.rgb * (1 - gradient);
-                return col * (1 - mask) + float4(_Color.rgb * _Color.a + col.rgb * (1 - _Color.a), 1) * mask;
+                float4 bgCol = SAMPLE_TEXTURE2D(_ColorTexture, sampler_ColorTexture, i.uv.xy);
+                float4 gradientCol = bgCol * gradient + _GeadientColor * (1 - gradient);
+                return gradientCol * (1 - mask) + float4(_Color.rgb * _Color.a + bgCol.rgb * (1 - _Color.a), 1) * mask;
             }
             ENDHLSL
         }

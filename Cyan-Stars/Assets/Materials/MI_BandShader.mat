@@ -31,7 +31,7 @@ Material:
     - _Width: 1.55
     - _XOffset: -0.5
     - _YOffset: 0.23
-    - _YSizeOffset: -3.82
+    - _YSizeOffset: -5.02
     m_Colors:
     - _Color: {r: 0, g: 0, b: 0, a: 0.5019608}
     - _GeadientColor: {r: 0, g: 0, b: 0, a: 0.34901962}
