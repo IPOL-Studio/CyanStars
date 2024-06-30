@@ -19,6 +19,10 @@ namespace CyanStars.Graphics.Editor
             {
                 bandGridBuffer.GenerateBuffer();
             }
+            if (GUILayout.Button("Update"))
+            {
+                bandGridBuffer.UpdateBuffer();
+            }
         }
     }
 }

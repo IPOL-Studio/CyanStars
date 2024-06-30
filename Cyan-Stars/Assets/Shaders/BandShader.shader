@@ -2,11 +2,8 @@ Shader "Shaders/BandShader"
 {
     Properties
     {
-        _Size ("整体大小", int) = 10
-        _Aspect ("条带数", float) = 5
-        _XOffset ("左右偏移", float) = 0
-        _YOffset ("上下偏移", float) = 0
-        _Width ("条带左右范围限制", float) = 0
+        _Aspect ("xy=左右上下比例z=左右偏移w=上下偏移", vector) = (100, 10, 0.5, 0.2)
+        _Width ("左右隐藏宽度", int) = 0
         _Color ("条带颜色", color) = (1, 1, 1, 1)
         _GeadientColor ("渐变颜色", color) = (1, 1, 1, 1)
         _GeadientOffset ("渐变长度", float) = 0
@@ -29,11 +26,8 @@ Shader "Shaders/BandShader"
             TEXTURE2D(_ColorTexture);
             SAMPLER(sampler_ColorTexture);
 
-            float _Size;
-            float _Aspect;
-            float _XOffset;
-            float _YOffset;
-            float _Width;
+            float4 _Aspect;
+            int _Width;
             float4 _Color;
             float4 _GeadientColor;
             float _GeadientOffset;
@@ -61,24 +55,34 @@ Shader "Shaders/BandShader"
 
             float4 frag(v2f i) : SV_Target
             {
-                float2 aspect = float2(_Aspect, 1);
-                float2 offset = float2(_XOffset, _YOffset);
-                float2 uv = i.uv * aspect * _Size + offset;
+                float2 aspect = _Aspect.xy;
+                float2 offset = float2(_Aspect.z, _Aspect.w);
+                float2 uv = i.uv * aspect + offset;
                 float2 gridUV = float2(frac(uv)) - 0.5;
                 float2 gridID = float2(floor(uv));
-                float2 GridCount = aspect * _Size;
 
-                float yMask = step(gridID.y, GridCount.y - 1) - step(gridID.y, GridCount.y - 2);
-                float gridGrow = grid[gridID.x];
+                float gradient = smoothstep(1.1, 0.9 - _GeadientOffset * 0.01, i.uv.y);
+                float yMask = step(gridID.y, aspect.y - 1) - step(gridID.y, aspect.y - 2);
 
+                //如果不在条带的范围就提前退出
+                if (gridID.x < _Width || gridID.x > aspect.x - _Width || !yMask)
+                {
+                    float4 bgCol = SAMPLE_TEXTURE2D(_ColorTexture, sampler_ColorTexture, i.uv.xy);
+                    return bgCol * gradient + _GeadientColor * (1 - gradient);
+                }
+
+                //读取偏移量
+                float gridGrow = grid[gridID.x - _Width];
+                //每个小格子的xmask
                 float x = step(abs(gridUV.x), 0.2);
+                //最小的ymask
                 float yBase = step(abs(gridUV.y), 0.01);
+                //每个小格子的ymask
                 float y = saturate(step(abs(gridUV.y), clamp(0, 0.5, gridGrow)) + yBase);
-                y *= step(abs(i.uv.x - 0.5), _Width * 0.1);
 
                 float mask = x * y * yMask;
-                float gradient = smoothstep(1.1, 0.9 + _GeadientOffset * 0.01, i.uv.y);
 
+                //采样颜色
                 float4 bgCol = SAMPLE_TEXTURE2D(_ColorTexture, sampler_ColorTexture, i.uv.xy);
                 float4 gradientCol = bgCol * gradient + _GeadientColor * (1 - gradient);
                 return gradientCol * (1 - mask) + float4(_Color.rgb * _Color.a + bgCol.rgb * (1 - _Color.a), 1) * mask;
