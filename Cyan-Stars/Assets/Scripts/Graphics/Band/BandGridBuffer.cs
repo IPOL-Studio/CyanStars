@@ -6,7 +6,8 @@ namespace CyanStars.Graphics.Band
 {
     public class BandGridBuffer : MonoBehaviour
     {
-        //实际的Count会+1因为Shader那边的特性,为了直观就写作20，这里的20是_Aspect.x-2*_Width
+        //实际的Count会+1因为Shader那边的特性,为了直观就写作20
+        //这里的Count指一侧的条带数量，最大是Aspect.x/2
         public int Count = 20;
         public Vector4 Aspect;
         public Material Material;
@@ -25,10 +26,11 @@ namespace CyanStars.Graphics.Band
         public void GenerateBuffer()
         {
             Release();
-            offsets = new float[Count + 1];
-            computeBuffer = new ComputeBuffer(Count + 1, sizeof(float), ComputeBufferType.Default);
+            offsets = new float[Count * 2 + 1];
+            computeBuffer = new ComputeBuffer(Count * 2 + 1, sizeof(float), ComputeBufferType.Default);
             Material.SetBuffer("grid", computeBuffer);
             Material.SetVector("_Aspect", Aspect);
+            Material.SetFloat("_Width", Aspect.x / 2 - Count);
         }
 
         public void Release()

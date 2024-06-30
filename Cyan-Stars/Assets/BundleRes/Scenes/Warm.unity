@@ -1752,7 +1752,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8e4235b69d312548a811ec9237be712, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Count: 20
+  Count: 10
   Aspect: {x: 100, y: 10, z: 0.5, w: 0.2}
   Material: {fileID: 2100000, guid: 5c46b237df4da9043972ce0b22400b9e, type: 2}
 --- !u!1 &1932090984
