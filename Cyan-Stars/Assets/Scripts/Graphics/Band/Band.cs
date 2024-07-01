@@ -7,11 +7,11 @@ namespace CyanStars.Graphics.Band
     {
         public struct BandData
         {
-            public int count;
-            public int xSize;
-            public int ySize;
-            public float xOffset;
-            public float yOffset;
+            public int Count;
+            public int XSize;
+            public int YSize;
+            public float XOffset;
+            public float YOffset;
         }
 
         private bool isDisposed;
@@ -19,10 +19,10 @@ namespace CyanStars.Graphics.Band
 
         public Band(BandData data)
         {
-            computeBuffer = new ComputeBuffer(data.count, sizeof(float));
+            computeBuffer = new ComputeBuffer(data.Count + 1, sizeof(float));
             Shader.SetGlobalBuffer("grid", computeBuffer);
-            Shader.SetGlobalVector("_Aspect", new Vector4(data.xSize, data.ySize, data.xOffset, data.yOffset));
-            Shader.SetGlobalInt("_Width", data.xSize / 2 - data.count);
+            Shader.SetGlobalVector("_Aspect", new Vector4(data.XSize, data.YSize, data.XOffset, data.YOffset));
+            Shader.SetGlobalInt("_Width", (data.XSize - data.Count) / 2);
         }
 
         public void UpdateBand(float[] bandHeights)

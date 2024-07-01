@@ -2,8 +2,6 @@ Shader "Shaders/BandShader"
 {
     Properties
     {
-        _Aspect ("xy=左右上下比例z=左右偏移w=上下偏移", vector) = (100, 10, 0.5, 0.2)
-        _Width ("左右隐藏宽度", int) = 0
         _Color ("条带颜色", color) = (1, 1, 1, 1)
         _GeadientColor ("渐变颜色", color) = (1, 1, 1, 1)
         _GeadientOffset ("渐变长度", float) = 0
