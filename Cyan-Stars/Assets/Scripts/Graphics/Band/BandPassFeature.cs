@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.Serialization;
 
 namespace CyanStars.Graphics.Band
 {
@@ -60,7 +59,7 @@ namespace CyanStars.Graphics.Band
         }
 
         private BandRenderPass bandPass;
-        public Settings settings;
+        [SerializeField] private Settings settings;
 
         public override void Create()
         {

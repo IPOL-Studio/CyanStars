@@ -5,8 +5,10 @@ using CatLrcParser;
 using CyanStars.Framework;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.FSM;
+using CyanStars.Framework.Logging;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Base;
+using CyanStars.Graphics.Band;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -34,6 +36,9 @@ namespace CyanStars.Gameplay.MusicGame
         private Transform sceneCameraTrans;
         private AudioSource audioSource;
 
+        //----场景后处理特效相关--------
+        private Band band;
+
         //----音游相关数据--------
         private MapTimelineData timelineData;
         private string lrcText;
@@ -47,6 +52,7 @@ namespace CyanStars.Gameplay.MusicGame
         //----流程逻辑相关--------
         private BaseInputReceiver inputReceiver;
         private float lastTime = -float.Epsilon;
+        private int preDistanceBarChangedCount;
 
 
         public override async void OnEnter()
@@ -102,6 +108,9 @@ namespace CyanStars.Gameplay.MusicGame
             sceneCameraTrans = null;
             audioSource = null;
             promptToneCollection = null;
+
+            band?.Dispose();
+            band = null;
 
             timelineData = null;
             lrcText = null;
@@ -258,6 +267,22 @@ namespace CyanStars.Gameplay.MusicGame
         private void InitDistanceBarData()
         {
             dataModule.InitDistanceBarData(settingsModule.EvaluateRange);
+
+            var bandData = new Band.BandData
+            {
+                Count = dataModule.DistanceBarData.Length,
+                XSize = 100,
+                YSize = 10,
+                XOffset = 0.5f,
+                YOffset = 0.2f
+            };
+
+            if (!Band.TryCreate(bandData, out Band band))
+            {
+                dataModule.Logger.LogError("band 创建失败，可能被其他地方占用");
+            }
+
+            this.band = band;
         }
 
         /// <summary>
@@ -380,18 +405,32 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 更新时间轴
         /// </summary>
-        private void UpdateTimeline(float deltaTime,object userdata)
+        private void UpdateTimeline(float deltaTime, object userdata)
         {
             float timelineDeltaTime = audioSource.time - lastTime;
             lastTime = audioSource.time;
 
             timeline.OnUpdate(timelineDeltaTime);
-            dataModule.DistanceBarData.ReduceHeight(deltaTime);
+            UpdateDistanceBar(timelineDeltaTime);
 
             //音游流程中 按下ESC打开暂停
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 GameRoot.UI.OpenUIPanel<MusicGamePausePanel>(null);
+            }
+        }
+
+        /// <summary>
+        /// 更新判定误差指示
+        /// </summary>
+        private void UpdateDistanceBar(float deltaTime)
+        {
+            var data = dataModule.DistanceBarData;
+            data.ReduceHeight(deltaTime);
+            if (data.IsDataChanged(preDistanceBarChangedCount))
+            {
+                band.UpdateBand(data.BarHeights);
+                preDistanceBarChangedCount = data.BarDataChangedCount;
             }
         }
 

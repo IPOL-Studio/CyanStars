@@ -17,7 +17,11 @@ namespace CyanStars.Graphics.Band
         private bool isDisposed;
         private ComputeBuffer computeBuffer;
 
-        public Band(BandData data)
+        // 现在正在设置 Band 的全局变量
+        // 为避免冲突，先做个实际上只允许被持有一个的单例
+        private static bool isCreated;
+
+        private Band(BandData data)
         {
             computeBuffer = new ComputeBuffer(data.Count, sizeof(float));
             Shader.SetGlobalBuffer("grid", computeBuffer);
@@ -27,7 +31,7 @@ namespace CyanStars.Graphics.Band
 
         public void UpdateBand(float[] bandHeights)
         {
-            if (computeBuffer == null || computeBuffer.count != bandHeights.Length)
+            if (computeBuffer == null || bandHeights == null || computeBuffer.count != bandHeights.Length)
             {
                 return;
             }
@@ -38,8 +42,9 @@ namespace CyanStars.Graphics.Band
         {
             if (!isDisposed)
             {
-                computeBuffer.Release();
+                computeBuffer?.Release();
                 isDisposed = true;
+                isCreated = false;
             }
         }
 
@@ -52,6 +57,19 @@ namespace CyanStars.Graphics.Band
         ~Band()
         {
             Dispose(false);
+        }
+
+        public static bool TryCreate(BandData data, out Band band)
+        {
+            if (isCreated)
+            {
+                band = null;
+                return false;
+            }
+
+            band = new Band(data);
+            isCreated = true;
+            return true;
         }
     }
 }

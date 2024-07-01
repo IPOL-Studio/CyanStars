@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
@@ -17,7 +15,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 限定每个条带的最大高度比例，样式待修改
         /// </summary>
-        private const float MaxHeighe = 1f;
+        private const float MaxHeight = 1f;
         /// <summary>
         /// 每次判定增加这个高度比例，高度样式待修改
         /// </summary>
@@ -36,15 +34,15 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private int centerIndex;
         /// <summary>
-        /// 用数组表示条带组中每个条带对应的高度
+        /// 每个条带对应的高度，范围 0 - 1
         /// </summary>
-        public float[] BarsHeight;
+        internal float[] BarHeights;
 
-        /// <summary>
-        /// 下一帧是否需要更新条带高度
-        /// </summary>
-        public bool HasHeightChangedFlag { get; private set; }
+        public int BarDataChangedCount { get; private set; }
 
+
+        public float this[int index] => BarHeights[index];
+        public int Length => BarHeights.Length;
 
 
         /// <summary>
@@ -60,15 +58,13 @@ namespace CyanStars.Gameplay.MusicGame
             // 创建条带，条带总数必定为奇数
             int barsNum = Mathf.CeilToInt(rangeTime / IntervalTime) * 2 - 1;
             centerIndex = Mathf.FloorToInt(barsNum / 2);  // 这个Index位于数组&屏幕中央
-            BarsHeight = new float[barsNum];
+            BarHeights = new float[barsNum];
 
             for (int i = 0; i < barsNum; i++)
             {
                 // 初始化条带长度
-                BarsHeight[i] = MinHeight;
+                BarHeights[i] = MinHeight;
             }
-
-            HasHeightChangedFlag = true;
 
             Debug.Log($"根据分割时间{IntervalTime}，创建了{barsNum}个条带");
         }
@@ -90,33 +86,30 @@ namespace CyanStars.Gameplay.MusicGame
             else if (distanceTime >= rangeTime)
             {
                 // 超出上界时选择最右边的一条条带
-                index = BarsHeight.Length - 1;
+                index = BarHeights.Length - 1;
             }
             else
             {
                 index = centerIndex + ((int)distanceTime - IntervalTime / 2) / IntervalTime;
             }
 
-            BarsHeight[index] = Mathf.Min(BarsHeight[index] + AddF, MaxHeighe);
-            HasHeightChangedFlag = true;
+            BarHeights[index] = Mathf.Min(BarHeights[index] + AddF, MaxHeight);
+            BarDataChangedCount++;
 
-            Debug.Log($"条带组长度更新：{BarsHeight}");
+            Debug.Log($"条带组长度更新：{BarHeights}");
         }
 
-        /// <summary>
-        /// （方法重载）不传入误差时间，而作为Miss判定处理
-        /// </summary>
-        public void AddHeight()
+        public void AddHeightWithMiss()
         {
             int index;
 
             // miss 时选择最右边的一条条带
-            index = BarsHeight.Length - 1;
+            index = BarHeights.Length - 1;
 
-            BarsHeight[index] = Mathf.Min(BarsHeight[index] + AddF, MaxHeighe);
-            HasHeightChangedFlag = true;
+            BarHeights[index] = Mathf.Min(BarHeights[index] + AddF, MaxHeight);
+            BarDataChangedCount++;
 
-            Debug.Log($"条带组长度更新：{BarsHeight}");
+            Debug.Log($"条带组长度更新：{BarHeights}");
         }
 
         /// <summary>
@@ -125,26 +118,31 @@ namespace CyanStars.Gameplay.MusicGame
         /// <param name="deltaTime">经过的时间</param>
         public void ReduceHeight(float deltaTime)
         {
-            for (int i = 0; i < BarsHeight.Length; i++)
+            if (deltaTime <= 0)
             {
-                if (BarsHeight[i] - MinHeight < 0.001f)
+                Debug.Log("delta time should be great or equal 0");
+                return;
+            }
+
+            for (int i = 0; i < BarHeights.Length; i++)
+            {
+                if (BarHeights[i] - MinHeight < 0.001f)
                     continue;   // 差距够小时认为相等
 
-                BarsHeight[i] -= ReduceF * deltaTime;
-                BarsHeight[i] = Mathf.Max(BarsHeight[i], MinHeight);    // BarsHeight[i] 必须大于 RawHeight
-                HasHeightChangedFlag = true;
+                BarHeights[i] -= ReduceF * deltaTime;
+                BarHeights[i] = Mathf.Max(BarHeights[i], MinHeight);    // BarsHeight[i] 必须大于 RawHeight
             }
+
+            BarDataChangedCount++;
         }
 
         /// <summary>
         /// 查询是否需要更新条带，并重置flag
         /// </summary>
         /// <returns>需要更新条带</returns>
-        public bool GetAndResetChangeFlag()
+        public bool IsDataChanged(int preChangedCount)
         {
-            bool rawHasHeightChanged = HasHeightChangedFlag;
-            HasHeightChangedFlag = false;
-            return rawHasHeightChanged;
+            return preChangedCount < BarDataChangedCount;
         }
     }
 }

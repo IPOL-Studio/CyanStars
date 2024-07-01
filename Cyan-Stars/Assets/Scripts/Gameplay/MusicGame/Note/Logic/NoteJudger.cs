@@ -62,7 +62,7 @@ namespace CyanStars.Gameplay.MusicGame
                 LogJudgedInfo(new HoldNoteHeadJudgedInfo(data, et));
                 dataModule.MaxScore++;
                 dataModule.RefreshPlayingData(1, EvaluateHelper.GetScoreWithEvaluate(et) * data.GetMagnification(),
-                    et, distance);  
+                    et, distance);
             }
 
             return et;
@@ -73,7 +73,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static void HoldMiss(NoteData data)
         {
-            dataModule.DistanceBarData.AddHeight();
+            dataModule.DistanceBarData.AddHeightWithMiss();
             LogJudgedInfo(new HoldNoteJudgedInfo(data, EvaluateType.Miss, 0, 0));
 
             dataModule.MaxScore += 2;
@@ -163,7 +163,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static void ClickMiss(NoteData data)
         {
-            dataModule.DistanceBarData.AddHeight();
+            dataModule.DistanceBarData.AddHeightWithMiss();
             LogJudgedInfo(new ClickNoteJudgedInfo(data, EvaluateType.Miss, 0));
 
             dataModule.MaxScore += 2;

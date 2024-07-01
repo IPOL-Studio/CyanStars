@@ -15,7 +15,7 @@ public class BandExample : MonoBehaviour
         bandData.YSize = 10;
         bandData.XOffset = 0.5f;
         bandData.YOffset = 0.2f;
-        band = new Band(bandData);
+        Band.TryCreate(bandData, out band);
 
         bandHeights = new float[bandData.Count];
         for (int i = 0; i < bandHeights.Length; i++)
@@ -23,6 +23,11 @@ public class BandExample : MonoBehaviour
             bandHeights[i] = Random.Range(0, 0.5f);
         }
         band.UpdateBand(bandHeights);
+    }
+
+    void OnDestroy()
+    {
+        band.Dispose();
     }
 
 }
