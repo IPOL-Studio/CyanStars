@@ -63,7 +63,7 @@ Shader "Shaders/BandShader"
                 float yMask = step(gridID.y, aspect.y - 1) - step(gridID.y, aspect.y - 2);
 
                 //如果不在条带的范围就提前退出
-                if (gridID.x < _Width || gridID.x > aspect.x - _Width || !yMask)
+                if (gridID.x < _Width || gridID.x >= aspect.x - _Width || !yMask)
                 {
                     float4 bgCol = SAMPLE_TEXTURE2D(_ColorTexture, sampler_ColorTexture, i.uv.xy);
                     return bgCol * gradient + _GeadientColor * (1 - gradient);

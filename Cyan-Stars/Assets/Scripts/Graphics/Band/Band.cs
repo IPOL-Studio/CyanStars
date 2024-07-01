@@ -19,7 +19,7 @@ namespace CyanStars.Graphics.Band
 
         public Band(BandData data)
         {
-            computeBuffer = new ComputeBuffer(data.Count + 1, sizeof(float));
+            computeBuffer = new ComputeBuffer(data.Count, sizeof(float));
             Shader.SetGlobalBuffer("grid", computeBuffer);
             Shader.SetGlobalVector("_Aspect", new Vector4(data.XSize, data.YSize, data.XOffset, data.YOffset));
             Shader.SetGlobalInt("_Width", (data.XSize - data.Count) / 2);

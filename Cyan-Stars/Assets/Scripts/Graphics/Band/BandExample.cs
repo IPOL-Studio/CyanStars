@@ -17,7 +17,7 @@ public class BandExample : MonoBehaviour
         bandData.YOffset = 0.2f;
         band = new Band(bandData);
 
-        bandHeights = new float[bandData.Count + 1];
+        bandHeights = new float[bandData.Count];
         for (int i = 0; i < bandHeights.Length; i++)
         {
             bandHeights[i] = Random.Range(0, 0.5f);
