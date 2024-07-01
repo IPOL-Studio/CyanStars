@@ -37,6 +37,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         /// <summary>
         /// 当前逻辑层时间和判定时间的距离
+        /// <para> ToFix: https://github.com/IPOL-Studio/CyanStars/issues/231 </para>
         /// </summary>
         public float Distance => JudgeTime - CurLogicTime;
 

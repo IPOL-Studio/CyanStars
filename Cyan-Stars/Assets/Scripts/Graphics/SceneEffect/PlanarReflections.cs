@@ -96,6 +96,7 @@ namespace UnityEngine.Rendering.Universal
             if (dest.gameObject.TryGetComponent(out UniversalAdditionalCameraData camData))
             {
                 camData.renderShadows = m_settings.m_Shadows; // turn off shadows for the reflection camera
+                camData.SetRenderer(0);
             }
         }
 
@@ -215,6 +216,7 @@ namespace UnityEngine.Rendering.Universal
 
             var t = transform;
             var reflectionCamera = go.GetComponent<Camera>();
+
             reflectionCamera.transform.SetPositionAndRotation(t.position, t.rotation);
             reflectionCamera.depth = -10;
             reflectionCamera.enabled = false;

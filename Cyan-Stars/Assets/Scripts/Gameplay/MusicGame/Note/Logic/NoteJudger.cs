@@ -11,11 +11,12 @@ namespace CyanStars.Gameplay.MusicGame
     {
         private static MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
 
-         /// <summary>
+        /// <summary>
         /// 处理tap音符判定
         /// </summary>
         public static void TapJudge(NoteData data, float distance)
         {
+            dataModule.DistanceBarData.AddHeight(distance);
 
             EvaluateType et = EvaluateHelper.GetTapEvaluate(distance); //获取评价类型
 
@@ -44,6 +45,8 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static EvaluateType HoldHeadJudge(NoteData data, float distance)
         {
+            dataModule.DistanceBarData.AddHeight(distance);
+
             EvaluateType et = EvaluateHelper.GetTapEvaluate(distance);
             if (et == EvaluateType.Bad || et == EvaluateType.Miss) //Bad、Miss:断combo，不计算杂率
             {
@@ -70,6 +73,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static void HoldMiss(NoteData data)
         {
+            dataModule.DistanceBarData.AddHeightWithMiss();
             LogJudgedInfo(new HoldNoteJudgedInfo(data, EvaluateType.Miss, 0, 0));
 
             dataModule.MaxScore += 2;
@@ -79,7 +83,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 处理hold音符尾判
         /// </summary>
-        public static void HoldTailJudge(NoteData data,float pressTimeLength, float value)
+        public static void HoldTailJudge(NoteData data, float pressTimeLength, float value)
         {
             EvaluateType et = EvaluateHelper.GetHoldEvaluate(value); // 不判Bad
 
@@ -102,14 +106,14 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 处理drag音符判定
         /// </summary>
-        public static void DragJudge(NoteData data,bool isMiss)
+        public static void DragJudge(NoteData data, bool isMiss)
         {
             EvaluateType et = EvaluateType.Exact;
             if (isMiss)
             {
                 et = EvaluateType.Miss;
             }
-            LogJudgedInfo(new DefaultNoteJudgedInfo(data,et));
+            LogJudgedInfo(new DefaultNoteJudgedInfo(data, et));
 
             dataModule.MaxScore += data.GetFullScore();
 
@@ -130,6 +134,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static EvaluateType ClickHeadJudge(NoteData data, float distance)
         {
+            dataModule.DistanceBarData.AddHeight(distance);
             EvaluateType et = EvaluateHelper.GetTapEvaluate(distance);
             dataModule.MaxScore += 1;
 
@@ -158,6 +163,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static void ClickMiss(NoteData data)
         {
+            dataModule.DistanceBarData.AddHeightWithMiss();
             LogJudgedInfo(new ClickNoteJudgedInfo(data, EvaluateType.Miss, 0));
 
             dataModule.MaxScore += 2;
@@ -167,7 +173,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 处理click音符尾判
         /// </summary>
-        public static void ClickTailJudge(NoteData data,float timeLength)
+        public static void ClickTailJudge(NoteData data, float timeLength)
         {
             dataModule.MaxScore += 1;
             EvaluateType et = EvaluateHelper.GetClickEvaluate(timeLength);
@@ -183,6 +189,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static void BreakJudge(NoteData data, float distance)
         {
+            dataModule.DistanceBarData.AddHeight(distance);
             EvaluateType et = EvaluateHelper.GetTapEvaluate(distance);
 
             LogJudgedInfo(new DefaultNoteJudgedInfo(data, et));
