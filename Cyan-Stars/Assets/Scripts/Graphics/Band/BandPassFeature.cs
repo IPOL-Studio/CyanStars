@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
 
-namespace CyanStars.Graphics
+namespace CyanStars.Graphics.Band
 {
     public class BandPassFeature : ScriptableRendererFeature
     {
