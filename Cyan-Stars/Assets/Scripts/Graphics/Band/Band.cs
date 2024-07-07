@@ -26,7 +26,7 @@ namespace CyanStars.Graphics.Band
             computeBuffer = new ComputeBuffer(data.Count, sizeof(float));
             Shader.SetGlobalBuffer("grid", computeBuffer);
             Shader.SetGlobalVector("_Aspect", new Vector4(data.XSize, data.YSize, data.XOffset, data.YOffset));
-            Shader.SetGlobalInt("_Width", (data.XSize - data.Count) / 2);
+            Shader.SetGlobalInt("_Width", Mathf.CeilToInt((data.XSize - data.Count) / 2f));
         }
 
         public void UpdateBand(float[] bandHeights)
