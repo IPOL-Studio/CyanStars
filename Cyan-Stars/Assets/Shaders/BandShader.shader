@@ -70,7 +70,7 @@ Shader "Shaders/BandShader"
                 }
 
                 //读取偏移量
-                float gridGrow = grid[gridID.x - _Width];
+                float gridGrow = grid[gridID.x - _Width] * 0.5;
                 //每个小格子的xmask
                 float x = step(abs(gridUV.x), 0.2);
                 //最小的ymask

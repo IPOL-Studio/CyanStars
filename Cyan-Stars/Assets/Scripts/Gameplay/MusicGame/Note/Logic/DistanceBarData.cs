@@ -7,11 +7,11 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 每个条带占据的误差时间（单位ms）
         /// </summary>
-        private const int IntervalTime = 6;
+        private const int IntervalTime = 10;
         /// <summary>
         /// 每个条带初始&最小高度比例，高度样式待修改
         /// </summary>
-        private const float MinHeight = 0f;
+        private const float MinHeight = 0.05f;
         /// <summary>
         /// 限定每个条带的最大高度比例，样式待修改
         /// </summary>
@@ -19,11 +19,11 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 每次判定增加这个高度比例，高度样式待修改
         /// </summary>
-        private const float AddF = 0.25f;
+        private const float AddF = 0.6f;
         /// <summary>
         /// 每帧都逐渐减少高度比例，每秒钟总共减少这个高度，高度样式待修改
         /// </summary>
-        private const float ReduceF = 0.1f;
+        private const float ReduceF = 0.3f;
 
         /// <summary>
         /// 左右边界代表最大的时间范围（单位ms）
@@ -136,10 +136,6 @@ namespace CyanStars.Gameplay.MusicGame
             BarDataChangedCount++;
         }
 
-        /// <summary>
-        /// 查询是否需要更新条带，并重置flag
-        /// </summary>
-        /// <returns>需要更新条带</returns>
         public bool IsDataChanged(int preChangedCount)
         {
             return preChangedCount < BarDataChangedCount;

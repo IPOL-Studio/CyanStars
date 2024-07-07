@@ -122,6 +122,8 @@ namespace CyanStars.Gameplay.MusicGame
             inputReceiver = null;
             lastTime = -float.Epsilon;
 
+            preDistanceBarChangedCount = 0;
+
             GameRoot.Event.RemoveListener(EventConst.MusicGameStartEvent, OnMusicGameStart);
             GameRoot.Event.RemoveListener(EventConst.MusicGamePauseEvent, OnMusicGamePause);
             GameRoot.Event.RemoveListener(EventConst.MusicGameResumeEvent, OnMusicGameResume);

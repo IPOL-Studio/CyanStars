@@ -34,6 +34,6 @@ Material:
     - _YSizeOffset: -5.02
     m_Colors:
     - _Aspect: {r: 100, g: 10, b: 0.5, a: 0.2}
-    - _Color: {r: 0, g: 0, b: 0, a: 0.5019608}
-    - _GeadientColor: {r: 0, g: 0, b: 0, a: 0.34901962}
+    - _Color: {r: 1, g: 1, b: 1, a: 0.078431375}
+    - _GeadientColor: {r: 0, g: 0, b: 0, a: 0.5882353}
   m_BuildTextureStacks: []
