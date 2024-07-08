@@ -57,7 +57,7 @@ namespace CyanStars.Gameplay.MusicGame
             Debug.Log($"判定边界：±{rangeTime}ms");
 
             // 条带总数必定为奇数
-            int barsNum = rangeTime / IntervalTime * 2 - 1;
+            int barsNum = rangeTime / IntervalTime * 2 + 1;
             centerIndex = barsNum / 2;
             BarHeights = new float[barsNum];
 
