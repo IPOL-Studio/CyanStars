@@ -68,6 +68,8 @@ namespace CyanStars.Gameplay.MusicGame
         private string loggerCategoryName;
         public ICysLogger Logger { get; private set; }
 
+        public DistanceBarData DistanceBarData { get; private set; }
+
 
 #region 玩家游戏过程中的实时数据
 
@@ -147,6 +149,11 @@ namespace CyanStars.Gameplay.MusicGame
             Logger = GameRoot.Logger.GetOrCreateLogger(loggerCategoryName);
         }
 
+        public void InitDistanceBarData(EvaluateRange evaluateRange)
+        {
+            DistanceBarData = new DistanceBarData(evaluateRange);
+        }
+
         /// <summary>
         /// 获取谱面清单
         /// </summary>
@@ -191,6 +198,7 @@ namespace CyanStars.Gameplay.MusicGame
             Logger = null;
             GameRoot.Logger.RemoveLogger(loggerCategoryName);
             loggerCategoryName = null;
+            DistanceBarData = null;
 
             Combo = 0; //Combo数量
             Score = 0; //分数
