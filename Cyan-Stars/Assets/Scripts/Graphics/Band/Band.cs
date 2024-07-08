@@ -5,6 +5,10 @@ namespace CyanStars.Graphics.Band
 {
     public class Band : IDisposable
     {
+        private static readonly int GridId = Shader.PropertyToID("grid");
+        private static readonly int AspectId = Shader.PropertyToID("_Aspect");
+        private static readonly int WidthId = Shader.PropertyToID("_Width");
+
         public struct BandData
         {
             public int Count;
@@ -24,9 +28,9 @@ namespace CyanStars.Graphics.Band
         private Band(BandData data)
         {
             computeBuffer = new ComputeBuffer(data.Count, sizeof(float));
-            Shader.SetGlobalBuffer("grid", computeBuffer);
-            Shader.SetGlobalVector("_Aspect", new Vector4(data.XSize, data.YSize, data.XOffset, data.YOffset));
-            Shader.SetGlobalInt("_Width", (data.XSize - data.Count) / 2);
+            Shader.SetGlobalBuffer(GridId, computeBuffer);
+            Shader.SetGlobalVector(AspectId, new Vector4(data.XSize, data.YSize, data.XOffset, data.YOffset));
+            Shader.SetGlobalInt(WidthId, (data.XSize - data.Count) / 2);
         }
 
         public void UpdateBand(float[] bandHeights)

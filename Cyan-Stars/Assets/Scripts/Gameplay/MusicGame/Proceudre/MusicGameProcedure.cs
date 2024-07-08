@@ -429,10 +429,9 @@ namespace CyanStars.Gameplay.MusicGame
         {
             var data = dataModule.DistanceBarData;
             data.ReduceHeight(deltaTime);
-            if (data.IsDataChanged(preDistanceBarChangedCount))
+            if (data.IsDataChangedAndSet(ref preDistanceBarChangedCount))
             {
                 band.UpdateBand(data.BarHeights);
-                preDistanceBarChangedCount = data.BarDataChangedCount;
             }
         }
 
