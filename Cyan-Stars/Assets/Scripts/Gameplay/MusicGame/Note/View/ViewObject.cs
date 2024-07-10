@@ -17,8 +17,8 @@ namespace CyanStars.Gameplay.MusicGame
         [SerializeField]
         private NoteType noteType;
 
-        private float viewDistance;
-        private float viewDeltaTime;
+        protected float ViewDistance;
+        protected float ViewDeltaTime;
 
         private string notePrefabName;
         private string hitEffectPrefabName;
@@ -35,10 +35,10 @@ namespace CyanStars.Gameplay.MusicGame
             timerCallback = ReleaseHitEffectObj;
         }
 
-        public void OnUpdate(float viewDistance)
+        public virtual void OnUpdate(float viewDistance)
         {
-            viewDeltaTime = this.viewDistance - viewDistance;
-            this.viewDistance = viewDistance;
+            ViewDeltaTime = this.ViewDistance - viewDistance;
+            this.ViewDistance = viewDistance;
             Vector3 pos = transform.position;
             pos.z = viewDistance;
             transform.position = pos;
@@ -103,9 +103,9 @@ namespace CyanStars.Gameplay.MusicGame
                 yield return null;
                 timer += Time.deltaTime;
 
-                viewDistance -= viewDeltaTime;
+                ViewDistance -= ViewDeltaTime;
                 Vector3 pos = trans.position;
-                pos.z = viewDistance;
+                pos.z = ViewDistance;
                 trans.position = pos;
 
                 if (timer >= 1f)
