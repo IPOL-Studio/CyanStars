@@ -62,9 +62,10 @@ namespace CyanStars.Gameplay.MusicGame
             }
             else
             {
+                //ToDo: key预计在后续重新设计样式至半透明灰色
                 key = Instantiate(keyPrefab);
                 var trans = key.transform;
-                trans.position = new Vector3(Endpoint.Instance.GetPosWithRatio(args.RangeMin), 0, 20);
+                trans.position = new Vector3(Endpoint.Instance.GetPosWithRatio(args.RangeMin), -0.045f, 20);
                 trans.localScale = new Vector3(Endpoint.Instance.Length * args.RangeWidth, 0.1f, 10000);
                 trans.SetParent(transform);
                 KeyDict.Add(args.ID, key);

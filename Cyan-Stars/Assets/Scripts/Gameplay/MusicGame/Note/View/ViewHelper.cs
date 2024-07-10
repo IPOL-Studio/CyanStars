@@ -69,15 +69,15 @@ namespace CyanStars.Gameplay.MusicGame
                 if (Mathf.Abs(data.Pos - (-1)) < float.Epsilon)
                 {
                     //左侧break
-                    pos.x = -15;
+                    pos.x = -19;
                 }
                 else
                 {
                     //右侧break
-                    pos.x = 15;
+                    pos.x = 19;
                 }
 
-                pos.y = 4;
+                pos.y = 2.5f;
             }
             else
             {
@@ -97,8 +97,8 @@ namespace CyanStars.Gameplay.MusicGame
             if (data.Type != NoteType.Break)
             {
                 //非Break音符需要缩放宽度
-                scale.x = NoteData.NoteWidth * Endpoint.Instance.Length;
-                scale.y = 2;
+                // scale.x = NoteData.NoteWidth * Endpoint.Instance.Length;
+                // scale.y = 2;
             }
             else
             {
@@ -120,12 +120,12 @@ namespace CyanStars.Gameplay.MusicGame
                 if (Mathf.Abs(data.Pos - (-1)) < float.Epsilon)
                 {
                     //左侧break
-                    rotation.z = -28;
+                    rotation.z = -30;
                 }
                 else
                 {
                     //右侧break
-                    rotation.z = 28;
+                    rotation.z = 30;
                 }
             }
 
