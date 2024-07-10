@@ -26,6 +26,14 @@ namespace CyanStars.Gameplay.MusicGame
         {
             this.pressed = pressed;
             OnUpdate(ViewDistance);
+            if (pressed)
+            {
+                OpenFlicker();
+            }
+            else
+            {
+                CloseFlicker();
+            }
         }
 
         public override void OnUpdate(float viewDistance)
@@ -76,11 +84,21 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 this.meshRenderer.SetPropertyBlock(block);
             }
+            CloseFlicker();
         }
 
         public void OpenFlicker()
         {
             block.SetFloat(Flicker, 1.2f);
+            if (meshRenderer)
+            {
+                this.meshRenderer.SetPropertyBlock(block);
+            }
+        }
+
+        public void CloseFlicker()
+        {
+            block.SetFloat(Flicker, 0);
             if (meshRenderer)
             {
                 this.meshRenderer.SetPropertyBlock(block);
