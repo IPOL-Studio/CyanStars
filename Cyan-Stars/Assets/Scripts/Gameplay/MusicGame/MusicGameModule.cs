@@ -114,20 +114,20 @@ namespace CyanStars.Gameplay.MusicGame
 
             EffectNames = new List<string>()
             {
-                //"Assets/BundleRes/Prefabs/Effect/VEG/MeteoriteEffect(VEG).prefab",  //640w面大烟花
-                "Assets/BundleRes/Prefabs/Effect/VEG/FireworkEffect(VEG).prefab", //先用另一个代替
+                //"Assets/CysMultimediaAssets/VEG/MeteoriteEffect(VEG).prefab",  //640w面大烟花
+                "Assets/CysMultimediaAssets/VEG/FireworkEffect(VEG).prefab", //先用另一个代替
 
-                "Assets/BundleRes/Prefabs/Effect/VEG/Fiery_trees_and_silver_flowers_Effect(VEG).prefab",
-                "Assets/BundleRes/Prefabs/Effect/VEG/FireworkEffect(VEG).prefab",
-                "Assets/BundleRes/Prefabs/Effect/VEG/GalaxyEffect(VEG).prefab",
-                "Assets/BundleRes/Prefabs/Effect/VEG/TriangleEffect(VEG).prefab",
-                "Assets/BundleRes/Prefabs/Effect/VEG/VortexEffect(VEG).prefab",
-                "Assets/BundleRes/Prefabs/Effect/VEG/ParticleGushingEffect(VEG).prefab",
-                "Assets/BundleRes/Prefabs/Effect/VEG/BlockEffect(VEG).prefab",
-                "Assets/BundleRes/Prefabs/Effect/VEG/LineEffect(VEG).prefab",
-                "Assets/BundleRes/Prefabs/Effect/VEG/BlockRainEffect(VEG).prefab",
-                "Assets/BundleRes/Prefabs/Effect/VEG/CircleFireEffect(VEG).prefab",
-                "Assets/BundleRes/Prefabs/Effect/VEG/SpaceJumpEffect(VEG).prefab"
+                "Assets/CysMultimediaAssets/VEG/Fiery_trees_and_silver_flowers_Effect(VEG).prefab",
+                "Assets/CysMultimediaAssets/VEG/FireworkEffect(VEG).prefab",
+                "Assets/CysMultimediaAssets/VEG/GalaxyEffect(VEG).prefab",
+                "Assets/CysMultimediaAssets/VEG/TriangleEffect(VEG).prefab",
+                "Assets/CysMultimediaAssets/VEG/VortexEffect(VEG).prefab",
+                "Assets/CysMultimediaAssets/VEG/ParticleGushingEffect(VEG).prefab",
+                "Assets/CysMultimediaAssets/VEG/BlockEffect(VEG).prefab",
+                "Assets/CysMultimediaAssets/VEG/LineEffect(VEG).prefab",
+                "Assets/CysMultimediaAssets/VEG/BlockRainEffect(VEG).prefab",
+                "Assets/CysMultimediaAssets/VEG/CircleFireEffect(VEG).prefab",
+                "Assets/CysMultimediaAssets/VEG/SpaceJumpEffect(VEG).prefab"
             };
         }
 
