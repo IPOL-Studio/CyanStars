@@ -53,7 +53,6 @@ MonoBehaviour:
   DestroyTime: 3
   ParticleSystemList:
   - {fileID: 479875855941464343}
-  - {fileID: 0}
   - {fileID: 479875854597958619}
 --- !u!1 &479875854597958614
 GameObject:
