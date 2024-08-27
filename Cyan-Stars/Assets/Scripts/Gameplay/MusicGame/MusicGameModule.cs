@@ -96,11 +96,11 @@ namespace CyanStars.Gameplay.MusicGame
 
             NotePrefabNameDict = new Dictionary<NoteType, string>()
             {
-                {NoteType.Tap,"Assets/BundleRes/Prefabs/Notes/Tap.prefab"},
-                {NoteType.Hold,"Assets/BundleRes/Prefabs/Notes/Hold.prefab"},
-                {NoteType.Drag,"Assets/BundleRes/Prefabs/Notes/Drag.prefab"},
-                {NoteType.Click,"Assets/BundleRes/Prefabs/Notes/Click.prefab"},
-                {NoteType.Break,"Assets/BundleRes/Prefabs/Notes/Break.prefab"},
+                {NoteType.Tap,"Assets/CysMultimediaAssets/NoteModelsV1.2/Tap.prefab"},
+                {NoteType.Hold,"Assets/CysMultimediaAssets/NoteModelsV1.2/Hold.prefab"},
+                {NoteType.Drag,"Assets/CysMultimediaAssets/NoteModelsV1.2/Drag.prefab"},
+                {NoteType.Click,"Assets/CysMultimediaAssets/NoteModelsV1.2/Click.prefab"},
+                {NoteType.Break,"Assets/CysMultimediaAssets/NoteModelsV1.2/Break.prefab"},
             };
 
             HitEffectPrefabNameDict = new Dictionary<NoteType, string>()
