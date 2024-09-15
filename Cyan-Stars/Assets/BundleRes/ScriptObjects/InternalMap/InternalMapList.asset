@@ -19,25 +19,25 @@ MonoBehaviour:
       Jackdaw\u7941\u6E90\r\n\u66F2\u7ED8 \u6DF1\u8C37-shintani\r\n\u89C6\u9891 \u89C2\u6708\u666F\r\n\u6E38\u620F\u66F2\u7ED8
       \u80D6\u5934\u9C7C\r\n\u8C31\u9762\u8BBE\u8BA1 \u6668\u5CE6"
     LrcFileName: 
-    MusicFileName: Assets/BundleRes/MusicGameMap/Map_0/Music.ogg
-    CoverFileName: Assets/BundleRes/Covers/0.png
-    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_0/TimelineData.asset
+    MusicFileName: "Assets/CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973/Music.ogg"
+    CoverFileName: "Assets/CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973/Cover.png"
+    TimelineFileName: "Assets/CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973/TimelineData.asset"
   - Name: "\u6DF1\u7A7A\u65C1\u767D"
     StaffInfo: "\u6F14\u5531 \u6D1B\u5929\u4F9D\r\n\u8BCD\u4F5C\u7F16\u6DF7\u8C03\u7ED8
       AfterLight\u4F59\u6656\r\n\u89C6\u9891 \u9B4E\u5929\u9752\r\n\u6E38\u620F\u66F2\u7ED8
       mika\r\n\u8C31\u9762\u8BBE\u8BA1 \u6668\u5CE6"
     LrcFileName: 
-    MusicFileName: Assets/BundleRes/MusicGameMap/Map_1/Music.ogg
-    CoverFileName: Assets/BundleRes/Covers/1.png
-    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_1/TimelineData.asset
+    MusicFileName: "Assets/CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D/Music.ogg"
+    CoverFileName: "Assets/CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D/Cover.png"
+    TimelineFileName: "Assets/CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D/TimelineData.asset"
   - Name: "\u76DB\u5178"
     StaffInfo: "\u6F14\u5531 \u6D1B\u5929\u4F9D\r\n\u8BCD\u4F5C\u7F16\u6DF7\u8C03\u7ED8\u89C6
       QGRay\r\n\u6E38\u620F\u66F2\u7ED8 \u5BFB\u4ED9\u4ED9\r\n\u8C31\u9762\u8BBE\u8BA1
       \u6668\u5CE6"
     LrcFileName: 
-    MusicFileName: Assets/BundleRes/MusicGameMap/Map_2/Music.ogg
-    CoverFileName: Assets/BundleRes/Covers/2.png
-    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_2/TimelineData.asset
+    MusicFileName: "Assets/CysMultimediaAssets/Charts/2-\u76DB\u5178/Music.ogg"
+    CoverFileName: "Assets/CysMultimediaAssets/Charts/2-\u76DB\u5178/Cover.png"
+    TimelineFileName: "Assets/CysMultimediaAssets/Charts/2-\u76DB\u5178/TimelineData.asset"
   - Name: "\u4E91\u4E0E\u8BD7"
     StaffInfo: "\u6F14\u5531 \u6D1B\u5929\u4F9D\r\n\u8BCD\u4F5C\u7F16\u8C03 \u7206\u97F3\u5E38\u5B89\r\n\u4F5C\u8BCD
       \u6D1B\u6625\u57CE\r\n\u4F5C\u66F2 \u9F99\u7FBD\u51CC\r\n\u7F16\u66F2 \u9F99\u7FBD\u51CC\r\n\u6DF7\u97F3
@@ -45,6 +45,6 @@ MonoBehaviour:
       \u9F99\u7FBD\u51CC\r\n\u5C01\u9762 \u963F\u4E39\r\n\u6E38\u620F\u66F2\u7ED8
       \u5B9E\u5FC3\u9910\u6905\r\n\u8C31\u9762\u8BBE\u8BA1 \u6668\u5CE6"
     LrcFileName: 
-    MusicFileName: Assets/BundleRes/MusicGameMap/Map_3/Music.ogg
-    CoverFileName: Assets/BundleRes/Covers/3.png
-    TimelineFileName: Assets/BundleRes/MusicGameMap/Map_3/TimelineData.asset
+    MusicFileName: "Assets/CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/Music.ogg"
+    CoverFileName: "Assets/CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/Cover.png"
+    TimelineFileName: "Assets/CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/TimelineData.asset"
