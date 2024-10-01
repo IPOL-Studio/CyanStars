@@ -38,7 +38,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             var args = new MapSelectionPageChangeArgs()
             {
-                FadeTime = 1.5f,
+                FadeTime = 1.2f,
                 AnimationEase = Ease.OutQuart
             };
 
@@ -106,7 +106,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             var args = new MapSelectionPageChangeArgs()
             {
-                FadeTime = 1.5f,
+                FadeTime = 1.2f,
                 AnimationEase = Ease.OutQuart
             };
 
