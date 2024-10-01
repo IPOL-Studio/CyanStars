@@ -21,12 +21,12 @@ namespace CyanStars.Gameplay.MusicGame
         private CanvasGroup canvasGroup;
         private Tween runningTween;
 
-        private MapSelectionPanelR owner;
+        private MapSelectionPanel owner;
 
         private Coroutine staffCarouseCor;
 
 
-        public void OnInit(MapSelectionPanelR owner)
+        public void OnInit(MapSelectionPanel owner)
         {
             this.owner = owner;
 

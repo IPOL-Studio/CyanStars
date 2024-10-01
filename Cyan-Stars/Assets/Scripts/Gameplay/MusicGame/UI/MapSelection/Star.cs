@@ -1,21 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+using CyanStars.EditorExtension;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    /// <summary>
-    /// 用于控制每个星星预制体的属性和运动
-    /// Star 较其他 PageControlAble 变化较大
-    /// </summary>
-    public class Star : PageControlAble
+    [RequireComponent(typeof(CanvasGroup))]
+    public class Star : MonoBehaviour
     {
         [SerializeField]
         private GameObject imageObj;
+
         [SerializeField]
         private GameObject staffLabelObj;
+
+        private CanvasGroup canvasGroup;
+        private RectTransform rectTransform;
+
+        public float Alpha
+        {
+            get => canvasGroup.alpha;
+            set => canvasGroup.alpha = Mathf.Clamp01(value);
+        }
+
+        public bool Interactable
+        {
+            get => canvasGroup.interactable;
+            set => canvasGroup.interactable = value;
+        }
 
         /// <summary>
         /// 这个星星可以显示 Staff 标签吗？
@@ -25,32 +35,74 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 这个星星在第几组显示？
         /// </summary>
-        public int Group { get; set; }
+        public int GroupId { get; set; }
+
+        /// <summary>
+        /// 位移灵敏度
+        /// </summary>
+        public Vector3 PosParallax { get; set; }
+
+        /// <summary>
+        /// 透明度灵敏度
+        /// </summary>
+        public float AlphaParallax { get; set; }
+
+        /// <summary>
+        /// 该组件在可用页时的位置比例（以左下为原点，相对于PanelWidth）
+        /// </summary>
+        [Active(ActiveMode.Edit)]
+        public Vector3 PosRatio;
+
+        public float EnabledAlpha { get; set; } = 1f;
+
+        private Vector3 enabledSize;
+        public Vector3 EnabledSize
+        {
+            get => enabledSize;
+            set
+            {
+                enabledSize = value;
+                (imageObj.transform as RectTransform).localScale = value;
+            }
+        }
 
         public StaffLabel StaffLabel { get; private set; }
 
-        public override void Start()
+        private void Awake()
         {
-            CurrentPageProgress = 1f;
-            RectTransform = GetComponent<RectTransform>();
-            imageObj.GetComponent<RectTransform>().localScale = Size;
-            Images = imageObj.GetComponentsInChildren<Image>();
+            rectTransform = transform as RectTransform;
 
             StaffLabel = staffLabelObj.GetComponent<StaffLabel>();
+            canvasGroup = GetComponent<CanvasGroup>();
+
+            EnabledSize = Vector3.one;
         }
 
-        public override void Update()
+        public void SetStaffLabelActive(bool isActive) => staffLabelObj.SetActive(isActive);
+
+        public void UpdateFromScreenRatio(RectTransform root, float ratio)
         {
-            float xPos = (PosRatio.x + (CurrentPageProgress - 1) * PosParallax.x) * PanelSize.x;
-            float yPos = PosRatio.y * PanelSize.y;
-            RectTransform.localPosition = new Vector3(xPos, yPos, PosRatio.z);
-            float deltaPage = Mathf.Abs(CurrentPageProgress - AblePage);
-            ChangeAlpha(deltaPage);
+            rectTransform.localPosition = CalculatePosFormScreenRatio(root, ratio);
+            Alpha = CalculateAlpha(ratio);
+
+            if (Alpha <= 0.1f)
+            {
+                Interactable = false;
+            }
         }
 
-        public void SetStaffLabelActive(bool active)
+        public Vector3 CalculatePosFormScreenRatio(RectTransform root, float ratio)
         {
-            staffLabelObj.SetActive(active);
+            var panelSize = root.rect.size;
+            float x = (PosRatio.x + ratio * PosParallax.x) * panelSize.x;
+            float y = PosRatio.y * panelSize.y;
+
+            return new Vector3(x, y, PosRatio.z);
+        }
+
+        public float CalculateAlpha(float ratio)
+        {
+            return EnabledAlpha - AlphaParallax * ratio;
         }
     }
 }

@@ -157,7 +157,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 392550605620995157}
-  - component: {fileID: 9220462689943219752}
+  - component: {fileID: 9079105333660477563}
+  - component: {fileID: 8464003321643128342}
   m_Layer: 5
   m_Name: StaffLabel
   m_TagString: Untagged
@@ -186,7 +187,19 @@ RectTransform:
   m_AnchoredPosition: {x: 959.995, y: -540}
   m_SizeDelta: {x: 474.73, y: 60}
   m_Pivot: {x: 0, y: 1}
---- !u!114 &9220462689943219752
+--- !u!225 &9079105333660477563
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3699980189134829464}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &8464003321643128342
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -195,16 +208,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 3699980189134829464}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8a36fc47fba45c4d8e8fb8ea7c32eb5, type: 3}
+  m_Script: {fileID: 11500000, guid: 9c78f1c674c66fc40b9e034a34e6a521, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DutyText: {fileID: 4072395803086207104}
-  NameText: {fileID: 1804128329180464030}
-  CollisionArea: {fileID: 3735164063687484230}
+  dutyText: {fileID: 4072395803086207104}
+  nameText: {fileID: 1804128329180464030}
   quasiFrameRectTransform: {fileID: 3249258939796664645}
   infoFrameRectTransform: {fileID: 1114237545002126070}
   dutyFrameRectTransform: {fileID: 7543479200539111383}
   nameFrameRectTransform: {fileID: 3349152674473642836}
+  CollisionArea: {fileID: 3735164063687484230}
   gradientTime: 0.5
 --- !u!1 &3819933864285700109
 GameObject:

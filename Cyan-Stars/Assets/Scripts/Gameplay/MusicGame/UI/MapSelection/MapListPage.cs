@@ -30,13 +30,13 @@ namespace CyanStars.Gameplay.MusicGame
 
         private List<BaseUIItem> mapItems = new List<BaseUIItem>();
 
-        private MapSelectionPanelR owner;
+        private MapSelectionPanel owner;
         private CanvasGroup canvasGroup;
 
         private IPageElementAnimation[] animationElements;
         private Tween runningTween;
 
-        public void OnInit(MapSelectionPanelR owner)
+        public void OnInit(MapSelectionPanel owner)
         {
             this.owner = owner;
             musicGameModule = GameRoot.GetDataModule<MusicGameModule>();

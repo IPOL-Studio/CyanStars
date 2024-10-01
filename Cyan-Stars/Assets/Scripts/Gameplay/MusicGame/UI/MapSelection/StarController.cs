@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public class StarControllerR : MonoBehaviour
+    public class StarController : MonoBehaviour
     {
         [SerializeField] private GameObject starPrefab;
 
@@ -29,9 +29,9 @@ namespace CyanStars.Gameplay.MusicGame
         private int groupCount;
         private int currentShowingGroupId;
 
-        private StarR[] stars;
-        private List<StarR> canShowStaffStars = new List<StarR>();
-        private HashSet<StarR> staffShowingStars = new HashSet<StarR>();
+        private Star[] stars;
+        private List<Star> canShowStaffStars = new List<Star>();
+        private HashSet<Star> staffShowingStars = new HashSet<Star>();
 
         private Dictionary<int, int> staffLabelCountInGroupDict = new Dictionary<int, int>();
 
@@ -46,7 +46,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             int starCount = Random.Range(minStarCount, maxStarCount + 1);
-            var stars = new StarR[starCount];
+            var stars = new Star[starCount];
             var trans = transform;
 
             var panelWidth = panelRectTransform.rect.width;
@@ -56,7 +56,7 @@ namespace CyanStars.Gameplay.MusicGame
             for (int i = 0; i < starCount; i++)
             {
                 var starObj = Instantiate(starPrefab, trans);
-                var star = starObj.GetComponent<StarR>();
+                var star = starObj.GetComponent<Star>();
 
                 star.PosRatio = new Vector3(Random.Range(0, maxStarParallax + 1), Random.value, 1f);
                 star.EnabledAlpha = Random.Range(minStarAlpha, maxStarAlpha);
@@ -239,7 +239,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 获取 StaffLabel 的碰撞区域的矩形
         /// </summary>
-        private Rect GetStaffLabelRect(StarR star)
+        private Rect GetStaffLabelRect(Star star)
         {
             var pos = star.CalculatePosFormScreenRatio(panelRectTransform, 2);
             var size = star.StaffLabel.CollisionArea.rect.size;
@@ -247,7 +247,7 @@ namespace CyanStars.Gameplay.MusicGame
             return new Rect(pos, size);
         }
 
-        private bool IsCollisionInGroup(StarR thisStar, int groupId)
+        private bool IsCollisionInGroup(Star thisStar, int groupId)
         {
             foreach (var otherStar in staffShowingStars)
             {
