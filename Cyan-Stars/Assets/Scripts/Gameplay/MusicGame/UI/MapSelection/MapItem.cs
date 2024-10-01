@@ -3,6 +3,7 @@ using CyanStars.Framework;
 using CyanStars.Framework.UI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.MusicGame
@@ -22,15 +23,25 @@ namespace CyanStars.Gameplay.MusicGame
 
         public int Index;
 
-        public override void OnCreate()
+        // TODO: 此事件可能会导致内存泄漏或多次订阅，当前没有独立使用，因此没有问题。后续可能需要处理
+        [SerializeField]
+        private UnityEvent<MapItem> onSelect;
+        public event UnityAction<MapItem> OnSelect
         {
-            BtnMap.onClick.AddListener(OnSelect);
+            add => onSelect.AddListener(value);
+            remove => onSelect.RemoveListener(value);
         }
 
-        public void OnSelect()
+        public override void OnCreate()
         {
-            MapSelectionPanel parent = GameRoot.UI.GetUIPanel<MapSelectionPanel>();
-            parent.OnSelectMap(this);
+            BtnMap.onClick.AddListener(Select);
+        }
+
+        public void Select()
+        {
+            // MapSelectionPanel parent = GameRoot.UI.GetUIPanel<MapSelectionPanel>();
+            // parent.OnSelectMap(this);
+            onSelect.Invoke(this);
         }
 
         public override void OnGet()
