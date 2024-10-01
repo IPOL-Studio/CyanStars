@@ -23,6 +23,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public int Index;
 
+        // TODO: 此事件可能会导致内存泄漏或多次订阅，当前没有独立使用，因此没有问题。后续可能需要处理
         [SerializeField]
         private UnityEvent<MapItem> onSelect;
         public event UnityAction<MapItem> OnSelect
