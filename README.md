@@ -11,13 +11,6 @@
 
 翠蓝星穹（CyanStars）是一款由无圻寻光开发组（IPOL）开发的中文虚拟歌手同人、非商、社区音乐游戏。
 
-游戏目前已发布 Beta1 版本，适用于 Windows 系统。
-
-
-## 下载游戏
-
-可以在右侧的 [Releases](https://github.com/IPOL-Studio/CyanStars/releases) 界面下载所需的版本。
-
 
 ## 参与开发
 
@@ -36,15 +29,32 @@
 
 - 附：[附属文档仓库](https://github.com/IPOL-Studio/CyanStars_Docs)
 
+多媒体文件作为子模块引用，路径为 `Cyan-Stars/Assets/CysMultimediaAssets`，对于多媒体文件的贡献指南请查阅子模块仓库说明。
+
+- 附：[多媒体文件仓库](https://github.com/IPOL-Studio/CyanStarsMultimediaAssets)
+
 在美术/音乐/谱面/程序/翻译等方面有特长，且有兴趣参与我们的内部讨论？欢迎点 [这里](http://chenluan.mikecrm.com/JeKq3DU) 来申请加入我们。
 
 玩家交流 QQ 群：`827556233`
 
 版权、安全性、成员与社区、或是其他问题，欢迎随时联系我们 <chenluan@cyanstars.onaliyun.com>。
 
----
 
 ## 开发文档
+
+### 克隆仓库和子模块（如果正在使用 git 命令行）
+
+```
+git clone --recurse-submodules https://github.com/IPOL-Studio/CyanStars.git
+```
+
+或
+
+```
+git clone https://github.com/IPOL-Studio/CyanStars.git
+cd CyanStars
+git submodule update --init --recursive
+```
 
 ### 下载 Unity 编辑器
 
