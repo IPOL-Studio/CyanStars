@@ -11,13 +11,6 @@
 
 CyanStars is a Chinese virtual singer fan-made, non-commercial, community music game developed by the Infinite Pursuit of Light Development Team (IPOL).
 
-The game is currently in Beta1 version and is available for Windows systems.
-
-
-## Download the Game
-
-You can download the required version from the [Releases](https://github.com/IPOL-Studio/CyanStars/releases) section on the right.
-
 
 ## Contributing
 
@@ -36,15 +29,32 @@ Community contributors/included tracks/privacy policy, etc., can be found in the
 
 - Attached: [Associated Documents Repository](https://github.com/IPOL-Studio/CyanStars_Docs)
 
+Multimedia files are referenced as submodules at the path `Cyan-Stars/Assets/CysMultimediaAssets`. Please refer to the submodule repository documentation for contribution guidelines regarding multimedia files.
+
+- Attachment: [Multimedia Assets Repository](https://github.com/IPOL-Studio/CyanStarsMultimediaAssets)
+
 Do you have expertise in art/music/charting/programming/translation, etc., and are interested in participating in our internal discussions? Feel free to apply to join us [here](http://chenluan.mikecrm.com/JeKq3DU).
 
 [Player Communication Discord Group (Work in Progress)](https://discord.gg/FNgbqQQY)
 
 For copyright, security, members and community, or other issues, please feel free to contact us at <chenluan@cyanstars.onaliyun.com>.
 
----
 
 ## Development Documentation
+
+### Cloning the repository and submodules (if using the git command line)
+
+```
+git clone --recurse-submodules https://github.com/IPOL-Studio/CyanStars.git
+```
+
+or
+
+```
+git clone https://github.com/IPOL-Studio/CyanStars.git
+cd CyanStars
+git submodule update --init --recursive
+```
 
 ### Download Unity Editor
 
