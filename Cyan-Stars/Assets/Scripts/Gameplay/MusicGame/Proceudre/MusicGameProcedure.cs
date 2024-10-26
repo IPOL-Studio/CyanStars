@@ -275,7 +275,7 @@ namespace CyanStars.Gameplay.MusicGame
                 Count = dataModule.DistanceBarData.Length,
                 XSize = 100,
                 YSize = 10,
-                XOffset = 0.5f,
+                XOffset = -0.5f,
                 YOffset = 0.2f
             };
 
