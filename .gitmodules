@@ -1,4 +1,3 @@
 [submodule "Cyan-Stars/Assets/CysMultimediaAssets"]
 	path = Cyan-Stars/Assets/CysMultimediaAssets
 	url = https://github.com/IPOL-Studio/CyanStarsMultimediaAssets.git
-	url = git@github.com:IPOL-Studio/CyanStarsMultimediaAssets.git
