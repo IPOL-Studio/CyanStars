@@ -96,11 +96,11 @@ namespace CyanStars.Gameplay.MusicGame
 
             NotePrefabNameDict = new Dictionary<NoteType, string>()
             {
-                {NoteType.Tap,"Assets/CysMultimediaAssets/NoteModelsV1.2/Tap.prefab"},
-                {NoteType.Hold,"Assets/CysMultimediaAssets/NoteModelsV1.2/Hold.prefab"},
-                {NoteType.Drag,"Assets/CysMultimediaAssets/NoteModelsV1.2/Drag.prefab"},
-                {NoteType.Click,"Assets/CysMultimediaAssets/NoteModelsV1.2/Click.prefab"},
-                {NoteType.Break,"Assets/CysMultimediaAssets/NoteModelsV1.2/Break.prefab"},
+                {NoteType.Tap,"Assets/BundleRes/NoteModelsV1.2/Tap.prefab"},
+                {NoteType.Hold,"Assets/BundleRes/NoteModelsV1.2/Hold.prefab"},
+                {NoteType.Drag,"Assets/BundleRes/NoteModelsV1.2/Drag.prefab"},
+                {NoteType.Click,"Assets/BundleRes/NoteModelsV1.2/Click.prefab"},
+                {NoteType.Break,"Assets/BundleRes/NoteModelsV1.2/Break.prefab"},
             };
 
             HitEffectPrefabNameDict = new Dictionary<NoteType, string>()
@@ -115,19 +115,19 @@ namespace CyanStars.Gameplay.MusicGame
             EffectNames = new List<string>()
             {
                 //"Assets/CysMultimediaAssets/VEG/MeteoriteEffect(VEG).prefab",  //640w面大烟花
-                "Assets/CysMultimediaAssets/VEG/FireworkEffect(VEG).prefab", //先用另一个代替
+                "Assets/VEG/FireworkEffect(VEG).prefab", //先用另一个代替
 
-                "Assets/CysMultimediaAssets/VEG/Fiery_trees_and_silver_flowers_Effect(VEG).prefab",
-                "Assets/CysMultimediaAssets/VEG/FireworkEffect(VEG).prefab",
-                "Assets/CysMultimediaAssets/VEG/GalaxyEffect(VEG).prefab",
-                "Assets/CysMultimediaAssets/VEG/TriangleEffect(VEG).prefab",
-                "Assets/CysMultimediaAssets/VEG/VortexEffect(VEG).prefab",
-                "Assets/CysMultimediaAssets/VEG/ParticleGushingEffect(VEG).prefab",
-                "Assets/CysMultimediaAssets/VEG/BlockEffect(VEG).prefab",
-                "Assets/CysMultimediaAssets/VEG/LineEffect(VEG).prefab",
-                "Assets/CysMultimediaAssets/VEG/BlockRainEffect(VEG).prefab",
-                "Assets/CysMultimediaAssets/VEG/CircleFireEffect(VEG).prefab",
-                "Assets/CysMultimediaAssets/VEG/SpaceJumpEffect(VEG).prefab"
+                "Assets/VEG/Fiery_trees_and_silver_flowers_Effect(VEG).prefab",
+                "Assets/VEG/FireworkEffect(VEG).prefab",
+                "Assets/VEG/GalaxyEffect(VEG).prefab",
+                "Assets/VEG/TriangleEffect(VEG).prefab",
+                "Assets/VEG/VortexEffect(VEG).prefab",
+                "Assets/VEG/ParticleGushingEffect(VEG).prefab",
+                "Assets/VEG/BlockEffect(VEG).prefab",
+                "Assets/VEG/LineEffect(VEG).prefab",
+                "Assets/VEG/BlockRainEffect(VEG).prefab",
+                "Assets/VEG/CircleFireEffect(VEG).prefab",
+                "Assets/VEG/SpaceJumpEffect(VEG).prefab"
             };
         }
 
