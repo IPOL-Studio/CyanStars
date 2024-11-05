@@ -346,6 +346,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             timeline = new Timeline(data.Length/ 1000f);
             timeline.OnStop += StopTimeline;
+            timeline.OnStop += OpenScoreSettlementUI;
 
             //添加音符轨道
             timeline.AddTrack(data.NoteTrackData, NoteTrack.CreateClipFunc);
@@ -465,6 +466,11 @@ namespace CyanStars.Gameplay.MusicGame
                     }
                 }
             }
+        }
+
+        private void OpenScoreSettlementUI()
+        {
+            GameRoot.UI.OpenUIPanel<ScoreSettlementPanel>(null);
         }
 
     }
