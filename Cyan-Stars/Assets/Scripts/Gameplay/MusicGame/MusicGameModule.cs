@@ -6,6 +6,7 @@ using CyanStars.Framework.Asset;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.Timeline;
 using CyanStars.Framework.Logging;
+using UnityEngine;
 
 
 namespace CyanStars.Gameplay.MusicGame
@@ -76,6 +77,7 @@ namespace CyanStars.Gameplay.MusicGame
         public int Combo = 0; //Combo数量
         public float Score = 0; //分数
         public EvaluateType Grade = default; //评分
+        public float ImpurityRate = 0; //杂率
         public float CurrentDeviation = 0; //当前精准度
         public List<float> DeviationList = new List<float>(); //各个音符的偏移
         public float MaxScore = 0; //理论最高分
@@ -203,6 +205,7 @@ namespace CyanStars.Gameplay.MusicGame
             Combo = 0; //Combo数量
             Score = 0; //分数
             Grade = default; //评分
+            ImpurityRate = 0; //杂率
             CurrentDeviation = 0; //当前精准度
             DeviationList.Clear(); //各个音符的偏移
             MaxScore = 0; //理论最高分
@@ -242,11 +245,20 @@ namespace CyanStars.Gameplay.MusicGame
                 _ => throw new ArgumentException(nameof(grade))
             };
 
-
+            // 仅部分音符计算偏移值/杂率
             if (currentDeviation < 10000)
             {
                 CurrentDeviation = currentDeviation;
                 DeviationList.Add(currentDeviation);
+
+                float sum = 0;
+                foreach (var item in DeviationList)
+                {
+                    sum += Mathf.Abs(item);
+                }
+
+                ImpurityRate = sum / DeviationList.Count;
+                ImpurityRate = (float)Mathf.CeilToInt(ImpurityRate * 1000000) / 1000; // 将杂率转换为 00.000ms 格式并向上取整
             }
 
             GameRoot.Event.Dispatch(EventConst.MusicGameDataRefreshEvent, this,EmptyEventArgs.Create());
