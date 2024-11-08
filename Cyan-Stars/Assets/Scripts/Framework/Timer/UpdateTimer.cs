@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace CyanStars.Framework.Timer
@@ -43,16 +42,22 @@ namespace CyanStars.Framework.Timer
         }
 
 
-        private List<Timer> timers = new List<Timer>();
+        private TimerListContainer<Timer> timers = new TimerListContainer<Timer>();
 
         public void OnUpdate(float deltaTime)
         {
-            if (timers.Count > 0)
+            if (timers.Count == 0)
             {
-                for (int i = timers.Count - 1; i >= 0; i--)
+                return;
+            }
+
+            using var _ = timers.Handle();
+
+            for (int i = timers.Count; i >= 0; i--)
+            {
+                if (timers.TryGetValue(i, out Timer timer) && timer.Callback != null)
                 {
-                    Timer timer = timers[i];
-                    timer.Callback?.Invoke(deltaTime, timer.Userdata);
+                    timer.Callback(deltaTime, timer.Userdata);
                 }
             }
         }
