@@ -71,10 +71,12 @@ namespace CyanStars.Gameplay.MusicGame
 
         public DistanceBarData DistanceBarData { get; private set; }
 
+        private float sum;
 
 #region 玩家游戏过程中的实时数据
 
         public int Combo = 0; //Combo数量
+        public int MaxCombo = 0; //玩家在此次游玩时的最大连击数量
         public float Score = 0; //分数
         public EvaluateType Grade = default; //评分
         public float ImpurityRate = 0; //杂率
@@ -203,6 +205,7 @@ namespace CyanStars.Gameplay.MusicGame
             DistanceBarData = null;
 
             Combo = 0; //Combo数量
+            MaxCombo = 0; //玩家在此次游玩时的最大连击数量
             Score = 0; //分数
             Grade = default; //评分
             ImpurityRate = 0; //杂率
@@ -229,6 +232,7 @@ namespace CyanStars.Gameplay.MusicGame
             else
             {
                 Combo += addCombo;
+                MaxCombo = Mathf.Max(Combo, MaxCombo);
                 Score += addScore;
             }
 
@@ -250,13 +254,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 CurrentDeviation = currentDeviation;
                 DeviationList.Add(currentDeviation);
-
-                float sum = 0;
-                foreach (var item in DeviationList)
-                {
-                    sum += Mathf.Abs(item);
-                }
-
+                sum += Mathf.Abs(currentDeviation);
                 ImpurityRate = sum / DeviationList.Count;
                 ImpurityRate = (float)Mathf.CeilToInt(ImpurityRate * 1000000) / 1000; // 将杂率转换为 00.000ms 格式并向上取整
             }
