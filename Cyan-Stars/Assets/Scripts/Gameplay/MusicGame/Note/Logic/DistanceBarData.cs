@@ -104,7 +104,6 @@ namespace CyanStars.Gameplay.MusicGame
         {
             if (deltaTime <= 0)
             {
-                Debug.Log("delta time should be great 0");
                 return;
             }
 

@@ -17,7 +17,7 @@ namespace CyanStars.Gameplay.MusicGame
     public class MusicGame3DUIPanel : BaseUIPanel
     {
         public TextMeshProUGUI TxtGrade;
-        public TextMeshProUGUI TxtAccuracy;
+        public TextMeshProUGUI TxtImpurityRate;
         public TextMeshProUGUI TxtScoreRatio;
         public TextMeshProUGUI TxtVisibleScore;
 
@@ -35,11 +35,11 @@ namespace CyanStars.Gameplay.MusicGame
             Color color = TxtGrade.color;
             color.a = 1;
             TxtGrade.color = color;
-            TxtAccuracy.text = $"杂率:{0:F3}s";
-            TxtAccuracy.color = Color.yellow;
-            TxtScoreRatio.text = $"{100:F}%";
+            TxtImpurityRate.text = $"杂率:{0:F3}ms";
+            TxtImpurityRate.color = Color.yellow;
+            TxtScoreRatio.text = $"{100:F}%"; //TODO: 已弃用，待删除
             TxtScoreRatio.color = Color.yellow;
-            TxtVisibleScore.text = "000000";;
+            TxtVisibleScore.text = "000000";
 
             GameRoot.Event.AddListener(EventConst.MusicGameDataRefreshEvent, OnMusicGameDataRefresh);
         }
@@ -93,30 +93,19 @@ namespace CyanStars.Gameplay.MusicGame
             StartCoroutine(FadeGradeTMP());
 
             //刷新杂率
-            float accuracy = 0, sum = 0;
-            if (dataModule.DeviationList.Count > 0)
-            {
-                foreach (var item in dataModule.DeviationList)
-                {
-                    sum += Mathf.Abs(item);
-                }
+            TxtImpurityRate.text = $"杂率:{dataModule.ImpurityRate:F3}ms";
 
-                accuracy = sum / dataModule.DeviationList.Count;
+            if (dataModule.ImpurityRate < 30)
+            {
+                TxtImpurityRate.color = Color.yellow;
             }
-
-            TxtAccuracy.text = $"杂率:{accuracy:F3}s";
-
-            if (accuracy < 0.03)
+            else if (dataModule.ImpurityRate < 50)
             {
-                TxtAccuracy.color = Color.yellow;
-            }
-            else if (accuracy < 0.05)
-            {
-                TxtAccuracy.color = Color.blue;
+                TxtImpurityRate.color = Color.blue;
             }
             else
             {
-                TxtAccuracy.color = Color.white;
+                TxtImpurityRate.color = Color.white;
             }
 
             //刷新得分率
@@ -128,7 +117,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             TxtScoreRatio.text = $"{(scoreRatio * 100):F}%";
 
-            if (dataModule.GreatNum + dataModule.RightNum + dataModule.BadNum +
+            if (dataModule.GreatNum + dataModule.RightNum + dataModule.OutNum + dataModule.BadNum +
                 dataModule.MissNum == 0)
             {
                 TxtScoreRatio.color = Color.yellow;
