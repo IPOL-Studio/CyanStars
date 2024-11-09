@@ -71,7 +71,10 @@ namespace CyanStars.Gameplay.MusicGame
 
         public DistanceBarData DistanceBarData { get; private set; }
 
-        private float sum;
+        /// <summary>
+        /// 用于计算杂率
+        /// </summary>
+        private float deviationsSum;
 
 #region 玩家游戏过程中的实时数据
 
@@ -86,6 +89,7 @@ namespace CyanStars.Gameplay.MusicGame
         public int ExactNum = 0;
         public int GreatNum = 0;
         public int RightNum = 0;
+        public int OutNum = 0;
         public int BadNum = 0;
         public int MissNum = 0;
         public float FullScore = 0; //全谱总分
@@ -215,6 +219,7 @@ namespace CyanStars.Gameplay.MusicGame
             ExactNum = 0;
             GreatNum = 0;
             RightNum = 0;
+            OutNum = 0;
             BadNum = 0;
             MissNum = 0;
             FullScore = 0; //全谱总分
@@ -243,19 +248,21 @@ namespace CyanStars.Gameplay.MusicGame
                 EvaluateType.Exact => ExactNum++,
                 EvaluateType.Great => GreatNum++,
                 EvaluateType.Right => RightNum++,
-                EvaluateType.Out => RightNum++,
+                EvaluateType.Out => OutNum++,
                 EvaluateType.Bad => BadNum++,
                 EvaluateType.Miss => MissNum++,
                 _ => throw new ArgumentException(nameof(grade))
             };
 
-            // 仅部分音符计算偏移值/杂率
+            // 仅部分音符计算偏移值/杂率，详见 NoteJudger.cs 代码
+            // currentDeviation 为玩家按下的时间相对于 Note 判定时间之差，单位 s
+            // 玩家提前按下为+，延后按下为-
             if (currentDeviation < 10000)
             {
                 CurrentDeviation = currentDeviation;
                 DeviationList.Add(currentDeviation);
-                sum += Mathf.Abs(currentDeviation);
-                ImpurityRate = sum / DeviationList.Count;
+                deviationsSum += Mathf.Abs(currentDeviation);
+                ImpurityRate = deviationsSum / DeviationList.Count;
                 ImpurityRate = (float)Mathf.CeilToInt(ImpurityRate * 1000000) / 1000; // 将杂率转换为 00.000ms 格式并向上取整
             }
 

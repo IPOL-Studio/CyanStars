@@ -117,7 +117,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             TxtScoreRatio.text = $"{(scoreRatio * 100):F}%";
 
-            if (dataModule.GreatNum + dataModule.RightNum + dataModule.BadNum +
+            if (dataModule.GreatNum + dataModule.RightNum + dataModule.OutNum + dataModule.BadNum +
                 dataModule.MissNum == 0)
             {
                 TxtScoreRatio.color = Color.yellow;
