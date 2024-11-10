@@ -24,6 +24,10 @@ MonoBehaviour:
     BuildRuleName: NAssetToOneBundle
     RuleRegex: 
     Group: Base
+  - DirectoryObj: {fileID: 102900000, guid: b7b2a107f0123df4887e5a9b4689f564, type: 3}
+    BuildRuleName: NAssetToOneBundle
+    RuleRegex: 
+    Group: Base
   - DirectoryObj: {fileID: 102900000, guid: 1f965ff98211daf4ca16e93a11e3311f, type: 3}
     BuildRuleName: NAssetToOneBundleWithTopDirectory
     RuleRegex: 
@@ -33,6 +37,22 @@ MonoBehaviour:
     RuleRegex: 
     Group: Base
   - DirectoryObj: {fileID: 102900000, guid: e9612cf774679ca4a86f8438efc2dc1a, type: 3}
+    BuildRuleName: NAssetToOneBundleWithTopDirectory
+    RuleRegex: 
+    Group: Base
+  - DirectoryObj: {fileID: 102900000, guid: 6ced5c52f0e720a4d84234ee09fec463, type: 3}
+    BuildRuleName: NAssetToNBundle
+    RuleRegex: 
+    Group: Base
+  - DirectoryObj: {fileID: 102900000, guid: 3fe20c2a749d63f46ad59fa05128884b, type: 3}
+    BuildRuleName: NAssetToNBundle
+    RuleRegex: 
+    Group: Base
+  - DirectoryObj: {fileID: 102900000, guid: f7a95e1c76f44664d945ec97b789937a, type: 3}
+    BuildRuleName: NAssetToNBundle
+    RuleRegex: 
+    Group: Base
+  - DirectoryObj: {fileID: 102900000, guid: 4e78a63056df8dc4ba01e5f122133ddd, type: 3}
     BuildRuleName: NAssetToOneBundleWithTopDirectory
     RuleRegex: 
     Group: Base
@@ -50,12 +70,73 @@ MonoBehaviour:
       Length: 6614
     - Name: Assets/BundleRes/Audio/PromptTone/ns_tambourine.ogg
       Length: 5893
+  - RelativePath: BundleRes/notemodelsv1.2.bundle
+    DirectoryName: BundleRes
+    BundleName: notemodelsv1.2.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 16914817
+    Assets:
+    - Name: Assets/BundleRes/NoteModelsV1.2/Break.prefab
+      Length: 4439
+    - Name: Assets/BundleRes/NoteModelsV1.2/Click.prefab
+      Length: 4433
+    - Name: Assets/BundleRes/NoteModelsV1.2/Drag.prefab
+      Length: 4436
+    - Name: Assets/BundleRes/NoteModelsV1.2/Hold.prefab
+      Length: 4734
+    - Name: Assets/BundleRes/NoteModelsV1.2/Key.prefab
+      Length: 3351
+    - Name: Assets/BundleRes/NoteModelsV1.2/KeyDown.mat
+      Length: 3579
+    - Name: Assets/BundleRes/NoteModelsV1.2/M_Break.fbx
+      Length: 14764
+    - Name: Assets/BundleRes/NoteModelsV1.2/M_Click.fbx
+      Length: 14652
+    - Name: Assets/BundleRes/NoteModelsV1.2/M_Drag.fbx
+      Length: 12748
+    - Name: Assets/BundleRes/NoteModelsV1.2/M_Hold.fbx
+      Length: 13372
+    - Name: Assets/BundleRes/NoteModelsV1.2/M_Tap.fbx
+      Length: 13292
+    - Name: Assets/BundleRes/NoteModelsV1.2/M_Track.fbx
+      Length: 12220
+    - Name: Assets/BundleRes/NoteModelsV1.2/MI_BreakNote.mat
+      Length: 860
+    - Name: Assets/BundleRes/NoteModelsV1.2/MI_ClickNote.mat
+      Length: 860
+    - Name: Assets/BundleRes/NoteModelsV1.2/MI_DragNote.mat
+      Length: 859
+    - Name: Assets/BundleRes/NoteModelsV1.2/MI_HoldNote.mat
+      Length: 1304
+    - Name: Assets/BundleRes/NoteModelsV1.2/MI_TapNote.mat
+      Length: 857
+    - Name: Assets/BundleRes/NoteModelsV1.2/MI_Track.mat
+      Length: 3662
+    - Name: Assets/BundleRes/NoteModelsV1.2/T_Note_Break_Color.tga
+      Length: 4194348
+    - Name: Assets/BundleRes/NoteModelsV1.2/T_Note_Click_Color.tga
+      Length: 4194348
+    - Name: Assets/BundleRes/NoteModelsV1.2/T_Note_Drag_Color.tga
+      Length: 108
+    - Name: Assets/BundleRes/NoteModelsV1.2/T_Note_Hold_Color.tga
+      Length: 4194348
+    - Name: Assets/BundleRes/NoteModelsV1.2/T_Note_Tap_Color.tga
+      Length: 4194348
+    - Name: Assets/BundleRes/NoteModelsV1.2/T_Track.png
+      Length: 14535
+    - Name: Assets/BundleRes/NoteModelsV1.2/Tap.prefab
+      Length: 4434
+    - Name: Assets/Shaders/BaseNoteShader.shader
+      Length: 1447
+    - Name: Assets/Shaders/HoldNote.shader
+      Length: 2479
   - RelativePath: BundleRes/Prefabs/effect.bundle
     DirectoryName: BundleRes/Prefabs
     BundleName: effect.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 2848287
+    AssetsLength: 2847234
     Assets:
     - Name: Assets/BundleRes/Prefabs/Effect/BreakHitEffect.prefab
       Length: 490286
@@ -105,35 +186,21 @@ MonoBehaviour:
       Length: 927
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
       Length: 6958
-    - Name: Packages/com.unity.shadergraph/Editor/Resources/Shaders/FallbackError.shader
-      Length: 1053
   - RelativePath: BundleRes/Prefabs/loginui.bundle
     DirectoryName: BundleRes/Prefabs
     BundleName: loginui.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 4217748
+    AssetsLength: 25641
     Assets:
     - Name: Assets/BundleRes/Prefabs/LoginUI/BaseLoginUI.prefab
       Length: 25641
-    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot 1.controller
-      Length: 2118
-    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot.prefab
-      Length: 86728
-    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot_Breath.anim
-      Length: 15801
-    - Name: Assets/CysMultimediaAssets/Sprites/Login/Background.png
-      Length: 2633067
-    - Name: Assets/CysMultimediaAssets/Sprites/Login/Chair.png
-      Length: 1433974
-    - Name: Assets/CysMultimediaAssets/Sprites/Login/Press Any Key To Start.png
-      Length: 20419
   - RelativePath: BundleRes/Prefabs/mapselectionui.bundle
     DirectoryName: BundleRes/Prefabs
     BundleName: mapselectionui.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 102303809
+    AssetsLength: 158974
     Assets:
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel.prefab
       Length: 124078
@@ -141,50 +208,12 @@ MonoBehaviour:
       Length: 25054
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/Star.prefab
       Length: 9842
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN-Heavy.otf
-      Length: 11304840
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN-Heavy-Dynamic-SDF.asset
-      Length: 2108911
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN-Heavy-Static-gb2312-SDF(FastPacking).asset
-      Length: 37152209
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN-Medium.otf
-      Length: 11373656
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN-Medium-Dynamic-SDF.asset
-      Length: 2110346
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN-Medium-Static-gb2312-SDF(FastPacking).asset
-      Length: 37157998
-    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/BlackGradientBackground.png
-      Length: 44741
-    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/1.png
-      Length: 262
-    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/2.png
-      Length: 225
-    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/back.png
-      Length: 1003
-    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/BtnStart.png
-      Length: 15780
-    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/ImpurityImage.png
-      Length: 3453
-    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/Info.png
-      Length: 4361
-    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/ScoreImage.png
-      Length: 3386
-    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/Star.png
-      Length: 782
-    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Mask.png
-      Length: 2621
-    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/NextStepButton.png
-      Length: 143658
-    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Sun1.png
-      Length: 663036
-    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/TrackStartButton.png
-      Length: 53567
   - RelativePath: BundleRes/Prefabs/musicgameui.bundle
     DirectoryName: BundleRes/Prefabs
     BundleName: musicgameui.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 52899762
+    AssetsLength: 3027647
     Assets:
     - Name: Assets/BundleRes/Prefabs/MusicGameUI/MusicGame3DUIPanel.prefab
       Length: 18250
@@ -192,12 +221,6 @@ MonoBehaviour:
       Length: 33272
     - Name: Assets/BundleRes/Prefabs/MusicGameUI/MusicGamePausePanel.prefab
       Length: 16431
-    - Name: Assets/CysMultimediaAssets/Font/LXGWWenKaiMono-Bold.ttf
-      Length: 15455768
-    - Name: Assets/CysMultimediaAssets/Font/LXGWWenKaiMono-Light.ttf
-      Length: 18912262
-    - Name: Assets/CysMultimediaAssets/Font/LXGWWenKaiMono-Regular.ttf
-      Length: 15445214
     - Name: Assets/CysMultimediaAssets/Sprites/Fream-16px.png
       Length: 153
     - Name: Assets/CysMultimediaAssets/Sprites/GrayFrame.png
@@ -206,11 +229,18 @@ MonoBehaviour:
       Length: 620712
     - Name: Assets/TextMeshPro/Examples & Extras/Fonts/Bangers.ttf
       Length: 39676
-    - Name: Assets/TextMeshPro/Examples & Extras/Fonts/Oswald-Bold.ttf
-      Length: 53056
     - Name: Assets/TextMeshPro/Examples & Extras/Resources/Fonts & Materials/Oswald
         Bold SDF.asset
-      Length: 2118445
+      Length: 2112630
+  - RelativePath: BundleRes/Prefabs/scoresettlementui.bundle
+    DirectoryName: BundleRes/Prefabs
+    BundleName: scoresettlementui.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 135421
+    Assets:
+    - Name: Assets/BundleRes/Prefabs/ScoreSettlementUI/ScoreSettlementPanel.prefab
+      Length: 135421
   - RelativePath: BundleRes/scenes.bundle
     DirectoryName: BundleRes
     BundleName: scenes.bundle
@@ -227,18 +257,8 @@ MonoBehaviour:
     BundleName: scenes_res.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 1777250
+    AssetsLength: 1704131
     Assets:
-    - Name: Assets/CysMultimediaAssets/Key.prefab
-      Length: 3351
-    - Name: Assets/CysMultimediaAssets/KeyDown.mat
-      Length: 3579
-    - Name: Assets/CysMultimediaAssets/M_Track.fbx
-      Length: 12220
-    - Name: Assets/CysMultimediaAssets/MI_Track.mat
-      Length: 3662
-    - Name: Assets/CysMultimediaAssets/T_Track.png
-      Length: 14535
     - Name: Assets/Materials/DarkScene/T_Moon.png
       Length: 222945
     - Name: Assets/Materials/DarkScene/T_RandomNoise.png
@@ -263,12 +283,6 @@ MonoBehaviour:
       Length: 13512
     - Name: Assets/Shaders/T_PerlinNoise.png
       Length: 180722
-    - Name: Packages/com.unity.render-pipelines.universal/Runtime/Materials/Lit.mat
-      Length: 3462
-    - Name: Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader
-      Length: 22786
-    - Name: Packages/com.unity.render-pipelines.universal/Shaders/Unlit.shader
-      Length: 9524
   - RelativePath: BundleRes/ScriptObjects/inputmap.bundle
     DirectoryName: BundleRes/ScriptObjects
     BundleName: inputmap.bundle
@@ -283,19 +297,664 @@ MonoBehaviour:
     BundleName: internalmap.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 3112
+    AssetsLength: 3432
     Assets:
     - Name: Assets/BundleRes/ScriptObjects/InternalMap/InternalMapList.asset
-      Length: 3112
+      Length: 3432
+  - RelativePath: "CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973/cover_png.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973"
+    BundleName: cover_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 214691
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973/Cover.png"
+      Length: 214691
+  - RelativePath: "CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973/license_txt.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973"
+    BundleName: license_txt.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 8036
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973/LICENSE.txt"
+      Length: 8036
+  - RelativePath: "CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973/music_ogg.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973"
+    BundleName: music_ogg.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 3318323
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973/Music.ogg"
+      Length: 3318323
+  - RelativePath: "CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973/timelinedata_asset.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973"
+    BundleName: timelinedata_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 45198
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973/TimelineData.asset"
+      Length: 45198
+  - RelativePath: "CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D/cover_png.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D"
+    BundleName: cover_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 151672
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D/Cover.png"
+      Length: 151672
+  - RelativePath: "CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D/license_txt.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D"
+    BundleName: license_txt.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 7953
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D/LICENSE.txt"
+      Length: 7953
+  - RelativePath: "CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D/music_ogg.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D"
+    BundleName: music_ogg.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 6078450
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D/Music.ogg"
+      Length: 6078450
+  - RelativePath: "CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D/timelinedata_asset.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D"
+    BundleName: timelinedata_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 106544
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/1-\u6DF1\u7A7A\u65C1\u767D/TimelineData.asset"
+      Length: 106544
+  - RelativePath: "CysMultimediaAssets/Charts/2-\u76DB\u5178/cover_png.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/2-\u76DB\u5178"
+    BundleName: cover_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 277350
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/2-\u76DB\u5178/Cover.png"
+      Length: 277350
+  - RelativePath: "CysMultimediaAssets/Charts/2-\u76DB\u5178/license_txt.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/2-\u76DB\u5178"
+    BundleName: license_txt.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 7894
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/2-\u76DB\u5178/LICENSE.txt"
+      Length: 7894
+  - RelativePath: "CysMultimediaAssets/Charts/2-\u76DB\u5178/music_ogg.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/2-\u76DB\u5178"
+    BundleName: music_ogg.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 7588520
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/2-\u76DB\u5178/Music.ogg"
+      Length: 7588520
+  - RelativePath: "CysMultimediaAssets/Charts/2-\u76DB\u5178/timelinedata_asset.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/2-\u76DB\u5178"
+    BundleName: timelinedata_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 83255
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/2-\u76DB\u5178/TimelineData.asset"
+      Length: 83255
+  - RelativePath: "CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/cover_png.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7"
+    BundleName: cover_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 203339
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/Cover.png"
+      Length: 203339
+  - RelativePath: "CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/license_txt.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7"
+    BundleName: license_txt.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 8181
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/LICENSE.txt"
+      Length: 8181
+  - RelativePath: "CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/music_ogg.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7"
+    BundleName: music_ogg.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 3352166
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/Music.ogg"
+      Length: 3352166
+  - RelativePath: "CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/timelinedata_asset.bundle"
+    DirectoryName: "CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7"
+    BundleName: timelinedata_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 273166
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/TimelineData.asset"
+      Length: 273166
+  - RelativePath: CysMultimediaAssets/Charts/99-debug/cover_png.bundle
+    DirectoryName: CysMultimediaAssets/Charts/99-debug
+    BundleName: cover_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 203339
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Charts/99-debug/Cover.png
+      Length: 203339
+  - RelativePath: CysMultimediaAssets/Charts/99-debug/music_ogg.bundle
+    DirectoryName: CysMultimediaAssets/Charts/99-debug
+    BundleName: music_ogg.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 3352166
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Charts/99-debug/Music.ogg
+      Length: 3352166
+  - RelativePath: CysMultimediaAssets/Charts/99-debug/timelinedata_asset.bundle
+    DirectoryName: CysMultimediaAssets/Charts/99-debug
+    BundleName: timelinedata_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 1063
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Charts/99-debug/TimelineData.asset
+      Length: 1063
+  - RelativePath: CysMultimediaAssets/Font/gb2312_txt.bundle
+    DirectoryName: CysMultimediaAssets/Font
+    BundleName: gb2312_txt.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 23143
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/gb2312.txt
+      Length: 23143
+  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/license_txt.bundle
+    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
+    BundleName: license_txt.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 4540
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LICENSE.txt
+      Length: 4540
+  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-bold_ttf.bundle
+    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
+    BundleName: lxgwwenkaimono-bold_ttf.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 15455768
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold.ttf
+      Length: 15455768
+  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-bold-dynamic-sdf_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
+    BundleName: lxgwwenkaimono-bold-dynamic-sdf_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 2105208
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold-Dynamic-SDF.asset
+      Length: 2105208
+  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-bold-static-gb2312-sdf(fastpacking)_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
+    BundleName: lxgwwenkaimono-bold-static-gb2312-sdf(fastpacking)_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 37176147
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold-Static-gb2312-SDF(FastPacking).asset
+      Length: 37176147
+  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-light_ttf.bundle
+    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
+    BundleName: lxgwwenkaimono-light_ttf.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 18912262
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Light.ttf
+      Length: 18912262
+  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-light-dynamic-sdf_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
+    BundleName: lxgwwenkaimono-light-dynamic-sdf_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 7676
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Light-Dynamic-SDF.asset
+      Length: 7676
+  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-light-static-gb2312-sdf(fastpacking)_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
+    BundleName: lxgwwenkaimono-light-static-gb2312-sdf(fastpacking)_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 37183255
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Light-Static-gb2312-SDF(FastPacking).asset
+      Length: 37183255
+  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-regular_ttf.bundle
+    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
+    BundleName: lxgwwenkaimono-regular_ttf.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 15445214
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Regular.ttf
+      Length: 15445214
+  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-regular-dynamic-sdf_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
+    BundleName: lxgwwenkaimono-regular-dynamic-sdf_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 7686
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Regular-Dynamic-SDF.asset
+      Length: 7686
+  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-regular-static-gb2312-sdf(fastpacking)_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
+    BundleName: lxgwwenkaimono-regular-static-gb2312-sdf(fastpacking)_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 37219968
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Regular-Static-gb2312-SDF(FastPacking).asset
+      Length: 37219968
+  - RelativePath: CysMultimediaAssets/Font/Oswald/license_txt.bundle
+    DirectoryName: CysMultimediaAssets/Font/Oswald
+    BundleName: license_txt.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 4483
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/Oswald/LICENSE.txt
+      Length: 4483
+  - RelativePath: CysMultimediaAssets/Font/Oswald/oswald-extralight_ttf.bundle
+    DirectoryName: CysMultimediaAssets/Font/Oswald
+    BundleName: oswald-extralight_ttf.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 87208
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-ExtraLight.ttf
+      Length: 87208
+  - RelativePath: CysMultimediaAssets/Font/Oswald/oswald-extralight-dynamic-sdf_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/Oswald
+    BundleName: oswald-extralight-dynamic-sdf_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 2107984
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-ExtraLight-Dynamic-SDF.asset
+      Length: 2107984
+  - RelativePath: CysMultimediaAssets/Font/Oswald/oswald-extralight-static-ascii-sdf(fastpacking)_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/Oswald
+    BundleName: oswald-extralight-static-ascii-sdf(fastpacking)_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 2154329
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-ExtraLight-Static-ASCII-SDF(FastPacking).asset
+      Length: 2154329
+  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/license_txt.bundle
+    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
+    BundleName: license_txt.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 4559
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/LICENSE.txt
+      Length: 4559
+  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-bold_otf.bundle
+    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
+    BundleName: sourcehanserifcn-bold_otf.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 12094680
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Bold.otf
+      Length: 12094680
+  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-bold-dynamic-sdf_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
+    BundleName: sourcehanserifcn-bold-dynamic-sdf_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 7682
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Bold-Dynamic-SDF.asset
+      Length: 7682
+  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-bold-static-gb2312-sdf(fastpacking)_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
+    BundleName: sourcehanserifcn-bold-static-gb2312-sdf(fastpacking)_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 37174184
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Bold-Static-gb2312-SDF(FastPacking).asset
+      Length: 37174184
+  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-heavy_otf.bundle
+    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
+    BundleName: sourcehanserifcn-heavy_otf.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 11304840
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy.otf
+      Length: 11304840
+  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-heavy-dynamic-sdf_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
+    BundleName: sourcehanserifcn-heavy-dynamic-sdf_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 2108911
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy-Dynamic-SDF.asset
+      Length: 2108911
+  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-heavy-static-gb2312-sdf(fastpacking)_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
+    BundleName: sourcehanserifcn-heavy-static-gb2312-sdf(fastpacking)_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 37152209
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy-Static-gb2312-SDF(FastPacking).asset
+      Length: 37152209
+  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-medium_otf.bundle
+    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
+    BundleName: sourcehanserifcn-medium_otf.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 11373656
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium.otf
+      Length: 11373656
+  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-medium-dynamic-sdf_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
+    BundleName: sourcehanserifcn-medium-dynamic-sdf_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 2124903
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium-Dynamic-SDF.asset
+      Length: 2124903
+  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-medium-static-gb2312-sdf(fastpacking)_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
+    BundleName: sourcehanserifcn-medium-static-gb2312-sdf(fastpacking)_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 37157998
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium-Static-gb2312-SDF(FastPacking).asset
+      Length: 37157998
+  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-regular_otf.bundle
+    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
+    BundleName: sourcehanserifcn-regular_otf.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 11626108
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Regular.otf
+      Length: 11626108
+  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-regular-dynamic-sdf_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
+    BundleName: sourcehanserifcn-regular-dynamic-sdf_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 2124812
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Regular-Dynamic-SDF.asset
+      Length: 2124812
+  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-regular-static-gb2312-sdf(fastpacking)_asset.bundle
+    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
+    BundleName: sourcehanserifcn-regular-static-gb2312-sdf(fastpacking)_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 37176697
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Regular-Static-gb2312-SDF(FastPacking).asset
+      Length: 37176697
+  - RelativePath: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/license_txt.bundle
+    DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot
+    BundleName: license_txt.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 7359
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LICENSE.txt
+      Length: 7359
+  - RelativePath: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/luotianyi_pilot 1_controller.bundle
+    DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot
+    BundleName: luotianyi_pilot 1_controller.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 2118
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot 1.controller
+      Length: 2118
+  - RelativePath: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot.8192/texture_00_png.bundle
+    DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot.8192
+    BundleName: texture_00_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 2992153
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot.8192/texture_00.png
+      Length: 2992153
+  - RelativePath: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/luotianyi_pilot_asset.bundle
+    DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot
+    BundleName: luotianyi_pilot_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 53166
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot.asset
+      Length: 53166
+  - RelativePath: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/luotianyi_pilot_breath_anim.bundle
+    DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot
+    BundleName: luotianyi_pilot_breath_anim.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 15801
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot_Breath.anim
+      Length: 15801
+  - RelativePath: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/luotianyi_pilot_breath_fade_asset.bundle
+    DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot
+    BundleName: luotianyi_pilot_breath_fade_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 5973
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot_Breath.fade.asset
+      Length: 5973
+  - RelativePath: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/luotianyi_pilot_breath_motion3_json.bundle
+    DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot
+    BundleName: luotianyi_pilot_breath_motion3_json.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 2231
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot_Breath.motion3.json
+      Length: 2231
+  - RelativePath: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/luotianyi_pilot_cdi3_json.bundle
+    DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot
+    BundleName: luotianyi_pilot_cdi3_json.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 658
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot.cdi3.json
+      Length: 658
+  - RelativePath: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/luotianyi_pilot_controller.bundle
+    DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot
+    BundleName: luotianyi_pilot_controller.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 1666
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot.controller
+      Length: 1666
+  - RelativePath: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/luotianyi_pilot_moc3.bundle
+    DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot
+    BundleName: luotianyi_pilot_moc3.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 26368
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot.moc3
+      Length: 26368
+  - RelativePath: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/luotianyi_pilot_model3_json.bundle
+    DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot
+    BundleName: luotianyi_pilot_model3_json.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 360
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot.model3.json
+      Length: 360
+  - RelativePath: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/luotianyi_pilot_prefab.bundle
+    DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot
+    BundleName: luotianyi_pilot_prefab.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 86728
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_Pilot.prefab
+      Length: 86728
+  - RelativePath: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/luotianyi_pilotmasktexture_asset.bundle
+    DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot
+    BundleName: luotianyi_pilotmasktexture_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 490
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_PilotMaskTexture.asset
+      Length: 490
+  - RelativePath: CysMultimediaAssets/Sprites/login.bundle
+    DirectoryName: CysMultimediaAssets/Sprites
+    BundleName: login.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 7017755
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/Login/Ambient light.png
+      Length: 2930295
+    - Name: Assets/CysMultimediaAssets/Sprites/Login/Background.png
+      Length: 2633067
+    - Name: Assets/CysMultimediaAssets/Sprites/Login/Chair.png
+      Length: 1433974
+    - Name: Assets/CysMultimediaAssets/Sprites/Login/Press Any Key To Start.png
+      Length: 20419
+  - RelativePath: CysMultimediaAssets/Sprites/mapselectionpanel.bundle
+    DirectoryName: CysMultimediaAssets/Sprites
+    BundleName: mapselectionpanel.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 4472001
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/BlackGradientBackground.png
+      Length: 44741
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/1.png
+      Length: 262
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/2.png
+      Length: 225
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/back.png
+      Length: 1003
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/BtnStart.png
+      Length: 15780
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/ImpurityImage.png
+      Length: 3453
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/Info.png
+      Length: 4361
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/ScoreImage.png
+      Length: 3386
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/Star.png
+      Length: 782
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/MapSelectionUI_Background.png
+      Length: 3535126
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Mask.png
+      Length: 2621
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/NextStepButton.png
+      Length: 143658
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Sun1.png
+      Length: 663036
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/TrackStartButton.png
+      Length: 53567
+  - RelativePath: CysMultimediaAssets/Sprites/scoresettlementui.bundle
+    DirectoryName: CysMultimediaAssets/Sprites
+    BundleName: scoresettlementui.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 8140817
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/Background Image
+        (temporarily used).png
+      Length: 2557309
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/Continue Button.png
+      Length: 41193
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/Grade/AE.png
+      Length: 164529
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/Grade/AE+.png
+      Length: 185015
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/Grade/Clear.png
+      Length: 104894
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/Grade/FC.png
+      Length: 202265
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/Grade/FC+.png
+      Length: 221678
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/Grade/UP-0.png
+      Length: 190754
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/Grade/UP-1.png
+      Length: 213630
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/Inside Track.png
+      Length: 107328
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/Outside Track.png
+      Length: 151280
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/Reference Image.png
+      Length: 2852627
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/Screenshot Button.png
+      Length: 4713
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/The Sun/AP.png
+      Length: 391643
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/The Sun/Clear.png
+      Length: 366056
+    - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/The Sun/FC.png
+      Length: 385903
   - RelativePath: redundancy_0.bundle
     DirectoryName: 
     BundleName: redundancy_0.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 204844
+    AssetsLength: 35772
+    Assets:
+    - Name: Packages/com.unity.render-pipelines.universal/Runtime/Materials/Lit.mat
+      Length: 3462
+    - Name: Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader
+      Length: 22786
+    - Name: Packages/com.unity.render-pipelines.universal/Shaders/Unlit.shader
+      Length: 9524
+  - RelativePath: redundancy_1.bundle
+    DirectoryName: 
+    BundleName: redundancy_1.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 257900
     Assets:
     - Name: Assets/CysMultimediaAssets/Sprites/Bg-16px.png
       Length: 139
+    - Name: Assets/TextMeshPro/Examples & Extras/Fonts/Oswald-Bold.ttf
+      Length: 53056
     - Name: Assets/TextMeshPro/Shaders/TMP_SDF.shader
       Length: 10917
     - Name: Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Font Asset

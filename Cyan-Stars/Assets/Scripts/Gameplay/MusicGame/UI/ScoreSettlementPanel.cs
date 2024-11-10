@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace CyanStars.Gameplay.MusicGame
 {
     [UIData(UIGroupName = UIConst.UIGroupButtom,
-        UIPrefabName = "Assets/BundleRes/Prefabs/ScoreSettlementPanel.prefab")]
+        UIPrefabName = "Assets/BundleRes/Prefabs/ScoreSettlementUI/ScoreSettlementPanel.prefab")]
     public class ScoreSettlementPanel : BaseUIPanel
     {
         // 硬编码渐变时间配置
@@ -27,6 +27,7 @@ namespace CyanStars.Gameplay.MusicGame
         private const float AveNumRiseTime = 1.5f;
 
         // Unity组件
+        public TextMeshProUGUI Title;
         public TextMeshProUGUI TextScoreNum;
         public TextMeshProUGUI TextImpurityRateNum;
         public TextMeshProUGUI TextMaxComboNum;
@@ -57,21 +58,25 @@ namespace CyanStars.Gameplay.MusicGame
         private CanvasGroup canvasGroup;
         private float startTime;
 
-
-        public override void OnOpen()
+        public void Start()
         {
-            canvasGroup = this.GetComponent<CanvasGroup>();
-            canvasGroup.alpha = 0;
-            startTime = Time.time;
             ContinueButton.onClick.AddListener(() =>
                 {
                     GameRoot.UI.CloseUIPanel(this);
                     GameRoot.Event.Dispatch(EventConst.MusicGameExitEvent, this, EmptyEventArgs.Create());
                 }
             );
+        }
 
-            // 获取分数、杂率、最大连击数，各判定数
+        public override void OnOpen()
+        {
+            canvasGroup = this.GetComponent<CanvasGroup>();
+            canvasGroup.alpha = 0;
+            startTime = Time.time;
+
+            // 获取曲名、分数、杂率、最大连击数，各判定数
             MusicGameModule musicGameModule = GameRoot.GetDataModule<MusicGameModule>();
+            Title.text = musicGameModule.GetMap(musicGameModule.MapIndex).Name;
             targetScoreNum = musicGameModule.FullScore == 0
                 ? 0 // 谱面没有 Note 时，展示得分为 0，见于调试谱面等情况
                 : Mathf.RoundToInt(musicGameModule.Score / musicGameModule.FullScore * 1000000);

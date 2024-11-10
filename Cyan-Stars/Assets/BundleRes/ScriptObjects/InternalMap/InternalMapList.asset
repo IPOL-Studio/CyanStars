@@ -13,6 +13,12 @@ MonoBehaviour:
   m_Name: InternalMapList
   m_EditorClassIdentifier: 
   InternalMaps:
+  - Name: "\u6D4B\u8BD5"
+    StaffInfo: "\u6D4B\u8BD5 \u6D4B\u8BD5"
+    LrcFileName: 
+    MusicFileName: Assets/CysMultimediaAssets/Charts/99-debug/Music.ogg
+    CoverFileName: Assets/CysMultimediaAssets/Charts/99-debug/Cover.png
+    TimelineFileName: Assets/CysMultimediaAssets/Charts/99-debug/TimelineData.asset
   - Name: "\u5E7D\u7075\u5C11\u5973"
     StaffInfo: "\u6F14\u5531 \u6D1B\u5929\u4F9D\r\n\u8C03\u6821 \u5929\u5929\u51C9\u51C9\u8C46\r\n\u7B56\u5212
       \u65F6\u5C1A\r\n\u4F5C\u7F16\u66F2 \u795E\u5154\u5C0FP\r\n\u6DF7\u97F3 \u9038\u606C\u6E05\r\n\u4F5C\u8BCD

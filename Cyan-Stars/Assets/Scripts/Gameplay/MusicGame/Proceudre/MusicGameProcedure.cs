@@ -184,6 +184,7 @@ namespace CyanStars.Gameplay.MusicGame
                 StopTimeline();
             }
 
+            // 打开结算页
             dataModule.ResetPlayingData();
             GameRoot.ChangeProcedure<MainHomeProcedure>();
         }
