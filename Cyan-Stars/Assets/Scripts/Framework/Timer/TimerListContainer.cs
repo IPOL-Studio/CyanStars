@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CyanStars.Framework.Timer
 {
-    internal sealed class TimerListContainer<T>
+    internal sealed class TimerListContainer<T> where T : struct, IEquatable<T>
     {
         public struct UpdateHandle : IDisposable
         {
@@ -27,17 +27,9 @@ namespace CyanStars.Framework.Timer
             public T Value;
             public bool Invalid;
 
-            public bool Equals(ValueWrapper other)
-            {
-                // 这里的 is 模式仅做检查，对 Value 做强转是故意的，不要改动
-                return Invalid == other.Invalid &&
-                       Value is IEquatable<T>
-                    ? ((IEquatable<T>)Value).Equals(other.Value)
-                    : Value.Equals(other.Value);
-            }
-
+            public bool Equals(ValueWrapper other) => Invalid == other.Invalid && Value.Equals(other.Value);
             public override bool Equals(object obj) => obj is ValueWrapper other && Equals(other);
-            public override int GetHashCode() => Value?.GetHashCode() ?? 0;
+            public override int GetHashCode() => Value.GetHashCode();
         }
 
         private List<ValueWrapper> list = new List<ValueWrapper>();
