@@ -66,11 +66,8 @@ namespace CyanStars.Framework.Timer
         {
             if (isHandled)
             {
-                if (index >= 0)
-                {
-                    list[index] = new ValueWrapper { Invalid = true };
-                    removedCount++;
-                }
+                list[index] = new ValueWrapper { Invalid = true };
+                removedCount++;
             }
             else
             {
