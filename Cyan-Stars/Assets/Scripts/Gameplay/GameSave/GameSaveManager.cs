@@ -12,9 +12,14 @@ namespace CyanStars.Gameplay.GameSave
     /// </summary>
     public static class GameSaveManager
     {
-        // 存档文件的路径
-        private static readonly string SaveFilePath =
-            Path.Combine(Application.persistentDataPath, "CyanStarsGameSave.json");
+        /// <summary>
+        /// 获取此设备上的存档文件路径
+        /// </summary>
+        /// <returns>存档文件的路径</returns>
+        public static string GetSaveFilePath()
+        {
+            return Path.Combine(Application.persistentDataPath, "CyanStarsGameSave.json");
+        }
 
         /// <summary>
         ///     保存游戏存档
@@ -22,13 +27,14 @@ namespace CyanStars.Gameplay.GameSave
         /// <param name="gameSaveData">存档数据</param>
         public static void SaveGameSave(GameSaveData gameSaveData)
         {
+            string saveFilePath = GetSaveFilePath();
             try
             {
                 gameSaveData.Verification = CalculateVerification(gameSaveData);
 
                 string json = JsonConvert.SerializeObject(gameSaveData, Formatting.Indented);
-                File.WriteAllText(SaveFilePath, json);
-                Debug.Log($"存档保存成功：{SaveFilePath}");
+                File.WriteAllText(saveFilePath, json);
+                Debug.Log($"存档保存成功：{saveFilePath}");
             }
             catch (Exception ex)
             {
@@ -42,7 +48,8 @@ namespace CyanStars.Gameplay.GameSave
         /// <returns>存档数据，如果加载失败则返回null</returns>
         public static GameSaveData LoadGameSave()
         {
-            if (!File.Exists(SaveFilePath))
+            string saveFilePath = GetSaveFilePath();
+            if (!File.Exists(saveFilePath))
             {
                 Debug.LogWarning("存档文件不存在，需要先手动创建。");
                 return null;
@@ -50,7 +57,7 @@ namespace CyanStars.Gameplay.GameSave
 
             try
             {
-                string json = File.ReadAllText(SaveFilePath);
+                string json = File.ReadAllText(saveFilePath);
                 JsonConvert.DefaultSettings = () => new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.None
@@ -132,10 +139,11 @@ namespace CyanStars.Gameplay.GameSave
         /// </summary>
         private static void BackupSaveFile()
         {
-            string saveDirectory = Path.GetDirectoryName(SaveFilePath);
+            string saveFilePath = GetSaveFilePath();
+            string saveDirectory = Path.GetDirectoryName(saveFilePath);
             if (saveDirectory == null)
             {
-                throw new ArgumentNullException(nameof(SaveFilePath), "存档文件路径无效，无法获取目录。");
+                throw new ArgumentNullException(nameof(saveFilePath), "存档文件路径无效，无法获取目录。");
             }
 
             // 查找一个可用的备份文件名
@@ -150,7 +158,7 @@ namespace CyanStars.Gameplay.GameSave
                 backupFilePath = Path.Combine(saveDirectory, backupFileName);
             }
 
-            File.Move(SaveFilePath, backupFilePath);
+            File.Move(saveFilePath, backupFilePath);
             Debug.Log($"存档已备份，备份文件名为：{backupFileName}");
         }
     }
