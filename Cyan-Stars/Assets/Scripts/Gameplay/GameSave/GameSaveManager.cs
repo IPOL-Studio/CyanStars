@@ -24,17 +24,14 @@ namespace CyanStars.Gameplay.GameSave
         {
             try
             {
-                // 计算并设置存档数据的校验值
                 gameSaveData.Verification = CalculateVerification(gameSaveData);
 
-                // 将存档数据序列化为JSON格式，并保存到文件
                 string json = JsonConvert.SerializeObject(gameSaveData, Formatting.Indented);
                 File.WriteAllText(SaveFilePath, json);
                 Debug.Log($"存档保存成功：{SaveFilePath}");
             }
             catch (Exception ex)
             {
-                // 出现异常时记录错误信息
                 Debug.LogError($"保存存档时发生错误：{ex.Message}");
             }
         }
@@ -45,7 +42,6 @@ namespace CyanStars.Gameplay.GameSave
         /// <returns>存档数据，如果加载失败则返回null</returns>
         public static GameSaveData LoadGameSave()
         {
-            // 检查存档文件是否存在
             if (!File.Exists(SaveFilePath))
             {
                 Debug.LogWarning("存档文件不存在，需要先手动创建。");
@@ -54,7 +50,6 @@ namespace CyanStars.Gameplay.GameSave
 
             try
             {
-                // 读取存档文件并反序列化为对象
                 string json = File.ReadAllText(SaveFilePath);
                 JsonConvert.DefaultSettings = () => new JsonSerializerSettings
                 {
@@ -67,7 +62,6 @@ namespace CyanStars.Gameplay.GameSave
                 string verification = CalculateVerification(gameSaveData);
                 if (verification != gameSaveData.Verification)
                 {
-                    // 校验失败，备份存档并返回null
                     Debug.LogWarning("存档校验失败，存档可能被篡改或版本不匹配。");
                     BackupSaveFile();
                     return null;
@@ -90,7 +84,6 @@ namespace CyanStars.Gameplay.GameSave
         /// <returns>默认的游戏存档数据</returns>
         public static GameSaveData CreateDefaultGameSave()
         {
-            // 创建一个新的游戏存档数据，包含默认的版本号和创建时间
             return new GameSaveData
             {
                 Version = 1,
@@ -117,17 +110,14 @@ namespace CyanStars.Gameplay.GameSave
                 MusicGameData = gameSaveData.MusicGameData
             };
 
-            // 将克隆后的存档数据序列化为JSON
             string json = JsonConvert.SerializeObject(clonedGameSaveData);
 
-            // 使用SHA256算法计算校验值（哈希值）
             using SHA256 sha256 = SHA256.Create();
 
             {
                 byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(json));
                 StringBuilder hashString = new StringBuilder();
 
-                // 将哈希值转换为16进制字符串
                 foreach (byte b in hashBytes)
                 {
                     hashString.Append(b.ToString("x2"));
@@ -142,7 +132,6 @@ namespace CyanStars.Gameplay.GameSave
         /// </summary>
         private static void BackupSaveFile()
         {
-            // 获取存档文件所在目录
             string saveDirectory = Path.GetDirectoryName(SaveFilePath);
             if (saveDirectory == null)
             {
@@ -161,7 +150,6 @@ namespace CyanStars.Gameplay.GameSave
                 backupFilePath = Path.Combine(saveDirectory, backupFileName);
             }
 
-            // 重命名原存档文件进行备份
             File.Move(SaveFilePath, backupFilePath);
             Debug.Log($"存档已备份，备份文件名为：{backupFileName}");
         }
