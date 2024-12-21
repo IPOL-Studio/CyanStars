@@ -13,21 +13,12 @@ namespace CyanStars.Gameplay.GameSave
     public static class GameSaveManager
     {
         /// <summary>
-        /// 获取此设备上的存档文件路径
-        /// </summary>
-        /// <returns>存档文件的路径</returns>
-        public static string GetSaveFilePath()
-        {
-            return Path.Combine(Application.persistentDataPath, "CyanStarsGameSave.json");
-        }
-
-        /// <summary>
         ///     保存游戏存档
         /// </summary>
         /// <param name="gameSaveData">存档数据</param>
-        public static void SaveGameSave(GameSaveData gameSaveData)
+        /// <param name="saveFilePath">存档文件路径</param>>
+        public static void SaveGameSave(GameSaveData gameSaveData, string saveFilePath)
         {
-            string saveFilePath = GetSaveFilePath();
             try
             {
                 gameSaveData.Verification = CalculateVerification(gameSaveData);
@@ -46,9 +37,8 @@ namespace CyanStars.Gameplay.GameSave
         ///     尝试加载已有的存档
         /// </summary>
         /// <returns>存档数据，如果加载失败则返回null</returns>
-        public static GameSaveData LoadGameSave()
+        public static GameSaveData LoadGameSave(string saveFilePath)
         {
-            string saveFilePath = GetSaveFilePath();
             if (!File.Exists(saveFilePath))
             {
                 Debug.LogWarning("存档文件不存在，需要先手动创建。");
@@ -70,7 +60,7 @@ namespace CyanStars.Gameplay.GameSave
                 if (verification != gameSaveData.Verification)
                 {
                     Debug.LogWarning("存档校验失败，存档可能被篡改或版本不匹配。");
-                    BackupSaveFile();
+                    BackupSaveFile(saveFilePath);
                     return null;
                 }
 
@@ -80,7 +70,7 @@ namespace CyanStars.Gameplay.GameSave
             catch (Exception ex)
             {
                 Debug.LogError($"加载存档时发生错误：{ex.Message}");
-                BackupSaveFile();
+                BackupSaveFile(saveFilePath);
                 return null;
             }
         }
@@ -137,9 +127,8 @@ namespace CyanStars.Gameplay.GameSave
         /// <summary>
         ///     重命名原存档并备份（在存档校验失败时）
         /// </summary>
-        private static void BackupSaveFile()
+        private static void BackupSaveFile(string saveFilePath)
         {
-            string saveFilePath = GetSaveFilePath();
             string saveDirectory = Path.GetDirectoryName(saveFilePath);
             if (saveDirectory == null)
             {
