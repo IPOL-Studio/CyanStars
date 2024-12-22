@@ -46,30 +46,13 @@ namespace CyanStars.Gameplay.GameSave
 
                     public int PlayCount { get; set; } // 玩家累计游玩此谱面的次数
 
-                    public DateTime FirstPlayTime { get; set; } // 首次游玩时间（进入结算页时时间）
+                    public DateTime FirstPlayTime { get; set; } // 首次完成游玩的时间（进入结算页时时间）
 
-                    /*  注意：这部分的 BestImpurityRate 等（下方以星号标识），只有在 BestScore 刷新时才记录为对应的数据
-                        换言之，即使打出了更好的 BestImpurityRate，但未打出新的最高分，也不更新这些属性
-                        而打出新的最高分后，无论这些属性是否增加或降低，全部更新记录为此时的成绩  */
-                    public int BestScore { get; set; } // 最高得分（0~1000000）
                     public DateTime BestScorePlayTime { get; set; } // 最佳成绩对应的游玩时间（进入结算页时时间）
-                    public float BestImpurityRate { get; set; } // 最佳成绩对应的杂率（ms）*
-                    public ChartGrade BestGrade { get; set; } // 最佳成绩对应的评级 *
-                    public int BestMaxCombo { get; set; } // 最佳成绩对应的最大连击数 *
+                    public MusicGamePlayData BestPlayData { get; set; } // 最佳成绩时的游玩数据
 
-                    public int LastScore { get; set; } // 末次游玩的得分（0~1000000）
                     public DateTime LastPlayTime { get; set; } // 末次游玩时间（进入结算页时时间）
-                    public float LastImpurityRate { get; set; } // 末次杂率（ms）
-                    public ChartGrade LastGrade { get; set; } // 末次评级
-                    public int LastMaxCombo { get; set; } // 末次最大连击数
-                    public int LastEarlyNum { get; set; } // 末次 Early 数
-                    public int LastLateNum { get; set; } // 末次 Late 数
-                    public float LastAve { get; set; } // 末次平均误差时间（ms）
-                    public int LastExactNum { get; set; } // 末次游玩的 Exact 数
-                    public int LastGreatNum { get; set; }
-                    public int LastRightNum { get; set; }
-                    public int LastOutNum { get; set; }
-                    public int LastBadAndMissNum { get; set; }
+                    public MusicGamePlayData LastPlayData { get; set; } // 末次游玩时的游玩数据
                 }
             }
         }
