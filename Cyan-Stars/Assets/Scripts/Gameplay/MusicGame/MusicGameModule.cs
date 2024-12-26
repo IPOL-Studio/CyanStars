@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using CyanStars.Framework;
-using CyanStars.Framework.Asset;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.Timeline;
 using CyanStars.Framework.Logging;
@@ -54,12 +53,12 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 音符类型 -> 音符预制体名称
         /// </summary>
-        public Dictionary<NoteType,string> NotePrefabNameDict{ get; private set; }
+        public Dictionary<NoteType, string> NotePrefabNameDict { get; private set; }
 
         /// <summary>
         /// 音符类型 -> 音符打击特效预制体名称
         /// </summary>
-        public Dictionary<NoteType,string> HitEffectPrefabNameDict{ get; private set; }
+        public Dictionary<NoteType, string> HitEffectPrefabNameDict { get; private set; }
 
         /// <summary>
         /// 特效预制体名称列表
@@ -76,25 +75,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private float deviationsSum;
 
-#region 玩家游戏过程中的实时数据
-
-        public int Combo = 0; //Combo数量
-        public int MaxCombo = 0; //玩家在此次游玩时的最大连击数量
-        public float Score = 0; //分数
-        public EvaluateType Grade = default; //评分
-        public float ImpurityRate = 0; //杂率
-        public float CurrentDeviation = 0; //当前精准度
-        public List<float> DeviationList = new List<float>(); //各个音符的偏移
-        public float MaxScore = 0; //理论最高分
-        public int ExactNum = 0;
-        public int GreatNum = 0;
-        public int RightNum = 0;
-        public int OutNum = 0;
-        public int BadNum = 0;
-        public int MissNum = 0;
-        public float FullScore = 0; //全谱总分
-
-#endregion
+        public MusicGamePlayData MusicGamePlayData = new MusicGamePlayData { DeviationList = new List<float>() };
 
 
         public override void OnInit()
@@ -104,20 +85,20 @@ namespace CyanStars.Gameplay.MusicGame
 
             NotePrefabNameDict = new Dictionary<NoteType, string>()
             {
-                {NoteType.Tap,"Assets/BundleRes/NoteModelsV1.2/Tap.prefab"},
-                {NoteType.Hold,"Assets/BundleRes/NoteModelsV1.2/Hold.prefab"},
-                {NoteType.Drag,"Assets/BundleRes/NoteModelsV1.2/Drag.prefab"},
-                {NoteType.Click,"Assets/BundleRes/NoteModelsV1.2/Click.prefab"},
-                {NoteType.Break,"Assets/BundleRes/NoteModelsV1.2/Break.prefab"},
+                { NoteType.Tap, "Assets/BundleRes/NoteModelsV1.2/Tap.prefab" },
+                { NoteType.Hold, "Assets/BundleRes/NoteModelsV1.2/Hold.prefab" },
+                { NoteType.Drag, "Assets/BundleRes/NoteModelsV1.2/Drag.prefab" },
+                { NoteType.Click, "Assets/BundleRes/NoteModelsV1.2/Click.prefab" },
+                { NoteType.Break, "Assets/BundleRes/NoteModelsV1.2/Break.prefab" },
             };
 
             HitEffectPrefabNameDict = new Dictionary<NoteType, string>()
             {
-                {NoteType.Tap,"Assets/BundleRes/Prefabs/Effect/TapHitEffect.prefab"},
-                {NoteType.Hold,"Assets/BundleRes/Prefabs/Effect/HoldHitEffect.prefab"},
-                {NoteType.Drag,"Assets/BundleRes/Prefabs/Effect/DragHitEffect.prefab"},
-                {NoteType.Click,"Assets/BundleRes/Prefabs/Effect/ClickHitEffect.prefab"},
-                {NoteType.Break,"Assets/BundleRes/Prefabs/Effect/BreakHitEffect.prefab"},
+                { NoteType.Tap, "Assets/BundleRes/Prefabs/Effect/TapHitEffect.prefab" },
+                { NoteType.Hold, "Assets/BundleRes/Prefabs/Effect/HoldHitEffect.prefab" },
+                { NoteType.Drag, "Assets/BundleRes/Prefabs/Effect/DragHitEffect.prefab" },
+                { NoteType.Click, "Assets/BundleRes/Prefabs/Effect/ClickHitEffect.prefab" },
+                { NoteType.Break, "Assets/BundleRes/Prefabs/Effect/BreakHitEffect.prefab" },
             };
 
             EffectNames = new List<string>()
@@ -184,14 +165,14 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public void CalFullScore(NoteTrackData noteTrackData)
         {
-            FullScore = 0;
+            MusicGamePlayData.FullScore = 0;
             foreach (var layer in noteTrackData.LayerDatas)
             {
                 foreach (var timeAxis in layer.TimeAxisDatas)
                 {
                     foreach (var note in timeAxis.NoteDatas)
                     {
-                        FullScore += note.GetFullScore();
+                        MusicGamePlayData.FullScore += note.GetFullScore();
                     }
                 }
             }
@@ -208,21 +189,7 @@ namespace CyanStars.Gameplay.MusicGame
             loggerCategoryName = null;
             DistanceBarData = null;
 
-            Combo = 0; //Combo数量
-            MaxCombo = 0; //玩家在此次游玩时的最大连击数量
-            Score = 0; //分数
-            Grade = default; //评分
-            ImpurityRate = 0; //杂率
-            CurrentDeviation = 0; //当前精准度
-            DeviationList.Clear(); //各个音符的偏移
-            MaxScore = 0; //理论最高分
-            ExactNum = 0;
-            GreatNum = 0;
-            RightNum = 0;
-            OutNum = 0;
-            BadNum = 0;
-            MissNum = 0;
-            FullScore = 0; //全谱总分
+            MusicGamePlayData = new MusicGamePlayData { DeviationList = new List<float>() };
         }
 
         /// <summary>
@@ -232,25 +199,25 @@ namespace CyanStars.Gameplay.MusicGame
         {
             if (addCombo < 0)
             {
-                Combo = 0;
+                MusicGamePlayData.Combo = 0;
             }
             else
             {
-                Combo += addCombo;
-                MaxCombo = Mathf.Max(Combo, MaxCombo);
-                Score += addScore;
+                MusicGamePlayData.Combo += addCombo;
+                MusicGamePlayData.MaxCombo = Mathf.Max(MusicGamePlayData.Combo, MusicGamePlayData.MaxCombo);
+                MusicGamePlayData.Score += addScore;
             }
 
-            Grade = grade;
+            MusicGamePlayData.Grade = grade;
 
             _ = grade switch
             {
-                EvaluateType.Exact => ExactNum++,
-                EvaluateType.Great => GreatNum++,
-                EvaluateType.Right => RightNum++,
-                EvaluateType.Out => OutNum++,
-                EvaluateType.Bad => BadNum++,
-                EvaluateType.Miss => MissNum++,
+                EvaluateType.Exact => MusicGamePlayData.ExactNum++,
+                EvaluateType.Great => MusicGamePlayData.GreatNum++,
+                EvaluateType.Right => MusicGamePlayData.RightNum++,
+                EvaluateType.Out => MusicGamePlayData.OutNum++,
+                EvaluateType.Bad => MusicGamePlayData.BadNum++,
+                EvaluateType.Miss => MusicGamePlayData.MissNum++,
                 _ => throw new ArgumentException(nameof(grade))
             };
 
@@ -259,14 +226,15 @@ namespace CyanStars.Gameplay.MusicGame
             // 玩家提前按下为+，延后按下为-
             if (currentDeviation < 10000)
             {
-                CurrentDeviation = currentDeviation;
-                DeviationList.Add(currentDeviation);
+                MusicGamePlayData.CurrentDeviation = currentDeviation;
+                MusicGamePlayData.DeviationList.Add(currentDeviation);
                 deviationsSum += Mathf.Abs(currentDeviation);
-                ImpurityRate = deviationsSum / DeviationList.Count;
-                ImpurityRate = (float)Mathf.CeilToInt(ImpurityRate * 1000000) / 1000; // 将杂率转换为 00.000ms 格式并向上取整
+                MusicGamePlayData.ImpurityRate = deviationsSum / MusicGamePlayData.DeviationList.Count;
+                MusicGamePlayData.ImpurityRate =
+                    (float)Mathf.CeilToInt(MusicGamePlayData.ImpurityRate * 1000000) / 1000; // 将杂率转换为 00.000ms 格式并向上取整
             }
 
-            GameRoot.Event.Dispatch(EventConst.MusicGameDataRefreshEvent, this,EmptyEventArgs.Create());
+            GameRoot.Event.Dispatch(EventConst.MusicGameDataRefreshEvent, this, EmptyEventArgs.Create());
         }
     }
 }

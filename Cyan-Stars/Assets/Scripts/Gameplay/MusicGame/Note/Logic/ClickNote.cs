@@ -53,7 +53,7 @@ namespace CyanStars.Gameplay.MusicGame
             if (Distance <= 0 && !headChecked)
             {
                 headChecked = true;
-                DataModule.MaxScore += 2;
+                DataModule.MusicGamePlayData.MaxScore += 2;
                 DataModule.RefreshPlayingData(1, 2, EvaluateType.Exact, 0); // Auto Mode 杂率为0
 
                 NoteJudger.LogJudgedInfo(new ClickNoteJudgedInfo(Data, EvaluateType.Exact, 0));

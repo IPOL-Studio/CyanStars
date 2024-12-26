@@ -37,10 +37,7 @@ namespace CyanStars.Gameplay.MusicGame
                 BtnStart.gameObject.SetActive(false);
             });
 
-            BtnPause.onClick.AddListener(() =>
-            {
-                GameRoot.UI.OpenUIPanel<MusicGamePausePanel>(null);
-            });
+            BtnPause.onClick.AddListener(() => { GameRoot.UI.OpenUIPanel<MusicGamePausePanel>(null); });
         }
 
         public override void OnOpen()
@@ -64,7 +61,7 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Timer.UpdateTimer.Remove(OnUpdate);
         }
 
-        private void OnUpdate(float deltaTime,object userdata)
+        private void OnUpdate(float deltaTime, object userdata)
         {
             if (dataModule.RunningTimeline != null)
             {
@@ -77,12 +74,10 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void OnMusicGameDataRefresh(object sender, EventArgs args)
         {
-            TxtCombo.text = dataModule.Combo < 2 ? string.Empty : dataModule.Combo.ToString();
-            TxtScore.text = "SCORE(DEBUG):" + dataModule.Score;
+            TxtCombo.text = dataModule.MusicGamePlayData.Combo < 2
+                ? string.Empty
+                : dataModule.MusicGamePlayData.Combo.ToString();
+            TxtScore.text = "SCORE(DEBUG):" + dataModule.MusicGamePlayData.Score;
         }
-
-
-
-
     }
 }
