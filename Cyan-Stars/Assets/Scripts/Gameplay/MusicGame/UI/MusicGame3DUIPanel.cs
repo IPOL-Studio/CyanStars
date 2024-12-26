@@ -63,9 +63,9 @@ namespace CyanStars.Gameplay.MusicGame
             }
             else
             {
-                TxtGrade.text = dataModule.Grade.ToString();
+                TxtGrade.text = dataModule.MusicGamePlayData.Grade.ToString();
 
-                switch (dataModule.Grade)
+                switch (dataModule.MusicGamePlayData.Grade)
                 {
                     case EvaluateType.Miss:
                         color = Color.white;
@@ -93,13 +93,13 @@ namespace CyanStars.Gameplay.MusicGame
             StartCoroutine(FadeGradeTMP());
 
             //刷新杂率
-            TxtImpurityRate.text = $"杂率:{dataModule.ImpurityRate:F3}ms";
+            TxtImpurityRate.text = $"杂率:{dataModule.MusicGamePlayData.ImpurityRate:F3}ms";
 
-            if (dataModule.ImpurityRate < 30)
+            if (dataModule.MusicGamePlayData.ImpurityRate < 30)
             {
                 TxtImpurityRate.color = Color.yellow;
             }
-            else if (dataModule.ImpurityRate < 50)
+            else if (dataModule.MusicGamePlayData.ImpurityRate < 50)
             {
                 TxtImpurityRate.color = Color.blue;
             }
@@ -110,21 +110,21 @@ namespace CyanStars.Gameplay.MusicGame
 
             //刷新得分率
             float scoreRatio = 0;
-            if (dataModule.MaxScore > 0)
+            if (dataModule.MusicGamePlayData.MaxScore > 0)
             {
-                scoreRatio = dataModule.Score / dataModule.MaxScore;
+                scoreRatio = dataModule.MusicGamePlayData.Score / dataModule.MusicGamePlayData.MaxScore;
             }
 
             TxtScoreRatio.text = $"{(scoreRatio * 100):F}%";
 
-            if (dataModule.GreatNum + dataModule.RightNum + dataModule.OutNum + dataModule.BadNum +
-                dataModule.MissNum == 0)
+            if (dataModule.MusicGamePlayData.GreatNum + dataModule.MusicGamePlayData.RightNum + dataModule.MusicGamePlayData.OutNum + dataModule.MusicGamePlayData.BadNum +
+                dataModule.MusicGamePlayData.MissNum == 0)
             {
                 TxtScoreRatio.color = Color.yellow;
             }
             else
             {
-                if (dataModule.MissNum + dataModule.BadNum == 0)
+                if (dataModule.MusicGamePlayData.MissNum + dataModule.MusicGamePlayData.BadNum == 0)
                 {
                     TxtScoreRatio.color = Color.cyan;
                 }
@@ -135,7 +135,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             //刷新当前分数
-            TxtVisibleScore.text = ((int)(dataModule.Score / dataModule.FullScore * 100000)).ToString().PadLeft(6, '0'); //更新文本
+            TxtVisibleScore.text = ((int)(dataModule.MusicGamePlayData.Score / dataModule.MusicGamePlayData.FullScore * 100000)).ToString().PadLeft(6, '0'); //更新文本
         }
 
         private IEnumerator FadeGradeTMP()

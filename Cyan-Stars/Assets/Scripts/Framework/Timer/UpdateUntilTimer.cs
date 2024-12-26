@@ -47,33 +47,24 @@ namespace CyanStars.Framework.Timer
         }
 
 
-        private List<Timer> runningTimers = new List<Timer>();
-        private List<Timer> waitRemoveTimers = new List<Timer>();
+        private TimerListContainer<Timer> runningTimers = new TimerListContainer<Timer>();
 
         public void OnUpdate(float deltaTime)
         {
-            //处理UpdateUntil定时器
-            if (runningTimers.Count > 0)
+            if (runningTimers.Count == 0)
             {
-                for (int i = runningTimers.Count - 1; i >= 0; i--)
-                {
-                    Timer timer = runningTimers[i];
-                    if (timer.Callback?.Invoke(deltaTime, timer.Userdata) ?? true)
-                    {
-                        waitRemoveTimers.Add(timer);
-                    }
-                }
+                return;
             }
 
-            //删除等待删除的timer
-            if (waitRemoveTimers.Count > 0)
-            {
-                foreach (Timer waitRemoveTimer in waitRemoveTimers)
-                {
-                    runningTimers.Remove(waitRemoveTimer);
-                }
+            using var _ = runningTimers.Handle();
 
-                waitRemoveTimers.Clear();
+            for (int i = runningTimers.Count; i >= 0; i--)
+            {
+                if (runningTimers.TryGetValue(i, out Timer timer) &&
+                    (timer.Callback?.Invoke(deltaTime, timer.Userdata) ?? true))
+                {
+                    runningTimers.RemoveAt(i);
+                }
             }
         }
 
