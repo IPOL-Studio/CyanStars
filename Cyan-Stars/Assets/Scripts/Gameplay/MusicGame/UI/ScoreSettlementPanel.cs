@@ -77,17 +77,18 @@ namespace CyanStars.Gameplay.MusicGame
             // 获取曲名、分数、杂率、最大连击数，各判定数
             MusicGameModule musicGameModule = GameRoot.GetDataModule<MusicGameModule>();
             Title.text = musicGameModule.GetMap(musicGameModule.MapIndex).Name;
-            targetScoreNum = musicGameModule.FullScore == 0
+            targetScoreNum = musicGameModule.MusicGamePlayData.FullScore == 0
                 ? 0 // 谱面没有 Note 时，展示得分为 0，见于调试谱面等情况
-                : Mathf.RoundToInt(musicGameModule.Score / musicGameModule.FullScore * 1000000);
-            targetImpurityRateNum = musicGameModule.ImpurityRate;
-            targetMaxComboNum = musicGameModule.MaxCombo;
+                : Mathf.RoundToInt(musicGameModule.MusicGamePlayData.Score /
+                    musicGameModule.MusicGamePlayData.FullScore * 1000000);
+            targetImpurityRateNum = musicGameModule.MusicGamePlayData.ImpurityRate;
+            targetMaxComboNum = musicGameModule.MusicGamePlayData.MaxCombo;
 
-            targetExactNum = musicGameModule.ExactNum;
-            targetGreatNum = musicGameModule.GreatNum;
-            targetRightNum = musicGameModule.RightNum;
-            targetOutNum = musicGameModule.OutNum;
-            targetBadAndMissNum = musicGameModule.BadNum + musicGameModule.MissNum;
+            targetExactNum = musicGameModule.MusicGamePlayData.ExactNum;
+            targetGreatNum = musicGameModule.MusicGamePlayData.GreatNum;
+            targetRightNum = musicGameModule.MusicGamePlayData.RightNum;
+            targetOutNum = musicGameModule.MusicGamePlayData.OutNum;
+            targetBadAndMissNum = musicGameModule.MusicGamePlayData.BadNum + musicGameModule.MusicGamePlayData.MissNum;
 
             // 计算 Early、Late、平均误差
             MusicGameSettingsModule musicGameSettingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
@@ -98,7 +99,8 @@ namespace CyanStars.Gameplay.MusicGame
             targetEarlyNum = 0;
             targetLateNum = 0;
 
-            foreach (float deviation in musicGameModule.DeviationList) // Drag，尾判等不计算杂率的音符不计算 Early 和 Late
+            foreach (float deviation in
+                     musicGameModule.MusicGamePlayData.DeviationList) // Drag，尾判等不计算杂率的音符不计算 Early 和 Late
             {
                 sum += deviation;
                 if (Mathf.Abs(deviation) <= exactRange) continue; // Exact 范围内 Note 不计算 Early 和 Late
@@ -106,13 +108,13 @@ namespace CyanStars.Gameplay.MusicGame
                 targetLateNum += deviation < 0f ? 1 : 0;
             }
 
-            if (musicGameModule.DeviationList.Count == 0) // 防止玩家放置游玩或没有有效Note的极端情况
+            if (musicGameModule.MusicGamePlayData.DeviationList.Count == 0) // 防止玩家放置游玩或没有有效Note的极端情况
             {
                 targetLateNum = 0;
             }
             else
             {
-                targetAveNum = sum / musicGameModule.DeviationList.Count * 1000f;
+                targetAveNum = sum / musicGameModule.MusicGamePlayData.DeviationList.Count * 1000f;
             }
         }
 
