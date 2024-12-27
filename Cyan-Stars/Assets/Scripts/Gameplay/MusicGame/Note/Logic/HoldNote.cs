@@ -1,12 +1,8 @@
-using CyanStars.Framework.Logging;
-
+using CyanStars.Framework;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    /// <summary>
-    /// Hold音符
-    /// </summary>
     public class HoldNote : BaseNote
     {
         /// <summary>
@@ -44,6 +40,8 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private float value;
 
+        private readonly MusicGameSettingsModule
+            MusicGameSettingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
 
 
         public override void Init(NoteData data, NoteLayer layer)
@@ -51,7 +49,7 @@ namespace CyanStars.Gameplay.MusicGame
             base.Init(data, layer);
 
             holdLength = (data.HoldEndTime - data.JudgeTime) / 1000f;
-            holdCheckInputEndDistance = -holdLength;//hold结束时间点与长度相同
+            holdCheckInputEndDistance = -holdLength; //hold结束时间点与长度相同
         }
 
         public override bool CanReceiveInput()
@@ -59,12 +57,57 @@ namespace CyanStars.Gameplay.MusicGame
             return Distance <= EvaluateHelper.CheckInputStartDistance && Distance >= holdCheckInputEndDistance;
         }
 
-        public override void OnUpdate(float curLogicTime,float curViewTime)
+        public override void OnUpdateInAutoMode(float curLogicTime, float curViewTime)
         {
-            float deltaTime = curLogicTime - CurLogicTime;
+            base.OnUpdateInAutoMode(curLogicTime, curViewTime);
 
+            var holdViewObject = ViewObject as HoldViewObject;
+
+            if (!headChecked && Distance <= 0)
+            {
+                headChecked = true;
+
+                holdViewObject?.OpenFlicker();
+
+                ViewObject.CreateEffectObj(NoteData.NoteWidth);
+
+                NoteJudger.HoldHeadJudge(Data, 0); // Auto Mode 杂率为0
+
+                holdViewObject?.SetPressed(true);
+            }
+
+            if (headChecked)
+            {
+                // 按下时根据已经经过的视图层时间比例计算Hold长度
+                float length = Data.HoldViewEndTime / 1000f - curViewTime;
+                holdViewObject?.SetLength(length);
+            }
+
+            if (Distance < holdCheckInputEndDistance)
+            {
+                ViewObject?.DestroyEffectObj();
+                DestroySelf(false);
+
+                NoteJudger.HoldTailJudge(Data, holdLength, 1);
+            }
+        }
+
+        public override void OnUpdate(float curLogicTime, float curViewTime)
+        {
+            // 1. 判定头判 Miss
+            // 2. 累加这一帧的按住时长，并计算视图长度
+            // 3. 判定尾判
+            float deltaTime = curLogicTime - CurLogicTime;
             base.OnUpdate(curLogicTime, curViewTime);
 
+            // 头判 Miss
+            if (!headChecked && EvaluateHelper.IsMiss(Distance))
+            {
+                headChecked = true;
+                NoteJudger.HoldHeadJudge(Data, Distance);
+            }
+
+            // 累加时长
             if (!isPressed)
             {
                 //这里isPressed为false 就表示从上一次OnUpdate到这次OnUpdate之间没有Press类型的输入
@@ -75,90 +118,68 @@ namespace CyanStars.Gameplay.MusicGame
                 //重置Press标记
                 isPressed = false;
 
-                if (Distance <= 0 && Distance >= holdCheckInputEndDistance)
+                if (Distance <= Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Bad) &&
+                    Distance >= holdCheckInputEndDistance)
                 {
-                    //只在hold音符区域内有按住时，累计有效时长
+                    // 只在 判定时间-Bad区间~结束时间 区间内才累计时长
+
                     pressTimeLength += deltaTime;
-                    
-                    // 按下时根据已经经过的视图层时间比例计算Hold长度
+
+                    // 按下时根据已经经过的视图层时间比例计算 Hold 长度
                     float length = Data.HoldViewEndTime / 1000f - curViewTime;
-                    (ViewObject as HoldViewObject).SetLength(length);
+                    (ViewObject as HoldViewObject)?.SetLength(length);
                 }
             }
 
-            if (Distance < holdCheckInputEndDistance)
+            // Hold 已结束（当前时间>Hold尾判时间，且当前时间>Hold头判时间+头判Right区间）
+            // 判定尾判
+            if (Distance < holdCheckInputEndDistance &&
+                Distance < MusicGameSettingsModule.EvaluateRange.Right)
             {
-                //整条hold都跑完了
-                if (!headChecked)
+                float allLength;
+                if (Data.HoldEndTime / 1000f >
+                    Data.JudgeTime / 1000f + Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Right))
                 {
-                    //没进行过头判 被漏掉了 miss
-                    NoteJudger.HoldMiss(Data);
+                    // 一般情况：Hold 结束时间大于开始时间+Right区间
+                    // 要求按住的总时长s = Hold结束时间 - (Hold开始时间 + Right区间)
+                    allLength = Data.HoldEndTime / 1000f -
+                                (Data.JudgeTime / 1000f + Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Right));
                 }
                 else
                 {
-                    //进行过头判 计算按住比例
-                    //总长度默认为hold长度
-                    float allLength = holdLength;
-                    if (headCheckTime > JudgeTime)
-                    {
-                        //头判晚命中的情况下 以头判命中时间为起点计算总长度
-                        allLength = Data.HoldEndTime / 1000f - headCheckTime;
-                    }
-
-                    //修正因累加deltaTime可能导致的按住时长比总时长大的情况
-                    pressTimeLength = Mathf.Clamp(pressTimeLength, pressTimeLength, allLength);
-
-                    //计算按住比例
-                    value = pressTimeLength / allLength;
-
-                    NoteJudger.HoldTailJudge(Data,pressTimeLength,value);
-
-                    ViewObject.DestroyEffectObj();
+                    // 极短的 Hold：Hold 结束时间小开始时间+Right区间
+                    // 此时只要头判非 Miss，或头判 Miss 但从头判前就按住了对应位置（无KeyDown但KeyPress），尾判都算 Exact
+                    allLength = 0;
                 }
-                DestroySelf();
-            }
 
-        }
+                if (allLength != 0)
+                {
+                    // 正常判定
+                    pressTimeLength = Mathf.Clamp(pressTimeLength, pressTimeLength, allLength);
+                    value = pressTimeLength / allLength;
+                    NoteJudger.HoldTailJudge(Data, pressTimeLength, value);
+                }
+                else
+                {
+                    // 短 Hold 判定
+                    if (headCheckTime == 0 && pressTimeLength == 0)
+                    {
+                        NoteJudger.HoldTailJudge(Data, pressTimeLength, 0f);
+                    }
+                    else
+                    {
+                        NoteJudger.HoldTailJudge(Data, pressTimeLength, 1f);
+                    }
+                }
 
-        public override void OnUpdateInAutoMode(float curLogicTime,float curViewTime)
-        {
-            base.OnUpdateInAutoMode(curLogicTime, curViewTime);
-
-            var holdViewObject = ViewObject as HoldViewObject;
-
-            if (!headChecked && Distance <= 0)
-            {
-                headChecked = true;
-
-                holdViewObject.OpenFlicker();
-
-                ViewObject.CreateEffectObj(NoteData.NoteWidth);
-
-                NoteJudger.HoldHeadJudge(Data, 0); // Auto Mode 杂率为0
-
-                holdViewObject.SetPressed(true);
-            }
-
-            if (headChecked)
-            {
-                // 按下时根据已经经过的视图层时间比例计算Hold长度
-                float length = Data.HoldViewEndTime / 1000f - curViewTime;
-                holdViewObject.SetLength(length);
-            }
-
-            if (Distance < holdCheckInputEndDistance)
-            {
                 ViewObject?.DestroyEffectObj();
-                DestroySelf();
-
-                NoteJudger.HoldTailJudge(Data,holdLength,1);
+                DestroySelf(false);
             }
         }
 
         public override void OnInput(InputType inputType)
         {
             base.OnInput(inputType);
-
             var holdViewObject = ViewObject as HoldViewObject;
             switch (inputType)
             {
@@ -168,47 +189,34 @@ namespace CyanStars.Gameplay.MusicGame
                         return;
                     }
 
-                    //头判处理
-                    EvaluateType et =  NoteJudger.HoldHeadJudge(Data, Distance);
-                    if (et == EvaluateType.Bad || et == EvaluateType.Miss)
-                    {
-                        //头判失败直接销毁
-                        DestroySelf(false);
-                    }
-                    else
-                    {
-                        //头判成功
-                        headChecked = true;
-                        headCheckTime = CurLogicTime;
-                        isPressed = true;
-                        // 按键按下，开始截断
-                        holdViewObject.SetPressed(true);
+                    // 进行头判
+                    NoteJudger.HoldHeadJudge(Data, Distance);
+                    headChecked = true;
+                    headCheckTime = CurLogicTime;
+                    isPressed = true;
 
-                        ViewObject.CreateEffectObj(NoteData.NoteWidth);
-                        //头判处理
-                        holdViewObject.OpenFlicker();
-                    }
-
+                    // 按键按下，开始截断和特效
+                    holdViewObject?.SetPressed(true);
+                    ViewObject.CreateEffectObj(NoteData.NoteWidth);
+                    holdViewObject?.OpenFlicker();
                     break;
 
                 case InputType.Press:
+                    // 提前按住也计算时长，但不截断或播放特效
+                    isPressed = true;
+
                     if (!headChecked)
                     {
-                       return;
+                        return;
                     }
 
-                    //头判命中后 有Press输入 才开始计算命中时长
-                    isPressed = true;
-                    // 按键按下，开始截断
-                    holdViewObject.SetPressed(true);
-
+                    holdViewObject?.SetPressed(true);
                     ViewObject.CreateEffectObj(NoteData.NoteWidth);
                     break;
 
                 case InputType.Up:
                     // 按键抬起，取消截断
-                    holdViewObject.SetPressed(false);
-                    
+                    holdViewObject?.SetPressed(false);
                     break;
             }
         }
