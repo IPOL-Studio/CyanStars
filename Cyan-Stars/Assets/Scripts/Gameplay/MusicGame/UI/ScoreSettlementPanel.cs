@@ -5,6 +5,7 @@ using CyanStars.Gameplay.Base;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -12,19 +13,19 @@ namespace CyanStars.Gameplay.MusicGame
         UIPrefabName = "Assets/BundleRes/Prefabs/ScoreSettlementUI/ScoreSettlementPanel.prefab")]
     public class ScoreSettlementPanel : BaseUIPanel
     {
-        // 硬编码渐变时间配置
-        private const float UIRiseTime = 0.5f;
-        private const float ScoreNumRiseTime = 2.0f;
-        private const float ImpurityRateNumRiseTime = 1.0f;
-        private const float MaxComboNumRiseTime = 1.5f;
-        private const float ExactNumRiseTime = 1.5f;
-        private const float GreatNumRiseTime = 1.5f;
-        private const float RightNumRiseTime = 1.5f;
-        private const float OutNumRiseTime = 1.5f;
-        private const float BadAndMissNumRiseTime = 1.5f;
-        private const float EarlyNumRiseTime = 1.5f;
-        private const float LateNumRiseTime = 1.5f;
-        private const float AveNumRiseTime = 1.5f;
+        // 渐变时间
+        public float UIRiseTime = 0.5f;
+        public float ScoreNumRiseTime = 2.0f;
+        public float ImpurityRateNumRiseTime = 1.0f;
+        public float MaxComboNumRiseTime = 1.5f;
+        public float ExactNumRiseTime = 1.5f;
+        public float GreatNumRiseTime = 1.5f;
+        public float RightNumRiseTime = 1.5f;
+        public float OutNumRiseTime = 1.5f;
+        public float BadAndMissNumRiseTime = 1.5f;
+        public float EarlyNumRiseTime = 1.5f;
+        public float LateNumRiseTime = 1.5f;
+        public float AveNumRiseTime = 1.5f;
 
         // Unity组件
         public TextMeshProUGUI Title;
@@ -56,7 +57,6 @@ namespace CyanStars.Gameplay.MusicGame
 
         // 内部变量
         private CanvasGroup canvasGroup;
-        private float startTime;
 
         public void Start()
         {
@@ -72,7 +72,6 @@ namespace CyanStars.Gameplay.MusicGame
         {
             canvasGroup = this.GetComponent<CanvasGroup>();
             canvasGroup.alpha = 0;
-            startTime = Time.time;
 
             // 获取曲名、分数、杂率、最大连击数，各判定数
             MusicGameModule musicGameModule = GameRoot.GetDataModule<MusicGameModule>();
@@ -110,233 +109,84 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (musicGameModule.MusicGamePlayData.DeviationList.Count == 0) // 防止玩家放置游玩或没有有效Note的极端情况
             {
-                targetLateNum = 0;
+                targetAveNum = 0;
             }
             else
             {
                 targetAveNum = sum / musicGameModule.MusicGamePlayData.DeviationList.Count * 1000f;
             }
-        }
 
-        public void Update()
-        {
-            if (Time.time <= (startTime + UIRiseTime))
-            {
-                canvasGroup.alpha = UpdateUIAlpha();
-            }
+            DOTween.To(() => 0f,
+                    x => canvasGroup.alpha = x,
+                    1f,
+                    UIRiseTime)
+                .SetEase(Ease.OutQuart);
 
-            if (Time.time <= (startTime + ScoreNumRiseTime))
-            {
-                TextScoreNum.text = UpdateScoreNumDisplay();
-            }
-
-            if (Time.time <= (startTime + ImpurityRateNumRiseTime))
-            {
-                TextImpurityRateNum.text = UpdateImpurityRateNumDisplay();
-            }
-
-            if (Time.time <= (startTime + MaxComboNumRiseTime))
-            {
-                TextMaxComboNum.text = UpdateMaxComboNumDisplay();
-            }
-
-            if (Time.time <= (startTime + ExactNumRiseTime))
-            {
-                TextExactNum.text = UpdateExactNumDisplay();
-            }
-
-            if (Time.time <= (startTime + GreatNumRiseTime))
-            {
-                TextGreatNum.text = UpdateGreatNumDisplay();
-            }
-
-            if (Time.time <= (startTime + RightNumRiseTime))
-            {
-                TextRightNum.text = UpdateRightNumDisplay();
-            }
-
-            if (Time.time <= (startTime + OutNumRiseTime))
-            {
-                TextOutNum.text = UpdateOutNumDisplay();
-            }
-
-            if (Time.time <= (startTime + BadAndMissNumRiseTime))
-            {
-                TextBadAndMissNum.text = UpdateBadAndMissNumDisplay();
-            }
-
-            if (Time.time <= (startTime + EarlyNumRiseTime))
-            {
-                TextEarlyNum.text = UpdateEarlyNumDisplay();
-            }
-
-            if (Time.time <= (startTime + LateNumRiseTime))
-            {
-                TextLateNum.text = UpdateLateNumDisplay();
-            }
-
-            if (Time.time <= (startTime + AveNumRiseTime))
-            {
-                TextAveNum.text = UpdateAveNumDisplay();
-            }
-        }
-
-
-        /// <summary>
-        /// 获取实时UI不透明度
-        /// </summary>
-        /// <returns>实时UI不透明度</returns>
-        private float UpdateUIAlpha()
-        {
-            return EasingFunction.EaseOutQuart(
-                0f,
-                1f,
-                Mathf.Min(Time.time - startTime, UIRiseTime),
-                UIRiseTime
-            );
-        }
-
-        /// <summary>
-        /// 获取实时分数文本
-        /// </summary>
-        /// <returns>实时分数</returns>
-        private string UpdateScoreNumDisplay()
-        {
-            return Mathf.RoundToInt(
-                EasingFunction.EaseOutQuart(
-                    0f,
+            DOTween.To(() => 0f,
+                    x => TextScoreNum.text = x.ToString("0000000"),
                     targetScoreNum,
-                    Mathf.Min(Time.time - startTime, ScoreNumRiseTime),
-                    ScoreNumRiseTime
-                )
-            ).ToString("D7"); // 格式化为7位数字，不足的位数用"0"填充
-        }
+                    ScoreNumRiseTime)
+                .SetEase(Ease.OutQuart);
 
-        /// <summary>
-        /// 获取实时杂率文本
-        /// </summary>
-        /// <returns>实时杂率</returns>
-        private string UpdateImpurityRateNumDisplay()
-        {
-            return (Mathf.RoundToInt(
-                        EasingFunction.EaseOutQuart(
-                            100.0f,
-                            targetImpurityRateNum,
-                            Mathf.Min(Time.time - startTime, ImpurityRateNumRiseTime),
-                            ImpurityRateNumRiseTime) * 10) / 10f
-                ).ToString("0.0");
-        }
+            DOTween.To(() => 100.0f,
+                    x => TextImpurityRateNum.text = x.ToString("0.0"),
+                    targetImpurityRateNum,
+                    ImpurityRateNumRiseTime)
+                .SetEase(Ease.OutQuart);
 
-        /// <summary>
-        /// 获取实时MaxCombo文本
-        /// </summary>
-        /// <returns>实时MaxCombo</returns>
-        private string UpdateMaxComboNumDisplay()
-        {
-            return Mathf.RoundToInt(
-                EasingFunction.EaseOutQuart(
-                    0f,
+            DOTween.To(() => 0f,
+                    x => TextMaxComboNum.text = x.ToString("0"),
                     targetMaxComboNum,
-                    Mathf.Min(Time.time - startTime, MaxComboNumRiseTime),
-                    MaxComboNumRiseTime
-                )
-            ).ToString(); // 格式化为7位数字，不足的位数用"0"填充
-        }
+                    MaxComboNumRiseTime)
+                .SetEase(Ease.OutQuart);
 
-        private string UpdateExactNumDisplay()
-        {
-            return Mathf.RoundToInt(
-                EasingFunction.EaseOutQuart(
-                    0f,
+            DOTween.To(() => 0f,
+                    x => TextExactNum.text = x.ToString("0"),
                     targetExactNum,
-                    Mathf.Min(Time.time - startTime, ExactNumRiseTime),
-                    ExactNumRiseTime
-                )
-            ).ToString();
-        }
+                    ExactNumRiseTime)
+                .SetEase(Ease.OutQuart);
 
-        private string UpdateGreatNumDisplay()
-        {
-            return Mathf.RoundToInt(
-                EasingFunction.EaseOutQuart(
-                    0f,
+            DOTween.To(() => 0f,
+                    x => TextGreatNum.text = x.ToString("0"),
                     targetGreatNum,
-                    Mathf.Min(Time.time - startTime, GreatNumRiseTime),
-                    GreatNumRiseTime
-                )
-            ).ToString();
-        }
+                    GreatNumRiseTime)
+                .SetEase(Ease.OutQuart);
 
-        private string UpdateRightNumDisplay()
-        {
-            return Mathf.RoundToInt(
-                EasingFunction.EaseOutQuart(
-                    0f,
+            DOTween.To(() => 0f,
+                    x => TextRightNum.text = x.ToString("0"),
                     targetRightNum,
-                    Mathf.Min(Time.time - startTime, RightNumRiseTime),
-                    RightNumRiseTime
-                )
-            ).ToString();
-        }
+                    RightNumRiseTime)
+                .SetEase(Ease.OutQuart);
 
-        private string UpdateOutNumDisplay()
-        {
-            return Mathf.RoundToInt(
-                EasingFunction.EaseOutQuart(
-                    0f,
+            DOTween.To(() => 0f,
+                    x => TextOutNum.text = x.ToString("0"),
                     targetOutNum,
-                    Mathf.Min(Time.time - startTime, OutNumRiseTime),
-                    OutNumRiseTime
-                )
-            ).ToString();
-        }
+                    OutNumRiseTime)
+                .SetEase(Ease.OutQuart);
 
-        private string UpdateBadAndMissNumDisplay()
-        {
-            return Mathf.RoundToInt(
-                EasingFunction.EaseOutQuart(
-                    0f,
+            DOTween.To(() => 0f,
+                    x => TextBadAndMissNum.text = x.ToString("0"),
                     targetBadAndMissNum,
-                    Mathf.Min(Time.time - startTime, BadAndMissNumRiseTime),
-                    BadAndMissNumRiseTime
-                )
-            ).ToString();
-        }
+                    BadAndMissNumRiseTime)
+                .SetEase(Ease.OutQuart);
 
-        private string UpdateEarlyNumDisplay()
-        {
-            return Mathf.RoundToInt(
-                EasingFunction.EaseOutQuart(
-                    0f,
+            DOTween.To(() => 0f,
+                    x => TextEarlyNum.text = x.ToString("0"),
                     targetEarlyNum,
-                    Mathf.Min(Time.time - startTime, EarlyNumRiseTime),
-                    EarlyNumRiseTime
-                )
-            ).ToString();
-        }
+                    EarlyNumRiseTime)
+                .SetEase(Ease.OutQuart);
 
-        private string UpdateLateNumDisplay()
-        {
-            return Mathf.RoundToInt(
-                EasingFunction.EaseOutQuart(
-                    0f,
+            DOTween.To(() => 0f,
+                    x => TextLateNum.text = x.ToString("0"),
                     targetLateNum,
-                    Mathf.Min(Time.time - startTime, LateNumRiseTime),
-                    LateNumRiseTime
-                )
-            ).ToString();
-        }
+                    LateNumRiseTime)
+                .SetEase(Ease.OutQuart);
 
-        private string UpdateAveNumDisplay()
-        {
-            return Mathf.RoundToInt(
-                EasingFunction.EaseOutQuart(
-                    0f,
+            DOTween.To(() => 0f,
+                    x => TextAveNum.text = x.ToString("0.0"),
                     targetAveNum,
-                    Mathf.Min(Time.time - startTime, AveNumRiseTime),
-                    AveNumRiseTime
-                )
-            ).ToString("0.0");
+                    AveNumRiseTime)
+                .SetEase(Ease.OutQuart);
         }
     }
 }
