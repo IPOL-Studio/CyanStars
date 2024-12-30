@@ -14,7 +14,8 @@ namespace CyanStars.Gameplay.MusicGame
     public class ScoreSettlementPanel : BaseUIPanel
     {
         // 渐变时间
-        public float UIRiseTime = 0.5f;
+        public float UIRiseTime = 0.8f;
+        public float GrayImageKeepTime = 0.5f;
         public float ScoreNumRiseTime = 2.0f;
         public float ImpurityRateNumRiseTime = 1.0f;
         public float MaxComboNumRiseTime = 1.5f;
@@ -55,8 +56,10 @@ namespace CyanStars.Gameplay.MusicGame
         private int targetLateNum;
         private float targetAveNum;
 
-        // 内部变量
-        private CanvasGroup canvasGroup;
+        // Unity 组件
+        public CanvasGroup MainUICanvasGroup;
+        public CanvasGroup GrayImageCanvasGroup;
+
 
         public void Start()
         {
@@ -70,9 +73,19 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnOpen()
         {
-            canvasGroup = this.GetComponent<CanvasGroup>();
-            canvasGroup.alpha = 0;
+            // 将 UI 恢复到初始状态
+            MainUICanvasGroup.alpha = 0;
+            GrayImageCanvasGroup.alpha = 0;
 
+            PreprocessData();
+            PlayTextFadeEffect();
+        }
+
+        /// <summary>
+        /// 获取数据并计算目标值
+        /// </summary>
+        private void PreprocessData()
+        {
             // 获取曲名、分数、杂率、最大连击数，各判定数
             MusicGameModule musicGameModule = GameRoot.GetDataModule<MusicGameModule>();
             Title.text = musicGameModule.GetMap(musicGameModule.MapIndex).Name;
@@ -115,78 +128,99 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 targetAveNum = sum / musicGameModule.MusicGamePlayData.DeviationList.Count * 1000f;
             }
+        }
 
+        /// <summary>
+        /// 通过 DOTween 播放动画
+        /// </summary>
+        private void PlayTextFadeEffect()
+        {
+            // 切入灰色过场图
             DOTween.To(() => 0f,
-                    x => canvasGroup.alpha = x,
+                    x => GrayImageCanvasGroup.alpha = x,
                     1f,
-                    UIRiseTime)
-                .SetEase(Ease.OutQuart);
+                    UIRiseTime / 2)
+                .SetEase(Ease.OutQuart)
+                .OnComplete(() =>
+                {
+                    MainUICanvasGroup.DOFade(1f, GrayImageKeepTime) // GrayImageKeepTime 在这里起到了延迟写一个动画的作用
+                        .OnComplete(() =>
+                        {
+                            // 淡去灰色图像，同时开始文本数值渐变
+                            DOTween.To(() => 1f,
+                                    x => GrayImageCanvasGroup.alpha = x,
+                                    0f,
+                                    UIRiseTime / 2)
+                                .SetEase(Ease.InQuart);
 
-            DOTween.To(() => 0f,
-                    x => TextScoreNum.text = x.ToString("0000000"),
-                    targetScoreNum,
-                    ScoreNumRiseTime)
-                .SetEase(Ease.OutQuart);
 
-            DOTween.To(() => 100.0f,
-                    x => TextImpurityRateNum.text = x.ToString("0.0"),
-                    targetImpurityRateNum,
-                    ImpurityRateNumRiseTime)
-                .SetEase(Ease.OutQuart);
+                            DOTween.To(() => 0f,
+                                    x => TextScoreNum.text = x.ToString("0000000"),
+                                    targetScoreNum,
+                                    ScoreNumRiseTime)
+                                .SetEase(Ease.OutQuart);
 
-            DOTween.To(() => 0f,
-                    x => TextMaxComboNum.text = x.ToString("0"),
-                    targetMaxComboNum,
-                    MaxComboNumRiseTime)
-                .SetEase(Ease.OutQuart);
+                            DOTween.To(() => 100.0f,
+                                    x => TextImpurityRateNum.text = x.ToString("0.0"),
+                                    targetImpurityRateNum,
+                                    ImpurityRateNumRiseTime)
+                                .SetEase(Ease.OutQuart);
 
-            DOTween.To(() => 0f,
-                    x => TextExactNum.text = x.ToString("0"),
-                    targetExactNum,
-                    ExactNumRiseTime)
-                .SetEase(Ease.OutQuart);
+                            DOTween.To(() => 0f,
+                                    x => TextMaxComboNum.text = x.ToString("0"),
+                                    targetMaxComboNum,
+                                    MaxComboNumRiseTime)
+                                .SetEase(Ease.OutQuart);
 
-            DOTween.To(() => 0f,
-                    x => TextGreatNum.text = x.ToString("0"),
-                    targetGreatNum,
-                    GreatNumRiseTime)
-                .SetEase(Ease.OutQuart);
+                            DOTween.To(() => 0f,
+                                    x => TextExactNum.text = x.ToString("0"),
+                                    targetExactNum,
+                                    ExactNumRiseTime)
+                                .SetEase(Ease.OutQuart);
 
-            DOTween.To(() => 0f,
-                    x => TextRightNum.text = x.ToString("0"),
-                    targetRightNum,
-                    RightNumRiseTime)
-                .SetEase(Ease.OutQuart);
+                            DOTween.To(() => 0f,
+                                    x => TextGreatNum.text = x.ToString("0"),
+                                    targetGreatNum,
+                                    GreatNumRiseTime)
+                                .SetEase(Ease.OutQuart);
 
-            DOTween.To(() => 0f,
-                    x => TextOutNum.text = x.ToString("0"),
-                    targetOutNum,
-                    OutNumRiseTime)
-                .SetEase(Ease.OutQuart);
+                            DOTween.To(() => 0f,
+                                    x => TextRightNum.text = x.ToString("0"),
+                                    targetRightNum,
+                                    RightNumRiseTime)
+                                .SetEase(Ease.OutQuart);
 
-            DOTween.To(() => 0f,
-                    x => TextBadAndMissNum.text = x.ToString("0"),
-                    targetBadAndMissNum,
-                    BadAndMissNumRiseTime)
-                .SetEase(Ease.OutQuart);
+                            DOTween.To(() => 0f,
+                                    x => TextOutNum.text = x.ToString("0"),
+                                    targetOutNum,
+                                    OutNumRiseTime)
+                                .SetEase(Ease.OutQuart);
 
-            DOTween.To(() => 0f,
-                    x => TextEarlyNum.text = x.ToString("0"),
-                    targetEarlyNum,
-                    EarlyNumRiseTime)
-                .SetEase(Ease.OutQuart);
+                            DOTween.To(() => 0f,
+                                    x => TextBadAndMissNum.text = x.ToString("0"),
+                                    targetBadAndMissNum,
+                                    BadAndMissNumRiseTime)
+                                .SetEase(Ease.OutQuart);
 
-            DOTween.To(() => 0f,
-                    x => TextLateNum.text = x.ToString("0"),
-                    targetLateNum,
-                    LateNumRiseTime)
-                .SetEase(Ease.OutQuart);
+                            DOTween.To(() => 0f,
+                                    x => TextEarlyNum.text = x.ToString("0"),
+                                    targetEarlyNum,
+                                    EarlyNumRiseTime)
+                                .SetEase(Ease.OutQuart);
 
-            DOTween.To(() => 0f,
-                    x => TextAveNum.text = x.ToString("0.0"),
-                    targetAveNum,
-                    AveNumRiseTime)
-                .SetEase(Ease.OutQuart);
+                            DOTween.To(() => 0f,
+                                    x => TextLateNum.text = x.ToString("0"),
+                                    targetLateNum,
+                                    LateNumRiseTime)
+                                .SetEase(Ease.OutQuart);
+
+                            DOTween.To(() => 0f,
+                                    x => TextAveNum.text = x.ToString("0.0"),
+                                    targetAveNum,
+                                    AveNumRiseTime)
+                                .SetEase(Ease.OutQuart);
+                        });
+                });
         }
     }
 }
