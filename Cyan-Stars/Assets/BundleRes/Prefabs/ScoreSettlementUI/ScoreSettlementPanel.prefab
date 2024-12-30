@@ -343,9 +343,20 @@ MonoBehaviour:
   TextEarlyNum: {fileID: 4523797780308391198}
   TextLateNum: {fileID: 4868133316033207108}
   TextAveNum: {fileID: 6934482095126267721}
+  ImageGrade: {fileID: 7184604113835458683}
+  ImageSun: {fileID: 1104506946658004421}
   ContinueButton: {fileID: 2788615296899328189}
   MainUICanvasGroup: {fileID: 6274985794509463384}
   GrayImageCanvasGroup: {fileID: 8494780633914051674}
+  GradeClear: {fileID: 21300000, guid: 75dba870dbe74224fafdec395024218d, type: 3}
+  GradeFullCombo: {fileID: 21300000, guid: 0bd14a61bfa28dc4fb408f2f6d9fb08b, type: 3}
+  GradeFullComboPlus: {fileID: 21300000, guid: 564abefac6bd1934a964e405dbc9a223, type: 3}
+  GradeAllExact: {fileID: 21300000, guid: 249879f882f635149a31537a69e3609a, type: 3}
+  GradeAllExactPlus: {fileID: 21300000, guid: 6ba4bd9b6ea3eb94fa9c71dd9e9457e4, type: 3}
+  GradeUltraPure: {fileID: 21300000, guid: b895171189e6b3942b84328a72243e62, type: 3}
+  SunClear: {fileID: 21300000, guid: 396415a32c5c7e0409a0abb6addf66f4, type: 3}
+  SunFc: {fileID: 21300000, guid: af39d7d9ff2a9544081bce0ad7c18d91, type: 3}
+  SunAeAndUp: {fileID: 21300000, guid: 045a0a689323dcf48804e0ecfc8b68c4, type: 3}
 --- !u!1 &677436554766016538
 GameObject:
   m_ObjectHideFlags: 0
@@ -2987,7 +2998,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6ba4bd9b6ea3eb94fa9c71dd9e9457e4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b895171189e6b3942b84328a72243e62, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3770,7 +3781,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.039215688, g: 0.039215688, b: 0.039215688, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:

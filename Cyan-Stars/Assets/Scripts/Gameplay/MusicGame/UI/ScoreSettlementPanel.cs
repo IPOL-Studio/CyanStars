@@ -2,6 +2,7 @@ using CyanStars.Framework;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.UI;
 using CyanStars.Gameplay.Base;
+using CyanStars.Gameplay.GameSave;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,8 +14,9 @@ namespace CyanStars.Gameplay.MusicGame
         UIPrefabName = "Assets/BundleRes/Prefabs/ScoreSettlementUI/ScoreSettlementPanel.prefab")]
     public class ScoreSettlementPanel : BaseUIPanel
     {
-        // 渐变时间
+        [Header("渐变时间配置")]
         public float UIRiseTime = 0.8f;
+
         public float GrayImageKeepTime = 0.5f;
         public float ScoreNumRiseTime = 2.0f;
         public float ImpurityRateNumRiseTime = 1.0f;
@@ -28,8 +30,9 @@ namespace CyanStars.Gameplay.MusicGame
         public float LateNumRiseTime = 1.5f;
         public float AveNumRiseTime = 1.5f;
 
-        // Unity组件
+        [Header("Unity组件")]
         public TextMeshProUGUI Title;
+
         public TextMeshProUGUI TextScoreNum;
         public TextMeshProUGUI TextImpurityRateNum;
         public TextMeshProUGUI TextMaxComboNum;
@@ -41,7 +44,23 @@ namespace CyanStars.Gameplay.MusicGame
         public TextMeshProUGUI TextEarlyNum;
         public TextMeshProUGUI TextLateNum;
         public TextMeshProUGUI TextAveNum;
+        public Image ImageGrade;
+        public Image ImageSun;
         public Button ContinueButton;
+        public CanvasGroup MainUICanvasGroup;
+        public CanvasGroup GrayImageCanvasGroup;
+
+        [Header("多媒体文件引用")]
+        public Sprite GradeClear;
+
+        public Sprite GradeFullCombo;
+        public Sprite GradeFullComboPlus;
+        public Sprite GradeAllExact;
+        public Sprite GradeAllExactPlus;
+        public Sprite GradeUltraPure;
+        public Sprite SunClear;
+        public Sprite SunFc;
+        public Sprite SunAeAndUp;
 
         // 从音游程序获取目标数据
         private int targetScoreNum;
@@ -56,9 +75,7 @@ namespace CyanStars.Gameplay.MusicGame
         private int targetLateNum;
         private float targetAveNum;
 
-        // Unity 组件
-        public CanvasGroup MainUICanvasGroup;
-        public CanvasGroup GrayImageCanvasGroup;
+        private ChartGrade grade;
 
 
         public void Start()
@@ -88,19 +105,20 @@ namespace CyanStars.Gameplay.MusicGame
         {
             // 获取曲名、分数、杂率、最大连击数，各判定数
             MusicGameModule musicGameModule = GameRoot.GetDataModule<MusicGameModule>();
+            MusicGamePlayData musicGamePlayData = musicGameModule.MusicGamePlayData;
             Title.text = musicGameModule.GetMap(musicGameModule.MapIndex).Name;
-            targetScoreNum = musicGameModule.MusicGamePlayData.FullScore == 0
+            targetScoreNum = musicGamePlayData.FullScore == 0
                 ? 0 // 谱面没有 Note 时，展示得分为 0，见于调试谱面等情况
-                : Mathf.RoundToInt(musicGameModule.MusicGamePlayData.Score /
-                    musicGameModule.MusicGamePlayData.FullScore * 1000000);
-            targetImpurityRateNum = musicGameModule.MusicGamePlayData.ImpurityRate;
-            targetMaxComboNum = musicGameModule.MusicGamePlayData.MaxCombo;
+                : Mathf.RoundToInt(musicGamePlayData.Score /
+                    musicGamePlayData.FullScore * 1000000);
+            targetImpurityRateNum = musicGamePlayData.ImpurityRate;
+            targetMaxComboNum = musicGamePlayData.MaxCombo;
 
-            targetExactNum = musicGameModule.MusicGamePlayData.ExactNum;
-            targetGreatNum = musicGameModule.MusicGamePlayData.GreatNum;
-            targetRightNum = musicGameModule.MusicGamePlayData.RightNum;
-            targetOutNum = musicGameModule.MusicGamePlayData.OutNum;
-            targetBadAndMissNum = musicGameModule.MusicGamePlayData.BadNum + musicGameModule.MusicGamePlayData.MissNum;
+            targetExactNum = musicGamePlayData.ExactNum;
+            targetGreatNum = musicGamePlayData.GreatNum;
+            targetRightNum = musicGamePlayData.RightNum;
+            targetOutNum = musicGamePlayData.OutNum;
+            targetBadAndMissNum = musicGamePlayData.BadNum + musicGamePlayData.MissNum;
 
             // 计算 Early、Late、平均误差
             MusicGameSettingsModule musicGameSettingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
@@ -112,7 +130,7 @@ namespace CyanStars.Gameplay.MusicGame
             targetLateNum = 0;
 
             foreach (float deviation in
-                     musicGameModule.MusicGamePlayData.DeviationList) // Drag，尾判等不计算杂率的音符不计算 Early 和 Late
+                     musicGamePlayData.DeviationList) // Drag，尾判等不计算杂率的音符不计算 Early 和 Late
             {
                 sum += deviation;
                 if (Mathf.Abs(deviation) <= exactRange) continue; // Exact 范围内 Note 不计算 Early 和 Late
@@ -120,13 +138,46 @@ namespace CyanStars.Gameplay.MusicGame
                 targetLateNum += deviation < 0f ? 1 : 0;
             }
 
-            if (musicGameModule.MusicGamePlayData.DeviationList.Count == 0) // 防止玩家放置游玩或没有有效Note的极端情况
+            if (musicGamePlayData.DeviationList.Count == 0) // 防止玩家放置游玩或没有有效Note的极端情况
             {
                 targetAveNum = 0;
             }
             else
             {
-                targetAveNum = sum / musicGameModule.MusicGamePlayData.DeviationList.Count * 1000f;
+                targetAveNum = sum / musicGamePlayData.DeviationList.Count * 1000f;
+            }
+
+            // 获取评级并切换图片
+            grade = GradeHelper.GetGrade(musicGamePlayData);
+            switch (grade)
+            {
+                case ChartGrade.Clear:
+                    ImageGrade.sprite = GradeClear;
+                    ImageSun.sprite = SunClear;
+                    break;
+                case ChartGrade.FullCombo:
+                    ImageGrade.sprite = GradeFullCombo;
+                    ImageSun.sprite = SunFc;
+                    break;
+                case ChartGrade.FullComboPlus:
+                    ImageGrade.sprite = GradeFullComboPlus;
+                    ImageSun.sprite = SunFc;
+                    break;
+                case ChartGrade.AllExact:
+                    ImageGrade.sprite = GradeAllExact;
+                    ImageSun.sprite = SunAeAndUp;
+                    break;
+                case ChartGrade.AllExactPlus:
+                    ImageGrade.sprite = GradeAllExactPlus;
+                    ImageSun.sprite = SunAeAndUp;
+                    break;
+                case ChartGrade.UltraPure:
+                    ImageGrade.sprite = GradeUltraPure;
+                    ImageSun.sprite = SunAeAndUp;
+                    break;
+                default:
+                    // But how?
+                    throw new System.ArgumentOutOfRangeException();
             }
         }
 
