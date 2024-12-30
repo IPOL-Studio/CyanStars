@@ -3,12 +3,14 @@ namespace CyanStars.Gameplay.MusicGame
     /// <summary>
     /// 谱面难度
     /// </summary>
+    /// <remarks>
+    /// 可为null，代表未定义难度的谱面，可在编辑器内编辑，但不能被游戏读取
+    /// </remarks>
     public enum ChartDifficulty
     {
-        Undefined = 0, // 未定义的难度，可有多个存在于谱包内，可以被谱面编辑器加载，但不会被游戏加载
-        KuiXing = 1, // 窥星（最简单）
-        QiMing = 2, // 启明
-        TianShu = 3, // 天枢
-        WuYin = 4 // 无垠（最难）
+        KuiXing = 0, // 窥星（最简单）
+        QiMing = 1, // 启明
+        TianShu = 2, // 天枢
+        WuYin = 3 // 无垠（最难）
     }
 }
