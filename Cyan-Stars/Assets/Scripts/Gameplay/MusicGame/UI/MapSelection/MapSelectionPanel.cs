@@ -99,6 +99,7 @@ namespace CyanStars.Gameplay.MusicGame
         public override void OnOpen()
         {
             pageRatio = 0;
+            pageStack.Clear();
             ChangePage<MapListPage>();
             StarController.GenerateStars();
         }
