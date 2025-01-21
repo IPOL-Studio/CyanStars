@@ -10,9 +10,8 @@ namespace CyanStars.Gameplay.MusicGame
         /// <remarks>
         /// ...一直生效直到有新的 BPM 组取代之
         /// 首个 BPM 组必须从 [0,0,0] 开始，末个 BPM 组持续到谱面结束。
-        /// 拍数以 “带分数” 的形式存储，可计算为浮点格式。例：[1,2,3] = 1 + 2 / 3 = 1.67
         /// </remarks>
-        public Vector3 StartBeat;
+        public Beat StartBeat;
 
         /// <summary>在生效时，每分钟会经过几拍</summary>
         /// <remarks>
