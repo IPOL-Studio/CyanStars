@@ -28,6 +28,10 @@ namespace CyanStars.Gameplay.MusicGame
         /// <remarks>即在谱面开始多久后才播放音乐，可为负数</remarks>
         public float Offset;
 
+        /// <summary>在第一个 BPM 组开始前播放几次预备拍音效</summary>
+        /// <remarks>必须大于等于0，一般为4，预备拍的时间间隔取决于第一个 BPM 组的 bpm</remarks>
+        public int ReadyBeat;
+
         /// <summary>bpm 组</summary>
         /// <remarks>控制不同时候的拍子所占时长（拍子可转换为时间）</remarks>
         [CanBeNull]
