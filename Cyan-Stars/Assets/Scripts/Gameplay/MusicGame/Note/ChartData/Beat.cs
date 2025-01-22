@@ -4,8 +4,10 @@
     {
         /// <summary>带分数拍子的整数部分</summary>
         public readonly int IntegerPart;
+
         /// <summary>带分数拍子的分子</summary>
         public readonly int Numerator;
+
         /// <summary>带分数拍子的分母，也作为节拍的细分精度</summary>
         public readonly int Denominator;
 
@@ -19,16 +21,16 @@
             IntegerPart = integerPart;
             Numerator = numerator;
             Denominator = denominator;
+
+            if (IntegerPart < 0 || Numerator < 0 || Denominator < 0)
+            {
+                throw new System.ArgumentException("Beat 的三个参数都必须大于等于 0");
+            }
         }
 
         /// <summary>将 Beat 转换为小数表示的拍子</summary>
         public float ToFloat()
         {
-            if (IntegerPart < 0 || Numerator < 0 || Denominator < 0)
-            {
-                throw new System.ArgumentException("Beat 的三个参数都必须大于等于 0");
-            }
-
             if (Denominator == 0)
             {
                 return IntegerPart;
