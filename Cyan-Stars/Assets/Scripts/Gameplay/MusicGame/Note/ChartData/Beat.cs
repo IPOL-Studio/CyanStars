@@ -21,8 +21,14 @@
             IntegerPart = integerPart;
             Numerator = numerator;
             Denominator = denominator;
+            Verify();
+        }
 
-            if (IntegerPart < 0 || Numerator < 0 || Denominator < 0)
+        /// <summary>校验 Beat 的三个参数是否都大于等于 0</summary>
+        /// <returns>数据合法性</returns>
+        public void Verify()
+        {
+            if (IntegerPart >= 0 && Numerator >= 0 && Denominator >= 0)
             {
                 throw new System.ArgumentException("Beat 的三个参数都必须大于等于 0");
             }
