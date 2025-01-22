@@ -28,7 +28,7 @@
         /// <returns>数据合法性</returns>
         public void Verify()
         {
-            if (IntegerPart >= 0 && Numerator >= 0 && Denominator >= 0)
+            if (IntegerPart < 0 || Numerator < 0 || Denominator < 0)
             {
                 throw new System.ArgumentException("Beat 的三个参数都必须大于等于 0");
             }
