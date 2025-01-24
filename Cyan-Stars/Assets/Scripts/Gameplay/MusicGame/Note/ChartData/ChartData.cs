@@ -10,16 +10,6 @@ namespace CyanStars.Gameplay.MusicGame
     [Serializable]
     public class ChartData
     {
-        /// <summary>谱面难度</summary>
-        /// <remarks>为空时只在编辑器内可见，游戏内不加载；其他难度最多在一个谱包中各有0或1个</remarks>
-        [CanBeNull]
-        public ChartDifficulty? Difficulty;
-
-        /// <summary>谱面定数</summary>
-        /// <remarks>内置谱面此值应该是一个[1,20]之间的整数，社区谱随意，大于等于0f就行</remarks>
-        [CanBeNull]
-        public float? Level;
-
         /// <summary>谱面结束时间，单位 ms</summary>
         /// <remarks>通常来说是音乐时长 + offset</remarks>
         public float EndTime;
@@ -44,6 +34,16 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>谱面音符数据</summary>
         [CanBeNull]
         public List<BaseChartNote> Notes;
+
+        /// <summary>谱面难度</summary>
+        /// <remarks>为空时只在编辑器内可见，游戏内不加载；其他难度最多在一个谱包中各有0或1个</remarks>
+        [CanBeNull]
+        public ChartDifficulty? Difficulty;
+
+        /// <summary>谱面定数</summary>
+        /// <remarks>内置谱面此值应该是一个[1,20]之间的整数，社区谱随意，大于等于0f就行</remarks>
+        [CanBeNull]
+        public float? Level;
 
         // public List<ChartEvent>? Events; // TODO:谱面事件
         // public Lise<ChartCondition>? Conditions; // TODO:事件条件

@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
@@ -16,12 +17,28 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>音符类型</summary>
         public NoteType Type;
 
+        /// <summary>引用的变速组</summary>
+        public SpeedGroup SpeedGroup;
+
+        /// <summary>正解提示音</summary>
+        /// <remarks>
+        /// 在音符达到判定时间时，无论是否有输入都播放音效，
+        /// 玩家可选择是否让谱师设定的音效覆盖默认收藏品音效
+        /// </remarks>
+        [CanBeNull]
+        public AudioClip CorrectAudio;
+
+        /// <summary>打击音</summary>
+        /// <remarks>
+        /// 玩家有输入后才播放音效，
+        /// 玩家可选择是否让谱师设定的音效覆盖默认收藏品音效
+        /// </remarks>
+        [CanBeNull]
+        public AudioClip HitAudio;
+
         /// <summary>在哪一拍判定</summary>
         /// <remarks>此值转换为时间后减去 offset 为相对于音乐开始的时间</remarks>
         public Beat JudgeBeat;
-
-        /// <summary>引用的变速组</summary>
-        public SpeedGroup SpeedGroup;
     }
 
     [Serializable]

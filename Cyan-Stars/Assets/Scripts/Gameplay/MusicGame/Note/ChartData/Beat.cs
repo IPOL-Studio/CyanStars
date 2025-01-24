@@ -1,4 +1,6 @@
-﻿namespace CyanStars.Gameplay.MusicGame
+﻿using System;
+
+namespace CyanStars.Gameplay.MusicGame
 {
     public readonly struct Beat
     {
@@ -30,7 +32,7 @@
         {
             if (IntegerPart < 0 || Numerator < 0 || Denominator < 0)
             {
-                throw new System.ArgumentException("Beat 的三个参数都必须大于等于 0");
+                throw new ArgumentException("Beat 的三个参数都必须大于等于 0");
             }
         }
 
@@ -41,10 +43,8 @@
             {
                 return IntegerPart;
             }
-            else
-            {
-                return IntegerPart + (float)Numerator / Denominator;
-            }
+
+            return IntegerPart + (float)Numerator / Denominator;
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -31,9 +32,26 @@ namespace CyanStars.Gameplay.MusicGame
         [CanBeNull]
         public string PackHash;
 
+        /// <summary>将曲绘大图裁剪为1:4小图时，小图左下角在大图上的的像素坐标（大图左下角为原点）</summary>
+        [CanBeNull]
+        public Vector2? CoverCroppingPos;
+
+        /// <summary>将曲绘大图裁剪为1:4小图时，小图在横向方向上的像素宽度</summary>
+        /// <remarks>竖直方向高度为此值的1/4</remarks>
+        [CanBeNull]
+        public float? CoverCroppingWidth;
+
         /// <summary>谱包导出时间</summary>
         [CanBeNull]
         public DateTime? ExportTime; //
+
+        /// <summary>游戏内选中音乐后的预览结束时间</summary>
+        [CanBeNull]
+        public Beat? MusicPreviewEndBeat;
+
+        /// <summary>游戏内选中音乐后的预览开始时间</summary>
+        [CanBeNull]
+        public Beat? MusicPreviewStartBeat;
 
         /// <summary>谱包工程文件保存时间</summary>
         public DateTime SaveTime;
