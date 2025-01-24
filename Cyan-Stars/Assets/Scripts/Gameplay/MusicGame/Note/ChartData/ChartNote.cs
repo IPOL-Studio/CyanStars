@@ -45,7 +45,7 @@ namespace CyanStars.Gameplay.MusicGame
     public class TapChartNote : BaseChartNote
     {
         /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
-        /// <remarks>范围 0~0.75（音符宽 0.25）</remarks>
+        /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
         public float Pos;
     }
 
@@ -53,7 +53,7 @@ namespace CyanStars.Gameplay.MusicGame
     public class HoldChartNote : BaseChartNote
     {
         /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
-        /// <remarks>范围 0~0.75（音符宽 0.25）</remarks>
+        /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
         public float Pos;
 
         /// <summary>长按音符结束判定拍</summary>
@@ -65,7 +65,7 @@ namespace CyanStars.Gameplay.MusicGame
     public class DragChartNote : BaseChartNote
     {
         /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
-        /// <remarks>范围 0~0.75（音符宽 0.25）</remarks>
+        /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
         public float Pos;
     }
 
@@ -73,7 +73,7 @@ namespace CyanStars.Gameplay.MusicGame
     public class ClickChartNote : BaseChartNote
     {
         /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
-        /// <remarks>范围 0~0.75（音符宽 0.25）</remarks>
+        /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
         public float Pos;
     }
 
