@@ -23,9 +23,11 @@ namespace CyanStars.Gameplay.GameSave
             try
             {
                 gameSaveData.Verification = CalculateVerification(gameSaveData);
+                if (!JsonUtility.JsonUtility.ToJson(gameSaveData, saveFilePath))
+                {
+                    Debug.LogError($"保存存档时发生错误");
+                }
 
-                string json = JsonConvert.SerializeObject(gameSaveData, Formatting.Indented);
-                File.WriteAllText(saveFilePath, json);
                 Debug.Log($"存档保存成功：{saveFilePath}");
             }
             catch (Exception ex)
@@ -42,21 +44,21 @@ namespace CyanStars.Gameplay.GameSave
         /// <returns>读取操作的结果</returns>
         public static GameSaveLoadResult LoadGameSave(string saveFilePath, [CanBeNull] out GameSaveData gameSaveData)
         {
+            gameSaveData = null;
             if (!File.Exists(saveFilePath))
             {
                 Debug.LogWarning("存档文件不存在，需要先手动创建。");
-                gameSaveData = null;
                 return GameSaveLoadResult.FileNotFound;
             }
 
             try
             {
-                string json = File.ReadAllText(saveFilePath);
-                JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+                if (!JsonUtility.JsonUtility.FromJson<GameSaveData>(saveFilePath, out gameSaveData))
                 {
-                    TypeNameHandling = TypeNameHandling.None
-                };
-                gameSaveData = JsonConvert.DeserializeObject<GameSaveData>(json);
+                    Debug.LogError("存档读取失败。");
+                    return GameSaveLoadResult.UnknownError;
+                }
+
                 Debug.Log("存档读取成功，进行校验。");
 
                 // 计算存档数据的校验值并验证
@@ -135,26 +137,33 @@ namespace CyanStars.Gameplay.GameSave
         /// </summary>
         private static void BackupSaveFile(string saveFilePath)
         {
-            string saveDirectory = Path.GetDirectoryName(saveFilePath);
-            if (saveDirectory == null)
+            try
             {
-                throw new ArgumentNullException(nameof(saveFilePath), "存档文件路径无效，无法获取目录。");
+                string saveDirectory = Path.GetDirectoryName(saveFilePath);
+                if (saveDirectory == null)
+                {
+                    throw new ArgumentNullException(nameof(saveFilePath), "存档文件路径无效，无法获取目录。");
+                }
+
+                // 查找一个可用的备份文件名
+                int backupNumber = 1;
+                string backupFileName = $"CyanStarsGameSaveBackup{backupNumber}.json";
+                string backupFilePath = Path.Combine(saveDirectory, backupFileName);
+
+                while (File.Exists(backupFilePath))
+                {
+                    backupNumber++;
+                    backupFileName = $"CyanStarsGameSaveBackup{backupNumber}.json";
+                    backupFilePath = Path.Combine(saveDirectory, backupFileName);
+                }
+
+                File.Move(saveFilePath, backupFilePath);
+                Debug.Log($"存档已备份，备份文件名为：{backupFileName}");
             }
-
-            // 查找一个可用的备份文件名
-            int backupNumber = 1;
-            string backupFileName = $"CyanStarsGameSaveBackup{backupNumber}.json";
-            string backupFilePath = Path.Combine(saveDirectory, backupFileName);
-
-            while (File.Exists(backupFilePath))
+            catch (Exception e)
             {
-                backupNumber++;
-                backupFileName = $"CyanStarsGameSaveBackup{backupNumber}.json";
-                backupFilePath = Path.Combine(saveDirectory, backupFileName);
+                Debug.LogError($"备份存档失败：{e.Message}");
             }
-
-            File.Move(saveFilePath, backupFilePath);
-            Debug.Log($"存档已备份，备份文件名为：{backupFileName}");
         }
 
         // Todo: 清理备份文件（低优先级）
