@@ -26,7 +26,7 @@ namespace CyanStars.Gameplay.MusicGame
         private float pageRatio;
         private Tween starTween;
 
-        public MapItemData CurrentSelectedMap { get; set; }
+        public ChartPackItemData CurrentSelectedChartPack { get; set; }
 
         public void ChangePage<T>() where T : IMapSelectionPage
         {
@@ -67,7 +67,7 @@ namespace CyanStars.Gameplay.MusicGame
         protected override void OnCreate()
         {
             var musicGameModule = GameRoot.GetDataModule<MusicGameModule>();
-            CurrentSelectedMap = MapItemData.Create(musicGameModule.MapIndex, musicGameModule.GetMaps()[musicGameModule.MapIndex]);
+            CurrentSelectedChartPack = ChartPackItemData.Create(musicGameModule.MapIndex, musicGameModule.GetChartPacks()[musicGameModule.MapIndex]);
 
             var pages = this.GetComponentsInChildren<IMapSelectionPage>(true);
             pageDict = new Dictionary<Type, IMapSelectionPage>();

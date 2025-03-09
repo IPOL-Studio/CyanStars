@@ -6,7 +6,7 @@ using UnityEngine;
 namespace CyanStars.Gameplay.MusicGame
 {
     /// <summary>
-    /// 谱包数据结构（包含多个谱面，其中4个难度谱面各0或1个，未定义难度的谱面数量不限）
+    /// 谱包文件数据结构（包含多个谱面，其中4个难度谱面各0或1个，未定义难度的谱面数量不限）
     /// </summary>
     [Serializable]
     public class ChartPackData
@@ -43,7 +43,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         /// <summary>谱包导出时间</summary>
         [CanBeNull]
-        public DateTime? ExportTime; //
+        public DateTime? ExportTime;
 
         /// <summary>游戏内选中音乐后的预览结束时间</summary>
         [CanBeNull]
@@ -53,7 +53,7 @@ namespace CyanStars.Gameplay.MusicGame
         [CanBeNull]
         public Beat? MusicPreviewStartBeat;
 
-        /// <summary>谱包工程文件保存时间</summary>
+        /// <summary>谱包工程文件上一次保存时间</summary>
         public DateTime SaveTime;
 
         /// <summary>音乐创作者、歌姬、谱师、游戏曲绘作者等信息</summary>

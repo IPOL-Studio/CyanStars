@@ -1,3 +1,4 @@
+// TODO: 已重构，待测试
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyanStars.Framework;
@@ -49,6 +50,7 @@ namespace CyanStars.Gameplay.MusicGame
                 this.owner.ChangePage<StaffPage>();
             });
 
+            // 预留给返回按钮
             // backButton.onClick.AddListener(() =>
             // {
             //     if (this.owner.IsActive<MapListPage>())
@@ -73,7 +75,7 @@ namespace CyanStars.Gameplay.MusicGame
                 await RefreshMusicList();
             }
 
-            OnSelectMap(mapItems[this.owner.CurrentSelectedMap.Index] as MapItem);
+            OnSelectMap(mapItems[this.owner.CurrentSelectedChartPack.Index] as MapItem);
             canvasGroup.alpha = 0;
             runningTween = canvasGroup.DOFade(1, args.FadeTime)
                                       .SetEase(args.AnimationEase)
@@ -110,17 +112,17 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private async Task RefreshMusicList()
         {
-            List<MapManifest> maps = musicGameModule.GetMaps();
+            List<ChartPack> chartPacks = musicGameModule.GetChartPacks();
 
-            for (int i = 0; i < maps.Count; i++)
+            for (int i = 0; i < chartPacks.Count; i++)
             {
-                MapManifest map = maps[i];
+                ChartPack chartPack = chartPacks[i];
                 MapItem mapItem = await GameRoot.UI.AwaitGetUIItem<MapItem>(mapItemTemplate, circularMapList.transform);
                 circularMapList.AddItem(mapItem);
                 mapItems.Add(mapItem);
                 mapItem.Index = i;
 
-                MapItemData data = MapItemData.Create(i, map);
+                ChartPackItemData data = ChartPackItemData.Create(i, chartPack);
                 mapItem.RefreshItem(data);
                 mapItem.OnSelect += OnSelectMap;
             }
@@ -133,30 +135,31 @@ namespace CyanStars.Gameplay.MusicGame
             // 将选中的谱面移到圆环中央，即使当前已经选中也执行
             circularMapList.MoveToItemAt(mapItem.Index);
 
-            if (this.owner.CurrentSelectedMap == mapItem.Data)
+            if (this.owner.CurrentSelectedChartPack == mapItem.Data)
             {
                 return;
             }
 
-            this.owner.CurrentSelectedMap = mapItem.Data;
+            this.owner.CurrentSelectedChartPack = mapItem.Data;
 
-            Debug.Log("当前选中:" + mapItem.Data.MapManifest.Name);
+            Debug.Log("当前选中:" + mapItem.Data.ChartPack.ChartPackData.Title);
 
             // 标题和Staff信息渐变动画
             mapTitleText.DOFade(0, 0.2f).OnComplete(() =>
             {
-                mapTitleText.text = mapItem.Data.MapManifest.Name;
+                mapTitleText.text = mapItem.Data.ChartPack.ChartPackData.Title;
                 mapTitleText.DOFade(1, 0.2f);
             });
 
             // 将原始 Staff 文本传递给 StarsGenerator 以进一步处理
-            if (string.IsNullOrEmpty(mapItem.Data.MapManifest.StaffInfo) || string.IsNullOrWhiteSpace(mapItem.Data.MapManifest.StaffInfo))
+            if (mapItem.Data.ChartPack.ChartPackData.Staffs == null)
             {
+                // TODO: 完善字典有效性检验
                 Debug.LogWarning("没有设置 Staff 文本");
             }
             else
             {
-                this.owner.StarController.ResetAllStaffGroup(mapItem.Data.MapManifest.StaffInfo);
+                this.owner.StarController.ResetAllStaffGroup(mapItem.Data.ChartPack.ChartPackData.Staffs);
             }
         }
     }

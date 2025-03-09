@@ -1,4 +1,6 @@
-﻿using CatAsset.Runtime;
+﻿// TODO: 已重构，待测试
+
+using CatAsset.Runtime;
 using CyanStars.Framework;
 using CyanStars.Framework.UI;
 using TMPro;
@@ -19,13 +21,14 @@ namespace CyanStars.Gameplay.MusicGame
         public TextMeshProUGUI TxtName;
         public Button BtnMap;
 
-        public MapItemData Data { get; private set; }
+        public ChartPackItemData Data { get; private set; }
 
         public int Index;
 
         // TODO: 此事件可能会导致内存泄漏或多次订阅，当前没有独立使用，因此没有问题。后续可能需要处理
         [SerializeField]
         private UnityEvent<MapItem> onSelect;
+
         public event UnityAction<MapItem> OnSelect
         {
             add => onSelect.AddListener(value);
@@ -58,7 +61,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
-        public void RefreshItem(MapItemData data)
+        public void RefreshItem(ChartPackItemData data)
         {
             Data = data;
             RefreshView();
@@ -66,10 +69,11 @@ namespace CyanStars.Gameplay.MusicGame
 
         public async void RefreshView()
         {
-            TxtName.text = Data.MapManifest.Name;
-            if (!string.IsNullOrEmpty(Data.MapManifest.CoverFileName))
+            TxtName.text = Data.ChartPack.ChartPackData.Title;
+            if (!string.IsNullOrEmpty(Data.ChartPack.ChartPackData.CoverFilePath))
             {
-                Sprite sprite = await GameRoot.Asset.LoadAssetAsync<Sprite>(Data.MapManifest.CoverFileName,gameObject);
+                Sprite sprite =
+                    await GameRoot.Asset.LoadAssetAsync<Sprite>(Data.ChartPack.ChartPackData.CoverFilePath, gameObject);
                 ImgCover.sprite = sprite;
             }
             else
@@ -84,6 +88,5 @@ namespace CyanStars.Gameplay.MusicGame
             Mask.color = new Color(Mask.color.r, Mask.color.g, Mask.color.b, alpha);
             TxtName.color = new Color(TxtName.color.r, TxtName.color.g, TxtName.color.b, alpha);
         }
-
     }
 }

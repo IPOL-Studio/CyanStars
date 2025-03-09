@@ -1,3 +1,5 @@
+// TODO: 已重构，待测试
+
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -6,24 +8,41 @@ namespace CyanStars.Gameplay.MusicGame
 {
     public class StarController : MonoBehaviour
     {
-        [SerializeField] private GameObject starPrefab;
+        [SerializeField]
+        private GameObject starPrefab;
 
-        [SerializeField] private int minStarCount;
-        [SerializeField] private int maxStarCount;
+        [SerializeField]
+        private int minStarCount;
 
-        [SerializeField] private float minStarAlpha;
-        [SerializeField] private float maxStarAlpha;
+        [SerializeField]
+        private int maxStarCount;
 
-        [SerializeField] private float minStarSize;
-        [SerializeField] private float maxStarSize;
+        [SerializeField]
+        private float minStarAlpha;
 
-        [SerializeField] private float minStarParallax;
-        [SerializeField] private float maxStarParallax;
+        [SerializeField]
+        private float maxStarAlpha;
 
-        [SerializeField] private float staffLabelKeepShowTime;
-        [SerializeField] private int maxStaffLabelCountInGroup;
+        [SerializeField]
+        private float minStarSize;
 
-        [SerializeField] private RectTransform panelRectTransform;
+        [SerializeField]
+        private float maxStarSize;
+
+        [SerializeField]
+        private float minStarParallax;
+
+        [SerializeField]
+        private float maxStarParallax;
+
+        [SerializeField]
+        private float staffLabelKeepShowTime;
+
+        [SerializeField]
+        private int maxStaffLabelCountInGroup;
+
+        [SerializeField]
+        private RectTransform panelRectTransform;
 
 
         private int groupCount;
@@ -101,13 +120,13 @@ namespace CyanStars.Gameplay.MusicGame
             this.stars = null;
         }
 
-        public void ResetAllStaffGroup(string rawStaffText)
+        public void ResetAllStaffGroup(Dictionary<string, List<string>> staffs)
         {
-            var staffs = rawStaffText.Split('\n');
-
-            if (staffs.Length > canShowStaffStars.Count)
+            // 调用前请确保数据有效性
+            if (staffs.Count > canShowStaffStars.Count)
             {
-                Debug.LogError($"Staff数量过多，最多{canShowStaffStars.Count}个，目前{staffs.Length}个。请尝试设置更多的星星生成数量来临时解决这个问题");    // ToFix
+                Debug.LogError( // TODO: 等有空了考虑修这个 bug
+                    $"Staff数量过多，最多{canShowStaffStars.Count}个，目前{staffs.Count}个。请尝试设置更多的星星生成数量来临时解决这个问题");
                 return;
             }
 
@@ -115,24 +134,20 @@ namespace CyanStars.Gameplay.MusicGame
             staffShowingStars.Clear();
             staffLabelCountInGroupDict.Clear();
 
-            if (staffs is null || staffs.Length == 0)
-            {
-                groupCount = 0;
-                currentShowingGroupId = 0;
-                return;
-            }
+            // if (staffs is null || staffs.Length == 0)
+            // {
+            //     groupCount = 0;
+            //     currentShowingGroupId = 0;
+            //     return;
+            // }
 
             groupCount = 1;
-            foreach (var item in staffs)
+            foreach (KeyValuePair<string, List<string>> item in staffs)
             {
-                var arr = item.Split(' ');
-                Debug.Log(item);
-
                 while (true)
                 {
-                    if (SetGroup(arr[0], arr[1], groupCount))
+                    if (SetGroup(string.Join("", item.Value), item.Key, groupCount))
                         break;
-
                     groupCount++;
                 }
             }
@@ -166,7 +181,6 @@ namespace CyanStars.Gameplay.MusicGame
 
                 RefreshStaffLabelRender(true, true);
             }
-
         }
 
         public void ResetShowingGroup()

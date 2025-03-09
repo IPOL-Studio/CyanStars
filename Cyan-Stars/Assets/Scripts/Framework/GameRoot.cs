@@ -10,6 +10,7 @@ using CyanStars.Framework.Event;
 using CyanStars.Framework.GameObjectPool;
 using CyanStars.Framework.Logging;
 using CyanStars.Framework.Timer;
+using CyanStars.Gameplay.MusicGame;
 
 
 namespace CyanStars.Framework
@@ -27,7 +28,8 @@ namespace CyanStars.Framework
         /// <summary>
         /// 数据模块字典
         /// </summary>
-        private static readonly Dictionary<Type, BaseDataModule> DataModuleDict = new Dictionary<Type, BaseDataModule>();
+        private static readonly Dictionary<Type, BaseDataModule>
+            DataModuleDict = new Dictionary<Type, BaseDataModule>();
 
         /// <summary>
         /// 主相机
@@ -88,6 +90,52 @@ namespace CyanStars.Framework
         private void Awake()
         {
             Application.targetFrameRate = 60;
+
+            #region 生成和读取谱包测试
+
+            // TODO: 删除测试代码
+            // ChartPackData chartPackData = new ChartPackData()
+            // {
+            //     Title = "测试",
+            //     MusicFilePath = "Assets/CysMultimediaAssets/Charts/NewSong/Music.ogg",
+            //     ChartDatas = new List<ChartData>()
+            //     {
+            //         new ChartData()
+            //         {
+            //             EndTime = 0f,
+            //             Offset = -2812f,
+            //             ReadyBeat = 4,
+            //             BpmGroups =
+            //                 new List<BpmGroup>() { new BpmGroup() { Bpm = 128f, StartBeat = new Beat(0, 0, 0) } },
+            //             SpeedGroups =
+            //                 new List<SpeedGroup>()
+            //                 {
+            //                     new SpeedGroup()
+            //                     {
+            //                         Name = "Default",
+            //                         Type = SpeedGroup.SpeedGroupType.Relative,
+            //                         BezierControlPoints = new float[][] { new float[] { 0f, 1f } }
+            //                     }
+            //                 },
+            //             Notes = new List<BaseChartNote>()
+            //             {
+            //                 new TapChartNote()
+            //                 {
+            //                     Pos = 0, Type = NoteType.Tap, SpeedGroupIndex = 0, JudgeBeat = new Beat(0, 0, 0)
+            //                 }
+            //             },
+            //             Difficulty = ChartDifficulty.KuiXing,
+            //             Level = "20"
+            //         }
+            //     }
+            // };
+            //
+            // JsonUtility.JsonUtility.ToJson(chartPackData, "Assets/CysMultimediaAssets/Charts/NewSong/ChartPack.json");
+            //
+            // JsonUtility.JsonUtility.FromJson<ChartPackData>("Assets/CysMultimediaAssets/Charts/NewSong/ChartPack.json",
+            //     out ChartPackData myChartPackData);
+
+            #endregion
         }
 
         private void Start()
@@ -116,7 +164,7 @@ namespace CyanStars.Framework
             {
                 if (RegisterAssemblies.Contains(assembly.GetName().Name))
                 {
-                   types.AddRange(assembly.GetTypes());
+                    types.AddRange(assembly.GetTypes());
                 }
             }
 
@@ -207,10 +255,12 @@ namespace CyanStars.Framework
             foreach (Type type in types)
             {
                 //检查是否为流程状态
-                if (type.IsSubclassOf(typeof(BaseState)) && Attribute.IsDefined(type, typeof(ProcedureStateAttribute)))
+                if (type.IsSubclassOf(typeof(BaseState)) &&
+                    Attribute.IsDefined(type, typeof(ProcedureStateAttribute)))
                 {
                     ProcedureStateAttribute procedureAttr =
-                        (ProcedureStateAttribute)Attribute.GetCustomAttribute(type, typeof(ProcedureStateAttribute));
+                        (ProcedureStateAttribute)Attribute.GetCustomAttribute(type,
+                            typeof(ProcedureStateAttribute));
                     BaseState procedureState = (BaseState)Activator.CreateInstance(type);
                     procedureStates.Add(procedureState);
 

@@ -41,9 +41,9 @@ namespace CyanStars.Gameplay.MusicGame
         public ChartDifficulty? Difficulty;
 
         /// <summary>谱面定数</summary>
-        /// <remarks>内置谱面此值应该是一个[1,20]之间的整数，社区谱随意，大于等于0f就行</remarks>
+        /// <remarks>内置谱面此值应该是一个[1,20]之间的整数，社区谱随意</remarks>
         [CanBeNull]
-        public float? Level;
+        public string Level;
 
         // public List<ChartEvent>? Events; // TODO:谱面事件
         // public Lise<ChartCondition>? Conditions; // TODO:事件条件

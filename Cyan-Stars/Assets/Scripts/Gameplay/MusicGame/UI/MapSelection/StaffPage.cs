@@ -32,7 +32,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             startButton.onClick.AddListener(() =>
             {
-                GameRoot.GetDataModule<MusicGameModule>().MapIndex = owner.CurrentSelectedMap.Index;
+                GameRoot.GetDataModule<MusicGameModule>().MapIndex = owner.CurrentSelectedChartPack.Index;
                 GameRoot.ChangeProcedure<MusicGameProcedure>();
             });
 

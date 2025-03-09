@@ -17,8 +17,10 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>音符类型</summary>
         public NoteType Type;
 
-        /// <summary>引用的变速组</summary>
-        public SpeedGroup SpeedGroup;
+        /// <summary>
+        /// 引用的变速组
+        /// </summary>
+        public int SpeedGroupIndex;
 
         /// <summary>正解提示音</summary>
         /// <remarks>
@@ -39,6 +41,22 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>在哪一拍判定</summary>
         /// <remarks>此值转换为时间后减去 offset 为相对于音乐开始的时间</remarks>
         public Beat JudgeBeat;
+
+        /// <summary>
+        /// 可被判定
+        /// </summary>
+        /// <remarks>
+        /// 为 false 时，音符不接收判定，仅用于表演
+        /// </remarks>
+        public bool JudgeAble = true;
+
+        /// <summary>
+        /// 可被展示
+        /// </summary>
+        /// <remarks>
+        /// 为 false 时，音符不展示，仅用于搭配其他效果时的表演
+        /// </remarks>
+        public bool ViewAble = true;
     }
 
     [Serializable]
@@ -52,6 +70,11 @@ namespace CyanStars.Gameplay.MusicGame
     [Serializable]
     public class HoldChartNote : BaseChartNote
     {
+        /// <summary>
+        /// 音符尾引用的变速组
+        /// </summary>
+        public SpeedGroup HoldEndSpeedGroup;
+
         /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
         /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
         public float Pos;

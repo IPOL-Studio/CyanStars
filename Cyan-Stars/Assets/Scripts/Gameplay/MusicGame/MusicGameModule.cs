@@ -16,9 +16,9 @@ namespace CyanStars.Gameplay.MusicGame
     public class MusicGameModule : BaseDataModule
     {
         /// <summary>
-        /// 谱面清单列表
+        /// 谱包清单列表
         /// </summary>
-        private List<MapManifest> mapManifests;
+        private List<ChartPack> chartPackManifests = new List<ChartPack>();
 
         /// <summary>
         /// 当前时间轴长度
@@ -31,9 +31,14 @@ namespace CyanStars.Gameplay.MusicGame
         public bool IsAutoMode { get; set; }
 
         /// <summary>
-        /// 谱面序号
+        /// 谱包序号
         /// </summary>
         public int MapIndex { get; set; } = 0;
+
+        /// <summary>
+        /// 谱面难度
+        /// </summary>
+        public ChartDifficulty ChartDifficulty { get; set; }
 
         /// <summary>
         /// 当前运行中的时间轴
@@ -46,9 +51,9 @@ namespace CyanStars.Gameplay.MusicGame
         public string InputMapDataName { get; private set; }
 
         /// <summary>
-        /// 内置谱面列表文件名
+        /// 内置谱包列表文件名
         /// </summary>
-        public string InternalMapListName { get; private set; }
+        public string InternalChartListName { get; private set; }
 
         /// <summary>
         /// 音符类型 -> 音符预制体名称
@@ -81,7 +86,7 @@ namespace CyanStars.Gameplay.MusicGame
         public override void OnInit()
         {
             InputMapDataName = "Assets/BundleRes/ScriptObjects/InputMap/InputMapData.asset";
-            InternalMapListName = "Assets/BundleRes/ScriptObjects/InternalMap/InternalMapList.asset";
+            InternalChartListName = "Assets/BundleRes/ScriptObjects/InternalChart/InternalChartPathList.asset";
 
             NotePrefabNameDict = new Dictionary<NoteType, string>()
             {
@@ -126,10 +131,27 @@ namespace CyanStars.Gameplay.MusicGame
         /// <returns></returns>
         public async Task LoadInternalMaps()
         {
-            InternalMapListSO internalMapListSo =
-                await GameRoot.Asset.LoadAssetAsync<InternalMapListSO>(InternalMapListName);
-            mapManifests = internalMapListSo.InternalMaps;
-            GameRoot.Asset.UnloadAsset(internalMapListSo);
+            InternalChartPathListSO internalChartPathListSO =
+                await GameRoot.Asset.LoadAssetAsync<InternalChartPathListSO>(InternalChartListName);
+            GameRoot.Asset.UnloadAsset(internalChartPathListSO);
+
+            foreach (string chartPath in internalChartPathListSO.InternalChartPaths)
+            {
+                if (!JsonUtility.JsonUtility.FromJson<ChartPackData>(chartPath, out ChartPackData chartPackData))
+                {
+                    Logger.LogError($"未能加载谱包数据：{chartPath}");
+                    continue;
+                }
+                ChartPack chartPack = new ChartPack()
+                {
+                    IsInternal = true,
+                    ChartPackData = chartPackData,
+                    Music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(chartPackData.MusicFilePath)
+                };
+                chartPackManifests.Add(chartPack);
+
+                GameRoot.Asset.UnloadAsset(chartPackData.MusicFilePath);
+            }
         }
 
         public void InitLogger(string categoryName)
@@ -146,34 +168,45 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 获取谱面清单
         /// </summary>
-        public MapManifest GetMap(int index)
+        public ChartPack GetChartPack(int index)
         {
-            return mapManifests[index];
+            return chartPackManifests[index];
         }
 
         /// <summary>
-        /// 获取所有谱面清单
+        /// 获取所有谱包清单
         /// </summary>
         /// <returns></returns>
-        public List<MapManifest> GetMaps()
+        public List<ChartPack> GetChartPacks()
         {
-            return mapManifests;
+            return chartPackManifests;
         }
 
         /// <summary>
         /// 计算全谱总分
         /// </summary>
-        public void CalFullScore(NoteTrackData noteTrackData)
+        public void CalFullScore(ChartData chartData)
         {
             MusicGamePlayData.FullScore = 0;
-            foreach (var layer in noteTrackData.LayerDatas)
+            foreach (BaseChartNote note in chartData.Notes)
             {
-                foreach (var timeAxis in layer.TimeAxisDatas)
+                switch (note.Type)
                 {
-                    foreach (var note in timeAxis.NoteDatas)
-                    {
-                        MusicGamePlayData.FullScore += note.GetFullScore();
-                    }
+                    case NoteType.Tap:
+                        MusicGamePlayData.FullScore += 1;
+                        break;
+                    case NoteType.Drag:
+                        MusicGamePlayData.FullScore += 0.25f;
+                        break;
+                    case NoteType.Hold:
+                        MusicGamePlayData.FullScore += 2f;
+                        break;
+                    case NoteType.Click:
+                        MusicGamePlayData.FullScore += 2f;
+                        break;
+                    case NoteType.Break:
+                        MusicGamePlayData.FullScore += 2f;
+                        break;
                 }
             }
         }

@@ -133,7 +133,7 @@ MonoBehaviour:
     BundleName: mapselectionui.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 102303809
+    AssetsLength: 136654907
     Assets:
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel.prefab
       Length: 124078
@@ -141,18 +141,22 @@ MonoBehaviour:
       Length: 25054
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/Star.prefab
       Length: 9842
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN-Heavy.otf
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold-Dynamic-SDF.asset
+      Length: 2105208
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold-Static-3500Chinese-SDF(FastPacking).asset
+      Length: 35509737
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy.otf
       Length: 11304840
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN-Heavy-Dynamic-SDF.asset
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy-Dynamic-SDF.asset
       Length: 2108911
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN-Heavy-Static-gb2312-SDF(FastPacking).asset
-      Length: 37152209
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN-Medium.otf
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy-Static-3500Chinese-SDF(FastPacking).asset
+      Length: 35554903
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium.otf
       Length: 11373656
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN-Medium-Dynamic-SDF.asset
-      Length: 2110346
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN-Medium-Static-gb2312-SDF(FastPacking).asset
-      Length: 37157998
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium-Dynamic-SDF.asset
+      Length: 2123311
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium-Static-3500Chinese-SDF(FastPacking).asset
+      Length: 35478492
     - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/BlackGradientBackground.png
       Length: 44741
     - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/1.png
@@ -184,7 +188,7 @@ MonoBehaviour:
     BundleName: musicgameui.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 52899762
+    AssetsLength: 3086518
     Assets:
     - Name: Assets/BundleRes/Prefabs/MusicGameUI/MusicGame3DUIPanel.prefab
       Length: 18250
@@ -192,12 +196,6 @@ MonoBehaviour:
       Length: 33272
     - Name: Assets/BundleRes/Prefabs/MusicGameUI/MusicGamePausePanel.prefab
       Length: 16431
-    - Name: Assets/CysMultimediaAssets/Font/LXGWWenKaiMono-Bold.ttf
-      Length: 15455768
-    - Name: Assets/CysMultimediaAssets/Font/LXGWWenKaiMono-Light.ttf
-      Length: 18912262
-    - Name: Assets/CysMultimediaAssets/Font/LXGWWenKaiMono-Regular.ttf
-      Length: 15445214
     - Name: Assets/CysMultimediaAssets/Sprites/Fream-16px.png
       Length: 153
     - Name: Assets/CysMultimediaAssets/Sprites/GrayFrame.png
@@ -229,15 +227,15 @@ MonoBehaviour:
     IsRaw: 0
     AssetsLength: 1777250
     Assets:
-    - Name: Assets/CysMultimediaAssets/Key.prefab
+    - Name: Assets/BundleRes/NoteModelsV1.2/Key.prefab
       Length: 3351
-    - Name: Assets/CysMultimediaAssets/KeyDown.mat
+    - Name: Assets/BundleRes/NoteModelsV1.2/KeyDown.mat
       Length: 3579
-    - Name: Assets/CysMultimediaAssets/M_Track.fbx
+    - Name: Assets/BundleRes/NoteModelsV1.2/M_Track.fbx
       Length: 12220
-    - Name: Assets/CysMultimediaAssets/MI_Track.mat
+    - Name: Assets/BundleRes/NoteModelsV1.2/MI_Track.mat
       Length: 3662
-    - Name: Assets/CysMultimediaAssets/T_Track.png
+    - Name: Assets/BundleRes/NoteModelsV1.2/T_Track.png
       Length: 14535
     - Name: Assets/Materials/DarkScene/T_Moon.png
       Length: 222945
@@ -278,22 +276,28 @@ MonoBehaviour:
     Assets:
     - Name: Assets/BundleRes/ScriptObjects/InputMap/InputMapData.asset
       Length: 2793
-  - RelativePath: BundleRes/ScriptObjects/internalmap.bundle
+  - RelativePath: BundleRes/ScriptObjects/internalchart.bundle
     DirectoryName: BundleRes/ScriptObjects
-    BundleName: internalmap.bundle
+    BundleName: internalchart.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 3112
+    AssetsLength: 492
     Assets:
-    - Name: Assets/BundleRes/ScriptObjects/InternalMap/InternalMapList.asset
-      Length: 3112
+    - Name: Assets/BundleRes/ScriptObjects/InternalChart/InternalChartPathList.asset
+      Length: 492
   - RelativePath: redundancy_0.bundle
     DirectoryName: 
     BundleName: redundancy_0.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 204844
+    AssetsLength: 50018088
     Assets:
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold.ttf
+      Length: 15455768
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Light.ttf
+      Length: 18912262
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Regular.ttf
+      Length: 15445214
     - Name: Assets/CysMultimediaAssets/Sprites/Bg-16px.png
       Length: 139
     - Name: Assets/TextMeshPro/Shaders/TMP_SDF.shader
