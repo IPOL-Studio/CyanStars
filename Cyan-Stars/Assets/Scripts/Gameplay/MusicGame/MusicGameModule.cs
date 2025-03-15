@@ -146,7 +146,6 @@ namespace CyanStars.Gameplay.MusicGame
                 {
                     IsInternal = true,
                     ChartPackData = chartPackData,
-                    Music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(chartPackData.MusicFilePath)
                 };
                 chartPackManifests.Add(chartPack);
 

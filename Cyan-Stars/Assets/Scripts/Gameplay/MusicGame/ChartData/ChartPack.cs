@@ -15,8 +15,6 @@ namespace CyanStars.Gameplay.MusicGame
         /// </remarks>
         public bool IsInternal;
 
-        public AudioClip Music;
-
         public ChartPackData ChartPackData;
     }
 }

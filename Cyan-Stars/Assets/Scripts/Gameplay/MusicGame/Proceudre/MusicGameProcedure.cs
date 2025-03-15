@@ -238,11 +238,12 @@ namespace CyanStars.Gameplay.MusicGame
             //谱面清单
             chartPack = dataModule.GetChartPack(dataModule.MapIndex);
 
-            //音乐
-            if (!string.IsNullOrEmpty(chartPack.ChartPackData.MusicFilePath))
-            {
-                music = chartPack.Music;
-            }
+            // TODO: 待弃用
+            // //音乐
+            // if (!string.IsNullOrEmpty(chartPack.ChartPackData.MusicFilePath))
+            // {
+            //     music = chartPack.Music;
+            // }
 
             //时间轴数据
             chartData = chartPack.ChartPackData.ChartDatas[(int)dataModule.ChartDifficulty];
