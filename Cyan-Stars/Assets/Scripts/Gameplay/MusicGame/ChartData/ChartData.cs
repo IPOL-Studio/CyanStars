@@ -10,14 +10,6 @@ namespace CyanStars.Gameplay.MusicGame
     [Serializable]
     public class ChartData
     {
-        /// <summary>谱面结束时间，单位 ms</summary>
-        /// <remarks>通常来说是音乐时长 + offset</remarks>
-        public float EndTime;
-
-        /// <summary>谱面向前偏移量，单位 ms</summary>
-        /// <remarks>即在谱面开始多久后才播放音乐，可为负数</remarks>
-        public float Offset;
-
         /// <summary>在第一个 BPM 组开始前播放几次预备拍音效</summary>
         /// <remarks>必须大于等于0，一般为4，预备拍的时间间隔取决于第一个 BPM 组的 bpm</remarks>
         public int ReadyBeat;
@@ -39,7 +31,7 @@ namespace CyanStars.Gameplay.MusicGame
         public ChartDifficulty? Difficulty;
 
         /// <summary>谱面定数</summary>
-        /// <remarks>内置谱面此值应该是一个[1,20]之间的整数，社区谱随意</remarks>
+        /// <remarks>内置谱面此值应该是一个 [1, 20] 之间的整数，社区谱随意</remarks>
         public string Level;
 
         // public List<ChartEvent>? Events; // TODO:谱面事件

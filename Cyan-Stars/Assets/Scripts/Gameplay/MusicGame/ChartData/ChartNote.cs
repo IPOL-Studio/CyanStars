@@ -18,8 +18,9 @@ namespace CyanStars.Gameplay.MusicGame
         public NoteType Type;
 
         /// <summary>
-        /// 引用的变速组
+        /// 引用的变速组下标
         /// </summary>
+        /// <remarks>从 0 开始，如果变速组在编辑器内发生变化，刷新所有 Note 的引用</remarks>
         public int SpeedGroupIndex;
 
         /// <summary>正解提示音</summary>

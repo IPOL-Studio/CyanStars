@@ -1,7 +1,7 @@
 namespace CyanStars.Gameplay.MusicGame
 {
     /// <summary>
-    /// 加载到游戏内的谱包
+    /// 运行时谱包数据
     /// </summary>
     public class ChartPack
     {

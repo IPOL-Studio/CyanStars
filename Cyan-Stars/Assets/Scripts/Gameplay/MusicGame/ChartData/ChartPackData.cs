@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -17,8 +18,8 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>谱包标题（音乐名）</summary>
         public string Title;
 
-        /// <summary>音频文件相对路径</summary>
-        public string MusicFilePath;
+        /// <summary>音频信息</summary>
+        public List<MusicVersionData> MusicVersionDatas;
 
         /// <summary>游戏内曲绘文件相对路径</summary>
         [CanBeNull]
