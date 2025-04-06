@@ -47,7 +47,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>将曲绘大图裁剪为1:4小图时，小图在横向方向上的像素宽度</summary>
         /// <remarks>竖直方向高度为此值的1/4</remarks>
         [CanBeNull]
-        public float? CoverCroppingWidth;
+        public int? CoverCroppingWidth;
 
 
         // 谱面音符信息和 Staff 信息
