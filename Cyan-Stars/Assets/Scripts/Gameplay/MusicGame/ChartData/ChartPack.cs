@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace CyanStars.Gameplay.MusicGame
 {
     /// <summary>

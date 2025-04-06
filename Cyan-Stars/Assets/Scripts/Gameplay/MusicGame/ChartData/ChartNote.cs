@@ -73,7 +73,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 音符尾引用的变速组
         /// </summary>
-        public SpeedGroup HoldEndSpeedGroup;
+        public int HoldEndSpeedGroupIndex;
 
         /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
         /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
