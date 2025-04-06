@@ -108,18 +108,18 @@ namespace CyanStars.Framework
             //             BpmGroups =
             //                 new List<BpmGroup>() { new BpmGroup() { Bpm = 128f, StartBeat = new Beat(0, 0, 0) } },
             //             SpeedGroups =
-            //                 new List<SpeedGroup>()
+            //                 new List<SpeedGroupData>()
             //                 {
-            //                     new SpeedGroup()
+            //                     new SpeedGroupData()
             //                     {
             //                         Name = "Default",
-            //                         Type = SpeedGroup.SpeedGroupType.Relative,
+            //                         Type = SpeedGroupData.SpeedGroupType.Relative,
             //                         BezierControlPoints = new float[][] { new float[] { 0f, 1f } }
             //                     }
             //                 },
-            //             Notes = new List<BaseChartNote>()
+            //             Notes = new List<BaseChartNoteData>()
             //             {
-            //                 new TapChartNote()
+            //                 new TapChartNoteData()
             //                 {
             //                     Pos = 0, Type = NoteType.Tap, SpeedGroupIndex = 0, JudgeBeat = new Beat(0, 0, 0)
             //                 }

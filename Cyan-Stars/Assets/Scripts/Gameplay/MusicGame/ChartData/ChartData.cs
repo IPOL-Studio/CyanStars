@@ -20,10 +20,10 @@ namespace CyanStars.Gameplay.MusicGame
 
         /// <summary>变速组</summary>
         /// <remarks>必定存在一个相对 1 速的变速组，不可编辑或删除</remarks>
-        public List<SpeedGroup> SpeedGroups;
+        public List<SpeedGroupData> SpeedGroups;
 
         /// <summary>谱面音符数据</summary>
-        public List<BaseChartNote> Notes;
+        public List<BaseChartNoteData> Notes;
 
         /// <summary>谱面难度</summary>
         /// <remarks>为空时只在编辑器内可见，游戏内不加载；其他难度最多在一个谱包中各有0或1个</remarks>

@@ -12,7 +12,7 @@ namespace CyanStars.Gameplay.MusicGame
 
 
     [Serializable]
-    public class BaseChartNote
+    public class BaseChartNoteData
     {
         /// <summary>音符类型</summary>
         public NoteType Type;
@@ -61,7 +61,7 @@ namespace CyanStars.Gameplay.MusicGame
     }
 
     [Serializable]
-    public class TapChartNote : BaseChartNote
+    public class TapChartNoteData : BaseChartNoteData
     {
         /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
         /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
@@ -69,7 +69,7 @@ namespace CyanStars.Gameplay.MusicGame
     }
 
     [Serializable]
-    public class HoldChartNote : BaseChartNote
+    public class HoldChartNoteData : BaseChartNoteData
     {
         /// <summary>
         /// 音符尾引用的变速组
@@ -86,7 +86,7 @@ namespace CyanStars.Gameplay.MusicGame
     }
 
     [Serializable]
-    public class DragChartNote : BaseChartNote
+    public class DragChartNoteData : BaseChartNoteData
     {
         /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
         /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
@@ -94,7 +94,7 @@ namespace CyanStars.Gameplay.MusicGame
     }
 
     [Serializable]
-    public class ClickChartNote : BaseChartNote
+    public class ClickChartNoteData : BaseChartNoteData
     {
         /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
         /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
@@ -102,7 +102,7 @@ namespace CyanStars.Gameplay.MusicGame
     }
 
     [Serializable]
-    public class BreakChartNote : BaseChartNote
+    public class BreakChartNoteData : BaseChartNoteData
     {
         /// <summary>Break 音符位于哪条轨道</summary>
         public BreakNotePos BreakNotePos;

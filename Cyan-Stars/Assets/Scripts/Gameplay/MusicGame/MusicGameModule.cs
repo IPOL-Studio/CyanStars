@@ -187,7 +187,7 @@ namespace CyanStars.Gameplay.MusicGame
         public void CalFullScore(ChartData chartData)
         {
             MusicGamePlayData.FullScore = 0;
-            foreach (BaseChartNote note in chartData.Notes)
+            foreach (BaseChartNoteData note in chartData.Notes)
             {
                 switch (note.Type)
                 {
