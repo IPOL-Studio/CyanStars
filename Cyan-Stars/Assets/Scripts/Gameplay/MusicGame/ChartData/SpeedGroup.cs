@@ -46,9 +46,9 @@ namespace CyanStars.Gameplay.MusicGame
 
             for (int i = 0; i < count; i++)
             {
-                float speed = speedGroupData.BezierCurve.CalculateSpeed(i * SampleInterval * -1) * ps;
+                float speed = speedGroupData.BezierCurve.CalculateSpeed(i * SampleInterval) * ps; // 从前方向后移动时速度为负
                 speedList.Add(speed);
-                sumDistance += speed * SampleInterval / 1000f;
+                sumDistance += speed * SampleInterval / 1000f; // 提前时距离为负数
                 distanceList.Add(sumDistance);
             }
         }
@@ -56,39 +56,41 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 根据逻辑时间差值获取速度
         /// </summary>
-        /// <remarks>当前时间提前于音符判定时间时 distance 为负值</remarks>
-        public float CalculateSpeed(float distance)
+        /// <remarks>当前时间提前于音符判定时间时 logicTimeDistance 为负值</remarks>
+        public float CalculateSpeed(float logicTimeDistance)
         {
-            if (distance > 0)
+            if (logicTimeDistance > 0)
             {
                 return speedList[0];
             }
 
-            if (-distance >= speedList.Count * SampleInterval)
+            if (-logicTimeDistance >= speedList.Count * SampleInterval)
             {
                 return speedList[speedList.Count - 1];
             }
 
-            return speedList[(int)-distance / SampleInterval];
+            return speedList[(int)-logicTimeDistance / SampleInterval];
         }
 
         /// <summary>
-        /// 根据逻辑时间差值获取距离（视图层时间）
+        /// 根据逻辑时间差值获取距离（视图层时间差值）
         /// </summary>
-        /// <remarks>当前时间提前于音符判定时间时 distance 为负值</remarks>
-        public float CalculateDistance(float distance)
+        /// <remarks>当前时间提前于音符判定时间时 logicTimeDistance 为负值</remarks>
+        public float CalculateDistance(float logicTimeDistance)
         {
-            if (distance > 0)
+            if (logicTimeDistance > 0)
             {
-                return distanceList[0];
+                // 过线后按照当前速度计算距离，而非从采样点缓存读取
+                return speedList[0] * logicTimeDistance / 1000f;
             }
 
-            if (-distance >= distanceList.Count * SampleInterval)
+            if (-logicTimeDistance >= distanceList.Count * SampleInterval)
             {
-                return distanceList[distanceList.Count - 1];
+                // 在进入首个采样点前按照速度计算距离
+                return speedList[distanceList.Count - 1] * logicTimeDistance / 1000f;
             }
 
-            return distanceList[(int)-distance / SampleInterval];
+            return distanceList[(int)-logicTimeDistance / SampleInterval];
         }
     }
 }
