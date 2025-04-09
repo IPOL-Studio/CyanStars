@@ -34,6 +34,16 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 throw new ArgumentException("Beat 的三个参数都必须大于等于 0");
             }
+
+            if (Denominator == 0)
+            {
+                throw new ArgumentException("Beat 的分母不能为 0");
+            }
+
+            if (Numerator >= Denominator)
+            {
+                throw new AggregateException("Beat 的分子必须小于分母");
+            }
         }
 
         /// <summary>将 Beat 转换为小数表示的拍子</summary>
