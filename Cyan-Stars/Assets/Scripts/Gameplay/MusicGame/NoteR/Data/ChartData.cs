@@ -34,7 +34,14 @@ namespace CyanStars.Gameplay.MusicGame
         /// <remarks>内置谱面此值应该是一个 [1, 20] 之间的整数，社区谱随意</remarks>
         public string Level;
 
-        // public List<ChartEvent>? Events; // TODO:谱面事件
-        // public Lise<ChartCondition>? Conditions; // TODO:事件条件
+        /// <summary>
+        /// 事件条件，用于在游戏过程中动态控制轨道中事件是否触发
+        /// </summary>
+        public List<ChartTrackCondition> Conditions;
+
+        /// <summary>
+        /// 谱面轨道数据，需要在加载谱面时转换
+        /// </summary>
+        public List<ChartTrackData> TrackDatas;
     }
 }

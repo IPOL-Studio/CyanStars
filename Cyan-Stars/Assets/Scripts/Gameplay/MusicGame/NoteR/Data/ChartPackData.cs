@@ -40,9 +40,13 @@ namespace CyanStars.Gameplay.MusicGame
         [CanBeNull]
         public string CoverFilePath;
 
-        /// <summary>将曲绘大图裁剪为1:4小图时，小图左下角在大图上的的像素坐标（大图左下角为原点）</summary>
+        /// <summary>将曲绘大图裁剪为1:4小图时，小图左下角在大图上的的像素坐标 X 值（大图左下角为原点）</summary>
         [CanBeNull]
-        public Vector2? CoverCroppingPos;
+        public int? CoverCroppingPosX;
+
+        /// <summary>将曲绘大图裁剪为1:4小图时，小图左下角在大图上的的像素坐标 Y 值（大图左下角为原点）</summary>
+        [CanBeNull]
+        public int? CoverCroppingPosY;
 
         /// <summary>将曲绘大图裁剪为1:4小图时，小图在横向方向上的像素宽度</summary>
         /// <remarks>竖直方向高度为此值的1/4</remarks>
