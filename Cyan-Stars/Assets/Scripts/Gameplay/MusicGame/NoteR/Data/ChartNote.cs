@@ -29,7 +29,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// 玩家可选择是否让谱师设定的音效覆盖默认收藏品音效
         /// </remarks>
         [CanBeNull]
-        public AudioClip CorrectAudio;
+        public string CorrectAudioName;
 
         /// <summary>打击音</summary>
         /// <remarks>
@@ -37,7 +37,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// 玩家可选择是否让谱师设定的音效覆盖默认收藏品音效
         /// </remarks>
         [CanBeNull]
-        public AudioClip HitAudio;
+        public string HitAudioName;
 
         /// <summary>在哪一拍判定</summary>
         /// <remarks>此值转换为时间后减去 offset 为相对于音乐开始的时间</remarks>
