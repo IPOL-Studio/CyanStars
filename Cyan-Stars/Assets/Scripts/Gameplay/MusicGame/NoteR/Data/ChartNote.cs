@@ -1,6 +1,5 @@
 using System;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {

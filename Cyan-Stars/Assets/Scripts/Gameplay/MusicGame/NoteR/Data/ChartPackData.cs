@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -54,16 +53,10 @@ namespace CyanStars.Gameplay.MusicGame
         public int? CoverCroppingWidth;
 
 
-        // 谱面音符信息和 Staff 信息
+        // 谱面数据
 
         /// <summary>谱面数据</summary>
         public List<ChartData> ChartDatas;
-
-        /// <summary>音乐创作者、歌姬、谱师、游戏曲绘作者等信息</summary>
-        /// <example>{"xxxx": ["作曲", "编曲", "调校", "谱面", "游戏曲绘"]}</example>
-        /// <example>{"xxxx": ["作", "编", "调", "谱", "绘"]}</example>
-        [CanBeNull]
-        public Dictionary<string, List<string>> Staffs;
 
 
         // 元数据

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -28,12 +29,13 @@ namespace CyanStars.Gameplay.MusicGame
     public class ChartTrackEventData
     {
         /// <summary>
-        /// 引用的条件的索引，满足条件时才会执行事件
+        /// 引用的条件的索引，满足条件时才会执行事件，为 null 时始终执行
         /// </summary>
-        public int ConditionIndex;
+        [CanBeNull]
+        public int? ConditionIndex;
 
         /// <summary>
-        /// 事件
+        /// 如果满足条件，要触发的事件
         /// </summary>
         public Dictionary<string, object> EventData;
     }

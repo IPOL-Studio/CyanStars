@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using JetBrains.Annotations;
+
 namespace CyanStars.Gameplay.MusicGame
 {
     /// <summary>
@@ -17,5 +20,11 @@ namespace CyanStars.Gameplay.MusicGame
         /// 即谱面延后时间
         /// </remarks>
         public int Offset;
+
+        /// <summary>音乐创作者、歌姬、谱师、游戏曲绘作者等信息</summary>
+        /// <example>{"xxxx": ["作曲", "编曲", "调校", "谱面", "游戏曲绘"]}</example>
+        /// <example>{"xxxx": ["作", "编", "调", "谱", "绘"]}</example>
+        [CanBeNull]
+        public Dictionary<string, List<string>> Staffs;
     }
 }
