@@ -30,14 +30,19 @@ namespace CyanStars.Gameplay.MusicGame
         /// <returns>数据合法性</returns>
         public void Verify()
         {
-            if (IntegerPart < 0 || Numerator < 0 || Denominator < 0)
+            if (IntegerPart < 0)
             {
-                throw new ArgumentException("Beat 的三个参数都必须大于等于 0");
+                throw new ArgumentException("Beat 的整数部分必须大于等于 0");
             }
 
-            if (Denominator == 0)
+            if (Numerator < 0)
             {
-                throw new ArgumentException("Beat 的分母不能为 0");
+                throw new ArgumentException("Beat 的分子必须大于等于 0");
+            }
+
+            if (Denominator <= 0)
+            {
+                throw new ArgumentException("Beat 的分母必须大于 0");
             }
 
             if (Numerator >= Denominator)
