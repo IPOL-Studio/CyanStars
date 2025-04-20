@@ -1,32 +1,39 @@
 ﻿namespace CyanStars.Gameplay.MusicGame
 {
-    /// <summary>
-    /// Tap音符
-    /// </summary>
-    public class TapNoteR : BaseNote
+    public class TapNoteR : BaseNoteR
     {
-        public override void OnUpdate(float curLogicTime,float curViewTime)
-        {
-            base.OnUpdate(curLogicTime, curViewTime);
+        public float Pos;
 
-            if (EvaluateHelper.IsMiss(Distance)) //没接住Miss
+        private const float NoteWidth = 0.2f;
+
+        public override void Init(BaseChartNoteData data, ChartData chartData)
+        {
+            base.Init(data, chartData);
+            Pos = (data as TapChartNoteData).Pos;
+        }
+
+        public override void OnUpdate(float curLogicTime)
+        {
+            base.OnUpdate(curLogicTime);
+
+            if (EvaluateHelper.IsMiss(LogicTimeDistance)) //没接住Miss
             {
                 DestroySelf(); //延迟销毁
 
-                NoteJudger.TapJudge(Data,Distance);
+                NoteJudgerR.TapJudge(NoteData as TapChartNoteData, LogicTimeDistance);
             }
         }
 
-        public override void OnUpdateInAutoMode(float curLogicTime,float curViewTime) //AutoMode下的更新
+        public override void OnUpdateInAutoMode(float curLogicTime)
         {
-            base.OnUpdateInAutoMode(curLogicTime, curViewTime);
+            base.OnUpdateInAutoMode(curLogicTime);
 
-            if (Distance <= 0)
+            if (LogicTimeDistance <= 0)
             {
-                ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
+                ViewObject.CreateEffectObj(NoteWidth); //生成特效
                 DestroySelf(false); //销毁
 
-                NoteJudger.TapJudge(Data, 0); // Auto Mode 杂率为0
+                NoteJudgerR.TapJudge(NoteData as TapChartNoteData, 0); // Auto Mode 杂率为0
             }
         }
 
@@ -36,10 +43,10 @@
 
             if (inputType != InputType.Down) return; //只处理按下的情况
 
-            ViewObject.CreateEffectObj(NoteData.NoteWidth); //生成特效
+            ViewObject.CreateEffectObj(NoteWidth); //生成特效
             DestroySelf(false); //销毁
 
-            NoteJudger.TapJudge(Data,Distance);
+            NoteJudgerR.TapJudge(NoteData as TapChartNoteData, LogicTimeDistance);
         }
     }
 }

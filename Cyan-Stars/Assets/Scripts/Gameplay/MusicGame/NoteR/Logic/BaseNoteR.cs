@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace CyanStars.Gameplay.MusicGame
+﻿namespace CyanStars.Gameplay.MusicGame
 {
     public class BaseNoteR
     {
@@ -27,6 +25,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 当前逻辑层时间和判定时间的距离（s）
         /// </summary>
+        /// <remarks>提前时距离为负数</remarks>
         public float LogicTimeDistance => CurLogicTime - JudgeTime;
 
         /// <summary>
@@ -55,37 +54,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 根据 beat 计算 JudgeTime
             // 注意 Offset 是作为空白时间直接加（或减）在 MisicTrack/MusicClip 中，与 Note 判定时间无关
-            JudgeTime = 0;
-            if (chartData.BpmGroups != null && chartData.BpmGroups.Count > 0)
-            {
-                float judgeBeat = data.JudgeBeat.ToFloat();
-                bool foundGroupFlag = false;
-                for (int i = 0; i < chartData.BpmGroups.Count - 1; i++)
-                {
-                    BpmGroup current = chartData.BpmGroups[i];
-                    BpmGroup next = chartData.BpmGroups[i + 1];
-                    if (judgeBeat >= next.StartBeat.ToFloat())
-                    {
-                        // 累加当前组的完整时长
-                        JudgeTime += (next.StartBeat.ToFloat() - current.StartBeat.ToFloat())
-                                     * (60 / current.Bpm) * 1000;
-                    }
-                    else
-                    {
-                        // 计算当前组的部分时间
-                        JudgeTime += (judgeBeat - current.StartBeat.ToFloat()) * (60 / current.Bpm) * 1000;
-                        foundGroupFlag = true;
-                        break;
-                    }
-                }
-
-                // 处理最后一个BPM组的情况
-                if (!foundGroupFlag)
-                {
-                    BpmGroup lastGroup = chartData.BpmGroups.Last();
-                    JudgeTime += (judgeBeat - lastGroup.StartBeat.ToFloat()) * (60 / lastGroup.Bpm) * 1000;
-                }
-            }
+            JudgeTime = chartData.BpmGroups.CalculateTime(data.JudgeBeat);
         }
 
         public virtual void OnUpdate(float curLogicTime)
@@ -117,7 +86,7 @@ namespace CyanStars.Gameplay.MusicGame
                 //到创建视图层物体的时间点了
                 createdViewObject = true;
 
-                ViewObject = await ViewHelper.CreateViewObject(Data, this);
+                ViewObject = await ViewHelperR. CreateViewObject(NoteData, this);
             }
         }
 
@@ -134,7 +103,6 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         protected void DestroySelf(bool autoMove = true)
         {
-            layer.RemoveNote(this);
             ViewObject.DestroySelf(autoMove);
             ViewObject = null;
         }
@@ -144,7 +112,8 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public virtual bool CanReceiveInput()
         {
-            return LogicTimeDistance <= EvaluateHelper.CheckInputStartDistance && !EvaluateHelper.IsMiss(Distance);
+            return LogicTimeDistance <= EvaluateHelper.CheckInputStartDistance &&
+                   !EvaluateHelper.IsMiss(LogicTimeDistance);
         }
     }
 }
