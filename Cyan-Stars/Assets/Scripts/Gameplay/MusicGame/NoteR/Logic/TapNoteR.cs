@@ -28,7 +28,7 @@
         {
             base.OnUpdateInAutoMode(curLogicTime);
 
-            if (LogicTimeDistance <= 0)
+            if (LogicTimeDistance >= 0)
             {
                 ViewObject.CreateEffectObj(NoteWidth); //生成特效
                 DestroySelf(false); //销毁

@@ -75,8 +75,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <param name="distanceTime">误差时间（单位s）</param>
         public void AddHeight(float distanceTime)
         {
-            // 这里是由于distanceTime正负与其他代码不一致引起的，ToFix https://github.com/IPOL-Studio/CyanStars/issues/231
-            int distanceTimeMillisecond = (int)(distanceTime * -1000);
+            int distanceTimeMillisecond = (int)(distanceTime * 1000);
 
             int index = distanceTimeMillisecond switch
             {

@@ -223,7 +223,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 仅部分音符计算偏移值/杂率，详见 NoteJudger.cs 代码
             // currentDeviation 为玩家按下的时间相对于 Note 判定时间之差，单位 s
-            // 玩家提前按下为+，延后按下为-
+            // 玩家提前按下为-，延后按下为+
             if (currentDeviation < 10000)
             {
                 MusicGamePlayData.CurrentDeviation = currentDeviation;

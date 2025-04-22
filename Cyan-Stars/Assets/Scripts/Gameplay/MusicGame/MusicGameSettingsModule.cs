@@ -15,9 +15,9 @@ namespace CyanStars.Gameplay.MusicGame
 
             static EvaluateRanges()
             {
-                Normal = new EvaluateRange(0.08f, 0.14f, 0.2f, -0.23f);
-                Hard = new EvaluateRange(0.04f, 0.1f, 0.2f, -0.16f);
-                Easy = new EvaluateRange(0.12f, 0.18f, 0.2f, -0.23f);
+                Normal = new EvaluateRange(0.08f, 0.14f, -0.2f, 0.23f);
+                Hard = new EvaluateRange(0.04f, 0.1f, -0.2f, 0.16f);
+                Easy = new EvaluateRange(0.12f, 0.18f, -0.2f, 0.23f);
             }
         }
 
