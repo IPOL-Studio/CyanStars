@@ -1,3 +1,5 @@
+using CyanStars.Gameplay.Chart;
+
 namespace CyanStars.Gameplay.MusicGame
 {
     public interface INoteJudgedInfoR

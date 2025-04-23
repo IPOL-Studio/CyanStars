@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CyanStars.Gameplay.MusicGame
+namespace CyanStars.Gameplay.Chart
 {
     /// <summary>
     /// 加载到游戏内的速度组

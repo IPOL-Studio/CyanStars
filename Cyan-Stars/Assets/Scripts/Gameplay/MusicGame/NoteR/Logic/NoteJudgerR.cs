@@ -1,5 +1,6 @@
 ﻿using CyanStars.Framework;
 using CyanStars.Framework.Logging;
+using CyanStars.Gameplay.Chart;
 
 
 namespace CyanStars.Gameplay.MusicGame

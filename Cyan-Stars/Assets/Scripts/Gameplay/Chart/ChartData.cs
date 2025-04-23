@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace CyanStars.Gameplay.MusicGame
+namespace CyanStars.Gameplay.Chart
 {
     /// <summary>
     /// 谱包中单个难度的谱面数据
@@ -24,20 +24,6 @@ namespace CyanStars.Gameplay.MusicGame
 
         /// <summary>谱面音符数据</summary>
         public List<BaseChartNoteData> Notes;
-
-        /// <summary>谱面难度</summary>
-        /// <remarks>为空时只在编辑器内可见，游戏内不加载；其他难度最多在一个谱包中各有0或1个</remarks>
-        [CanBeNull]
-        public ChartDifficulty? Difficulty;
-
-        /// <summary>谱面定数</summary>
-        /// <remarks>内置谱面此值应该是一个 [1, 20] 之间的整数，社区谱随意</remarks>
-        public string Level;
-
-        /// <summary>
-        /// 事件条件，用于在游戏过程中动态控制轨道中事件是否触发
-        /// </summary>
-        public List<ChartTrackCondition> Conditions;
 
         /// <summary>
         /// 谱面轨道数据，需要在加载谱面时转换

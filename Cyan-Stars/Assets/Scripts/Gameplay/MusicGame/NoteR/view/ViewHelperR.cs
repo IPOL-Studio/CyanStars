@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CyanStars.Framework;
+using CyanStars.Gameplay.Chart;
 using UnityEngine;
 
 

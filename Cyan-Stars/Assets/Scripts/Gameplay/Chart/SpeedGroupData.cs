@@ -1,6 +1,7 @@
 using System;
+using CyanStars.Gameplay.MusicGame;
 
-namespace CyanStars.Gameplay.MusicGame
+namespace CyanStars.Gameplay.Chart
 {
     public enum SpeedGroupType
     {

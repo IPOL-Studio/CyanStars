@@ -1,4 +1,6 @@
-﻿namespace CyanStars.Gameplay.MusicGame
+﻿using CyanStars.Gameplay.Chart;
+
+namespace CyanStars.Gameplay.MusicGame
 {
     public class TapNoteR : BaseNoteR
     {
