@@ -46,8 +46,8 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (data.Type == NoteType.Hold)
             {
-                // 初始创建时长度为 0，随后每帧更新为 Min((视图层末尾距离-视图层开始距离),(音符生成距离-视图层开始距离))
-                (view as HoldViewObject).SetLength(0);
+                (view as HoldViewObject).SetLength(Mathf.Abs((note as HoldNoteR).ViewDistance -
+                                                             (note as HoldNoteR).EndViewDistance));
             }
 
             return view;

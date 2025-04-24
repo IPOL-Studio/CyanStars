@@ -8,9 +8,9 @@ namespace CyanStars.Gameplay.MusicGame
         private static readonly MusicGameSettingsModule DataModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
 
         /// <summary>
-        /// 输入时间和判定时间的距离差大于此值，就不处理输入
+        /// 输入时间和判定时间的距离差小于此值，就不处理输入
         /// </summary>
-        public const float CheckInputStartDistance = 0.201f;
+        public const float CheckInputStartDistance = -0.201f;
 
         /// <summary>
         /// Drag音符的判定时间距离范围

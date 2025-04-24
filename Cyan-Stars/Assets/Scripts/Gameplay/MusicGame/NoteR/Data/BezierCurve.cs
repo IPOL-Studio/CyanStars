@@ -79,7 +79,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <param name="time">相对于判定点时间（ms），必须为负数或 0</param>
         /// <returns>贝塞尔曲线上的瞬时速度，如果时间小于最前一个曲线，返回最前一个曲线的速度</returns>
         /// <exception cref="ArgumentOutOfRangeException">time 大于 0 时将会抛出异常</exception>
-        public float CalculateSpeed(int time)
+        public float GetSpeed(int time)
         {
             Sort();
 
@@ -136,7 +136,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 在单个曲线区间上计算时间对应的速度
         /// </summary>
-        /// <remarks>如非必要，请调用 BezierCurve 类的 CalculateSpeed()</remarks>
+        /// <remarks>如非必要，请调用 BezierCurve 类的 GetSpeed()</remarks>
         public float Calculate(int time)
         {
             if (time > 0)

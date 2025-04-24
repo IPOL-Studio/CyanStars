@@ -56,7 +56,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 根据 beat 计算 JudgeTime
             // 注意 Offset 是作为空白时间直接加（或减）在 MisicTrack/MusicClip 中，与 Note 判定时间无关
-            JudgeTime = chartData.BpmGroups.CalculateTime(data.JudgeBeat);
+            JudgeTime = chartData.BpmGroups.CalculateTime(data.JudgeBeat) / 1000f;
         }
 
         public virtual void OnUpdate(float curLogicTime)
@@ -72,7 +72,7 @@ namespace CyanStars.Gameplay.MusicGame
         private void OnBaseUpdate(float curLogicTime)
         {
             CurLogicTime = curLogicTime;
-            ViewDistance = SpeedGroup.CalculateDistance(LogicTimeDistance * 1000f);
+            ViewDistance = SpeedGroup.GetDistance(LogicTimeDistance * 1000f);
             TryCreateViewObject();
 
             ViewObject?.OnUpdate(ViewDistance);
@@ -88,7 +88,7 @@ namespace CyanStars.Gameplay.MusicGame
                 //到创建视图层物体的时间点了
                 createdViewObject = true;
 
-                ViewObject = await ViewHelperR. CreateViewObject(NoteData, this);
+                ViewObject = await ViewHelperR.CreateViewObject(NoteData, this);
             }
         }
 
@@ -114,7 +114,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public virtual bool CanReceiveInput()
         {
-            return LogicTimeDistance <= EvaluateHelper.CheckInputStartDistance &&
+            return LogicTimeDistance >= EvaluateHelper.CheckInputStartDistance &&
                    !EvaluateHelper.IsMiss(LogicTimeDistance);
         }
     }

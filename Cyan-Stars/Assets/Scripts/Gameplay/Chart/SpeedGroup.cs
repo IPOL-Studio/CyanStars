@@ -46,7 +46,7 @@ namespace CyanStars.Gameplay.Chart
 
             for (int i = 0; i < count; i++)
             {
-                float speed = speedGroupData.BezierCurve.CalculateSpeed(i * SampleInterval) * ps; // 从前方向后移动时速度为负
+                float speed = speedGroupData.BezierCurve.GetSpeed(i * SampleInterval) * ps; // 从前方向后移动时速度为负
                 speedList.Add(speed);
                 sumDistance += speed * SampleInterval / 1000f; // 提前时距离为负数
                 distanceList.Add(sumDistance);
@@ -57,7 +57,7 @@ namespace CyanStars.Gameplay.Chart
         /// 根据逻辑时间差值获取速度
         /// </summary>
         /// <remarks>当前时间提前于音符判定时间时 logicTimeDistance 为负值</remarks>
-        public float CalculateSpeed(float logicTimeDistance)
+        public float GetSpeed(float logicTimeDistance)
         {
             if (logicTimeDistance > 0)
             {
@@ -76,7 +76,7 @@ namespace CyanStars.Gameplay.Chart
         /// 根据逻辑时间差值获取距离（视图层时间差值）
         /// </summary>
         /// <remarks>当前时间提前于音符判定时间时 logicTimeDistance 为负值</remarks>
-        public float CalculateDistance(float logicTimeDistance)
+        public float GetDistance(float logicTimeDistance)
         {
             if (logicTimeDistance > 0)
             {
