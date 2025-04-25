@@ -2,6 +2,9 @@ namespace CyanStars.Gameplay.Chart
 {
     public sealed class ChartMetadata
     {
+        /// <summary>
+        /// 对应的谱面文件
+        /// </summary>
         public string FilePath;
 
         /// <summary>谱面难度</summary>

@@ -54,9 +54,9 @@ namespace CyanStars.Gameplay.Chart
         public int? CoverCroppingWidth;
 
 
-        // 谱面数据
+        // 谱面元数据
 
-        /// <summary>谱面数据</summary>
+        /// <summary>谱面元数据</summary>
         public List<ChartMetadata> Charts;
 
 

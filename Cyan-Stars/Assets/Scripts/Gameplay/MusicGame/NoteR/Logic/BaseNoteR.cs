@@ -20,7 +20,7 @@ namespace CyanStars.Gameplay.MusicGame
         protected float JudgeTime;
 
         /// <summary>
-        /// 当前逻辑层时间
+        /// 当前逻辑层时间（s）
         /// </summary>
         public float CurLogicTime { get; private set; }
 

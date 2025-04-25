@@ -229,7 +229,6 @@ namespace CyanStars.Gameplay.MusicGame
                 }
             }
 
-
             //谱面清单
             MapManifest mapManifest = dataModule.GetMap(dataModule.MapIndex);
 
