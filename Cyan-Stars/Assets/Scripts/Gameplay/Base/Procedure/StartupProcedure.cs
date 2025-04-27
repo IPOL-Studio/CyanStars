@@ -19,7 +19,7 @@ namespace CyanStars.Gameplay.Base
                 //编辑器下并且开启了编辑器资源模式 直接切换到主界面流程
 
                 //加载内置谱面清单
-                await GameRoot.GetDataModule<MusicGameModule>().LoadInternalMaps();
+                await GameRoot.GetDataModule<MusicGameModule>().LoadChartPacks();
 
                 GameRoot.ChangeProcedure<MainHomeProcedure>();
                 return;
@@ -30,7 +30,7 @@ namespace CyanStars.Gameplay.Base
             if (success)
             {
                 //加载内置谱面清单
-                await GameRoot.GetDataModule<MusicGameModule>().LoadInternalMaps();
+                await GameRoot.GetDataModule<MusicGameModule>().LoadChartPacks();
 
                 GameRoot.ChangeProcedure<MainHomeProcedure>();
             }

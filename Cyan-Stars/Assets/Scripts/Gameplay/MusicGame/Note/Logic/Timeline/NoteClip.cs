@@ -11,61 +11,124 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public class NoteClip : BaseClip<NoteTrack>
     {
+        // /// <summary>
+        // /// 音符图层列表
+        // /// </summary>
+        // private List<NoteLayer> layers = new List<NoteLayer>();
 
         /// <summary>
-        /// 谱面整体速度
+        /// 音符列表
         /// </summary>
-        private float mapSpeed;
+        private List<BaseNoteR> notes = new List<BaseNoteR>();
 
-        /// <summary>
-        /// 音符图层列表
-        /// </summary>
-        private List<NoteLayer> layers = new List<NoteLayer>();
-
-        public NoteClip(float startTime, float endTime, NoteTrack owner, float baseSpeed, float speedRate) : base(
+        public NoteClip(float startTime, float endTime, NoteTrack owner) : base(
             startTime, endTime, owner)
         {
-            mapSpeed = baseSpeed * speedRate;
         }
 
-        /// <summary>
-        /// 添加音符图层
-        /// </summary>
-        public void AddLayer(NoteLayer layer)
+        public void AddNote(BaseNoteR note)
         {
-            layers.Add(layer);
+            notes.Add(note);
         }
+
+        // /// <summary>
+        // /// 添加音符图层
+        // /// </summary>
+        // public void AddLayer(NoteLayer layer)
+        // {
+        //     layers.Add(layer);
+        // }
 
         public override void OnEnter()
         {
-            GameRoot.Event.AddListener(EventConst.MusicGameEndEvent,OnMusicGameEnd);
-            GameRoot.Event.AddListener(InputEventArgs.EventName,OnInput);
+            GameRoot.Event.AddListener(EventConst.MusicGameEndEvent, OnMusicGameEnd);
+            GameRoot.Event.AddListener(InputEventArgs.EventName, OnInput);
         }
 
         public override void OnUpdate(float currentTime, float previousTime)
         {
-            for (int i = 0; i < layers.Count; i++)
+            if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)
             {
-                NoteLayer layer = layers[i];
-                layer.Update(currentTime, previousTime, mapSpeed);
+                foreach (BaseNoteR note in notes)
+                {
+                    note.OnUpdateInAutoMode(currentTime);
+                }
+            }
+            else
+            {
+                foreach (BaseNoteR note in notes)
+                {
+                    note.OnUpdate(currentTime);
+                }
             }
         }
 
         private void OnMusicGameEnd(object sender, EventArgs e)
         {
-            GameRoot.Event.RemoveListener(EventConst.MusicGameEndEvent,OnMusicGameEnd);
-            GameRoot.Event.RemoveListener(InputEventArgs.EventName,OnInput);
+            GameRoot.Event.RemoveListener(EventConst.MusicGameEndEvent, OnMusicGameEnd);
+            GameRoot.Event.RemoveListener(InputEventArgs.EventName, OnInput);
         }
 
         private void OnInput(object sender, EventArgs e)
         {
             InputEventArgs args = (InputEventArgs)e;
-            for (int i = 0; i < layers.Count; i++)
+
+            if (notes.Count == 0)
             {
-                layers[i].OnInput(args.Type,args.RangeMin,args.RangeWidth);
+                return;
             }
+
+            List<BaseNoteR> list = GetValidNotes(args.RangeMin, args.RangeWidth);
+
+            if (list.Count == 0)
+            {
+                return;
+            }
+
+            if (list.Count > 1)
+            {
+                list.Sort((x, y) =>
+                {
+                    if (x is INotePos && y is INotePos)
+                    {
+                        if (Math.Abs(x.CurLogicTime - y.CurLogicTime) > float.Epsilon)
+                        {
+                            //第一优先级是离玩家的距离
+                            return x.CurLogicTime.CompareTo(y.CurLogicTime);
+                        }
+
+                        //第二优先级是离屏幕中间的距离
+                        return Math.Abs(((INotePos)x).Pos - NoteData.MiddlePos)
+                            .CompareTo(Math.Abs(((INotePos)y).Pos - NoteData.MiddlePos));
+                    }
+                    else
+                    {
+                        // Break 音符只比较时间距离
+                        return x.CurLogicTime.CompareTo(y.CurLogicTime);
+                    }
+                });
+            }
+
+            //一次输入信号 只发给一个note处理 避免同时有多个note响应
+            list[0].OnInput(args.Type);
         }
 
+        /// <summary>
+        /// 获取可接收输入且在输入映射范围内的音符列表
+        /// </summary>
+        private List<BaseNoteR> GetValidNotes(float rangeMin, float rangeWidth)
+        {
+            List<BaseNoteR> cachedList = new List<BaseNoteR>();
 
+            foreach (var note in notes)
+            {
+                if (note.CanReceiveInput() && note.IsInInputRange(rangeMin, rangeMin + rangeWidth))
+                {
+                    cachedList.Add(note);
+                }
+            }
+
+            return cachedList;
+        }
     }
 }

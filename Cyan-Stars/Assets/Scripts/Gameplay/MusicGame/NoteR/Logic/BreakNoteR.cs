@@ -53,5 +53,18 @@ namespace CyanStars.Gameplay.MusicGame
 
             NoteJudgerR.BreakJudge(NoteData as BreakChartNoteData, LogicTimeDistance);
         }
+
+        public override bool IsInInputRange(float min, float max)
+        {
+            // TODO: 把 BreakNote 的输入处理得更优雅一点，顺便加上陀螺仪输入检测
+            float p = Pos switch
+            {
+                BreakNotePos.Left => -1,
+                BreakNotePos.Right => 2,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            return Mathf.Abs(p - min) <= float.Epsilon;
+        }
     }
 }

@@ -104,5 +104,21 @@ namespace CyanStars.Gameplay.MusicGame
                     break;
             }
         }
+
+        /// <summary>
+        /// 是否在指定输入范围内
+        /// </summary>
+        public override bool IsInInputRange(float min, float max)
+        {
+            float left = Pos;
+            float right = Pos + NoteWidth;
+
+            //3种情况可能重合 1.最左侧在范围内 2.最右侧在范围内 3.中间部分在范围内
+            bool result = (left >= min && left <= max)
+                          || (right >= min && right <= max)
+                          || (left <= min && right >= max);
+
+            return result;
+        }
     }
 }

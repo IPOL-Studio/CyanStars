@@ -1,4 +1,5 @@
-﻿using CyanStars.Gameplay.Chart;
+﻿using System;
+using CyanStars.Gameplay.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -116,6 +117,15 @@ namespace CyanStars.Gameplay.MusicGame
         {
             return LogicTimeDistance >= EvaluateHelper.CheckInputStartDistance &&
                    !EvaluateHelper.IsMiss(LogicTimeDistance);
+        }
+
+        /// <summary>
+        /// 是否在指定输入范围内
+        /// </summary>
+        public virtual bool IsInInputRange(float min, float max)
+        {
+            // 由于子类 Pos 不一致，方法需要由子类重写实现
+            throw new InvalidOperationException("不允许直接调用基类 IsInInputRange()");
         }
     }
 }

@@ -5,6 +5,7 @@ using CyanStars.Framework;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.Timeline;
 using CyanStars.Framework.Logging;
+using CyanStars.Gameplay.Chart;
 using UnityEngine;
 
 
@@ -15,13 +16,43 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public class MusicGameModule : BaseDataModule
     {
-        /// <summary>
-        /// 谱面清单列表
-        /// </summary>
-        private List<MapManifest> mapManifests;
+        // --- --- 谱包和谱面 --- ---
 
         /// <summary>
-        /// 当前时间轴长度
+        /// 所有谱包列表
+        /// </summary>
+        private List<ChartPack> chartPacks;
+
+        /// <summary>
+        /// 选中的谱包序号
+        /// </summary>
+        public int ChartPackIndex { get; set; } = 0;
+
+        /// <summary>
+        /// 选中的音乐版本序号
+        /// </summary>
+        public int MusicVersionIndex = 0;
+
+        /// <summary>
+        /// 选中的谱面难度
+        /// </summary>
+        public ChartDifficulty? Difficulty;
+
+        /// <summary>
+        /// 选中的谱包和难度对应的谱面数据
+        /// </summary>
+        private ChartData chartData;
+
+
+        // --- --- 时间轴和游玩时数据 --- ---
+
+        /// <summary>
+        /// 当前运行中的时间轴
+        /// </summary>
+        public Timeline RunningTimeline { get; set; }
+
+        /// <summary>
+        /// 当前运行的时间轴的总长度（s）
         /// </summary>
         public float CurTimelineLength { get; set; }
 
@@ -31,14 +62,22 @@ namespace CyanStars.Gameplay.MusicGame
         public bool IsAutoMode { get; set; }
 
         /// <summary>
-        /// 谱面序号
+        /// 误差指示条数据
         /// </summary>
-        public int MapIndex { get; set; } = 0;
+        public DistanceBarData DistanceBarData { get; private set; }
 
         /// <summary>
-        /// 当前运行中的时间轴
+        /// 用于计算杂率
         /// </summary>
-        public Timeline RunningTimeline { get; set; }
+        private float deviationsSum;
+
+        /// <summary>
+        /// 游玩时动态数据
+        /// </summary>
+        public MusicGamePlayData MusicGamePlayData = new MusicGamePlayData { DeviationList = new List<float>() };
+
+
+        // --- --- 索引文件文件名 --- ---
 
         /// <summary>
         /// 输入映射数据文件名
@@ -51,6 +90,14 @@ namespace CyanStars.Gameplay.MusicGame
         public string InternalMapListName { get; private set; }
 
         /// <summary>
+        /// 特效预制体名称列表
+        /// </summary>
+        public List<string> EffectNames { get; private set; }
+
+
+        // --- --- 预制体映射 --- ---
+
+        /// <summary>
         /// 音符类型 -> 音符预制体名称
         /// </summary>
         public Dictionary<NoteType, string> NotePrefabNameDict { get; private set; }
@@ -60,23 +107,15 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public Dictionary<NoteType, string> HitEffectPrefabNameDict { get; private set; }
 
-        /// <summary>
-        /// 特效预制体名称列表
-        /// </summary>
-        public List<string> EffectNames { get; private set; }
+
+        // --- --- 日志 --- ---
 
         private string loggerCategoryName;
+
         public ICysLogger Logger { get; private set; }
 
-        public DistanceBarData DistanceBarData { get; private set; }
 
-        /// <summary>
-        /// 用于计算杂率
-        /// </summary>
-        private float deviationsSum;
-
-        public MusicGamePlayData MusicGamePlayData = new MusicGamePlayData { DeviationList = new List<float>() };
-
+        #region 从路径加载数据
 
         public override void OnInit()
         {
@@ -120,17 +159,73 @@ namespace CyanStars.Gameplay.MusicGame
             };
         }
 
+        #endregion
+
+
+        #region 谱面加载和查询
+
         /// <summary>
-        /// 加载内置谱面
+        /// 加载谱包
         /// </summary>
-        /// <returns></returns>
-        public async Task LoadInternalMaps()
+        public async Task LoadChartPacks()
         {
-            InternalMapListSO internalMapListSo =
-                await GameRoot.Asset.LoadAssetAsync<InternalMapListSO>(InternalMapListName);
-            mapManifests = internalMapListSo.InternalMaps;
-            GameRoot.Asset.UnloadAsset(internalMapListSo);
+            List<ChartPack> packs = new List<ChartPack>();
+            InternalChartPackListSO internalChartPackListSO =
+                await GameRoot.Asset.LoadAssetAsync<InternalChartPackListSO>(InternalMapListName);
+            GameRoot.Asset.UnloadAsset(internalChartPackListSO);
+
+            foreach (string chartPath in internalChartPackListSO.InternalCharts)
+            {
+                JsonUtility.JsonUtility.FromJson(chartPath, out ChartPack chartPack);
+                packs.Add(chartPack);
+            }
+
+            // TODO: 从外部加载谱包
+
+            chartPacks = packs;
         }
+
+        /// <summary>
+        /// 获取所有谱包
+        /// </summary>
+        public List<ChartPack> GetChartPacks()
+        {
+            return chartPacks;
+        }
+
+        /// <summary>
+        /// 根据下标获取谱包
+        /// </summary>
+        public ChartPack GetChartPack(int index)
+        {
+            return chartPacks[index];
+        }
+
+        /// <summary>
+        /// 根据难度从谱包中获取谱面数据
+        /// </summary>
+        public ChartData GetChartData(ChartPack chartPack, ChartDifficulty? difficulty)
+        {
+            if (difficulty is null)
+            {
+                // 难度为 null 时只能在制谱器内加载，不能在游戏内加载
+                return null;
+            }
+
+            foreach (ChartMetadata metadata in chartPack.ChartPackData.Charts)
+            {
+                if (metadata.Difficulty == difficulty)
+                {
+                    JsonUtility.JsonUtility.FromJson(metadata.FilePath, out ChartData chartData);
+                    return chartData;
+                }
+            }
+
+            return null;
+        }
+
+        #endregion
+
 
         public void InitLogger(string categoryName)
         {
@@ -144,37 +239,22 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         /// <summary>
-        /// 获取谱面清单
-        /// </summary>
-        public MapManifest GetMap(int index)
-        {
-            return mapManifests[index];
-        }
-
-        /// <summary>
-        /// 获取所有谱面清单
-        /// </summary>
-        /// <returns></returns>
-        public List<MapManifest> GetMaps()
-        {
-            return mapManifests;
-        }
-
-        /// <summary>
         /// 计算全谱总分
         /// </summary>
-        public void CalFullScore(NoteTrackData noteTrackData)
+        public void CalFullScore(List<BaseChartNoteData> baseChartNoteDatas)
         {
             MusicGamePlayData.FullScore = 0;
-            foreach (var layer in noteTrackData.LayerDatas)
+            foreach (BaseChartNoteData noteData in baseChartNoteDatas)
             {
-                foreach (var timeAxis in layer.TimeAxisDatas)
+                MusicGamePlayData.FullScore += noteData.Type switch
                 {
-                    foreach (var note in timeAxis.NoteDatas)
-                    {
-                        MusicGamePlayData.FullScore += note.GetFullScore();
-                    }
-                }
+                    NoteType.Tap => 1,
+                    NoteType.Hold => 2,
+                    NoteType.Drag => 0.25f,
+                    NoteType.Click => 2,
+                    NoteType.Break => 2,
+                    _ => throw new System.NotFiniteNumberException()
+                };
             }
         }
 
