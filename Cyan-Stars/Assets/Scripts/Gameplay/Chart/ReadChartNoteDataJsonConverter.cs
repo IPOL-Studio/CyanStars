@@ -34,6 +34,8 @@ namespace CyanStars.Gameplay.Chart
             // 创建具体实例
             BaseChartNoteData noteData = (BaseChartNoteData)Activator.CreateInstance(concreteType);
 
+            serializer.Populate(jo.CreateReader(), noteData);
+
             return noteData;
         }
 

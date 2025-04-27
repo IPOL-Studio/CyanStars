@@ -216,7 +216,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 if (metadata.Difficulty == difficulty)
                 {
-                    JsonUtility.JsonUtility.FromJson(metadata.FilePath, out ChartData chartData);
+                    JsonUtility.JsonUtility.FromJson(metadata.FilePath, out chartData);
                     return chartData;
                 }
             }
