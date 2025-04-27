@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public class HoldNoteR : BaseNoteR,INotePos
+    public class HoldNoteR : BaseNoteR, INotePos
     {
         public float Pos { get; set; }
 
@@ -64,9 +64,9 @@ namespace CyanStars.Gameplay.MusicGame
         private readonly MusicGameSettingsModule
             MusicGameSettingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
 
-        public override void Init(BaseChartNoteData data, ChartData chartData)
+        public override void Init(BaseChartNoteData data, ChartData chartData, NoteClip clip)
         {
-            base.Init(data, chartData);
+            base.Init(data, chartData, clip);
 
             Pos = (data as HoldChartNoteData).Pos;
 

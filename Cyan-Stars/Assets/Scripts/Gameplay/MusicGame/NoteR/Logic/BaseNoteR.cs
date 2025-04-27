@@ -47,12 +47,15 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         protected IView ViewObject;
 
+        public NoteClip NoteClip;
+
 
         /// <summary>
         /// 初始化数据
         /// </summary>
-        public virtual void Init(BaseChartNoteData data, ChartData chartData)
+        public virtual void Init(BaseChartNoteData data, ChartData chartData, NoteClip clip)
         {
+            NoteClip = clip;
             NoteData = data;
             SpeedGroup = new SpeedGroup(chartData.SpeedGroups[data.SpeedGroupIndex]);
 
@@ -107,6 +110,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         protected void DestroySelf(bool autoMove = true)
         {
+            NoteClip.Notes.Remove(this);
             ViewObject.DestroySelf(autoMove);
             ViewObject = null;
         }

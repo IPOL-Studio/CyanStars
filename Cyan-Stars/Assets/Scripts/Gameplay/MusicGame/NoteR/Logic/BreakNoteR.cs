@@ -11,9 +11,9 @@ namespace CyanStars.Gameplay.MusicGame
     {
         public BreakNotePos Pos;
 
-        public override void Init(BaseChartNoteData data, ChartData chartData)
+        public override void Init(BaseChartNoteData data, ChartData chartData, NoteClip clip)
         {
-            base.Init(data, chartData);
+            base.Init(data, chartData,clip);
             Pos = (data as BreakChartNoteData).BreakNotePos;
         }
 

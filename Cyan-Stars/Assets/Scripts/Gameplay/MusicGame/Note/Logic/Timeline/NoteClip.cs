@@ -19,7 +19,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 音符列表
         /// </summary>
-        private List<BaseNoteR> notes = new List<BaseNoteR>();
+        public List<BaseNoteR> Notes = new List<BaseNoteR>();
 
         public NoteClip(float startTime, float endTime, NoteTrack owner) : base(
             startTime, endTime, owner)
@@ -28,7 +28,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public void AddNote(BaseNoteR note)
         {
-            notes.Add(note);
+            Notes.Add(note);
         }
 
         // /// <summary>
@@ -49,16 +49,16 @@ namespace CyanStars.Gameplay.MusicGame
         {
             if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)
             {
-                foreach (BaseNoteR note in notes)
+                for (int i = Notes.Count - 1; i >= 0; i--)
                 {
-                    note.OnUpdateInAutoMode(currentTime);
+                    Notes[i].OnUpdateInAutoMode(currentTime);
                 }
             }
             else
             {
-                foreach (BaseNoteR note in notes)
+                for (int i = Notes.Count - 1; i >= 0; i--)
                 {
-                    note.OnUpdate(currentTime);
+                    Notes[i].OnUpdate(currentTime);
                 }
             }
         }
@@ -73,7 +73,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             InputEventArgs args = (InputEventArgs)e;
 
-            if (notes.Count == 0)
+            if (Notes.Count == 0)
             {
                 return;
             }
@@ -120,7 +120,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             List<BaseNoteR> cachedList = new List<BaseNoteR>();
 
-            foreach (var note in notes)
+            foreach (var note in Notes)
             {
                 if (note.CanReceiveInput() && note.IsInInputRange(rangeMin, rangeMin + rangeWidth))
                 {

@@ -22,9 +22,9 @@ namespace CyanStars.Gameplay.MusicGame
         private const float NoteWidth = 0.2f;
 
 
-        public override void Init(BaseChartNoteData data, ChartData chartData)
+        public override void Init(BaseChartNoteData data, ChartData chartData, NoteClip clip)
         {
-            base.Init(data, chartData);
+            base.Init(data, chartData, clip);
             Pos = (data as DragChartNoteData).Pos;
         }
 
