@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CatLrcParser;
 using CyanStars.Framework;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.FSM;
@@ -247,6 +246,10 @@ namespace CyanStars.Gameplay.MusicGame
             // 音乐
             MusicVersionData musicVersionData = chartPack.ChartPackData.MusicVersionDatas[dataModule.MusicVersionIndex];
             music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.MusicFilePath, sceneRoot);
+            if (!music)
+            {
+                Debug.LogError($"谱包 {chartPack.ChartPackData.Title} 的音乐加载失败");
+            }
 
             // 时间轴
             dataModule.CurTimelineLength = music.length + musicVersionData.Offset / 1000f;

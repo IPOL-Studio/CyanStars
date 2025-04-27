@@ -61,7 +61,7 @@ namespace CyanStars.JsonUtility
             obj = default;
             try
             {
-                // 设置序列化格式参数
+                // 设置反序列化格式参数
                 JsonSerializerSettings settings = new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.None,

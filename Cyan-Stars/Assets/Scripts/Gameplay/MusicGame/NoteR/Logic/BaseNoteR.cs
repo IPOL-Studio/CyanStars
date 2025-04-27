@@ -54,6 +54,7 @@ namespace CyanStars.Gameplay.MusicGame
         public virtual void Init(BaseChartNoteData data, ChartData chartData)
         {
             NoteData = data;
+            SpeedGroup = new SpeedGroup(chartData.SpeedGroups[data.SpeedGroupIndex]);
 
             // 根据 beat 计算 JudgeTime
             // 注意 Offset 是作为空白时间直接加（或减）在 MisicTrack/MusicClip 中，与 Note 判定时间无关
