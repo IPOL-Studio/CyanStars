@@ -1,6 +1,7 @@
 using System;
 using CyanStars.Gameplay.MusicGame;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 
 namespace CyanStars.Gameplay.Chart
 {
@@ -12,6 +13,7 @@ namespace CyanStars.Gameplay.Chart
 
 
     [Serializable]
+    [JsonConverter(typeof(ReadChartNoteDataJsonConverter))]
     public class BaseChartNoteData
     {
         /// <summary>音符类型</summary>
