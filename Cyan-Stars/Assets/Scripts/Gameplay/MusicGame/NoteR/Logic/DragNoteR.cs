@@ -2,8 +2,10 @@
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public class DragNoteR : BaseNoteR
+    public class DragNoteR : BaseNoteR, INotePos
     {
+        public float Pos { get; set; }
+
         private bool isHit;
 
         private const float NoteWidth = 0.2f;
@@ -13,6 +15,12 @@ namespace CyanStars.Gameplay.MusicGame
         {
             return LogicTimeDistance <= EvaluateHelper.DragJudgeDistanceRange &&
                    LogicTimeDistance >= -EvaluateHelper.DragJudgeDistanceRange;
+        }
+
+        public override void Init(BaseChartNoteData data, ChartData chartData)
+        {
+            base.Init(data, chartData);
+            Pos = (data as DragChartNoteData).Pos;
         }
 
         public override void OnUpdate(float curLogicTime)

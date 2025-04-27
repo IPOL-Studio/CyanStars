@@ -2,9 +2,9 @@
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public class TapNoteR : BaseNoteR
+    public class TapNoteR : BaseNoteR, INotePos
     {
-        public float Pos;
+        public float Pos { get; set; }
 
         private const float NoteWidth = 0.2f;
 

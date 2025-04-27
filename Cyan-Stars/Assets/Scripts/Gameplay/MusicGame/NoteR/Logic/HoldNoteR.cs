@@ -1,12 +1,13 @@
 using CyanStars.Framework;
 using CyanStars.Gameplay.Chart;
 using UnityEngine;
-using UnityEngine.ProBuilder;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public class HoldNoteR : BaseNoteR
+    public class HoldNoteR : BaseNoteR,INotePos
     {
+        public float Pos { get; set; }
+
         /// <summary>
         /// Hold音符的检查输入结束距离
         /// </summary>
@@ -66,6 +67,8 @@ namespace CyanStars.Gameplay.MusicGame
         public override void Init(BaseChartNoteData data, ChartData chartData)
         {
             base.Init(data, chartData);
+
+            Pos = (data as HoldChartNoteData).Pos;
 
             JudgeTime = chartData.BpmGroups.CalculateTime((data as HoldChartNoteData).JudgeBeat) / 1000f;
             EndTime = chartData.BpmGroups.CalculateTime((data as HoldChartNoteData).EndJudgeBeat) / 1000f;

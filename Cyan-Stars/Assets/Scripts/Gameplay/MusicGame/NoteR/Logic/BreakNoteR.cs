@@ -1,4 +1,6 @@
+using System;
 using CyanStars.Gameplay.Chart;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -7,6 +9,14 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public class BreakNoteR : BaseNoteR
     {
+        public BreakNotePos Pos;
+
+        public override void Init(BaseChartNoteData data, ChartData chartData)
+        {
+            base.Init(data, chartData);
+            Pos = (data as BreakChartNoteData).BreakNotePos;
+        }
+
         public override void OnUpdate(float curLogicTime)
         {
             base.OnUpdate(curLogicTime);

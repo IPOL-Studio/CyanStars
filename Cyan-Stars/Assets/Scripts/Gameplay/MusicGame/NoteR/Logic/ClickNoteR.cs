@@ -5,8 +5,10 @@ namespace CyanStars.Gameplay.MusicGame
     /// <summary>
     /// Click音符
     /// </summary>
-    public class ClickNoteR : BaseNoteR
+    public class ClickNoteR : BaseNoteR, INotePos
     {
+        public float Pos { get; set; }
+
         /// <summary>
         /// 按下的时间点
         /// </summary>
@@ -19,6 +21,12 @@ namespace CyanStars.Gameplay.MusicGame
 
         private const float NoteWidth = 0.2f;
 
+
+        public override void Init(BaseChartNoteData data, ChartData chartData)
+        {
+            base.Init(data, chartData);
+            Pos = (data as DragChartNoteData).Pos;
+        }
 
         public override void OnUpdate(float curLogicTime)
         {
