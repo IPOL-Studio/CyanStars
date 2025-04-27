@@ -1,5 +1,4 @@
 using UnityEngine;
-using CyanStars.Framework.Utils;
 
 namespace CyanStars.Gameplay.MusicGame
 {

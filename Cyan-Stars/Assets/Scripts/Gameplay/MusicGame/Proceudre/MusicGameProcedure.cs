@@ -203,8 +203,8 @@ namespace CyanStars.Gameplay.MusicGame
         private void GetSceneObj()
         {
             sceneRoot = GameObject.Find("SceneRoot");
-            ViewHelper.ViewRoot = sceneRoot.transform.Find("ViewRoot");
-            ViewHelper.EffectRoot = sceneRoot.transform.Find("EffectRoot");
+            ViewHelperR.ViewRoot = sceneRoot.transform.Find("ViewRoot");
+            ViewHelperR.EffectRoot = sceneRoot.transform.Find("EffectRoot");
             sceneCameraTrans = sceneRoot.transform.Find("SceneCamera");
             audioSource = sceneRoot.GetComponent<AudioSource>();
         }

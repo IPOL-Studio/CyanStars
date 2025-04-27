@@ -176,8 +176,8 @@ namespace CyanStars.Gameplay.MusicGame
 
             foreach (string chartPath in internalChartPackListSO.InternalCharts)
             {
-                JsonUtility.JsonUtility.FromJson(chartPath, out ChartPack chartPack);
-                packs.Add(chartPack);
+                JsonUtility.JsonUtility.FromJson(chartPath, out ChartPackData chartPackData);
+                packs.Add(new ChartPack() { ChartPackData = chartPackData, IsInternal = true });
             }
 
             // TODO: 从外部加载谱包

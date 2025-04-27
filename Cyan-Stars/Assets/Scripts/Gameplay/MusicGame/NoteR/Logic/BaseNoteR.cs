@@ -84,7 +84,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private async void TryCreateViewObject()
         {
-            if (!createdViewObject && ViewDistance <= ViewHelper.ViewObjectCreateDistance)
+            if (!createdViewObject && ViewDistance <= ViewHelperR.ViewObjectCreateDistance)
             {
                 //到创建视图层物体的时间点了
                 createdViewObject = true;
