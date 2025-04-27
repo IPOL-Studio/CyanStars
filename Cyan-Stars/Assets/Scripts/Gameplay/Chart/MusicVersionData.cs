@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 namespace CyanStars.Gameplay.Chart
 {
     /// <summary>
-    /// 多演唱版本曲目数据
+    /// 用于支持多个版本（翻唱/翻调）的音乐
     /// </summary>
     public class MusicVersionData
     {
