@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.Chart
 {
@@ -38,8 +39,8 @@ namespace CyanStars.Gameplay.Chart
             }
 
             // 根据持续时间计算采样点数量
-            int length =
-                speedGroupData.BezierCurve.CubicBeziers[speedGroupData.BezierCurve.CubicBeziers.Count - 1].P3.Time;
+            int length = Mathf.Abs(speedGroupData.BezierCurve
+                .CubicBeziers[speedGroupData.BezierCurve.CubicBeziers.Count - 1].P3.Time);
             int count = length / SampleInterval + 1;
 
             float sumDistance = 0f;

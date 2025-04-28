@@ -85,13 +85,14 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (time > 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(time), "Time must be negative or zero.");
+                // 过线后返回判定时瞬时速度
+                return CubicBeziers[0].P0.Value;
             }
 
             if (time <= CubicBeziers[CubicBeziers.Count - 1].P3.Time)
             {
                 // 超出最左侧曲线的时间时，直接返回最左侧曲线 P3 的速度
-                return CubicBeziers[CubicBeziers.Count - 1].P3.Time;
+                return CubicBeziers[CubicBeziers.Count - 1].P3.Value;
             }
 
             foreach (CubicBezierCurve cubic in CubicBeziers)
