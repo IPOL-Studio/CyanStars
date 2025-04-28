@@ -47,7 +47,7 @@ namespace CyanStars.Gameplay.Chart
 
             for (int i = 0; i < count; i++)
             {
-                float speed = speedGroupData.BezierCurve.GetSpeed(i * SampleInterval) * ps; // 从前方向后移动时速度为负
+                float speed = speedGroupData.BezierCurve.GetSpeed(i * SampleInterval * -1) * ps; // 从前方向后移动时速度为负
                 speedList.Add(speed);
                 sumDistance += speed * SampleInterval / 1000f; // 提前时距离为负数
                 distanceList.Add(sumDistance);
@@ -82,13 +82,14 @@ namespace CyanStars.Gameplay.Chart
             if (logicTimeDistance > 0)
             {
                 // 过线后按照当前速度计算距离，而非从采样点缓存读取
-                return speedList[0] * logicTimeDistance / 1000f;
+                return speedList[0] * logicTimeDistance / 1000f * -1;
             }
 
             if (-logicTimeDistance >= distanceList.Count * SampleInterval)
             {
-                // 在进入首个采样点前按照速度计算距离
-                return speedList[distanceList.Count - 1] * logicTimeDistance / 1000f;
+                // 在进入首个采样点前按照速度，在距离上叠加计算
+                return (distanceList[distanceList.Count - 1]) +
+                       (speedList[speedList.Count - 1] * logicTimeDistance / 1000f);
             }
 
             return distanceList[(int)-logicTimeDistance / SampleInterval];
