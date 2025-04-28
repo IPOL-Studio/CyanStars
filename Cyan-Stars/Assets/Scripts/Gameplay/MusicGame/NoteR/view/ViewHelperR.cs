@@ -46,8 +46,9 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (data.Type == NoteType.Hold)
             {
-                (view as HoldViewObject).SetLength(Mathf.Abs((note as HoldNoteR).ViewDistance -
-                                                             (note as HoldNoteR).EndViewDistance));
+                (view as HoldViewObject).SetLength(
+                    Mathf.Abs((note as HoldNoteR).ViewDistance -
+                              (note as HoldNoteR).EndViewDistance));
             }
 
             return view;
@@ -60,7 +61,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             Vector3 pos = default;
 
-            pos.z = viewDistance;
+            pos.z = -viewDistance;
 
             pos.y = Endpoint.Instance.LeftTrans.position.y;
             switch (data.Type)

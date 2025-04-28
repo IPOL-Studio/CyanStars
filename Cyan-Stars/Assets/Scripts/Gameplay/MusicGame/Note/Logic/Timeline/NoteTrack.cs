@@ -19,9 +19,9 @@ namespace CyanStars.Gameplay.MusicGame
             ChartData chartData)
         {
             NoteClip clip = new NoteClip(0, GameRoot.GetDataModule<MusicGameModule>().CurTimelineLength, track);
-            foreach (BaseChartNoteData note in chartData.Notes)
+            foreach (BaseChartNoteData noteData in chartData.Notes)
             {
-                BaseNoteR baseNote = CreateNote(note, chartData,clip);
+                BaseNoteR baseNote = CreateNote(noteData, chartData,clip);
                 clip.AddNote(baseNote);
             }
 
