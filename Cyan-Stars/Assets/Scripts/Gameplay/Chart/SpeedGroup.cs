@@ -32,8 +32,7 @@ namespace CyanStars.Gameplay.Chart
         public SpeedGroup(SpeedGroupData speedGroupData, float playerSpeed = 1f) // TODO: 外部传入玩家速度
         {
             float ps = playerSpeed;
-            SpeedGroupType type = speedGroupData.Type;
-            if (type == SpeedGroupType.Absolute)
+            if (speedGroupData.Type == SpeedGroupType.Absolute)
             {
                 ps = 1f;
             }
@@ -43,13 +42,20 @@ namespace CyanStars.Gameplay.Chart
                 .CubicBeziers[speedGroupData.BezierCurve.CubicBeziers.Count - 1].P3.Time);
             int count = length / SampleInterval + 1;
 
-            float sumDistance = 0f;
-
+            // 生成speedList
             for (int i = 0; i < count; i++)
             {
-                float speed = speedGroupData.BezierCurve.GetSpeed(i * SampleInterval * -1) * ps; // 从前方向后移动时速度为负
+                float t = i * SampleInterval * -1;
+                float speed = speedGroupData.BezierCurve.GetSpeed((int)t) * ps;
                 speedList.Add(speed);
-                sumDistance += speed * SampleInterval / 1000f; // 提前时距离为负数
+            }
+
+            // 生成distanceList
+            distanceList.Add(0f); // i=0对应logicTimeDistance=0时distance为0
+            float sumDistance = 0f;
+            for (int i = 1; i < count; i++)
+            {
+                sumDistance += speedList[i] * SampleInterval / 1000f;
                 distanceList.Add(sumDistance);
             }
         }
@@ -65,12 +71,14 @@ namespace CyanStars.Gameplay.Chart
                 return speedList[0];
             }
 
-            if (-logicTimeDistance >= speedList.Count * SampleInterval)
+            float absTime = -logicTimeDistance;
+            if (absTime >= (speedList.Count - 1) * SampleInterval)
             {
                 return speedList[speedList.Count - 1];
             }
 
-            return speedList[(int)-logicTimeDistance / SampleInterval];
+            int index = (int)(absTime / SampleInterval);
+            return speedList[index];
         }
 
         /// <summary>
@@ -81,18 +89,39 @@ namespace CyanStars.Gameplay.Chart
         {
             if (logicTimeDistance > 0)
             {
-                // 过线后按照当前速度计算距离，而非从采样点缓存读取
                 return speedList[0] * logicTimeDistance / 1000f * -1;
             }
 
-            if (-logicTimeDistance >= distanceList.Count * SampleInterval)
+            float absTime = -logicTimeDistance;
+
+            // 处理超过最远采样时间的情况
+            if (absTime >= (distanceList.Count - 1) * SampleInterval)
             {
-                // 在进入首个采样点前按照速度，在距离上叠加计算
-                return (distanceList[distanceList.Count - 1]) +
-                       (speedList[speedList.Count - 1] * logicTimeDistance / 1000f);
+                int lastIndex = distanceList.Count - 1;
+                float timeExceeded = absTime - (lastIndex * SampleInterval);
+                return distanceList[lastIndex] + speedList[lastIndex] * timeExceeded / 1000f;
             }
 
-            return distanceList[(int)-logicTimeDistance / SampleInterval];
+            int index = (int)(absTime / SampleInterval);
+            float remainder = absTime % SampleInterval;
+
+            if (remainder == 0)
+            {
+                return distanceList[index];
+            }
+            else
+            {
+                // 线性插值处理余数时间
+                int nextIndex = index + 1;
+                if (nextIndex >= distanceList.Count)
+                {
+                    return distanceList[index];
+                }
+
+                float baseDistance = distanceList[index];
+                float partialDistance = speedList[nextIndex] * remainder / 1000f;
+                return baseDistance + partialDistance;
+            }
         }
     }
 }
