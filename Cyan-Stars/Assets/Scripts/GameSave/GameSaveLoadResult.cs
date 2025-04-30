@@ -1,4 +1,4 @@
-namespace CyanStars.Gameplay.GameSave
+namespace CyanStars.GameSave
 {
     /// <summary>
     /// 存档读取结果

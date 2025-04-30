@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace CyanStars.Gameplay.GameSave
+namespace CyanStars.GameSave
 {
     /// <summary>
     /// 管理游戏存档的保存和加载操作

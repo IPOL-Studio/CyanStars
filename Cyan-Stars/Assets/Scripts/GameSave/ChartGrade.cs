@@ -1,4 +1,4 @@
-namespace CyanStars.Gameplay.GameSave
+namespace CyanStars.GameSave
 {
     /// <summary>
     /// 音游谱面成绩评级
