@@ -27,7 +27,6 @@ namespace CyanStars.Gameplay.MusicGame
         public void SetPressed(bool pressed)
         {
             this.pressed = pressed;
-            OnUpdate(ViewDistance);
             if (pressed)
             {
                 OpenFlicker();

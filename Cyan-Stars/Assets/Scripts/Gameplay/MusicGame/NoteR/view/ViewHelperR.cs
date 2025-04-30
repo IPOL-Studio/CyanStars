@@ -46,7 +46,9 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (data.Type == NoteType.Hold)
             {
-                (view as HoldViewObject).Init((note as HoldNoteR));
+                (view as HoldViewObject).Init(note as HoldNoteR);
+                (view as HoldViewObject).SetPressed(false);
+                (view as HoldViewObject).SetLength();
             }
 
             return view;
