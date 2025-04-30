@@ -38,7 +38,7 @@ namespace CyanStars.Gameplay.MusicGame
             go = await GameRoot.GameObjectPool.GetGameObjectAsync(prefabName, ViewRoot);
 
             //这里因为用了异步await，所以需要使用note在物体创建成功后这一刻的视图层时间作为viewCreateTime，否则位置会对不上
-            go.transform.position = GetViewObjectPos(data, note.ViewDistance);
+            go.transform.position = GetViewObjectPos(data, note.CurViewDistance);
             go.transform.localScale = GetViewObjectScale(data);
             go.transform.localEulerAngles = GetViewObjectRotation(data);
 
@@ -46,9 +46,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (data.Type == NoteType.Hold)
             {
-                (view as HoldViewObject).SetLength(
-                    Mathf.Abs((note as HoldNoteR).ViewDistance -
-                              (note as HoldNoteR).EndViewDistance));
+                (view as HoldViewObject).Init((note as HoldNoteR));
             }
 
             return view;

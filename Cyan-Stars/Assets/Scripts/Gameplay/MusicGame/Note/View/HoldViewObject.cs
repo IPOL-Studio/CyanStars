@@ -5,6 +5,7 @@ namespace CyanStars.Gameplay.MusicGame
     public class HoldViewObject : ViewObject
     {
         private static readonly int Flicker = Shader.PropertyToID("_Flicker");
+
         [SerializeField]
         private MeshRenderer meshRenderer;
 
@@ -15,11 +16,13 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private bool pressed = false;
 
-        /// <summary>
-        /// 记录上一次截断时Hold的实际的Distance，在松开时将distance减去这个值修正位置
-        /// </summary>
-        private float lastDistanceWhenPressed = 0;
+        private HoldNoteR note;
 
+
+        public void Init(HoldNoteR note)
+        {
+            this.note = note;
+        }
 
         public void SetPressed(bool pressed)
         {
@@ -37,31 +40,31 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnUpdate(float viewDistance)
         {
-            ViewDeltaTime = this.ViewDistance - viewDistance;
-            this.ViewDistance = viewDistance;
-            Vector3 pos = transform.position;
-
             if (pressed)
             {
-                // 视觉上的distance被设置为0（截断）
-                pos.z = viewDistance > 0 ? ViewDistance : 0;
-                lastDistanceWhenPressed = viewDistance;
+                viewDistance = 0;
+            }
+
+            Vector3 p = transform.position;
+            p.z = -viewDistance;
+            transform.position = p;
+
+            SetLength();
+        }
+
+        public void SetLength()
+        {
+            Vector3 s = transform.localScale;
+            if (pressed)
+            {
+                s.z = -(note.EndViewDistance - 0);
             }
             else
             {
-                // 按下时实际的distance为lastDistanceWhenPressed，减去这个值修正
-                pos.z = viewDistance - lastDistanceWhenPressed;
+                s.z = -(note.EndViewDistance - note.CurViewDistance);
             }
 
-            transform.position = pos;
-        }
-
-        public void SetLength(float length)
-        {
-            var t = transform;
-            var s = t.localScale;
-            s.z = length;
-            t.localScale = s;
+            transform.localScale = s;
         }
 
         protected override void Awake()
@@ -76,13 +79,13 @@ namespace CyanStars.Gameplay.MusicGame
         private void OnEnable()
         {
             pressed = false;
-            lastDistanceWhenPressed = 0;
 
             block.SetFloat(Flicker, 0);
             if (meshRenderer)
             {
                 this.meshRenderer.SetPropertyBlock(block);
             }
+
             CloseFlicker();
         }
 

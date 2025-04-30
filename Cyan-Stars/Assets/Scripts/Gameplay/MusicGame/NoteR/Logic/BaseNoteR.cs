@@ -6,6 +6,11 @@ namespace CyanStars.Gameplay.MusicGame
     public class BaseNoteR
     {
         /// <summary>
+        /// 拥有此音符的片段
+        /// </summary>
+        public NoteClip NoteClip;
+
+        /// <summary>
         /// 音符数据
         /// </summary>
         protected BaseChartNoteData NoteData;
@@ -35,7 +40,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// 当前视图层时间与视图层时间的差（音符到判定线的距离）
         /// </summary>
         /// <remarks>提前时距离为负数</remarks>
-        public float ViewDistance { get; private set; }
+        public float CurViewDistance { get; private set; }
 
         /// <summary>
         /// 是否创建过视图层物体
@@ -46,8 +51,6 @@ namespace CyanStars.Gameplay.MusicGame
         /// 视图层物体
         /// </summary>
         protected IView ViewObject;
-
-        public NoteClip NoteClip;
 
 
         /// <summary>
@@ -77,10 +80,10 @@ namespace CyanStars.Gameplay.MusicGame
         private void OnBaseUpdate(float curLogicTime)
         {
             CurLogicTime = curLogicTime;
-            ViewDistance = SpeedGroup.GetDistance(LogicTimeDistance * 1000f);
+            CurViewDistance = SpeedGroup.GetDistance(LogicTimeDistance * 1000f);
             TryCreateViewObject();
 
-            ViewObject?.OnUpdate(ViewDistance);
+            ViewObject?.OnUpdate(CurViewDistance);
         }
 
         /// <summary>
@@ -88,7 +91,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private async void TryCreateViewObject()
         {
-            if (!createdViewObject && ViewDistance <= ViewHelperR.ViewObjectCreateDistance)
+            if (!createdViewObject && CurViewDistance <= ViewHelperR.ViewObjectCreateDistance)
             {
                 //到创建视图层物体的时间点了
                 createdViewObject = true;

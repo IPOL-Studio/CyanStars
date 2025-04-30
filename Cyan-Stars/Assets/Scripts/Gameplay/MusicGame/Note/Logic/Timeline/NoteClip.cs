@@ -89,7 +89,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 list.Sort((x, y) =>
                 {
-                    if (x is INotePos && y is INotePos)
+                    if (x is IPosNote && y is IPosNote)
                     {
                         if (Math.Abs(x.CurLogicTime - y.CurLogicTime) > float.Epsilon)
                         {
@@ -98,8 +98,8 @@ namespace CyanStars.Gameplay.MusicGame
                         }
 
                         //第二优先级是离屏幕中间的距离
-                        return Math.Abs(((INotePos)x).Pos - NoteData.MiddlePos)
-                            .CompareTo(Math.Abs(((INotePos)y).Pos - NoteData.MiddlePos));
+                        return Math.Abs(((IPosNote)x).Pos - NoteData.MiddlePos)
+                            .CompareTo(Math.Abs(((IPosNote)y).Pos - NoteData.MiddlePos));
                     }
                     else
                     {

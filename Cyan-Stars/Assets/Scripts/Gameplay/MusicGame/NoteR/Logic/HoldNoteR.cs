@@ -4,27 +4,27 @@ using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public class HoldNoteR : BaseNoteR, INotePos
+    public class HoldNoteR : BaseNoteR, IPosNote
     {
         public float Pos { get; set; }
 
         /// <summary>
-        /// Hold音符的检查输入结束距离
+        /// 音符尾判定时间（s）
         /// </summary>
-        private float holdCheckInputEndDistance;
+        private float endTime;
 
         /// <summary>
-        /// Hold音符长度
+        /// Hold 音符逻辑层长度
         /// </summary>
-        private float holdLength;
+        private float HoldLength => endTime - JudgeTime;
 
         /// <summary>
         /// Hold 音符尾对应的变速组
         /// </summary>
-        private SpeedGroup holdEndSpeedGroup;
+        private SpeedGroup endSpeedGroup;
 
         /// <summary>
-        /// Hole 音符尾与判定线的距离
+        /// Hole 音符尾与判定线的视图层距离
         /// </summary>
         /// <remarks>提前时为负值</remarks>
         public float EndViewDistance;
@@ -54,44 +54,34 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private float value;
 
-        /// <summary>
-        /// 结束时间（s）
-        /// </summary>
-        private float EndTime;
-
         private const float NoteWidth = 0.2f;
 
         private readonly MusicGameSettingsModule
             MusicGameSettingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
 
+
         public override void Init(BaseChartNoteData data, ChartData chartData, NoteClip clip)
         {
             base.Init(data, chartData, clip);
-
             Pos = (data as HoldChartNoteData).Pos;
+            endTime = chartData.BpmGroups.CalculateTime((data as HoldChartNoteData).EndJudgeBeat) / 1000f;
 
-            JudgeTime = chartData.BpmGroups.CalculateTime((data as HoldChartNoteData).JudgeBeat) / 1000f;
-            EndTime = chartData.BpmGroups.CalculateTime((data as HoldChartNoteData).EndJudgeBeat) / 1000f;
-
-            holdEndSpeedGroup =
+            endSpeedGroup =
                 new SpeedGroup(chartData.SpeedGroups[(data as HoldChartNoteData).HoldEndSpeedGroupIndex],
                     playerSpeed: 1f);
-
-            holdLength = (EndTime - JudgeTime);
-            holdCheckInputEndDistance = holdLength; //hold结束时间点与长度相同
         }
 
         public override bool CanReceiveInput()
         {
             return EvaluateHelper.CheckInputStartDistance <= LogicTimeDistance &&
-                   LogicTimeDistance <= holdCheckInputEndDistance;
+                   LogicTimeDistance <= HoldLength;
         }
 
         public override void OnUpdateInAutoMode(float curLogicTime)
         {
             base.OnUpdateInAutoMode(curLogicTime);
 
-            EndViewDistance = holdEndSpeedGroup.GetDistance(LogicTimeDistance);
+            EndViewDistance = endSpeedGroup.GetDistance(LogicTimeDistance * 1000f);
 
             var holdViewObject = ViewObject as HoldViewObject;
 
@@ -108,19 +98,12 @@ namespace CyanStars.Gameplay.MusicGame
                 holdViewObject?.SetPressed(true);
             }
 
-            if (headChecked)
-            {
-                // 按下时根据已经经过的视图层时间比例计算Hold长度
-                float length = Mathf.Abs(ViewDistance - EndViewDistance);
-                holdViewObject?.SetLength(length);
-            }
-
-            if (LogicTimeDistance < holdCheckInputEndDistance)
+            if (LogicTimeDistance < HoldLength)
             {
                 ViewObject?.DestroyEffectObj();
                 DestroySelf(false);
 
-                NoteJudgerR.HoldTailJudge(NoteData as HoldChartNoteData, holdLength, 1);
+                NoteJudgerR.HoldTailJudge(NoteData as HoldChartNoteData, HoldLength, 1);
             }
         }
 
@@ -132,7 +115,7 @@ namespace CyanStars.Gameplay.MusicGame
             float deltaTime = curLogicTime - CurLogicTime;
             base.OnUpdate(curLogicTime);
 
-            EndViewDistance = holdEndSpeedGroup.GetDistance(LogicTimeDistance);
+            EndViewDistance = endSpeedGroup.GetDistance((CurLogicTime - endTime) * 1000);
 
             // 头判 Miss
             if (!headChecked && EvaluateHelper.IsMiss(LogicTimeDistance))
@@ -153,29 +136,24 @@ namespace CyanStars.Gameplay.MusicGame
                 isPressed = false;
 
                 if (-Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Bad) <= LogicTimeDistance &&
-                    LogicTimeDistance <= holdCheckInputEndDistance)
+                    LogicTimeDistance <= HoldLength)
                 {
                     // 只在 判定时间-Bad区间~结束时间 区间内才累计时长
-
                     pressTimeLength += deltaTime;
-
-                    // 按下时根据已经经过的视图层时间比例计算 Hold 长度
-                    float length = Mathf.Abs(ViewDistance - EndViewDistance);
-                    (ViewObject as HoldViewObject)?.SetLength(length);
                 }
             }
 
             // Hold 已结束（当前时间>Hold尾判时间，且当前时间>Hold头判时间+头判Right区间）
             // 判定尾判
-            if (holdCheckInputEndDistance < LogicTimeDistance &&
+            if (HoldLength < LogicTimeDistance &&
                 MusicGameSettingsModule.EvaluateRange.Right < LogicTimeDistance)
             {
                 float allLength;
-                if (EndTime > JudgeTime + Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Right))
+                if (endTime > JudgeTime + Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Right))
                 {
                     // 一般情况：Hold 结束时间大于开始时间+Right区间
                     // 要求按住的总时长s = Hold结束时间 - (Hold开始时间 + Right区间)
-                    allLength = EndTime - (JudgeTime + Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Right));
+                    allLength = endTime - (JudgeTime + Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Right));
                 }
                 else
                 {
