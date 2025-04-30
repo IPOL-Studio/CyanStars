@@ -29,7 +29,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         private PromptToneCollection promptToneCollection;
 
-        private AudioClip music;
+        private MusicClipData musicClipData;
         //private MapTimelineData timelineData;
         //private string lrcText;
 
@@ -117,7 +117,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             chartPack = null;
             chartData = null;
-            music = null;
+            musicClipData = null;
 
             // timelineData = null;
             // lrcText = null;
@@ -245,11 +245,16 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 音乐
             MusicVersionData musicVersionData = chartPack.ChartPackData.MusicVersionDatas[dataModule.MusicVersionIndex];
-            music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.MusicFilePath, sceneRoot);
+            AudioClip music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.MusicFilePath, sceneRoot);
             if (!music)
             {
                 Debug.LogError($"谱包 {chartPack.ChartPackData.Title} 的音乐加载失败");
             }
+            else
+            {
+                musicClipData = new MusicClipData(music, musicVersionData.Offset);
+            }
+
 
             // 时间轴
             dataModule.CurTimelineLength = music.length + musicVersionData.Offset / 1000f;
@@ -384,9 +389,12 @@ namespace CyanStars.Gameplay.MusicGame
             // }
 
             //添加音乐轨道
-            if (music)
+            if (musicClipData != null)
             {
-                MusicTrackData musicTrackData = new MusicTrackData { ClipDataList = new List<AudioClip>() { music } };
+                MusicTrackData musicTrackData = new MusicTrackData()
+                {
+                    ClipDataList = new List<MusicClipData>() { musicClipData }
+                };
 
                 MusicTrack musicTrack = timeline.AddTrack(musicTrackData, MusicTrack.CreateClipFunc);
                 musicTrack.AudioSource = audioSource;
