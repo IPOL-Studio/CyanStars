@@ -41,7 +41,6 @@ namespace CyanStars.Gameplay.Chart
 
         private bool TryGetNoteDataType(NoteType type, out Type concreteType)
         {
-            // 类型映射字典（可根据需要改为从数据模块获取）
             var typeMapping = new Dictionary<NoteType, Type>
             {
                 [NoteType.Tap] = typeof(TapChartNoteData),
