@@ -9,6 +9,11 @@ namespace CyanStars.Gameplay.Chart
     {
         public List<BpmGroup> Groups;
 
+        /// <summary>
+        /// 由 Beat 组计算时间（ms）的委托
+        /// </summary>
+        public delegate int BeatToTimeDelegate(Beat beat);
+
 
         /// <summary>
         /// 根据当前 BPM 组，计算 beat 对应的时间(ms)
@@ -25,7 +30,6 @@ namespace CyanStars.Gameplay.Chart
         /// </summary>
         /// <param name="fBeat">float 形式的拍子</param>
         /// <returns>int 形式的毫秒时间（相对于时间轴开始）</returns
-
         public int CalculateTime(float fBeat)
         {
             if (Groups.Count == 1)
