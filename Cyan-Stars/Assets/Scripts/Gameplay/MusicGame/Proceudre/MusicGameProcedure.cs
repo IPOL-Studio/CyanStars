@@ -266,12 +266,6 @@ namespace CyanStars.Gameplay.MusicGame
             //     TextAsset lrcAsset = await GameRoot.Asset.LoadAssetAsync<TextAsset>(mapManifest.LrcFileName, sceneRoot);
             //     lrcText = lrcAsset.text;
             // }
-            //
-            // //音乐
-            // if (!string.IsNullOrEmpty(mapManifest.MusicFileName))
-            // {
-            //     music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(mapManifest.MusicFileName, sceneRoot);
-            // }
         }
 
         /// <summary>
