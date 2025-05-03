@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CyanStars.Gameplay.MusicGame;
 using JetBrains.Annotations;
+using UnityEngine.Serialization;
 
 namespace CyanStars.Gameplay.Chart
 {
@@ -34,24 +35,15 @@ namespace CyanStars.Gameplay.Chart
         public Beat? MusicPreviewEndBeat;
 
 
-        // 曲绘文件和曲绘裁剪
+        // 曲绘文件
 
-        /// <summary>游戏内曲绘文件相对路径</summary>
+        /// <summary>原始曲绘相对路径（展示收藏品原图用）</summary>
         [CanBeNull]
         public string CoverFilePath;
 
-        /// <summary>将曲绘大图裁剪为1:4小图时，小图左下角在大图上的的像素坐标 X 值（大图左下角为原点）</summary>
+        /// <summary>裁剪后的1:4横向小图（在选取页展示用）</summary>
         [CanBeNull]
-        public int? CoverCroppingPosX;
-
-        /// <summary>将曲绘大图裁剪为1:4小图时，小图左下角在大图上的的像素坐标 Y 值（大图左下角为原点）</summary>
-        [CanBeNull]
-        public int? CoverCroppingPosY;
-
-        /// <summary>将曲绘大图裁剪为1:4小图时，小图在横向方向上的像素宽度</summary>
-        /// <remarks>竖直方向高度为此值的1/4</remarks>
-        [CanBeNull]
-        public int? CoverCroppingWidth;
+        public string CroppedCoverFilePath;
 
 
         // 谱面元数据
