@@ -365,7 +365,7 @@ namespace CyanStars.Gameplay.MusicGame
             timeline = new Timeline(dataModule.CurTimelineLength);
             timeline.OnStop += StopTimeline;
 
-            //添加音符轨道
+            // 添加音符轨道
             NoteTrackData noteTrackData = new NoteTrackData() { ClipDataList = new List<ChartData>() { chartData } };
             timeline.AddTrack(noteTrackData, NoteTrack.CreateClipFunc);
 
@@ -388,7 +388,7 @@ namespace CyanStars.Gameplay.MusicGame
             //     cameraTrack.CameraTrans = sceneCameraTrans.transform;
             // }
 
-            //添加音乐轨道
+            // 添加音乐轨道
             if (musicClipData != null)
             {
                 MusicTrackData musicTrackData = new MusicTrackData()
@@ -398,6 +398,30 @@ namespace CyanStars.Gameplay.MusicGame
 
                 MusicTrack musicTrack = timeline.AddTrack(musicTrackData, MusicTrack.CreateClipFunc);
                 musicTrack.AudioSource = audioSource;
+            }
+
+            // 添加边框闪烁轨道
+            if (settingsModule.EnableFrameTrack)
+            {
+                foreach (ChartTrackData chartTrackData in chartData.TrackDatas)
+                {
+                    if (chartTrackData.TrackData.GetType() != typeof(FrameChartTrackData))
+                    {
+                        continue;
+                    }
+
+                    FrameChartTrackData frameChartTrackData = chartTrackData.TrackData as FrameChartTrackData;
+                    FrameClipData frameClipData = new FrameClipData(frameChartTrackData, chartData.BpmGroups.CalculateTime);
+                    FrameTrackData frameTrackData = new FrameTrackData()
+                    {
+                        ClipDataList = new List<FrameClipData>() { frameClipData }
+                    };
+
+                    FrameTrack frameTrack = timeline.AddTrack(frameTrackData, FrameTrack.CreateClipFunc);
+                    frameTrack.ImgFrame = GameRoot.UI.GetUIPanel<MusicGameMainPanel>().ImgFrame;
+
+                    break;
+                }
             }
 
             // //添加提示音轨道

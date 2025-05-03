@@ -68,7 +68,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 是否启用特效Track
         /// </summary>
-        public bool EnableEffectTrack { get; set; } = true;
+        public bool EnableFrameTrack { get; set; } = true;
 
         /// <summary>
         /// 要使用的默认打击音效
