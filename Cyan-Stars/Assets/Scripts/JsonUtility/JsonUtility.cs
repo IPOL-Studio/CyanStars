@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -11,6 +12,15 @@ namespace CyanStars.JsonUtility
     /// </summary>
     public static class JsonUtility
     {
+        /// <summary>
+        /// 自定义 JsonConverter 列表
+        /// </summary>
+        private static IList<JsonConverter> converters = new List<JsonConverter>()
+        {
+            new ColorConverter(), new ChartNoteDataReadConverter(), new ChartTrackDataReadConverter()
+        };
+
+
         /// <summary>
         /// 序列化对象为 Json 文件
         /// </summary>
@@ -27,7 +37,8 @@ namespace CyanStars.JsonUtility
                     TypeNameHandling = TypeNameHandling.None,
                     Formatting = Formatting.Indented,
                     Culture = System.Globalization.CultureInfo.InvariantCulture,
-                    DateFormatHandling = DateFormatHandling.IsoDateFormat
+                    DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                    Converters = converters
                 };
 
                 // 如果目录不存在，创建目录
@@ -67,7 +78,8 @@ namespace CyanStars.JsonUtility
                     TypeNameHandling = TypeNameHandling.None,
                     Formatting = Formatting.Indented,
                     Culture = System.Globalization.CultureInfo.InvariantCulture,
-                    DateFormatHandling = DateFormatHandling.IsoDateFormat
+                    DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                    Converters = converters
                 };
 
                 if (!File.Exists(filePath))

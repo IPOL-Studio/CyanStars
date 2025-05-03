@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using CyanStars.Gameplay.Chart;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using CyanStars.Gameplay.MusicGame;
 
-namespace CyanStars.Gameplay.Chart
+namespace CyanStars.JsonUtility
 {
-    public sealed class ReadChartNoteDataJsonConverter : JsonConverter<BaseChartNoteData>
+    public sealed class ChartNoteDataReadConverter : JsonConverter<BaseChartNoteData>
     {
         public override bool CanWrite => false;
         public override bool CanRead => true;

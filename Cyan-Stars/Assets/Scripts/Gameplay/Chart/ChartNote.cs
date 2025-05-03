@@ -13,7 +13,6 @@ namespace CyanStars.Gameplay.Chart
 
 
     [Serializable]
-    [JsonConverter(typeof(ReadChartNoteDataJsonConverter))]
     public class BaseChartNoteData
     {
         /// <summary>音符类型</summary>
