@@ -92,9 +92,9 @@ namespace DG.Tweening
                     offsetYSet = true;
                     offsetY = s.isRelative ? endValue.y : endValue.y - startPosY;
                 }
-                Vector3 Pos = target.position;
-                Pos.y += DOVirtual.EasedValue(0, offsetY, yTween.ElapsedPercentage(), Ease.OutQuad);
-                target.MovePosition(Pos);
+                Vector3 pos = target.position;
+                pos.y += DOVirtual.EasedValue(0, offsetY, yTween.ElapsedPercentage(), Ease.OutQuad);
+                target.MovePosition(pos);
             });
             return s;
         }
