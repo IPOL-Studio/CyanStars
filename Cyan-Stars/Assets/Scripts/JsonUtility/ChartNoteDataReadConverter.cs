@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using CyanStars.Gameplay.Chart;
+using CyanStars.Gameplay.MusicGame;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using CyanStars.Gameplay.MusicGame;
 
 namespace CyanStars.JsonUtility
 {
@@ -23,7 +23,7 @@ namespace CyanStars.JsonUtility
             JObject jo = JObject.Load(reader);
 
             // 获取音符类型
-            if (!jo.TryGetValue(nameof(BaseChartNoteData.Type), out var typeToken))
+            if (!jo.TryGetValue(nameof(BaseChartNoteData.Type), out JToken typeToken))
                 throw new JsonSerializationException("Note data missing Type property");
 
             NoteType noteType = (NoteType)typeToken.Value<int>();
@@ -42,7 +42,7 @@ namespace CyanStars.JsonUtility
 
         private bool TryGetNoteDataType(NoteType type, out Type concreteType)
         {
-            var typeMapping = new Dictionary<NoteType, Type>
+            Dictionary<NoteType, Type> typeMapping = new Dictionary<NoteType, Type>
             {
                 [NoteType.Tap] = typeof(TapChartNoteData),
                 [NoteType.Hold] = typeof(HoldChartNoteData),

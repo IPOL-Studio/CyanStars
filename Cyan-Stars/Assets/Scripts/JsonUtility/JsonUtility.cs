@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -15,7 +16,7 @@ namespace CyanStars.JsonUtility
         /// <summary>
         /// 自定义 JsonConverter 列表
         /// </summary>
-        private static IList<JsonConverter> converters = new List<JsonConverter>()
+        private static readonly IList<JsonConverter> converters = new List<JsonConverter>
         {
             new ColorConverter(), new ChartNoteDataReadConverter(), new ChartTrackDataReadConverter()
         };
@@ -36,7 +37,7 @@ namespace CyanStars.JsonUtility
                 {
                     TypeNameHandling = TypeNameHandling.None,
                     Formatting = Formatting.Indented,
-                    Culture = System.Globalization.CultureInfo.InvariantCulture,
+                    Culture = CultureInfo.InvariantCulture,
                     DateFormatHandling = DateFormatHandling.IsoDateFormat,
                     Converters = converters
                 };
@@ -77,7 +78,7 @@ namespace CyanStars.JsonUtility
                 {
                     TypeNameHandling = TypeNameHandling.None,
                     Formatting = Formatting.Indented,
-                    Culture = System.Globalization.CultureInfo.InvariantCulture,
+                    Culture = CultureInfo.InvariantCulture,
                     DateFormatHandling = DateFormatHandling.IsoDateFormat,
                     Converters = converters
                 };

@@ -24,9 +24,10 @@ namespace CyanStars.JsonUtility
             writer.WriteEndObject();
         }
 
-        public override Color ReadJson(JsonReader reader, Type objectType, Color existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override Color ReadJson(JsonReader reader, Type objectType, Color existingValue, bool hasExistingValue,
+            JsonSerializer serializer)
         {
-            var obj = JObject.Load(reader);
+            JObject obj = JObject.Load(reader);
             return new Color(
                 (float)obj["r"],
                 (float)obj["g"],
