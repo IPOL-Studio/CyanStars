@@ -3,7 +3,6 @@ using CyanStars.Framework;
 using CyanStars.Gameplay.Chart;
 using UnityEngine;
 
-
 namespace CyanStars.Gameplay.MusicGame
 {
     /// <summary>

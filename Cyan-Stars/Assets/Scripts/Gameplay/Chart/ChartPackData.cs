@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using CyanStars.Gameplay.MusicGame;
 using JetBrains.Annotations;
-using UnityEngine.Serialization;
 
 namespace CyanStars.Gameplay.Chart
 {

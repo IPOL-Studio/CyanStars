@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace CyanStars.Gameplay.Chart
+﻿namespace CyanStars.Gameplay.Chart
 {
     /// <summary>
     /// 谱面轨道数据拓展格式

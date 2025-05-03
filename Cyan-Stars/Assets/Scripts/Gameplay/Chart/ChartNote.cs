@@ -1,7 +1,6 @@
 using System;
 using CyanStars.Gameplay.MusicGame;
 using JetBrains.Annotations;
-using Newtonsoft.Json;
 
 namespace CyanStars.Gameplay.Chart
 {

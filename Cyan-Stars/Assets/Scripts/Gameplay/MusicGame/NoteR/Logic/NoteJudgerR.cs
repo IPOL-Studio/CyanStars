@@ -1,7 +1,7 @@
-﻿using CyanStars.Framework;
+﻿using System;
+using CyanStars.Framework;
 using CyanStars.Framework.Logging;
 using CyanStars.Gameplay.Chart;
-
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -24,7 +24,7 @@ namespace CyanStars.Gameplay.MusicGame
                 NoteType.Break => 2,
                 NoteType.Drag => 0.25f,
                 NoteType.Click => 2, // 包括头判和尾判的总分
-                _ => throw new System.NotFiniteNumberException()
+                _ => throw new NotFiniteNumberException()
             };
         }
 
@@ -40,7 +40,7 @@ namespace CyanStars.Gameplay.MusicGame
                 NoteType.Break => 2,
                 NoteType.Drag => 0.25f,
                 NoteType.Click => 1, // 判定两次
-                _ => throw new System.NotFiniteNumberException()
+                _ => throw new NotFiniteNumberException()
             };
         }
 
