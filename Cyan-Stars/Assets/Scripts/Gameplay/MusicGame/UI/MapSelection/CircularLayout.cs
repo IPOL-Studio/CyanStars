@@ -165,11 +165,6 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public void MoveToItemAt(int targetItemIndex)
         {
-            if (Items.Count <= 1)
-            {
-                return; // 避免除零错误
-            }
-
             float targetPositionY =
                 (scrollRect.content.sizeDelta.y - GetComponent<RectTransform>().sizeDelta.y) *
                 targetItemIndex / (Items.Count - 1);

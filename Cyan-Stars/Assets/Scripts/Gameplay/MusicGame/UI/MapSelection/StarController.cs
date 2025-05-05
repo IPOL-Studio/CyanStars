@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
@@ -123,7 +124,7 @@ namespace CyanStars.Gameplay.MusicGame
             if (staffs.Count > canShowStaffStars.Count)
             {
                 Debug.LogError(
-                    $"Staff数量过多，最多{canShowStaffStars.Count}个，目前{staffs.Count}个。请尝试设置更多的星星生成数量来临时解决这个问题"); // ToFix
+                    $"Staff数量过多，最多{canShowStaffStars.Count}个，目前{staffs.Count}个。请尝试设置更多的星星生成数量来临时解决这个问题"); // TODO: 修复星星数量不足导致无法完整展示 Staff 的问题
                 return;
             }
 
@@ -143,9 +144,17 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 Debug.Log(item);
 
+                var sb = new StringBuilder();
+                foreach (var str in item.Value)
+                {
+                    sb.Append(str);
+                }
+
+                string combined = sb.ToString();
+
                 while (true)
                 {
-                    if (SetGroup(string.Join("", item.Value), item.Key, groupCount))
+                    if (SetGroup(combined, item.Key, groupCount))
                         break;
 
                     groupCount++;

@@ -204,11 +204,11 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 根据难度从谱包中获取谱面数据
         /// </summary>
+        /// <remarks>难度为 null 时只能在制谱器内加载，不能在游戏内加载</remarks>
         public ChartData GetChartData(ChartPack chartPack, ChartDifficulty? difficulty)
         {
             if (difficulty is null)
             {
-                // 难度为 null 时只能在制谱器内加载，不能在游戏内加载
                 return null;
             }
 

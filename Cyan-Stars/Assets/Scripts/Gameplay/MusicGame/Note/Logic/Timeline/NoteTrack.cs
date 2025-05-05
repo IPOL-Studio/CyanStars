@@ -21,8 +21,8 @@ namespace CyanStars.Gameplay.MusicGame
             NoteClip clip = new NoteClip(0, GameRoot.GetDataModule<MusicGameModule>().CurTimelineLength, track);
             foreach (BaseChartNoteData noteData in chartData.Notes)
             {
-                BaseNoteR baseNote = CreateNote(noteData, chartData,clip);
-                clip.AddNote(baseNote);
+                BaseNoteR baseNote = CreateNote(noteData, chartData, clip);
+                clip.InsertNote(baseNote);
             }
 
 
@@ -55,7 +55,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 根据音符数据创建音符
         /// </summary>
-        private static BaseNoteR CreateNote(BaseChartNoteData noteData, ChartData chartData,NoteClip clip)
+        private static BaseNoteR CreateNote(BaseChartNoteData noteData, ChartData chartData, NoteClip clip)
         {
             BaseNoteR note = noteData.Type switch
             {
@@ -67,7 +67,7 @@ namespace CyanStars.Gameplay.MusicGame
                 _ => null
             };
 
-            note?.Init(noteData, chartData,clip);
+            note?.Init(noteData, chartData, clip);
             return note;
         }
     }

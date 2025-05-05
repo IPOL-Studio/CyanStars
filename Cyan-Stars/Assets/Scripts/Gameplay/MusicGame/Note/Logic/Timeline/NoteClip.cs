@@ -17,18 +17,37 @@ namespace CyanStars.Gameplay.MusicGame
         // private List<NoteLayer> layers = new List<NoteLayer>();
 
         /// <summary>
-        /// 音符列表
+        /// 音符链表
         /// </summary>
-        public List<BaseNoteR> Notes = new List<BaseNoteR>();
+        public LinkedList<BaseNoteR> Notes = new LinkedList<BaseNoteR>();
 
         public NoteClip(float startTime, float endTime, NoteTrack owner) : base(
             startTime, endTime, owner)
         {
         }
 
-        public void AddNote(BaseNoteR note)
+        public void InsertNote(BaseNoteR note)
         {
-            Notes.Add(note);
+            if (Notes.Count == 0)
+            {
+                Notes.AddFirst(note);
+                return;
+            }
+
+            var current = Notes.First;
+            while (current != null && current.Value.CurLogicTime <= note.CurLogicTime)
+            {
+                current = current.Next;
+            }
+
+            if (current == null)
+            {
+                Notes.AddLast(note);
+            }
+            else
+            {
+                Notes.AddBefore(current, note);
+            }
         }
 
         // /// <summary>
@@ -49,16 +68,20 @@ namespace CyanStars.Gameplay.MusicGame
         {
             if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)
             {
-                for (int i = Notes.Count - 1; i >= 0; i--)
+                var node = Notes.Last;
+                while (node != null)
                 {
-                    Notes[i].OnUpdateInAutoMode(currentTime);
+                    node.Value.OnUpdateInAutoMode(currentTime);
+                    node = node.Previous;
                 }
             }
             else
             {
-                for (int i = Notes.Count - 1; i >= 0; i--)
+                var node = Notes.Last;
+                while (node != null)
                 {
-                    Notes[i].OnUpdate(currentTime);
+                    node.Value.OnUpdate(currentTime);
+                    node = node.Previous;
                 }
             }
         }
@@ -78,57 +101,32 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
-            List<BaseNoteR> list = GetValidNotes(args.RangeMin, args.RangeWidth);
-
-            if (list.Count == 0)
-            {
-                return;
-            }
-
-            if (list.Count > 1)
-            {
-                list.Sort((x, y) =>
-                {
-                    if (x is IPosNote && y is IPosNote)
-                    {
-                        if (Math.Abs(x.CurLogicTime - y.CurLogicTime) > float.Epsilon)
-                        {
-                            //第一优先级是离玩家的距离
-                            return x.CurLogicTime.CompareTo(y.CurLogicTime);
-                        }
-
-                        //第二优先级是离屏幕中间的距离
-                        return Math.Abs(((IPosNote)x).Pos - NoteData.MiddlePos)
-                            .CompareTo(Math.Abs(((IPosNote)y).Pos - NoteData.MiddlePos));
-                    }
-                    else
-                    {
-                        // Break 音符只比较时间距离
-                        return x.CurLogicTime.CompareTo(y.CurLogicTime);
-                    }
-                });
-            }
-
-            //一次输入信号 只发给一个note处理 避免同时有多个note响应
-            list[0].OnInput(args.Type);
-        }
-
-        /// <summary>
-        /// 获取可接收输入且在输入映射范围内的音符列表
-        /// </summary>
-        private List<BaseNoteR> GetValidNotes(float rangeMin, float rangeWidth)
-        {
-            List<BaseNoteR> cachedList = new List<BaseNoteR>();
-
             foreach (var note in Notes)
             {
-                if (note.CanReceiveInput() && note.IsInInputRange(rangeMin, rangeMin + rangeWidth))
+                if (note.CanReceiveInput() && note.IsInInputRange(args.RangeMin, args.RangeMin + args.RangeWidth))
                 {
-                    cachedList.Add(note);
+                    note.OnInput(args.Type);
+                    break; // 一次输入信号只发给一个 note
                 }
             }
-
-            return cachedList;
         }
+
+        // /// <summary>
+        // /// 获取可接收输入且在输入映射范围内的音符列表
+        // /// </summary>
+        // private List<BaseNoteR> GetValidNotes(float rangeMin, float rangeWidth)
+        // {
+        //     List<BaseNoteR> cachedList = new List<BaseNoteR>();
+        //
+        //     foreach (var note in Notes)
+        //     {
+        //         if (note.CanReceiveInput() && note.IsInInputRange(rangeMin, rangeMin + rangeWidth))
+        //         {
+        //             cachedList.Add(note);
+        //         }
+        //     }
+        //
+        //     return cachedList;
+        // }
     }
 }
