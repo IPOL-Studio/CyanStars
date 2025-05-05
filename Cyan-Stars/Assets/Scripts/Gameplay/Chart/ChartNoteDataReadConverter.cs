@@ -26,30 +26,25 @@ namespace CyanStars.Gameplay.Chart
 
             NoteType noteType = (NoteType)typeToken.Value<int>();
 
-            // 获取对应类型
-            if (!TryGetNoteDataType(noteType, out Type concreteType))
+            if (!TryGetNoteData(noteType, out var noteData))
                 throw new JsonSerializationException($"Unsupported note type: {noteType}");
 
-            // 创建具体实例
-            BaseChartNoteData noteData = (BaseChartNoteData)Activator.CreateInstance(concreteType);
-
             serializer.Populate(jo.CreateReader(), noteData);
-
             return noteData;
         }
 
-        private bool TryGetNoteDataType(NoteType type, out Type concreteType)
+        private bool TryGetNoteData(NoteType type, out BaseChartNoteData noteData)
         {
-            concreteType = type switch
+            noteData = type switch
             {
-                NoteType.Tap => typeof(TapChartNoteData),
-                NoteType.Hold => typeof(HoldChartNoteData),
-                NoteType.Drag => typeof(DragChartNoteData),
-                NoteType.Click => typeof(ClickChartNoteData),
-                NoteType.Break => typeof(BreakChartNoteData),
+                NoteType.Tap => new TapChartNoteData(),
+                NoteType.Hold => new HoldChartNoteData(),
+                NoteType.Drag => new DragChartNoteData(),
+                NoteType.Click => new ClickChartNoteData(),
+                NoteType.Break => new BreakChartNoteData(),
                 _ => null
             };
-            return concreteType != null;
+            return noteData != null;
         }
     }
 }
