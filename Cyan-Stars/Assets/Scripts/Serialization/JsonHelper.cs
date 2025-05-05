@@ -2,21 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using CyanStars.Gameplay.Chart;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace CyanStars.JsonUtility
+namespace CyanStars.Serialization
 {
     /// <summary>
     /// 序列化和反序列化工具类
     /// </summary>
-    public static class JsonUtility
+    public static class JsonHelper
     {
         /// <summary>
         /// 自定义 JsonConverter 列表
         /// </summary>
-        private static readonly IList<JsonConverter> converters = new List<JsonConverter>
+        private static readonly IList<JsonConverter> Converters = new List<JsonConverter>
         {
             new ColorConverter(), new ChartNoteDataReadConverter(), new ChartTrackDataReadConverter()
         };
@@ -39,7 +40,7 @@ namespace CyanStars.JsonUtility
                     Formatting = Formatting.Indented,
                     Culture = CultureInfo.InvariantCulture,
                     DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                    Converters = converters
+                    Converters = Converters
                 };
 
                 // 如果目录不存在，创建目录
@@ -80,7 +81,7 @@ namespace CyanStars.JsonUtility
                     Formatting = Formatting.Indented,
                     Culture = CultureInfo.InvariantCulture,
                     DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                    Converters = converters
+                    Converters = Converters
                 };
 
                 if (!File.Exists(filePath))

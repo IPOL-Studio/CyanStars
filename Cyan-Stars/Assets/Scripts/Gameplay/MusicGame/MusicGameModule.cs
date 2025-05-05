@@ -176,7 +176,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             foreach (string chartPath in internalChartPackListSO.InternalCharts)
             {
-                JsonUtility.JsonUtility.FromJson(chartPath, out ChartPackData chartPackData);
+                Serialization.JsonHelper.FromJson(chartPath, out ChartPackData chartPackData);
                 packs.Add(new ChartPack() { ChartPackData = chartPackData, IsInternal = true });
             }
 
@@ -216,7 +216,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 if (metadata.Difficulty == difficulty)
                 {
-                    JsonUtility.JsonUtility.FromJson(metadata.FilePath, out chartData);
+                    Serialization.JsonHelper.FromJson(metadata.FilePath, out chartData);
                     return chartData;
                 }
             }
