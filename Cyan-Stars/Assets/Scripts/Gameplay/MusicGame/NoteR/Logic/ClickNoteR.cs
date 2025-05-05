@@ -5,7 +5,7 @@ namespace CyanStars.Gameplay.MusicGame
     /// <summary>
     /// Click音符
     /// </summary>
-    public class ClickNoteR : BaseNoteR, IPosNote
+    public class ClickNoteR : BaseNoteR, IMainTrackNotePos
     {
         public float Pos { get; set; }
 

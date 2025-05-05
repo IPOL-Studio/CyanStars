@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public class HoldNoteR : BaseNoteR, IPosNote
+    public class HoldNoteR : BaseNoteR, IMainTrackNotePos
     {
         public float Pos { get; set; }
 

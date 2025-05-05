@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using CyanStars.Gameplay.MusicGame;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -32,25 +31,21 @@ namespace CyanStars.Gameplay.Chart
                 throw new JsonSerializationException($"Unsupported note type: {noteType}");
 
             // 创建具体实例
-            BaseChartNoteData noteData = (BaseChartNoteData)Activator.CreateInstance(concreteType);
-
-            serializer.Populate(jo.CreateReader(), noteData);
-
-            return noteData;
+            return (BaseChartNoteData)serializer.Deserialize(reader, concreteType);
         }
 
         private bool TryGetNoteDataType(NoteType type, out Type concreteType)
         {
-            Dictionary<NoteType, Type> typeMapping = new Dictionary<NoteType, Type>
+            concreteType = type switch
             {
-                [NoteType.Tap] = typeof(TapChartNoteData),
-                [NoteType.Hold] = typeof(HoldChartNoteData),
-                [NoteType.Drag] = typeof(DragChartNoteData),
-                [NoteType.Click] = typeof(ClickChartNoteData),
-                [NoteType.Break] = typeof(BreakChartNoteData)
+                NoteType.Tap => typeof(TapChartNoteData),
+                NoteType.Hold => typeof(HoldChartNoteData),
+                NoteType.Drag => typeof(DragChartNoteData),
+                NoteType.Click => typeof(ClickChartNoteData),
+                NoteType.Break => typeof(BreakChartNoteData),
+                _ => null
             };
-
-            return typeMapping.TryGetValue(type, out concreteType);
+            return concreteType != null;
         }
     }
 }

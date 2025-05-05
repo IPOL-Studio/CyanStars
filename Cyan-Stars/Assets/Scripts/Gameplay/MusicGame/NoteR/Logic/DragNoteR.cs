@@ -2,7 +2,7 @@
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public class DragNoteR : BaseNoteR, IPosNote
+    public class DragNoteR : BaseNoteR, IMainTrackNotePos
     {
         public float Pos { get; set; }
 
