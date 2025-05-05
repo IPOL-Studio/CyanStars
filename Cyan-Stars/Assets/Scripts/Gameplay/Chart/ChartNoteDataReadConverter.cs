@@ -31,7 +31,11 @@ namespace CyanStars.Gameplay.Chart
                 throw new JsonSerializationException($"Unsupported note type: {noteType}");
 
             // 创建具体实例
-            return (BaseChartNoteData)serializer.Deserialize(reader, concreteType);
+            BaseChartNoteData noteData = (BaseChartNoteData)Activator.CreateInstance(concreteType);
+
+            serializer.Populate(jo.CreateReader(), noteData);
+
+            return noteData;
         }
 
         private bool TryGetNoteDataType(NoteType type, out Type concreteType)
