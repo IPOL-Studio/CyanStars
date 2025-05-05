@@ -22,6 +22,7 @@ namespace CyanStars.Gameplay.MusicGame
     {
         //  --- --- 音游数据模块 --- ---
         private MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
+        private MusicGameTrackModule trackModule = GameRoot.GetDataModule<MusicGameTrackModule>();
 
         //  --- --- 音游相关数据 --- ---
         private ChartPack chartPack;
@@ -394,29 +395,38 @@ namespace CyanStars.Gameplay.MusicGame
                 musicTrack.AudioSource = audioSource;
             }
 
-            // 添加边框闪烁轨道
-            if (settingsModule.EnableFrameTrack)
+            for (int i = 0; i < chartData.TrackDatas.Count; i++)
             {
-                foreach (ChartTrackData chartTrackData in chartData.TrackDatas)
+                if (trackModule.TryGetTrackLoader(chartData.TrackDatas[i].TrackData.GetType(), out var trackLoader) &&
+                    trackLoader.IsEnabled)
                 {
-                    if (chartTrackData.TrackData.GetType() != typeof(FrameChartTrackData))
-                    {
-                        continue;
-                    }
-
-                    FrameChartTrackData frameChartTrackData = chartTrackData.TrackData as FrameChartTrackData;
-                    FrameClipData frameClipData = new FrameClipData(frameChartTrackData, chartData.BpmGroups.CalculateTime);
-                    FrameTrackData frameTrackData = new FrameTrackData()
-                    {
-                        ClipDataList = new List<FrameClipData>() { frameClipData }
-                    };
-
-                    FrameTrack frameTrack = timeline.AddTrack(frameTrackData, FrameTrack.CreateClipFunc);
-                    frameTrack.ImgFrame = GameRoot.UI.GetUIPanel<MusicGameMainPanel>().ImgFrame;
-
-                    break;
+                    trackLoader.LoadTrack(timeline, chartData, i);
                 }
             }
+
+            // // 添加边框闪烁轨道
+            // if (settingsModule.EnableFrameTrack)
+            // {
+            //     foreach (ChartTrackData chartTrackData in chartData.TrackDatas)
+            //     {
+            //         if (chartTrackData.TrackData.GetType() != typeof(FrameChartTrackData))
+            //         {
+            //             continue;
+            //         }
+            //
+            //         FrameChartTrackData frameChartTrackData = chartTrackData.TrackData as FrameChartTrackData;
+            //         FrameClipData frameClipData = new FrameClipData(frameChartTrackData, chartData.BpmGroups.CalculateTime);
+            //         FrameTrackData frameTrackData = new FrameTrackData()
+            //         {
+            //             ClipDataList = new List<FrameClipData>() { frameClipData }
+            //         };
+            //
+            //         FrameTrack frameTrack = timeline.AddTrack(frameTrackData, FrameTrack.CreateClipFunc);
+            //         frameTrack.ImgFrame = GameRoot.UI.GetUIPanel<MusicGameMainPanel>().ImgFrame;
+            //
+            //         break;
+            //     }
+            // }
 
             // //添加提示音轨道
             // GetLinearNoteData();
