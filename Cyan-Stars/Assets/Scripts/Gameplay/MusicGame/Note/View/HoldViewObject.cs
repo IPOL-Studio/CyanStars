@@ -16,10 +16,10 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private bool pressed = false;
 
-        private HoldNoteR note;
+        private HoldNote note;
 
 
-        public void Init(HoldNoteR note)
+        public void Init(HoldNote note)
         {
             this.note = note;
         }

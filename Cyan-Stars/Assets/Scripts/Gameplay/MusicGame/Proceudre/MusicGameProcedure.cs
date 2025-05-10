@@ -53,7 +53,6 @@ namespace CyanStars.Gameplay.MusicGame
 
         //  --- --- 时间轴相关对象 --- ---
         private Timeline timeline;
-        private List<NoteData> linearNoteData = new List<NoteData>();
 
         //  --- --- 流程逻辑相关 --- ---
         private BaseInputReceiver inputReceiver;
@@ -124,7 +123,6 @@ namespace CyanStars.Gameplay.MusicGame
             // lrcText = null;
 
             timeline = null;
-            linearNoteData.Clear();
 
             inputReceiver = null;
             lastTime = -float.Epsilon;
@@ -203,8 +201,8 @@ namespace CyanStars.Gameplay.MusicGame
         private void GetSceneObj()
         {
             sceneRoot = GameObject.Find("SceneRoot");
-            ViewHelperR.ViewRoot = sceneRoot.transform.Find("ViewRoot");
-            ViewHelperR.EffectRoot = sceneRoot.transform.Find("EffectRoot");
+            ViewHelper.ViewRoot = sceneRoot.transform.Find("ViewRoot");
+            ViewHelper.EffectRoot = sceneRoot.transform.Find("EffectRoot");
             sceneCameraTrans = sceneRoot.transform.Find("SceneCamera");
             audioSource = sceneRoot.GetComponent<AudioSource>();
         }

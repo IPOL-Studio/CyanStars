@@ -11,22 +11,17 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public class NoteClip : BaseClip<NoteTrack>
     {
-        // /// <summary>
-        // /// 音符图层列表
-        // /// </summary>
-        // private List<NoteLayer> layers = new List<NoteLayer>();
-
         /// <summary>
         /// 音符链表
         /// </summary>
-        public LinkedList<BaseNoteR> Notes = new LinkedList<BaseNoteR>();
+        public LinkedList<BaseNote> Notes = new LinkedList<BaseNote>();
 
         public NoteClip(float startTime, float endTime, NoteTrack owner) : base(
             startTime, endTime, owner)
         {
         }
 
-        public void InsertNote(BaseNoteR note)
+        public void InsertNote(BaseNote note)
         {
             if (Notes.Count == 0)
             {
@@ -49,14 +44,6 @@ namespace CyanStars.Gameplay.MusicGame
                 Notes.AddBefore(current, note);
             }
         }
-
-        // /// <summary>
-        // /// 添加音符图层
-        // /// </summary>
-        // public void AddLayer(NoteLayer layer)
-        // {
-        //     layers.Add(layer);
-        // }
 
         public override void OnEnter()
         {
@@ -110,23 +97,5 @@ namespace CyanStars.Gameplay.MusicGame
                 }
             }
         }
-
-        // /// <summary>
-        // /// 获取可接收输入且在输入映射范围内的音符列表
-        // /// </summary>
-        // private List<BaseNoteR> GetValidNotes(float rangeMin, float rangeWidth)
-        // {
-        //     List<BaseNoteR> cachedList = new List<BaseNoteR>();
-        //
-        //     foreach (var note in Notes)
-        //     {
-        //         if (note.CanReceiveInput() && note.IsInInputRange(rangeMin, rangeMin + rangeWidth))
-        //         {
-        //             cachedList.Add(note);
-        //         }
-        //     }
-        //
-        //     return cachedList;
-        // }
     }
 }

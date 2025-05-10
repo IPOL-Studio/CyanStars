@@ -52,7 +52,7 @@ namespace CyanStars.Gameplay.MusicGame
             hitEffectObj.transform.position = new Vector3(transform.position.x + Endpoint.Instance.Length * w / 2,
                 transform.position.y, 0);
             hitEffectObj.transform.rotation = transform.rotation;
-            hitEffectObj.transform.SetParent(ViewHelperR.EffectRoot);
+            hitEffectObj.transform.SetParent(ViewHelper.EffectRoot);
 
             NoteHitEffect hitEffect = hitEffectObj.GetComponent<NoteHitEffect>();
             if (hitEffect.WillDestroy)

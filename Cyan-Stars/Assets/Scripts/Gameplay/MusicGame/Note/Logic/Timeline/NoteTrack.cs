@@ -21,32 +21,9 @@ namespace CyanStars.Gameplay.MusicGame
             NoteClip clip = new NoteClip(0, GameRoot.GetDataModule<MusicGameModule>().CurTimelineLength, track);
             foreach (BaseChartNoteData noteData in chartData.Notes)
             {
-                BaseNoteR baseNote = CreateNote(noteData, chartData, clip);
+                BaseNote baseNote = CreateNote(noteData, chartData, clip);
                 clip.InsertNote(baseNote);
             }
-
-
-            // for (int i = 0; i < trackData.LayerDatas.Count; i++)
-            // {
-            //     //创建图层
-            //     NoteLayerData layerData = trackData.LayerDatas[i];
-            //     NoteLayer layer = new NoteLayer(layerData);
-            //
-            //     for (int j = 0; j < layerData.TimeAxisDatas.Count; j++)
-            //     {
-            //         NoteTimeAxisData timeAxisData = layerData.TimeAxisDatas[j];
-            //         for (int k = 0; k < timeAxisData.NoteDatas.Count; k++)
-            //         {
-            //             //创建音符
-            //             NoteData noteData = timeAxisData.NoteDatas[k];
-            //             BaseNote note = CreateNote(noteData, layer);
-            //             layer.AddNote(note);
-            //         }
-            //     }
-            //
-            //     clip.AddLayer(layer);
-            // }
-
 
             return clip;
         }
@@ -55,15 +32,15 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 根据音符数据创建音符
         /// </summary>
-        private static BaseNoteR CreateNote(BaseChartNoteData noteData, ChartData chartData, NoteClip clip)
+        private static BaseNote CreateNote(BaseChartNoteData noteData, ChartData chartData, NoteClip clip)
         {
-            BaseNoteR note = noteData.Type switch
+            BaseNote note = noteData.Type switch
             {
-                NoteType.Tap => new TapNoteR(),
-                NoteType.Hold => new HoldNoteR(),
-                NoteType.Drag => new DragNoteR(),
-                NoteType.Click => new ClickNoteR(),
-                NoteType.Break => new BreakNoteR(),
+                NoteType.Tap => new TapNote(),
+                NoteType.Hold => new HoldNote(),
+                NoteType.Drag => new DragNote(),
+                NoteType.Click => new ClickNote(),
+                NoteType.Break => new BreakNote(),
                 _ => null
             };
 
