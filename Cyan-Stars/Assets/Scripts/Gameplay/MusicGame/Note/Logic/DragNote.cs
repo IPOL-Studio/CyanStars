@@ -4,11 +4,10 @@ namespace CyanStars.Gameplay.MusicGame
 {
     public class DragNote : BaseNote, IMainTrackNotePos
     {
-        public float Pos { get; set; }
+        private const float NoteWidth = 0.2f;
 
         private bool isHit;
-
-        private const float NoteWidth = 0.2f;
+        public float Pos { get; set; }
 
 
         public override bool CanReceiveInput()

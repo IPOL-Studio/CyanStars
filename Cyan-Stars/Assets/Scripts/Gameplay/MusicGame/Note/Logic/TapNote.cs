@@ -4,9 +4,8 @@ namespace CyanStars.Gameplay.MusicGame
 {
     public class TapNote : BaseNote, IMainTrackNotePos
     {
-        public float Pos { get; set; }
-
         private const float NoteWidth = 0.2f;
+        public float Pos { get; set; }
 
         public override void Init(BaseChartNoteData data, ChartData chartData, NoteClip clip)
         {

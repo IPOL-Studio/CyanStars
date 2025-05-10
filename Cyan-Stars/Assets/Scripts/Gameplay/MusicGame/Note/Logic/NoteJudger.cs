@@ -10,7 +10,7 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public static class NoteJudger
     {
-        private static MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
+        private static readonly MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
 
         /// <summary>
         /// 获取每个音符的总分
@@ -60,9 +60,9 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (et != EvaluateType.Miss && et != EvaluateType.Bad) //Exact、Great、Right:加一combo，计算杂率
             {
-                dataModule.RefreshPlayingData(addCombo: 1,
-                    addScore: EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Tap),
-                    grade: et, currentDeviation: distance);
+                dataModule.RefreshPlayingData(1,
+                    EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Tap),
+                    et, distance);
             }
             else //Bad、Miss:断combo，不计算杂率
             {
@@ -155,9 +155,9 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (!isMiss) // Exact：加一combo、不计算杂率
             {
-                dataModule.RefreshPlayingData(addCombo: 1,
-                    addScore: EvaluateHelper.GetScoreWithEvaluate(EvaluateType.Exact) * GetMagnification(NoteType.Drag),
-                    grade: EvaluateType.Exact, currentDeviation: float.MaxValue);
+                dataModule.RefreshPlayingData(1,
+                    EvaluateHelper.GetScoreWithEvaluate(EvaluateType.Exact) * GetMagnification(NoteType.Drag),
+                    EvaluateType.Exact, float.MaxValue);
             }
             else // Miss：断combo、不计算杂率
             {
@@ -236,9 +236,9 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (et != EvaluateType.Miss && et != EvaluateType.Bad) //Exact、Great、Right:加一combo，计算杂率
             {
-                dataModule.RefreshPlayingData(addCombo: 1,
-                    addScore: EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Break),
-                    grade: et, currentDeviation: distance);
+                dataModule.RefreshPlayingData(1,
+                    EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Break),
+                    et, distance);
             }
             else //Bad、Miss:断combo，不计算杂率
             {

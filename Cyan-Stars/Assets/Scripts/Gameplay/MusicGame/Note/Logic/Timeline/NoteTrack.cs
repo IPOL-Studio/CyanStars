@@ -2,7 +2,6 @@ using CyanStars.Framework;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Chart;
 
-
 namespace CyanStars.Gameplay.MusicGame
 {
     /// <summary>

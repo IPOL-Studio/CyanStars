@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CyanStars.Framework;
 using CyanStars.Framework.Timeline;
 
-
 namespace CyanStars.Gameplay.MusicGame
 {
     /// <summary>
@@ -29,7 +28,7 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
-            var current = Notes.First;
+            LinkedListNode<BaseNote> current = Notes.First;
             while (current != null && current.Value.CurLogicTime <= note.CurLogicTime)
             {
                 current = current.Next;
@@ -55,7 +54,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)
             {
-                var node = Notes.Last;
+                LinkedListNode<BaseNote> node = Notes.Last;
                 while (node != null)
                 {
                     node.Value.OnUpdateInAutoMode(currentTime);
@@ -64,7 +63,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
             else
             {
-                var node = Notes.Last;
+                LinkedListNode<BaseNote> node = Notes.Last;
                 while (node != null)
                 {
                     node.Value.OnUpdate(currentTime);
@@ -88,7 +87,7 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
-            foreach (var note in Notes)
+            foreach (BaseNote note in Notes)
             {
                 if (note.CanReceiveInput() && note.IsInInputRange(args.RangeMin, args.RangeMin + args.RangeWidth))
                 {

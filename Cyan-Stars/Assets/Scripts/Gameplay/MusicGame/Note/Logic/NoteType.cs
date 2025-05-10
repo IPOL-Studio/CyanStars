@@ -9,6 +9,6 @@ namespace CyanStars.Gameplay.MusicGame
         Hold,
         Drag,
         Click,
-        Break,
+        Break
     }
 }

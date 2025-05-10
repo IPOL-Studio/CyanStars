@@ -1,10 +1,19 @@
-﻿using System;
-using CyanStars.Gameplay.Chart;
+﻿using CyanStars.Gameplay.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
     public abstract class BaseNote
     {
+        /// <summary>
+        /// 是否创建过视图层物体
+        /// </summary>
+        private bool createdViewObject;
+
+        /// <summary>
+        /// 判定时间（逻辑层时间）（s）
+        /// </summary>
+        protected float JudgeTime;
+
         /// <summary>
         /// 拥有此音符的片段
         /// </summary>
@@ -21,9 +30,9 @@ namespace CyanStars.Gameplay.MusicGame
         protected SpeedGroup SpeedGroup;
 
         /// <summary>
-        /// 判定时间（逻辑层时间）（s）
+        /// 视图层物体
         /// </summary>
-        protected float JudgeTime;
+        protected IView ViewObject;
 
         /// <summary>
         /// 当前逻辑层时间（s）
@@ -41,16 +50,6 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         /// <remarks>提前时距离为负数</remarks>
         public float CurViewDistance { get; private set; }
-
-        /// <summary>
-        /// 是否创建过视图层物体
-        /// </summary>
-        private bool createdViewObject = false;
-
-        /// <summary>
-        /// 视图层物体
-        /// </summary>
-        protected IView ViewObject;
 
 
         /// <summary>

@@ -6,22 +6,20 @@ namespace CyanStars.Gameplay.MusicGame
 {
     public class HoldNote : BaseNote, IMainTrackNotePos
     {
-        public float Pos { get; set; }
+        private const float NoteWidth = 0.2f;
 
-        /// <summary>
-        /// 音符尾判定时间（s）
-        /// </summary>
-        private float endTime;
-
-        /// <summary>
-        /// Hold 音符逻辑层长度
-        /// </summary>
-        private float HoldLength => endTime - JudgeTime;
+        private readonly MusicGameSettingsModule
+            MusicGameSettingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
 
         /// <summary>
         /// Hold 音符尾对应的变速组
         /// </summary>
         private SpeedGroup endSpeedGroup;
+
+        /// <summary>
+        /// 音符尾判定时间（s）
+        /// </summary>
+        private float endTime;
 
         /// <summary>
         /// Hole 音符尾与判定线的视图层距离
@@ -54,10 +52,12 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private float value;
 
-        private const float NoteWidth = 0.2f;
+        /// <summary>
+        /// Hold 音符逻辑层长度
+        /// </summary>
+        private float HoldLength => endTime - JudgeTime;
 
-        private readonly MusicGameSettingsModule
-            MusicGameSettingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
+        public float Pos { get; set; }
 
 
         public override void Init(BaseChartNoteData data, ChartData chartData, NoteClip clip)
@@ -68,7 +68,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             endSpeedGroup =
                 new SpeedGroup(chartData.SpeedGroups[(data as HoldChartNoteData).HoldEndSpeedGroupIndex],
-                    playerSpeed: 1f);
+                    1f);
         }
 
         public override bool CanReceiveInput()
@@ -83,7 +83,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             EndViewDistance = endSpeedGroup.GetDistance(LogicTimeDistance * 1000f);
 
-            var holdViewObject = ViewObject as HoldViewObject;
+            HoldViewObject holdViewObject = ViewObject as HoldViewObject;
 
             if (!headChecked && LogicTimeDistance <= 0)
             {
@@ -190,7 +190,7 @@ namespace CyanStars.Gameplay.MusicGame
         public override void OnInput(InputType inputType)
         {
             base.OnInput(inputType);
-            var holdViewObject = ViewObject as HoldViewObject;
+            HoldViewObject holdViewObject = ViewObject as HoldViewObject;
             switch (inputType)
             {
                 case InputType.Down:

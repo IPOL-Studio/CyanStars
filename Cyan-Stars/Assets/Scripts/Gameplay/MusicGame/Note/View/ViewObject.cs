@@ -1,8 +1,7 @@
-using UnityEngine;
 using System.Collections;
 using CyanStars.Framework;
 using CyanStars.Framework.Timer;
-
+using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -14,15 +13,15 @@ namespace CyanStars.Gameplay.MusicGame
         [SerializeField]
         private NoteType noteType;
 
-        protected float ViewDistance;
-        protected float ViewDeltaTime;
-
-        private string notePrefabName;
+        private GameObject hitEffectObj;
         private string hitEffectPrefabName;
 
-        private GameObject hitEffectObj;
+        private string notePrefabName;
 
         private TimerCallback timerCallback;
+        protected float ViewDeltaTime;
+
+        protected float ViewDistance;
 
         protected virtual void Awake()
         {
@@ -34,8 +33,8 @@ namespace CyanStars.Gameplay.MusicGame
 
         public virtual void OnUpdate(float viewDistance)
         {
-            ViewDeltaTime = this.ViewDistance - viewDistance;
-            this.ViewDistance = viewDistance;
+            ViewDeltaTime = ViewDistance - viewDistance;
+            ViewDistance = viewDistance;
             Vector3 pos = transform.position;
             pos.z = -viewDistance;
             transform.position = pos;
@@ -61,12 +60,6 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
-        private void ReleaseHitEffectObj(object userdata)
-        {
-            GameRoot.GameObjectPool.ReleaseGameObject(hitEffectPrefabName, hitEffectObj);
-            hitEffectObj = null;
-        }
-
         public void DestroyEffectObj()
         {
             if (hitEffectObj == null)
@@ -86,6 +79,12 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             StartCoroutine(AutoMove());
+        }
+
+        private void ReleaseHitEffectObj(object userdata)
+        {
+            GameRoot.GameObjectPool.ReleaseGameObject(hitEffectPrefabName, hitEffectObj);
+            hitEffectObj = null;
         }
 
         /// <summary>

@@ -67,7 +67,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 case NoteType.Break:
                 {
-                    pos.x = ((data as BreakChartNoteData).BreakNotePos == BreakNotePos.Left) ? -19 : 19;
+                    pos.x = (data as BreakChartNoteData).BreakNotePos == BreakNotePos.Left ? -19 : 19;
                     pos.y = 2.5f;
                     break;
                 }

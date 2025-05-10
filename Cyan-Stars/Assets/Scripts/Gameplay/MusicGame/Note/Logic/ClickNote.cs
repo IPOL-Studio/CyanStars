@@ -7,7 +7,7 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public class ClickNote : BaseNote, IMainTrackNotePos
     {
-        public float Pos { get; set; }
+        private const float NoteWidth = 0.2f;
 
         /// <summary>
         /// 按下的时间点
@@ -19,7 +19,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private bool headChecked;
 
-        private const float NoteWidth = 0.2f;
+        public float Pos { get; set; }
 
 
         public override void Init(BaseChartNoteData data, ChartData chartData, NoteClip clip)

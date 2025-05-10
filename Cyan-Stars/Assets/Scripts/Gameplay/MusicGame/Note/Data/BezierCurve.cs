@@ -34,6 +34,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 throw new InvalidOperationException("No starting curve with P0.Time = 0.");
             }
+
             if (remainingCurves.Count(c => c.P0.Time == 0) > 1)
             {
                 throw new InvalidOperationException("Multiple curves with P0.Time = 0.");

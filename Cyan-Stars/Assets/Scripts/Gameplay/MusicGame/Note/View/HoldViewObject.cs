@@ -9,14 +9,36 @@ namespace CyanStars.Gameplay.MusicGame
         [SerializeField]
         private MeshRenderer meshRenderer;
 
-        private MaterialPropertyBlock block = null;
+        private MaterialPropertyBlock block;
+
+        private HoldNote note;
 
         /// <summary>
         /// 是否被按下（在判定线上截断）
         /// </summary>
-        private bool pressed = false;
+        private bool pressed;
 
-        private HoldNote note;
+        protected override void Awake()
+        {
+            base.Awake();
+            block = new MaterialPropertyBlock();
+            block.SetFloat(Flicker, 0);
+            meshRenderer.SetPropertyBlock(block);
+        }
+
+
+        private void OnEnable()
+        {
+            pressed = false;
+
+            block.SetFloat(Flicker, 0);
+            if (meshRenderer)
+            {
+                meshRenderer.SetPropertyBlock(block);
+            }
+
+            CloseFlicker();
+        }
 
 
         public void Init(HoldNote note)
@@ -66,34 +88,12 @@ namespace CyanStars.Gameplay.MusicGame
             transform.localScale = s;
         }
 
-        protected override void Awake()
-        {
-            base.Awake();
-            block = new MaterialPropertyBlock();
-            block.SetFloat(Flicker, 0);
-            meshRenderer.SetPropertyBlock(block);
-        }
-
-
-        private void OnEnable()
-        {
-            pressed = false;
-
-            block.SetFloat(Flicker, 0);
-            if (meshRenderer)
-            {
-                this.meshRenderer.SetPropertyBlock(block);
-            }
-
-            CloseFlicker();
-        }
-
         public void OpenFlicker()
         {
             block.SetFloat(Flicker, 1.2f);
             if (meshRenderer)
             {
-                this.meshRenderer.SetPropertyBlock(block);
+                meshRenderer.SetPropertyBlock(block);
             }
         }
 
@@ -102,7 +102,7 @@ namespace CyanStars.Gameplay.MusicGame
             block.SetFloat(Flicker, 0);
             if (meshRenderer)
             {
-                this.meshRenderer.SetPropertyBlock(block);
+                meshRenderer.SetPropertyBlock(block);
             }
         }
     }
