@@ -26,7 +26,7 @@ namespace CyanStars.Gameplay.MusicGame
                     }
 
                     var attr = type.GetCustomAttribute<TrackLoaderAttribute>();
-                    if (attr?.ChartTrackDataType is null || attr.GameplayTrackType is null)
+                    if (attr?.ChartTrackDataType is null)
                         continue;
 
                     var trackLoader = (ITrackLoader)Activator.CreateInstance(type);

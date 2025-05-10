@@ -6,12 +6,10 @@ namespace CyanStars.Gameplay.MusicGame
     public sealed class TrackLoaderAttribute : Attribute
     {
         public readonly Type ChartTrackDataType;
-        public readonly Type GameplayTrackType;
 
-        public TrackLoaderAttribute(Type chartTrackDataType, Type gameplayTrackType)
+        public TrackLoaderAttribute(Type chartTrackDataType)
         {
             ChartTrackDataType = chartTrackDataType;
-            GameplayTrackType = gameplayTrackType;
         }
     }
 }

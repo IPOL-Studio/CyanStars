@@ -5,7 +5,7 @@ using CyanStars.Gameplay.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    [TrackLoader(typeof(FrameChartTrackData), typeof(FrameTrack))]
+    [TrackLoader(typeof(FrameChartTrackData))]
     public sealed class FrameTrackLoader : BaseTrackLoader<FrameChartTrackData>
     {
         public override bool IsEnabled => GameRoot.GetDataModule<MusicGameSettingsModule>().EnableFrameTrack;
