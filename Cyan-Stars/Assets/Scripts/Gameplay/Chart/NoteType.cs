@@ -1,4 +1,4 @@
-namespace CyanStars.Gameplay.MusicGame
+namespace CyanStars.Gameplay.Chart
 {
     /// <summary>
     /// 音符类型

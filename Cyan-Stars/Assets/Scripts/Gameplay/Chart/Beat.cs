@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CyanStars.Gameplay.MusicGame
+namespace CyanStars.Gameplay.Chart
 {
     public readonly struct Beat
     {

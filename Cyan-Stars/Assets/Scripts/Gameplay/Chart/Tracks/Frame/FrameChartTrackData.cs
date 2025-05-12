@@ -1,5 +1,4 @@
-﻿using CyanStars.Gameplay.MusicGame;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace CyanStars.Gameplay.Chart
 {

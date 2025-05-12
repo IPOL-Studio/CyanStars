@@ -1,6 +1,7 @@
 using System.Collections;
 using CyanStars.Framework;
 using CyanStars.Framework.Timer;
+using CyanStars.Gameplay.Chart;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame

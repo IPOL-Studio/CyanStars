@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CyanStars.Gameplay.MusicGame;
 using JetBrains.Annotations;
 
 namespace CyanStars.Gameplay.Chart
