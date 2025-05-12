@@ -1,5 +1,6 @@
 using System.Collections;
 using CyanStars.Framework;
+using CyanStars.Gameplay.Chart;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         [SerializeField]
         private float staffGroupKeepTime = 3f;
+
         private float lastStaffGroupKeepTime = -1;
 
         private WaitForSeconds staffCarouseInterval;
@@ -32,14 +34,15 @@ namespace CyanStars.Gameplay.MusicGame
 
             startButton.onClick.AddListener(() =>
             {
-                GameRoot.GetDataModule<MusicGameModule>().MapIndex = owner.CurrentSelectedMap.Index;
+                GameRoot.GetDataModule<MusicGameModule>().ChartPackIndex = owner.CurrentSelectedMap.Index;
+                GameRoot.GetDataModule<MusicGameModule>().Difficulty = ChartDifficulty.KuiXing; // TODO: 从 UI 传入难度参数
                 GameRoot.ChangeProcedure<MusicGameProcedure>();
             });
 
             canvasGroup = GetComponent<CanvasGroup>();
         }
 
-        public  void OnEnter(MapSelectionPageChangeArgs args)
+        public void OnEnter(MapSelectionPageChangeArgs args)
         {
             if (runningTween?.IsPlaying() ?? false)
             {
@@ -51,9 +54,9 @@ namespace CyanStars.Gameplay.MusicGame
             canvasGroup.alpha = 0;
 
             runningTween = canvasGroup.DOFade(1, args.FadeTime)
-                                      .SetEase(args.AnimationEase)
-                                      .OnComplete(() => canvasGroup.interactable = true)
-                                      .OnKill(() => runningTween = null);
+                .SetEase(args.AnimationEase)
+                .OnComplete(() => canvasGroup.interactable = true)
+                .OnKill(() => runningTween = null);
 
             staffCarouseCor = StartCoroutine(CarouselStaffStarsCor());
         }
@@ -76,9 +79,9 @@ namespace CyanStars.Gameplay.MusicGame
             canvasGroup.interactable = false;
 
             runningTween = canvasGroup.DOFade(0, args.FadeTime)
-                                      .SetEase(args.AnimationEase)
-                                      .OnComplete(() => gameObject.SetActive(false))
-                                      .OnKill(() => runningTween = null);
+                .SetEase(args.AnimationEase)
+                .OnComplete(() => gameObject.SetActive(false))
+                .OnKill(() => runningTween = null);
         }
 
         private IEnumerator CarouselStaffStarsCor()

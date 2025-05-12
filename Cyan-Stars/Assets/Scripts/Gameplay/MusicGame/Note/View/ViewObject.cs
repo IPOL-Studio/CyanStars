@@ -1,10 +1,8 @@
-using System;
-using UnityEngine;
 using System.Collections;
 using CyanStars.Framework;
-using CyanStars.Framework.GameObjectPool;
 using CyanStars.Framework.Timer;
-
+using CyanStars.Gameplay.Chart;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -13,19 +11,18 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public class ViewObject : MonoBehaviour, IView
     {
-
         [SerializeField]
         private NoteType noteType;
 
-        protected float ViewDistance;
-        protected float ViewDeltaTime;
-
-        private string notePrefabName;
+        private GameObject hitEffectObj;
         private string hitEffectPrefabName;
 
-        private GameObject hitEffectObj;
+        private string notePrefabName;
 
         private TimerCallback timerCallback;
+        protected float ViewDeltaTime;
+
+        protected float ViewDistance;
 
         protected virtual void Awake()
         {
@@ -37,10 +34,10 @@ namespace CyanStars.Gameplay.MusicGame
 
         public virtual void OnUpdate(float viewDistance)
         {
-            ViewDeltaTime = this.ViewDistance - viewDistance;
-            this.ViewDistance = viewDistance;
+            ViewDeltaTime = ViewDistance - viewDistance;
+            ViewDistance = viewDistance;
             Vector3 pos = transform.position;
-            pos.z = viewDistance;
+            pos.z = -viewDistance;
             transform.position = pos;
         }
 
@@ -52,21 +49,16 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             hitEffectObj = await GameRoot.GameObjectPool.GetGameObjectAsync(hitEffectPrefabName, null);
-            hitEffectObj.transform.position = new Vector3(transform.position.x + Endpoint.Instance.Length * w / 2, transform.position.y ,0);
+            hitEffectObj.transform.position = new Vector3(transform.position.x + Endpoint.Instance.Length * w / 2,
+                transform.position.y, 0);
             hitEffectObj.transform.rotation = transform.rotation;
             hitEffectObj.transform.SetParent(ViewHelper.EffectRoot);
 
             NoteHitEffect hitEffect = hitEffectObj.GetComponent<NoteHitEffect>();
             if (hitEffect.WillDestroy)
             {
-                GameRoot.Timer.GetTimer<IntervalTimer>().Add(hitEffect.DestroyTime,timerCallback);
+                GameRoot.Timer.GetTimer<IntervalTimer>().Add(hitEffect.DestroyTime, timerCallback);
             }
-        }
-
-        private void ReleaseHitEffectObj(object userdata)
-        {
-            GameRoot.GameObjectPool.ReleaseGameObject(hitEffectPrefabName,hitEffectObj);
-            hitEffectObj = null;
         }
 
         public void DestroyEffectObj()
@@ -77,7 +69,6 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             ReleaseHitEffectObj(null);
-
         }
 
         public void DestroySelf(bool autoMove = true)
@@ -89,6 +80,12 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             StartCoroutine(AutoMove());
+        }
+
+        private void ReleaseHitEffectObj(object userdata)
+        {
+            GameRoot.GameObjectPool.ReleaseGameObject(hitEffectPrefabName, hitEffectObj);
+            hitEffectObj = null;
         }
 
         /// <summary>
@@ -105,7 +102,7 @@ namespace CyanStars.Gameplay.MusicGame
 
                 ViewDistance -= ViewDeltaTime;
                 Vector3 pos = trans.position;
-                pos.z = ViewDistance;
+                pos.z = -ViewDistance;
                 trans.position = pos;
 
                 if (timer >= 1f)

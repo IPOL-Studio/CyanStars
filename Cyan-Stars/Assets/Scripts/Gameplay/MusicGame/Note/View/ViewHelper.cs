@@ -1,9 +1,7 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CyanStars.Framework;
-
+using CyanStars.Gameplay.Chart;
 using UnityEngine;
-
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -30,16 +28,16 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 创建视图层物体
         /// </summary>
-        public static async Task<IView> CreateViewObject(NoteData data, BaseNote note)
+        public static async Task<IView> CreateViewObject(BaseChartNoteData data, BaseNote note)
         {
             MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
             GameObject go = null;
             string prefabName = dataModule.NotePrefabNameDict[data.Type];
 
-            go = await GameRoot.GameObjectPool.GetGameObjectAsync(prefabName,ViewRoot);
+            go = await GameRoot.GameObjectPool.GetGameObjectAsync(prefabName, ViewRoot);
 
             //这里因为用了异步await，所以需要使用note在物体创建成功后这一刻的视图层时间作为viewCreateTime，否则位置会对不上
-            go.transform.position = GetViewObjectPos(data,note.ViewDistance);
+            go.transform.position = GetViewObjectPos(data, note.CurViewDistance);
             go.transform.localScale = GetViewObjectScale(data);
             go.transform.localEulerAngles = GetViewObjectRotation(data);
 
@@ -47,8 +45,9 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (data.Type == NoteType.Hold)
             {
-                float length = (data.HoldViewEndTime - data.ViewJudgeTime) / 1000f;
-                (view as HoldViewObject).SetLength(length);
+                (view as HoldViewObject).Init(note as HoldNote);
+                (view as HoldViewObject).SetPressed(false);
+                (view as HoldViewObject).SetLength();
             }
 
             return view;
@@ -57,31 +56,41 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 根据音符数据获取映射后的视图层位置
         /// </summary>
-        private static Vector3 GetViewObjectPos(NoteData data,float viewDistance)
+        private static Vector3 GetViewObjectPos(BaseChartNoteData data, float viewDistance)
         {
             Vector3 pos = default;
 
-            pos.z = viewDistance;
+            pos.z = -viewDistance;
 
             pos.y = Endpoint.Instance.LeftTrans.position.y;
-            if (data.Type == NoteType.Break)
+            switch (data.Type)
             {
-                if (Mathf.Abs(data.Pos - (-1)) < float.Epsilon)
+                case NoteType.Break:
                 {
-                    //左侧break
-                    pos.x = -19;
+                    pos.x = (data as BreakChartNoteData).BreakNotePos == BreakNotePos.Left ? -19 : 19;
+                    pos.y = 2.5f;
+                    break;
                 }
-                else
+                case NoteType.Tap:
                 {
-                    //右侧break
-                    pos.x = 19;
+                    pos.x = Endpoint.Instance.GetPosWithRatio((data as TapChartNoteData).Pos);
+                    break;
                 }
-
-                pos.y = 2.5f;
-            }
-            else
-            {
-                pos.x = Endpoint.Instance.GetPosWithRatio(data.Pos);
+                case NoteType.Hold:
+                {
+                    pos.x = Endpoint.Instance.GetPosWithRatio((data as HoldChartNoteData).Pos);
+                    break;
+                }
+                case NoteType.Drag:
+                {
+                    pos.x = Endpoint.Instance.GetPosWithRatio((data as DragChartNoteData).Pos);
+                    break;
+                }
+                case NoteType.Click:
+                {
+                    pos.x = Endpoint.Instance.GetPosWithRatio((data as ClickChartNoteData).Pos);
+                    break;
+                }
             }
 
             return pos;
@@ -90,43 +99,20 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 根据音符数据获取映射后的视图层缩放
         /// </summary>
-        private static Vector3 GetViewObjectScale(NoteData data)
+        private static Vector3 GetViewObjectScale(BaseChartNoteData _)
         {
-            Vector3 scale = Vector3.one;
-
-            if (data.Type != NoteType.Break)
-            {
-                //非Break音符需要缩放宽度
-                // scale.x = NoteData.NoteWidth * Endpoint.Instance.Length;
-                // scale.y = 2;
-            }
-            else
-            {
-                scale.x = 1;
-                scale.z = 1;
-            }
-
-            return scale;
+            return Vector3.one;
         }
 
         /// <summary>
         /// 根据音符数据获取视图层物体旋转
         /// </summary>
-        private static Vector3 GetViewObjectRotation(NoteData data)
+        private static Vector3 GetViewObjectRotation(BaseChartNoteData data)
         {
             Vector3 rotation = Vector3.zero;
             if (data.Type == NoteType.Break)
             {
-                if (Mathf.Abs(data.Pos - (-1)) < float.Epsilon)
-                {
-                    //左侧break
-                    rotation.z = -30;
-                }
-                else
-                {
-                    //右侧break
-                    rotation.z = 30;
-                }
+                rotation.z = (data as BreakChartNoteData).BreakNotePos == BreakNotePos.Left ? -30 : 30;
             }
 
             return rotation;
