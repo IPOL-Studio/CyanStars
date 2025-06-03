@@ -1,3 +1,3 @@
 files:
   - source: README.md
-    translation: /README_%two_letters_code%.md
+    translation: /README_%osx_locale%.md
