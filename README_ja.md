@@ -18,13 +18,13 @@
 
 若要发布修改后的游戏文件，请明确指出“此游戏以经过修改，非 IPOL 原版内容”等类似表达，以将您的作品与此仓库发布的作品进行区分。修改后的游戏文件不得在任何国家/地区注册版权。
 
-記事やプロジェクトの翻訳に参加したいですか？[crowdin](https://zh.crowdin.com/project/cyanstars) に参加してください！
+記事やプロジェクトの翻訳に参加したいですか？[crowdin](https://ja.crowdin.com/project/cyanstars) に参加してください、または PR を提出してください。
 
 ## 相关链接
 
-ドキュメントへの貢献
+社区贡献者/收录曲目/隐私协议等，见于 [附属文档](https://ipol-studio.github.io/CyanStars_Docs/)。
 
-- ドキュメントのウェブページは[こちら](https://ipol-studio.github.io/CyanStars_Docs)でご覧ください。
+- 附：[附属文档仓库](https://github.com/IPOL-Studio/CyanStars_Docs)
 
 多媒体文件作为子模块引用，路径为 `Cyan-Stars/Assets/CysMultimediaAssets`，对于多媒体文件的贡献指南请查阅子模块仓库说明。
 
