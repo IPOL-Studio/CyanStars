@@ -2,7 +2,7 @@
 
 ---
 
-\| [简体中文](README.md) | **English** | [繁體中文](README_zh-Hant.md) | [日本語](README_ja.md) | [![Crowdin](https://badges.crowdin.net/cyanstars/localized.svg)](https://crowdin.com/project/cyanstars)
+\| **简体中文** | [English](README_en.md) | [繁體中文](README_zh-Hant.md) | [日本語](README_ja.md) | [![Crowdin](https://badges.crowdin.net/cyanstars/localized.svg)](https://crowdin.com/project/cyanstars)
 
 # CyanStars
 
@@ -16,9 +16,9 @@ Before you start contributing, please take a moment to read the [Contribution Gu
 
 Please use the specifications outlined in [LICENSE](LICENSE) and [NOTICE](NOTICE) for source code and multimedia files.
 
-If you wish to publish modified game files, please clearly state expressions like "This game has been modified and is not the original IPOL version" to differentiate your work from what is released in this repository. Modified game files must not be copyrighted in any country/region.The modified game files cannot be registered for copyright in any country/region.
+If you wish to publish modified game files, please clearly state expressions like "This game has been modified and is not the original IPOL version" to differentiate your work from what is released in this repository. Modified game files must not be copyrighted in any country/region.The modified game files cannot be registered for copyright in any country/region.修改后的游戏文件不得在任何国家/地区注册版权。
 
-Are you able to participate in the translation of the project and documents?Please assist us on [Crowdin](https://crowdin.com/project/cyanstars) or submit via PR.
+有能力参与项目与文档的翻译吗？Are you able to participate in the translation of the project and documents?Do you have the ability to contribute to the project and document translation? Please assist us on [Crowdin](https://crowdin.com/project/cyanstars) or submit via PR.
 
 ## Related Links
 
@@ -30,7 +30,7 @@ Multimedia files are referenced as submodules at the path `Cyan-Stars/Assets/Cys
 
 - Attachment: [Multimedia Assets Repository](https://github.com/IPOL-Studio/CyanStarsMultimediaAssets)
 
-Do you have expertise in art/music/charting/programming/translation, etc., and are interested in participating in our internal discussions? Feel free to apply to join us [here](http://chenluan.mikecrm.com/JeKq3DU).Click [here](http://chenluan.mikecrm.com/JeKq3DU) to apply to join us.
+Do you have expertise in art/music/charting/programming/translation, etc., and are interested in participating in our internal discussions? Feel free to apply to join us [here](http://chenluan.mikecrm.com/JeKq3DU).Click [here](http://chenluan.mikecrm.com/JeKq3DU) to apply to join us.欢迎点 [这里](http://chenluan.mikecrm.com/JeKq3DU) 来申请加入我们。
 
 Player communication QQ group: `827556233`
 
@@ -60,7 +60,7 @@ Alternatively, manually download version `2020.3.28f1` of the editor from the [U
 
 ### Download Other Necessary Resources
 
-[Live2D Cubism SDK for Unity](https://www.live2d.com/zh-CHS/sdk/download/unity/) - A third-party Unity package for playing Live2D resources in Unity projects. After agreeing to the license, download and drag it into the Unity editor for import, then restart the editor.After agreeing to the terms, download and drag it into the Unity editor for import, then restart the editor.
+[Live2D Cubism SDK for Unity](https://www.live2d.com/zh-CHS/sdk/download/unity/) - A third-party Unity package for playing Live2D resources in Unity projects. After agreeing to the license, download and drag it into the Unity editor for import, then restart the editor.After agreeing to the terms, download and drag it into the Unity editor for import, then restart the editor.在同意协议后、下载并拖动到 Unity 编辑器内导入，然后重启一次编辑器。
 
 ### Build Installation Package
 
