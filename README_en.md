@@ -2,7 +2,7 @@
 
 ---
 
-\| [简体中文](README.md) | **English** |
+\| **简体中文** | [English](README_en.md) | [繁體中文](README_zh-Hant.md) | [日本語](README_ja.md) | [![Crowdin](https://badges.crowdin.net/cyanstars/localized.svg)](https://crowdin.com/project/cyanstars)
 
 # CyanStars
 
@@ -18,7 +18,7 @@ Please use the specifications outlined in [LICENSE](LICENSE) and [NOTICE](NOTICE
 
 If you wish to publish modified game files, please clearly state expressions like "This game has been modified and is not the original IPOL version" to differentiate your work from what is released in this repository. Modified game files must not be copyrighted in any country/region.The modified game files cannot be registered for copyright in any country/region.
 
-Are you able to participate in the translation of the project and documents?Do you have the ability to contribute to the project and document translation? Please assist us on [Crowdin](https://crowdin.com/project/cyanstars) or submit via PR.
+Are you able to participate in the translation of the project and documents?Please assist us on [Crowdin](https://crowdin.com/project/cyanstars) or submit via PR.
 
 ## Related Links
 
