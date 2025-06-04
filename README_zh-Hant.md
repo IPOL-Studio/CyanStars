@@ -2,7 +2,7 @@
 
 ---
 
-\| **简体中文** | [English](README_en.md) |
+\| [简体中文](README.md) | [English](README_en.md) | **繁體中文** | [日本語](README_ja.md) | [![Crowdin](https://badges.crowdin.net/cyanstars/localized.svg)](https://crowdin.com/project/cyanstars)
 
 # CyanStars
 
@@ -18,13 +18,13 @@
 
 若要发布修改后的游戏文件，请明确指出“此游戏以经过修改，非 IPOL 原版内容”等类似表达，以将您的作品与此仓库发布的作品进行区分。修改后的游戏文件不得在任何国家/地区注册版权。
 
-希望参与文章与项目的翻译工作？欢迎前往 [crowdin](https://zh.crowdin.com/project/cyanstars) 参与！
+有能力参与项目与文档的翻译吗？请在 [Crowdin](https://zh.crowdin.com/project/cyanstars) 上协助我们，或通过 PR 提出。
 
 ## 相关链接
 
-歡迎來到 CyanStars_Docs 倉庫，CyanStars_Docs 是開源遊戲 CyanStars 的附屬文檔與百科。
+社区贡献者/收录曲目/隐私协议等，见于 [附属文档](https://ipol-studio.github.io/CyanStars_Docs/)。
 
-- 请在 [这里](https://ipol-studio.github.io/CyanStars_Docs) 查看文档网页。
+- 附：[附属文档仓库](https://github.com/IPOL-Studio/CyanStars_Docs)
 
 多媒体文件作为子模块引用，路径为 `Cyan-Stars/Assets/CysMultimediaAssets`，对于多媒体文件的贡献指南请查阅子模块仓库说明。
 
