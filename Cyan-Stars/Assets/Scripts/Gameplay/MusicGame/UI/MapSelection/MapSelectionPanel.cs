@@ -67,7 +67,7 @@ namespace CyanStars.Gameplay.MusicGame
         protected override void OnCreate()
         {
             var musicGameModule = GameRoot.GetDataModule<MusicGameModule>();
-            CurrentSelectedMap = MapItemData.Create(musicGameModule.MapIndex, musicGameModule.GetMaps()[musicGameModule.MapIndex]);
+            CurrentSelectedMap = MapItemData.Create(musicGameModule.ChartPackIndex, musicGameModule.GetChartPacks()[musicGameModule.ChartPackIndex]);
 
             var pages = this.GetComponentsInChildren<IMapSelectionPage>(true);
             pageDict = new Dictionary<Type, IMapSelectionPage>();

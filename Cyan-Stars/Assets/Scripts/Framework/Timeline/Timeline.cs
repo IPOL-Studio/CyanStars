@@ -29,11 +29,6 @@ namespace CyanStars.Framework.Timeline
         /// </summary>
         public float CurrentTime { get; private set; } = -float.Epsilon;
 
-        /// <summary>
-        /// 播放速度
-        /// </summary>
-        public float PlaybackSpeed { get; set; } = 1;
-
         public Timeline(float length)
         {
             Length = length;
@@ -105,7 +100,7 @@ namespace CyanStars.Framework.Timeline
             }
 
             float previousTime = CurrentTime;
-            CurrentTime += deltaTime * PlaybackSpeed;
+            CurrentTime += deltaTime;
             for (int i = 0; i < tracks.Count; i++)
             {
                 //更新轨道

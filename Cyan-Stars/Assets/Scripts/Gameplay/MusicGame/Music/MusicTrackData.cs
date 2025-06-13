@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public class MusicTrackData : ITrackData<AudioClip>
+    public class MusicTrackData : ITrackData<MusicClipData>
     {
         public int ClipCount => 1;
-        public List<AudioClip> ClipDataList { get; set; }
+        public List<MusicClipData> ClipDataList { get; set; }
     }
 }

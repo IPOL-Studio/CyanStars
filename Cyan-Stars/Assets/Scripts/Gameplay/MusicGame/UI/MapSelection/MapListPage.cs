@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyanStars.Framework;
 using CyanStars.Framework.UI;
+using CyanStars.Gameplay.Chart;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -12,7 +13,6 @@ namespace CyanStars.Gameplay.MusicGame
     [RequireComponent(typeof(CanvasGroup))]
     public class MapListPage : MonoBehaviour, IMapSelectionPage
     {
-
         [SerializeField]
         private GameObject mapItemTemplate;
 
@@ -44,10 +44,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             animationElements = GetComponentsInChildren<IPageElementAnimation>(true);
 
-            nextStepButton.onClick.AddListener(() =>
-            {
-                this.owner.ChangePage<StaffPage>();
-            });
+            nextStepButton.onClick.AddListener(() => { this.owner.ChangePage<StaffPage>(); });
 
             // backButton.onClick.AddListener(() =>
             // {
@@ -76,8 +73,8 @@ namespace CyanStars.Gameplay.MusicGame
             OnSelectMap(mapItems[this.owner.CurrentSelectedMap.Index] as MapItem);
             canvasGroup.alpha = 0;
             runningTween = canvasGroup.DOFade(1, args.FadeTime)
-                                      .SetEase(args.AnimationEase)
-                                      .OnKill(() => runningTween = null);
+                .SetEase(args.AnimationEase)
+                .OnKill(() => runningTween = null);
 
             foreach (var elem in animationElements)
             {
@@ -100,9 +97,9 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             runningTween = canvasGroup.DOFade(0, args.FadeTime)
-                                      .SetEase(args.AnimationEase)
-                                      .OnComplete(() => gameObject.SetActive(false))
-                                      .OnKill(() => runningTween = null);
+                .SetEase(args.AnimationEase)
+                .OnComplete(() => gameObject.SetActive(false))
+                .OnKill(() => runningTween = null);
         }
 
         /// <summary>
@@ -110,17 +107,18 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private async Task RefreshMusicList()
         {
-            List<MapManifest> maps = musicGameModule.GetMaps();
+            // List<MapManifest> maps = musicGameModule.GetMaps();
+            List<ChartPack> chartPacks = musicGameModule.GetChartPacks();
 
-            for (int i = 0; i < maps.Count; i++)
+            for (int i = 0; i < chartPacks.Count; i++)
             {
-                MapManifest map = maps[i];
+                ChartPack chartPack = chartPacks[i];
                 MapItem mapItem = await GameRoot.UI.AwaitGetUIItem<MapItem>(mapItemTemplate, circularMapList.transform);
                 circularMapList.AddItem(mapItem);
                 mapItems.Add(mapItem);
                 mapItem.Index = i;
 
-                MapItemData data = MapItemData.Create(i, map);
+                MapItemData data = MapItemData.Create(i, chartPack);
                 mapItem.RefreshItem(data);
                 mapItem.OnSelect += OnSelectMap;
             }
@@ -140,23 +138,26 @@ namespace CyanStars.Gameplay.MusicGame
 
             this.owner.CurrentSelectedMap = mapItem.Data;
 
-            Debug.Log("当前选中:" + mapItem.Data.MapManifest.Name);
+            Debug.Log("当前选中:" + mapItem.Data.ChartPack.ChartPackData.Title);
 
             // 标题和Staff信息渐变动画
             mapTitleText.DOFade(0, 0.2f).OnComplete(() =>
             {
-                mapTitleText.text = mapItem.Data.MapManifest.Name;
+                mapTitleText.text = mapItem.Data.ChartPack.ChartPackData.Title;
                 mapTitleText.DOFade(1, 0.2f);
             });
 
             // 将原始 Staff 文本传递给 StarsGenerator 以进一步处理
-            if (string.IsNullOrEmpty(mapItem.Data.MapManifest.StaffInfo) || string.IsNullOrWhiteSpace(mapItem.Data.MapManifest.StaffInfo))
+            Dictionary<string, List<string>> staffs = mapItem.Data.ChartPack.ChartPackData
+                .MusicVersionDatas[musicGameModule.MusicVersionIndex].Staffs;
+            if (staffs == null || staffs.Count == 0)
             {
                 Debug.LogWarning("没有设置 Staff 文本");
             }
             else
             {
-                this.owner.StarController.ResetAllStaffGroup(mapItem.Data.MapManifest.StaffInfo);
+                this.owner.StarController.ResetAllStaffGroup(mapItem.Data.ChartPack.ChartPackData
+                    .MusicVersionDatas[musicGameModule.MusicVersionIndex].Staffs);
             }
         }
     }

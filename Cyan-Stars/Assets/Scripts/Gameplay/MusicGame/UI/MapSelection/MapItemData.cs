@@ -1,6 +1,6 @@
-﻿// TODO: TO BE DELETED
-using System;
+﻿using System;
 using CatAsset.Runtime;
+using CyanStars.Gameplay.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -17,20 +17,20 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 谱面清单
         /// </summary>
-        public MapManifest MapManifest {get; private set; }
+        public ChartPack ChartPack {get; private set; }
 
-        public static MapItemData Create(int index, MapManifest mapManifest)
+        public static MapItemData Create(int index, ChartPack chartPack)
         {
             MapItemData data = ReferencePool.Get<MapItemData>();
             data.Index = index;
-            data.MapManifest = mapManifest;
+            data.ChartPack = chartPack;
             return data;
         }
 
         public void Clear()
         {
             Index = default;
-            MapManifest = default;
+            ChartPack = default;
         }
 
         public bool Equals(MapItemData other)
@@ -38,7 +38,7 @@ namespace CyanStars.Gameplay.MusicGame
             if (other is null)
                 return false;
 
-            return this.Index == other.Index && this.MapManifest.Equals(other.MapManifest);
+            return this.Index == other.Index && this.ChartPack.Equals(other.ChartPack);
         }
 
         public override bool Equals(object obj)
@@ -48,7 +48,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override int GetHashCode()
         {
-            return Index ^ 23 ^ MapManifest.GetHashCode();
+            return Index ^ 23 ^ ChartPack.GetHashCode();
         }
     }
 }
