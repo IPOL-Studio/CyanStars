@@ -17,7 +17,7 @@ namespace CyanStars.Gameplay.MusicGame
         public float MaxScore; // 当前的理论最高分
         public float FullScore; // 全谱总分
         public EvaluateType Grade; // 当前Note的判定评价
-        public float ImpurityRate; // 杂率
+        public float ImpurityRate; // 杂率，单位为ms
         public float CurrentDeviation; // 当前Note的偏移
         public List<float> DeviationList; // 各个音符的偏移
         public int ExactNum;
