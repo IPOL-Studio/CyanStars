@@ -1,6 +1,6 @@
 using CyanStars.Framework;
 using CyanStars.Framework.Timeline;
-
+using CyanStars.Gameplay.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -12,32 +12,16 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 片段创建方法
         /// </summary>
-        public static readonly CreateClipFunc<NoteTrack, NoteTrackData, NoteLayerData> CreateClipFunc = CreateClip;
+        public static readonly CreateClipFunc<NoteTrack, NoteTrackData, ChartData> CreateClipFunc = CreateClip;
 
-        private static BaseClip<NoteTrack> CreateClip(NoteTrack track, NoteTrackData trackData, int curIndex, NoteLayerData _)
+        private static BaseClip<NoteTrack> CreateClip(NoteTrack track, NoteTrackData trackData, int curIndex,
+            ChartData chartData)
         {
-            NoteClip clip = new NoteClip(0, GameRoot.GetDataModule<MusicGameModule>().CurTimelineLength, track,
-                trackData.BaseSpeed, trackData.SpeedRate);
-
-            for (int i = 0; i < trackData.LayerDatas.Count; i++)
+            NoteClip clip = new NoteClip(0, GameRoot.GetDataModule<MusicGameModule>().CurTimelineLength, track);
+            foreach (BaseChartNoteData noteData in chartData.Notes)
             {
-                //创建图层
-                NoteLayerData layerData = trackData.LayerDatas[i];
-                NoteLayer layer = new NoteLayer(layerData);
-
-                for (int j = 0; j < layerData.TimeAxisDatas.Count; j++)
-                {
-                    NoteTimeAxisData timeAxisData = layerData.TimeAxisDatas[j];
-                    for (int k = 0; k < timeAxisData.NoteDatas.Count; k++)
-                    {
-                        //创建音符
-                        NoteData noteData = timeAxisData.NoteDatas[k];
-                        BaseNote note = CreateNote(noteData, layer);
-                        layer.AddNote(note);
-                    }
-                }
-
-                clip.AddLayer(layer);
+                BaseNote baseNote = CreateNote(noteData, chartData, clip);
+                clip.InsertNote(baseNote);
             }
 
             return clip;
@@ -47,7 +31,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 根据音符数据创建音符
         /// </summary>
-        private static BaseNote CreateNote(NoteData noteData, NoteLayer layer)
+        private static BaseNote CreateNote(BaseChartNoteData noteData, ChartData chartData, NoteClip clip)
         {
             BaseNote note = noteData.Type switch
             {
@@ -59,9 +43,8 @@ namespace CyanStars.Gameplay.MusicGame
                 _ => null
             };
 
-            note?.Init(noteData, layer);
+            note?.Init(noteData, chartData, clip);
             return note;
         }
-
     }
 }

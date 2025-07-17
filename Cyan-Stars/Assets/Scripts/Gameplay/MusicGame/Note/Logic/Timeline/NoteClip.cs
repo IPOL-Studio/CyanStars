@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CyanStars.Framework;
 using CyanStars.Framework.Timeline;
 
-
 namespace CyanStars.Gameplay.MusicGame
 {
     /// <summary>
@@ -11,61 +10,91 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public class NoteClip : BaseClip<NoteTrack>
     {
-
         /// <summary>
-        /// 谱面整体速度
+        /// 音符链表
         /// </summary>
-        private float mapSpeed;
+        public LinkedList<BaseNote> Notes = new LinkedList<BaseNote>();
 
-        /// <summary>
-        /// 音符图层列表
-        /// </summary>
-        private List<NoteLayer> layers = new List<NoteLayer>();
-
-        public NoteClip(float startTime, float endTime, NoteTrack owner, float baseSpeed, float speedRate) : base(
+        public NoteClip(float startTime, float endTime, NoteTrack owner) : base(
             startTime, endTime, owner)
         {
-            mapSpeed = baseSpeed * speedRate;
         }
 
-        /// <summary>
-        /// 添加音符图层
-        /// </summary>
-        public void AddLayer(NoteLayer layer)
+        public void InsertNote(BaseNote note)
         {
-            layers.Add(layer);
+            if (Notes.Count == 0)
+            {
+                Notes.AddFirst(note);
+                return;
+            }
+
+            LinkedListNode<BaseNote> current = Notes.First;
+            while (current != null && current.Value.CurLogicTime <= note.CurLogicTime)
+            {
+                current = current.Next;
+            }
+
+            if (current == null)
+            {
+                Notes.AddLast(note);
+            }
+            else
+            {
+                Notes.AddBefore(current, note);
+            }
         }
 
         public override void OnEnter()
         {
-            GameRoot.Event.AddListener(EventConst.MusicGameEndEvent,OnMusicGameEnd);
-            GameRoot.Event.AddListener(InputEventArgs.EventName,OnInput);
+            GameRoot.Event.AddListener(EventConst.MusicGameEndEvent, OnMusicGameEnd);
+            GameRoot.Event.AddListener(InputEventArgs.EventName, OnInput);
         }
 
         public override void OnUpdate(float currentTime, float previousTime)
         {
-            for (int i = 0; i < layers.Count; i++)
+            if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)
             {
-                NoteLayer layer = layers[i];
-                layer.Update(currentTime, previousTime, mapSpeed);
+                LinkedListNode<BaseNote> node = Notes.Last;
+                while (node != null)
+                {
+                    node.Value.OnUpdateInAutoMode(currentTime);
+                    node = node.Previous;
+                }
+            }
+            else
+            {
+                LinkedListNode<BaseNote> node = Notes.Last;
+                while (node != null)
+                {
+                    node.Value.OnUpdate(currentTime);
+                    node = node.Previous;
+                }
             }
         }
 
         private void OnMusicGameEnd(object sender, EventArgs e)
         {
-            GameRoot.Event.RemoveListener(EventConst.MusicGameEndEvent,OnMusicGameEnd);
-            GameRoot.Event.RemoveListener(InputEventArgs.EventName,OnInput);
+            GameRoot.Event.RemoveListener(EventConst.MusicGameEndEvent, OnMusicGameEnd);
+            GameRoot.Event.RemoveListener(InputEventArgs.EventName, OnInput);
         }
 
         private void OnInput(object sender, EventArgs e)
         {
             InputEventArgs args = (InputEventArgs)e;
-            for (int i = 0; i < layers.Count; i++)
+
+            if (Notes.Count == 0)
             {
-                layers[i].OnInput(args.Type,args.RangeMin,args.RangeWidth);
+                return;
+            }
+
+            foreach (BaseNote note in Notes)
+            {
+                if (note.CanReceiveInput() && note.IsInInputRange(args.RangeMin, args.RangeMin + args.RangeWidth))
+                {
+                    note.OnInput(args.Type);
+                    break; // 一次输入信号只发给一个 note
+                }
             }
         }
-
-
     }
 }
