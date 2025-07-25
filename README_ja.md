@@ -2,7 +2,7 @@
 
 ---
 
-\| [简体中文](README.md) | [English](README_en.md) | [繁體中文](README_zh-Hant.md) | **日本語** | [![Crowdin](https://badges.crowdin.net/cyanstars/localized.svg)](https://crowdin.com/project/cyanstars)
+\| **简体中文** | [English](README_en.md) | [繁體中文](README_zh-Hant.md) | [日本語](README_ja.md) | [![Crowdin](https://badges.crowdin.net/cyanstars/localized.svg)](https://crowdin.com/project/cyanstars)
 
 # CyanStars
 
@@ -18,7 +18,7 @@
 
 若要发布修改后的游戏文件，请明确指出“此游戏以经过修改，非 IPOL 原版内容”等类似表达，以将您的作品与此仓库发布的作品进行区分。修改后的游戏文件不得在任何国家/地区注册版权。
 
-記事やプロジェクトの翻訳に参加したいですか？[crowdin](https://ja.crowdin.com/project/cyanstars) に参加してください、または PR を提出してください。
+有能力参与项目与文档的翻译吗？请在 [Crowdin](https://zh.crowdin.com/project/cyanstars) 上协助我们，或通过 PR 提出。
 
 ## 相关链接
 
