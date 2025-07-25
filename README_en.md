@@ -2,49 +2,49 @@
 
 ---
 
-\| **简体中文** | [English](README_en.md) | [繁體中文](README_zh-Hant.md) | [日本語](README_ja.md) | [![Crowdin](https://badges.crowdin.net/cyanstars/localized.svg)](https://crowdin.com/project/cyanstars)
+\| [简体中文](README.md) | **English** | [繁體中文](README_zh-Hant.md) | [日本語](README_ja.md) | [![Crowdin](https://badges.crowdin.net/cyanstars/localized.svg)](https://crowdin.com/project/cyanstars)
 
 # CyanStars
 
-> 音乐，是宇宙的共通语言。
+> Music is the universal language of the cosmos.
 
-翠蓝星穹（CyanStars）是一款由无圻寻光开发组（IPOL）开发的中文虚拟歌手同人、非商、社区音乐游戏。
+CyanStars is a fan-made, non-commercial rhythm game about Chinese Virtual Singers. It's developed by the Infinite Pursuit of Light (IPOL) Development Team.
 
-## 参与开发
+## Contribute to the Development
 
-在您第一次开发之前，请务必花一点点时间阅读一下 [贡献指南](CONTRIBUTING.md)，非常感谢！
+If you'd like to contribute to our project, please spend a moment to read through the [Contribution Guidelines](CONTRIBUTING.md), It will be really appreciated!
 
-源代码与多媒体文件请在 [LICENSE](LICENSE) 和 [NOTICE](NOTICE) 中约定的规范内使用。
+Please use the specifications outlined in [LICENSE](LICENSE) and [NOTICE](NOTICE) for source code and multimedia files.
 
-若要发布修改后的游戏文件，请明确指出“此游戏以经过修改，非 IPOL 原版内容”等类似表达，以将您的作品与此仓库发布的作品进行区分。修改后的游戏文件不得在任何国家/地区注册版权。
+If you wish to publish modified game files, please clearly state that "This game has been modified and is not the original IPOL version" to differentiate your work from what is released in this repository.The modified game files must not be registered for copyright in any country/region.
 
-有能力参与项目与文档的翻译吗？请在 [Crowdin](https://zh.crowdin.com/project/cyanstars) 上协助我们，或通过 PR 提出。
+Are you able to participate in the translation of the project and documents?Please assist us on [Crowdin](https://crowdin.com/project/cyanstars) or submit via PR.
 
-## 相关链接
+## Related Links
 
-社区贡献者/收录曲目/隐私协议等，见于 [附属文档](https://ipol-studio.github.io/CyanStars_Docs/)。
+Community contributors/included tracks/privacy policy, etc., can be found in the [Associated Documents](https://ipol-studio.github.io/CyanStars_Docs/).
 
-- 附：[附属文档仓库](https://github.com/IPOL-Studio/CyanStars_Docs)
+- Please check the documentation webpage [here](https://ipol-studio.github.io/CyanStars_Docs)
 
-多媒体文件作为子模块引用，路径为 `Cyan-Stars/Assets/CysMultimediaAssets`，对于多媒体文件的贡献指南请查阅子模块仓库说明。
+Multimedia files are referenced as submodules at the path `Cyan-Stars/Assets/CysMultimediaAssets`. Please refer to the submodule repository documentation for contribution guidelines regarding multimedia files.
 
-- 附：[多媒体文件仓库](https://github.com/IPOL-Studio/CyanStarsMultimediaAssets)
+- Attachment: [Multimedia Assets Repository](https://github.com/IPOL-Studio/CyanStarsMultimediaAssets)
 
-在美术/音乐/谱面/程序/翻译等方面有特长，且有兴趣参与我们的内部讨论？欢迎点 [这里](http://chenluan.mikecrm.com/JeKq3DU) 来申请加入我们。
+Do you have expertise in art/music/charting/programming/translation, etc., and are interested in participating in our internal discussions?Click [here](http://chenluan.mikecrm.com/JeKq3DU) to apply and join us.
 
-玩家交流 QQ 群：`827556233`
+Player's communication QQ group: `827556233`
 
-版权、安全性、成员与社区、或是其他问题，欢迎随时联系我们 <chenluan@cyanstars.onaliyun.com>。
+For copyright, security, members and community, or other issues, please feel free to contact us at <chenluan@cyanstars.onaliyun.com>.
 
-## 开发文档
+## Development Documentation
 
-### 克隆仓库和子模块（如果正在使用 git 命令行）
+### Cloning the repository and submodules (if using the git command line)
 
 ```
 git clone --recurse-submodules https://github.com/IPOL-Studio/CyanStars.git
 ```
 
-或
+or
 
 ```
 git clone https://github.com/IPOL-Studio/CyanStars.git
@@ -52,16 +52,16 @@ cd CyanStars
 git submodule update --init --recursive
 ```
 
-### 下载 Unity 编辑器
+### Download Unity Editor
 
-若您已安装 Unity Hub，可将此链接复制到浏览器，调起 Unity Hub 内下载：`unityhub://2020.3.28f1/f5400f52e03f`。
+If you have Unity Hub installed, you can copy this link to your browser to launch Unity Hub for download: `unityhub://2020.3.28f1/f5400f52e03f`.
 
-或从 [Unity 官网](https://unity3d.com/get-unity/download/archive) 手动下载 `2020.3.28f1` 版本的编辑器。
+Alternatively, manually download version `2020.3.28f1` of the editor from the [Unity official website](https://unity3d.com/get-unity/download/archive).
 
-### 下载其他必要资源
+### Download Other Necessary Resources
 
-[Live2D Cubism SDK for Unity](https://www.live2d.com/zh-CHS/sdk/download/unity/) - 一个第三方 Unity 包，用于在 Unity 项目中播放 Live2D 资源。在同意协议后、下载并拖动到 Unity 编辑器内导入，然后重启一次编辑器。
+[Live2D Cubism SDK for Unity](https://www.live2d.com/zh-CHS/sdk/download/unity/) - A third-party Unity package for playing Live2D resources in Unity projects.After agreeing to the terms, download and drag it into the Unity editor for import, then restart the editor.
 
-### 构建安装包
+### Build Installation Package
 
-从 Unity 编辑器上方菜单中选中 `CyanStars 工具箱` 进行构建。
+Select `CyanStars 工具箱` (CyanStars Toolbox) from the menu above the Unity editor for building.
