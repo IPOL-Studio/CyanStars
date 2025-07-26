@@ -1,4 +1,4 @@
-using CyanStars.Gameplay.GameSave;
+using CyanStars.GameSave;
 
 namespace CyanStars.Gameplay.MusicGame
 {

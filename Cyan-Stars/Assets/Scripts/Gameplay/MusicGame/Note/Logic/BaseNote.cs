@@ -1,134 +1,88 @@
-using CyanStars.Framework;
-
-using UnityEngine;
+﻿using CyanStars.Gameplay.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    /// <summary>
-    /// 音符基类
-    /// </summary>
     public abstract class BaseNote
     {
-
         /// <summary>
-        /// 此音符所属图层
+        /// 是否创建过视图层物体
         /// </summary>
-        private NoteLayer layer;
+        private bool createdViewObject;
 
         /// <summary>
-        /// 音符数据
-        /// </summary>
-        protected NoteData Data;
-
-        /// <summary>
-        /// 音符位置值
-        /// </summary>
-        public float Pos => Data.Pos;
-
-        /// <summary>
-        /// 判定时间
+        /// 判定时间（逻辑层时间）（s）
         /// </summary>
         protected float JudgeTime;
 
         /// <summary>
-        /// 当前逻辑层时间
+        /// 拥有此音符的片段
         /// </summary>
-        public float CurLogicTime { get; private set; }
+        public NoteClip NoteClip;
 
         /// <summary>
-        /// 当前逻辑层时间和判定时间的距离
-        /// <para> ToFix: https://github.com/IPOL-Studio/CyanStars/issues/231 </para>
+        /// 音符数据
         /// </summary>
-        public float Distance => JudgeTime - CurLogicTime;
+        protected BaseChartNoteData NoteData;
 
         /// <summary>
-        /// 视图层判定时间
+        /// 引用的变速组实例
         /// </summary>
-        private float viewJudgeTime;
-
-        /// <summary>
-        /// 当前视图层时间
-        /// </summary>
-        public float CurViewTime { get; private set; }
-
-        /// <summary>
-        /// 当前视图层时间和视图层时间的距离
-        /// </summary>
-        public float ViewDistance => viewJudgeTime - CurViewTime;
-
-        /// <summary>
-        /// 是否创建过视图层物体
-        /// </summary>
-        private bool createdViewObject = false;
+        protected SpeedGroup SpeedGroup;
 
         /// <summary>
         /// 视图层物体
         /// </summary>
         protected IView ViewObject;
 
-
-
-        protected MusicGameModule DataModule;
+        /// <summary>
+        /// 当前逻辑层时间（s）
+        /// </summary>
+        public float CurLogicTime { get; private set; }
 
         /// <summary>
-        /// 设置数据
+        /// 当前逻辑层时间和判定时间的距离（s）
         /// </summary>
-        public virtual void Init(NoteData data, NoteLayer layer)
-        {
-            Data = data;
-            this.layer = layer;
-            JudgeTime = data.JudgeTime / 1000f;
-            viewJudgeTime = data.ViewJudgeTime / 1000f;
-
-            DataModule = GameRoot.GetDataModule<MusicGameModule>();
-
-            //考虑性能问题 不再会一开始就创建出所有Note的游戏物体
-            //而是需要在viewTimer运行到一个特定时间时再创建
-            //viewObject = ViewHelper.CreateViewObject(data);
-        }
+        /// <remarks>提前时距离为负数</remarks>
+        public float LogicTimeDistance => CurLogicTime - JudgeTime;
 
         /// <summary>
-        /// 是否可接收输入
+        /// 当前视图层时间与视图层时间的差（音符到判定线的距离）
         /// </summary>
-        public virtual bool CanReceiveInput()
-        {
-            return Distance <= EvaluateHelper.CheckInputStartDistance && !EvaluateHelper.IsMiss(Distance);
-        }
+        /// <remarks>提前时距离为负数</remarks>
+        public float CurViewDistance { get; private set; }
+
 
         /// <summary>
-        /// 是否在指定输入范围内
+        /// 初始化数据
         /// </summary>
-        public virtual bool IsInInputRange(float min, float max)
+        public virtual void Init(BaseChartNoteData data, ChartData chartData, NoteClip clip)
         {
-            float left = Data.Pos;
-            float right = Data.Pos + NoteData.NoteWidth;
+            NoteClip = clip;
+            NoteData = data;
+            SpeedGroup = new SpeedGroup(chartData.SpeedGroups[data.SpeedGroupIndex]);
 
-            //3种情况可能重合 1.最左侧在范围内 2.最右侧在范围内 3.中间部分在范围内
-            bool result = (left >= min && left <= max)
-                          || (right >= min && right <= max)
-                          || (left <= min && right >= max);
-
-            return result;
+            // 根据 beat 计算 JudgeTime
+            // 注意 Offset 是作为空白时间直接加（或减）在 MisicTrack/MusicClip 中，与 Note 判定时间无关
+            JudgeTime = chartData.BpmGroups.CalculateTime(data.JudgeBeat) / 1000f;
         }
 
-        public virtual void OnUpdate(float curLogicTime,float curViewTime)
+        public virtual void OnUpdate(float curLogicTime)
         {
-            OnBaseUpdate(curLogicTime,curViewTime);
+            OnBaseUpdate(curLogicTime);
         }
 
-        public virtual void OnUpdateInAutoMode(float curLogicTime,float curViewTime)
+        public virtual void OnUpdateInAutoMode(float curLogicTime)
         {
-            OnBaseUpdate(curLogicTime,curViewTime);
+            OnBaseUpdate(curLogicTime);
         }
 
-        private void OnBaseUpdate(float curLogicTime,float curViewTime)
+        private void OnBaseUpdate(float curLogicTime)
         {
             CurLogicTime = curLogicTime;
-            CurViewTime = curViewTime;
-
+            CurViewDistance = SpeedGroup.GetDistance(LogicTimeDistance * 1000f);
             TryCreateViewObject();
 
-            ViewObject?.OnUpdate(ViewDistance);
+            ViewObject?.OnUpdate(CurViewDistance);
         }
 
         /// <summary>
@@ -136,12 +90,12 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private async void TryCreateViewObject()
         {
-            if (!createdViewObject && ViewDistance <= ViewHelper.ViewObjectCreateDistance)
+            if (!createdViewObject && CurViewDistance <= ViewHelper.ViewObjectCreateDistance)
             {
                 //到创建视图层物体的时间点了
                 createdViewObject = true;
 
-                ViewObject = await ViewHelper.CreateViewObject(Data, this);
+                ViewObject = await ViewHelper.CreateViewObject(NoteData, this);
             }
         }
 
@@ -158,9 +112,23 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         protected void DestroySelf(bool autoMove = true)
         {
-            layer.RemoveNote(this);
+            NoteClip.Notes.Remove(this);
             ViewObject.DestroySelf(autoMove);
             ViewObject = null;
         }
+
+        /// <summary>
+        /// 是否可接收输入
+        /// </summary>
+        public virtual bool CanReceiveInput()
+        {
+            return LogicTimeDistance >= EvaluateHelper.CheckInputStartDistance &&
+                   !EvaluateHelper.IsMiss(LogicTimeDistance);
+        }
+
+        /// <summary>
+        /// 是否在指定输入范围内
+        /// </summary>
+        public abstract bool IsInInputRange(float min, float max);
     }
 }

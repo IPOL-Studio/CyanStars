@@ -8,9 +8,9 @@ namespace CyanStars.Gameplay.MusicGame
         private static readonly MusicGameSettingsModule DataModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
 
         /// <summary>
-        /// 输入时间和判定时间的距离差大于此值，就不处理输入
+        /// 输入时间和判定时间的距离差小于此值，就不处理输入
         /// </summary>
-        public const float CheckInputStartDistance = 0.201f;
+        public const float CheckInputStartDistance = -0.201f;
 
         /// <summary>
         /// Drag音符的判定时间距离范围
@@ -35,12 +35,12 @@ namespace CyanStars.Gameplay.MusicGame
                 return EvaluateType.Great;
             }
 
-            if (distance <= c.Bad && distance >= 0)
+            if (distance >= c.Bad && distance <= 0)
             {
                 return EvaluateType.Bad;
             }
 
-            if (distance >= c.Right)
+            if (distance <= c.Right)
             {
                 return EvaluateType.Right;
             }
@@ -80,7 +80,7 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         /// <summary>
-        /// //由评价获取分数倍率
+        /// 由评价获取分数倍率
         /// </summary>
         public static float GetScoreWithEvaluate(EvaluateType et)
         {
@@ -102,7 +102,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <param name="distance">音符逻辑层时间和判定时间的距离</param>
         public static bool IsMiss(float distance)
         {
-            return distance < DataModule.EvaluateRange.Right;
+            return distance > DataModule.EvaluateRange.Right;
         }
     }
 }
