@@ -6,17 +6,17 @@
 
 # CyanStars
 
-> Music, the universal language of the cosmos.
+> Music is the universal language of the cosmos.
 
-CyanStars is a Chinese virtual singer fan-made, non-commercial, community music game developed by the Infinite Pursuit of Light Development Team (IPOL).
+CyanStars is a fan-made, non-commercial rhythm game about Chinese Virtual Singers. It's developed by the Infinite Pursuit of Light (IPOL) Development Team.
 
-## Contribute to Development
+## Contribute to the Development
 
-Before you start contributing, please take a moment to read the [Contribution Guidelines](CONTRIBUTING.md), thank you very much!
+If you'd like to contribute to our project, please spend a moment to read through the [Contribution Guidelines](CONTRIBUTING.md), It will be really appreciated!
 
 Please use the specifications outlined in [LICENSE](LICENSE) and [NOTICE](NOTICE) for source code and multimedia files.
 
-If you wish to publish modified game files, please clearly state expressions like "This game has been modified and is not the original IPOL version" to differentiate your work from what is released in this repository. Modified game files must not be copyrighted in any country/region.The modified game files cannot be registered for copyright in any country/region.
+If you wish to publish modified game files, please clearly state that "This game has been modified and is not the original IPOL version" to differentiate your work from what is released in this repository.The modified game files must not be registered for copyright in any country/region.
 
 Are you able to participate in the translation of the project and documents?Please assist us on [Crowdin](https://crowdin.com/project/cyanstars) or submit via PR.
 
@@ -24,15 +24,15 @@ Are you able to participate in the translation of the project and documents?Plea
 
 Community contributors/included tracks/privacy policy, etc., can be found in the [Associated Documents](https://ipol-studio.github.io/CyanStars_Docs/).
 
-- Please check the documentation webpage [here](https://ipol-studio.github.io/CyanStars_Docs).
+- Please check the documentation webpage [here](https://ipol-studio.github.io/CyanStars_Docs)
 
 Multimedia files are referenced as submodules at the path `Cyan-Stars/Assets/CysMultimediaAssets`. Please refer to the submodule repository documentation for contribution guidelines regarding multimedia files.
 
 - Attachment: [Multimedia Assets Repository](https://github.com/IPOL-Studio/CyanStarsMultimediaAssets)
 
-Do you have expertise in art/music/charting/programming/translation, etc., and are interested in participating in our internal discussions? Feel free to apply to join us [here](http://chenluan.mikecrm.com/JeKq3DU).Click [here](http://chenluan.mikecrm.com/JeKq3DU) to apply to join us.
+Do you have expertise in art/music/charting/programming/translation, etc., and are interested in participating in our internal discussions?Click [here](http://chenluan.mikecrm.com/JeKq3DU) to apply and join us.
 
-Player communication QQ group: `827556233`
+Player's communication QQ group: `827556233`
 
 For copyright, security, members and community, or other issues, please feel free to contact us at <chenluan@cyanstars.onaliyun.com>.
 
@@ -60,7 +60,7 @@ Alternatively, manually download version `2020.3.28f1` of the editor from the [U
 
 ### Download Other Necessary Resources
 
-[Live2D Cubism SDK for Unity](https://www.live2d.com/zh-CHS/sdk/download/unity/) - A third-party Unity package for playing Live2D resources in Unity projects. After agreeing to the license, download and drag it into the Unity editor for import, then restart the editor.After agreeing to the terms, download and drag it into the Unity editor for import, then restart the editor.
+[Live2D Cubism SDK for Unity](https://www.live2d.com/zh-CHS/sdk/download/unity/) - A third-party Unity package for playing Live2D resources in Unity projects.After agreeing to the terms, download and drag it into the Unity editor for import, then restart the editor.
 
 ### Build Installation Package
 
