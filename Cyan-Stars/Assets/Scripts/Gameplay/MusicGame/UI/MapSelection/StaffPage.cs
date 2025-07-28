@@ -1,6 +1,6 @@
 using System.Collections;
 using CyanStars.Framework;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;

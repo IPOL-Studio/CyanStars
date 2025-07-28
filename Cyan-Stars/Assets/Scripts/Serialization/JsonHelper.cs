@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
