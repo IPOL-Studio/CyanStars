@@ -1,8 +1,11 @@
 using UnityEngine;
 
-public class BeatLine : MonoBehaviour
+namespace CyanStars.ChartEditor
 {
-    public void ScrollCellIndex()
+    public class BeatLine : MonoBehaviour, ILoopScrollRectItem
     {
+        public void ScrollCellIndex(int index)
+        {
+        }
     }
 }
