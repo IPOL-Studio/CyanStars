@@ -23,10 +23,10 @@ namespace CyanStars.Chart
         public int SpeedGroupIndex;
 
         /// <summary>
-        /// 音符的变速 Offset，在计算变速效果时提前一段时间，必须大于等于 0。
+        /// 音符的变速 Offset，在计算变速效果时提前一段时间，必须小于等于 0。
         /// 用于协调多个音符的整体变速效果。// TODO: 实装计算逻辑
         /// </summary>
-        public int SpeedGroupOffset;
+        public int SpeedGroupOffset = 0;
 
         /// <summary>正解提示音</summary>
         /// <remarks>

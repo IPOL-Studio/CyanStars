@@ -11,8 +11,28 @@ namespace CyanStars.Chart
     /// <remarks>一整条曲线，由首尾相连的多个贝塞尔区间组成，即一个变速组</remarks>
     public class BezierCurve
     {
-        public List<CubicBezierCurve> CubicBeziers = new List<CubicBezierCurve>();
+        public List<CubicBezierCurve> CubicBeziers;
 
+        public BezierCurve(List<CubicBezierCurve> cubicBeziers = null)
+        {
+            if (cubicBeziers == null)
+            {
+                CubicBeziers = new List<CubicBezierCurve>()
+                {
+                    new CubicBezierCurve()
+                    {
+                        P0 = new BezierControlPoint() { Time = 0, Value = 1f },
+                        P1 = new BezierControlPoint() { Time = 0, Value = 1f },
+                        P2 = new BezierControlPoint() { Time = -100, Value = 1f },
+                        P3 = new BezierControlPoint() { Time = -100, Value = 1f }
+                    }
+                };
+            }
+            else
+            {
+                CubicBeziers = cubicBeziers;
+            }
+        }
 
         /// <summary>
         /// 排序列表，并舍弃不连续的曲线
