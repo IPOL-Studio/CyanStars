@@ -19,7 +19,7 @@ namespace CyanStars.Chart
 
         /// <summary>变速组</summary>
         /// <remarks>必定存在一个相对 1 速的变速组，不可编辑或删除</remarks>
-        public List<SpeedGroupData> SpeedGroups;
+        public List<SpeedGroupData> SpeedGroupDatas;
 
         /// <summary>谱面音符数据</summary>
         public List<BaseChartNoteData> Notes;

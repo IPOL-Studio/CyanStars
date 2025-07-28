@@ -31,10 +31,9 @@ namespace CyanStars.Chart
         /// </summary>
         public SpeedGroup(SpeedGroupData speedGroupData, float playerSpeed = 1f) // TODO: 外部传入玩家速度
         {
-            float ps = playerSpeed;
             if (speedGroupData.Type == SpeedGroupType.Absolute)
             {
-                ps = 1f;
+                playerSpeed = 1f;
             }
 
             // 根据持续时间计算采样点数量
@@ -46,7 +45,7 @@ namespace CyanStars.Chart
             for (int i = 0; i < count; i++)
             {
                 float t = i * SampleInterval * -1;
-                float speed = speedGroupData.BezierCurve.GetSpeed((int)t) * ps;
+                float speed = speedGroupData.BezierCurve.GetSpeed((int)t) * playerSpeed;
                 speedList.Add(speed);
             }
 

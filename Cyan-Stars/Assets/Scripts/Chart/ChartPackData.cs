@@ -60,8 +60,24 @@ namespace CyanStars.Chart
         public DateTime? ExportTime;
 
         /// <summary>谱包哈希</summary>
-        /// <remarks>导出谱包时固定</remarks>
+        /// <remarks>保存谱包时更新</remarks>
         [CanBeNull]
         public string PackHash;
+
+
+        public ChartPackData(string Title)
+        {
+            DataVersion = 1;
+            this.Title = Title;
+            MusicVersionDatas = null;
+            MusicPreviewStartBeat = null;
+            MusicPreviewEndBeat = null;
+            CoverFilePath = null;
+            CroppedCoverFilePath = null;
+            Charts = null;
+            SaveTime = DateTime.UtcNow;
+            ExportTime = null;
+            PackHash = null;
+        }
     }
 }
