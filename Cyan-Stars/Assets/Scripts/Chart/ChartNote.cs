@@ -1,7 +1,7 @@
 using System;
 using JetBrains.Annotations;
 
-namespace CyanStars.Gameplay.Chart
+namespace CyanStars.Chart
 {
     public enum BreakNotePos
     {
@@ -21,6 +21,12 @@ namespace CyanStars.Gameplay.Chart
         /// </summary>
         /// <remarks>从 0 开始，如果变速组在编辑器内发生变化，刷新所有 Note 的引用</remarks>
         public int SpeedGroupIndex;
+
+        /// <summary>
+        /// 音符的变速 Offset，在计算变速效果时提前一段时间，必须大于等于 0。
+        /// 用于协调多个音符的整体变速效果。// TODO: 实装计算逻辑
+        /// </summary>
+        public int SpeedGroupOffset;
 
         /// <summary>正解提示音</summary>
         /// <remarks>
@@ -46,7 +52,7 @@ namespace CyanStars.Gameplay.Chart
         /// 可被判定
         /// </summary>
         /// <remarks>
-        /// 为 false 时，音符不接收判定，仅用于表演
+        /// 为 false 时，音符不接收判定，仅用于表演 TODO: 在 GamePlay 实装此内容
         /// </remarks>
         public bool JudgeAble = true;
 
@@ -54,7 +60,7 @@ namespace CyanStars.Gameplay.Chart
         /// 可被展示
         /// </summary>
         /// <remarks>
-        /// 为 false 时，音符不展示，仅用于搭配其他效果时的表演
+        /// 为 false 时，音符不展示，仅用于搭配其他效果时的表演 TODO: 在 GamePlay 实装此内容
         /// </remarks>
         public bool ViewAble = true;
     }

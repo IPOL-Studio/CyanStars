@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CyanStars.Gameplay.Chart
+namespace CyanStars.Chart
 {
     /// <summary>
     /// 谱面边框轨道基类

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace CyanStars.Gameplay.Chart
+namespace CyanStars.Chart
 {
     /// <summary>
     /// 用于支持多个版本（翻唱/翻调）的音乐

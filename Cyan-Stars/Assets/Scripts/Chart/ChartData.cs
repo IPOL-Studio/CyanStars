@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CyanStars.Gameplay.Chart
+namespace CyanStars.Chart
 {
     /// <summary>
     /// 谱包中单个难度的谱面数据
