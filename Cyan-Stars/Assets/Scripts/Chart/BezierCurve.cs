@@ -19,13 +19,12 @@ namespace CyanStars.Chart
             {
                 CubicBeziers = new List<CubicBezierCurve>()
                 {
-                    new CubicBezierCurve()
-                    {
-                        P0 = new BezierControlPoint() { Time = 0, Value = 1f },
-                        P1 = new BezierControlPoint() { Time = 0, Value = 1f },
-                        P2 = new BezierControlPoint() { Time = -100, Value = 1f },
-                        P3 = new BezierControlPoint() { Time = -100, Value = 1f }
-                    }
+                    new CubicBezierCurve(
+                        new BezierControlPoint(0, 1f),
+                        new BezierControlPoint(0, 1f),
+                        new BezierControlPoint(-100, 1f),
+                        new BezierControlPoint(-100, 1f)
+                    )
                 };
             }
             else
@@ -155,6 +154,15 @@ namespace CyanStars.Chart
         public BezierControlPoint P2; // 控制点
         public BezierControlPoint P3; // 最左侧的位置点，也是下一组曲线的 P0
 
+        public CubicBezierCurve(BezierControlPoint p0, BezierControlPoint p1, BezierControlPoint p2,
+            BezierControlPoint p3)
+        {
+            P0 = p0;
+            P1 = p1;
+            P2 = p2;
+            P3 = p3;
+        }
+
         /// <summary>
         /// 在单个曲线区间上计算时间对应的速度
         /// </summary>
@@ -220,5 +228,11 @@ namespace CyanStars.Chart
     {
         public int Time;
         public float Value;
+
+        public BezierControlPoint(int time, float value)
+        {
+            Time = time;
+            Value = value;
+        }
     }
 }
