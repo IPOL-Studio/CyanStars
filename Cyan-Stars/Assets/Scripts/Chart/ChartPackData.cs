@@ -65,10 +65,10 @@ namespace CyanStars.Chart
         public string PackHash;
 
 
-        public ChartPackData(string Title)
+        public ChartPackData(string title)
         {
             DataVersion = 1;
-            this.Title = Title;
+            Title = title;
             MusicVersionDatas = null;
             MusicPreviewStartBeat = null;
             MusicPreviewEndBeat = null;

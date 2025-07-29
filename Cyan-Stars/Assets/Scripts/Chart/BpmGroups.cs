@@ -6,7 +6,7 @@ namespace CyanStars.Chart
     [Serializable]
     public class BpmGroups
     {
-        public List<BpmGroup> Groups;
+        public List<BpmGroup> Groups = new List<BpmGroup>();
 
         /// <summary>
         /// 由 Beat 组计算时间（ms）的委托
@@ -28,7 +28,7 @@ namespace CyanStars.Chart
         /// 根据当前 BPM 组，计算 beat 对应的时间(ms)
         /// </summary>
         /// <param name="fBeat">float 形式的拍子</param>
-        /// <returns>int 形式的毫秒时间（相对于时间轴开始）</returns
+        /// <returns>int 形式的毫秒时间（相对于时间轴开始）</returns>
         public int CalculateTime(float fBeat)
         {
             if (Groups.Count == 1)
