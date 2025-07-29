@@ -14,7 +14,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             var frameClipData = new FrameClipData(
                 trackAccessor.GetTrackData(chartData),
-                chartData.BpmGroups.CalculateTime
+                chartData.BpmGroup.CalculateTime
             );
 
             var frameTrackData = new FrameTrackData
