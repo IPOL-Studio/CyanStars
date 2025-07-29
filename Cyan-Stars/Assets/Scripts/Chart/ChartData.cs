@@ -15,7 +15,7 @@ namespace CyanStars.Chart
 
         /// <summary>bpm 组</summary>
         /// <remarks>控制不同时候的拍子所占时长（拍子可转换为时间）</remarks>
-        public BpmGroups BpmGroups = new BpmGroups();
+        public BpmGroup BpmGroup = new BpmGroup();
 
         /// <summary>变速组</summary>
         /// <remarks>必定存在一个相对 1 速的变速组，不可编辑或删除</remarks>
