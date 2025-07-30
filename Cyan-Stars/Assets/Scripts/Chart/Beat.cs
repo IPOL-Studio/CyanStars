@@ -2,7 +2,7 @@
 
 namespace CyanStars.Chart
 {
-    public readonly struct Beat
+    public readonly struct Beat : IEquatable<Beat>
     {
         /// <summary>带分数拍子的整数部分</summary>
         public readonly int IntegerPart;
@@ -60,6 +60,37 @@ namespace CyanStars.Chart
             }
 
             return IntegerPart + (float)Numerator / Denominator;
+        }
+
+        public bool Equals(Beat other)
+        {
+            return IntegerPart == other.IntegerPart && Numerator == other.Numerator && Denominator == other.Denominator;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Beat other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = IntegerPart;
+                hashCode = (hashCode * 397) ^ Numerator;
+                hashCode = (hashCode * 397) ^ Denominator;
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(Beat left, Beat right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Beat left, Beat right)
+        {
+            return !left.Equals(right);
         }
     }
 }
