@@ -20,10 +20,52 @@ namespace CyanStars.ChartEditor.Model
 
         public List<BpmGroupItem> BpmGroupDatas => ChartData.BpmGroup.Groups;
 
+        public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
+
+
+        // --- 谱包事件 ---
+
         /// <summary>
         /// 谱包中任意内容发生变化
         /// </summary>
         public event Action OnChanged;
+
+        /// <summary>
+        /// 谱包基本信息（目前只有标题）发生变化
+        /// </summary>
+        public event Action OnChartPackTitleChanged;
+
+        /// <summary>
+        /// 谱包元数据（时间等）发生变化（在保存时）
+        /// </summary>
+        public event Action OnChartPackSave;
+
+        /// <summary>
+        /// 谱包大图路径发生变化
+        /// </summary>
+        public event Action OnCoverFilePathChanged;
+
+        /// <summary>
+        /// 谱包小图路径发生变化
+        /// </summary>
+        public event Action OnCroppedCoverFilePathChanged;
+
+        /// <summary>
+        /// 谱包音乐版本数据发生变化时
+        /// </summary>
+        public event Action OnMusicVersionDataChanged;
+
+        /// <summary>
+        /// 谱包预览开始节拍变化时
+        /// </summary>
+        public event Action OnMusicPreviewStartBeatChanged;
+
+        /// <summary>
+        /// 谱包预览结束节拍变化时
+        /// </summary>
+        public event Action OnMusicPreviewEndBeatChanged;
+
+        // --- 谱面事件 ---
 
         /// <summary>
         /// Bpm 组发生变化
@@ -36,7 +78,7 @@ namespace CyanStars.ChartEditor.Model
         public event Action OnSpeedGroupChanged;
 
 
-        #region 谱包和谱面管理
+        #region 谱包信息和谱面元数据管理
 
         /// <summary>
         /// 从指定路径加载谱包和谱面
@@ -47,7 +89,7 @@ namespace CyanStars.ChartEditor.Model
         /// <exception cref="System.NotImplementedException">没做完</exception>
         public ChartPackData LoadChartPack(string chartPackPath, int chartIndex)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
             // TODO: 加载谱包
             // ChartPackData = ;
             // ChartIndex = chartIndex;
@@ -68,6 +110,178 @@ namespace CyanStars.ChartEditor.Model
             // ChartPackData.Charts = new List<ChartMetadata>(new ChartMetadata(filePath: ________));
             OnChanged?.Invoke();
             return ChartPackData;
+        }
+
+        /// <summary>
+        /// 保存谱包到文件
+        /// </summary>
+        /// <exception cref="NotImplementedException">没做完</exception>
+        public void SaveChartPack()
+        {
+            throw new NotImplementedException();
+            // TODO: 保存谱包
+            // OnChanged?.Invoke();
+            // OnChartPackTitleChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// 尝试更新谱包标题
+        /// </summary>
+        /// <param name="title">新的谱包标题</param>
+        /// <remarks>如果新标题和旧标题一致，不会触发事件并返回 false</remarks>
+        /// <returns>是否发生了更新（旧标题与新标题不一致）</returns>
+        public bool UpdateChartPackTitle(string title)
+        {
+            if (ChartPackData.Title == title)
+            {
+                return false;
+            }
+
+            ChartPackData.Title = title;
+            OnChanged?.Invoke();
+            OnChartPackTitleChanged?.Invoke();
+            return true;
+        }
+
+        /// <summary>
+        /// 尝试更新曲绘大图
+        /// </summary>
+        /// <param name="path">曲绘大图相对路径</param>
+        /// <remarks>如果路径一致，不会触发事件并返回 false</remarks>
+        /// <returns>是否发生了更新</returns>
+        public bool UpdateCoverFilePath(string path)
+        {
+            if (ChartPackData.CoverFilePath == path)
+            {
+                return false;
+            }
+
+            ChartPackData.CoverFilePath = path;
+
+            OnChanged?.Invoke();
+            OnCoverFilePathChanged?.Invoke();
+            return true;
+        }
+
+        /// <summary>
+        /// 尝试更新曲绘小图
+        /// </summary>
+        /// <param name="path">曲绘小图相对路径</param>
+        /// <remarks>如果路径一致，不会触发事件并返回 false</remarks>
+        /// <returns>是否发生了更新</returns>
+        public bool UpdateCroppedCoverFilePath(string path)
+        {
+            if (ChartPackData.CroppedCoverFilePath == path)
+            {
+                return false;
+            }
+
+            ChartPackData.CroppedCoverFilePath = path;
+            OnChanged?.Invoke();
+            OnCroppedCoverFilePathChanged?.Invoke();
+            return true;
+        }
+
+        /// <summary>
+        /// 向列表添加一个新的音乐版本
+        /// </summary>
+        /// <param name="newMusicVersionData">要添加的音乐版本数据</param>
+        /// <returns>是否成功添加，如果音乐路径已存在会返回 false 且不触发事件</returns>
+        public bool AddMusicVersionDatas(MusicVersionData newMusicVersionData)
+        {
+            foreach (MusicVersionData musicVersionData in MusicVersionDatas)
+            {
+                if (musicVersionData.MusicFilePath == newMusicVersionData.MusicFilePath)
+                {
+                    return false;
+                }
+            }
+
+            MusicVersionDatas.Add(newMusicVersionData);
+            OnMusicVersionDataChanged?.Invoke();
+            return true;
+        }
+
+        /// <summary>
+        /// 从列表删除并返回指定下标的音乐版本数据
+        /// </summary>
+        /// <param name="index">下标</param>
+        /// <returns>弹出的音乐版本数据</returns>
+        public MusicVersionData PopMusicVersionDatas(int index)
+        {
+            MusicVersionData musicVersionData = MusicVersionDatas[index];
+            MusicVersionDatas.RemoveAt(index);
+
+            OnChanged?.Invoke();
+            OnMusicVersionDataChanged?.Invoke();
+            return musicVersionData;
+        }
+
+        /// <summary>
+        /// 更新指定下标的音乐版本数据
+        /// </summary>
+        /// <remarks>注意路径不能与其他数据重复，否则会返回 false 且不会触发事件</remarks>
+        /// <param name="index">要更新的下标</param>
+        /// <param name="newMusicVersionData">新的音乐版本数据</param>
+        /// <returns>是否成功更新</returns>
+        public bool UpdateMusicVersionDatas(int index, MusicVersionData newMusicVersionData)
+        {
+            for (int i = 0; i < MusicVersionDatas.Count; i++)
+            {
+                if (i == index)
+                {
+                    continue;
+                }
+
+                if (MusicVersionDatas[i].MusicFilePath == newMusicVersionData.MusicFilePath)
+                {
+                    return false;
+                }
+            }
+
+            MusicVersionDatas[index] = newMusicVersionData;
+
+            OnChanged?.Invoke();
+            OnMusicVersionDataChanged?.Invoke();
+            return true;
+        }
+
+        /// <summary>
+        /// 更新预览开始节拍
+        /// </summary>
+        /// <param name="beat">新的节拍</param>
+        /// <returns>是否成功修改</returns>
+        public bool UpdateMusicPreviewStartBeat(Beat beat)
+        {
+            if (ChartPackData.MusicPreviewStartBeat == beat) // TODO: 校验开始节拍在结束节拍前
+            {
+                return false;
+            }
+
+            ChartPackData.MusicPreviewStartBeat = beat;
+
+            OnChanged?.Invoke();
+            OnMusicPreviewStartBeatChanged?.Invoke();
+            return true;
+        }
+
+        /// <summary>
+        /// 更新预览结束节拍
+        /// </summary>
+        /// <param name="beat">新的节拍</param>
+        /// <returns>是否成功修改</returns>
+        public bool UpdateMusicPreviewEndBeat(Beat beat)
+        {
+            if (ChartPackData.MusicPreviewEndBeat == beat) // TODO: 校验开始节拍在结束节拍前
+            {
+                return false;
+            }
+
+            ChartPackData.MusicPreviewEndBeat = beat;
+
+            OnChanged?.Invoke();
+            OnMusicPreviewEndBeatChanged?.Invoke();
+            return true;
         }
 
         #endregion
@@ -130,7 +344,6 @@ namespace CyanStars.ChartEditor.Model
         }
 
         #endregion
-
 
         #region 变速组管理
 

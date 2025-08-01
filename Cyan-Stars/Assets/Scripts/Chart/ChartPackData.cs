@@ -55,13 +55,12 @@ namespace CyanStars.Chart
         /// <summary>谱包工程文件上一次保存时间</summary>
         public DateTime SaveTime;
 
-        /// <summary>谱包导出时间</summary>
-        [CanBeNull]
-        public DateTime? ExportTime;
+        // /// <summary>谱包导出时间</summary>
+        // [CanBeNull]
+        // public DateTime? ExportTime;
 
         /// <summary>谱包哈希</summary>
         /// <remarks>保存谱包时更新</remarks>
-        [CanBeNull]
         public string PackHash;
 
 
@@ -76,7 +75,7 @@ namespace CyanStars.Chart
             CroppedCoverFilePath = null;
             Charts = null;
             SaveTime = DateTime.UtcNow;
-            ExportTime = null;
+            // ExportTime = null;
             PackHash = null;
         }
     }
