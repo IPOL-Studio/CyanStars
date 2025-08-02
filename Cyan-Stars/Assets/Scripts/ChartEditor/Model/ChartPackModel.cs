@@ -102,7 +102,7 @@ namespace CyanStars.ChartEditor.Model
         /// </summary>
         /// <param name="title">谱包标题，会同时用于文件夹名和文件内标题</param>
         /// <returns>谱包数据</returns>
-        public ChartPackData CreateChartPack(string title)
+        public ChartPackData CreateChartPackData(string title)
         {
             ChartData chartData = new ChartData();
             ChartPackData = new ChartPackData(title);
@@ -141,6 +141,35 @@ namespace CyanStars.ChartEditor.Model
             OnChanged?.Invoke();
             OnChartPackTitleChanged?.Invoke();
             return true;
+        }
+
+        public bool CreateChart(ChartDifficulty? chartDifficulty = null)
+        {
+            if (chartDifficulty != null)
+            {
+                foreach (ChartMetadata chartMetadata in ChartPackData.ChartMetaDatas)
+                {
+                    if (chartMetadata.Difficulty == chartDifficulty)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            throw new NotImplementedException();
+            // TODO: 创建谱面并将谱面相对路径写入谱包元数据
+        }
+
+        public bool DeleteChart(int index, out ChartMetadata chartMetadata, out ChartData chartData)
+        {
+            throw new NotImplementedException();
+            // TODO: 删除谱面和元数据
+        }
+
+        public bool UpdateChart(int index, ChartMetadata chartMetadata, ChartData chartData)
+        {
+            throw new NotImplementedException();
+            // TODO:更新指定 index 的谱面
         }
 
         /// <summary>
