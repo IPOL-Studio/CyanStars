@@ -212,7 +212,7 @@ namespace CyanStars.Gameplay.MusicGame
                 return null;
             }
 
-            foreach (ChartMetadata metadata in chartPack.ChartPackData.Charts)
+            foreach (ChartMetadata metadata in chartPack.ChartPackData.ChartMetaDatas)
             {
                 if (metadata.Difficulty == difficulty)
                 {

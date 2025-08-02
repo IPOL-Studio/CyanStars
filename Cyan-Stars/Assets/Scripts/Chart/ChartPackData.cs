@@ -47,7 +47,7 @@ namespace CyanStars.Chart
         // 谱面元数据
 
         /// <summary>谱面元数据</summary>
-        public List<ChartMetadata> Charts;
+        public List<ChartMetadata> ChartMetaDatas;
 
 
         // 元数据
@@ -73,7 +73,7 @@ namespace CyanStars.Chart
             MusicPreviewEndBeat = null;
             CoverFilePath = null;
             CroppedCoverFilePath = null;
-            Charts = null;
+            ChartMetaDatas = null;
             SaveTime = DateTime.UtcNow;
             // ExportTime = null;
             PackHash = null;
