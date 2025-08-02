@@ -7,7 +7,7 @@ namespace CyanStars.ChartEditor.Model
     /// <summary>
     /// 谱面编辑器 Model 层
     /// </summary>
-    public class ChartModel
+    public class ChartPackModel
     {
         public ChartPackData ChartPackData { get; private set; }
 
@@ -16,11 +16,11 @@ namespace CyanStars.ChartEditor.Model
         public ChartData ChartData { get; private set; }
 
 
-        public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
+        public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
 
         public List<BpmGroupItem> BpmGroupDatas => ChartData.BpmGroup.Groups;
 
-        public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
+        public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
 
 
         // --- 谱包事件 ---
