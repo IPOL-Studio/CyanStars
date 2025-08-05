@@ -10,7 +10,6 @@ namespace CyanStars.Chart
     }
 
 
-    [Serializable]
     public class BaseChartNoteData
     {
         /// <summary>音符类型</summary>
@@ -65,7 +64,6 @@ namespace CyanStars.Chart
         public bool ViewAble = true;
     }
 
-    [Serializable]
     public class TapChartNoteData : BaseChartNoteData
     {
         /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
@@ -73,7 +71,6 @@ namespace CyanStars.Chart
         public float Pos;
     }
 
-    [Serializable]
     public class HoldChartNoteData : BaseChartNoteData
     {
         /// <summary>
@@ -90,7 +87,6 @@ namespace CyanStars.Chart
         public Beat EndJudgeBeat;
     }
 
-    [Serializable]
     public class DragChartNoteData : BaseChartNoteData
     {
         /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
@@ -98,7 +94,6 @@ namespace CyanStars.Chart
         public float Pos;
     }
 
-    [Serializable]
     public class ClickChartNoteData : BaseChartNoteData
     {
         /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
@@ -106,7 +101,6 @@ namespace CyanStars.Chart
         public float Pos;
     }
 
-    [Serializable]
     public class BreakChartNoteData : BaseChartNoteData
     {
         /// <summary>Break 音符位于哪条轨道</summary>
