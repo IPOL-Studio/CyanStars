@@ -28,7 +28,7 @@ namespace CyanStars.ChartEditor.Model
         /// <summary>
         /// 谱包中任意内容发生变化
         /// </summary>
-        public event Action OnChanged;
+        public event Action OnChartPackDataChanged;
 
         /// <summary>
         /// 谱包基本信息（目前只有标题）发生变化
@@ -66,6 +66,16 @@ namespace CyanStars.ChartEditor.Model
         public event Action OnMusicPreviewEndBeatChanged;
 
         // --- 谱面事件 ---
+
+        /// <summary>
+        /// 谱面中任意内容发生变化
+        /// </summary>
+        public event Action OnChartDataChanged;
+
+        /// <summary>
+        /// 谱面中任意内容发生变化
+        /// </summary>
+        public event Action OnReadyBeatChanged;
 
         /// <summary>
         /// Bpm 组发生变化
@@ -108,7 +118,7 @@ namespace CyanStars.ChartEditor.Model
             ChartPackData = new ChartPackData(title);
             // TODO: 获取谱面保存的相对路径，写到谱包元数据中，并创建谱面文件
             // ChartPackData.Charts = new List<ChartMetadata>(new ChartMetadata(filePath: ________));
-            OnChanged?.Invoke();
+            OnChartPackDataChanged?.Invoke();
             return ChartPackData;
         }
 
@@ -138,7 +148,7 @@ namespace CyanStars.ChartEditor.Model
             }
 
             ChartPackData.Title = title;
-            OnChanged?.Invoke();
+            OnChartPackDataChanged?.Invoke();
             OnChartPackTitleChanged?.Invoke();
             return true;
         }
@@ -187,7 +197,7 @@ namespace CyanStars.ChartEditor.Model
 
             ChartPackData.CoverFilePath = path;
 
-            OnChanged?.Invoke();
+            OnChartPackDataChanged?.Invoke();
             OnCoverFilePathChanged?.Invoke();
             return true;
         }
@@ -206,7 +216,7 @@ namespace CyanStars.ChartEditor.Model
             }
 
             ChartPackData.CroppedCoverFilePath = path;
-            OnChanged?.Invoke();
+            OnChartPackDataChanged?.Invoke();
             OnCroppedCoverFilePathChanged?.Invoke();
             return true;
         }
@@ -227,6 +237,8 @@ namespace CyanStars.ChartEditor.Model
             }
 
             MusicVersionDatas.Add(newMusicVersionData);
+
+            OnChartPackDataChanged?.Invoke();
             OnMusicVersionDataChanged?.Invoke();
             return true;
         }
@@ -241,7 +253,7 @@ namespace CyanStars.ChartEditor.Model
             MusicVersionData musicVersionData = MusicVersionDatas[index];
             MusicVersionDatas.RemoveAt(index);
 
-            OnChanged?.Invoke();
+            OnChartPackDataChanged?.Invoke();
             OnMusicVersionDataChanged?.Invoke();
             return musicVersionData;
         }
@@ -257,6 +269,11 @@ namespace CyanStars.ChartEditor.Model
         {
             for (int i = 0; i < MusicVersionDatas.Count; i++)
             {
+                if (i == index)
+                {
+                    continue;
+                }
+
                 if (MusicVersionDatas[i].MusicFilePath == newMusicVersionData.MusicFilePath)
                 {
                     return false;
@@ -265,7 +282,7 @@ namespace CyanStars.ChartEditor.Model
 
             MusicVersionDatas[index] = newMusicVersionData;
 
-            OnChanged?.Invoke();
+            OnChartPackDataChanged?.Invoke();
             OnMusicVersionDataChanged?.Invoke();
             return true;
         }
@@ -287,7 +304,7 @@ namespace CyanStars.ChartEditor.Model
 
             ChartPackData.MusicPreviewStartBeat = beat;
 
-            OnChanged?.Invoke();
+            OnChartPackDataChanged?.Invoke();
             OnMusicPreviewStartBeatChanged?.Invoke();
             return true;
         }
@@ -309,12 +326,28 @@ namespace CyanStars.ChartEditor.Model
 
             ChartPackData.MusicPreviewEndBeat = beat;
 
-            OnChanged?.Invoke();
+            OnChartPackDataChanged?.Invoke();
             OnMusicPreviewEndBeatChanged?.Invoke();
             return true;
         }
 
         #endregion
+
+        # region 谱面管理
+
+        public bool UpdateReadyBeat(int value)
+        {
+            if (value < 0 || value == ChartData.ReadyBeat)
+            {
+                return false;
+            }
+
+            ChartData.ReadyBeat = value;
+
+            OnChartDataChanged?.Invoke();
+            OnReadyBeatChanged?.Invoke();
+            return true;
+        }
 
         #region BPM 组管理
 
@@ -342,7 +375,7 @@ namespace CyanStars.ChartEditor.Model
                     // beat 与已有的元素相等
                     BpmGroupDatas[i] = newItem;
 
-                    OnChanged?.Invoke();
+                    OnChartDataChanged?.Invoke();
                     OnBpmGroupChanged?.Invoke();
                     return BpmGroupDatas;
                 }
@@ -356,7 +389,7 @@ namespace CyanStars.ChartEditor.Model
 
             BpmGroupDatas.Insert(i, newItem);
 
-            OnChanged?.Invoke();
+            OnChartDataChanged?.Invoke();
             OnBpmGroupChanged?.Invoke();
 
             return BpmGroupDatas;
@@ -367,7 +400,7 @@ namespace CyanStars.ChartEditor.Model
             BpmGroupItem bpmGroupItem = BpmGroupDatas[index];
             BpmGroupDatas.RemoveAt(index);
 
-            OnChanged?.Invoke();
+            OnChartDataChanged?.Invoke();
             OnBpmGroupChanged?.Invoke();
 
             return bpmGroupItem;
@@ -397,7 +430,7 @@ namespace CyanStars.ChartEditor.Model
 
             SpeedGroupDatas.Add(speedGroupData);
 
-            OnChanged?.Invoke();
+            OnChartDataChanged?.Invoke();
             OnSpeedGroupChanged?.Invoke();
             return speedGroupData;
         }
@@ -412,7 +445,7 @@ namespace CyanStars.ChartEditor.Model
             SpeedGroupData speedGroupData = SpeedGroupDatas[index];
             SpeedGroupDatas.RemoveAt(index);
 
-            OnChanged?.Invoke();
+            OnChartDataChanged?.Invoke();
             OnSpeedGroupChanged?.Invoke();
 
             return speedGroupData;
@@ -427,9 +460,11 @@ namespace CyanStars.ChartEditor.Model
         {
             SpeedGroupDatas[index] = speedGroupData;
 
-            OnChanged?.Invoke();
+            OnChartDataChanged?.Invoke();
             OnSpeedGroupChanged?.Invoke();
         }
+
+        #endregion
 
         #endregion
     }
