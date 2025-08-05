@@ -257,11 +257,6 @@ namespace CyanStars.ChartEditor.Model
         {
             for (int i = 0; i < MusicVersionDatas.Count; i++)
             {
-                if (i == index)
-                {
-                    continue;
-                }
-
                 if (MusicVersionDatas[i].MusicFilePath == newMusicVersionData.MusicFilePath)
                 {
                     return false;
