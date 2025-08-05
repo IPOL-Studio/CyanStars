@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using CyanStars.Chart;
-using CyanStars.Gameplay.MusicGame;
 
 namespace CyanStars.ChartEditor.Model
 {
