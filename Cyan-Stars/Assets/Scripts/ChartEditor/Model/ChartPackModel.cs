@@ -73,7 +73,7 @@ namespace CyanStars.ChartEditor.Model
         public event Action OnChartDataChanged;
 
         /// <summary>
-        /// 谱面中任意内容发生变化
+        /// 谱面预备拍数发生变化
         /// </summary>
         public event Action OnReadyBeatChanged;
 
@@ -130,8 +130,6 @@ namespace CyanStars.ChartEditor.Model
         {
             throw new NotImplementedException();
             // TODO: 保存谱包
-            // OnChanged?.Invoke();
-            // OnChartPackTitleChanged?.Invoke();
         }
 
         /// <summary>
@@ -361,7 +359,7 @@ namespace CyanStars.ChartEditor.Model
         }
 
         /// <summary>
-        /// 自动在合适的位置添加 BPM 元素
+        /// 自动在合适的位置添加或更新 BPM 元素
         /// </summary>
         /// <remarks>将根据 beat 自动插入或更新 Bpm 组</remarks>
         /// <returns>更新后的 BPM 组列表</returns>
