@@ -539,6 +539,8 @@ namespace CyanStars.ChartEditor.Model
 
         #endregion
 
+        // TODO: ChartTrackData 轨道拓展数据下个版本再说
+
         #endregion
     }
 }
