@@ -280,10 +280,13 @@ namespace CyanStars.ChartEditor.Model
         /// </summary>
         /// <param name="beat">新的节拍</param>
         /// <returns>是否成功修改</returns>
-        public bool UpdateMusicPreviewStartBeat(Beat beat)
+        public bool UpdateMusicPreviewStartBeat(Beat? beat)
         {
-            if (ChartPackData.MusicPreviewStartBeat == beat) // TODO: 校验开始节拍在结束节拍前
+            if (beat != null && // 如果传入的 beat 为 null，直接允许后续修改
+                ChartPackData.MusicPreviewEndBeat != null &&
+                ChartPackData.MusicPreviewEndBeat.Value.ToFloat() <= beat.Value.ToFloat())
             {
+                // 当 endBeat 不为 null 且小于等于 startBeat 时，不允许修改
                 return false;
             }
 
@@ -299,10 +302,13 @@ namespace CyanStars.ChartEditor.Model
         /// </summary>
         /// <param name="beat">新的节拍</param>
         /// <returns>是否成功修改</returns>
-        public bool UpdateMusicPreviewEndBeat(Beat beat)
+        public bool UpdateMusicPreviewEndBeat(Beat? beat)
         {
-            if (ChartPackData.MusicPreviewEndBeat == beat) // TODO: 校验开始节拍在结束节拍前
+            if (beat != null && // 如果传入的 beat 为 null，直接允许后续修改
+                ChartPackData.MusicPreviewStartBeat != null &&
+                ChartPackData.MusicPreviewStartBeat.Value.ToFloat() >= beat.Value.ToFloat())
             {
+                // 当 startBeat 不为 null 且大于等于 startBeat 时，不允许修改
                 return false;
             }
 
