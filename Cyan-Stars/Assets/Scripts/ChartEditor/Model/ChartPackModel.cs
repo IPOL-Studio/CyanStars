@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CyanStars.Chart;
+using CyanStars.Gameplay.MusicGame;
 
 namespace CyanStars.ChartEditor.Model
 {
@@ -22,6 +23,7 @@ namespace CyanStars.ChartEditor.Model
 
         public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
 
+        public List<BaseChartNoteData> Notes => ChartData.Notes;
 
         // --- 谱包事件 ---
 
@@ -86,6 +88,11 @@ namespace CyanStars.ChartEditor.Model
         /// 变速组发生变化
         /// </summary>
         public event Action OnSpeedGroupChanged;
+
+        /// <summary>
+        /// 音符组发生变化
+        /// </summary>
+        public event Action OnNoteDataChanged;
 
 
         #region 谱包信息和谱面元数据管理
@@ -460,6 +467,75 @@ namespace CyanStars.ChartEditor.Model
 
             OnChartDataChanged?.Invoke();
             OnSpeedGroupChanged?.Invoke();
+        }
+
+        #endregion
+
+        #region 音符组管理
+
+        /// <summary>
+        /// 插入一个新的音符数据
+        /// </summary>
+        /// <remarks>
+        /// 方法会根据音符的 JudgeBeat 自动找到正确的位置插入，以保持列表有序。
+        /// </remarks>
+        /// <param name="newNote">要插入的新音符</param>
+        public void InsertNoteData(BaseChartNoteData newNote)
+        {
+            int i;
+            for (i = 0; i < ChartData.Notes.Count; i++)
+            {
+                // 找到第一个比新音符判定时间晚的音符，插入到它前面
+                if (ChartData.Notes[i].JudgeBeat.ToFloat() > newNote.JudgeBeat.ToFloat())
+                {
+                    break;
+                }
+            }
+
+            ChartData.Notes.Insert(i, newNote);
+
+            OnChartDataChanged?.Invoke();
+            OnNoteDataChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// 更新指定索引的音符数据
+        /// </summary>
+        /// <remarks>
+        /// 由于音符的判定时间(JudgeBeat)可能被修改，此方法会先移除旧音符，再将新音符插入到正确的位置，以保证列表的有序性。
+        /// 因此，更新后音符的索引可能会改变。
+        /// </remarks>
+        /// <param name="index">要更新的音符的当前索引</param>
+        /// <param name="updatedNote">更新后的音符数据</param>
+        /// <returns>如果索引无效，返回 false</returns>
+        public bool UpdateNoteData(int index, BaseChartNoteData updatedNote)
+        {
+            if (index < 0 || index >= ChartData.Notes.Count)
+            {
+                return false;
+            }
+
+            // 先移除，再用 Insert 方法重新插入，以保证排序正确
+            ChartData.Notes.RemoveAt(index);
+            InsertNoteData(updatedNote); // InsertNoteData 内部已经调用了事件，这里无需重复调用
+
+            return true;
+        }
+
+        /// <summary>
+        /// 删除并返回指定索引的音符
+        /// </summary>
+        /// <param name="index">要删除的音符索引</param>
+        /// <returns>被删除的音符数据。如果索引越界会抛出异常。</returns>
+        public BaseChartNoteData PopNoteData(int index)
+        {
+            BaseChartNoteData noteData = ChartData.Notes[index];
+            ChartData.Notes.RemoveAt(index);
+
+            OnChartDataChanged?.Invoke();
+            OnNoteDataChanged?.Invoke();
+
+            return noteData;
         }
 
         #endregion
