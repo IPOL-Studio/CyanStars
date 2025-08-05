@@ -11,7 +11,7 @@ namespace CyanStars.Chart
     {
         /// <summary>在第一个 BPM 组开始前播放几次预备拍音效</summary>
         /// <remarks>必须大于等于0，一般为4，预备拍的时间间隔取决于第一个 BPM 组的 bpm</remarks>
-        public int ReadyBeat = 0;
+        public int ReadyBeat = 4;
 
         /// <summary>bpm 组</summary>
         /// <remarks>控制不同时候的拍子所占时长（拍子可转换为时间）</remarks>
