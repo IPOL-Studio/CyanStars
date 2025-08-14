@@ -1,37 +1,34 @@
 name: "优化建议 Enhancement Suggestions"
 description: "提交一个代码或玩法建议 Submit a code or gameplay suggestion"
-labels: ["◆ 优化 Enhancement","♢ 待审阅 To be reviewed"]
+labels: ["Type: 优化 Enhancement", "▪ 待审阅 To be reviewed"]
 body:
-- type: textarea
-  attributes:
-    label: "详情 Details"
-    description: "现有的元素有什么瑕疵？预计应当如何？这么做有什么好处？可以怎么做到？What flaws exist in the current elements? What is the expected outcome? What are the benefits of doing so? How can this be achieved?"
-    value: |
-      **我认为这些内容存在瑕疵...**
-      **I believe there are flaws in these aspects...**
-      1. 
-      2. 
-      3. 
+  - type: textarea
+    attributes:
+      label: "详情 Details"
+      description: "现有的元素有什么瑕疵？预计应当如何？这么做有什么好处？可以怎么做到？What flaws exist in the current elements? What is the expected outcome? What are the benefits of doing so? How can this be achieved?"
+      value: |
+        **我认为这些内容存在瑕疵...**
+        **I believe there are flaws in these aspects...**
+        1. 
+        2. 
+        3. 
 
-      **这些内容可以改成这样...**
-      **These elements can be modified to...**
-      1. 
-      2. 
-      3. 
+        **这些内容可以改成这样...**
+        **These elements can be modified to...**
+        1. 
+        2. 
+        3. 
 
-      **这么做将会带来以下的好处与变化...**
-      **Making these changes will bring the following benefits and improvements...**
-      1. 
-      2. 
-      3. 
+        **这么做将会带来以下的好处与变化...**
+        **Making these changes will bring the following benefits and improvements...**
+        1. 
+        2. 
+        3. 
 
-      **据我所知，可以这样修改代码或玩法...**
-      **To the best of my knowledge, the code or gameplay can be modified in this way...**
-      1. 
-      2. 
-      3. 
-  validations:
-    required: true
-
-
-
+        **据我所知，可以这样修改代码或玩法...**
+        **To the best of my knowledge, the code or gameplay can be modified in this way...**
+        1. 
+        2. 
+        3.
+    validations:
+      required: true
