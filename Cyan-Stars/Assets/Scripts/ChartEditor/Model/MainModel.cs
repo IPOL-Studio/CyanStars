@@ -7,7 +7,7 @@ namespace CyanStars.ChartEditor.Model
     /// <summary>
     /// 谱面编辑器 Model 层
     /// </summary>
-    public class ChartPackModel
+    public class MainModel
     {
         public ChartPackData ChartPackData { get; private set; }
 
