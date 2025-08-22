@@ -21,7 +21,7 @@ namespace CyanStars.ChartEditor.View
     /// </summary>
     /// <remarks>工具顺序暂时是硬编码的，务必确保编辑器内正确设置</remarks>
     [RequireComponent(typeof(ToggleGroup))]
-    public class EditToolbar : MonoBehaviour
+    public class EditToolbar : BaseView
     {
         [SerializeField]
         private Toggle[] toggles;
@@ -32,7 +32,7 @@ namespace CyanStars.ChartEditor.View
         /// 由管理器绑定 VM 和物体实例并初始化
         /// </summary>
         /// <param name="viewModel">VM 实例</param>
-        public void Bind(MainViewModel viewModel)
+        public override void Bind(MainViewModel viewModel)
         {
             mainViewModel = viewModel;
 
