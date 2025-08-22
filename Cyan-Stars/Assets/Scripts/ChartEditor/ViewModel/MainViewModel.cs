@@ -1,5 +1,7 @@
+using System;
 using System.ComponentModel;
 using CyanStars.ChartEditor.Model;
+using CyanStars.ChartEditor.View;
 
 namespace CyanStars.Assets.ViewModel
 {
@@ -12,6 +14,13 @@ namespace CyanStars.Assets.ViewModel
         public MainViewModel(MainModel mainModel)
         {
             this.mainModel = mainModel;
+        }
+
+
+        public void ChangeEditTool(EditTools editTool)
+        {
+            // TODO
+            throw new NotSupportedException();
         }
 
         // protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
