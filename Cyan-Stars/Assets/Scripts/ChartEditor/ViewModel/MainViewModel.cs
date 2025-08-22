@@ -3,7 +3,7 @@ using System.ComponentModel;
 using CyanStars.ChartEditor.Model;
 using CyanStars.ChartEditor.View;
 
-namespace CyanStars.Assets.ViewModel
+namespace CyanStars.ChartEditor.ViewModel
 {
     public class MainViewModel : INotifyPropertyChanged
     {
@@ -11,11 +11,12 @@ namespace CyanStars.Assets.ViewModel
 
         private MainModel mainModel;
 
+
         public MainViewModel(MainModel mainModel)
         {
             this.mainModel = mainModel;
+            // TODO: 监听来自 Model 的事件
         }
-
 
         public void ChangeEditTool(EditTools editTool)
         {

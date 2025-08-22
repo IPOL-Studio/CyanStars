@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using CyanStars.Assets.ViewModel;
+using CyanStars.ChartEditor.ViewModel;
 
 namespace CyanStars.ChartEditor.View
 {
@@ -16,6 +16,10 @@ namespace CyanStars.ChartEditor.View
         Eraser
     }
 
+    /// <summary>
+    /// 左侧编辑栏的 view 层
+    /// </summary>
+    /// <remarks>工具顺序暂时是硬编码的，务必确保编辑器内正确设置</remarks>
     [RequireComponent(typeof(ToggleGroup))]
     public class EditToolbar : MonoBehaviour
     {
