@@ -337,7 +337,7 @@ namespace CyanStars.ChartEditor.Model
 
         #endregion
 
-        # region 谱面管理
+        #region 谱面管理
 
         public bool UpdateReadyBeat(int value)
         {

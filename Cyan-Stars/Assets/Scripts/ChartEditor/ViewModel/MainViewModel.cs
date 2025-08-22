@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 using CyanStars.ChartEditor.Model;
 using CyanStars.ChartEditor.View;
@@ -12,16 +11,21 @@ namespace CyanStars.ChartEditor.ViewModel
         private MainModel mainModel;
 
 
+        private EditTools SelectedEditTool;
+
+
         public MainViewModel(MainModel mainModel)
         {
             this.mainModel = mainModel;
             // TODO: 监听来自 Model 的事件
         }
 
+        /// <summary>
+        /// 更新左侧画笔工具栏选中的工具
+        /// </summary>
         public void ChangeEditTool(EditTools editTool)
         {
-            // TODO
-            throw new NotSupportedException();
+            SelectedEditTool = editTool;
         }
 
         // protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
