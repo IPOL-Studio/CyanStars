@@ -21,7 +21,7 @@ namespace CyanStars.ChartEditor.View
     /// </summary>
     /// <remarks>工具顺序暂时是硬编码的，务必确保编辑器内正确设置</remarks>
     [RequireComponent(typeof(ToggleGroup))]
-    public class EditToolbar : BaseView
+    public class EditToolbarCanvas : BaseView
     {
         [SerializeField]
         private Toggle[] toggles;
