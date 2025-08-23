@@ -28,7 +28,7 @@ namespace CyanStars.ChartEditor.View
 
         public override void Bind(MainViewModel viewModel)
         {
-            mainViewModel = viewModel;
+            base.Bind(viewModel);
 
             menuButton.onClick.AddListener(() => { mainViewModel.MenuButtonClick(MenuButtons.Menu); });
             saveButton.onClick.AddListener(() => { mainViewModel.MenuButtonClick(MenuButtons.Save); });

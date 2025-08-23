@@ -29,7 +29,7 @@ namespace CyanStars.ChartEditor.View
 
         public override void Bind(MainViewModel viewModel)
         {
-            mainViewModel = viewModel;
+            base.Bind(viewModel);
 
             if (toggles.Length != 7) // 目前是硬编码的，需要确保在 Unity 中按枚举的顺序正确配置 toggle
             {
