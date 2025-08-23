@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using CyanStars.ChartEditor.Model;
 using CyanStars.ChartEditor.View;
+using UnityEngine;
 
 namespace CyanStars.ChartEditor.ViewModel
 {
@@ -11,15 +14,24 @@ namespace CyanStars.ChartEditor.ViewModel
 
         private MainModel mainModel;
 
+        // --- EditToolbar ---
 
-        private EditTools SelectedEditTool;
+        private EditTools selectedEditTool;
 
+        public EditTools SelectedEditTool
+        {
+            get => selectedEditTool;
+            private set => SetField(ref selectedEditTool, value);
+        }
 
         public MainViewModel(MainModel mainModel)
         {
             this.mainModel = mainModel;
             // TODO: 监听来自 Model 的事件
         }
+
+
+        // --- EditToolbar ---
 
         /// <summary>
         /// 更新左侧画笔工具栏选中的工具
@@ -28,6 +40,9 @@ namespace CyanStars.ChartEditor.ViewModel
         {
             SelectedEditTool = editTool;
         }
+
+
+        // --- MenuButton ---
 
         /// <summary>
         /// 当左上角菜单窗口中的一级按钮被点击时
@@ -38,17 +53,20 @@ namespace CyanStars.ChartEditor.ViewModel
             // TODO: 完善点击响应逻辑
         }
 
-        // protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        // {
-        //     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        // }
-        //
-        // protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
-        // {
-        //     if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-        //     field = value;
-        //     OnPropertyChanged(propertyName);
-        //     return true;
-        // }
+
+        // --- MVVM 辅助方法 ---
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
     }
 }
