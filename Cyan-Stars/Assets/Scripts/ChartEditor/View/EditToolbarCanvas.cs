@@ -1,3 +1,5 @@
+// TODO：需要修改，将默认工具初始化放在 VM 层硬编码
+
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,9 +29,9 @@ namespace CyanStars.ChartEditor.View
         private Toggle[] toggles;
 
 
-        public override void Bind(MainViewModel viewModel)
+        public override void Bind(MainViewModel mainViewModel)
         {
-            base.Bind(viewModel);
+            base.Bind(mainViewModel);
 
             if (toggles.Length != 7) // 目前是硬编码的，需要确保在 Unity 中按枚举的顺序正确配置 toggle
             {
@@ -49,12 +51,12 @@ namespace CyanStars.ChartEditor.View
                 if (initialToggle is null)
                 {
                     initialToggle = toggles[i];
-                    mainViewModel.ChangeEditTool((EditTools)i);
+                    ViewModel.ChangeEditTool((EditTools)i);
                 }
                 else
                 {
                     Debug.LogError("EditToolbar: 初始存在多个激活的 toggle，在 Unity 内修改");
-                    throw new System.Exception("EditToolbar: 存在多个激活的 toggle，在 Unity 内修改");
+                    throw new Exception("EditToolbar: 存在多个激活的 toggle，在 Unity 内修改");
                 }
             }
 
@@ -79,7 +81,7 @@ namespace CyanStars.ChartEditor.View
                 {
                     if (isOn) //被 Unity 自动取消选中的物体不会调用方法
                     {
-                        mainViewModel.ChangeEditTool((EditTools)toggleIndex);
+                        ViewModel.ChangeEditTool((EditTools)toggleIndex);
                     }
                 });
             }

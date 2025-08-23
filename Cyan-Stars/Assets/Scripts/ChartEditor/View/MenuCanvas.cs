@@ -26,13 +26,13 @@ namespace CyanStars.ChartEditor.View
         private Button playButton;
 
 
-        public override void Bind(MainViewModel viewModel)
+        public override void Bind(MainViewModel mainViewModel)
         {
-            base.Bind(viewModel);
+            base.Bind(mainViewModel);
 
-            menuButton.onClick.AddListener(() => { mainViewModel.MenuButtonClick(MenuButtons.Menu); });
-            saveButton.onClick.AddListener(() => { mainViewModel.MenuButtonClick(MenuButtons.Save); });
-            playButton.onClick.AddListener(() => { mainViewModel.MenuButtonClick(MenuButtons.Play); });
+            menuButton.onClick.AddListener(() => { ViewModel.MenuButtonClick(MenuButtons.Menu); });
+            saveButton.onClick.AddListener(() => { ViewModel.MenuButtonClick(MenuButtons.Save); });
+            playButton.onClick.AddListener(() => { ViewModel.MenuButtonClick(MenuButtons.Play); });
         }
 
         private void OnDestroy()

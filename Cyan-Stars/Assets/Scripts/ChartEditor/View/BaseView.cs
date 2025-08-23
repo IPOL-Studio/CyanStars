@@ -9,11 +9,11 @@ namespace CyanStars.ChartEditor.View
     /// <param name="viewModel">VM 实例</param>
     public abstract class BaseView : MonoBehaviour
     {
-        protected MainViewModel mainViewModel;
+        protected MainViewModel ViewModel;
 
-        public virtual void Bind(MainViewModel viewModel)
+        public virtual void Bind(MainViewModel mainViewModel)
         {
-            mainViewModel = viewModel;
+            ViewModel = mainViewModel;
         }
     }
 }
