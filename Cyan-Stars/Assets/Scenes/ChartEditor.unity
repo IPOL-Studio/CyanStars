@@ -11588,7 +11588,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e5b079b88513749a44c67f93160393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toolToggles:
+  toggles:
   - {fileID: 7757076495323768142}
   - {fileID: 7757076495190248014}
   - {fileID: 7757076494837556230}
@@ -11835,7 +11835,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7757076495624774869, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_Name
-      value: "\u6D4B\u8BD5Button"
+      value: PlayButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
@@ -24777,8 +24777,9 @@ GameObject:
   - component: {fileID: 1633411526}
   - component: {fileID: 1633411527}
   - component: {fileID: 1633411529}
+  - component: {fileID: 1633411530}
   m_Layer: 5
-  m_Name: "\u5DE6\u4E0A\u5DE5\u5177\u680FCanvas"
+  m_Name: MenuCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24884,6 +24885,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 2
+--- !u!114 &1633411530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1633411524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 246e2cfb89387ce4eafd140bc5688171, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menuButton: {fileID: 0}
+  saveButton: {fileID: 0}
+  playButton: {fileID: 0}
 --- !u!1001 &1640431773
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25671,6 +25687,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246e2cfb89387ce4eafd140bc5688171, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  menuButton: {fileID: 0}
+  saveButton: {fileID: 0}
+  playButton: {fileID: 0}
 --- !u!1 &1686710226
 GameObject:
   m_ObjectHideFlags: 0
@@ -29006,7 +29025,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7757076495624774869, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_Name
-      value: "\u4FDD\u5B58Button"
+      value: SaveButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
