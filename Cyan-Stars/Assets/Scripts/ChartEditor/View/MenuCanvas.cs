@@ -26,9 +26,6 @@ namespace CyanStars.ChartEditor.View
         private Button playButton;
 
 
-        private MainViewModel mainViewModel;
-
-
         public override void Bind(MainViewModel viewModel)
         {
             mainViewModel = viewModel;

@@ -26,8 +26,6 @@ namespace CyanStars.ChartEditor.View
         [SerializeField]
         private Toggle[] toggles;
 
-        private MainViewModel mainViewModel;
-
 
         public override void Bind(MainViewModel viewModel)
         {
