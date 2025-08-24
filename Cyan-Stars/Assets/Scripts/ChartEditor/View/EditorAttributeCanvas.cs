@@ -21,10 +21,10 @@ namespace CyanStars.ChartEditor.View
         private TMP_InputField beatPrecisionInputField;
 
         [SerializeField]
-        private Button beatPrecisionSubBuutton;
+        private Button beatPrecisionSubButton;
 
         [SerializeField]
-        private Button beatPrecisionAddBuutton;
+        private Button beatPrecisionAddButton;
 
         // --- 节拍缩放 ---
 
