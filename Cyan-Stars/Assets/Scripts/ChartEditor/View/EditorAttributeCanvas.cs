@@ -42,14 +42,17 @@ namespace CyanStars.ChartEditor.View
         {
             base.Bind(mainViewModel);
 
-            // TODO: 初始化文本框内容
+            // 初始化文本框内容
             posPrecisionInputField.text = ViewModel.PosPrecisionInput;
-            // ...
+            beatPrecisionInputField.text = ViewModel.BeatPrecisionInput;
+            beatZoomInputField.text = ViewModel.BeatZoomInput;
 
-            // TODO: 添加双向绑定
+            // 添加双向绑定
             ViewModel.PropertyChanged += OnViewModelPropertyChanged;
             posPrecisionInputField.onEndEdit.AddListener((string val) => { ViewModel.PosPrecisionInput = val; });
-            // ...
+            beatPrecisionInputField.onEndEdit.AddListener((string val) => { ViewModel.BeatPrecisionInput = val; });
+            beatZoomInputField.onEndEdit.AddListener((string val) => { ViewModel.BeatZoomInput = val; });
+            // TODO: 为按钮添加绑定
         }
 
         /// <summary>
@@ -66,6 +69,20 @@ namespace CyanStars.ChartEditor.View
                     }
 
                     break;
+                case nameof(MainViewModel.BeatPrecisionInput):
+                    if (beatPrecisionInputField.text != ViewModel.BeatPrecisionInput)
+                    {
+                        beatPrecisionInputField.text = ViewModel.BeatPrecisionInput;
+                    }
+
+                    break;
+                case nameof(MainViewModel.BeatZoomInput):
+                    if (beatZoomInputField.text != ViewModel.BeatZoomInput)
+                    {
+                        beatZoomInputField.text = ViewModel.BeatZoomInput;
+                    }
+
+                    break;
             }
         }
 
@@ -75,6 +92,10 @@ namespace CyanStars.ChartEditor.View
             {
                 ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
             }
+
+            posPrecisionInputField.onEndEdit.RemoveAllListeners();
+            beatPrecisionInputField.onEndEdit.RemoveAllListeners();
+            beatZoomInputField.onEndEdit.RemoveAllListeners();
         }
     }
 }
