@@ -15,6 +15,10 @@ namespace CyanStars.ChartEditor.ViewModel
 
         private MainModel mainModel;
 
+        // --- 常量 ---
+        private const float BeatZoomStep = 0.1f; // 每次按下缩放加减按钮后，beatZoom 变化的值
+
+
         // --- 初始化默认值 ---
 
         private const int DefaultPosPrecision = 4;
@@ -158,6 +162,33 @@ namespace CyanStars.ChartEditor.ViewModel
         {
             throw new NotSupportedException();
             // TODO: 完善点击响应逻辑
+        }
+
+
+        // --- EditorAttribute ---
+
+        /// <summary>
+        /// 增加 BeatZoom 值（放大）
+        /// </summary>
+        public void BeatZoomIn()
+        {
+            BeatZoomInput = (beatZoom + BeatZoomStep).ToString(CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
+        /// 减少 BeatZoom 值（缩小）
+        /// </summary>
+        public void BeatZoomOut()
+        {
+            float newValue = beatZoom - BeatZoomStep;
+
+            if (newValue <= 0)
+            {
+                // 如果新值小于或等于0，则不执行任何操作，保持当前值不变
+                return;
+            }
+
+            BeatZoomInput = newValue.ToString(CultureInfo.InvariantCulture);
         }
 
 

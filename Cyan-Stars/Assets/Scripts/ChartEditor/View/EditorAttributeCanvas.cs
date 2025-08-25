@@ -52,6 +52,8 @@ namespace CyanStars.ChartEditor.View
             posPrecisionInputField.onEndEdit.AddListener((string val) => { ViewModel.PosPrecisionInput = val; });
             beatPrecisionInputField.onEndEdit.AddListener((string val) => { ViewModel.BeatPrecisionInput = val; });
             beatZoomInputField.onEndEdit.AddListener((string val) => { ViewModel.BeatZoomInput = val; });
+            beatZoomOutButton.onClick.AddListener(ViewModel.BeatZoomOut);
+            beatZoomInButton.onClick.AddListener(ViewModel.BeatZoomIn);
             // TODO: 为按钮添加绑定
         }
 
@@ -96,6 +98,8 @@ namespace CyanStars.ChartEditor.View
             posPrecisionInputField.onEndEdit.RemoveAllListeners();
             beatPrecisionInputField.onEndEdit.RemoveAllListeners();
             beatZoomInputField.onEndEdit.RemoveAllListeners();
+            beatZoomOutButton.onClick.RemoveAllListeners();
+            beatZoomInButton.onClick.RemoveAllListeners();
         }
     }
 }
