@@ -20,6 +20,8 @@ namespace CyanStars.ChartEditor.ViewModel
 
 
         // --- 初始化默认值 ---
+        private const EditTools DefaultEditTool = EditTools.Select;
+
         private const bool DefaultPosMagnet = false;
         private const int DefaultPosPrecision = 4;
         private const int DefaultBeatPrecision = 2;
@@ -146,6 +148,8 @@ namespace CyanStars.ChartEditor.ViewModel
             this.mainModel = mainModel;
 
             // 初始化各部分值
+            selectedEditTool =  DefaultEditTool;
+
             PosMagnet = DefaultPosMagnet;
             posPrecision = DefaultPosPrecision;
             beatPrecision = DefaultBeatPrecision;

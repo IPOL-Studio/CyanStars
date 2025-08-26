@@ -1,5 +1,3 @@
-// TODO：需要修改，将默认工具初始化放在 VM 层硬编码
-
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,36 +34,8 @@ namespace CyanStars.ChartEditor.View
             if (toggles.Length != 7) // 目前是硬编码的，需要确保在 Unity 中按枚举的顺序正确配置 toggle
             {
                 Debug.LogError("EditToolbar: 未在 Unity 中正确配置");
-                throw new System.InvalidOperationException("EditToolbar: 未在 Unity 中正确配置");
+                throw new InvalidOperationException("EditToolbar: 未在 Unity 中正确配置");
             }
-
-            // 传入初始激活的工具
-            Toggle initialToggle = null; // 应该在 Unity 编辑器中将一个 toggle 设为启用
-            for (int i = 0; i < toggles.Length; i++)
-            {
-                if (!toggles[i].isOn)
-                {
-                    continue;
-                }
-
-                if (initialToggle is null)
-                {
-                    initialToggle = toggles[i];
-                    ViewModel.ChangeEditTool((EditTools)i);
-                }
-                else
-                {
-                    Debug.LogError("EditToolbar: 初始存在多个激活的 toggle，在 Unity 内修改");
-                    throw new Exception("EditToolbar: 存在多个激活的 toggle，在 Unity 内修改");
-                }
-            }
-
-            if (initialToggle is null)
-            {
-                Debug.LogError("EditToolbar: 未设置初始激活的 toggle，在 Unity 内修改");
-                throw new Exception("EditToolbar: 未设置初始激活的 toggle，在 Unity 内修改");
-            }
-
 
             for (int i = 0; i < toggles.Length; i++)
             {
@@ -74,6 +44,9 @@ namespace CyanStars.ChartEditor.View
                     Debug.LogError("EditToolbar: null toggle");
                     throw new InvalidOperationException("EditToolbar: null toggle");
                 }
+
+                // 如果 VM 中将这个 toggle 设为了默认初始启用，则修改 isOn 为 true，否则为 false
+                toggles[i].isOn = (i == (int)ViewModel.SelectedEditTool);
 
                 // 绑定事件响应，使新选中的物体调用 VM 的方法，传入新的 EditTools 类型
                 int toggleIndex = i;
@@ -86,6 +59,7 @@ namespace CyanStars.ChartEditor.View
                 });
             }
         }
+
 
         private void OnDestroy()
         {
