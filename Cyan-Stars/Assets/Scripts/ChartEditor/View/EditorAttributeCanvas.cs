@@ -42,19 +42,24 @@ namespace CyanStars.ChartEditor.View
         {
             base.Bind(mainViewModel);
 
-            // 初始化文本框内容
+            // 初始化内容
+            posMagnetToggle.isOn = ViewModel.PosMagnet;
             posPrecisionInputField.text = ViewModel.PosPrecisionInput;
             beatPrecisionInputField.text = ViewModel.BeatPrecisionInput;
             beatZoomInputField.text = ViewModel.BeatZoomInput;
 
             // 添加双向绑定
             ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+
             posPrecisionInputField.onEndEdit.AddListener((string val) => { ViewModel.PosPrecisionInput = val; });
             beatPrecisionInputField.onEndEdit.AddListener((string val) => { ViewModel.BeatPrecisionInput = val; });
             beatZoomInputField.onEndEdit.AddListener((string val) => { ViewModel.BeatZoomInput = val; });
+
+            posMagnetToggle.onValueChanged.AddListener((bool val) => { ViewModel.PosMagnet = val; });
+            beatPrecisionSubButton.onClick.AddListener(ViewModel.SubBeatPrecision);
+            beatPrecisionAddButton.onClick.AddListener(ViewModel.AddBeatPrecision);
             beatZoomOutButton.onClick.AddListener(ViewModel.BeatZoomOut);
             beatZoomInButton.onClick.AddListener(ViewModel.BeatZoomIn);
-            // TODO: 为按钮添加绑定
         }
 
         /// <summary>
@@ -95,6 +100,7 @@ namespace CyanStars.ChartEditor.View
                 ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
             }
 
+            posMagnetToggle.onValueChanged.RemoveAllListeners();
             posPrecisionInputField.onEndEdit.RemoveAllListeners();
             beatPrecisionInputField.onEndEdit.RemoveAllListeners();
             beatZoomInputField.onEndEdit.RemoveAllListeners();

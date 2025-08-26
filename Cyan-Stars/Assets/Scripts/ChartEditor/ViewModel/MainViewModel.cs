@@ -20,7 +20,7 @@ namespace CyanStars.ChartEditor.ViewModel
 
 
         // --- 初始化默认值 ---
-
+        private const bool DefaultPosMagnet = false;
         private const int DefaultPosPrecision = 4;
         private const int DefaultBeatPrecision = 2;
         private const float DefaultBeatZoom = 1;
@@ -38,6 +38,20 @@ namespace CyanStars.ChartEditor.ViewModel
 
 
         #region EditorAttribute
+
+        /// <summary>
+        /// 是否开启了位置吸附，不要用这个
+        /// </summary>
+        private bool posMagnet;
+
+        /// <summary>
+        /// 位置吸附属性
+        /// </summary>
+        public bool PosMagnet
+        {
+            get => posMagnet;
+            set => SetField(ref posMagnet, value);
+        }
 
         /// <summary>
         /// 真实的位置细分值，不要使用这个
@@ -132,14 +146,13 @@ namespace CyanStars.ChartEditor.ViewModel
             this.mainModel = mainModel;
 
             // 初始化各部分值
+            PosMagnet = DefaultPosMagnet;
             posPrecision = DefaultPosPrecision;
             beatPrecision = DefaultBeatPrecision;
             beatZoom = DefaultBeatZoom;
 
             // TODO: 监听来自 Model 的事件
         }
-
-        // TODO: 为按钮添加绑定方法
 
 
         // --- EditToolbar ---
@@ -166,14 +179,30 @@ namespace CyanStars.ChartEditor.ViewModel
 
 
         // --- EditorAttribute ---
+        /// <summary>
+        /// 减少节拍细分
+        /// </summary>
+        public void SubBeatPrecision()
+        {
+            int newValue = beatPrecision - 1;
+
+            if (newValue <= 0)
+            {
+                // 如果新值小于或等于0，则不执行任何操作，保持当前值不变
+                return;
+            }
+
+            BeatPrecisionInput = newValue.ToString();
+        }
 
         /// <summary>
-        /// 增加 BeatZoom 值（放大）
+        /// 增加节拍细分
         /// </summary>
-        public void BeatZoomIn()
+        public void AddBeatPrecision()
         {
-            BeatZoomInput = (beatZoom + BeatZoomStep).ToString(CultureInfo.InvariantCulture);
+            BeatPrecisionInput = (beatPrecision + 1).ToString();
         }
+
 
         /// <summary>
         /// 减少 BeatZoom 值（缩小）
@@ -191,6 +220,14 @@ namespace CyanStars.ChartEditor.ViewModel
             BeatZoomInput = newValue.ToString(CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// 增加 BeatZoom 值（放大）
+        /// </summary>
+        public void BeatZoomIn()
+        {
+            BeatZoomInput = (beatZoom + BeatZoomStep).ToString(CultureInfo.InvariantCulture);
+        }
+
 
         // --- MVVM 辅助方法 ---
 
@@ -199,7 +236,7 @@ namespace CyanStars.ChartEditor.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        private bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, value)) return false;
             field = value;
