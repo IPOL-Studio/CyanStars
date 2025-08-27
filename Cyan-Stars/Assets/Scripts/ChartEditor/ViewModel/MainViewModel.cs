@@ -11,15 +11,20 @@ namespace CyanStars.ChartEditor.ViewModel
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+        #region 数据定义
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private MainModel mainModel;
 
-        // --- 常量 ---
+        #region 常量
+
         private const float BeatZoomStep = 0.1f; // 每次按下缩放加减按钮后，beatZoom 变化的值
 
+        #endregion
 
-        // --- 初始化默认值 ---
+        #region 初始化默认值
+
         private const EditTools DefaultEditTool = EditTools.Select;
 
         private const bool DefaultPosMagnet = false;
@@ -27,8 +32,9 @@ namespace CyanStars.ChartEditor.ViewModel
         private const int DefaultBeatPrecision = 2;
         private const float DefaultBeatZoom = 1;
 
+        #endregion
 
-        // --- EditToolbar ---
+        #region 画笔工具栏
 
         private EditTools selectedEditTool;
 
@@ -38,8 +44,9 @@ namespace CyanStars.ChartEditor.ViewModel
             private set => SetField(ref selectedEditTool, value);
         }
 
+        #endregion
 
-        #region EditorAttribute
+        #region 编辑器属性
 
         /// <summary>
         /// 是否开启了位置吸附，不要用这个
@@ -142,13 +149,20 @@ namespace CyanStars.ChartEditor.ViewModel
 
         #endregion
 
+        #endregion
 
+        #region VM方法
+
+        /// <summary>
+        /// MainViewModel 构造函数
+        /// </summary>
+        /// <param name="mainModel">传入一个绑定的 M 层</param>
         public MainViewModel(MainModel mainModel)
         {
             this.mainModel = mainModel;
 
             // 初始化各部分值
-            selectedEditTool =  DefaultEditTool;
+            selectedEditTool = DefaultEditTool;
 
             PosMagnet = DefaultPosMagnet;
             posPrecision = DefaultPosPrecision;
@@ -158,8 +172,7 @@ namespace CyanStars.ChartEditor.ViewModel
             // TODO: 监听来自 Model 的事件
         }
 
-
-        // --- EditToolbar ---
+        #region 画笔工具栏
 
         /// <summary>
         /// 更新左侧画笔工具栏选中的工具
@@ -169,8 +182,9 @@ namespace CyanStars.ChartEditor.ViewModel
             SelectedEditTool = editTool;
         }
 
+        #endregion
 
-        // --- MenuButton ---
+        #region 菜单按钮组
 
         /// <summary>
         /// 当左上角菜单窗口中的一级按钮被点击时
@@ -181,8 +195,10 @@ namespace CyanStars.ChartEditor.ViewModel
             // TODO: 完善点击响应逻辑
         }
 
+        #endregion
 
-        // --- EditorAttribute ---
+        #region 编辑器属性
+
         /// <summary>
         /// 减少节拍细分
         /// </summary>
@@ -232,6 +248,34 @@ namespace CyanStars.ChartEditor.ViewModel
             BeatZoomInput = (beatZoom + BeatZoomStep).ToString(CultureInfo.InvariantCulture);
         }
 
+        #endregion
+
+        #region 变速模板
+
+        /// <summary>
+        /// 切换在编辑器内选中的变速模板
+        /// </summary>
+        /// <param name="index">模板下标</param>
+        public void ChangeSpeedTemplate(int index)
+        {
+        }
+
+        /// <summary>
+        /// 添加一个变速模板
+        /// </summary>
+        public void AddSpeedTemplate()
+        {
+        }
+
+        /// <summary>
+        /// 删除一个变速模板
+        /// </summary>
+        /// <param name="index">模板下标</param>
+        public void AddSpeedTemplate(int index)
+        {
+        }
+
+        #endregion
 
         // --- MVVM 辅助方法 ---
 
@@ -247,5 +291,7 @@ namespace CyanStars.ChartEditor.ViewModel
             OnPropertyChanged(propertyName);
             return true;
         }
+
+        #endregion
     }
 }
