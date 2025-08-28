@@ -30,7 +30,7 @@ namespace CyanStars.Chart
         /// </remarks>
         public BezierCurve BezierCurve;
 
-        public SpeedGroupData(SpeedGroupType type, BezierCurve bezierCurve = null)
+        public SpeedGroupData(SpeedGroupType type = SpeedGroupType.Relative, BezierCurve bezierCurve = null)
         {
             Name = "";
             Type = type;

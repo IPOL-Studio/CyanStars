@@ -33,6 +33,8 @@ namespace CyanStars.ChartEditor.ViewModel
         private const int DefaultBeatPrecision = 2;
         private const float DefaultBeatZoom = 1;
 
+        private const int DefaultSpeedGroupIndex = 0;
+
         #endregion
 
         #region 画笔工具栏
@@ -152,11 +154,31 @@ namespace CyanStars.ChartEditor.ViewModel
 
         #region 变速模板
 
-        private int CurrentSpeedGroupIndex;
+        private List<SpeedGroupData> SpeedGroups => mainModel.SpeedGroupDatas;
 
-        private string SpeedGroupRemarkInput;
+        private int currentSpeedGroupIndex;
 
-        private List<SpeedGroupData> SpeedGroupDatas => mainModel.SpeedGroupDatas;
+        public int CurrentSpeedGroupIndex
+        {
+            get => currentSpeedGroupIndex;
+            private set => SetField(ref currentSpeedGroupIndex, value);
+        }
+
+        private string speedGroupRemarkInput;
+
+        public string SpeedGroupRemarkInput
+        {
+            get => speedGroupRemarkInput;
+            private set => SetField(ref speedGroupRemarkInput, value);
+        }
+
+        private SpeedGroupType currentSpeedGroupType;
+
+        public SpeedGroupType CurrentSpeedGroupType
+        {
+            get => currentSpeedGroupType;
+            private set => SetField(ref currentSpeedGroupType, value);
+        }
 
         #endregion
 
@@ -175,10 +197,11 @@ namespace CyanStars.ChartEditor.ViewModel
             // 初始化各部分值
             selectedEditTool = DefaultEditTool;
 
-            PosMagnet = DefaultPosMagnet;
+            posMagnet = DefaultPosMagnet;
             posPrecision = DefaultPosPrecision;
             beatPrecision = DefaultBeatPrecision;
             beatZoom = DefaultBeatZoom;
+            currentSpeedGroupIndex = DefaultSpeedGroupIndex;
 
             // TODO: 监听来自 Model 的事件
         }
@@ -269,6 +292,7 @@ namespace CyanStars.ChartEditor.ViewModel
         /// <param name="index">模板下标</param>
         public void ChangeSpeedGroup(int index)
         {
+            CurrentSpeedGroupIndex = index;
         }
 
         /// <summary>
@@ -276,6 +300,9 @@ namespace CyanStars.ChartEditor.ViewModel
         /// </summary>
         public void AddSpeedGroup()
         {
+            SpeedGroups.Add(new SpeedGroupData());
+            CurrentSpeedGroupIndex = SpeedGroups.Count - 1;
+            // TODO: 修改 M 层数据
         }
 
         /// <summary>
@@ -283,6 +310,17 @@ namespace CyanStars.ChartEditor.ViewModel
         /// </summary>
         public void DelSpeedGroup()
         {
+            if (CurrentSpeedGroupIndex == 0)
+            {
+                Debug.LogWarning("MainViewModel: 不允许删除默认变速组");
+                return;
+            }
+
+            SpeedGroups.RemoveAt(CurrentSpeedGroupIndex);
+            CurrentSpeedGroupIndex = CurrentSpeedGroupIndex > SpeedGroups.Count - 1
+                ? SpeedGroups.Count - 1
+                : CurrentSpeedGroupIndex;
+            // TODO: 修改 M 层数据
         }
 
         /// <summary>
@@ -290,6 +328,9 @@ namespace CyanStars.ChartEditor.ViewModel
         /// </summary>
         public void CopySpeedGroup()
         {
+            SpeedGroups.Add(SpeedGroups[CurrentSpeedGroupIndex]);
+            CurrentSpeedGroupIndex = SpeedGroups.Count - 1;
+            // TODO: 修改 M 层数据
         }
 
         /// <summary>
@@ -297,6 +338,14 @@ namespace CyanStars.ChartEditor.ViewModel
         /// </summary>
         public void TrySetSpeedGroupRemark(string remark)
         {
+            if (CurrentSpeedGroupIndex == 0)
+            {
+                Debug.LogWarning("MainViewModel: 不允许修改默认变速组");
+                return;
+            }
+
+            speedGroupRemarkInput = remark;
+            // TODO: 修改 M 层数据
         }
 
         /// <summary>
@@ -304,6 +353,14 @@ namespace CyanStars.ChartEditor.ViewModel
         /// </summary>
         public void SetSpeedGroupType(SpeedGroupType type)
         {
+            if (CurrentSpeedGroupIndex == 0)
+            {
+                Debug.LogWarning("MainViewModel: 不允许修改默认变速组");
+                return;
+            }
+
+            CurrentSpeedGroupType = type;
+            // TODO: 修改 M 层数据
         }
 
         #endregion

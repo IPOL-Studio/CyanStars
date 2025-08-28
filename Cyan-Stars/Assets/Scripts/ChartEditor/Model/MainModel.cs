@@ -118,7 +118,7 @@ namespace CyanStars.ChartEditor.Model
         /// </summary>
         /// <param name="title">谱包标题，会同时用于文件夹名和文件内标题</param>
         /// <returns>谱包数据</returns>
-        public ChartPackData CreateChartPackData(string title)
+        public ChartPackData CreateChartPack(string title)
         {
             ChartData chartData = new ChartData();
             ChartPackData = new ChartPackData(title);
@@ -170,7 +170,10 @@ namespace CyanStars.ChartEditor.Model
                 }
             }
 
-            throw new NotImplementedException();
+            ChartData = new ChartData();
+            return true;
+
+            // throw new NotImplementedException();
             // TODO: 创建谱面并将谱面相对路径写入谱包元数据
         }
 

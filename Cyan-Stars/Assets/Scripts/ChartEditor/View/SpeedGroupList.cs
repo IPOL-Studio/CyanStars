@@ -20,8 +20,14 @@ namespace CyanStars.ChartEditor.View
         {
             base.Bind(mainViewModel);
 
-            ViewModel.PropertyChanged += OnViewModelPropertyChanged;
             listItems = listContent.GetComponentsInChildren<SpeedGroupListItem>();
+
+            for (int i = 0; i < listItems.Length; i++)
+            {
+                listItems[i].Toggle.isOn = (ViewModel.CurrentSpeedGroupIndex == i);
+            }
+
+            ViewModel.PropertyChanged += OnViewModelPropertyChanged;
             for (int i = 0; i < listItems.Length; i++)
             {
                 int index = i;
