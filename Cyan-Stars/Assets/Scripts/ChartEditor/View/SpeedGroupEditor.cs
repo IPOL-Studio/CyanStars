@@ -1,3 +1,4 @@
+using CyanStars.Chart;
 using CyanStars.ChartEditor.ViewModel;
 using TMPro;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine.UI;
 
 namespace CyanStars.ChartEditor.View
 {
-    public class SpeedTemplateEditor : BaseView
+    public class SpeedGroupEditor : BaseView
     {
         [SerializeField]
         private TMP_Text indexText;
@@ -28,6 +29,12 @@ namespace CyanStars.ChartEditor.View
         public override void Bind(MainViewModel mainViewModel)
         {
             base.Bind(mainViewModel);
+
+            remarkInput.onEndEdit.AddListener((text) => ViewModel.TrySetSpeedGroupRemark(text));
+            relativeButton.onClick.AddListener(() => ViewModel.SetSpeedGroupType(SpeedGroupType.Relative));
+            absoluteButton.onClick.AddListener(() => ViewModel.SetSpeedGroupType(SpeedGroupType.Absolute));
+            delItemButton.onClick.AddListener(() => ViewModel.DelSpeedGroup());
+            copyItemButton.onClick.AddListener(() => ViewModel.CopySpeedGroup());
         }
 
         private void OnViewModelPropertyChanged(object _, System.ComponentModel.PropertyChangedEventArgs e)

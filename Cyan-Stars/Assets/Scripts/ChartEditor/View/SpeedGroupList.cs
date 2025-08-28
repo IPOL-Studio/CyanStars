@@ -1,12 +1,11 @@
 using CyanStars.ChartEditor.ViewHelper;
 using CyanStars.ChartEditor.ViewModel;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace CyanStars.ChartEditor.View
 {
-    public class SpeedTemplateList : BaseView
+    public class SpeedGroupList : BaseView
     {
         [SerializeField]
         private GameObject listContent;
@@ -14,7 +13,7 @@ namespace CyanStars.ChartEditor.View
         [SerializeField]
         private Button addItemButton;
 
-        private SpeedTemplateListItem[] listItems;
+        private SpeedGroupListItem[] listItems;
 
 
         public override void Bind(MainViewModel mainViewModel)
@@ -22,7 +21,7 @@ namespace CyanStars.ChartEditor.View
             base.Bind(mainViewModel);
 
             ViewModel.PropertyChanged += OnViewModelPropertyChanged;
-            listItems = listContent.GetComponentsInChildren<SpeedTemplateListItem>();
+            listItems = listContent.GetComponentsInChildren<SpeedGroupListItem>();
             for (int i = 0; i < listItems.Length; i++)
             {
                 int index = i;
@@ -30,12 +29,12 @@ namespace CyanStars.ChartEditor.View
                 {
                     if (isOn)
                     {
-                        mainViewModel.ChangeSpeedTemplate(index);
+                        mainViewModel.ChangeSpeedGroup(index);
                     }
                 });
             }
 
-            addItemButton.onClick.AddListener(mainViewModel.AddSpeedTemplate);
+            addItemButton.onClick.AddListener(mainViewModel.AddSpeedGroup);
         }
 
         private void OnViewModelPropertyChanged(object _, System.ComponentModel.PropertyChangedEventArgs e)

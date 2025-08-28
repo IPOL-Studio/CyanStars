@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace CyanStars.ChartEditor.ViewHelper
 {
     [RequireComponent(typeof(Toggle))]
-    public class SpeedTemplateListItem : MonoBehaviour
+    public class SpeedGroupListItem : MonoBehaviour
     {
         public Toggle Toggle;
         public TMP_Text IndexText;

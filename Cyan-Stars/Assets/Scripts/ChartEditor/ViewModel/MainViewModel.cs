@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using CyanStars.Chart;
 using CyanStars.ChartEditor.Model;
 using CyanStars.ChartEditor.View;
 using UnityEngine;
@@ -149,6 +150,16 @@ namespace CyanStars.ChartEditor.ViewModel
 
         #endregion
 
+        #region 变速模板
+
+        private int CurrentSpeedGroupIndex;
+
+        private string SpeedGroupRemarkInput;
+
+        private List<SpeedGroupData> SpeedGroupDatas => mainModel.SpeedGroupDatas;
+
+        #endregion
+
         #endregion
 
         #region VM方法
@@ -256,22 +267,42 @@ namespace CyanStars.ChartEditor.ViewModel
         /// 切换在编辑器内选中的变速模板
         /// </summary>
         /// <param name="index">模板下标</param>
-        public void ChangeSpeedTemplate(int index)
+        public void ChangeSpeedGroup(int index)
         {
         }
 
         /// <summary>
         /// 添加一个变速模板
         /// </summary>
-        public void AddSpeedTemplate()
+        public void AddSpeedGroup()
         {
         }
 
         /// <summary>
-        /// 删除一个变速模板
+        /// 删除当前正在编辑的变速模板
         /// </summary>
-        /// <param name="index">模板下标</param>
-        public void AddSpeedTemplate(int index)
+        public void DelSpeedGroup()
+        {
+        }
+
+        /// <summary>
+        /// 复制当前正在编辑的变速模板
+        /// </summary>
+        public void CopySpeedGroup()
+        {
+        }
+
+        /// <summary>
+        /// 尝试修改变速组备注
+        /// </summary>
+        public void TrySetSpeedGroupRemark(string remark)
+        {
+        }
+
+        /// <summary>
+        /// 修改变速组类型
+        /// </summary>
+        public void SetSpeedGroupType(SpeedGroupType type)
         {
         }
 
