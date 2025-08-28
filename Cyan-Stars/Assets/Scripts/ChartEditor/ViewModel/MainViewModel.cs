@@ -293,6 +293,7 @@ namespace CyanStars.ChartEditor.ViewModel
         public void ChangeSpeedGroup(int index)
         {
             CurrentSpeedGroupIndex = index;
+            // TODO: 从 M 层读取变速组详情数据
         }
 
         /// <summary>

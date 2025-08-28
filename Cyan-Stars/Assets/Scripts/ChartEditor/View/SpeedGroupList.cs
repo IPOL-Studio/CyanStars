@@ -45,8 +45,22 @@ namespace CyanStars.ChartEditor.View
 
         private void OnViewModelPropertyChanged(object _, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            // TODO: 在 SpeedTemplateEditor View 删除元素后刷新当前选中的列表元素
-            // TODO: 在 SpeedTemplateEditor View 更新元素后更新列表元素文本
+            switch (e.PropertyName)
+            {
+                case nameof(ViewModel.CurrentSpeedGroupIndex):
+                    for (int i = 0; i < listItems.Length; i++)
+                    {
+                        listItems[i].Toggle.isOn = (ViewModel.CurrentSpeedGroupIndex == i);
+                    }
+
+                    break;
+
+                case nameof(ViewModel.SpeedGroupRemarkInput):
+                    listItems[ViewModel.CurrentSpeedGroupIndex].RemarkText.text = ViewModel.SpeedGroupRemarkInput;
+
+                    break;
+            }
+            // TODO: 在删除、复制、添加元素后刷新当前选中的列表元素
         }
 
         public void Destroy()
