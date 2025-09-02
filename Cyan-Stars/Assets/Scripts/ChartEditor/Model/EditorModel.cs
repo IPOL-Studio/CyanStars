@@ -7,8 +7,14 @@ namespace CyanStars.ChartEditor.Model
     /// <summary>
     /// 谱面编辑器 Model 层
     /// </summary>
-    public class ChartPackModel
+    public class EditorModel
     {
+        // --- 在编辑器内初始化和临时存储的、经过校验后的数据，不会持久化 ---
+
+        public EditTool EditTool { get; private set; }
+
+
+        // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面数据，加载/保存时需要从读写磁盘。 ---
         public ChartPackData ChartPackData { get; private set; }
 
         public int ChartIndex { get; private set; }
@@ -24,119 +30,123 @@ namespace CyanStars.ChartEditor.Model
 
         public List<BaseChartNoteData> Notes => ChartData.Notes;
 
+
+        // --- 编辑器事件 ---
+
+        /// <summary>
+        /// 编辑器任意内容发生变化
+        /// </summary>
+        public event Action EditorDataChanged;
+
+        /// <summary>
+        /// 选中的画笔发生变化
+        /// </summary>
+        public event Action EditToolChanged;
+
+
         // --- 谱包事件 ---
 
         /// <summary>
         /// 谱包中任意内容发生变化
         /// </summary>
-        public event Action OnChartPackDataChanged;
+        public event Action ChartPackDataChanged;
 
         /// <summary>
         /// 谱包基本信息（目前只有标题）发生变化
         /// </summary>
-        public event Action OnChartPackTitleChanged;
+        public event Action ChartPackTitleChanged;
 
         /// <summary>
         /// 谱包元数据（时间等）发生变化（在保存时）
         /// </summary>
-        public event Action OnChartPackSave;
+        public event Action ChartPackSave;
 
         /// <summary>
         /// 谱包大图路径发生变化
         /// </summary>
-        public event Action OnCoverFilePathChanged;
+        public event Action CoverFilePathChanged;
 
         /// <summary>
         /// 谱包小图路径发生变化
         /// </summary>
-        public event Action OnCroppedCoverFilePathChanged;
+        public event Action CroppedCoverFilePathChanged;
 
         /// <summary>
         /// 谱包音乐版本数据发生变化时
         /// </summary>
-        public event Action OnMusicVersionDataChanged;
+        public event Action MusicVersionDataChanged;
 
         /// <summary>
         /// 谱包预览开始节拍变化时
         /// </summary>
-        public event Action OnMusicPreviewStartBeatChanged;
+        public event Action MusicPreviewStartBeatChanged;
 
         /// <summary>
         /// 谱包预览结束节拍变化时
         /// </summary>
-        public event Action OnMusicPreviewEndBeatChanged;
+        public event Action MusicPreviewEndBeatChanged;
 
         // --- 谱面事件 ---
 
         /// <summary>
         /// 谱面中任意内容发生变化
         /// </summary>
-        public event Action OnChartDataChanged;
+        public event Action ChartDataChanged;
 
         /// <summary>
         /// 谱面预备拍数发生变化
         /// </summary>
-        public event Action OnReadyBeatChanged;
+        public event Action ReadyBeatChanged;
 
         /// <summary>
         /// Bpm 组发生变化
         /// </summary>
-        public event Action OnBpmGroupChanged;
+        public event Action BpmGroupChanged;
 
         /// <summary>
         /// 变速组发生变化
         /// </summary>
-        public event Action OnSpeedGroupChanged;
+        public event Action SpeedGroupChanged;
 
         /// <summary>
         /// 音符组发生变化
         /// </summary>
-        public event Action OnNoteDataChanged;
+        public event Action NoteDataChanged;
 
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="chartPackData">要加载到编辑器的谱包数据</param>
+        /// <param name="chartIndex">谱面在此谱包中的下标</param>
+        /// <param name="chartData">要加载到编辑器的谱面数据</param>
+        public EditorModel(ChartPackData chartPackData, int chartIndex, ChartData chartData)
+        {
+            ChartPackData = chartPackData;
+            ChartIndex = chartIndex;
+            ChartData = chartData;
+
+            EditTool = EditTool.Select;
+        }
+
+
+        #region 编辑器管理
+
+        public void SetEditTool(EditTool editTool)
+        {
+            if (EditTool == editTool)
+            {
+                return;
+            }
+
+            EditTool = editTool;
+            EditorDataChanged?.Invoke();
+            EditToolChanged?.Invoke();
+        }
+
+        #endregion
 
         #region 谱包信息和谱面元数据管理
-
-        /// <summary>
-        /// 从指定路径加载谱包和谱面
-        /// </summary>
-        /// <param name="chartPackPath">谱包路径</param>
-        /// <param name="chartIndex">选定的谱面下标</param>
-        /// <returns>谱包数据</returns>
-        /// <exception cref="System.NotImplementedException">没做完</exception>
-        public ChartPackData LoadChartPack(string chartPackPath, int chartIndex)
-        {
-            throw new NotImplementedException();
-            // TODO: 加载谱包
-            // ChartPackData = ;
-            // ChartIndex = chartIndex;
-            // ChartData = ;
-            // OnChartDataChanged?.Invoke();
-        }
-
-        /// <summary>
-        /// 创建新谱包和默认谱面
-        /// </summary>
-        /// <param name="title">谱包标题，会同时用于文件夹名和文件内标题</param>
-        /// <returns>谱包数据</returns>
-        public ChartPackData CreateChartPackData(string title)
-        {
-            ChartData chartData = new ChartData();
-            ChartPackData = new ChartPackData(title);
-            // TODO: 获取谱面保存的相对路径，写到谱包元数据中，并创建谱面文件
-            // ChartPackData.Charts = new List<ChartMetadata>(new ChartMetadata(filePath: ________));
-            OnChartPackDataChanged?.Invoke();
-            return ChartPackData;
-        }
-
-        /// <summary>
-        /// 保存谱包到文件
-        /// </summary>
-        /// <exception cref="NotImplementedException">没做完</exception>
-        public void SaveChartPack()
-        {
-            throw new NotImplementedException();
-            // TODO: 保存谱包
-        }
 
         /// <summary>
         /// 尝试更新谱包标题
@@ -152,38 +162,9 @@ namespace CyanStars.ChartEditor.Model
             }
 
             ChartPackData.Title = title;
-            OnChartPackDataChanged?.Invoke();
-            OnChartPackTitleChanged?.Invoke();
+            ChartPackDataChanged?.Invoke();
+            ChartPackTitleChanged?.Invoke();
             return true;
-        }
-
-        public bool CreateChart(ChartDifficulty? chartDifficulty = null)
-        {
-            if (chartDifficulty != null)
-            {
-                foreach (ChartMetadata chartMetadata in ChartPackData.ChartMetaDatas)
-                {
-                    if (chartMetadata.Difficulty == chartDifficulty)
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            throw new NotImplementedException();
-            // TODO: 创建谱面并将谱面相对路径写入谱包元数据
-        }
-
-        public bool DeleteChart(int index, out ChartMetadata chartMetadata, out ChartData chartData)
-        {
-            throw new NotImplementedException();
-            // TODO: 删除谱面和元数据
-        }
-
-        public bool UpdateChart(int index, ChartMetadata chartMetadata, ChartData chartData)
-        {
-            throw new NotImplementedException();
-            // TODO:更新指定 index 的谱面
         }
 
         /// <summary>
@@ -201,8 +182,8 @@ namespace CyanStars.ChartEditor.Model
 
             ChartPackData.CoverFilePath = path;
 
-            OnChartPackDataChanged?.Invoke();
-            OnCoverFilePathChanged?.Invoke();
+            ChartPackDataChanged?.Invoke();
+            CoverFilePathChanged?.Invoke();
             return true;
         }
 
@@ -220,8 +201,8 @@ namespace CyanStars.ChartEditor.Model
             }
 
             ChartPackData.CroppedCoverFilePath = path;
-            OnChartPackDataChanged?.Invoke();
-            OnCroppedCoverFilePathChanged?.Invoke();
+            ChartPackDataChanged?.Invoke();
+            CroppedCoverFilePathChanged?.Invoke();
             return true;
         }
 
@@ -242,8 +223,8 @@ namespace CyanStars.ChartEditor.Model
 
             MusicVersionDatas.Add(newMusicVersionData);
 
-            OnChartPackDataChanged?.Invoke();
-            OnMusicVersionDataChanged?.Invoke();
+            ChartPackDataChanged?.Invoke();
+            MusicVersionDataChanged?.Invoke();
             return true;
         }
 
@@ -257,8 +238,8 @@ namespace CyanStars.ChartEditor.Model
             MusicVersionData musicVersionData = MusicVersionDatas[index];
             MusicVersionDatas.RemoveAt(index);
 
-            OnChartPackDataChanged?.Invoke();
-            OnMusicVersionDataChanged?.Invoke();
+            ChartPackDataChanged?.Invoke();
+            MusicVersionDataChanged?.Invoke();
             return musicVersionData;
         }
 
@@ -286,8 +267,8 @@ namespace CyanStars.ChartEditor.Model
 
             MusicVersionDatas[index] = newMusicVersionData;
 
-            OnChartPackDataChanged?.Invoke();
-            OnMusicVersionDataChanged?.Invoke();
+            ChartPackDataChanged?.Invoke();
+            MusicVersionDataChanged?.Invoke();
             return true;
         }
 
@@ -308,8 +289,8 @@ namespace CyanStars.ChartEditor.Model
 
             ChartPackData.MusicPreviewStartBeat = beat;
 
-            OnChartPackDataChanged?.Invoke();
-            OnMusicPreviewStartBeatChanged?.Invoke();
+            ChartPackDataChanged?.Invoke();
+            MusicPreviewStartBeatChanged?.Invoke();
             return true;
         }
 
@@ -330,8 +311,8 @@ namespace CyanStars.ChartEditor.Model
 
             ChartPackData.MusicPreviewEndBeat = beat;
 
-            OnChartPackDataChanged?.Invoke();
-            OnMusicPreviewEndBeatChanged?.Invoke();
+            ChartPackDataChanged?.Invoke();
+            MusicPreviewEndBeatChanged?.Invoke();
             return true;
         }
 
@@ -348,8 +329,8 @@ namespace CyanStars.ChartEditor.Model
 
             ChartData.ReadyBeat = value;
 
-            OnChartDataChanged?.Invoke();
-            OnReadyBeatChanged?.Invoke();
+            ChartDataChanged?.Invoke();
+            ReadyBeatChanged?.Invoke();
             return true;
         }
 
@@ -379,8 +360,8 @@ namespace CyanStars.ChartEditor.Model
                     // beat 与已有的元素相等
                     BpmGroupDatas[i] = newItem;
 
-                    OnChartDataChanged?.Invoke();
-                    OnBpmGroupChanged?.Invoke();
+                    ChartDataChanged?.Invoke();
+                    BpmGroupChanged?.Invoke();
                     return BpmGroupDatas;
                 }
 
@@ -393,8 +374,8 @@ namespace CyanStars.ChartEditor.Model
 
             BpmGroupDatas.Insert(i, newItem);
 
-            OnChartDataChanged?.Invoke();
-            OnBpmGroupChanged?.Invoke();
+            ChartDataChanged?.Invoke();
+            BpmGroupChanged?.Invoke();
 
             return BpmGroupDatas;
         }
@@ -404,8 +385,8 @@ namespace CyanStars.ChartEditor.Model
             BpmGroupItem bpmGroupItem = BpmGroupDatas[index];
             BpmGroupDatas.RemoveAt(index);
 
-            OnChartDataChanged?.Invoke();
-            OnBpmGroupChanged?.Invoke();
+            ChartDataChanged?.Invoke();
+            BpmGroupChanged?.Invoke();
 
             return bpmGroupItem;
         }
@@ -413,15 +394,6 @@ namespace CyanStars.ChartEditor.Model
         #endregion
 
         #region 变速组管理
-
-        /// <summary>
-        /// 获取谱面下的变速组
-        /// </summary>
-        /// <returns>变速组列表</returns>
-        public IReadOnlyList<SpeedGroupData> GetSpeedGroups()
-        {
-            return SpeedGroupDatas;
-        }
 
         /// <summary>
         /// 在变速组列表末尾添加变速组
@@ -434,8 +406,8 @@ namespace CyanStars.ChartEditor.Model
 
             SpeedGroupDatas.Add(speedGroupData);
 
-            OnChartDataChanged?.Invoke();
-            OnSpeedGroupChanged?.Invoke();
+            ChartDataChanged?.Invoke();
+            SpeedGroupChanged?.Invoke();
             return speedGroupData;
         }
 
@@ -449,8 +421,8 @@ namespace CyanStars.ChartEditor.Model
             SpeedGroupData speedGroupData = SpeedGroupDatas[index];
             SpeedGroupDatas.RemoveAt(index);
 
-            OnChartDataChanged?.Invoke();
-            OnSpeedGroupChanged?.Invoke();
+            ChartDataChanged?.Invoke();
+            SpeedGroupChanged?.Invoke();
 
             return speedGroupData;
         }
@@ -464,8 +436,8 @@ namespace CyanStars.ChartEditor.Model
         {
             SpeedGroupDatas[index] = speedGroupData;
 
-            OnChartDataChanged?.Invoke();
-            OnSpeedGroupChanged?.Invoke();
+            ChartDataChanged?.Invoke();
+            SpeedGroupChanged?.Invoke();
         }
 
         #endregion
@@ -493,8 +465,8 @@ namespace CyanStars.ChartEditor.Model
 
             ChartData.Notes.Insert(i, newNote);
 
-            OnChartDataChanged?.Invoke();
-            OnNoteDataChanged?.Invoke();
+            ChartDataChanged?.Invoke();
+            NoteDataChanged?.Invoke();
         }
 
         /// <summary>
@@ -531,8 +503,8 @@ namespace CyanStars.ChartEditor.Model
             BaseChartNoteData noteData = ChartData.Notes[index];
             ChartData.Notes.RemoveAt(index);
 
-            OnChartDataChanged?.Invoke();
-            OnNoteDataChanged?.Invoke();
+            ChartDataChanged?.Invoke();
+            NoteDataChanged?.Invoke();
 
             return noteData;
         }
