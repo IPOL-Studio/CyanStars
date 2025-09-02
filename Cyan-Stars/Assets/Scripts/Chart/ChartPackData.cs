@@ -64,19 +64,22 @@ namespace CyanStars.Chart
         public string PackHash;
 
 
-        public ChartPackData(string title)
+        public ChartPackData(string title, List<MusicVersionData> musicVersionDatas = null,
+            Beat? musicPreviewStartBeat = null, Beat? musicPreviewEndBeat = null, string coverFilePath = null,
+            string croppedCoverFilePath = null, List<ChartMetadata> chartMetaDatas = null,
+            DateTime? saveTime = null, string packHash = null)
         {
             DataVersion = 1;
             Title = title;
-            MusicVersionDatas = null;
-            MusicPreviewStartBeat = null;
-            MusicPreviewEndBeat = null;
-            CoverFilePath = null;
-            CroppedCoverFilePath = null;
-            ChartMetaDatas = null;
-            SaveTime = DateTime.UtcNow;
+            MusicVersionDatas = musicVersionDatas ?? new List<MusicVersionData>();
+            MusicPreviewStartBeat = musicPreviewStartBeat;
+            MusicPreviewEndBeat = musicPreviewEndBeat;
+            CoverFilePath = coverFilePath;
+            CroppedCoverFilePath = croppedCoverFilePath;
+            ChartMetaDatas = chartMetaDatas ?? new List<ChartMetadata>();
+            SaveTime = saveTime ?? DateTime.UtcNow;
+            PackHash = packHash;
             // ExportTime = null;
-            PackHash = null;
         }
     }
 }
