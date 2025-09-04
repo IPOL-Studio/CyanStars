@@ -20,9 +20,9 @@ namespace CyanStars.ChartEditor.Model
 
         public int NoteIdCounter { get; private set; }
 
-        public List<ModelChartNoteData> Notes { get; private set; }
+        public List<ModelChartNoteData> ChartNotes { get; private set; }
 
-        public List<int> SelectedNoteIDs { get; private set; } // 当前选中的 Note ID，用列表是考虑兼容后续框选多个 Note 一起修改，目前只实现单个 Note 修改
+        public List<int> SelectedNoteIDs { get; private set; } // 当前选中的 Note ID，用列表是考虑兼容后续框选多个 Note 一起修改
 
 
         // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面数据，加载/保存时需要从读写磁盘。 ---
@@ -61,6 +61,11 @@ namespace CyanStars.ChartEditor.Model
         /// 编辑器属性侧边栏内容变化
         /// </summary>
         public event Action OnEditorAttributeChanged;
+
+        /// <summary>
+        /// 音符属性侧边栏内容变化
+        /// </summary>
+        public event Action OnNoteAttributeChanged;
 
 
         // --- 谱包事件 ---
@@ -153,10 +158,10 @@ namespace CyanStars.ChartEditor.Model
             NoteIdCounter = 0;
             SelectedNoteIDs = new List<int>();
 
-            Notes = new List<ModelChartNoteData>();
+            ChartNotes = new List<ModelChartNoteData>();
             foreach (var note in ChartData.Notes)
             {
-                Notes.Add(new ModelChartNoteData(NoteIdCounter, note));
+                ChartNotes.Add(new ModelChartNoteData(NoteIdCounter, note));
                 NoteIdCounter++;
             }
         }
@@ -172,25 +177,25 @@ namespace CyanStars.ChartEditor.Model
         {
             modelChartNoteData = null;
 
-            if (Notes == null || Notes.Count == 0)
+            if (ChartNotes == null || ChartNotes.Count == 0)
             {
                 return false;
             }
 
             // --- 阶段 1: 反向线性查找 (针对高频访问的末尾区域) ---
-            int count = Notes.Count;
+            int count = ChartNotes.Count;
             // 确保 linearCheckCount 是一个合理的正数，且不超过列表总数
             if (linearCheckCount <= 0) linearCheckCount = 1;
             int checkCount = Math.Min(count, linearCheckCount);
 
             for (int i = count - 1; i >= count - checkCount; i--)
             {
-                if (Notes[i].ID != targetId)
+                if (ChartNotes[i].ID != targetId)
                 {
                     continue;
                 }
 
-                modelChartNoteData = Notes[i];
+                modelChartNoteData = ChartNotes[i];
                 return true;
             }
 
@@ -199,7 +204,7 @@ namespace CyanStars.ChartEditor.Model
             int searchUpperBound = count - checkCount - 1;
 
             // 如果二分查找的范围无效 (例如，线性部分已覆盖全部)，或者目标 ID 小于该范围内的最小值，则没有必要进行二分查找。
-            if (searchUpperBound < 0 || targetId < Notes[0].ID || targetId > Notes[searchUpperBound].ID)
+            if (searchUpperBound < 0 || targetId < ChartNotes[0].ID || targetId > ChartNotes[searchUpperBound].ID)
             {
                 return false;
             }
@@ -211,11 +216,11 @@ namespace CyanStars.ChartEditor.Model
             while (low <= high)
             {
                 int mid = low + (high - low) / 2;
-                int midId = Notes[mid].ID;
+                int midId = ChartNotes[mid].ID;
 
                 if (midId == targetId)
                 {
-                    modelChartNoteData = Notes[mid];
+                    modelChartNoteData = ChartNotes[mid];
                     return true;
                 }
 
@@ -503,7 +508,7 @@ namespace CyanStars.ChartEditor.Model
 
         #endregion
 
-        # region 谱面管理
+        #region 谱面管理
 
         public bool UpdateReadyBeat(int value)
         {
@@ -630,68 +635,46 @@ namespace CyanStars.ChartEditor.Model
         #region 音符组管理
 
         /// <summary>
-        /// 插入一个新的音符数据
+        /// 为选中的 Note 设置判定拍。null 代表不修改此字段而保留原值，以兼容框选多个 note 统一修改。
         /// </summary>
-        /// <remarks>
-        /// 方法会根据音符的 JudgeBeat 自动找到正确的位置插入，以保持列表有序。
-        /// </remarks>
-        /// <param name="newNote">要插入的新音符</param>
-        public void InsertNoteData(BaseChartNoteData newNote)
+        public void SetNotesJudgeBeat(int? integerPart = null, int? numerator = null, int? denominator = null)
         {
-            int i;
-            for (i = 0; i < ChartData.Notes.Count; i++)
+            if (integerPart is null && numerator is null && denominator is null)
             {
-                // 找到第一个比新音符判定时间晚的音符，插入到它前面
-                if (ChartData.Notes[i].JudgeBeat.ToFloat() > newNote.JudgeBeat.ToFloat())
+                OnEditorDataChanged?.Invoke();
+                OnNoteAttributeChanged?.Invoke();
+                return;
+            }
+
+            bool isChangedFlag = false;
+            foreach (int id in SelectedNoteIDs)
+            {
+                if (!SearchNote(id, out ModelChartNoteData note))
                 {
-                    break;
+                    Debug.LogWarning($"EditorModel: 未找到 ID 为 {id} 的 Note");
+                    continue;
                 }
+
+                Beat newJudgeBeat = new Beat(
+                    integerPart ?? note.NoteData.JudgeBeat.IntegerPart,
+                    numerator ?? note.NoteData.JudgeBeat.Numerator,
+                    denominator ?? note.NoteData.JudgeBeat.Denominator
+                );
+
+                if (note.NoteData.JudgeBeat == newJudgeBeat)
+                {
+                    continue;
+                }
+
+                note.NoteData.JudgeBeat = newJudgeBeat;
+                isChangedFlag = true;
             }
 
-            ChartData.Notes.Insert(i, newNote);
-
-            OnChartDataChanged?.Invoke();
-            OnNoteDataChanged?.Invoke();
-        }
-
-        /// <summary>
-        /// 更新指定索引的音符数据
-        /// </summary>
-        /// <remarks>
-        /// 由于音符的判定时间(JudgeBeat)可能被修改，此方法会先移除旧音符，再将新音符插入到正确的位置，以保证列表的有序性。
-        /// 因此，更新后音符的索引可能会改变。
-        /// </remarks>
-        /// <param name="index">要更新的音符的当前索引</param>
-        /// <param name="updatedNote">更新后的音符数据</param>
-        /// <returns>如果索引无效，返回 false</returns>
-        public bool UpdateNoteData(int index, BaseChartNoteData updatedNote)
-        {
-            if (index < 0 || index >= ChartData.Notes.Count)
+            if (isChangedFlag)
             {
-                return false;
+                OnEditorDataChanged?.Invoke();
+                OnNoteAttributeChanged?.Invoke();
             }
-
-            // 先移除，再用 Insert 方法重新插入，以保证排序正确
-            ChartData.Notes.RemoveAt(index);
-            InsertNoteData(updatedNote); // InsertNoteData 内部已经调用了事件，这里无需重复调用
-
-            return true;
-        }
-
-        /// <summary>
-        /// 删除并返回指定索引的音符
-        /// </summary>
-        /// <param name="index">要删除的音符索引</param>
-        /// <returns>被删除的音符数据。如果索引越界会抛出异常。</returns>
-        public BaseChartNoteData PopNoteData(int index)
-        {
-            BaseChartNoteData noteData = ChartData.Notes[index];
-            ChartData.Notes.RemoveAt(index);
-
-            OnChartDataChanged?.Invoke();
-            OnNoteDataChanged?.Invoke();
-
-            return noteData;
         }
 
         #endregion

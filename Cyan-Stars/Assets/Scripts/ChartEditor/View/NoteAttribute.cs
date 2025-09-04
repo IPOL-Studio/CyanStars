@@ -1,3 +1,4 @@
+using CyanStars.ChartEditor.Model;
 using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
@@ -48,5 +49,12 @@ namespace CyanStars.ChartEditor.View
 
         [SerializeField]
         private TMP_InputField speedOffsetField;
+
+        public override void Bind(EditorModel editorModel)
+        {
+            base.Bind(editorModel);
+
+
+        }
     }
 }
