@@ -7,7 +7,7 @@ namespace CyanStars.ChartEditor.View
     {
         protected EditorModel Model;
 
-        public virtual void Band(EditorModel editorModel)
+        public virtual void Bind(EditorModel editorModel)
         {
             Model = editorModel;
         }

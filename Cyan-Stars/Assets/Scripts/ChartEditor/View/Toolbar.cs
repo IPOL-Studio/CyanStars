@@ -14,9 +14,9 @@ namespace CyanStars.ChartEditor.View
         [SerializeField]
         private Toggle[] toggles;
 
-        public override void Band(EditorModel editorModel)
+        public override void Bind(EditorModel editorModel)
         {
-            base.Band(editorModel);
+            base.Bind(editorModel);
 
             if (!CheckToggles())
             {
@@ -40,7 +40,7 @@ namespace CyanStars.ChartEditor.View
                 });
             }
 
-            Model.EditToolChanged += OnEditToolChanged;
+            Model.OnEditToolChanged += OnEditToolChanged;
         }
 
         /// <summary>
@@ -67,8 +67,13 @@ namespace CyanStars.ChartEditor.View
 
         private void OnEditToolChanged()
         {
-            // 目前不会有其他源修改，后续拓展时再写
-            throw new NotSupportedException();
+            for (int i = 0; i < toggles.Length; i++)
+            {
+                if (toggles[i].isOn != ((int)Model.EditTool == i))
+                {
+                    toggles[i].isOn = ((int)Model.EditTool == i);
+                }
+            }
         }
 
         private void OnDestroy()
@@ -78,7 +83,7 @@ namespace CyanStars.ChartEditor.View
                 toggle.onValueChanged.RemoveAllListeners();
             }
 
-            Model.EditToolChanged -= OnEditToolChanged;
+            Model.OnEditToolChanged -= OnEditToolChanged;
         }
     }
 }
