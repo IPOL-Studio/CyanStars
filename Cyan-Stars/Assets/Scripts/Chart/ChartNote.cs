@@ -9,6 +9,12 @@ namespace CyanStars.Chart
         Right
     }
 
+    public interface IChartNoteNormalPos
+    {
+        /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
+        /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
+        public float Pos { get; set; }
+    }
 
     public class BaseChartNoteData
     {
@@ -64,41 +70,34 @@ namespace CyanStars.Chart
         public bool ViewAble = true;
     }
 
-    public class TapChartNoteData : BaseChartNoteData
+    public class TapChartNoteData : BaseChartNoteData, IChartNoteNormalPos
     {
-        /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
-        /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
-        public float Pos;
+        public float Pos { get; set; }
     }
 
-    public class HoldChartNoteData : BaseChartNoteData
+    public class HoldChartNoteData : BaseChartNoteData, IChartNoteNormalPos
     {
+        public float Pos { get; set; }
+
         /// <summary>
         /// 音符尾引用的变速组
         /// </summary>
         public int HoldEndSpeedGroupIndex;
 
-        /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
-        /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
-        public float Pos;
 
         /// <summary>长按音符结束判定拍</summary>
         /// <remarks>必须大于 JudgeBeat</remarks>
         public Beat EndJudgeBeat;
     }
 
-    public class DragChartNoteData : BaseChartNoteData
+    public class DragChartNoteData : BaseChartNoteData, IChartNoteNormalPos
     {
-        /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
-        /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
-        public float Pos;
+        public float Pos { get; set; }
     }
 
-    public class ClickChartNoteData : BaseChartNoteData
+    public class ClickChartNoteData : BaseChartNoteData, IChartNoteNormalPos
     {
-        /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
-        /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
-        public float Pos;
+        public float Pos { get; set; }
     }
 
     public class BreakChartNoteData : BaseChartNoteData

@@ -20,6 +20,10 @@ namespace CyanStars.ChartEditor.Model
 
         public int NoteIdCounter { get; private set; }
 
+        /// <summary>
+        /// 用于 M 层的音符数据，在 Model 构造时初始化，提供高效的按 ID 查询音符数据能力
+        /// </summary>
+        /// <remarks>int 为音符 ID，不持久化，在每次加载谱面时按序分配，不保证连续。</remarks>
         public Dictionary<int, BaseChartNoteData> ChartNotes { get; private set; }
 
         public List<int> SelectedNoteIDs { get; private set; } // 当前选中的 Note ID，用列表是考虑兼容后续框选多个 Note 一起修改
@@ -43,11 +47,6 @@ namespace CyanStars.ChartEditor.Model
         // --- 编辑器事件 ---
 
         /// <summary>
-        /// 编辑器任意内容发生变化
-        /// </summary>
-        public event Action OnEditorDataChanged;
-
-        /// <summary>
         /// 选中的画笔发生变化
         /// </summary>
         public event Action OnEditToolChanged;
@@ -67,13 +66,10 @@ namespace CyanStars.ChartEditor.Model
         /// </summary>
         public event Action OnNoteAttributeChanged;
 
-
-        // --- 谱包事件 ---
-
         /// <summary>
-        /// 谱包中任意内容发生变化
+        /// 当选中的音符发生了变化（被选中、被取消选中）
         /// </summary>
-        public event Action OnChartPackDataChanged;
+        public event Action OnSelectedNoteIDsChanged;
 
         /// <summary>
         /// 谱包基本信息（目前只有标题）发生变化
@@ -109,13 +105,6 @@ namespace CyanStars.ChartEditor.Model
         /// 谱包预览结束节拍变化时
         /// </summary>
         public event Action OnMusicPreviewEndBeatChanged;
-
-        // --- 谱面事件 ---
-
-        /// <summary>
-        /// 谱面中任意内容发生变化
-        /// </summary>
-        public event Action OnChartDataChanged;
 
         /// <summary>
         /// 谱面预备拍数发生变化
@@ -177,13 +166,11 @@ namespace CyanStars.ChartEditor.Model
             }
 
             EditTool = editTool;
-            OnEditorDataChanged?.Invoke();
             OnEditToolChanged?.Invoke();
         }
 
         public void MenuButtonClicked(MenuButton menuButton)
         {
-            OnEditorDataChanged?.Invoke();
             OnMenuButtonClicked?.Invoke();
             throw new NotSupportedException();
         }
@@ -193,7 +180,6 @@ namespace CyanStars.ChartEditor.Model
             if (!int.TryParse(posAccuracyStr, out int posAccuracy) ||
                 posAccuracy < 0)
             {
-                OnEditorDataChanged?.Invoke();
                 OnEditorAttributeChanged?.Invoke();
                 return;
             }
@@ -204,7 +190,6 @@ namespace CyanStars.ChartEditor.Model
             }
 
             PosAccuracy = posAccuracy;
-            OnEditorDataChanged?.Invoke();
             OnEditorAttributeChanged?.Invoke();
         }
 
@@ -216,7 +201,6 @@ namespace CyanStars.ChartEditor.Model
             }
 
             PosMagnetState = isOn;
-            OnEditorDataChanged?.Invoke();
             OnEditorAttributeChanged?.Invoke();
         }
 
@@ -225,7 +209,6 @@ namespace CyanStars.ChartEditor.Model
             if (!int.TryParse(beatAccuracyStr, out int beatAccuracy) ||
                 beatAccuracy <= 0)
             {
-                OnEditorDataChanged?.Invoke();
                 OnEditorAttributeChanged?.Invoke();
                 return;
             }
@@ -236,7 +219,6 @@ namespace CyanStars.ChartEditor.Model
             }
 
             BeatAccuracy = beatAccuracy;
-            OnEditorDataChanged?.Invoke();
             OnEditorAttributeChanged?.Invoke();
         }
 
@@ -246,7 +228,6 @@ namespace CyanStars.ChartEditor.Model
                 beatZoom <= 0)
             {
                 // 不修改值，触发刷新
-                OnEditorDataChanged?.Invoke();
                 OnEditorAttributeChanged?.Invoke();
                 return;
             }
@@ -259,7 +240,6 @@ namespace CyanStars.ChartEditor.Model
 
             // 赋值，刷新
             BeatZoom = beatZoom;
-            OnEditorDataChanged?.Invoke();
             OnEditorAttributeChanged?.Invoke();
         }
 
@@ -281,7 +261,6 @@ namespace CyanStars.ChartEditor.Model
             }
 
             ChartPackData.Title = title;
-            OnChartPackDataChanged?.Invoke();
             OnChartPackTitleChanged?.Invoke();
             return true;
         }
@@ -301,7 +280,6 @@ namespace CyanStars.ChartEditor.Model
 
             ChartPackData.CoverFilePath = path;
 
-            OnChartPackDataChanged?.Invoke();
             OnCoverFilePathChanged?.Invoke();
             return true;
         }
@@ -320,7 +298,6 @@ namespace CyanStars.ChartEditor.Model
             }
 
             ChartPackData.CroppedCoverFilePath = path;
-            OnChartPackDataChanged?.Invoke();
             OnCroppedCoverFilePathChanged?.Invoke();
             return true;
         }
@@ -342,7 +319,6 @@ namespace CyanStars.ChartEditor.Model
 
             MusicVersionDatas.Add(newMusicVersionData);
 
-            OnChartPackDataChanged?.Invoke();
             OnMusicVersionDataChanged?.Invoke();
             return true;
         }
@@ -357,7 +333,6 @@ namespace CyanStars.ChartEditor.Model
             MusicVersionData musicVersionData = MusicVersionDatas[index];
             MusicVersionDatas.RemoveAt(index);
 
-            OnChartPackDataChanged?.Invoke();
             OnMusicVersionDataChanged?.Invoke();
             return musicVersionData;
         }
@@ -386,7 +361,6 @@ namespace CyanStars.ChartEditor.Model
 
             MusicVersionDatas[index] = newMusicVersionData;
 
-            OnChartPackDataChanged?.Invoke();
             OnMusicVersionDataChanged?.Invoke();
             return true;
         }
@@ -408,7 +382,6 @@ namespace CyanStars.ChartEditor.Model
 
             ChartPackData.MusicPreviewStartBeat = beat;
 
-            OnChartPackDataChanged?.Invoke();
             OnMusicPreviewStartBeatChanged?.Invoke();
             return true;
         }
@@ -430,7 +403,6 @@ namespace CyanStars.ChartEditor.Model
 
             ChartPackData.MusicPreviewEndBeat = beat;
 
-            OnChartPackDataChanged?.Invoke();
             OnMusicPreviewEndBeatChanged?.Invoke();
             return true;
         }
@@ -448,7 +420,6 @@ namespace CyanStars.ChartEditor.Model
 
             ChartData.ReadyBeat = value;
 
-            OnChartDataChanged?.Invoke();
             OnReadyBeatChanged?.Invoke();
             return true;
         }
@@ -479,7 +450,6 @@ namespace CyanStars.ChartEditor.Model
                     // beat 与已有的元素相等
                     BpmGroupDatas[i] = newItem;
 
-                    OnChartDataChanged?.Invoke();
                     OnBpmGroupChanged?.Invoke();
                     return BpmGroupDatas;
                 }
@@ -493,7 +463,6 @@ namespace CyanStars.ChartEditor.Model
 
             BpmGroupDatas.Insert(i, newItem);
 
-            OnChartDataChanged?.Invoke();
             OnBpmGroupChanged?.Invoke();
 
             return BpmGroupDatas;
@@ -504,7 +473,6 @@ namespace CyanStars.ChartEditor.Model
             BpmGroupItem bpmGroupItem = BpmGroupDatas[index];
             BpmGroupDatas.RemoveAt(index);
 
-            OnChartDataChanged?.Invoke();
             OnBpmGroupChanged?.Invoke();
 
             return bpmGroupItem;
@@ -525,7 +493,6 @@ namespace CyanStars.ChartEditor.Model
 
             SpeedGroupDatas.Add(speedGroupData);
 
-            OnChartDataChanged?.Invoke();
             OnSpeedGroupChanged?.Invoke();
             return speedGroupData;
         }
@@ -540,7 +507,6 @@ namespace CyanStars.ChartEditor.Model
             SpeedGroupData speedGroupData = SpeedGroupDatas[index];
             SpeedGroupDatas.RemoveAt(index);
 
-            OnChartDataChanged?.Invoke();
             OnSpeedGroupChanged?.Invoke();
 
             return speedGroupData;
@@ -555,7 +521,6 @@ namespace CyanStars.ChartEditor.Model
         {
             SpeedGroupDatas[index] = speedGroupData;
 
-            OnChartDataChanged?.Invoke();
             OnSpeedGroupChanged?.Invoke();
         }
 
@@ -566,12 +531,33 @@ namespace CyanStars.ChartEditor.Model
         /// <summary>
         /// 为选中的 Note 设置判定拍。null 代表不修改此字段而保留原值，以兼容框选多个 note 统一修改。
         /// </summary>
-        public void SetNotesJudgeBeat(int? integerPart = null, int? numerator = null, int? denominator = null)
+        public void SetJudgeBeat(string integerPart, string numerator, string denominator)
+        {
+            int? b1 = (int.TryParse(integerPart, out int n1)) ? (int?)n1 : null; // 整数
+            int? b2 = (int.TryParse(numerator, out int n2)) ? (int?)n2 : null; // 分子
+            int? b3 = (int.TryParse(denominator, out int n3)) ? (int?)n3 : null; // 分母
+
+            if (b1 == null && b2 == null && b3 == null)
+            {
+                // 输入无有效数字，通知 view 刷新内容，不更新数据
+                OnNoteAttributeChanged?.Invoke();
+                return;
+            }
+
+            if (b1 < 0 || b2 < 0 || b3 <= 0 || b2 >= b3)
+            {
+                // 带分数不合法，通知 view 刷新内容，不更新数据
+                OnNoteAttributeChanged?.Invoke();
+                return;
+            }
+
+            SetNotesJudgeBeat(b1, b2, b3);
+        }
+
+        private void SetNotesJudgeBeat(int? integerPart = null, int? numerator = null, int? denominator = null)
         {
             if (integerPart is null && numerator is null && denominator is null)
             {
-                OnEditorDataChanged?.Invoke();
-                OnNoteAttributeChanged?.Invoke();
                 return;
             }
 
@@ -601,7 +587,162 @@ namespace CyanStars.ChartEditor.Model
 
             if (isChangedFlag)
             {
-                OnEditorDataChanged?.Invoke();
+                OnNoteAttributeChanged?.Invoke();
+            }
+        }
+
+        /// <summary>
+        /// 为选中的 Note 设置结束拍，非 HoldNote 将不发生变化。null 代表不修改此字段而保留原值，以兼容框选多个 note 统一修改。
+        /// </summary>
+        public void SetEndBeat(string integerPart, string numerator, string denominator)
+        {
+            int? b1 = (int.TryParse(integerPart, out int n1)) ? (int?)n1 : null; // 整数
+            int? b2 = (int.TryParse(numerator, out int n2)) ? (int?)n2 : null; // 分子
+            int? b3 = (int.TryParse(denominator, out int n3)) ? (int?)n3 : null; // 分母
+
+            if (b1 == null && b2 == null && b3 == null)
+            {
+                // 输入无有效数字，通知 view 刷新内容，不更新数据
+                OnNoteAttributeChanged?.Invoke();
+                return;
+            }
+
+            if (b1 < 0 || b2 < 0 || b3 <= 0 || b2 >= b3)
+            {
+                // 带分数不合法，通知 view 刷新内容，不更新数据
+                OnNoteAttributeChanged?.Invoke();
+                return;
+            }
+
+            SetNotesEndBeat(b1, b2, b3);
+        }
+
+        private void SetNotesEndBeat(int? integerPart = null, int? numerator = null, int? denominator = null)
+        {
+            if (integerPart is null && numerator is null && denominator is null)
+            {
+                return;
+            }
+
+            bool isChangedFlag = false;
+            foreach (int id in SelectedNoteIDs)
+            {
+                if (!ChartNotes.TryGetValue(id, out BaseChartNoteData note))
+                {
+                    Debug.LogWarning($"EditorModel: 未找到 ID 为 {id} 的 Note");
+                    continue;
+                }
+
+                if (note.Type != NoteType.Hold)
+                {
+                    Debug.Log($"EditorModel: ID 为 {id} 的 Note 不是 HoldNote，将不设定 EndBeat。");
+                    continue;
+                }
+
+                HoldChartNoteData holdNote = (HoldChartNoteData)note;
+
+                Beat newEndBeat = new Beat(
+                    integerPart ?? holdNote.EndJudgeBeat.IntegerPart,
+                    numerator ?? holdNote.EndJudgeBeat.Numerator,
+                    denominator ?? holdNote.EndJudgeBeat.Denominator
+                );
+
+                if (holdNote.EndJudgeBeat == newEndBeat)
+                {
+                    continue;
+                }
+
+                holdNote.EndJudgeBeat = newEndBeat;
+                isChangedFlag = true;
+            }
+
+            if (isChangedFlag)
+            {
+                OnNoteAttributeChanged?.Invoke();
+            }
+        }
+
+        /// <summary>
+        /// 为选中的 Note 设置位置，BreakNote 将不发生变化。
+        /// </summary>
+        public void SetPos(string posStr)
+        {
+            if (!float.TryParse(posStr, out float pos))
+            {
+                // 输入无法转换为 float，通知 view 刷新内容，不更新数据
+                OnNoteAttributeChanged?.Invoke();
+                return;
+            }
+
+            if (pos < 0 || pos > 0.8f)
+            {
+                // pos 不在有效范围，通知 view 刷新内容，不更新数据
+                OnNoteAttributeChanged?.Invoke();
+                return;
+            }
+
+            bool isChangedFlag = false;
+            foreach (int id in SelectedNoteIDs)
+            {
+                if (!ChartNotes.TryGetValue(id, out BaseChartNoteData note))
+                {
+                    Debug.LogWarning($"EditorModel: 未找到 ID 为 {id} 的 Note");
+                    continue;
+                }
+
+                if (note.Type == NoteType.Break)
+                {
+                    Debug.Log($"EditorModel: ID 为 {id} 的 Note 是 BreakNote，将不设定 Pos。");
+                    continue;
+                }
+
+                IChartNoteNormalPos posNote = (IChartNoteNormalPos)note;
+
+                if (Mathf.Approximately(posNote.Pos, pos))
+                {
+                    continue;
+                }
+
+                posNote.Pos = pos;
+                isChangedFlag = true;
+            }
+
+            if (isChangedFlag)
+            {
+                OnNoteAttributeChanged?.Invoke();
+            }
+        }
+
+        public void SetBreakPos(BreakNotePos breakPos)
+        {
+            bool isChangedFlag = false;
+            foreach (int id in SelectedNoteIDs)
+            {
+                if (!ChartNotes.TryGetValue(id, out BaseChartNoteData note))
+                {
+                    Debug.LogWarning($"EditorModel: 未找到 ID 为 {id} 的 Note");
+                    continue;
+                }
+
+                if (note.Type != NoteType.Break)
+                {
+                    Debug.Log($"EditorModel: ID 为 {id} 的 Note 不是 BreakNote，将不设定 BreakPos。");
+                    continue;
+                }
+
+                BreakChartNoteData breakNote = (BreakChartNoteData)note;
+
+                if (breakNote.BreakNotePos == breakPos)
+                {
+                    continue;
+                }
+
+                breakNote.BreakNotePos = breakPos;
+                isChangedFlag = true;
+            }
+
+            if (isChangedFlag)
+            {
                 OnNoteAttributeChanged?.Invoke();
             }
         }
