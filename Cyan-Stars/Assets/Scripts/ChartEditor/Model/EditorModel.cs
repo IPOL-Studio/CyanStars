@@ -20,7 +20,7 @@ namespace CyanStars.ChartEditor.Model
 
         public int NoteIdCounter { get; private set; }
 
-        public List<ModelChartNoteData> ChartNotes { get; private set; }
+        public Dictionary<int, BaseChartNoteData> ChartNotes { get; private set; }
 
         public List<int> SelectedNoteIDs { get; private set; } // 当前选中的 Note ID，用列表是考虑兼容后续框选多个 Note 一起修改
 
@@ -158,85 +158,14 @@ namespace CyanStars.ChartEditor.Model
             NoteIdCounter = 0;
             SelectedNoteIDs = new List<int>();
 
-            ChartNotes = new List<ModelChartNoteData>();
+            ChartNotes = new Dictionary<int, BaseChartNoteData>();
             foreach (var note in ChartData.Notes)
             {
-                ChartNotes.Add(new ModelChartNoteData(NoteIdCounter, note));
+                ChartNotes.Add(NoteIdCounter, note);
                 NoteIdCounter++;
             }
         }
 
-        /// <summary>
-        /// 根据 ID 搜索音符
-        /// </summary>
-        /// <param name="targetId">音符 ID，与视图层 ID 和 ModelChartNoteData.ID 一致</param>
-        /// <param name="linearCheckCount">在执行二分查找前先对末尾x个元素进行线性查找</param>
-        /// <param name="modelChartNoteData">返回的元素</param>
-        /// <returns>是否搜索到对应元素</returns>
-        private bool SearchNote(int targetId, out ModelChartNoteData modelChartNoteData, int linearCheckCount = 5)
-        {
-            modelChartNoteData = null;
-
-            if (ChartNotes == null || ChartNotes.Count == 0)
-            {
-                return false;
-            }
-
-            // --- 阶段 1: 反向线性查找 (针对高频访问的末尾区域) ---
-            int count = ChartNotes.Count;
-            // 确保 linearCheckCount 是一个合理的正数，且不超过列表总数
-            if (linearCheckCount <= 0) linearCheckCount = 1;
-            int checkCount = Math.Min(count, linearCheckCount);
-
-            for (int i = count - 1; i >= count - checkCount; i--)
-            {
-                if (ChartNotes[i].ID != targetId)
-                {
-                    continue;
-                }
-
-                modelChartNoteData = ChartNotes[i];
-                return true;
-            }
-
-            // --- 阶段 2: 二分查找 (针对列表的其余部分) ---
-
-            int searchUpperBound = count - checkCount - 1;
-
-            // 如果二分查找的范围无效 (例如，线性部分已覆盖全部)，或者目标 ID 小于该范围内的最小值，则没有必要进行二分查找。
-            if (searchUpperBound < 0 || targetId < ChartNotes[0].ID || targetId > ChartNotes[searchUpperBound].ID)
-            {
-                return false;
-            }
-
-            // 执行二分查找
-            int low = 0;
-            int high = searchUpperBound;
-
-            while (low <= high)
-            {
-                int mid = low + (high - low) / 2;
-                int midId = ChartNotes[mid].ID;
-
-                if (midId == targetId)
-                {
-                    modelChartNoteData = ChartNotes[mid];
-                    return true;
-                }
-
-                if (midId < targetId)
-                {
-                    low = mid + 1;
-                }
-                else
-                {
-                    high = mid - 1;
-                }
-            }
-
-            // 两个阶段都搜索完毕，未找到
-            return false;
-        }
 
         #region 编辑器管理
 
@@ -649,24 +578,24 @@ namespace CyanStars.ChartEditor.Model
             bool isChangedFlag = false;
             foreach (int id in SelectedNoteIDs)
             {
-                if (!SearchNote(id, out ModelChartNoteData note))
+                if (!ChartNotes.TryGetValue(id, out BaseChartNoteData note))
                 {
                     Debug.LogWarning($"EditorModel: 未找到 ID 为 {id} 的 Note");
                     continue;
                 }
 
                 Beat newJudgeBeat = new Beat(
-                    integerPart ?? note.NoteData.JudgeBeat.IntegerPart,
-                    numerator ?? note.NoteData.JudgeBeat.Numerator,
-                    denominator ?? note.NoteData.JudgeBeat.Denominator
+                    integerPart ?? note.JudgeBeat.IntegerPart,
+                    numerator ?? note.JudgeBeat.Numerator,
+                    denominator ?? note.JudgeBeat.Denominator
                 );
 
-                if (note.NoteData.JudgeBeat == newJudgeBeat)
+                if (note.JudgeBeat == newJudgeBeat)
                 {
                     continue;
                 }
 
-                note.NoteData.JudgeBeat = newJudgeBeat;
+                note.JudgeBeat = newJudgeBeat;
                 isChangedFlag = true;
             }
 
