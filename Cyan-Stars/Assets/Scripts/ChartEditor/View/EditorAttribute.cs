@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using CyanStars.ChartEditor.Model;
 using CyanStars.ChartEditor.View;
