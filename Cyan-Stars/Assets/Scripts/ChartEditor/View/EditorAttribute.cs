@@ -46,7 +46,7 @@ namespace CuanStars.ChartEditor.View
             beatAccuracyField.text = Model.BeatAccuracy.ToString();
             beatZoomField.text = Model.BeatZoom.ToString(CultureInfo.InvariantCulture);
 
-            // 绑定事件响应
+            // 绑定 UI 事件响应
             posAccuracyField.onEndEdit.AddListener((text) => { Model.SetPosAccuracy(text); });
             posMagnet.onValueChanged.AddListener((isOn) => { Model.SetPosMagnetState(isOn); });
             beatAccuracyField.onEndEdit.AddListener((text) => { Model.SetBeatAccuracy(text); });
