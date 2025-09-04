@@ -22,10 +22,10 @@ namespace CuanStars.ChartEditor.View
         private TMP_InputField beatAccuracyField;
 
         [SerializeField]
-        private Button beatAccutacySub;
+        private Button beatAccuracySub;
 
         [SerializeField]
-        private Button beatAccutacyAdd;
+        private Button beatAccuracyAdd;
 
         [SerializeField]
         private TMP_InputField beatZoomField;
@@ -50,11 +50,11 @@ namespace CuanStars.ChartEditor.View
             posAccuracyField.onEndEdit.AddListener((text) => { Model.SetPosAccuracy(text); });
             posMagnet.onValueChanged.AddListener((isOn) => { Model.SetPosMagnetState(isOn); });
             beatAccuracyField.onEndEdit.AddListener((text) => { Model.SetBeatAccuracy(text); });
-            beatAccutacySub.onClick.AddListener(() =>
+            beatAccuracySub.onClick.AddListener(() =>
             {
                 Model.SetBeatAccuracy((Model.BeatAccuracy - BeatZoomStep).ToString(CultureInfo.InvariantCulture));
             });
-            beatAccutacyAdd.onClick.AddListener(() =>
+            beatAccuracyAdd.onClick.AddListener(() =>
             {
                 Model.SetBeatAccuracy((Model.BeatAccuracy + BeatZoomStep).ToString(CultureInfo.InvariantCulture));
             });
