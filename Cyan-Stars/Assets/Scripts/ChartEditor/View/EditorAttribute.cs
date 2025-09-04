@@ -10,6 +10,8 @@ namespace CuanStars.ChartEditor.View
 {
     public class EditorAttribute : BaseView
     {
+        private const float BeatZoomStep = 0.2f;
+
         [SerializeField]
         private TMP_InputField posAccuracyField;
 
@@ -38,16 +40,24 @@ namespace CuanStars.ChartEditor.View
         {
             base.Bind(editorModel);
 
+            // 初始化字段
             posAccuracyField.text = Model.PosAccuracy.ToString();
             posMagnet.isOn = Model.PosMagnetState;
             beatAccuracyField.text = Model.BeatAccuracy.ToString();
             beatZoomField.text = Model.BeatZoom.ToString(CultureInfo.InvariantCulture);
 
+            // 绑定事件响应
             posAccuracyField.onEndEdit.AddListener((text) => { Model.SetPosAccuracy(text); });
             posMagnet.onValueChanged.AddListener((isOn) => { Model.SetPosMagnetState(isOn); });
             beatAccuracyField.onEndEdit.AddListener((text) => { Model.SetBeatAccuracy(text); });
-            beatAccutacySub.onClick.AddListener(() => { Model.SetBeatAccuracy((Model.BeatAccuracy - 1).ToString()); });
-            beatAccutacyAdd.onClick.AddListener(() => { Model.SetBeatAccuracy((Model.BeatAccuracy + 1).ToString()); });
+            beatAccutacySub.onClick.AddListener(() =>
+            {
+                Model.SetBeatAccuracy((Model.BeatAccuracy - BeatZoomStep).ToString(CultureInfo.InvariantCulture));
+            });
+            beatAccutacyAdd.onClick.AddListener(() =>
+            {
+                Model.SetBeatAccuracy((Model.BeatAccuracy + BeatZoomStep).ToString(CultureInfo.InvariantCulture));
+            });
             beatZoomField.onEndEdit.AddListener((text) => { Model.SetBeatZoom(text); });
             beatZoomOut.onClick.AddListener(() =>
             {
@@ -58,6 +68,7 @@ namespace CuanStars.ChartEditor.View
                 Model.SetBeatZoom((Model.BeatZoom + 0.2f).ToString(CultureInfo.InvariantCulture));
             });
 
+            // 绑定 M 层事件响应
             Model.OnEditorAttributeChanged += EditorAttributeChanged;
         }
 
