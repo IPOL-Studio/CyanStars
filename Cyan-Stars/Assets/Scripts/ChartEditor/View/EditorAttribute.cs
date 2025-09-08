@@ -96,7 +96,10 @@ namespace CuanStars.ChartEditor.View
 
         private void OnDestroy()
         {
-            Model.OnEditorAttributeChanged -= EditorAttributeChanged;
+            if (Model != null)
+            {
+                Model.OnEditorAttributeChanged -= EditorAttributeChanged;
+            }
         }
     }
 }

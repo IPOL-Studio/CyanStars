@@ -83,7 +83,10 @@ namespace CyanStars.ChartEditor.View
                 toggle.onValueChanged.RemoveAllListeners();
             }
 
-            Model.OnEditToolChanged -= OnEditToolChanged;
+            if (Model != null)
+            {
+                Model.OnEditToolChanged -= OnEditToolChanged;
+            }
         }
     }
 }

@@ -28,6 +28,11 @@ namespace CyanStars.ChartEditor.Model
 
         public List<int> SelectedNoteIDs { get; private set; } // 当前选中的 Note ID，用列表是考虑兼容后续框选多个 Note 一起修改
 
+        /// <summary>
+        /// 计算 offset 后，当前选中的音乐的实际时长（ms）
+        /// </summary>
+        public int ActualMusicTime { get; private set; }
+
 
         // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面数据，加载/保存时需要从读写磁盘。 ---
         public ChartPackData ChartPackData { get; private set; }
@@ -39,7 +44,7 @@ namespace CyanStars.ChartEditor.Model
 
         public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
 
-        public List<BpmGroupItem> BpmGroupDatas => ChartData.BpmGroup.Groups;
+        public List<BpmGroupItem> BpmGroupDatas => ChartData.BpmGroup.Data;
 
         public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
 
