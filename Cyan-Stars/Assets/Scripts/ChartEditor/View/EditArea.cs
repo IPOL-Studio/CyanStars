@@ -67,16 +67,17 @@ namespace CyanStars.ChartEditor.View
         private async void RefreshBeatLine()
         {
             // 归还所有节拍线到池
-            foreach (Transform childTransform in beatLines.transform)
+            for (int i = beatLines.transform.childCount - 1; i >= 0; i--)
             {
-                GameRoot.GameObjectPool.ReleaseGameObject(BeatLinePrefabPath, childTransform.gameObject);
+                GameRoot.GameObjectPool.ReleaseGameObject(BeatLinePrefabPath,
+                    beatLines.transform.GetChild(i).gameObject);
             }
 
             // 计算屏幕下沿对应的 content 位置
             float contentPos = (ContentRect.sizeDelta.y - Screen.height) * scrollRect.verticalNormalizedPosition;
 
             // 计算每条节拍线（包括细分节拍线）占用的位置
-            float beatLineDistance = DefaultBeatLineInterval * Model.BeatZoom * Model.BeatAccuracy;
+            float beatLineDistance = DefaultBeatLineInterval * Model.BeatZoom / Model.BeatAccuracy;
 
             // 计算第一条需要渲染的节拍线的计数
             int currentBeatLineCount =
@@ -92,10 +93,11 @@ namespace CyanStars.ChartEditor.View
                 RectTransform rect = beatLine.BeatLineRect;
                 rect.anchorMin = new Vector2(0.5f, 0f);
                 rect.anchorMax = new Vector2(0.5f, 0f);
-                rect.anchoredPosition = new Vector2(
-                    0,
-                    JudgeLineRect.position.y + beatLineDistance * (currentBeatLineCount - 1) - contentPos
-                );
+                float anchoredPositionY = JudgeLineRect.anchoredPosition.y +
+                                          beatLineDistance * (currentBeatLineCount - 1) -
+                                          contentPos;
+                rect.anchoredPosition = new Vector2(0, anchoredPositionY);
+                rect.localScale = Vector3.one;
 
                 int beatAccNum = (currentBeatLineCount - 1) % Model.BeatAccuracy;
                 if (beatAccNum == 0)
@@ -103,7 +105,7 @@ namespace CyanStars.ChartEditor.View
                     // 整数节拍线
                     beatLine.Image.color = Color.white;
                     beatLine.BeatTextObject.SetActive(true);
-                    beatLine.BeatText.text = currentBeatLineCount.ToString();
+                    beatLine.BeatText.text = ((currentBeatLineCount - 1) / Model.BeatAccuracy + 1).ToString();
                 }
                 else if (Model.BeatAccuracy % 2 == 0 && beatAccNum == Model.BeatAccuracy / 2)
                 {
@@ -183,8 +185,6 @@ namespace CyanStars.ChartEditor.View
                 RefreshUI();
                 lastScreenHeight = Screen.height;
             }
-
-            RefreshUI();
         }
     }
 }
