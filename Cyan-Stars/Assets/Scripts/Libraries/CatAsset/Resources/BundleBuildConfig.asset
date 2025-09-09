@@ -136,10 +136,12 @@ MonoBehaviour:
     BundleName: charteditor.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 3074523
+    AssetsLength: 3074716
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/BeatInputField.prefab
       Length: 49161
+    - Name: Assets/BundleRes/Prefabs/ChartEditor/BeatLine.prefab
+      Length: 7320
     - Name: Assets/BundleRes/Prefabs/ChartEditor/Button(BPM Element).prefab
       Length: 22187
     - Name: Assets/BundleRes/Prefabs/ChartEditor/Button(Speed Element).prefab
@@ -158,8 +160,6 @@ MonoBehaviour:
       Length: 7330
     - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u6B63\u89E3\u97F3\u6D6E\u6761Canvas.prefab"
       Length: 14401
-    - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u8282\u62CD\u7EBF.prefab"
-      Length: 7127
     - Name: Assets/TextMeshPro/Fonts/LiberationSans.ttf
       Length: 350200
     - Name: Assets/TextMeshPro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset
