@@ -136,12 +136,10 @@ MonoBehaviour:
     BundleName: charteditor.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 3074716
+    AssetsLength: 455676
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/BeatInputField.prefab
       Length: 49161
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/BeatLine.prefab
-      Length: 7320
     - Name: Assets/BundleRes/Prefabs/ChartEditor/Button(BPM Element).prefab
       Length: 22187
     - Name: Assets/BundleRes/Prefabs/ChartEditor/Button(Speed Element).prefab
@@ -152,6 +150,18 @@ MonoBehaviour:
       Length: 14471
     - Name: Assets/BundleRes/Prefabs/ChartEditor/Dropdown.prefab
       Length: 39590
+    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/BeatLine.prefab
+      Length: 7596
+    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/BreakNote.prefab
+      Length: 2212
+    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/ClickNote.prefab
+      Length: 2214
+    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/DragNote.prefab
+      Length: 2216
+    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/HoldNote.prefab
+      Length: 4439
+    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/TapNote.prefab
+      Length: 2212
     - Name: Assets/BundleRes/Prefabs/ChartEditor/InputFieldWithButton.prefab
       Length: 27917
     - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u5F39\u7A97Canvas.prefab"
@@ -160,14 +170,6 @@ MonoBehaviour:
       Length: 7330
     - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u6B63\u89E3\u97F3\u6D6E\u6761Canvas.prefab"
       Length: 14401
-    - Name: Assets/TextMeshPro/Fonts/LiberationSans.ttf
-      Length: 350200
-    - Name: Assets/TextMeshPro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset
-      Length: 9812
-    - Name: Assets/TextMeshPro/Resources/Fonts & Materials/LiberationSans SDF.asset
-      Length: 2264683
-    - Name: Assets/TextMeshPro/Shaders/TMP_SDF-Mobile.shader
-      Length: 7914
     - Name: Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Dropdown
         Icon.psd
       Length: 85308
@@ -963,10 +965,28 @@ MonoBehaviour:
     BundleName: charteditor.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 4278787
+    AssetsLength: 5214898
     Assets:
     - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/DropdownBackground.png
       Length: 46445
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/Break.png
+      Length: 85614
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/Click.png
+      Length: 99419
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/Drag.png
+      Length: 116645
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/HoldTail.png
+      Length: 418816
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/HoleHead.png
+      Length: 119728
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/JudgeLine.png
+      Length: 7099
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/Tap.png
+      Length: 95889
+    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/\u4F4D\u7F6E\u7EBF.png"
+      Length: 2011
+    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/\u8282\u62CD\u7EBF.png"
+      Length: 1495
     - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditorFrame.png
       Length: 84140
     - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Add.png
@@ -1029,10 +1049,6 @@ MonoBehaviour:
       Length: 3556
     - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u989C\u8272\u6761\u5E26.png"
       Length: 1771
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/JudgeLine.png
-      Length: 7099
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u4F4D\u7F6E\u7EBF.png"
-      Length: 2011
     - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u5236\u8C31\u5668\u53C2\u8003\u56FE.png"
       Length: 875671
     - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u6309\u94AE\u8FB9\u6846.png"
@@ -1047,8 +1063,6 @@ MonoBehaviour:
       Length: 213
     - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u80CC\u666F\u6846.png"
       Length: 2423199
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u8282\u62CD\u7EBF.png"
-      Length: 1495
     - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u957F\u529F\u80FD\u83DC\u5355.png"
       Length: 101967
   - RelativePath: CysMultimediaAssets/Sprites/login.bundle
