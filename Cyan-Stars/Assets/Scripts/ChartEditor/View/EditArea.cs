@@ -53,11 +53,6 @@ namespace CyanStars.ChartEditor.View
             ResetTotalBeats();
         }
 
-        private void Start()
-        {
-            RefreshUI();
-        }
-
         /// <summary>
         /// 画面变化后(而不是每帧)或在编辑器或音符属性修改后，重新绘制编辑器的节拍线、位置线、音符
         /// </summary>
@@ -65,6 +60,22 @@ namespace CyanStars.ChartEditor.View
         {
             RefreshScrollRect();
             RefreshBeatLine();
+        }
+
+        private void RefreshScrollRect()
+        {
+            // 记录已滚动的位置百分比
+            float verticalNormalizedPosition = scrollRect.verticalNormalizedPosition;
+
+            // 刷新 content 高度
+            contentHeight = Math.Max(
+                totalBeats * DefaultBeatLineInterval * Model.BeatZoom + JudgeLineRect.transform.position.y,
+                mainCanvaRect.rect.height
+            );
+            ContentRect.sizeDelta = new Vector2(ContentRect.sizeDelta.x, contentHeight);
+
+            // 恢复 content 位置
+            scrollRect.verticalNormalizedPosition = verticalNormalizedPosition;
         }
 
         private async void RefreshBeatLine()
@@ -135,21 +146,6 @@ namespace CyanStars.ChartEditor.View
             }
         }
 
-        private void RefreshScrollRect()
-        {
-            // 记录已滚动的位置百分比
-            float verticalNormalizedPosition = scrollRect.verticalNormalizedPosition;
-
-            // 刷新 content 高度
-            contentHeight = Math.Max(
-                totalBeats * DefaultBeatLineInterval * Model.BeatZoom + JudgeLineRect.transform.position.y,
-                mainCanvaRect.rect.height
-            );
-            ContentRect.sizeDelta = new Vector2(ContentRect.sizeDelta.x, contentHeight);
-
-            // 恢复 content 位置
-            scrollRect.verticalNormalizedPosition = verticalNormalizedPosition;
-        }
 
         /// <summary>
         /// 重计算总拍数并刷新编辑器视图
@@ -179,6 +175,11 @@ namespace CyanStars.ChartEditor.View
             }
 
             return beatCount;
+        }
+
+        private void Awake()
+        {
+            scrollRect.onValueChanged.AddListener((_) => { RefreshUI(); });
         }
 
         private void Update()
