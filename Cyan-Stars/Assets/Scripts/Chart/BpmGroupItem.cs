@@ -15,5 +15,11 @@
         /// 首个 BPM 组必须从 [0,0,0] 开始，末个 BPM 组持续到谱面结束。
         /// </remarks>
         public Beat StartBeat;
+
+        public BpmGroupItem(float bpm, Beat startBeat)
+        {
+            Bpm = bpm;
+            StartBeat = startBeat;
+        }
     }
 }

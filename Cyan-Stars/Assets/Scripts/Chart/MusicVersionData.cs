@@ -26,5 +26,14 @@ namespace CyanStars.Chart
         /// <example>{"xxxx": ["作", "编", "调", "谱", "绘"]}</example>
         [CanBeNull]
         public Dictionary<string, List<string>> Staffs;
+
+        public MusicVersionData(string musicFilePath = null,
+            int offset = 0,
+            Dictionary<string, List<string>> staffs = null)
+        {
+            MusicFilePath = musicFilePath;
+            Offset = offset;
+            Staffs = staffs ?? new Dictionary<string, List<string>>();
+        }
     }
 }

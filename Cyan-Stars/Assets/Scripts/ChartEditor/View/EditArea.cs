@@ -71,6 +71,7 @@ namespace CyanStars.ChartEditor.View
         {
             RefreshScrollRect();
             RefreshBeatLines();
+            RefreshNotes();
         }
 
         private void RefreshScrollRect()
@@ -209,20 +210,26 @@ namespace CyanStars.ChartEditor.View
                 GameObject go;
                 float xPos;
                 RectTransform rect;
+
+
                 switch (noteData.Type)
                 {
-                    // TODO: 优化横向位置计算
+                    // TODO: 优化代码
                     case NoteType.Tap:
                         go = await GameRoot.GameObjectPool.GetGameObjectAsync(TapNotePrefabPath, notes.transform);
                         xPos = (noteData as TapChartNoteData).Pos * 802.5f - 321f;
                         rect = go.GetComponent<RectTransform>();
-                        rect.anchoredPosition = new Vector2(xPos, rect.anchoredPosition.y);
+                        rect.anchorMin = new Vector2(0.5f, 0f);
+                        rect.anchorMax = new Vector2(0.5f, 0f);
+                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos - contentPos);
                         break;
                     case NoteType.Hold:
                         go = await GameRoot.GameObjectPool.GetGameObjectAsync(HoldNotePrefabPath, notes.transform);
                         xPos = (noteData as HoldChartNoteData).Pos * 802.5f - 321f;
                         rect = go.GetComponent<RectTransform>();
-                        rect.anchoredPosition = new Vector2(xPos, rect.anchoredPosition.y);
+                        rect.anchorMin = new Vector2(0.5f, 0f);
+                        rect.anchorMax = new Vector2(0.5f, 0f);
+                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
                         rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
                             Mathf.Max(0, noteCalculateEndPos - 12.5f));
                         break;
@@ -230,19 +237,25 @@ namespace CyanStars.ChartEditor.View
                         go = await GameRoot.GameObjectPool.GetGameObjectAsync(DragNotePrefabPath, notes.transform);
                         xPos = (noteData as DragChartNoteData).Pos * 802.5f - 321f;
                         rect = go.GetComponent<RectTransform>();
-                        rect.anchoredPosition = new Vector2(xPos, rect.anchoredPosition.y);
+                        rect.anchorMin = new Vector2(0.5f, 0f);
+                        rect.anchorMax = new Vector2(0.5f, 0f);
+                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
                         break;
                     case NoteType.Click:
                         go = await GameRoot.GameObjectPool.GetGameObjectAsync(ClickNotePrefabPath, notes.transform);
                         xPos = (noteData as ClickChartNoteData).Pos * 802.5f - 321f;
                         rect = go.GetComponent<RectTransform>();
-                        rect.anchoredPosition = new Vector2(xPos, rect.anchoredPosition.y);
+                        rect.anchorMin = new Vector2(0.5f, 0f);
+                        rect.anchorMax = new Vector2(0.5f, 0f);
+                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
                         break;
                     case NoteType.Break:
                         go = await GameRoot.GameObjectPool.GetGameObjectAsync(BreakNotePrefabPath, notes.transform);
                         xPos = (noteData as BreakChartNoteData).BreakNotePos == BreakNotePos.Left ? -468.8f : 468.8f;
                         rect = go.GetComponent<RectTransform>();
-                        rect.anchoredPosition = new Vector2(xPos, rect.anchoredPosition.y);
+                        rect.anchorMin = new Vector2(0.5f, 0f);
+                        rect.anchorMax = new Vector2(0.5f, 0f);
+                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
