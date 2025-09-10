@@ -14,7 +14,8 @@ namespace CyanStars.ChartEditor.View
         /// </summary>
         private const float DefaultBeatLineInterval = 250f;
 
-        private const string BeatLinePrefabPath = "Assets/BundleRes/Prefabs/ChartEditor/BeatLine.prefab";
+        // 对象池使用的预制体
+        private const string BeatLinePrefabPath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/BeatLine.prefab";
 
 
         [SerializeField]
