@@ -59,7 +59,7 @@ namespace CyanStars.ChartEditor.View
         private void RefreshUI()
         {
             RefreshScrollRect();
-            RefreshBeatLine();
+            RefreshBeatLines();
         }
 
         private void RefreshScrollRect()
@@ -78,7 +78,7 @@ namespace CyanStars.ChartEditor.View
             scrollRect.verticalNormalizedPosition = verticalNormalizedPosition;
         }
 
-        private async void RefreshBeatLine()
+        private async void RefreshBeatLines()
         {
             // 归还所有节拍线到池
             for (int i = beatLines.transform.childCount - 1; i >= 0; i--)
