@@ -69,7 +69,7 @@ namespace CyanStars.ChartEditor.View
 
             // 刷新 content 高度
             contentHeight = Math.Max(
-                totalBeats * DefaultBeatLineInterval * Model.BeatZoom + JudgeLineRect.transform.position.y,
+                totalBeats * DefaultBeatLineInterval * Model.BeatZoom + JudgeLineRect.anchoredPosition.y,
                 mainCanvaRect.rect.height
             );
             ContentRect.sizeDelta = new Vector2(ContentRect.sizeDelta.x, contentHeight);
