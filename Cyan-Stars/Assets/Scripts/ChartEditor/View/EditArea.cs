@@ -18,6 +18,9 @@ namespace CyanStars.ChartEditor.View
 
 
         [SerializeField]
+        private RectTransform mainCanvaRect;
+
+        [SerializeField]
         private GameObject tracks;
 
         [SerializeField]
@@ -40,7 +43,7 @@ namespace CyanStars.ChartEditor.View
         private RectTransform JudgeLineRect => judgeLine.GetComponent<RectTransform>();
 
         private int totalBeats; // 当前选中的音乐（含offset）的向上取整拍子总数量
-        private int lastScreenHeight; // 上次记录的屏幕高度（刷新前）
+        private float lastCanvaHeight; // 上次记录的 Canva 高度（刷新前）
         private float contentHeight; // 内容总高度
 
 
@@ -74,7 +77,8 @@ namespace CyanStars.ChartEditor.View
             }
 
             // 计算屏幕下沿对应的 content 位置
-            float contentPos = (ContentRect.sizeDelta.y - Screen.height) * scrollRect.verticalNormalizedPosition;
+            float contentPos = (ContentRect.rect.height - mainCanvaRect.rect.height) *
+                               scrollRect.verticalNormalizedPosition;
 
             // 计算每条节拍线（包括细分节拍线）占用的位置
             float beatLineDistance = DefaultBeatLineInterval * Model.BeatZoom / Model.BeatAccuracy;
@@ -84,7 +88,7 @@ namespace CyanStars.ChartEditor.View
                 (int)((contentPos - JudgeLineRect.position.y) / beatLineDistance); // 屏幕外会多渲染几条节拍线，符合预期
             currentBeatLineCount = Math.Max(1, currentBeatLineCount);
 
-            while ((currentBeatLineCount - 1) * beatLineDistance < contentPos + Screen.height)
+            while ((currentBeatLineCount - 1) * beatLineDistance < contentPos + mainCanvaRect.rect.height)
             {
                 // 渲染节拍线
                 GameObject go =
@@ -139,7 +143,7 @@ namespace CyanStars.ChartEditor.View
             // 刷新 content 高度
             contentHeight = Math.Max(
                 totalBeats * DefaultBeatLineInterval * Model.BeatZoom + JudgeLineRect.transform.position.y,
-                Screen.height
+                mainCanvaRect.rect.height
             );
             ContentRect.sizeDelta = new Vector2(ContentRect.sizeDelta.x, contentHeight);
 
@@ -180,10 +184,10 @@ namespace CyanStars.ChartEditor.View
         private void Update()
         {
             // TODO: 改为由 GameRoot 下发事件
-            if (lastScreenHeight != Screen.height)
+            if (!Mathf.Approximately(lastCanvaHeight, mainCanvaRect.rect.height))
             {
                 RefreshUI();
-                lastScreenHeight = Screen.height;
+                lastCanvaHeight = mainCanvaRect.rect.height;
             }
         }
     }
