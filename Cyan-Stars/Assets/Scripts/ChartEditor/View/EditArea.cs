@@ -45,8 +45,8 @@ namespace CyanStars.ChartEditor.View
         private GameObject notes;
 
 
-        private RectTransform ContentRect => scrollRect.content.GetComponent<RectTransform>();
-        private RectTransform JudgeLineRect => judgeLine.GetComponent<RectTransform>();
+        private RectTransform contentRect;
+        private RectTransform judgeLineRect;
 
         private int totalBeats; // 当前选中的音乐（含offset）的向上取整拍子总数量
         private float lastCanvaHeight; // 上次记录的 Canva 高度（刷新前）
@@ -56,6 +56,11 @@ namespace CyanStars.ChartEditor.View
         public override void Bind(EditorModel editorModel)
         {
             base.Bind(editorModel);
+
+            // 缓存一些物体
+            contentRect = scrollRect.content.GetComponent<RectTransform>();
+            judgeLineRect = judgeLine.GetComponent<RectTransform>();
+
             ResetTotalBeats();
         }
 
@@ -75,10 +80,10 @@ namespace CyanStars.ChartEditor.View
 
             // 刷新 content 高度
             contentHeight = Math.Max(
-                totalBeats * DefaultBeatLineInterval * Model.BeatZoom + JudgeLineRect.anchoredPosition.y,
+                totalBeats * DefaultBeatLineInterval * Model.BeatZoom + judgeLineRect.anchoredPosition.y,
                 mainCanvaRect.rect.height
             );
-            ContentRect.sizeDelta = new Vector2(ContentRect.sizeDelta.x, contentHeight);
+            contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentHeight);
 
             // 恢复 content 位置
             scrollRect.verticalNormalizedPosition = verticalNormalizedPosition;
@@ -94,7 +99,7 @@ namespace CyanStars.ChartEditor.View
             }
 
             // 计算屏幕下沿对应的 content 位置
-            float contentPos = (ContentRect.rect.height - mainCanvaRect.rect.height) *
+            float contentPos = (contentRect.rect.height - mainCanvaRect.rect.height) *
                                scrollRect.verticalNormalizedPosition;
 
             // 计算每条节拍线（包括细分节拍线）占用的位置
@@ -102,7 +107,7 @@ namespace CyanStars.ChartEditor.View
 
             // 计算第一条需要渲染的节拍线的计数
             int currentBeatLineCount =
-                (int)((contentPos - JudgeLineRect.position.y) / beatLineDistance); // 屏幕外会多渲染几条节拍线，符合预期
+                (int)((contentPos - judgeLineRect.position.y) / beatLineDistance); // 屏幕外会多渲染几条节拍线，符合预期
             currentBeatLineCount = Math.Max(1, currentBeatLineCount);
 
             while ((currentBeatLineCount - 1) * beatLineDistance < contentPos + mainCanvaRect.rect.height)
@@ -114,7 +119,7 @@ namespace CyanStars.ChartEditor.View
                 RectTransform rect = beatLine.BeatLineRect;
                 rect.anchorMin = new Vector2(0.5f, 0f);
                 rect.anchorMax = new Vector2(0.5f, 0f);
-                float anchoredPositionY = JudgeLineRect.anchoredPosition.y +
+                float anchoredPositionY = judgeLineRect.anchoredPosition.y +
                                           beatLineDistance * (currentBeatLineCount - 1) -
                                           contentPos;
                 rect.anchoredPosition = new Vector2(0, anchoredPositionY);
@@ -150,6 +155,116 @@ namespace CyanStars.ChartEditor.View
 
                 currentBeatLineCount++;
             }
+        }
+
+        private async void RefreshNotes()
+        {
+            // 将所有 Note 归还到池
+            for (int i = notes.transform.childCount - 1; i >= 0; i--)
+            {
+                GameObject go = beatLines.transform.GetChild(i).gameObject;
+                switch (go.GetComponent<EditorNote>().NoteType)
+                {
+                    case NoteType.Tap:
+                        GameRoot.GameObjectPool.ReleaseGameObject(TapNotePrefabPath, go);
+                        break;
+                    case NoteType.Hold:
+                        GameRoot.GameObjectPool.ReleaseGameObject(HoldNotePrefabPath, go);
+                        break;
+                    case NoteType.Drag:
+                        GameRoot.GameObjectPool.ReleaseGameObject(DragNotePrefabPath, go);
+                        break;
+                    case NoteType.Click:
+                        GameRoot.GameObjectPool.ReleaseGameObject(ClickNotePrefabPath, go);
+                        break;
+                    case NoteType.Break:
+                        GameRoot.GameObjectPool.ReleaseGameObject(BreakNotePrefabPath, go);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            // 计算屏幕下沿对应的 content 位置
+            float contentPos = (contentRect.rect.height - mainCanvaRect.rect.height) *
+                               scrollRect.verticalNormalizedPosition;
+
+            // 遍历并渲染在可视区域附近的 note
+            foreach (BaseChartNoteData noteData in Model.ChartNotes)
+            {
+                float noteCalculatePos = CalculatePosInContent(noteData.JudgeBeat.ToFloat());
+                float noteCalculateEndPos = noteCalculatePos;
+                if (noteData.Type == NoteType.Hold)
+                {
+                    noteCalculateEndPos = CalculatePosInContent((noteData as HoldChartNoteData).EndJudgeBeat.ToFloat());
+                }
+
+                if (!(noteCalculatePos <= (contentPos + mainCanvaRect.rect.height + 20f) &&
+                      (contentPos - 20f) <= noteCalculateEndPos))
+                {
+                    return;
+                }
+
+                // 发生重叠，需要渲染
+                GameObject go;
+                float xPos;
+                RectTransform rect;
+                switch (noteData.Type)
+                {
+                    // TODO: 优化横向位置计算
+                    case NoteType.Tap:
+                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(TapNotePrefabPath, notes.transform);
+                        xPos = (noteData as TapChartNoteData).Pos * 802.5f - 321f;
+                        rect = go.GetComponent<RectTransform>();
+                        rect.anchoredPosition = new Vector2(xPos, rect.anchoredPosition.y);
+                        break;
+                    case NoteType.Hold:
+                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(HoldNotePrefabPath, notes.transform);
+                        xPos = (noteData as HoldChartNoteData).Pos * 802.5f - 321f;
+                        rect = go.GetComponent<RectTransform>();
+                        rect.anchoredPosition = new Vector2(xPos, rect.anchoredPosition.y);
+                        rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                            Mathf.Max(0, noteCalculateEndPos - 12.5f));
+                        break;
+                    case NoteType.Drag:
+                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(DragNotePrefabPath, notes.transform);
+                        xPos = (noteData as DragChartNoteData).Pos * 802.5f - 321f;
+                        rect = go.GetComponent<RectTransform>();
+                        rect.anchoredPosition = new Vector2(xPos, rect.anchoredPosition.y);
+                        break;
+                    case NoteType.Click:
+                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(ClickNotePrefabPath, notes.transform);
+                        xPos = (noteData as ClickChartNoteData).Pos * 802.5f - 321f;
+                        rect = go.GetComponent<RectTransform>();
+                        rect.anchoredPosition = new Vector2(xPos, rect.anchoredPosition.y);
+                        break;
+                    case NoteType.Break:
+                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(BreakNotePrefabPath, notes.transform);
+                        xPos = (noteData as BreakChartNoteData).BreakNotePos == BreakNotePos.Left ? -468.8f : 468.8f;
+                        rect = go.GetComponent<RectTransform>();
+                        rect.anchoredPosition = new Vector2(xPos, rect.anchoredPosition.y);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 根据 beat 计算内容在 Content 中的位置
+        /// </summary>
+        /// <param name="beatFloat">float 格式的 beat</param>
+        /// <returns>内容在 Content 中的位置（相对于 Content 下边缘）</returns>
+        private float CalculatePosInContent(float beatFloat)
+        {
+            // 计算每拍占用的间隔
+            float beatDistance = DefaultBeatLineInterval * Model.BeatZoom;
+
+            // 乘算节拍位置
+            float pos = beatFloat * beatDistance;
+
+            // 添加判定线的位置偏移
+            return pos + judgeLineRect.anchoredPosition.y;
         }
 
 

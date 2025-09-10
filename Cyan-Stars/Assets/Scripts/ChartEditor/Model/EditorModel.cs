@@ -24,9 +24,10 @@ namespace CyanStars.ChartEditor.Model
         /// 用于 M 层的音符数据，在 Model 构造时初始化，提供高效的按 ID 查询音符数据能力
         /// </summary>
         /// <remarks>int 为音符 ID，不持久化，在每次加载谱面时按序分配，不保证连续。</remarks>
-        public Dictionary<int, BaseChartNoteData> ChartNotes { get; private set; }
+        public HashSet<BaseChartNoteData> ChartNotes { get; private set; }
 
-        public List<int> SelectedNoteIDs { get; private set; } // 当前选中的 Note ID，用列表是考虑兼容后续框选多个 Note 一起修改
+        // 当前选中的 Note，用 HashSet 是考虑兼容后续框选多个 Note 一起修改
+        public HashSet<BaseChartNoteData> SelectedNotes { get; private set; }
 
         /// <summary>
         /// 计算 offset 后，当前选中的音乐的实际时长（ms）
@@ -150,12 +151,12 @@ namespace CyanStars.ChartEditor.Model
             BeatAccuracy = 2;
             BeatZoom = 1f;
             NoteIdCounter = 0;
-            SelectedNoteIDs = new List<int>();
+            SelectedNotes = new HashSet<BaseChartNoteData>();
 
-            ChartNotes = new Dictionary<int, BaseChartNoteData>();
+            ChartNotes = new HashSet<BaseChartNoteData>();
             foreach (var note in ChartData.Notes)
             {
-                ChartNotes.Add(NoteIdCounter, note);
+                ChartNotes.Add(note);
                 NoteIdCounter++;
             }
         }
@@ -567,14 +568,8 @@ namespace CyanStars.ChartEditor.Model
             }
 
             bool isChangedFlag = false;
-            foreach (int id in SelectedNoteIDs)
+            foreach (BaseChartNoteData note in SelectedNotes)
             {
-                if (!ChartNotes.TryGetValue(id, out BaseChartNoteData note))
-                {
-                    Debug.LogWarning($"EditorModel: 未找到 ID 为 {id} 的 Note");
-                    continue;
-                }
-
                 Beat newJudgeBeat = new Beat(
                     integerPart ?? note.JudgeBeat.IntegerPart,
                     numerator ?? note.JudgeBeat.Numerator,
@@ -630,17 +625,11 @@ namespace CyanStars.ChartEditor.Model
             }
 
             bool isChangedFlag = false;
-            foreach (int id in SelectedNoteIDs)
+            foreach (BaseChartNoteData note in SelectedNotes)
             {
-                if (!ChartNotes.TryGetValue(id, out BaseChartNoteData note))
-                {
-                    Debug.LogWarning($"EditorModel: 未找到 ID 为 {id} 的 Note");
-                    continue;
-                }
-
                 if (note.Type != NoteType.Hold)
                 {
-                    Debug.Log($"EditorModel: ID 为 {id} 的 Note 不是 HoldNote，将不设定 EndBeat。");
+                    Debug.Log($"EditorModel: 此 Note 不是 HoldNote，将不设定 EndBeat。{note} ");
                     continue;
                 }
 
@@ -687,17 +676,11 @@ namespace CyanStars.ChartEditor.Model
             }
 
             bool isChangedFlag = false;
-            foreach (int id in SelectedNoteIDs)
+            foreach (BaseChartNoteData note in SelectedNotes)
             {
-                if (!ChartNotes.TryGetValue(id, out BaseChartNoteData note))
-                {
-                    Debug.LogWarning($"EditorModel: 未找到 ID 为 {id} 的 Note");
-                    continue;
-                }
-
                 if (note.Type == NoteType.Break)
                 {
-                    Debug.Log($"EditorModel: ID 为 {id} 的 Note 是 BreakNote，将不设定 Pos。");
+                    Debug.Log($"EditorModel: 此 Note 是 BreakNote，将不设定 Pos。{note}");
                     continue;
                 }
 
@@ -721,17 +704,11 @@ namespace CyanStars.ChartEditor.Model
         public void SetBreakPos(BreakNotePos breakPos)
         {
             bool isChangedFlag = false;
-            foreach (int id in SelectedNoteIDs)
+            foreach (BaseChartNoteData note in SelectedNotes)
             {
-                if (!ChartNotes.TryGetValue(id, out BaseChartNoteData note))
-                {
-                    Debug.LogWarning($"EditorModel: 未找到 ID 为 {id} 的 Note");
-                    continue;
-                }
-
                 if (note.Type != NoteType.Break)
                 {
-                    Debug.Log($"EditorModel: ID 为 {id} 的 Note 不是 BreakNote，将不设定 BreakPos。");
+                    Debug.Log($"EditorModel: 此 Note 不是 BreakNote，将不设定 BreakPos。{note}");
                     continue;
                 }
 

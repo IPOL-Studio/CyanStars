@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5071605713215035352}
   - component: {fileID: 2266626610211678585}
   - component: {fileID: 6701752872806648853}
+  - component: {fileID: 3234322076483583052}
   m_Layer: 5
   m_Name: ClickNote
   m_TagString: Untagged
@@ -75,3 +76,16 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3234322076483583052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1914766278988696775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f2fb82ada93dae40bca1b79c5480bb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NoteType: 3
