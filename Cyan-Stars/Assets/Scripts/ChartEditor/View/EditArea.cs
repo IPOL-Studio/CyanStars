@@ -161,9 +161,9 @@ namespace CyanStars.ChartEditor.View
         private async void RefreshNotes()
         {
             // 将所有 Note 归还到池
-            for (int i = notes.transform.childCount - 1; i >= 0; i--)
+            for (int i = contentRect.childCount - 1; i >= 0; i--)
             {
-                GameObject go = notes.transform.GetChild(i).gameObject;
+                GameObject go = contentRect.GetChild(i).gameObject;
                 switch (go.GetComponent<EditorNote>().NoteType)
                 {
                     case NoteType.Tap:
@@ -219,11 +219,11 @@ namespace CyanStars.ChartEditor.View
                         go = noteData.Type switch
                         {
                             NoteType.Tap => await GameRoot.GameObjectPool.GetGameObjectAsync(TapNotePrefabPath,
-                                notes.transform),
+                                contentRect),
                             NoteType.Drag => await GameRoot.GameObjectPool.GetGameObjectAsync(DragNotePrefabPath,
-                                notes.transform),
+                                contentRect),
                             NoteType.Click => await GameRoot.GameObjectPool.GetGameObjectAsync(ClickNotePrefabPath,
-                                notes.transform),
+                                contentRect),
                             _ => throw new ArgumentOutOfRangeException()
                         };
 
@@ -234,10 +234,10 @@ namespace CyanStars.ChartEditor.View
                         rect.anchorMin = new Vector2(0.5f, 0f);
                         rect.anchorMax = new Vector2(0.5f, 0f);
                         xPos = (noteData as IChartNoteNormalPos).Pos * 802.5f - 321f;
-                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos - contentPos);
+                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
                         break;
                     case NoteType.Hold:
-                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(HoldNotePrefabPath, notes.transform);
+                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(HoldNotePrefabPath, contentRect);
                         editorNote = go.GetComponent<EditorNote>();
                         editorNote.Init(noteData);
                         rect = editorNote.Rect;
@@ -245,12 +245,12 @@ namespace CyanStars.ChartEditor.View
                         rect.anchorMin = new Vector2(0.5f, 0f);
                         rect.anchorMax = new Vector2(0.5f, 0f);
                         xPos = (noteData as HoldChartNoteData).Pos * 802.5f - 321f;
-                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos - contentPos);
+                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
                         editorNote.HoldTailRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
                             Mathf.Max(0, noteCalculateEndPos - noteCalculatePos - 12.5f));
                         break;
                     case NoteType.Break:
-                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(BreakNotePrefabPath, notes.transform);
+                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(BreakNotePrefabPath, contentRect);
                         editorNote = go.GetComponent<EditorNote>();
                         editorNote.Init(noteData);
                         rect = editorNote.Rect;
@@ -258,7 +258,7 @@ namespace CyanStars.ChartEditor.View
                         rect.anchorMin = new Vector2(0.5f, 0f);
                         rect.anchorMax = new Vector2(0.5f, 0f);
                         xPos = (noteData as BreakChartNoteData).BreakNotePos == BreakNotePos.Left ? -468.8f : 468.8f;
-                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos - contentPos);
+                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
