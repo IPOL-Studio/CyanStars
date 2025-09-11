@@ -84,7 +84,7 @@ namespace CyanStars.ChartEditor.View
                 totalBeats * DefaultBeatLineInterval * Model.BeatZoom + judgeLineRect.anchoredPosition.y,
                 mainCanvaRect.rect.height
             );
-            contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentHeight);
+            contentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, contentHeight);
 
             // 恢复 content 位置
             scrollRect.verticalNormalizedPosition = verticalNormalizedPosition;
