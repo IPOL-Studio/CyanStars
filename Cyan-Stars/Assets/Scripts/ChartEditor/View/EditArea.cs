@@ -138,7 +138,8 @@ namespace CyanStars.ChartEditor.View
                 (int)((contentPos - judgeLineRect.position.y) / beatLineDistance); // 屏幕外会多渲染几条节拍线，符合预期
             currentBeatLineCount = Math.Max(1, currentBeatLineCount);
 
-            while ((currentBeatLineCount - 1) * beatLineDistance < contentPos + mainCanvaRect.rect.height)
+            while ((currentBeatLineCount - 1) * beatLineDistance < contentPos + mainCanvaRect.rect.height &&
+                   currentBeatLineCount / Model.BeatAccuracy <= totalBeats)
             {
                 // 渲染节拍线
                 GameObject go = await GameRoot.GameObjectPool.GetGameObjectAsync(BeatLinePrefabPath, contentRect);
