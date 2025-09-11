@@ -163,7 +163,7 @@ namespace CyanStars.ChartEditor.View
             // 将所有 Note 归还到池
             for (int i = notes.transform.childCount - 1; i >= 0; i--)
             {
-                GameObject go = beatLines.transform.GetChild(i).gameObject;
+                GameObject go = notes.transform.GetChild(i).gameObject;
                 switch (go.GetComponent<EditorNote>().NoteType)
                 {
                     case NoteType.Tap:
@@ -194,68 +194,71 @@ namespace CyanStars.ChartEditor.View
             foreach (BaseChartNoteData noteData in Model.ChartNotes)
             {
                 float noteCalculatePos = CalculatePosInContent(noteData.JudgeBeat.ToFloat());
-                float noteCalculateEndPos = noteCalculatePos;
-                if (noteData.Type == NoteType.Hold)
-                {
-                    noteCalculateEndPos = CalculatePosInContent((noteData as HoldChartNoteData).EndJudgeBeat.ToFloat());
-                }
+                float noteCalculateEndPos = noteData.Type == NoteType.Hold
+                    ? CalculatePosInContent((noteData as HoldChartNoteData).EndJudgeBeat.ToFloat())
+                    : noteCalculatePos;
 
-                if (!(noteCalculatePos <= (contentPos + mainCanvaRect.rect.height + 20f) &&
-                      (contentPos - 20f) <= noteCalculateEndPos))
+                if ((noteCalculateEndPos < (contentPos - 40f)) ||
+                    (noteCalculatePos > (contentPos + mainCanvaRect.rect.height + 40f)))
                 {
-                    return;
+                    continue;
                 }
 
                 // 发生重叠，需要渲染
                 GameObject go;
                 float xPos;
                 RectTransform rect;
-
+                EditorNote editorNote;
 
                 switch (noteData.Type)
                 {
                     // TODO: 优化代码
                     case NoteType.Tap:
-                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(TapNotePrefabPath, notes.transform);
-                        xPos = (noteData as TapChartNoteData).Pos * 802.5f - 321f;
-                        rect = go.GetComponent<RectTransform>();
+                    case NoteType.Drag:
+                    case NoteType.Click:
+                        go = noteData.Type switch
+                        {
+                            NoteType.Tap => await GameRoot.GameObjectPool.GetGameObjectAsync(TapNotePrefabPath,
+                                notes.transform),
+                            NoteType.Drag => await GameRoot.GameObjectPool.GetGameObjectAsync(DragNotePrefabPath,
+                                notes.transform),
+                            NoteType.Click => await GameRoot.GameObjectPool.GetGameObjectAsync(ClickNotePrefabPath,
+                                notes.transform),
+                            _ => null
+                        };
+
+                        editorNote = go.GetComponent<EditorNote>();
+                        editorNote.Init(noteData);
+                        rect = editorNote.Rect;
+                        rect.localScale = Vector3.one;
                         rect.anchorMin = new Vector2(0.5f, 0f);
                         rect.anchorMax = new Vector2(0.5f, 0f);
+                        xPos = (noteData as IChartNoteNormalPos).Pos * 802.5f - 321f;
                         rect.anchoredPosition = new Vector2(xPos, noteCalculatePos - contentPos);
                         break;
                     case NoteType.Hold:
                         go = await GameRoot.GameObjectPool.GetGameObjectAsync(HoldNotePrefabPath, notes.transform);
+                        editorNote = go.GetComponent<EditorNote>();
+                        editorNote.Init(noteData);
+                        rect = editorNote.Rect;
+                        rect.localScale = Vector3.one;
+                        rect.anchorMin = new Vector2(0.5f, 0f);
+                        rect.anchorMax = new Vector2(0.5f, 0f);
                         xPos = (noteData as HoldChartNoteData).Pos * 802.5f - 321f;
-                        rect = go.GetComponent<RectTransform>();
-                        rect.anchorMin = new Vector2(0.5f, 0f);
-                        rect.anchorMax = new Vector2(0.5f, 0f);
-                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
-                        rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-                            Mathf.Max(0, noteCalculateEndPos - 12.5f));
-                        break;
-                    case NoteType.Drag:
-                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(DragNotePrefabPath, notes.transform);
-                        xPos = (noteData as DragChartNoteData).Pos * 802.5f - 321f;
-                        rect = go.GetComponent<RectTransform>();
-                        rect.anchorMin = new Vector2(0.5f, 0f);
-                        rect.anchorMax = new Vector2(0.5f, 0f);
-                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
-                        break;
-                    case NoteType.Click:
-                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(ClickNotePrefabPath, notes.transform);
-                        xPos = (noteData as ClickChartNoteData).Pos * 802.5f - 321f;
-                        rect = go.GetComponent<RectTransform>();
-                        rect.anchorMin = new Vector2(0.5f, 0f);
-                        rect.anchorMax = new Vector2(0.5f, 0f);
-                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
+                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos - contentPos);
+                        editorNote.HoldTailRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                            Mathf.Max(0, noteCalculateEndPos - noteCalculatePos - 12.5f));
                         break;
                     case NoteType.Break:
                         go = await GameRoot.GameObjectPool.GetGameObjectAsync(BreakNotePrefabPath, notes.transform);
-                        xPos = (noteData as BreakChartNoteData).BreakNotePos == BreakNotePos.Left ? -468.8f : 468.8f;
-                        rect = go.GetComponent<RectTransform>();
+                        editorNote = go.GetComponent<EditorNote>();
+                        editorNote.Init(noteData);
+                        rect = editorNote.Rect;
+                        rect.localScale = Vector3.one;
                         rect.anchorMin = new Vector2(0.5f, 0f);
                         rect.anchorMax = new Vector2(0.5f, 0f);
-                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
+                        xPos = (noteData as BreakChartNoteData).BreakNotePos == BreakNotePos.Left ? -468.8f : 468.8f;
+                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos - contentPos);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

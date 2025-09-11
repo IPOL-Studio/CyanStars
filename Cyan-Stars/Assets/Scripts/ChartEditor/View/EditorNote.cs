@@ -1,5 +1,6 @@
 using CyanStars.Chart;
 using CyanStars.ChartEditor.Model;
+using UnityEngine;
 
 namespace CyanStars.ChartEditor.View
 {
@@ -8,7 +9,9 @@ namespace CyanStars.ChartEditor.View
     /// </summary>
     public class EditorNote : BaseView
     {
+        public RectTransform Rect;
         public NoteType NoteType;
+        public RectTransform HoldTailRect;
         public BaseChartNoteData Data;
 
 
@@ -22,9 +25,8 @@ namespace CyanStars.ChartEditor.View
         /// </summary>
         /// <param name="noteType">音符类型</param>
         /// <param name="data">音符数据，用于哈希查询</param>
-        public void Init(NoteType noteType, BaseChartNoteData data)
+        public void Init(BaseChartNoteData data)
         {
-            NoteType = noteType;
             Data = data;
         }
     }
