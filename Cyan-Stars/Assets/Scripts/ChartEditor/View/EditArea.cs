@@ -224,7 +224,7 @@ namespace CyanStars.ChartEditor.View
                                 notes.transform),
                             NoteType.Click => await GameRoot.GameObjectPool.GetGameObjectAsync(ClickNotePrefabPath,
                                 notes.transform),
-                            _ => null
+                            _ => throw new ArgumentOutOfRangeException()
                         };
 
                         editorNote = go.GetComponent<EditorNote>();
