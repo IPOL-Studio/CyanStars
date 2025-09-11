@@ -3,6 +3,7 @@ using CyanStars.Chart;
 using UnityEngine;
 using CyanStars.ChartEditor.Model;
 using CyanStars.Framework;
+using CyanStars.Gameplay.MusicGame;
 using UnityEngine.UI;
 
 namespace CyanStars.ChartEditor.View
@@ -33,16 +34,10 @@ namespace CyanStars.ChartEditor.View
         private GameObject posLines;
 
         [SerializeField]
-        private GameObject beatLines;
-
-        [SerializeField]
         private GameObject judgeLine;
 
         [SerializeField]
         private ScrollRect scrollRect;
-
-        [SerializeField]
-        private GameObject notes;
 
 
         private RectTransform contentRect;
@@ -70,6 +65,7 @@ namespace CyanStars.ChartEditor.View
         private void RefreshUI()
         {
             RefreshScrollRect();
+            ReleaseGameObjectInContent();
             RefreshBeatLines();
             RefreshNotes();
         }
@@ -90,15 +86,46 @@ namespace CyanStars.ChartEditor.View
             scrollRect.verticalNormalizedPosition = verticalNormalizedPosition;
         }
 
+        private void ReleaseGameObjectInContent()
+        {
+            for (int i = contentRect.childCount - 1; i >= 0; i--)
+            {
+                if (contentRect.GetChild(i).TryGetComponent<BeatLine>(out BeatLine beatLine))
+                {
+                    GameRoot.GameObjectPool.ReleaseGameObject(BeatLinePrefabPath, beatLine.gameObject);
+                    continue;
+                }
+
+                if (contentRect.GetChild(i).TryGetComponent<EditorNote>(out EditorNote editorNote))
+                {
+                    switch (editorNote.NoteType)
+                    {
+                        case NoteType.Tap:
+                            GameRoot.GameObjectPool.ReleaseGameObject(TapNotePrefabPath, editorNote.gameObject);
+                            break;
+                        case NoteType.Hold:
+                            GameRoot.GameObjectPool.ReleaseGameObject(HoldNotePrefabPath, editorNote.gameObject);
+                            break;
+                        case NoteType.Drag:
+                            GameRoot.GameObjectPool.ReleaseGameObject(DragNotePrefabPath, editorNote.gameObject);
+                            break;
+                        case NoteType.Click:
+                            GameRoot.GameObjectPool.ReleaseGameObject(ClickNotePrefabPath, editorNote.gameObject);
+                            break;
+                        case NoteType.Break:
+                            GameRoot.GameObjectPool.ReleaseGameObject(BreakNotePrefabPath, editorNote.gameObject);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
+                    continue;
+                }
+            }
+        }
+
         private async void RefreshBeatLines()
         {
-            // 归还所有节拍线到池
-            for (int i = beatLines.transform.childCount - 1; i >= 0; i--)
-            {
-                GameRoot.GameObjectPool.ReleaseGameObject(BeatLinePrefabPath,
-                    beatLines.transform.GetChild(i).gameObject);
-            }
-
             // 计算屏幕下沿对应的 content 位置
             float contentPos = (contentRect.rect.height - mainCanvaRect.rect.height) *
                                scrollRect.verticalNormalizedPosition;
@@ -114,15 +141,13 @@ namespace CyanStars.ChartEditor.View
             while ((currentBeatLineCount - 1) * beatLineDistance < contentPos + mainCanvaRect.rect.height)
             {
                 // 渲染节拍线
-                GameObject go =
-                    await GameRoot.GameObjectPool.GetGameObjectAsync(BeatLinePrefabPath, beatLines.transform);
+                GameObject go = await GameRoot.GameObjectPool.GetGameObjectAsync(BeatLinePrefabPath, contentRect);
                 BeatLine beatLine = go.GetComponent<BeatLine>();
                 RectTransform rect = beatLine.BeatLineRect;
                 rect.anchorMin = new Vector2(0.5f, 0f);
                 rect.anchorMax = new Vector2(0.5f, 0f);
-                float anchoredPositionY = judgeLineRect.anchoredPosition.y +
-                                          beatLineDistance * (currentBeatLineCount - 1) -
-                                          contentPos;
+                float anchoredPositionY =
+                    judgeLineRect.anchoredPosition.y + beatLineDistance * (currentBeatLineCount - 1);
                 rect.anchoredPosition = new Vector2(0, anchoredPositionY);
                 rect.localScale = Vector3.one;
 
@@ -164,26 +189,6 @@ namespace CyanStars.ChartEditor.View
             for (int i = contentRect.childCount - 1; i >= 0; i--)
             {
                 GameObject go = contentRect.GetChild(i).gameObject;
-                switch (go.GetComponent<EditorNote>().NoteType)
-                {
-                    case NoteType.Tap:
-                        GameRoot.GameObjectPool.ReleaseGameObject(TapNotePrefabPath, go);
-                        break;
-                    case NoteType.Hold:
-                        GameRoot.GameObjectPool.ReleaseGameObject(HoldNotePrefabPath, go);
-                        break;
-                    case NoteType.Drag:
-                        GameRoot.GameObjectPool.ReleaseGameObject(DragNotePrefabPath, go);
-                        break;
-                    case NoteType.Click:
-                        GameRoot.GameObjectPool.ReleaseGameObject(ClickNotePrefabPath, go);
-                        break;
-                    case NoteType.Break:
-                        GameRoot.GameObjectPool.ReleaseGameObject(BreakNotePrefabPath, go);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
             }
 
             // 计算屏幕下沿对应的 content 位置

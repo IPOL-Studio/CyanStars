@@ -2,9 +2,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CyanStars.ChartEditor
+namespace CyanStars.ChartEditor.View
 {
-    public class BeatLine : MonoBehaviour
+    public class BeatLine : BaseView
     {
         public RectTransform BeatLineRect;
         public Image Image;
