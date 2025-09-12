@@ -3,12 +3,12 @@ using CyanStars.Chart;
 using UnityEngine;
 using CyanStars.ChartEditor.Model;
 using CyanStars.Framework;
-using CyanStars.Gameplay.MusicGame;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace CyanStars.ChartEditor.View
 {
-    public class EditArea : BaseView
+    public class EditArea : BaseView, IPointerClickHandler
     {
         /// <summary>
         /// 一倍缩放时整数节拍线之间的间隔距离
@@ -234,7 +234,7 @@ namespace CyanStars.ChartEditor.View
                         };
 
                         editorNote = go.GetComponent<EditorNote>();
-                        editorNote.Init(noteData);
+                        editorNote.SetData(Model, noteData);
                         rect = editorNote.Rect;
                         rect.localScale = Vector3.one;
                         rect.anchorMin = new Vector2(0.5f, 0f);
@@ -245,7 +245,7 @@ namespace CyanStars.ChartEditor.View
                     case NoteType.Hold:
                         go = await GameRoot.GameObjectPool.GetGameObjectAsync(HoldNotePrefabPath, contentRect);
                         editorNote = go.GetComponent<EditorNote>();
-                        editorNote.Init(noteData);
+                        editorNote.SetData(Model, noteData);
                         rect = editorNote.Rect;
                         rect.localScale = Vector3.one;
                         rect.anchorMin = new Vector2(0.5f, 0f);
@@ -258,7 +258,7 @@ namespace CyanStars.ChartEditor.View
                     case NoteType.Break:
                         go = await GameRoot.GameObjectPool.GetGameObjectAsync(BreakNotePrefabPath, contentRect);
                         editorNote = go.GetComponent<EditorNote>();
-                        editorNote.Init(noteData);
+                        editorNote.SetData(Model, noteData);
                         rect = editorNote.Rect;
                         rect.localScale = Vector3.one;
                         rect.anchorMin = new Vector2(0.5f, 0f);
@@ -319,6 +319,92 @@ namespace CyanStars.ChartEditor.View
 
             return beatCount;
         }
+
+
+        /// <summary>
+        /// 当空白部分（除 note 按钮组件）被点击时自动触发，用于向 Model 请求在点击位置创建一个音符
+        /// </summary>
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            // TODO: 优化计算
+
+            // 将屏幕坐标转为局部坐标
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                scrollRect.GetComponent<RectTransform>(),
+                eventData.position,
+                eventData.pressEventCamera,
+                out Vector2 localPosition);
+
+
+            // 计算横坐标，左侧 Break 轨道视为 -1f，右侧 Break 轨道视为 2f，中央轨道取值为 [0f,0.8f]，点击轨道间隙时不触发 Model 方法
+            // 开启横坐标吸附时，将音符中心位置解析到最近的（位置线/位置线间隔中线）上，随后返回音符左端点位置
+            float notePos;
+            if (localPosition.x <= -421f)
+            {
+                // 左侧 Break 轨道
+                notePos = -1f;
+            }
+            else if (421f <= localPosition.x)
+            {
+                // 右侧 Break 轨道
+                notePos = 2f;
+            }
+            else if (-400f <= localPosition.x && localPosition.x <= 400f)
+            {
+                // 中央轨道
+                if (Model.PosMagnetState)
+                {
+                    // 开启了位置吸附
+                    if (Model.PosAccuracy == 0)
+                    {
+                        notePos = 0;
+                    }
+                    else
+                    {
+                        float subSectionWidth = (800f / (Model.PosAccuracy + 1)) / 2f;
+                        float relativePosX = localPosition.x + 400f;
+                        float snappingIndex = Mathf.Round(relativePosX / subSectionWidth);
+                        float maxIndex = 2 * Model.PosAccuracy + 1;
+                        snappingIndex = Mathf.Max(1f, Mathf.Min(maxIndex, snappingIndex));
+                        float snappedRelativePos = snappingIndex * subSectionWidth;
+                        float posX = snappedRelativePos - 400f;
+                        notePos = (posX + 320f) / 800f;
+                        notePos = Mathf.Min(notePos, 0.8f);
+                        notePos = Mathf.Max(notePos, 0f);
+                    }
+                }
+                else
+                {
+                    // 未开启位置吸附
+                    notePos = (localPosition.x + 320f) / 800f;
+                    notePos = Mathf.Min(notePos, 0.8f);
+                    notePos = Mathf.Max(notePos, 0f);
+                }
+            }
+            else
+            {
+                // 点到轨道间隙了，不处理
+                return;
+            }
+
+
+            // 计算纵坐标，将鼠标位置解析到最近的节拍线（含细分）上
+            float contentPos = (contentRect.rect.height - mainCanvaRect.rect.height) *
+                               scrollRect.verticalNormalizedPosition;
+            float clickOnContentPos = contentPos + localPosition.y;
+            int subBeatLineIndex = Mathf.RoundToInt((clickOnContentPos - judgeLineRect.anchoredPosition.y) /
+                                                    (DefaultBeatLineInterval * Model.BeatZoom / Model.BeatAccuracy));
+            subBeatLineIndex = Math.Max(0, subBeatLineIndex);
+            subBeatLineIndex = Math.Min(subBeatLineIndex, totalBeats * Model.BeatAccuracy);
+
+            int z = Model.BeatAccuracy;
+            int x = subBeatLineIndex / Model.BeatAccuracy;
+            int y = subBeatLineIndex % Model.BeatAccuracy;
+            Beat noteBeat = new Beat(x, y, z);
+
+            Debug.Log($"创建音符：pos: {notePos}, Beat:[{x}, {y}, {z}]");
+        }
+
 
         private void Awake()
         {

@@ -92,6 +92,7 @@ MonoBehaviour:
   Rect: {fileID: 6231665866318767331}
   NoteType: 4
   HoldTailRect: {fileID: 0}
+  Button: {fileID: 899734525084373944}
 --- !u!114 &899734525084373944
 MonoBehaviour:
   m_ObjectHideFlags: 0

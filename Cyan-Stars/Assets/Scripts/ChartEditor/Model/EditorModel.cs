@@ -249,6 +249,24 @@ namespace CyanStars.ChartEditor.Model
             OnEditorAttributeChanged?.Invoke();
         }
 
+        /// <summary>
+        /// 点击某个已存在的音符，由 note 的 button 组件触发
+        /// </summary>
+        /// <param name="note">音符数据</param>
+        public void SelectNote(BaseChartNoteData note)
+        {
+            // TODO: 拓展兼容选中多个音符
+            SelectedNotes = new HashSet<BaseChartNoteData>() { note };
+            OnSelectedNoteIDsChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// 点击 Content 空白处以创建音符
+        /// </summary>
+        public void AddNote()
+        {
+        }
+
         #endregion
 
         #region 谱包信息和谱面元数据管理
