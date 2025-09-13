@@ -69,7 +69,7 @@ namespace CyanStars.ChartEditor.View
             breakButtonL.onClick.AddListener(() => { Model.SetBreakPos(BreakNotePos.Left); });
             breakButtonR.onClick.AddListener(() => { Model.SetBreakPos(BreakNotePos.Right); });
 
-            Model.OnSelectedNoteIDsChanged += RefreshNoteAttribute;
+            Model.OnSelectedNotesChanged += RefreshNoteAttribute;
             Model.OnNoteAttributeChanged += RefreshNoteAttribute;
         }
 
@@ -83,7 +83,7 @@ namespace CyanStars.ChartEditor.View
 
         private void OnDestroy()
         {
-            Model.OnSelectedNoteIDsChanged -= RefreshNoteAttribute;
+            Model.OnSelectedNotesChanged -= RefreshNoteAttribute;
             Model.OnNoteAttributeChanged -= RefreshNoteAttribute;
         }
     }

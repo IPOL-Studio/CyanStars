@@ -75,7 +75,7 @@ namespace CyanStars.ChartEditor.Model
         /// <summary>
         /// 当选中的音符发生了变化（被选中、被取消选中）
         /// </summary>
-        public event Action OnSelectedNoteIDsChanged;
+        public event Action OnSelectedNotesChanged;
 
         /// <summary>
         /// 谱包基本信息（目前只有标题）发生变化
@@ -539,6 +539,12 @@ namespace CyanStars.ChartEditor.Model
         /// </summary>
         public void CreateNote(float pos, Beat beat)
         {
+            if (SelectedNotes.Count != 0)
+            {
+                SelectedNotes.Clear();
+                OnSelectedNotesChanged?.Invoke();
+            }
+
             switch (EditTool)
             {
                 case EditTool.Select:
@@ -611,8 +617,9 @@ namespace CyanStars.ChartEditor.Model
                 return;
             }
 
-            SelectedNotes = new HashSet<BaseChartNoteData>() { note };
-            OnSelectedNoteIDsChanged?.Invoke();
+            SelectedNotes.Clear();
+            SelectedNotes.Add(note);
+            OnSelectedNotesChanged?.Invoke();
         }
 
         /// <summary>
