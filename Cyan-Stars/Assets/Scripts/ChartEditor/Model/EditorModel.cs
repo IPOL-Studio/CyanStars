@@ -32,7 +32,7 @@ namespace CyanStars.ChartEditor.Model
         /// <summary>
         /// 计算 offset 后，当前选中的音乐的实际时长（ms）
         /// </summary>
-        public int ActualMusicTime { get; private set; }
+        public int ActualMusicTime { get; set; } // TODO：测试完成后改为 private set;
 
 
         // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面数据，加载/保存时需要从读写磁盘。 ---
@@ -50,7 +50,7 @@ namespace CyanStars.ChartEditor.Model
         public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
 
 
-        // --- 编辑器事件 ---
+        // --- Model 事件 ---
 
         /// <summary>
         /// 选中的画笔发生变化
@@ -247,24 +247,6 @@ namespace CyanStars.ChartEditor.Model
             // 赋值，刷新
             BeatZoom = beatZoom;
             OnEditorAttributeChanged?.Invoke();
-        }
-
-        /// <summary>
-        /// 点击某个已存在的音符，由 note 的 button 组件触发
-        /// </summary>
-        /// <param name="note">音符数据</param>
-        public void SelectNote(BaseChartNoteData note)
-        {
-            // TODO: 拓展兼容选中多个音符
-            SelectedNotes = new HashSet<BaseChartNoteData>() { note };
-            OnSelectedNoteIDsChanged?.Invoke();
-        }
-
-        /// <summary>
-        /// 点击 Content 空白处以创建音符
-        /// </summary>
-        public void AddNote()
-        {
         }
 
         #endregion
@@ -551,6 +533,87 @@ namespace CyanStars.ChartEditor.Model
         #endregion
 
         #region 音符组管理
+
+        /// <summary>
+        /// 点击 Content 空白处以创建音符
+        /// </summary>
+        public void CreateNote(float pos, Beat beat)
+        {
+            switch (EditTool)
+            {
+                case EditTool.Select:
+                case EditTool.Eraser:
+                    break;
+                case EditTool.TapPen:
+                    if (pos < 0 || 0.8 < pos)
+                    {
+                        break;
+                    }
+
+                    ChartNotes.Add(new TapChartNoteData(pos, beat));
+                    OnNoteDataChanged?.Invoke();
+                    break;
+                case EditTool.DragPen:
+                    if (pos < 0 || 0.8 < pos)
+                    {
+                        break;
+                    }
+
+                    ChartNotes.Add(new DragChartNoteData(pos, beat));
+                    OnNoteDataChanged?.Invoke();
+                    break;
+                case EditTool.HoldPen:
+                    // TODO
+                    throw new NotSupportedException();
+                    break;
+                case EditTool.ClickPen:
+                    if (pos < 0 || 0.8 < pos)
+                    {
+                        break;
+                    }
+
+                    ChartNotes.Add(new ClickChartNoteData(pos, beat));
+                    OnNoteDataChanged?.Invoke();
+                    break;
+                case EditTool.BreakPen:
+                    if (Mathf.Approximately(pos, -1))
+                    {
+                        ChartNotes.Add(new BreakChartNoteData(BreakNotePos.Left, beat));
+                        OnNoteDataChanged?.Invoke();
+                        break;
+                    }
+
+                    if (Mathf.Approximately(pos, 2))
+                    {
+                        ChartNotes.Add(new BreakChartNoteData(BreakNotePos.Right, beat));
+                        OnNoteDataChanged?.Invoke();
+                        break;
+                    }
+
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        /// <summary>
+        /// 点击某个已存在的音符，由 note 的 button 组件触发
+        /// </summary>
+        /// <param name="note">音符数据</param>
+        public void SelectNote(BaseChartNoteData note)
+        {
+            // TODO: 拓展兼容选中多个音符
+            if (EditTool == EditTool.Eraser)
+            {
+                ChartNotes.Remove(note);
+                OnNoteDataChanged?.Invoke();
+                return;
+            }
+
+            SelectedNotes = new HashSet<BaseChartNoteData>() { note };
+            OnSelectedNoteIDsChanged?.Invoke();
+        }
 
         /// <summary>
         /// 为选中的 Note 设置判定拍。null 代表不修改此字段而保留原值，以兼容框选多个 note 统一修改。

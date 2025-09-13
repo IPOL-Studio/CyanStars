@@ -36,11 +36,11 @@ namespace CyanStars.Chart
         {
             noteData = type switch
             {
-                NoteType.Tap => new TapChartNoteData(),
-                NoteType.Hold => new HoldChartNoteData(),
-                NoteType.Drag => new DragChartNoteData(),
-                NoteType.Click => new ClickChartNoteData(),
-                NoteType.Break => new BreakChartNoteData(),
+                NoteType.Tap => new TapChartNoteData(default, default),
+                NoteType.Hold => new HoldChartNoteData(default, default, default, default),
+                NoteType.Drag => new DragChartNoteData(default, default),
+                NoteType.Click => new ClickChartNoteData(default, default),
+                NoteType.Break => new BreakChartNoteData(default, default),
                 _ => null
             };
             return noteData != null;

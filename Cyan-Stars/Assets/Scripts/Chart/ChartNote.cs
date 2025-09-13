@@ -68,11 +68,38 @@ namespace CyanStars.Chart
         /// 为 false 时，音符不展示，仅用于搭配其他效果时的表演 TODO: 在 GamePlay 实装此内容
         /// </remarks>
         public bool ViewAble = true;
+
+        public BaseChartNoteData(NoteType type,
+            Beat judgeBeat,
+            int speedGroupIndex = 0,
+            int speedGroupOffset = 0,
+            string correctAudioName = null,
+            string hitAudioName = null,
+            bool judgeAble = true,
+            bool viewAble = true)
+        {
+            Type = type;
+            JudgeBeat = judgeBeat;
+            SpeedGroupIndex = speedGroupIndex;
+            SpeedGroupOffset = speedGroupOffset;
+            CorrectAudioName = correctAudioName;
+            HitAudioName = hitAudioName;
+            JudgeAble = judgeAble;
+            ViewAble = viewAble;
+        }
     }
 
     public class TapChartNoteData : BaseChartNoteData, IChartNoteNormalPos
     {
         public float Pos { get; set; }
+
+        public TapChartNoteData(float pos, Beat judgeBeat, int speedGroupIndex = 0,
+            int speedGroupOffset = 0, string correctAudioName = null, string hitAudioName = null, bool judgeAble = true,
+            bool viewAble = true) : base(NoteType.Tap, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName,
+            hitAudioName, judgeAble, viewAble)
+        {
+            Pos = pos;
+        }
     }
 
     public class HoldChartNoteData : BaseChartNoteData, IChartNoteNormalPos
@@ -88,21 +115,55 @@ namespace CyanStars.Chart
         /// <summary>长按音符结束判定拍</summary>
         /// <remarks>必须大于 JudgeBeat</remarks>
         public Beat EndJudgeBeat;
+
+        public HoldChartNoteData(float pos, Beat judgeBeat, Beat endJudgeBeat, int speedGroupIndex = 0,
+            int holdEndSpeedGroupIndex = 0, int speedGroupOffset = 0, string correctAudioName = null,
+            string hitAudioName = null, bool judgeAble = true, bool viewAble = true) : base(NoteType.Hold, judgeBeat,
+            speedGroupIndex, speedGroupOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
+        {
+            HoldEndSpeedGroupIndex = holdEndSpeedGroupIndex;
+            EndJudgeBeat = endJudgeBeat;
+            Pos = pos;
+        }
     }
 
     public class DragChartNoteData : BaseChartNoteData, IChartNoteNormalPos
     {
         public float Pos { get; set; }
+
+        public DragChartNoteData(float pos, Beat judgeBeat, int speedGroupIndex = 0,
+            int speedGroupOffset = 0, string correctAudioName = null, string hitAudioName = null, bool judgeAble = true,
+            bool viewAble = true) : base(NoteType.Drag, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName,
+            hitAudioName, judgeAble, viewAble)
+        {
+            Pos = pos;
+        }
     }
 
     public class ClickChartNoteData : BaseChartNoteData, IChartNoteNormalPos
     {
         public float Pos { get; set; }
+
+        public ClickChartNoteData(float pos, Beat judgeBeat, int speedGroupIndex = 0,
+            int speedGroupOffset = 0, string correctAudioName = null, string hitAudioName = null, bool judgeAble = true,
+            bool viewAble = true) : base(NoteType.Click, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName,
+            hitAudioName, judgeAble, viewAble)
+        {
+            Pos = pos;
+        }
     }
 
     public class BreakChartNoteData : BaseChartNoteData
     {
         /// <summary>Break 音符位于哪条轨道</summary>
         public BreakNotePos BreakNotePos;
+
+        public BreakChartNoteData(BreakNotePos breakNotePos, Beat judgeBeat, int speedGroupIndex = 0,
+            int speedGroupOffset = 0, string correctAudioName = null, string hitAudioName = null, bool judgeAble = true,
+            bool viewAble = true) : base(NoteType.Break, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName,
+            hitAudioName, judgeAble, viewAble)
+        {
+            BreakNotePos = breakNotePos;
+        }
     }
 }

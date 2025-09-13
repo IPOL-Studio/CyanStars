@@ -70,6 +70,8 @@ namespace CyanStars.ChartEditor.View
             contentRect = scrollRect.content.GetComponent<RectTransform>();
             judgeLineRect = judgeLine.GetComponent<RectTransform>();
 
+            Model.OnNoteDataChanged += RefreshUI;
+
             ResetTotalBeats();
         }
 
@@ -431,7 +433,7 @@ namespace CyanStars.ChartEditor.View
             int y = subBeatLineIndex % Model.BeatAccuracy;
             Beat noteBeat = new Beat(x, y, z);
 
-            Debug.Log($"创建音符：pos: {notePos}, Beat:[{x}, {y}, {z}]");
+            Model.CreateNote(notePos, noteBeat);
         }
 
 
@@ -453,6 +455,11 @@ namespace CyanStars.ChartEditor.View
                 RefreshUI();
                 lastCanvaHeight = mainCanvaRect.rect.height;
             }
+        }
+
+        private void OnDestroy()
+        {
+            Model.OnNoteDataChanged -= RefreshUI;
         }
     }
 }
