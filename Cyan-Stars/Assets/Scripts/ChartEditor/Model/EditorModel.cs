@@ -18,6 +18,11 @@ namespace CyanStars.ChartEditor.Model
         public int BeatAccuracy { get; private set; }
         public float BeatZoom { get; private set; }
 
+        /// <summary>
+        /// 创建 Hold 音符时暂存的开始拍
+        /// </summary>
+        public Beat? TempHoldJudgeBeat;
+
         public int NoteIdCounter { get; private set; }
 
         /// <summary>
@@ -132,6 +137,11 @@ namespace CyanStars.ChartEditor.Model
         /// </summary>
         public event Action OnNoteDataChanged;
 
+        /// <summary>
+        /// 暂存的 Hold 开始拍发生变化
+        /// </summary>
+        public event Action OnTempHoldJudgeBeatChanged;
+
 
         /// <summary>
         /// 构造函数
@@ -150,6 +160,7 @@ namespace CyanStars.ChartEditor.Model
             PosMagnetState = true;
             BeatAccuracy = 2;
             BeatZoom = 1f;
+            TempHoldJudgeBeat = null;
             NoteIdCounter = 0;
             SelectedNotes = new HashSet<BaseChartNoteData>();
 
@@ -545,58 +556,89 @@ namespace CyanStars.ChartEditor.Model
                 OnSelectedNotesChanged?.Invoke();
             }
 
+            if (EditTool == EditTool.HoldPen)
+            {
+                if (TempHoldJudgeBeat == null)
+                {
+                    // 点击的是开始位置，暂存 beat
+                    TempHoldJudgeBeat = beat;
+                    OnTempHoldJudgeBeatChanged?.Invoke();
+                    return;
+                }
+                else if (((Beat)TempHoldJudgeBeat).ToFloat() < beat.ToFloat())
+                {
+                    // 点击的是结束位置，创建 HoldNote
+                    ChartNotes.Add(new HoldChartNoteData(pos, (Beat)TempHoldJudgeBeat, beat));
+                    OnNoteDataChanged?.Invoke();
+                    TempHoldJudgeBeat = null;
+                    OnTempHoldJudgeBeatChanged?.Invoke();
+                    return;
+                }
+                else
+                {
+                    // 结束位置小于等于开始位置，放弃创建
+                    TempHoldJudgeBeat = null;
+                    OnTempHoldJudgeBeatChanged?.Invoke();
+                    Debug.LogWarning("EditorModel: 无法创建持续时长小于等于 0 的 HoldNote。");
+                    return;
+                }
+            }
+
+            if (TempHoldJudgeBeat != null)
+            {
+                // 使用其他画笔点击时，清除暂存的 Hold 开始拍
+                TempHoldJudgeBeat = null;
+                OnTempHoldJudgeBeatChanged?.Invoke();
+            }
+
             switch (EditTool)
             {
+                // HoldNote 的创建逻辑在上文处理
                 case EditTool.Select:
                 case EditTool.Eraser:
-                    break;
+                    return;
                 case EditTool.TapPen:
-                    if (pos < 0 || 0.8 < pos)
+                    if (pos < 0 || 0.8f < pos)
                     {
-                        break;
+                        return;
                     }
 
                     ChartNotes.Add(new TapChartNoteData(pos, beat));
                     OnNoteDataChanged?.Invoke();
-                    break;
+                    return;
                 case EditTool.DragPen:
-                    if (pos < 0 || 0.8 < pos)
+                    if (pos < 0 || 0.8f < pos)
                     {
-                        break;
+                        return;
                     }
 
                     ChartNotes.Add(new DragChartNoteData(pos, beat));
                     OnNoteDataChanged?.Invoke();
-                    break;
-                case EditTool.HoldPen:
-                    // TODO
-                    throw new NotSupportedException();
-                    break;
+                    return;
                 case EditTool.ClickPen:
-                    if (pos < 0 || 0.8 < pos)
+                    if (pos < 0 || 0.8f < pos)
                     {
-                        break;
+                        return;
                     }
 
                     ChartNotes.Add(new ClickChartNoteData(pos, beat));
                     OnNoteDataChanged?.Invoke();
-                    break;
+                    return;
                 case EditTool.BreakPen:
                     if (Mathf.Approximately(pos, -1))
                     {
                         ChartNotes.Add(new BreakChartNoteData(BreakNotePos.Left, beat));
                         OnNoteDataChanged?.Invoke();
-                        break;
+                        return;
                     }
-
-                    if (Mathf.Approximately(pos, 2))
+                    else if (Mathf.Approximately(pos, 2))
                     {
                         ChartNotes.Add(new BreakChartNoteData(BreakNotePos.Right, beat));
                         OnNoteDataChanged?.Invoke();
-                        break;
+                        return;
                     }
 
-                    break;
+                    return;
 
                 default:
                     throw new ArgumentOutOfRangeException();
