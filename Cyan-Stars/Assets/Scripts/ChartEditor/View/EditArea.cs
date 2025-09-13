@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using CyanStars.Chart;
 using UnityEngine;
 using CyanStars.ChartEditor.Model;
@@ -47,6 +48,19 @@ namespace CyanStars.ChartEditor.View
         private float lastCanvaHeight; // 上次记录的 Canva 高度（刷新前）
         private float contentHeight; // 内容总高度
 
+        private static readonly Color BeatHalfColor = new Color(0.7f, 0.6f, 1f, 0.8f);
+        private static readonly Color BeatQuarterColor = new Color(0.5f, 0.8f, 1f, 0.8f);
+        private static readonly Color BeatOtherColor = new Color(0.6f, 1f, 0.6f, 0.8f);
+
+        private const float NotePosScale = 802.5f;
+        private const float NotePosOffset = -321f;
+        private const float BreakLeftX = -468.8f;
+        private const float BreakRightX = 468.8f;
+        private const float LeftBreakThreshold = -421f;
+        private const float RightBreakThreshold = 421f;
+        private const float CentralMin = -400f;
+        private const float CentralMax = 400f;
+
 
         public override void Bind(EditorModel editorModel)
         {
@@ -66,8 +80,8 @@ namespace CyanStars.ChartEditor.View
         {
             RefreshScrollRect();
             ReleaseGameObjectInContent();
-            RefreshBeatLines();
-            RefreshNotes();
+            _ = RefreshBeatLinesAsync();
+            _ = RefreshNotesAsync();
         }
 
         private void RefreshScrollRect()
@@ -90,13 +104,15 @@ namespace CyanStars.ChartEditor.View
         {
             for (int i = contentRect.childCount - 1; i >= 0; i--)
             {
-                if (contentRect.GetChild(i).TryGetComponent<BeatLine>(out BeatLine beatLine))
+                Transform child = contentRect.GetChild(i);
+
+                if (child.TryGetComponent<BeatLine>(out BeatLine beatLine))
                 {
                     GameRoot.GameObjectPool.ReleaseGameObject(BeatLinePrefabPath, beatLine.gameObject);
                     continue;
                 }
 
-                if (contentRect.GetChild(i).TryGetComponent<EditorNote>(out EditorNote editorNote))
+                if (child.TryGetComponent<EditorNote>(out EditorNote editorNote))
                 {
                     switch (editorNote.NoteType)
                     {
@@ -124,7 +140,7 @@ namespace CyanStars.ChartEditor.View
             }
         }
 
-        private async void RefreshBeatLines()
+        private async Task RefreshBeatLinesAsync()
         {
             // 计算屏幕下沿对应的 content 位置
             float contentPos = (contentRect.rect.height - mainCanvaRect.rect.height) *
@@ -163,20 +179,20 @@ namespace CyanStars.ChartEditor.View
                 else if (Model.BeatAccuracy % 2 == 0 && beatAccNum == Model.BeatAccuracy / 2)
                 {
                     // 1/2 节拍线
-                    beatLine.Image.color = new Color(0.7f, 0.6f, 1f, 0.8f);
+                    beatLine.Image.color = BeatHalfColor;
                     beatLine.BeatTextObject.SetActive(false);
                 }
                 else if (Model.BeatAccuracy % 4 == 0 &&
                          (beatAccNum == Model.BeatAccuracy / 4 || beatAccNum == Model.BeatAccuracy / 4 * 3))
                 {
                     // 1/4 或 3/4 节拍线
-                    beatLine.Image.color = new Color(0.5f, 0.8f, 1f, 0.8f);
+                    beatLine.Image.color = BeatQuarterColor;
                     beatLine.BeatTextObject.SetActive(false);
                 }
                 else
                 {
                     // 其他节拍线
-                    beatLine.Image.color = new Color(0.6f, 1f, 0.6f, 0.8f);
+                    beatLine.Image.color = BeatOtherColor;
                     beatLine.BeatTextObject.SetActive(false);
                 }
 
@@ -184,14 +200,15 @@ namespace CyanStars.ChartEditor.View
             }
         }
 
-        private async void RefreshNotes()
+        private void ConfigureNoteRect(RectTransform rect)
         {
-            // 将所有 Note 归还到池
-            for (int i = contentRect.childCount - 1; i >= 0; i--)
-            {
-                GameObject go = contentRect.GetChild(i).gameObject;
-            }
+            rect.localScale = Vector3.one;
+            rect.anchorMin = new Vector2(0.5f, 0f);
+            rect.anchorMax = new Vector2(0.5f, 0f);
+        }
 
+        private async Task RefreshNotesAsync()
+        {
             // 计算屏幕下沿对应的 content 位置
             float contentPos = (contentRect.rect.height - mainCanvaRect.rect.height) *
                                scrollRect.verticalNormalizedPosition;
@@ -210,7 +227,6 @@ namespace CyanStars.ChartEditor.View
                     continue;
                 }
 
-                // 发生重叠，需要渲染
                 GameObject go;
                 float xPos;
                 RectTransform rect;
@@ -218,28 +234,23 @@ namespace CyanStars.ChartEditor.View
 
                 switch (noteData.Type)
                 {
-                    // TODO: 优化代码
                     case NoteType.Tap:
                     case NoteType.Drag:
                     case NoteType.Click:
-                        go = noteData.Type switch
+                        string prefabPath = noteData.Type switch
                         {
-                            NoteType.Tap => await GameRoot.GameObjectPool.GetGameObjectAsync(TapNotePrefabPath,
-                                contentRect),
-                            NoteType.Drag => await GameRoot.GameObjectPool.GetGameObjectAsync(DragNotePrefabPath,
-                                contentRect),
-                            NoteType.Click => await GameRoot.GameObjectPool.GetGameObjectAsync(ClickNotePrefabPath,
-                                contentRect),
+                            NoteType.Tap => TapNotePrefabPath,
+                            NoteType.Drag => DragNotePrefabPath,
+                            NoteType.Click => ClickNotePrefabPath,
                             _ => throw new ArgumentOutOfRangeException()
                         };
 
+                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(prefabPath, contentRect);
                         editorNote = go.GetComponent<EditorNote>();
                         editorNote.SetData(Model, noteData);
                         rect = editorNote.Rect;
-                        rect.localScale = Vector3.one;
-                        rect.anchorMin = new Vector2(0.5f, 0f);
-                        rect.anchorMax = new Vector2(0.5f, 0f);
-                        xPos = (noteData as IChartNoteNormalPos).Pos * 802.5f - 321f;
+                        ConfigureNoteRect(rect);
+                        xPos = (noteData as IChartNoteNormalPos).Pos * NotePosScale + NotePosOffset;
                         rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
                         break;
                     case NoteType.Hold:
@@ -247,10 +258,8 @@ namespace CyanStars.ChartEditor.View
                         editorNote = go.GetComponent<EditorNote>();
                         editorNote.SetData(Model, noteData);
                         rect = editorNote.Rect;
-                        rect.localScale = Vector3.one;
-                        rect.anchorMin = new Vector2(0.5f, 0f);
-                        rect.anchorMax = new Vector2(0.5f, 0f);
-                        xPos = (noteData as HoldChartNoteData).Pos * 802.5f - 321f;
+                        ConfigureNoteRect(rect);
+                        xPos = (noteData as HoldChartNoteData).Pos * NotePosScale + NotePosOffset;
                         rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
                         editorNote.HoldTailRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
                             Mathf.Max(0, noteCalculateEndPos - noteCalculatePos - 12.5f));
@@ -260,10 +269,10 @@ namespace CyanStars.ChartEditor.View
                         editorNote = go.GetComponent<EditorNote>();
                         editorNote.SetData(Model, noteData);
                         rect = editorNote.Rect;
-                        rect.localScale = Vector3.one;
-                        rect.anchorMin = new Vector2(0.5f, 0f);
-                        rect.anchorMax = new Vector2(0.5f, 0f);
-                        xPos = (noteData as BreakChartNoteData).BreakNotePos == BreakNotePos.Left ? -468.8f : 468.8f;
+                        ConfigureNoteRect(rect);
+                        xPos = (noteData as BreakChartNoteData).BreakNotePos == BreakNotePos.Left
+                            ? BreakLeftX
+                            : BreakRightX;
                         rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
                         break;
                     default:
@@ -310,14 +319,34 @@ namespace CyanStars.ChartEditor.View
         {
             bpmGroup.SortGroup();
 
-            // 懒得写算法了，暴力枚举吧
-            int beatCount = 0;
-            while (bpmGroup.CalculateTime(beatCount) < actualMusicTime)
+            // 使用指数扩展 + 二分查找替代以提升性能
+            if (bpmGroup.CalculateTime(0) >= actualMusicTime)
             {
-                beatCount++;
+                return 0;
             }
 
-            return beatCount;
+            int low = 0;
+            int high = 1;
+            while (bpmGroup.CalculateTime(high) < actualMusicTime)
+            {
+                low = high;
+                high <<= 1;
+            }
+
+            while (low + 1 < high)
+            {
+                int mid = low + ((high - low) >> 1);
+                if (bpmGroup.CalculateTime(mid) < actualMusicTime)
+                {
+                    low = mid;
+                }
+                else
+                {
+                    high = mid;
+                }
+            }
+
+            return high;
         }
 
 
@@ -339,17 +368,17 @@ namespace CyanStars.ChartEditor.View
             // 计算横坐标，左侧 Break 轨道视为 -1f，右侧 Break 轨道视为 2f，中央轨道取值为 [0f,0.8f]，点击轨道间隙时不触发 Model 方法
             // 开启横坐标吸附时，将音符中心位置解析到最近的（位置线/位置线间隔中线）上，随后返回音符左端点位置
             float notePos;
-            if (localPosition.x <= -421f)
+            if (localPosition.x <= LeftBreakThreshold)
             {
                 // 左侧 Break 轨道
                 notePos = -1f;
             }
-            else if (421f <= localPosition.x)
+            else if (RightBreakThreshold <= localPosition.x)
             {
                 // 右侧 Break 轨道
                 notePos = 2f;
             }
-            else if (-400f <= localPosition.x && localPosition.x <= 400f)
+            else if (CentralMin <= localPosition.x && localPosition.x <= CentralMax)
             {
                 // 中央轨道
                 if (Model.PosMagnetState)
@@ -408,7 +437,12 @@ namespace CyanStars.ChartEditor.View
 
         private void Awake()
         {
-            scrollRect.onValueChanged.AddListener((_) => { RefreshUI(); });
+            scrollRect.onValueChanged.AddListener(OnScrollValueChanged);
+        }
+
+        private void OnScrollValueChanged(Vector2 _)
+        {
+            RefreshUI();
         }
 
         private void Update()
