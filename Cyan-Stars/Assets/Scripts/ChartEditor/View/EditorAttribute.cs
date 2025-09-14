@@ -9,6 +9,7 @@ namespace CuanStars.ChartEditor.View
 {
     public class EditorAttribute : BaseView
     {
+        private const int BeatAccuracyStep = 1;
         private const float BeatZoomStep = 0.2f;
 
         [SerializeField]
@@ -51,20 +52,22 @@ namespace CuanStars.ChartEditor.View
             beatAccuracyField.onEndEdit.AddListener((text) => { Model.SetBeatAccuracy(text); });
             beatAccuracySub.onClick.AddListener(() =>
             {
-                Model.SetBeatAccuracy((Model.BeatAccuracy - BeatZoomStep).ToString(CultureInfo.InvariantCulture));
+                Model.SetBeatAccuracy(
+                    (Model.BeatAccuracy - BeatAccuracyStep).ToString(CultureInfo.InvariantCulture));
             });
             beatAccuracyAdd.onClick.AddListener(() =>
             {
-                Model.SetBeatAccuracy((Model.BeatAccuracy + BeatZoomStep).ToString(CultureInfo.InvariantCulture));
+                Model.SetBeatAccuracy(
+                    (Model.BeatAccuracy + BeatAccuracyStep).ToString(CultureInfo.InvariantCulture));
             });
             beatZoomField.onEndEdit.AddListener((text) => { Model.SetBeatZoom(text); });
             beatZoomOut.onClick.AddListener(() =>
             {
-                Model.SetBeatZoom((Model.BeatZoom - 0.2f).ToString(CultureInfo.InvariantCulture));
+                Model.SetBeatZoom((Model.BeatZoom - BeatZoomStep).ToString(CultureInfo.InvariantCulture));
             });
             beatZoomIn.onClick.AddListener(() =>
             {
-                Model.SetBeatZoom((Model.BeatZoom + 0.2f).ToString(CultureInfo.InvariantCulture));
+                Model.SetBeatZoom((Model.BeatZoom + BeatZoomStep).ToString(CultureInfo.InvariantCulture));
             });
 
             // 绑定 M 层事件响应
