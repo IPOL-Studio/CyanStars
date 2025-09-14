@@ -27,7 +27,7 @@ namespace CyanStars.ChartEditor.View
             for (int i = 0; i < toggles.Length; i++)
             {
                 // 初始化默认值
-                toggles[i].isOn = ((int)Model.EditTool == i);
+                toggles[i].isOn = ((int)Model.SelectedEditTool == i);
 
                 // 添加事件绑定
                 int index = i;
@@ -69,9 +69,9 @@ namespace CyanStars.ChartEditor.View
         {
             for (int i = 0; i < toggles.Length; i++)
             {
-                if (toggles[i].isOn != ((int)Model.EditTool == i))
+                if (toggles[i].isOn != ((int)Model.SelectedEditTool == i))
                 {
-                    toggles[i].isOn = ((int)Model.EditTool == i);
+                    toggles[i].isOn = ((int)Model.SelectedEditTool == i);
                 }
             }
         }

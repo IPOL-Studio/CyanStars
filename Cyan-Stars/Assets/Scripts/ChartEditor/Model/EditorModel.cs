@@ -11,32 +11,60 @@ namespace CyanStars.ChartEditor.Model
     public class EditorModel
     {
         // --- 在编辑器内初始化和临时存储的、经过校验后的数据，不会持久化 ---
+        /// <summary>
+        /// 编辑器精简模式
+        /// </summary>
+        /// <remarks>精简无关元素方便新手理解制谱器，只允许设置 1 个 BPM 组、曲目版本，隐藏变速和事件相关设置</remarks>
+        public bool IsSimplification { get; private set; }
 
-        public EditTool EditTool { get; private set; }
+        /// <summary>
+        /// 当前选中的画笔（或者是橡皮？）
+        /// </summary>
+        public EditTool SelectedEditTool { get; private set; }
+
+        /// <summary>
+        /// 当前设置的位置精度（等于屏幕上有几条竖直位置线）
+        /// </summary>
         public int PosAccuracy { get; private set; }
+
+        /// <summary>
+        /// 是否开启了位置吸附
+        /// </summary>
+        /// <remarks>将会吸附到最近的位置线，或者是两条位置线的中点</remarks>
         public bool PosMagnetState { get; private set; }
+
+        /// <summary>
+        /// 节拍精度（等于将每小节均分为几分）
+        /// </summary>
         public int BeatAccuracy { get; private set; }
+
+        /// <summary>
+        /// 节拍缩放
+        /// </summary>
+        /// <remarks>编辑器纵向拉伸比例</remarks>
         public float BeatZoom { get; private set; }
 
         /// <summary>
         /// 创建 Hold 音符时暂存的开始拍
         /// </summary>
+        /// <remarks>选中 Hold 画笔后第一次点击空白区域</remarks>
         public Beat? TempHoldJudgeBeat;
 
-        public int NoteIdCounter { get; private set; }
-
         /// <summary>
-        /// 用于 M 层的音符数据，在 Model 构造时初始化，提供高效的按 ID 查询音符数据能力
+        /// 用于 M 层的音符数据，在 Model 构造时指向 ChartData 中的对象
         /// </summary>
-        /// <remarks>int 为音符 ID，不持久化，在每次加载谱面时按序分配，不保证连续。</remarks>
+        /// <remarks>NoteView 在从对象池取回时会存储对应的单个音符数据，可以借此定位回来</remarks>
         public HashSet<BaseChartNoteData> ChartNotes { get; private set; }
 
-        // 当前选中的 Note，用 HashSet 是考虑兼容后续框选多个 Note 一起修改
+        /// <summary>
+        /// 当前选中的 Note，用 HashSet 是考虑兼容后续框选多个 Note 一起修改
+        /// </summary>
         public HashSet<BaseChartNoteData> SelectedNotes { get; private set; }
 
         /// <summary>
         /// 计算 offset 后，当前选中的音乐的实际时长（ms）
         /// </summary>
+        /// <remarks>超过这个时长的内容都不可以编辑，包括音符编辑、事件等等</remarks>
         public int ActualMusicTime { get; set; } // TODO：测试完成后改为 private set;
 
 
@@ -47,7 +75,6 @@ namespace CyanStars.ChartEditor.Model
 
         public ChartData ChartData { get; private set; }
 
-
         public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
 
         public List<BpmGroupItem> BpmGroupDatas => ChartData.BpmGroup.Data;
@@ -56,6 +83,11 @@ namespace CyanStars.ChartEditor.Model
 
 
         // --- Model 事件 ---
+
+        /// <summary>
+        /// 进入/退出精简模式
+        /// </summary>
+        public event Action OnSimplificationChanged;
 
         /// <summary>
         /// 选中的画笔发生变化
@@ -155,20 +187,19 @@ namespace CyanStars.ChartEditor.Model
             ChartIndex = chartIndex;
             ChartData = chartData;
 
-            EditTool = EditTool.Select;
+            IsSimplification = true;
+            SelectedEditTool = EditTool.Select;
             PosAccuracy = 4;
             PosMagnetState = true;
             BeatAccuracy = 2;
             BeatZoom = 1f;
             TempHoldJudgeBeat = null;
-            NoteIdCounter = 0;
             SelectedNotes = new HashSet<BaseChartNoteData>();
 
             ChartNotes = new HashSet<BaseChartNoteData>();
             foreach (var note in ChartData.Notes)
             {
                 ChartNotes.Add(note);
-                NoteIdCounter++;
             }
         }
 
@@ -177,12 +208,12 @@ namespace CyanStars.ChartEditor.Model
 
         public void SetEditTool(EditTool editTool)
         {
-            if (EditTool == editTool)
+            if (SelectedEditTool == editTool)
             {
                 return;
             }
 
-            EditTool = editTool;
+            SelectedEditTool = editTool;
             OnEditToolChanged?.Invoke();
         }
 
@@ -556,7 +587,7 @@ namespace CyanStars.ChartEditor.Model
                 OnSelectedNotesChanged?.Invoke();
             }
 
-            if (EditTool == EditTool.HoldPen)
+            if (SelectedEditTool == EditTool.HoldPen)
             {
                 if (TempHoldJudgeBeat == null)
                 {
@@ -591,7 +622,7 @@ namespace CyanStars.ChartEditor.Model
                 OnTempHoldJudgeBeatChanged?.Invoke();
             }
 
-            switch (EditTool)
+            switch (SelectedEditTool)
             {
                 // HoldNote 的创建逻辑在上文处理
                 case EditTool.Select:
@@ -652,7 +683,7 @@ namespace CyanStars.ChartEditor.Model
         public void SelectNote(BaseChartNoteData note)
         {
             // TODO: 拓展兼容选中多个音符
-            if (EditTool == EditTool.Eraser)
+            if (SelectedEditTool == EditTool.Eraser)
             {
                 ChartNotes.Remove(note);
                 OnNoteDataChanged?.Invoke();
