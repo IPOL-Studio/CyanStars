@@ -48,9 +48,9 @@ namespace CyanStars.ChartEditor.View
         private float lastCanvaHeight; // 上次记录的 Canva 高度（刷新前）
         private float contentHeight; // 内容总高度
 
-        private static readonly Color BeatHalfColor = new Color(0.5f, 0.8f, 1f, 0.8f);
-        private static readonly Color BeatQuarterColor = new Color(0.7f, 0.6f, 1f, 0.8f);
-        private static readonly Color BeatOtherColor = new Color(0.6f, 1f, 0.6f, 0.8f);
+        private static readonly Color BeatHalfColor = new Color(1f, 1f, 0.5f, 0.8f);
+        private static readonly Color BeatQuarterColor = new Color(0.7f, 0.6f, 1f, 0.7f);
+        private static readonly Color BeatOtherColor = new Color(0.6f, 1f, 0.6f, 0.6f);
 
         private const float NotePosScale = 802.5f;
         private const float NotePosOffset = -321f;
