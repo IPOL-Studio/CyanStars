@@ -48,8 +48,8 @@ namespace CyanStars.ChartEditor.View
         private float lastCanvaHeight; // 上次记录的 Canva 高度（刷新前）
         private float contentHeight; // 内容总高度
 
-        private static readonly Color BeatHalfColor = new Color(0.7f, 0.6f, 1f, 0.8f);
-        private static readonly Color BeatQuarterColor = new Color(0.5f, 0.8f, 1f, 0.8f);
+        private static readonly Color BeatHalfColor = new Color(0.5f, 0.8f, 1f, 0.8f);
+        private static readonly Color BeatQuarterColor = new Color(0.7f, 0.6f, 1f, 0.8f);
         private static readonly Color BeatOtherColor = new Color(0.6f, 1f, 0.6f, 0.8f);
 
         private const float NotePosScale = 802.5f;
@@ -71,6 +71,8 @@ namespace CyanStars.ChartEditor.View
             judgeLineRect = judgeLine.GetComponent<RectTransform>();
 
             Model.OnNoteDataChanged += RefreshUI;
+            Model.OnEditorAttributeChanged += RefreshUI;
+            Model.OnNoteAttributeChanged += RefreshUI;
 
             ResetTotalBeats();
         }
@@ -153,7 +155,7 @@ namespace CyanStars.ChartEditor.View
 
             // 计算第一条需要渲染的节拍线的计数
             int currentBeatLineCount =
-                (int)((contentPos - judgeLineRect.position.y) / beatLineDistance); // 屏幕外会多渲染几条节拍线，符合预期
+                (int)((contentPos - judgeLineRect.anchoredPosition.y) / beatLineDistance); // 屏幕外会多渲染几条节拍线，符合预期
             currentBeatLineCount = Math.Max(1, currentBeatLineCount);
 
             while ((currentBeatLineCount - 1) * beatLineDistance < contentPos + mainCanvaRect.rect.height &&
@@ -460,6 +462,8 @@ namespace CyanStars.ChartEditor.View
         private void OnDestroy()
         {
             Model.OnNoteDataChanged -= RefreshUI;
+            Model.OnEditorAttributeChanged -= RefreshUI;
+            Model.OnNoteAttributeChanged -= RefreshUI;
         }
     }
 }
