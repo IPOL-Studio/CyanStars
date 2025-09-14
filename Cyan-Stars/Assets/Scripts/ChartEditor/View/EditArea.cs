@@ -18,6 +18,7 @@ namespace CyanStars.ChartEditor.View
 
         // 对象池使用的预制体
         private const string BeatLinePrefabPath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/BeatLine.prefab";
+        private const string PosLinePrefabPath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/PosLine.prefab";
         private const string TapNotePrefabPath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/TapNote.prefab";
         private const string DragNotePrefabPath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/DragNote.prefab";
         private const string HoldNotePrefabPath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/HoldNote.prefab";
@@ -48,8 +49,8 @@ namespace CyanStars.ChartEditor.View
         private float lastCanvaHeight; // 上次记录的 Canva 高度（刷新前）
         private float contentHeight; // 内容总高度
 
-        private static readonly Color BeatHalfColor = new Color(1f, 1f, 0.5f, 0.8f);
-        private static readonly Color BeatQuarterColor = new Color(0.7f, 0.6f, 1f, 0.7f);
+        private static readonly Color BeatHalfColor = new Color(1f, 0.7f, 0.4f, 0.8f);
+        private static readonly Color BeatQuarterColor = new Color(0.4f, 0.7f, 1f, 0.7f);
         private static readonly Color BeatOtherColor = new Color(0.6f, 1f, 0.6f, 0.6f);
 
         private const float NotePosScale = 802.5f;
@@ -77,6 +78,7 @@ namespace CyanStars.ChartEditor.View
             ResetTotalBeats();
         }
 
+
         /// <summary>
         /// 画面变化后(而不是每帧)或在编辑器或音符属性修改后，重新绘制编辑器的节拍线、位置线、音符
         /// </summary>
@@ -84,6 +86,7 @@ namespace CyanStars.ChartEditor.View
         {
             RefreshScrollRect();
             ReleaseContentGameObject();
+            _ = RefreshPosLinesAsync();
             _ = RefreshBeatLinesAsync();
             _ = RefreshNotesAsync();
         }
@@ -112,6 +115,19 @@ namespace CyanStars.ChartEditor.View
         /// </summary>
         private void ReleaseContentGameObject()
         {
+            // 归还位置线
+            for (int i = posLines.transform.childCount - 1; i >= 0; i--)
+            {
+                Transform child = posLines.transform.GetChild(i);
+                // 不归还占位物体
+                if (child.TryGetComponent<PosLine>(out PosLine posLine))
+                {
+                    GameRoot.GameObjectPool.ReleaseGameObject(PosLinePrefabPath, posLine.gameObject);
+                    continue;
+                }
+            }
+
+            // 归还节拍线和音符
             for (int i = contentRect.childCount - 1; i >= 0; i--)
             {
                 Transform child = contentRect.GetChild(i);
@@ -299,6 +315,15 @@ namespace CyanStars.ChartEditor.View
             }
         }
 
+        private async Task RefreshPosLinesAsync()
+        {
+            for (int i = 0; i < Model.PosAccuracy; i++)
+            {
+                GameObject _ = await GameRoot.GameObjectPool.GetGameObjectAsync(PosLinePrefabPath, posLines.transform);
+            }
+        }
+
+
         /// <summary>
         /// 根据 beat 计算内容在 Content 中的位置
         /// </summary>
@@ -315,7 +340,6 @@ namespace CyanStars.ChartEditor.View
             // 添加判定线的位置偏移
             return pos + judgeLineRect.anchoredPosition.y;
         }
-
 
         /// <summary>
         /// 重计算总拍数并刷新编辑器视图
@@ -404,7 +428,7 @@ namespace CyanStars.ChartEditor.View
                     // 开启了位置吸附
                     if (Model.PosAccuracy == 0)
                     {
-                        notePos = 0;
+                        notePos = 0.4f;
                     }
                     else
                     {
