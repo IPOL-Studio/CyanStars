@@ -83,11 +83,14 @@ namespace CyanStars.ChartEditor.View
         private void RefreshUI()
         {
             RefreshScrollRect();
-            ReleaseGameObjectInContent();
+            ReleaseContentGameObject();
             _ = RefreshBeatLinesAsync();
             _ = RefreshNotesAsync();
         }
 
+        /// <summary>
+        /// 刷新滚动窗口大小和位置
+        /// </summary>
         private void RefreshScrollRect()
         {
             // 记录已滚动的位置百分比
@@ -104,7 +107,10 @@ namespace CyanStars.ChartEditor.View
             scrollRect.verticalNormalizedPosition = verticalNormalizedPosition;
         }
 
-        private void ReleaseGameObjectInContent()
+        /// <summary>
+        /// 将所有预制体归还到对象池
+        /// </summary>
+        private void ReleaseContentGameObject()
         {
             for (int i = contentRect.childCount - 1; i >= 0; i--)
             {
@@ -135,8 +141,6 @@ namespace CyanStars.ChartEditor.View
                         case NoteType.Break:
                             GameRoot.GameObjectPool.ReleaseGameObject(BreakNotePrefabPath, editorNote.gameObject);
                             break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
                     }
 
                     continue;
@@ -144,6 +148,9 @@ namespace CyanStars.ChartEditor.View
             }
         }
 
+        /// <summary>
+        /// 从对象池获取物体并刷新节拍线
+        /// </summary>
         private async Task RefreshBeatLinesAsync()
         {
             // 计算屏幕下沿对应的 content 位置
@@ -204,6 +211,10 @@ namespace CyanStars.ChartEditor.View
             }
         }
 
+        /// <summary>
+        /// 统一设定 Note Rect 值
+        /// </summary>
+        /// <param name="rect">Note 的 Rect 组件</param>
         private void ConfigureNoteRect(RectTransform rect)
         {
             rect.localScale = Vector3.one;
@@ -211,6 +222,9 @@ namespace CyanStars.ChartEditor.View
             rect.anchorMax = new Vector2(0.5f, 0f);
         }
 
+        /// <summary>
+        /// 从对象池获取物体并刷新音符
+        /// </summary>
         private async Task RefreshNotesAsync()
         {
             // 计算屏幕下沿对应的 content 位置
@@ -438,15 +452,18 @@ namespace CyanStars.ChartEditor.View
             Model.CreateNote(notePos, noteBeat);
         }
 
+        /// <summary>
+        /// 当窗口滚动时刷新界面
+        /// </summary>
+        private void OnScrollValueChanged(Vector2 _)
+        {
+            RefreshUI();
+        }
+
 
         private void Awake()
         {
             scrollRect.onValueChanged.AddListener(OnScrollValueChanged);
-        }
-
-        private void OnScrollValueChanged(Vector2 _)
-        {
-            RefreshUI();
         }
 
         private void Update()
