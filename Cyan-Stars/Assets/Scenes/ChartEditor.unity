@@ -168,7 +168,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -0.00048828125}
-  m_SizeDelta: {x: 0, y: 461.0794}
+  m_SizeDelta: {x: 0, y: -624.71747}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3748259
 MonoBehaviour:
@@ -257,7 +257,7 @@ GameObject:
   - component: {fileID: 5759158}
   - component: {fileID: 5759156}
   m_Layer: 5
-  m_Name: "\u5DE6Button"
+  m_Name: LeftToggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -293,7 +293,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5759154}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -303,7 +303,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
+  m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -324,10 +324,14 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
-  m_OnClick:
+  m_TargetGraphic: {fileID: 267364417}
+  toggleTransition: 1
+  graphic: {fileID: 0}
+  m_Group: {fileID: 0}
+  onValueChanged:
     m_PersistentCalls:
       m_Calls: []
+  m_IsOn: 0
 --- !u!222 &5759158
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1689,6 +1693,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4e3e871a4dec2442a426da85c3a9d78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectedIcon: {fileID: 21300000, guid: 41e29448b6c076042a17ab01d753e78e, type: 3}
+  unselectedIcon: {fileID: 21300000, guid: 1d0792bed21ff9341b4795cd90d39451, type: 3}
   judgeBeatField1: {fileID: 1342060764}
   judgeBeatField2: {fileID: 299902434}
   judgeBeatField3: {fileID: 431572208}
@@ -1696,8 +1702,8 @@ MonoBehaviour:
   endBeatField2: {fileID: 1761952933}
   endBeatField3: {fileID: 1000716141}
   posField: {fileID: 1617886833}
-  breakButtonL: {fileID: 5759156}
-  breakButtonR: {fileID: 1303653260}
+  breakToggleL: {fileID: 5759156}
+  breakToggleR: {fileID: 1303653260}
   correctAudioDropdown: {fileID: 1238142736}
   hitAudioDropdown: {fileID: 340710144}
   speedGroupDropdown: {fileID: 1240978307}
@@ -3929,7 +3935,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 180, y: -442.5}
+  m_AnchoredPosition: {x: 180, y: -37.5}
   m_SizeDelta: {x: 360, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &267364415
@@ -8055,8 +8061,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1573881464}
   m_HandleRect: {fileID: 1573881463}
   m_Direction: 2
-  m_Value: 1.0000011
-  m_Size: 0.60079575
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -20774,7 +20780,7 @@ GameObject:
   - component: {fileID: 1303653261}
   - component: {fileID: 1303653260}
   m_Layer: 5
-  m_Name: "\u53F3Button"
+  m_Name: RightToggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20810,7 +20816,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1303653258}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -20820,7 +20826,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
+  m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -20841,10 +20847,14 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
-  m_OnClick:
+  m_TargetGraphic: {fileID: 453111790}
+  toggleTransition: 1
+  graphic: {fileID: 0}
+  m_Group: {fileID: 0}
+  onValueChanged:
     m_PersistentCalls:
       m_Calls: []
+  m_IsOn: 0
 --- !u!222 &1303653261
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -24644,7 +24654,7 @@ RectTransform:
   m_Father: {fileID: 506499768}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.39920425}
+  m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
@@ -29823,8 +29833,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2044032260}
   - component: {fileID: 2044032261}
+  - component: {fileID: 2044032262}
   m_Layer: 5
-  m_Name: "\u6309\u94AE\u5E03\u5C40"
+  m_Name: ToggleGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29877,6 +29888,19 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &2044032262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2044032259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AllowSwitchOff: 0
 --- !u!1001 &2049077258
 PrefabInstance:
   m_ObjectHideFlags: 0

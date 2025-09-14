@@ -12,6 +12,14 @@ namespace CyanStars.ChartEditor.View
 {
     public class NoteAttribute : BaseView
     {
+        // 资源文件
+        [SerializeField]
+        private Sprite selectedIcon;
+
+        [SerializeField]
+        private Sprite unselectedIcon;
+
+        // 侧边栏组件
         [SerializeField]
         private TMP_InputField judgeBeatField1;
 
@@ -36,10 +44,10 @@ namespace CyanStars.ChartEditor.View
         private TMP_InputField posField;
 
         [SerializeField]
-        private Button breakButtonL;
+        private Toggle breakToggleL;
 
         [SerializeField]
-        private Button breakButtonR;
+        private Toggle breakToggleR;
 
 
         [SerializeField]
@@ -92,8 +100,20 @@ namespace CyanStars.ChartEditor.View
             endBeatField2.onEndEdit.AddListener((text) => Model.SetEndBeat(null, text, null));
             endBeatField3.onEndEdit.AddListener((text) => Model.SetEndBeat(null, null, text));
             posField.onEndEdit.AddListener((text) => Model.SetPos(text));
-            breakButtonL.onClick.AddListener(() => { Model.SetBreakPos(BreakNotePos.Left); });
-            breakButtonR.onClick.AddListener(() => { Model.SetBreakPos(BreakNotePos.Right); });
+            breakToggleL.onValueChanged.AddListener((isOn) =>
+            {
+                if (isOn)
+                {
+                    Model.SetBreakPos(BreakNotePos.Left);
+                }
+            });
+            breakToggleR.onValueChanged.AddListener((isOn) =>
+            {
+                if (isOn)
+                {
+                    Model.SetBreakPos(BreakNotePos.Right);
+                }
+            });
 
             Model.OnSelectedNotesChanged += RefreshNoteAttribute;
             Model.OnNoteAttributeChanged += RefreshNoteAttribute;
@@ -166,7 +186,31 @@ namespace CyanStars.ChartEditor.View
                 ? pos.ToString(CultureInfo.InvariantCulture)
                 : "-";
 
-            // TODO: 把 Break button 的贴图改了
+            var selectedBreakNotes = Model.SelectedNotes.OfType<BreakChartNoteData>().ToList();
+            if (TryGetUniquePropertyValue(selectedBreakNotes, item => item.BreakNotePos, out BreakNotePos breakNotePos))
+            {
+                if (breakNotePos == BreakNotePos.Left)
+                {
+                    breakToggleL.isOn = true;
+                    breakToggleR.isOn = false;
+                    breakToggleL.GetComponentInChildren<Image>().sprite = selectedIcon;
+                    breakToggleR.GetComponentInChildren<Image>().sprite = unselectedIcon;
+                }
+                else
+                {
+                    breakToggleL.isOn = false;
+                    breakToggleR.isOn = true;
+                    breakToggleL.GetComponentInChildren<Image>().sprite = unselectedIcon;
+                    breakToggleR.GetComponentInChildren<Image>().sprite = selectedIcon;
+                }
+            }
+            else
+            {
+                breakToggleL.isOn = false;
+                breakToggleR.isOn = false;
+                breakToggleL.GetComponentInChildren<Image>().sprite = unselectedIcon;
+                breakToggleR.GetComponentInChildren<Image>().sprite = unselectedIcon;
+            }
         }
 
         /// <summary>
