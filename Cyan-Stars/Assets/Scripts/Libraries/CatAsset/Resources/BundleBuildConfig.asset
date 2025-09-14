@@ -136,7 +136,7 @@ MonoBehaviour:
     BundleName: charteditor.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 468417
+    AssetsLength: 475148
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/BeatInputField.prefab
       Length: 49161
@@ -153,17 +153,17 @@ MonoBehaviour:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/BeatLine.prefab
       Length: 7596
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/BreakNote.prefab
-      Length: 4229
+      Length: 5569
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/ClickNote.prefab
-      Length: 4238
+      Length: 5584
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/DragNote.prefab
-      Length: 4234
+      Length: 5602
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/HoldNote.prefab
-      Length: 6472
+      Length: 7815
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/PosLine.prefab
       Length: 2625
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/TapNote.prefab
-      Length: 4236
+      Length: 5570
     - Name: Assets/BundleRes/Prefabs/ChartEditor/InputFieldWithButton.prefab
       Length: 27917
     - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u5F39\u7A97Canvas.prefab"
