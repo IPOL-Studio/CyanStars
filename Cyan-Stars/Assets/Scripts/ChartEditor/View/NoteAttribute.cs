@@ -75,6 +75,11 @@ namespace CyanStars.ChartEditor.View
         public void RefreshNoteAttribute()
         {
             // TODO
+            // 只有选中音符，才展示 Note 属性（否则展示编辑器属性）
+            foreach (Transform child in this.transform)
+            {
+                child.gameObject.SetActive(Model.SelectedNotes.Count > 0);
+            }
         }
 
         private void OnDestroy()

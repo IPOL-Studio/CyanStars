@@ -72,6 +72,16 @@ namespace CuanStars.ChartEditor.View
 
             // 绑定 M 层事件响应
             Model.OnEditorAttributeChanged += EditorAttributeChanged;
+            Model.OnSelectedNotesChanged += SelectedNotesChanged;
+        }
+
+        private void SelectedNotesChanged()
+        {
+            // 只有未选中音符，才展示编辑器属性（否则展示 Note 属性）
+            foreach (Transform child in this.transform)
+            {
+                child.gameObject.SetActive(Model.SelectedNotes.Count == 0);
+            }
         }
 
         private void EditorAttributeChanged()
