@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using CyanStars.Chart;
 using CyanStars.ChartEditor.Model;
 using TMPro;
@@ -39,16 +43,42 @@ namespace CyanStars.ChartEditor.View
 
 
         [SerializeField]
-        private Button correctAudioButton; // TODO
+        private TMP_Dropdown correctAudioDropdown; // TODO
 
         [SerializeField]
-        private Button hitAudioButton; // TODO
+        private TMP_Dropdown hitAudioDropdown; // TODO
 
         [SerializeField]
-        private Button speedGroupButton; // TODO
+        private TMP_Dropdown speedGroupDropdown; // TODO
 
         [SerializeField]
         private TMP_InputField speedOffsetField; // TODO
+
+
+        // 子物体，用于根据选中音符类型动态控制是否显示
+        [SerializeField]
+        private GameObject judgeBeatObject;
+
+        [SerializeField]
+        private GameObject holdEndBeatObject;
+
+        [SerializeField]
+        private GameObject posObject;
+
+        [SerializeField]
+        private GameObject breakPosObject;
+
+        [SerializeField]
+        private GameObject correctAudioObject; // TODO
+
+        [SerializeField]
+        private GameObject hitAudioObject; // TODO
+
+        [SerializeField]
+        private GameObject speedGroupAudioObject; // TODO
+
+        [SerializeField]
+        private GameObject speedOffsetAudioObject; // TODO
 
 
         public override void Bind(EditorModel editorModel)
@@ -74,12 +104,100 @@ namespace CyanStars.ChartEditor.View
         /// </summary>
         public void RefreshNoteAttribute()
         {
-            // TODO
             // 只有选中音符，才展示 Note 属性（否则展示编辑器属性）
             foreach (Transform child in this.transform)
             {
                 child.gameObject.SetActive(Model.SelectedNotes.Count > 0);
             }
+
+            if (Model.SelectedNotes.Count == 0)
+            {
+                return;
+            }
+
+            // 根据选中的音符，动态显示可编辑属性
+            bool hasTapNote = Model.SelectedNotes.Any(baseNoteData => baseNoteData is TapChartNoteData);
+            bool hasDragNote = Model.SelectedNotes.Any(baseNoteData => baseNoteData is DragChartNoteData);
+            bool hasHoldNote = Model.SelectedNotes.Any(baseNoteData => baseNoteData is HoldChartNoteData);
+            bool hasClickNote = Model.SelectedNotes.Any(baseNoteData => baseNoteData is ClickChartNoteData);
+            bool hasBreakNote = Model.SelectedNotes.Any(baseNoteData => baseNoteData is BreakChartNoteData);
+            judgeBeatObject.SetActive(true);
+            holdEndBeatObject.SetActive(hasHoldNote);
+            posObject.SetActive(hasTapNote || hasDragNote || hasHoldNote || hasClickNote);
+            breakPosObject.SetActive(hasBreakNote);
+            correctAudioObject.SetActive(false); // TODO
+            hitAudioObject.SetActive(false); // TODO
+            speedGroupAudioObject.SetActive(false); // TODO
+            speedOffsetAudioObject.SetActive(false); // TODO
+
+            // 查询选中音符中各属性的值，有多个值的以“-”表示，有唯一值的直接显示值
+            judgeBeatField1.text =
+                TryGetUniquePropertyValue(Model.SelectedNotes, item => item.JudgeBeat.IntegerPart, out int judgeIntPart)
+                    ? judgeIntPart.ToString()
+                    : "-";
+            judgeBeatField2.text =
+                TryGetUniquePropertyValue(Model.SelectedNotes, item => item.JudgeBeat.Numerator, out int judgeNumerator)
+                    ? judgeNumerator.ToString()
+                    : "-";
+            judgeBeatField3.text =
+                TryGetUniquePropertyValue(Model.SelectedNotes, item => item.JudgeBeat.Denominator,
+                    out int judgeDenominator)
+                    ? judgeDenominator.ToString()
+                    : "-";
+
+            var selectedHoldNotes = Model.SelectedNotes.OfType<HoldChartNoteData>();
+            endBeatField1.text =
+                TryGetUniquePropertyValue(selectedHoldNotes, item => item.EndJudgeBeat.IntegerPart, out int endIntPart)
+                    ? endIntPart.ToString()
+                    : "-";
+            endBeatField2.text =
+                TryGetUniquePropertyValue(selectedHoldNotes, item => item.EndJudgeBeat.Numerator, out int endNumerator)
+                    ? endNumerator.ToString()
+                    : "-";
+            endBeatField3.text =
+                TryGetUniquePropertyValue(selectedHoldNotes, item => item.EndJudgeBeat.Denominator,
+                    out int endDenominator)
+                    ? endDenominator.ToString()
+                    : "-";
+
+            var selectedIChartNoteNormalPos = Model.SelectedNotes.OfType<IChartNoteNormalPos>().ToList();
+            posField.text = TryGetUniquePropertyValue(selectedIChartNoteNormalPos, item => item.Pos,
+                out float pos)
+                ? pos.ToString(CultureInfo.InvariantCulture)
+                : "-";
+
+            // TODO: 把 Break button 的贴图改了
+        }
+
+        /// <summary>
+        /// 尝试从一个集合中获取某个属性的唯一值。
+        /// </summary>
+        /// <typeparam name="TTarget">集合中元素的类型。</typeparam>
+        /// <typeparam name="TResult">要检查的属性的类型。</typeparam>
+        /// <param name="source">要检查的源集合。</param>
+        /// <param name="selector">一个用于从元素中提取属性的函数。</param>
+        /// <param name="value">如果找到唯一值，则通过此参数传出；否则传出该类型的默认值。</param>
+        /// <returns>如果集合中所有元素的该属性值都相同且集合不为空，则返回 true；否则返回 false。</returns>
+        private bool TryGetUniquePropertyValue<TTarget, TResult>(
+            IEnumerable<TTarget> source,
+            Func<TTarget, TResult> selector,
+            out TResult value)
+        {
+            value = default(TResult);
+
+            if (source == null || !source.Any())
+            {
+                return false;
+            }
+
+            var distinctValues = source.Select(selector).Distinct().Take(2).ToList();
+            if (distinctValues.Count == 1)
+            {
+                value = distinctValues[0];
+                return true;
+            }
+
+            return false;
         }
 
         private void OnDestroy()

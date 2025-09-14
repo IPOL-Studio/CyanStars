@@ -680,13 +680,6 @@ namespace CyanStars.ChartEditor.Model
                 return;
             }
 
-            if (b1 < 0 || b2 < 0 || b3 <= 0 || b2 >= b3)
-            {
-                // 带分数不合法，通知 view 刷新内容，不更新数据
-                OnNoteAttributeChanged?.Invoke();
-                return;
-            }
-
             SetNotesJudgeBeat(b1, b2, b3);
         }
 
@@ -700,11 +693,17 @@ namespace CyanStars.ChartEditor.Model
             bool isChangedFlag = false;
             foreach (BaseChartNoteData note in SelectedNotes)
             {
-                Beat newJudgeBeat = new Beat(
-                    integerPart ?? note.JudgeBeat.IntegerPart,
-                    numerator ?? note.JudgeBeat.Numerator,
-                    denominator ?? note.JudgeBeat.Denominator
-                );
+                if (!Beat.TryCreateBeat(integerPart ?? note.JudgeBeat.IntegerPart,
+                        numerator ?? note.JudgeBeat.Numerator,
+                        denominator ?? note.JudgeBeat.Denominator,
+                        out Beat? beat))
+                {
+                    // 合法性校验失败，通知刷新
+                    OnNoteAttributeChanged?.Invoke();
+                    continue;
+                }
+
+                Beat newJudgeBeat = (Beat)beat;
 
                 if (note.JudgeBeat == newJudgeBeat)
                 {
@@ -737,13 +736,6 @@ namespace CyanStars.ChartEditor.Model
                 return;
             }
 
-            if (b1 < 0 || b2 < 0 || b3 <= 0 || b2 >= b3)
-            {
-                // 带分数不合法，通知 view 刷新内容，不更新数据
-                OnNoteAttributeChanged?.Invoke();
-                return;
-            }
-
             SetNotesEndBeat(b1, b2, b3);
         }
 
@@ -765,11 +757,17 @@ namespace CyanStars.ChartEditor.Model
 
                 HoldChartNoteData holdNote = (HoldChartNoteData)note;
 
-                Beat newEndBeat = new Beat(
-                    integerPart ?? holdNote.EndJudgeBeat.IntegerPart,
-                    numerator ?? holdNote.EndJudgeBeat.Numerator,
-                    denominator ?? holdNote.EndJudgeBeat.Denominator
-                );
+                if (!Beat.TryCreateBeat(integerPart ?? holdNote.JudgeBeat.IntegerPart,
+                        numerator ?? holdNote.JudgeBeat.Numerator,
+                        denominator ?? holdNote.JudgeBeat.Denominator,
+                        out Beat? beat))
+                {
+                    // 合法性校验失败，通知刷新
+                    OnNoteAttributeChanged?.Invoke();
+                    continue;
+                }
+
+                Beat newEndBeat = (Beat)beat;
 
                 if (holdNote.EndJudgeBeat == newEndBeat)
                 {

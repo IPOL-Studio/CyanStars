@@ -28,7 +28,7 @@ namespace CyanStars.Chart
 
         /// <summary>校验 Beat 的三个参数是否都大于等于 0</summary>
         /// <returns>数据合法性</returns>
-        public void Verify()
+        private void Verify()
         {
             if (IntegerPart < 0)
             {
@@ -49,6 +49,18 @@ namespace CyanStars.Chart
             {
                 throw new AggregateException("Beat 的分子必须小于分母");
             }
+        }
+
+        public static bool TryCreateBeat(int integerPart, int numerator, int denominator, out Beat? beat)
+        {
+            beat = null;
+            if (integerPart < 0 || numerator < 0 || denominator <= 0 || numerator >= denominator)
+            {
+                return false;
+            }
+
+            beat = new Beat(integerPart, numerator, denominator);
+            return true;
         }
 
         /// <summary>将 Beat 转换为小数表示的拍子</summary>

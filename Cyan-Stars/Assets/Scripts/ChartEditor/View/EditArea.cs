@@ -201,7 +201,7 @@ namespace CyanStars.ChartEditor.View
                     // 整数节拍线
                     beatLine.Image.color = Color.white;
                     beatLine.BeatTextObject.SetActive(true);
-                    beatLine.BeatText.text = ((currentBeatLineCount - 1) / Model.BeatAccuracy + 1).ToString();
+                    beatLine.BeatText.text = ((currentBeatLineCount - 1) / Model.BeatAccuracy).ToString();
                 }
                 else if (Model.BeatAccuracy % 2 == 0 && beatAccNum == Model.BeatAccuracy / 2)
                 {
@@ -315,6 +315,9 @@ namespace CyanStars.ChartEditor.View
             }
         }
 
+        /// <summary>
+        /// 从对象池获取物体并刷新位置线
+        /// </summary>
         private async Task RefreshPosLinesAsync()
         {
             for (int i = 0; i < Model.PosAccuracy; i++)
