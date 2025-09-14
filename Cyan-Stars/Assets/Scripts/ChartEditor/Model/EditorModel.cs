@@ -757,9 +757,9 @@ namespace CyanStars.ChartEditor.Model
 
                 HoldChartNoteData holdNote = (HoldChartNoteData)note;
 
-                if (!Beat.TryCreateBeat(integerPart ?? holdNote.JudgeBeat.IntegerPart,
-                        numerator ?? holdNote.JudgeBeat.Numerator,
-                        denominator ?? holdNote.JudgeBeat.Denominator,
+                if (!Beat.TryCreateBeat(integerPart ?? holdNote.EndJudgeBeat.IntegerPart,
+                        numerator ?? holdNote.EndJudgeBeat.Numerator,
+                        denominator ?? holdNote.EndJudgeBeat.Denominator,
                         out Beat? beat))
                 {
                     // 合法性校验失败，通知刷新
