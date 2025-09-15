@@ -244,7 +244,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 音乐
             MusicVersionData musicVersionData = chartPack.ChartPackData.MusicVersionDatas[dataModule.MusicVersionIndex];
-            AudioClip music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.MusicFilePath, sceneRoot);
+            AudioClip music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.AudioFilePath, sceneRoot);
             if (!music)
             {
                 Debug.LogError($"谱包 {chartPack.ChartPackData.Title} 的音乐加载失败");

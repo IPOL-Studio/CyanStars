@@ -67,6 +67,11 @@ namespace CyanStars.ChartEditor.Model
         /// <remarks>超过这个时长的内容都不可以编辑，包括音符编辑、事件等等</remarks>
         public int ActualMusicTime { get; set; } // TODO：测试完成后改为 private set;
 
+        /// <summary>
+        /// 音乐版本弹窗可见性
+        /// </summary>
+        public bool MusicVersionCanvasVisibleness { get; private set; }
+
 
         // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面数据，加载/保存时需要从读写磁盘。 ---
         public ChartPackData ChartPackData { get; private set; }
@@ -174,6 +179,11 @@ namespace CyanStars.ChartEditor.Model
         /// </summary>
         public event Action OnTempHoldJudgeBeatChanged;
 
+        /// <summary>
+        /// 曲目弹窗打开或关闭
+        /// </summary>
+        public event Action OnMusicVersionCanvasVisiblenessChanged;
+
 
         /// <summary>
         /// 构造函数
@@ -201,6 +211,8 @@ namespace CyanStars.ChartEditor.Model
             {
                 ChartNotes.Add(note);
             }
+
+            MusicVersionCanvasVisibleness = false;
         }
 
 
@@ -291,6 +303,17 @@ namespace CyanStars.ChartEditor.Model
             OnEditorAttributeChanged?.Invoke();
         }
 
+        public void SetMusicVersionCanvasVisibleness(bool isVisible)
+        {
+            if (MusicVersionCanvasVisibleness == isVisible)
+            {
+                return;
+            }
+
+            MusicVersionCanvasVisibleness = isVisible;
+            OnMusicVersionCanvasVisiblenessChanged?.Invoke();
+        }
+
         #endregion
 
         #region 谱包信息和谱面元数据管理
@@ -353,19 +376,20 @@ namespace CyanStars.ChartEditor.Model
         /// <summary>
         /// 向列表添加一个新的音乐版本
         /// </summary>
-        /// <param name="newMusicVersionData">要添加的音乐版本数据</param>
+        /// <param name="newData">要添加的音乐版本数据</param>
         /// <returns>是否成功添加，如果音乐路径已存在会返回 false 且不触发事件</returns>
-        public bool AddMusicVersionDatas(MusicVersionData newMusicVersionData)
+        public bool AddMusicVersionDatas(MusicVersionData newData = null)
         {
+            newData = newData ?? new MusicVersionData();
             foreach (MusicVersionData musicVersionData in MusicVersionDatas)
             {
-                if (musicVersionData.MusicFilePath == newMusicVersionData.MusicFilePath)
+                if (musicVersionData.AudioFilePath == newData.AudioFilePath)
                 {
                     return false;
                 }
             }
 
-            MusicVersionDatas.Add(newMusicVersionData);
+            MusicVersionDatas.Add(newData);
 
             OnMusicVersionDataChanged?.Invoke();
             return true;
@@ -401,7 +425,7 @@ namespace CyanStars.ChartEditor.Model
                     continue;
                 }
 
-                if (MusicVersionDatas[i].MusicFilePath == newMusicVersionData.MusicFilePath)
+                if (MusicVersionDatas[i].AudioFilePath == newMusicVersionData.AudioFilePath)
                 {
                     return false;
                 }
