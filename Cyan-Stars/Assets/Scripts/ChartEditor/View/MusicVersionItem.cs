@@ -57,7 +57,7 @@ namespace CyanStars.ChartEditor.View
         private Button copyMusicVersionItemButton;
 
         [SerializeField]
-        private Button setDefaultMusicVersionItemButton;
+        private Button topMusicVersionItemButton;
 
 
         public void InitDataAndBind(EditorModel editorModel, MusicVersionData musicVersionData)
@@ -82,14 +82,17 @@ namespace CyanStars.ChartEditor.View
             offsetField.onEndEdit.RemoveAllListeners();
             offsetField.onEndEdit.AddListener((text) => { Model.UpdateMusicVersionOffset(musicVersionData, text); });
             subOffsetButton.onClick.RemoveAllListeners();
-            subOffsetButton.onClick.AddListener(() => { Model.AddMusicVersionOffset(musicVersionData, -OffsetStep); });
+            subOffsetButton.onClick.AddListener(() => { Model.AddMusicVersionOffsetValue(musicVersionData, -OffsetStep); });
             addOffsetButton.onClick.RemoveAllListeners();
-            addOffsetButton.onClick.AddListener(() => { Model.AddMusicVersionOffset(musicVersionData, OffsetStep); });
+            addOffsetButton.onClick.AddListener(() => { Model.AddMusicVersionOffsetValue(musicVersionData, OffsetStep); });
             addStaffItemButton.onClick.RemoveAllListeners();
             addStaffItemButton.onClick.AddListener(() => { Model.AddStaffItem(musicVersionData); });
             deleteMusicVersionItemButton.onClick.RemoveAllListeners();
             deleteMusicVersionItemButton.onClick.AddListener(() => { Model.DeleteMusicVersionItem(musicVersionData); });
-
+            copyMusicVersionItemButton.onClick.RemoveAllListeners();
+            copyMusicVersionItemButton.onClick.AddListener(() => { Model.CopyMusicVersionItem(musicVersionData); });
+            topMusicVersionItemButton.onClick.RemoveAllListeners();
+            topMusicVersionItemButton.onClick.AddListener(() => { Model.TopMusicVersionItem(musicVersionData); });
             RefreshUI();
         }
 

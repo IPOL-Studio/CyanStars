@@ -55,6 +55,8 @@ namespace CyanStars.ChartEditor.View
             {
                 Model.UpdateStaffItem(musicVersionData, staffItemData, staffIdField.text, newJob);
             });
+            deleteItemButton.onClick.RemoveAllListeners();
+            deleteItemButton.onClick.AddListener(() => { Model.DeleteStaffItem(musicVersionData, staffItemData); });
 
             RefreshUI();
         }

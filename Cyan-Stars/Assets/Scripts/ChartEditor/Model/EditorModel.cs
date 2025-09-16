@@ -403,6 +403,27 @@ namespace CyanStars.ChartEditor.Model
             OnMusicVersionDataChanged?.Invoke();
         }
 
+        public void TopMusicVersionItem(MusicVersionData item)
+        {
+            MusicVersionDatas.Remove(item);
+            MusicVersionDatas.Insert(0, item);
+            OnMusicVersionDataChanged?.Invoke();
+        }
+
+        public void CopyMusicVersionItem(MusicVersionData item)
+        {
+            MusicVersionData copiedItem = new MusicVersionData(item.VersionTitle, item.AudioFilePath, item.Offset,
+                new Dictionary<string, List<string>>());
+            foreach (KeyValuePair<string, List<string>> staff in item.Staffs)
+            {
+                List<string> copiedStaffJobs = new List<string>(staff.Value);
+                copiedItem.Staffs.Add(staff.Key, copiedStaffJobs);
+            }
+
+            MusicVersionDatas.Add(copiedItem);
+            OnMusicVersionDataChanged?.Invoke();
+        }
+
         public void UpdateMusicVersionTitle(MusicVersionData oldItem, string newTitle)
         {
             int itemIndex = MusicVersionDatas.IndexOf(oldItem);
@@ -428,7 +449,7 @@ namespace CyanStars.ChartEditor.Model
             }
         }
 
-        public void AddMusicVersionOffset(MusicVersionData oldItem, int addNumber)
+        public void AddMusicVersionOffsetValue(MusicVersionData oldItem, int addNumber)
         {
             if (addNumber == 0)
             {
@@ -452,10 +473,17 @@ namespace CyanStars.ChartEditor.Model
             OnMusicVersionDataChanged?.Invoke();
         }
 
+        public void DeleteStaffItem(MusicVersionData oldItem, KeyValuePair<string, List<string>> oldStaffItem)
+        {
+            oldItem.Staffs.Remove(oldStaffItem.Key);
+            OnMusicVersionDataChanged?.Invoke();
+        }
+
         public void UpdateStaffItem(MusicVersionData oldMusicVersionItem,
             KeyValuePair<string, List<string>> oldStaffItem, string newName, string newJobString)
         {
-            if (oldStaffItem.Key == newName && string.Join("/", oldStaffItem.Value) == newJobString)
+            if (oldStaffItem.Key == newName && string.Join("/", oldStaffItem.Value) == newJobString ||
+                oldMusicVersionItem.Staffs.ContainsKey(newName))
             {
                 OnMusicVersionDataChanged?.Invoke();
                 return;

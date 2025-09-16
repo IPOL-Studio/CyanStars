@@ -34,6 +34,7 @@ namespace CyanStars.ChartEditor.View
             addItemButton = addItemButtonObject.GetComponent<Button>();
 
             Model.OnMusicVersionDataChanged += RefreshUI;
+            addItemButton.onClick.AddListener(() => { Model.AddMusicVersionItem(); });
 
             RefreshUI();
         }
