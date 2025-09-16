@@ -746,18 +746,12 @@ MonoBehaviour:
   subOffsetButton: {fileID: 5546541406410918423}
   addOffsetButton: {fileID: 6503562934058396147}
   testOffsetButton: {fileID: 9066602331327158289}
-  previewStartBeatField1: {fileID: 0}
-  previewStartBeatField2: {fileID: 0}
-  previewStartBeatField3: {fileID: 0}
-  previewEndBeatField1: {fileID: 0}
-  previewEndBeatField2: {fileID: 0}
-  previewEndBeatField3: {fileID: 0}
   staffInfoFrameObject: {fileID: 1618376875905616933}
   staffItemPrefab: {fileID: 1570479164798640671, guid: a3981b7e3937b554bb09cc436c652156, type: 3}
   addStaffItemButton: {fileID: 9066602332422501077}
   deleteMusicVersionItemButton: {fileID: 9066602331633871266}
   copyMusicVersionItemButton: {fileID: 9066602332017338521}
-  setDefaultMusicVersionItemButton: {fileID: 9066602332517873587}
+  topMusicVersionItemButton: {fileID: 9066602332517873587}
 --- !u!1 &1618376875854276796
 GameObject:
   m_ObjectHideFlags: 0

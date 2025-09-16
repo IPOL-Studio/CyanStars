@@ -32,9 +32,9 @@ namespace CyanStars.ChartEditor.View
             base.Bind(editorModel);
 
             addItemButton = addItemButtonObject.GetComponent<Button>();
+            addItemButton.onClick.AddListener(() => { Model.AddMusicVersionItem(); });
 
             Model.OnMusicVersionDataChanged += RefreshUI;
-            addItemButton.onClick.AddListener(() => { Model.AddMusicVersionItem(); });
 
             RefreshUI();
         }
@@ -55,22 +55,22 @@ namespace CyanStars.ChartEditor.View
                 Destroy(items[i].gameObject);
             }
 
-            // 刷新已有元素的内容
-            items = contentObject.GetComponentsInChildren<MusicVersionItem>();
-            for (int i = 0; i < items.Length; i++)
-            {
-                items[i].InitDataAndBind(Model, Model.MusicVersionDatas[i]);
-            }
-
-            // 添加并刷新新元素
+            // 添加新元素
             for (int i = items.Length; i < Model.MusicVersionDatas.Count; i++)
             {
                 GameObject go = Instantiate(musicVersionItemPrefab, contentObject.transform);
                 go.transform.SetSiblingIndex(contentObject.transform.childCount - 2);
-                go.GetComponent<MusicVersionItem>().InitDataAndBind(Model, Model.MusicVersionDatas[i]);
+            }
+
+            // 刷新已有元素的内容
+            items = contentObject.GetComponentsInChildren<MusicVersionItem>();
+            for (int i = 0; i < Model.MusicVersionDatas.Count; i++)
+            {
+                items[i].InitDataAndBind(Model, Model.MusicVersionDatas[i]);
             }
 
             // 刷新 UI 自动布局
+            Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(contentObject.GetComponent<RectTransform>());
         }
 

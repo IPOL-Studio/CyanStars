@@ -18512,8 +18512,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 616623954}
   m_HandleRect: {fileID: 616623953}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.5518406
+  m_Value: 1.0000008
+  m_Size: 0.8671193
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -33999,7 +33999,7 @@ MonoBehaviour:
   addStaffItemButton: {fileID: 9066602331622812902}
   deleteMusicVersionItemButton: {fileID: 9066602332411508625}
   copyMusicVersionItemButton: {fileID: 9066602332564846250}
-  setDefaultMusicVersionItemButton: {fileID: 9066602332068440448}
+  topMusicVersionItemButton: {fileID: 9066602332068440448}
 --- !u!224 &5724035192970558789
 RectTransform:
   m_ObjectHideFlags: 0
