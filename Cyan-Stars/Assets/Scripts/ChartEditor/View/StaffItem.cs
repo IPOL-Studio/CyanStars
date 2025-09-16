@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using CyanStars.Chart;
 using CyanStars.ChartEditor.Model;
 using TMPro;
 using UnityEngine;
@@ -11,8 +11,8 @@ namespace CyanStars.ChartEditor.View
     public class StaffItem : BaseView
     {
         private bool isInit = false;
-        private string staffId;
-        private List<string> staffJobs;
+        private MusicVersionData musicVersionData;
+        private KeyValuePair<string, List<string>> staffItemData;
 
         [SerializeField]
         private TMP_InputField staffIdField;
@@ -27,11 +27,12 @@ namespace CyanStars.ChartEditor.View
         private Button deleteItemButton;
 
 
-        public void InitData(EditorModel editorModel, string staffId, List<string> staffJobs)
+        public void InitDataAndBind(EditorModel editorModel, MusicVersionData musicVersionData,
+            KeyValuePair<string, List<string>> staffItemData)
         {
             isInit = true;
-            this.staffId = staffId;
-            this.staffJobs = staffJobs;
+            this.musicVersionData = musicVersionData;
+            this.staffItemData = staffItemData;
             Bind(editorModel);
         }
 
@@ -44,8 +45,24 @@ namespace CyanStars.ChartEditor.View
 
             base.Bind(editorModel);
 
-            staffIdField.text = staffId;
-            staffJobField.text = string.Join("/", staffJobs);
+            staffIdField.onEndEdit.RemoveAllListeners();
+            staffIdField.onEndEdit.AddListener((newName) =>
+            {
+                Model.UpdateStaffItem(musicVersionData, staffItemData, newName, staffJobField.text);
+            });
+            staffJobField.onEndEdit.RemoveAllListeners();
+            staffJobField.onEndEdit.AddListener((newJob) =>
+            {
+                Model.UpdateStaffItem(musicVersionData, staffItemData, staffIdField.text, newJob);
+            });
+
+            RefreshUI();
+        }
+
+        private void RefreshUI()
+        {
+            staffIdField.text = staffItemData.Key;
+            staffJobField.text = string.Join("/", staffItemData.Value);
         }
     }
 }

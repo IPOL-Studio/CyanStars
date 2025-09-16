@@ -1,3 +1,4 @@
+using System;
 using CyanStars.Chart;
 using CyanStars.ChartEditor.Model;
 using UnityEngine;
@@ -22,19 +23,59 @@ namespace CyanStars.ChartEditor.View
         [SerializeField]
         private GameObject addItemButtonObject;
 
-        private Button AddItemButton => addItemButtonObject.GetComponent<Button>();
+
+        private Button addItemButton;
 
 
         public override void Bind(EditorModel editorModel)
         {
             base.Bind(editorModel);
 
-            foreach (MusicVersionData musicVersionData in Model.MusicVersionDatas)
+            addItemButton = addItemButtonObject.GetComponent<Button>();
+
+            Model.OnMusicVersionDataChanged += RefreshUI;
+
+            RefreshUI();
+        }
+
+        private void RefreshUI()
+        {
+            addItemButtonObject.SetActive(!Model.IsSimplification);
+            if (Model.MusicVersionDatas.Count == 0 && Model.IsSimplification)
+            {
+                Model.AddMusicVersionItem(new MusicVersionData());
+            }
+
+
+            // 删除多余元素
+            MusicVersionItem[] items = contentObject.GetComponentsInChildren<MusicVersionItem>();
+            for (int i = items.Length - 1; i >= Model.MusicVersionDatas.Count; i--)
+            {
+                Destroy(items[i].gameObject);
+            }
+
+            // 刷新已有元素的内容
+            items = contentObject.GetComponentsInChildren<MusicVersionItem>();
+            for (int i = 0; i < items.Length; i++)
+            {
+                items[i].InitDataAndBind(Model, Model.MusicVersionDatas[i]);
+            }
+
+            // 添加并刷新新元素
+            for (int i = items.Length; i < Model.MusicVersionDatas.Count; i++)
             {
                 GameObject go = Instantiate(musicVersionItemPrefab, contentObject.transform);
                 go.transform.SetSiblingIndex(contentObject.transform.childCount - 2);
-                go.GetComponent<MusicVersionItem>().InitData(Model, musicVersionData);
+                go.GetComponent<MusicVersionItem>().InitDataAndBind(Model, Model.MusicVersionDatas[i]);
             }
+
+            // 刷新 UI 自动布局
+            LayoutRebuilder.ForceRebuildLayoutImmediate(contentObject.GetComponent<RectTransform>());
+        }
+
+        private void OnDestroy()
+        {
+            Model.OnMusicVersionDataChanged -= RefreshUI;
         }
     }
 }

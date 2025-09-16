@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CyanStars.Chart;
 using UnityEngine;
 
@@ -377,64 +378,104 @@ namespace CyanStars.ChartEditor.Model
         /// 向列表添加一个新的音乐版本
         /// </summary>
         /// <param name="newData">要添加的音乐版本数据</param>
-        /// <returns>是否成功添加，如果音乐路径已存在会返回 false 且不触发事件</returns>
-        public bool AddMusicVersionDatas(MusicVersionData newData = null)
+        public void AddMusicVersionItem(MusicVersionData newData = null)
         {
             newData = newData ?? new MusicVersionData();
             foreach (MusicVersionData musicVersionData in MusicVersionDatas)
             {
                 if (musicVersionData.AudioFilePath == newData.AudioFilePath)
                 {
-                    return false;
+                    return;
                 }
             }
 
             MusicVersionDatas.Add(newData);
 
             OnMusicVersionDataChanged?.Invoke();
-            return true;
         }
 
         /// <summary>
-        /// 从列表删除并返回指定下标的音乐版本数据
+        /// 从列表删除音乐版本数据元素
         /// </summary>
-        /// <param name="index">下标</param>
-        /// <returns>弹出的音乐版本数据</returns>
-        public MusicVersionData PopMusicVersionDatas(int index)
+        public void DeleteMusicVersionItem(MusicVersionData oldItem)
         {
-            MusicVersionData musicVersionData = MusicVersionDatas[index];
-            MusicVersionDatas.RemoveAt(index);
-
+            MusicVersionDatas.Remove(oldItem);
             OnMusicVersionDataChanged?.Invoke();
-            return musicVersionData;
         }
 
-        /// <summary>
-        /// 更新指定下标的音乐版本数据
-        /// </summary>
-        /// <remarks>注意路径不能与其他数据重复，否则会返回 false 且不会触发事件</remarks>
-        /// <param name="index">要更新的下标</param>
-        /// <param name="newMusicVersionData">新的音乐版本数据</param>
-        /// <returns>是否成功更新</returns>
-        public bool UpdateMusicVersionDatas(int index, MusicVersionData newMusicVersionData)
+        public void UpdateMusicVersionTitle(MusicVersionData oldItem, string newTitle)
         {
-            for (int i = 0; i < MusicVersionDatas.Count; i++)
+            int itemIndex = MusicVersionDatas.IndexOf(oldItem);
+            if (MusicVersionDatas[itemIndex].VersionTitle != newTitle)
             {
-                if (i == index)
-                {
-                    continue;
-                }
+                MusicVersionDatas[itemIndex].VersionTitle = newTitle;
+                OnMusicVersionDataChanged?.Invoke();
+            }
+        }
 
-                if (MusicVersionDatas[i].AudioFilePath == newMusicVersionData.AudioFilePath)
-                {
-                    return false;
-                }
+        public void UpdateMusicVersionOffset(MusicVersionData oldItem, string newOffsetString)
+        {
+            if (!int.TryParse(newOffsetString, out int newOffset))
+            {
+                OnMusicVersionDataChanged?.Invoke();
             }
 
-            MusicVersionDatas[index] = newMusicVersionData;
+            int itemIndex = MusicVersionDatas.IndexOf(oldItem);
+            if (MusicVersionDatas[itemIndex].Offset != newOffset)
+            {
+                MusicVersionDatas[itemIndex].Offset = newOffset;
+                OnMusicVersionDataChanged?.Invoke();
+            }
+        }
 
+        public void AddMusicVersionOffset(MusicVersionData oldItem, int addNumber)
+        {
+            if (addNumber == 0)
+            {
+                return;
+            }
+
+            int itemIndex = MusicVersionDatas.IndexOf(oldItem);
+            MusicVersionDatas[itemIndex].Offset += addNumber;
             OnMusicVersionDataChanged?.Invoke();
-            return true;
+        }
+
+        public void AddStaffItem(MusicVersionData oldItem)
+        {
+            int i = 1;
+            while (oldItem.Staffs.ContainsKey("Staff" + i.ToString()))
+            {
+                i++;
+            }
+
+            oldItem.Staffs.Add("Staff" + i.ToString(), new List<string>());
+            OnMusicVersionDataChanged?.Invoke();
+        }
+
+        public void UpdateStaffItem(MusicVersionData oldMusicVersionItem,
+            KeyValuePair<string, List<string>> oldStaffItem, string newName, string newJobString)
+        {
+            if (oldStaffItem.Key == newName && string.Join("/", oldStaffItem.Value) == newJobString)
+            {
+                OnMusicVersionDataChanged?.Invoke();
+                return;
+            }
+
+            List<string> newJob = new List<string>(newJobString.Split('/'));
+
+            if (oldStaffItem.Key != newName)
+            {
+                oldMusicVersionItem.Staffs.Remove(oldStaffItem.Key);
+                oldMusicVersionItem.Staffs.Add(newName, newJob);
+                OnMusicVersionDataChanged?.Invoke();
+                return;
+            }
+            else
+            {
+                oldMusicVersionItem.Staffs[newName] = newJob;
+                OnMusicVersionDataChanged?.Invoke();
+                return;
+            }
         }
 
         /// <summary>
