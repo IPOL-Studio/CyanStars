@@ -32,11 +32,18 @@ namespace CyanStars.ChartEditor.View
             base.Bind(editorModel);
 
             addItemButton = addItemButtonObject.GetComponent<Button>();
+            closeCanvasButton.onClick.AddListener(() => { Model.SetMusicVersionCanvasVisibleness(false); });
             addItemButton.onClick.AddListener(() => { Model.AddMusicVersionItem(); });
 
             Model.OnMusicVersionDataChanged += RefreshUI;
+            Model.OnMusicVersionCanvasVisiblenessChanged += SetCanvasVisibleness;
 
             RefreshUI();
+        }
+
+        private void SetCanvasVisibleness()
+        {
+            canvas.gameObject.SetActive(Model.MusicVersionCanvasVisibleness);
         }
 
         private void RefreshUI()
@@ -77,6 +84,7 @@ namespace CyanStars.ChartEditor.View
         private void OnDestroy()
         {
             Model.OnMusicVersionDataChanged -= RefreshUI;
+            Model.OnMusicVersionCanvasVisiblenessChanged -= SetCanvasVisibleness;
         }
     }
 }
