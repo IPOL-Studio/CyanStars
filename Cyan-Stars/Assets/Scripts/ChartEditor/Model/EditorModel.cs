@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CyanStars.Chart;
 using UnityEngine;
 
@@ -22,6 +21,7 @@ namespace CyanStars.ChartEditor.Model
         /// 当前选中的画笔（或者是橡皮？）
         /// </summary>
         public EditTool SelectedEditTool { get; private set; }
+
 
         /// <summary>
         /// 当前设置的位置精度（等于屏幕上有几条竖直位置线）
@@ -51,6 +51,7 @@ namespace CyanStars.ChartEditor.Model
         /// <remarks>选中 Hold 画笔后第一次点击空白区域</remarks>
         public Beat? TempHoldJudgeBeat;
 
+
         /// <summary>
         /// 用于 M 层的音符数据，在 Model 构造时指向 ChartData 中的对象
         /// </summary>
@@ -72,6 +73,11 @@ namespace CyanStars.ChartEditor.Model
         /// 音乐版本弹窗可见性
         /// </summary>
         public bool MusicVersionCanvasVisibleness { get; private set; }
+
+        /// <summary>
+        /// 谱包信息弹窗可见性
+        /// </summary>
+        public bool ChartPackDataCanvasVisibleness { get; private set; }
 
 
         // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面数据，加载/保存时需要从读写磁盘。 ---
@@ -121,24 +127,9 @@ namespace CyanStars.ChartEditor.Model
         public event Action OnSelectedNotesChanged;
 
         /// <summary>
-        /// 谱包基本信息（目前只有标题）发生变化
+        /// 谱包信息（谱面元数据）发生变化
         /// </summary>
-        public event Action OnChartPackTitleChanged;
-
-        /// <summary>
-        /// 谱包元数据（时间等）发生变化（在保存时）
-        /// </summary>
-        public event Action OnChartPackSave;
-
-        /// <summary>
-        /// 谱包大图路径发生变化
-        /// </summary>
-        public event Action OnCoverFilePathChanged;
-
-        /// <summary>
-        /// 谱包小图路径发生变化
-        /// </summary>
-        public event Action OnCroppedCoverFilePathChanged;
+        public event Action OnChartPackDataChanged;
 
         /// <summary>
         /// 谱包音乐版本数据发生变化时
@@ -185,6 +176,11 @@ namespace CyanStars.ChartEditor.Model
         /// </summary>
         public event Action OnMusicVersionCanvasVisiblenessChanged;
 
+        /// <summary>
+        /// 谱包弹窗打开或关闭
+        /// </summary>
+        public event Action OnChartPackDataCanvasVisiblenessChanged;
+
 
         /// <summary>
         /// 构造函数
@@ -214,6 +210,7 @@ namespace CyanStars.ChartEditor.Model
             }
 
             MusicVersionCanvasVisibleness = false;
+            ChartPackDataCanvasVisibleness = false;
         }
 
 
@@ -315,26 +312,80 @@ namespace CyanStars.ChartEditor.Model
             OnMusicVersionCanvasVisiblenessChanged?.Invoke();
         }
 
+        public void SetChartPackDataCanvasVisibleness(bool isVisible)
+        {
+            if (ChartPackDataCanvasVisibleness == isVisible)
+            {
+                return;
+            }
+
+            ChartPackDataCanvasVisibleness = isVisible;
+            OnChartPackDataCanvasVisiblenessChanged?.Invoke();
+        }
+
         #endregion
 
         #region 谱包信息和谱面元数据管理
 
         /// <summary>
-        /// 尝试更新谱包标题
+        /// 更新谱包标题
         /// </summary>
         /// <param name="title">新的谱包标题</param>
-        /// <remarks>如果新标题和旧标题一致，不会触发事件并返回 false</remarks>
-        /// <returns>是否发生了更新（旧标题与新标题不一致）</returns>
-        public bool UpdateChartPackTitle(string title)
+        public void UpdateChartPackTitle(string title)
         {
-            if (ChartPackData.Title == title)
+            if (ChartPackData.Title != title)
             {
-                return false;
+                ChartPackData.Title = title;
+                OnChartPackDataChanged?.Invoke();
+            }
+        }
+
+        public void UpdatePreviewStareBeat(string integerPartString, string numeratorString, string denominatorString)
+        {
+            if (!(int.TryParse(integerPartString, out int integerPart) &&
+                  int.TryParse(numeratorString, out int numerator) &&
+                  int.TryParse(denominatorString, out int denominator)))
+            {
+                OnChartPackDataChanged?.Invoke();
+                return;
             }
 
-            ChartPackData.Title = title;
-            OnChartPackTitleChanged?.Invoke();
-            return true;
+            if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat? newBeat) ||
+                ((Beat)newBeat).ToFloat() > ChartPackData.MusicPreviewEndBeat.ToFloat())
+            {
+                OnChartPackDataChanged?.Invoke();
+                return;
+            }
+
+            if (ChartPackData.MusicPreviewStartBeat != (Beat)newBeat)
+            {
+                ChartPackData.MusicPreviewStartBeat = (Beat)newBeat;
+                OnChartPackDataChanged?.Invoke();
+            }
+        }
+
+        public void UpdatePreviewEndBeat(string integerPartString, string numeratorString, string denominatorString)
+        {
+            if (!(int.TryParse(integerPartString, out int integerPart) &&
+                  int.TryParse(numeratorString, out int numerator) &&
+                  int.TryParse(denominatorString, out int denominator)))
+            {
+                OnChartPackDataChanged?.Invoke();
+                return;
+            }
+
+            if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat? newBeat) ||
+                ((Beat)newBeat).ToFloat() < ChartPackData.MusicPreviewStartBeat.ToFloat())
+            {
+                OnChartPackDataChanged?.Invoke();
+                return;
+            }
+
+            if (ChartPackData.MusicPreviewEndBeat != (Beat)newBeat)
+            {
+                ChartPackData.MusicPreviewEndBeat = (Beat)newBeat;
+                OnChartPackDataChanged?.Invoke();
+            }
         }
 
         /// <summary>
@@ -343,17 +394,13 @@ namespace CyanStars.ChartEditor.Model
         /// <param name="path">曲绘大图相对路径</param>
         /// <remarks>如果路径一致，不会触发事件并返回 false</remarks>
         /// <returns>是否发生了更新</returns>
-        public bool UpdateCoverFilePath(string path)
+        public void UpdateCoverFilePath(string path)
         {
-            if (ChartPackData.CoverFilePath == path)
+            if (ChartPackData.CoverFilePath != path)
             {
-                return false;
+                ChartPackData.CoverFilePath = path;
+                OnChartPackDataChanged?.Invoke();
             }
-
-            ChartPackData.CoverFilePath = path;
-
-            OnCoverFilePathChanged?.Invoke();
-            return true;
         }
 
         /// <summary>
@@ -362,16 +409,13 @@ namespace CyanStars.ChartEditor.Model
         /// <param name="path">曲绘小图相对路径</param>
         /// <remarks>如果路径一致，不会触发事件并返回 false</remarks>
         /// <returns>是否发生了更新</returns>
-        public bool UpdateCroppedCoverFilePath(string path)
+        public void UpdateCroppedCoverFilePath(string path)
         {
             if (ChartPackData.CroppedCoverFilePath == path)
             {
-                return false;
+                ChartPackData.CroppedCoverFilePath = path;
+                OnChartPackDataChanged?.Invoke();
             }
-
-            ChartPackData.CroppedCoverFilePath = path;
-            OnCroppedCoverFilePathChanged?.Invoke();
-            return true;
         }
 
         /// <summary>
@@ -504,48 +548,6 @@ namespace CyanStars.ChartEditor.Model
                 OnMusicVersionDataChanged?.Invoke();
                 return;
             }
-        }
-
-        /// <summary>
-        /// 更新预览开始节拍
-        /// </summary>
-        /// <param name="beat">新的节拍</param>
-        /// <returns>是否成功修改</returns>
-        public bool UpdateMusicPreviewStartBeat(Beat? beat)
-        {
-            if (beat != null && // 如果传入的 beat 为 null，直接允许后续修改
-                ChartPackData.MusicPreviewEndBeat != null &&
-                ChartPackData.MusicPreviewEndBeat.Value.ToFloat() <= beat.Value.ToFloat())
-            {
-                // 当 endBeat 不为 null 且小于等于 startBeat 时，不允许修改
-                return false;
-            }
-
-            ChartPackData.MusicPreviewStartBeat = beat;
-
-            OnMusicPreviewStartBeatChanged?.Invoke();
-            return true;
-        }
-
-        /// <summary>
-        /// 更新预览结束节拍
-        /// </summary>
-        /// <param name="beat">新的节拍</param>
-        /// <returns>是否成功修改</returns>
-        public bool UpdateMusicPreviewEndBeat(Beat? beat)
-        {
-            if (beat != null && // 如果传入的 beat 为 null，直接允许后续修改
-                ChartPackData.MusicPreviewStartBeat != null &&
-                ChartPackData.MusicPreviewStartBeat.Value.ToFloat() >= beat.Value.ToFloat())
-            {
-                // 当 startBeat 不为 null 且大于等于 startBeat 时，不允许修改
-                return false;
-            }
-
-            ChartPackData.MusicPreviewEndBeat = beat;
-
-            OnMusicPreviewEndBeatChanged?.Invoke();
-            return true;
         }
 
         #endregion
