@@ -483,7 +483,7 @@ namespace CyanStars.ChartEditor.Model
             KeyValuePair<string, List<string>> oldStaffItem, string newName, string newJobString)
         {
             if (oldStaffItem.Key == newName && string.Join("/", oldStaffItem.Value) == newJobString ||
-                oldMusicVersionItem.Staffs.ContainsKey(newName))
+                oldStaffItem.Key != newName && oldMusicVersionItem.Staffs.ContainsKey(newName))
             {
                 OnMusicVersionDataChanged?.Invoke();
                 return;
