@@ -53,8 +53,9 @@ namespace CyanStars.ChartEditor.View
             base.Bind(editorModel);
 
             Model.OnChartPackDataChanged += RefreshUI;
+            Model.OnChartPackDataCanvasVisiblenessChanged += RefreshUI;
 
-            closeCanvaButton.onClick.AddListener(() => { Model.SetMusicVersionCanvasVisibleness(false); });
+            closeCanvaButton.onClick.AddListener(() => { Model.SetChartPackDataCanvasVisibleness(false); });
 
             chartPackTitleField.onEndEdit.AddListener((text) => { Model.UpdateChartPackTitle(text); });
             previewStartField1.onEndEdit.AddListener((_) =>
@@ -102,6 +103,7 @@ namespace CyanStars.ChartEditor.View
         private void OnDestroy()
         {
             Model.OnChartPackDataChanged -= RefreshUI;
+            Model.OnChartPackDataCanvasVisiblenessChanged -= RefreshUI;
         }
     }
 }

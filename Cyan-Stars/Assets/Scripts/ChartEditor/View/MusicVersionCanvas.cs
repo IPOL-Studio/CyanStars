@@ -35,18 +35,15 @@ namespace CyanStars.ChartEditor.View
             addItemButton.onClick.AddListener(() => { Model.AddMusicVersionItem(); });
 
             Model.OnMusicVersionDataChanged += RefreshUI;
-            Model.OnMusicVersionCanvasVisiblenessChanged += SetCanvasVisibleness;
+            Model.OnMusicVersionCanvasVisiblenessChanged += RefreshUI;
 
             RefreshUI();
         }
 
-        private void SetCanvasVisibleness()
-        {
-            canvas.gameObject.SetActive(Model.MusicVersionCanvasVisibleness);
-        }
-
         private void RefreshUI()
         {
+            canvas.gameObject.SetActive(Model.MusicVersionCanvasVisibleness);
+
             addItemButtonObject.SetActive(!Model.IsSimplification);
             if (Model.MusicVersionDatas.Count == 0 && Model.IsSimplification)
             {
@@ -83,7 +80,7 @@ namespace CyanStars.ChartEditor.View
         private void OnDestroy()
         {
             Model.OnMusicVersionDataChanged -= RefreshUI;
-            Model.OnMusicVersionCanvasVisiblenessChanged -= SetCanvasVisibleness;
+            Model.OnMusicVersionCanvasVisiblenessChanged -= RefreshUI;
         }
     }
 }

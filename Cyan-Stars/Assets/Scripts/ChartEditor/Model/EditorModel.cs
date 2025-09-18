@@ -70,14 +70,19 @@ namespace CyanStars.ChartEditor.Model
         public int ActualMusicTime { get; set; } // TODO：测试完成后改为 private set;
 
         /// <summary>
-        /// 音乐版本弹窗可见性
-        /// </summary>
-        public bool MusicVersionCanvasVisibleness { get; private set; }
-
-        /// <summary>
         /// 谱包信息弹窗可见性
         /// </summary>
         public bool ChartPackDataCanvasVisibleness { get; private set; }
+
+        /// <summary>
+        /// 谱面信息弹窗可见性
+        /// </summary>
+        public bool ChartDataCanvasVisibleness { get; private set; }
+
+        /// <summary>
+        /// 音乐版本弹窗可见性
+        /// </summary>
+        public bool MusicVersionCanvasVisibleness { get; private set; }
 
 
         // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面数据，加载/保存时需要从读写磁盘。 ---
@@ -127,29 +132,19 @@ namespace CyanStars.ChartEditor.Model
         public event Action OnSelectedNotesChanged;
 
         /// <summary>
-        /// 谱包信息（谱面元数据）发生变化
+        /// 谱包基本信息（名称、预览时间、曲绘）发生变化
         /// </summary>
         public event Action OnChartPackDataChanged;
 
         /// <summary>
-        /// 谱包音乐版本数据发生变化时
+        /// 谱面基本信息（难度、定数、预备拍数）发生变化
+        /// </summary>
+        public event Action OnChartDataChanged;
+
+        /// <summary>
+        /// 音乐版本数据发生变化时
         /// </summary>
         public event Action OnMusicVersionDataChanged;
-
-        /// <summary>
-        /// 谱包预览开始节拍变化时
-        /// </summary>
-        public event Action OnMusicPreviewStartBeatChanged;
-
-        /// <summary>
-        /// 谱包预览结束节拍变化时
-        /// </summary>
-        public event Action OnMusicPreviewEndBeatChanged;
-
-        /// <summary>
-        /// 谱面预备拍数发生变化
-        /// </summary>
-        public event Action OnReadyBeatChanged;
 
         /// <summary>
         /// Bpm 组发生变化
@@ -172,14 +167,19 @@ namespace CyanStars.ChartEditor.Model
         public event Action OnTempHoldJudgeBeatChanged;
 
         /// <summary>
-        /// 曲目弹窗打开或关闭
-        /// </summary>
-        public event Action OnMusicVersionCanvasVisiblenessChanged;
-
-        /// <summary>
         /// 谱包弹窗打开或关闭
         /// </summary>
         public event Action OnChartPackDataCanvasVisiblenessChanged;
+
+        /// <summary>
+        /// 谱面弹窗打开或关闭
+        /// </summary>
+        public event Action OnChartDataCanvasVisiblenessChanged;
+
+        /// <summary>
+        /// 曲目弹窗打开或关闭
+        /// </summary>
+        public event Action OnMusicVersionCanvasVisiblenessChanged;
 
 
         /// <summary>
@@ -209,8 +209,9 @@ namespace CyanStars.ChartEditor.Model
                 ChartNotes.Add(note);
             }
 
-            MusicVersionCanvasVisibleness = false;
             ChartPackDataCanvasVisibleness = false;
+            ChartDataCanvasVisibleness = false;
+            MusicVersionCanvasVisibleness = false;
         }
 
 
@@ -321,6 +322,17 @@ namespace CyanStars.ChartEditor.Model
 
             ChartPackDataCanvasVisibleness = isVisible;
             OnChartPackDataCanvasVisiblenessChanged?.Invoke();
+        }
+
+        public void SetChartDataCanvasVisibleness(bool isVisible)
+        {
+            if (ChartDataCanvasVisibleness == isVisible)
+            {
+                return;
+            }
+
+            ChartDataCanvasVisibleness = isVisible;
+            OnChartDataCanvasVisiblenessChanged?.Invoke();
         }
 
         #endregion
@@ -554,17 +566,41 @@ namespace CyanStars.ChartEditor.Model
 
         #region 谱面管理
 
-        public bool UpdateReadyBeat(int value)
+        public void UpdateDifficulty(ChartDifficulty? difficulty)
         {
-            if (value < 0 || value == ChartData.ReadyBeat)
+            if (difficulty == null && ChartData.Difficulty != null)
             {
-                return false;
+                ChartData.Difficulty = null;
+                OnChartDataChanged?.Invoke();
+            }
+            else
+            {
+                // TODO: 校验谱包内是否存在其他相同难度谱面
+                throw new NotSupportedException();
+            }
+        }
+
+        public void UpdateLevel(string text)
+        {
+            if (text != ChartData.Level)
+            {
+                ChartData.Level = text;
+                OnChartDataChanged?.Invoke();
+            }
+        }
+
+        public void UpdateReadyBeat(string text)
+        {
+            if (!int.TryParse(text, out int value))
+            {
+                OnChartDataChanged?.Invoke();
             }
 
-            ChartData.ReadyBeat = value;
-
-            OnReadyBeatChanged?.Invoke();
-            return true;
+            if (value >= 0 || value != ChartData.ReadyBeat)
+            {
+                ChartData.ReadyBeat = value;
+                OnChartDataChanged?.Invoke();
+            }
         }
 
         #region BPM 组管理
