@@ -22,6 +22,11 @@ namespace CyanStars.ChartEditor.Model
         /// </summary>
         public EditTool SelectedEditTool { get; private set; }
 
+        /// <summary>
+        /// 当前选中编辑的 BPM 组下标
+        /// </summary>
+        public int SelectedBpmGroupIndex { get; private set; }
+
 
         /// <summary>
         /// 当前设置的位置精度（等于屏幕上有几条竖直位置线）
@@ -83,6 +88,11 @@ namespace CyanStars.ChartEditor.Model
         /// 音乐版本弹窗可见性
         /// </summary>
         public bool MusicVersionCanvasVisibleness { get; private set; }
+
+        /// <summary>
+        /// BPM 组弹窗可见性
+        /// </summary>
+        public bool BpmGroupCanvasVisibleness { get; private set; }
 
 
         // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面数据，加载/保存时需要从读写磁盘。 ---
@@ -181,6 +191,11 @@ namespace CyanStars.ChartEditor.Model
         /// </summary>
         public event Action OnMusicVersionCanvasVisiblenessChanged;
 
+        /// <summary>
+        /// BPM 组弹窗打开或关闭
+        /// </summary>
+        public event Action OnBpmGroupCanvasVisiblenessChanged;
+
 
         /// <summary>
         /// 构造函数
@@ -202,6 +217,7 @@ namespace CyanStars.ChartEditor.Model
             BeatZoom = 1f;
             TempHoldJudgeBeat = null;
             SelectedNotes = new HashSet<BaseChartNoteData>();
+            SelectedBpmGroupIndex = 0;
 
             ChartNotes = new HashSet<BaseChartNoteData>();
             foreach (var note in ChartData.Notes)
@@ -212,6 +228,7 @@ namespace CyanStars.ChartEditor.Model
             ChartPackDataCanvasVisibleness = false;
             ChartDataCanvasVisibleness = false;
             MusicVersionCanvasVisibleness = false;
+            BpmGroupCanvasVisibleness = false;
         }
 
 
@@ -333,6 +350,17 @@ namespace CyanStars.ChartEditor.Model
 
             ChartDataCanvasVisibleness = isVisible;
             OnChartDataCanvasVisiblenessChanged?.Invoke();
+        }
+
+        public void SetBpmGroupCanvasVisibleness(bool isVisible)
+        {
+            if (BpmGroupCanvasVisibleness == isVisible)
+            {
+                return;
+            }
+
+            BpmGroupCanvasVisibleness = isVisible;
+            OnBpmGroupCanvasVisiblenessChanged?.Invoke();
         }
 
         #endregion
@@ -606,55 +634,70 @@ namespace CyanStars.ChartEditor.Model
         #region BPM 组管理
 
         /// <summary>
-        /// 获取谱面下的 BPM 组
-        /// </summary>
-        /// <returns>BPM 组列表</returns>
-        public IReadOnlyList<BpmGroupItem> GetBpmGroupItems()
-        {
-            return BpmGroupDatas;
-        }
-
-        /// <summary>
-        /// 自动在合适的位置添加或更新 BPM 元素
+        /// 更新 BPM 元素开始时间，并将其自动放在合适的位置
         /// </summary>
         /// <remarks>将根据 beat 自动插入或更新 Bpm 组</remarks>
-        /// <returns>更新后的 BPM 组列表</returns>
-        public IReadOnlyList<BpmGroupItem> InsertBpmGroupItems(BpmGroupItem newItem)
+        public void UpdateBpmGroupItemBeat(string integerPartString, string numeratorString, string denominatorString)
         {
-            int i;
-            for (i = 0; i < BpmGroupDatas.Count; i++)
+            if (!(int.TryParse(integerPartString, out int integerPart) &&
+                  int.TryParse(numeratorString, out int numerator) &&
+                  int.TryParse(denominatorString, out int denominator)))
             {
-                if (BpmGroupDatas[i].StartBeat == newItem.StartBeat)
-                {
-                    // beat 与已有的元素相等
-                    BpmGroupDatas[i] = newItem;
+                OnBpmGroupChanged?.Invoke();
+                return;
+            }
 
-                    OnBpmGroupChanged?.Invoke();
-                    return BpmGroupDatas;
+            if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat? beat))
+            {
+                OnBpmGroupChanged?.Invoke();
+                return;
+            }
+
+            if ((Beat)beat == BpmGroupDatas[SelectedBpmGroupIndex].StartBeat)
+            {
+                OnBpmGroupChanged?.Invoke();
+                return;
+            }
+
+            for (int i = 0; i < BpmGroupDatas.Count; i++)
+            {
+                if (i == SelectedBpmGroupIndex)
+                {
+                    continue;
                 }
 
-                if (BpmGroupDatas[i].StartBeat.ToFloat() > newItem.StartBeat.ToFloat())
+                BpmGroupItem item = BpmGroupDatas[i];
+                if (item.StartBeat == (Beat)beat)
                 {
-                    // 新的 bpm 元素应作为第 i 个元素插入 bpm 组
-                    break;
+                    OnBpmGroupChanged?.Invoke();
+                    return;
                 }
             }
 
-            BpmGroupDatas.Insert(i, newItem);
+            BpmGroupItem itemToUpdate = BpmGroupDatas[SelectedBpmGroupIndex];
+            itemToUpdate.StartBeat = (Beat)beat;
+            BpmGroupDatas.Sort((item1, item2) => item1.StartBeat.ToFloat().CompareTo(item2.StartBeat.ToFloat()));
+            SelectedBpmGroupIndex = BpmGroupDatas.IndexOf(itemToUpdate);
 
             OnBpmGroupChanged?.Invoke();
-
-            return BpmGroupDatas;
         }
 
-        public BpmGroupItem PopBpmGroupItem(int index)
+        public void DeleteBpmGroupItem()
         {
-            BpmGroupItem bpmGroupItem = BpmGroupDatas[index];
-            BpmGroupDatas.RemoveAt(index);
-
+            BpmGroupDatas.RemoveAt(SelectedBpmGroupIndex);
+            SelectedBpmGroupIndex = Math.Min(BpmGroupDatas.Count - 1, SelectedBpmGroupIndex);
             OnBpmGroupChanged?.Invoke();
+        }
 
-            return bpmGroupItem;
+        public void AddBpmGroupItem()
+        {
+            float bpm = BpmGroupDatas[-1].Bpm;
+            Beat beat = BpmGroupDatas[-1].StartBeat;
+            Beat newBeat = new Beat(beat.IntegerPart + 1, beat.Numerator, beat.Denominator);
+            BpmGroupItem item = new BpmGroupItem(bpm, newBeat);
+            BpmGroupDatas.Add(item);
+            SelectedBpmGroupIndex = BpmGroupDatas.Count - 1;
+            OnBpmGroupChanged?.Invoke();
         }
 
         #endregion
