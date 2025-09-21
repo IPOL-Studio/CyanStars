@@ -26,7 +26,7 @@ namespace CyanStars.Chart
 
         /// <summary>游戏内选中音乐后的预览开始时间</summary>
         [CanBeNull]
-        public Beat MusicPreviewStartBeat;
+        public Beat MusicPreviewStartBeat { get; set; }
 
         /// <summary>游戏内选中音乐后的预览结束时间</summary>
         [CanBeNull]
@@ -72,8 +72,8 @@ namespace CyanStars.Chart
             DataVersion = 1;
             Title = title;
             MusicVersionDatas = musicVersionDatas ?? new List<MusicVersionData>();
-            MusicPreviewStartBeat = musicPreviewStartBeat ?? new Beat();
-            MusicPreviewEndBeat = musicPreviewEndBeat?? new Beat();
+            MusicPreviewStartBeat = musicPreviewStartBeat ?? new Beat(0, 0, 1);
+            MusicPreviewEndBeat = musicPreviewEndBeat ?? new Beat(0, 0, 1);
             CoverFilePath = coverFilePath;
             CroppedCoverFilePath = croppedCoverFilePath;
             ChartMetaDatas = chartMetaDatas ?? new List<ChartMetadata>();

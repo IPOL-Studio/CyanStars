@@ -13,12 +13,12 @@ namespace CyanStars.Chart
         /// <summary>带分数拍子的分母，也作为节拍的细分精度</summary>
         public readonly int Denominator;
 
-        /// <summary>Beat 的构造参数</summary>
+        /// <summary>Beat 结构体的构造参数重载</summary>
         /// <param name="integerPart">拍子的整数部分</param>
         /// <param name="numerator">拍子的小数部分的分数</param>
         /// <param name="denominator">拍子的小数部分的分母（细分精度），如果为 0，numerator 也视为0（只取 integerPart 部分）</param>
         /// <remarks>上述三个值都必须大于等于 0</remarks>
-        public Beat(int integerPart = 0, int numerator = 0, int denominator = 1)
+        public Beat(int integerPart, int numerator, int denominator)
         {
             IntegerPart = integerPart;
             Numerator = numerator;
