@@ -122,11 +122,6 @@ namespace CyanStars.ChartEditor.Model
         public event Action OnEditToolChanged;
 
         /// <summary>
-        /// 菜单栏任意按钮被点击
-        /// </summary>
-        public event Action OnMenuButtonClicked;
-
-        /// <summary>
         /// 编辑器属性侧边栏内容变化
         /// </summary>
         public event Action OnEditorAttributeChanged;
@@ -248,12 +243,6 @@ namespace CyanStars.ChartEditor.Model
 
             SelectedEditTool = editTool;
             OnEditToolChanged?.Invoke();
-        }
-
-        public void MenuButtonClicked(MenuButton menuButton)
-        {
-            OnMenuButtonClicked?.Invoke();
-            throw new NotSupportedException();
         }
 
         public void SetPosAccuracy(string posAccuracyStr)
