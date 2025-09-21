@@ -646,7 +646,12 @@ namespace CyanStars.ChartEditor.Model
                 OnChartDataChanged?.Invoke();
             }
 
-            if (value >= 0 || value != ChartData.ReadyBeat)
+            if (value < 0)
+            {
+                OnChartDataChanged?.Invoke();
+            }
+
+            if (value != ChartData.ReadyBeat)
             {
                 ChartData.ReadyBeat = value;
                 OnChartDataChanged?.Invoke();
