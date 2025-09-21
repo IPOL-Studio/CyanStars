@@ -63,6 +63,7 @@ namespace CyanStars.ChartEditor.View
             Model.OnBpmGroupChanged += RefreshUI;
             Model.OnSelectedBpmItemChanged += RefreshUI;
 
+            closeCanvasButton.onClick.AddListener(() => { Model.SetBpmGroupCanvasVisibleness(false); });
             addItemButton.onClick.AddListener(() => { Model.AddBpmGroupItem(); });
             deleteItemButton.onClick.AddListener(() => { Model.DeleteBpmGroupItem(); });
             startBeatField1.onEndEdit.AddListener((_) =>
