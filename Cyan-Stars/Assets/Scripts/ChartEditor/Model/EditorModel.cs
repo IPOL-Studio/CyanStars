@@ -162,6 +162,11 @@ namespace CyanStars.ChartEditor.Model
         public event Action OnBpmGroupChanged;
 
         /// <summary>
+        /// 选中的 Bpm 组发生变化
+        /// </summary>
+        public event Action OnSelectedBpmItemChanged;
+
+        /// <summary>
         /// 变速组发生变化
         /// </summary>
         public event Action OnSpeedGroupChanged;
@@ -352,6 +357,25 @@ namespace CyanStars.ChartEditor.Model
             OnChartDataCanvasVisiblenessChanged?.Invoke();
         }
 
+        /// <summary>
+        /// 点击某个已存在的音符，由 note 的 button 组件触发
+        /// </summary>
+        /// <param name="note">音符数据</param>
+        public void SelectNote(BaseChartNoteData note)
+        {
+            // TODO: 拓展兼容选中多个音符
+            if (SelectedEditTool == EditTool.Eraser)
+            {
+                ChartNotes.Remove(note);
+                OnNoteDataChanged?.Invoke();
+                return;
+            }
+
+            SelectedNotes.Clear();
+            SelectedNotes.Add(note);
+            OnSelectedNotesChanged?.Invoke();
+        }
+
         public void SetBpmGroupCanvasVisibleness(bool isVisible)
         {
             if (BpmGroupCanvasVisibleness == isVisible)
@@ -361,6 +385,15 @@ namespace CyanStars.ChartEditor.Model
 
             BpmGroupCanvasVisibleness = isVisible;
             OnBpmGroupCanvasVisiblenessChanged?.Invoke();
+        }
+
+        public void SelectBpmItem(int index)
+        {
+            if (SelectedBpmGroupIndex != index)
+            {
+                SelectedBpmGroupIndex = index;
+                OnSelectedBpmItemChanged?.Invoke();
+            }
         }
 
         #endregion
@@ -691,8 +724,8 @@ namespace CyanStars.ChartEditor.Model
 
         public void AddBpmGroupItem()
         {
-            float bpm = BpmGroupDatas[-1].Bpm;
-            Beat beat = BpmGroupDatas[-1].StartBeat;
+            float bpm = BpmGroupDatas[BpmGroupDatas.Count - 1].Bpm;
+            Beat beat = BpmGroupDatas[BpmGroupDatas.Count - 1].StartBeat;
             Beat newBeat = new Beat(beat.IntegerPart + 1, beat.Numerator, beat.Denominator);
             BpmGroupItem item = new BpmGroupItem(bpm, newBeat);
             BpmGroupDatas.Add(item);
@@ -848,25 +881,6 @@ namespace CyanStars.ChartEditor.Model
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-
-        /// <summary>
-        /// 点击某个已存在的音符，由 note 的 button 组件触发
-        /// </summary>
-        /// <param name="note">音符数据</param>
-        public void SelectNote(BaseChartNoteData note)
-        {
-            // TODO: 拓展兼容选中多个音符
-            if (SelectedEditTool == EditTool.Eraser)
-            {
-                ChartNotes.Remove(note);
-                OnNoteDataChanged?.Invoke();
-                return;
-            }
-
-            SelectedNotes.Clear();
-            SelectedNotes.Add(note);
-            OnSelectedNotesChanged?.Invoke();
         }
 
         /// <summary>
