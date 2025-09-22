@@ -136,7 +136,7 @@ MonoBehaviour:
     BundleName: charteditor.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 660628
+    AssetsLength: 664801
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/BeatInputField.prefab
       Length: 49161
@@ -153,7 +153,7 @@ MonoBehaviour:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/BeatLine.prefab
       Length: 7596
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/BpmItem.prefab
-      Length: 21923
+      Length: 22771
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/BreakNote.prefab
       Length: 5753
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/ClickNote.prefab
@@ -178,6 +178,8 @@ MonoBehaviour:
       Length: 7330
     - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u6B63\u89E3\u97F3\u6D6E\u6761Canvas.prefab"
       Length: 14401
+    - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u8282\u62CD\u7EBF.prefab"
+      Length: 3325
     - Name: Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Dropdown
         Icon.psd
       Length: 85308
