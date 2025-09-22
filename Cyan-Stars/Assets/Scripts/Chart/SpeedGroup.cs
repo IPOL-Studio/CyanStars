@@ -37,15 +37,15 @@ namespace CyanStars.Chart
             }
 
             // 根据持续时间计算采样点数量
-            int length = Mathf.Abs(speedGroupData.BezierCurve
-                .CubicBeziers[speedGroupData.BezierCurve.CubicBeziers.Count - 1].P3.Time);
+            int length = (int)Mathf.Abs(speedGroupData.BezierCurve
+                .ControlPoints[speedGroupData.BezierCurve.ControlPoints.Count - 1].Position.x);
             int count = length / SampleInterval + 1;
 
             // 生成speedList
             for (int i = 0; i < count; i++)
             {
-                float t = i * SampleInterval * -1;
-                float speed = speedGroupData.BezierCurve.GetSpeed((int)t) * playerSpeed;
+                int time = i * SampleInterval * -1;
+                float speed = speedGroupData.BezierCurve.GetValue(time) * playerSpeed;
                 speedList.Add(speed);
             }
 
