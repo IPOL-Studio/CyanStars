@@ -466,21 +466,6 @@ namespace CyanStars.ChartEditor.Model
         }
 
         /// <summary>
-        /// 尝试更新曲绘小图
-        /// </summary>
-        /// <param name="path">曲绘小图相对路径</param>
-        /// <remarks>如果路径一致，不会触发事件并返回 false</remarks>
-        /// <returns>是否发生了更新</returns>
-        public void UpdateCroppedCoverFilePath(string path)
-        {
-            if (ChartPackData.CroppedCoverFilePath == path)
-            {
-                ChartPackData.CroppedCoverFilePath = path;
-                OnChartPackDataChanged?.Invoke();
-            }
-        }
-
-        /// <summary>
         /// 向列表添加一个新的音乐版本
         /// </summary>
         /// <param name="newData">要添加的音乐版本数据</param>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using UnityEngine;
 
 namespace CyanStars.Chart
 {
@@ -25,11 +26,9 @@ namespace CyanStars.Chart
         public List<MusicVersionData> MusicVersionDatas;
 
         /// <summary>游戏内选中音乐后的预览开始时间</summary>
-        [CanBeNull]
         public Beat MusicPreviewStartBeat { get; set; }
 
         /// <summary>游戏内选中音乐后的预览结束时间</summary>
-        [CanBeNull]
         public Beat MusicPreviewEndBeat;
 
 
@@ -39,10 +38,18 @@ namespace CyanStars.Chart
         [CanBeNull]
         public string CoverFilePath;
 
-        /// <summary>裁剪后的1:4横向小图（在选取页展示用）</summary>
-        [CanBeNull]
-        public string CroppedCoverFilePath;
+        /// <summary>开始裁剪像素（相对于图片左下角）</summary>
+        public Vector2 CropPosition;
 
+        /// <summary>
+        /// 裁剪高度
+        /// </summary>
+        public float CropHeight;
+
+        /// <summary>
+        /// 裁剪宽度
+        /// </summary>
+        public float CropWidth => CropHeight * 4;
 
         // 谱面元数据
 
@@ -75,7 +82,6 @@ namespace CyanStars.Chart
             MusicPreviewStartBeat = musicPreviewStartBeat ?? new Beat(0, 0, 1);
             MusicPreviewEndBeat = musicPreviewEndBeat ?? new Beat(0, 0, 1);
             CoverFilePath = coverFilePath;
-            CroppedCoverFilePath = croppedCoverFilePath;
             ChartMetaDatas = chartMetaDatas ?? new List<ChartMetadata>();
             SaveTime = saveTime ?? DateTime.UtcNow;
             PackHash = packHash;
