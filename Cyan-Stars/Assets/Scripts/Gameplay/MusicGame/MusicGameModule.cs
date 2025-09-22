@@ -268,6 +268,7 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Logger.RemoveLogger(loggerCategoryName);
             loggerCategoryName = null;
             DistanceBarData = null;
+            deviationsSum = 0;
 
             MusicGamePlayData = new MusicGamePlayData { DeviationList = new List<float>() };
         }
