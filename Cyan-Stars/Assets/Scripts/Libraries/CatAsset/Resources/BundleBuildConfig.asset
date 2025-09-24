@@ -45,7 +45,7 @@ MonoBehaviour:
     RuleRegex: 
     Group: Base
   - DirectoryObj: {fileID: 102900000, guid: 3fe20c2a749d63f46ad59fa05128884b, type: 3}
-    BuildRuleName: NAssetToNBundle
+    BuildRuleName: NAssetToOneBundleWithTopDirectory
     RuleRegex: 
     Group: Base
   - DirectoryObj: {fileID: 102900000, guid: f7a95e1c76f44664d945ec97b789937a, type: 3}
@@ -131,61 +131,6 @@ MonoBehaviour:
       Length: 1447
     - Name: Assets/Shaders/HoldNote.shader
       Length: 2479
-  - RelativePath: BundleRes/Prefabs/charteditor.bundle
-    DirectoryName: BundleRes/Prefabs
-    BundleName: charteditor.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 664801
-    Assets:
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/BeatInputField.prefab
-      Length: 49161
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/Button(BPM Element).prefab
-      Length: 22187
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/Button(Speed Element).prefab
-      Length: 22196
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/Button.controller
-      Length: 37714
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/Button.prefab
-      Length: 14471
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/Dropdown.prefab
-      Length: 39590
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/BeatLine.prefab
-      Length: 7596
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/BpmItem.prefab
-      Length: 22771
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/BreakNote.prefab
-      Length: 5753
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/ClickNote.prefab
-      Length: 5768
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/DragNote.prefab
-      Length: 5786
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/HoldNote.prefab
-      Length: 8075
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/MusicVersionItem.prefab
-      Length: 106943
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/PosLine.prefab
-      Length: 2715
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/StaffItem.prefab
-      Length: 55528
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/TapNote.prefab
-      Length: 5754
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/InputFieldWithButton.prefab
-      Length: 27917
-    - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u5F39\u7A97Canvas.prefab"
-      Length: 12412
-    - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u65B0\u5EFA\u6309\u94AE\u6D6E\u6761Canvas.prefab"
-      Length: 7330
-    - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u6B63\u89E3\u97F3\u6D6E\u6761Canvas.prefab"
-      Length: 14401
-    - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u8282\u62CD\u7EBF.prefab"
-      Length: 3325
-    - Name: Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Dropdown
-        Icon.psd
-      Length: 85308
-    - Name: Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Input Field
-        Icon.psd
-      Length: 102100
   - RelativePath: BundleRes/Prefabs/effect.bundle
     DirectoryName: BundleRes/Prefabs
     BundleName: effect.bundle
@@ -270,7 +215,7 @@ MonoBehaviour:
     BundleName: musicgameui.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 3033462
+    AssetsLength: 915017
     Assets:
     - Name: Assets/BundleRes/Prefabs/MusicGameUI/MusicGame3DUIPanel.prefab
       Length: 18250
@@ -286,9 +231,6 @@ MonoBehaviour:
       Length: 620712
     - Name: Assets/TextMeshPro/Examples & Extras/Fonts/Bangers.ttf
       Length: 39676
-    - Name: Assets/TextMeshPro/Examples & Extras/Resources/Fonts & Materials/Oswald
-        Bold SDF.asset
-      Length: 2118445
   - RelativePath: BundleRes/Prefabs/scoresettlementui.bundle
     DirectoryName: BundleRes/Prefabs
     BundleName: scoresettlementui.bundle
@@ -502,357 +444,85 @@ MonoBehaviour:
     Assets:
     - Name: "Assets/CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/TimelineData.asset"
       Length: 273166
-  - RelativePath: CysMultimediaAssets/Charts/NewSong/chartpack_json.bundle
-    DirectoryName: CysMultimediaAssets/Charts/NewSong
-    BundleName: chartpack_json.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2113
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Charts/NewSong/ChartPack.json
-      Length: 2113
-  - RelativePath: "CysMultimediaAssets/Font/3500\u5E38\u7528\u6C49\u5B57+\u7B26\u53F7+\u82F1\u6587\u5B57\u7B26\u96C6_txt.bundle"
+  - RelativePath: CysMultimediaAssets/Font/lxgwwenkai.bundle
     DirectoryName: CysMultimediaAssets/Font
-    BundleName: "3500\u5E38\u7528\u6C49\u5B57+\u7B26\u53F7+\u82F1\u6587\u5B57\u7B26\u96C6_txt.bundle"
+    BundleName: lxgwwenkai.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 11794
-    Assets:
-    - Name: "Assets/CysMultimediaAssets/Font/3500\u5E38\u7528\u6C49\u5B57+\u7B26\u53F7+\u82F1\u6587\u5B57\u7B26\u96C6.txt"
-      Length: 11794
-  - RelativePath: CysMultimediaAssets/Font/gb2312_txt.bundle
-    DirectoryName: CysMultimediaAssets/Font
-    BundleName: gb2312_txt.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 23151
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/gb2312.txt
-      Length: 23151
-  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/license_txt.bundle
-    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: license_txt.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 4540
+    AssetsLength: 158456767
     Assets:
     - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LICENSE.txt
       Length: 4540
-  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-bold_ttf.bundle
-    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: lxgwwenkaimono-bold_ttf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 15455768
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold.ttf
       Length: 15455768
-  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-bold-dynamic-sdf_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: lxgwwenkaimono-bold-dynamic-sdf_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2105208
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold-Dynamic-SDF.asset
       Length: 2105208
-  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-bold-static-3500chinese-sdf(fastpacking)_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: lxgwwenkaimono-bold-static-3500chinese-sdf(fastpacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35509737
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35509737
-  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-light_ttf.bundle
-    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: lxgwwenkaimono-light_ttf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 18912262
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Light.ttf
       Length: 18912262
-  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-light-dynamic-sdf_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: lxgwwenkaimono-light-dynamic-sdf_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 7676
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Light-Dynamic-SDF.asset
       Length: 7676
-  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-light-static-3500chinese-sdf(fastpacking)_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: lxgwwenkaimono-light-static-3500chinese-sdf(fastpacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35523855
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Light-Static-3500Chinese-SDF(FastPacking).asset
-      Length: 35523855
-  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-regular_ttf.bundle
-    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: lxgwwenkaimono-regular_ttf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 15445214
-    Assets:
+      Length: 35523839
     - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Regular.ttf
       Length: 15445214
-  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-regular-dynamic-sdf_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: lxgwwenkaimono-regular-dynamic-sdf_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 7686
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Regular-Dynamic-SDF.asset
       Length: 7686
-  - RelativePath: CysMultimediaAssets/Font/LxgwWenKai/lxgwwenkaimono-regular-static-3500chinese-sdf(fastpacking)_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: lxgwwenkaimono-regular-static-3500chinese-sdf(fastpacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35484837
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Regular-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35484837
-  - RelativePath: CysMultimediaAssets/Font/Oswald/license_txt.bundle
-    DirectoryName: CysMultimediaAssets/Font/Oswald
-    BundleName: license_txt.bundle
+  - RelativePath: CysMultimediaAssets/Font/oswald.bundle
+    DirectoryName: CysMultimediaAssets/Font
+    BundleName: oswald.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 4483
+    AssetsLength: 6524718
     Assets:
     - Name: Assets/CysMultimediaAssets/Font/Oswald/LICENSE.txt
       Length: 4483
-  - RelativePath: CysMultimediaAssets/Font/Oswald/oswald-extralight_ttf.bundle
-    DirectoryName: CysMultimediaAssets/Font/Oswald
-    BundleName: oswald-extralight_ttf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 87208
-    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-Bold SDF.asset
+      Length: 2117658
+    - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-Bold.ttf
+      Length: 53056
     - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-ExtraLight.ttf
       Length: 87208
-  - RelativePath: CysMultimediaAssets/Font/Oswald/oswald-extralight-dynamic-sdf_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/Oswald
-    BundleName: oswald-extralight-dynamic-sdf_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2107984
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-ExtraLight-Dynamic-SDF.asset
       Length: 2107984
-  - RelativePath: CysMultimediaAssets/Font/Oswald/oswald-extralight-static-ascii-sdf(fastpacking)_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/Oswald
-    BundleName: oswald-extralight-static-ascii-sdf(fastpacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2154329
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-ExtraLight-Static-ASCII-SDF(FastPacking).asset
       Length: 2154329
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/license_txt.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: license_txt.bundle
+  - RelativePath: CysMultimediaAssets/Font/sourcehanserifcn.bundle
+    DirectoryName: CysMultimediaAssets/Font
+    BundleName: sourcehanserifcn.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 4559
+    AssetsLength: 196968611
     Assets:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/LICENSE.txt
       Length: 4559
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-bold_otf.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-bold_otf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 12094680
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Bold.otf
       Length: 12094680
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-bold-dynamic-sdf_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-bold-dynamic-sdf_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2107242
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Bold-Dynamic-SDF.asset
       Length: 2107242
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-bold-static-3500chinese-sdf(fastpacking)_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-bold-static-3500chinese-sdf(fastpacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35551347
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Bold-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35551347
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-extralight_otf.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-extralight_otf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 10444316
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-ExtraLight.otf
-      Length: 10444316
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-extralight-dynamic-sdf_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-extralight-dynamic-sdf_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 7708
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-ExtraLight-Dynamic-SDF.asset
-      Length: 7708
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-extralight-static-3500chinese-sdf(fastpacking)_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-extralight-static-3500chinese-sdf(fastpacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35500490
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-ExtraLight-Static-3500Chinese-SDF(FastPacking).asset
-      Length: 35500490
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-heavy_otf.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-heavy_otf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 11304840
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy.otf
       Length: 11304840
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-heavy-dynamic-sdf_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-heavy-dynamic-sdf_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2108911
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy-Dynamic-SDF.asset
       Length: 2108911
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-heavy-static-3500chinese-sdf(fastpacking)_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-heavy-static-3500chinese-sdf(fastpacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35554903
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35554903
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-light_otf.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-light_otf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 11495436
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Light.otf
-      Length: 11495436
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-light-dynamic-sdf_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-light-dynamic-sdf_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2105397
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Light-Dynamic-SDF.asset
-      Length: 2105397
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-light-static-3500chinese-sdf(fastpacking)_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-light-static-3500chinese-sdf(fastpacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35501281
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Light-Static-3500Chinese-SDF(FastPacking).asset
-      Length: 35501281
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-medium_otf.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-medium_otf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 11373656
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium.otf
       Length: 11373656
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-medium-dynamic-sdf_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-medium-dynamic-sdf_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2123311
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium-Dynamic-SDF.asset
       Length: 2123311
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-medium-static-3500chinese-sdf(fastpacking)_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-medium-static-3500chinese-sdf(fastpacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35478492
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35478492
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-regular_otf.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-regular_otf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 11626108
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Regular.otf
       Length: 11626108
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-regular-dynamic-sdf_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-regular-dynamic-sdf_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2124157
-    Assets:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Regular-Dynamic-SDF.asset
-      Length: 2124157
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-regular-static-3500chinese-sdf(fastpacking)_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-regular-static-3500chinese-sdf(fastpacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35517472
-    Assets:
+      Length: 2123090
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Regular-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35517472
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-semibold_otf.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-semibold_otf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 11771824
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-SemiBold.otf
-      Length: 11771824
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-semibold-dynamic-sdf_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-semibold-dynamic-sdf_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2109449
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-SemiBold-Dynamic-SDF.asset
-      Length: 2109449
-  - RelativePath: CysMultimediaAssets/Font/SourceHanSerifCN/sourcehanserifcn-semibold-static-3500chinese-sdf(fastpacking)_asset.bundle
-    DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: sourcehanserifcn-semibold-static-3500chinese-sdf(fastpacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35522581
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-SemiBold-Static-3500Chinese-SDF(FastPacking).asset
-      Length: 35522581
   - RelativePath: CysMultimediaAssets/Live2D/LuoTianYi_Pilot/license_txt.bundle
     DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot
     BundleName: license_txt.bundle
@@ -970,111 +640,6 @@ MonoBehaviour:
     Assets:
     - Name: Assets/CysMultimediaAssets/Live2D/LuoTianYi_Pilot/LuoTianYi_PilotMaskTexture.asset
       Length: 490
-  - RelativePath: CysMultimediaAssets/Sprites/charteditor.bundle
-    DirectoryName: CysMultimediaAssets/Sprites
-    BundleName: charteditor.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 5214898
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/DropdownBackground.png
-      Length: 46445
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/Break.png
-      Length: 85614
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/Click.png
-      Length: 99419
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/Drag.png
-      Length: 116645
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/HoldTail.png
-      Length: 418816
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/HoleHead.png
-      Length: 119728
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/JudgeLine.png
-      Length: 7099
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/Tap.png
-      Length: 95889
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/\u4F4D\u7F6E\u7EBF.png"
-      Length: 2011
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/\u8282\u62CD\u7EBF.png"
-      Length: 1495
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditorFrame.png
-      Length: 84140
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Add.png
-      Length: 3081
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Apply.png
-      Length: 4526
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Bell.png
-      Length: 3767
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Copy.png
-      Length: 3832
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Del.png
-      Length: 3696
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/LED.png
-      Length: 432
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Menu.png
-      Length: 3908
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/MiniBreak.png
-      Length: 46749
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/MiniClick.png
-      Length: 40274
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/MiniDrag.png
-      Length: 46039
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/MiniHold.png
-      Length: 47390
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/MiniTap.png
-      Length: 39861
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Minus.png
-      Length: 1950
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Mute.png
-      Length: 4440
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Play.png
-      Length: 3855
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u4FDD\u5B58.png"
-      Length: 4415
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u529F\u80FD\u83DC\u5355.png"
-      Length: 3596
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u53F3\u4FA7\u8FB9\u680F.png"
-      Length: 337472
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u5438\u9644.png"
-      Length: 4979
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u5BFC\u5165\u97F3\u4E50&\u66F2\u7ED8.png"
-      Length: 4731
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u5C55\u5F00.png"
-      Length: 263
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u653E\u5927\u89C6\u91CE.png"
-      Length: 4789
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u672A\u9009\u4E2D.png"
-      Length: 1735
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u6A61\u76AE.png"
-      Length: 4550
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u6D4B\u5B9ABPM.png"
-      Length: 4333
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u7F29\u5C0F\u89C6\u91CE.png"
-      Length: 4726
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u9009\u4E2D.png"
-      Length: 1871
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u9009\u62E9.png"
-      Length: 4544
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u94C5\u7B14.png"
-      Length: 3556
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u989C\u8272\u6761\u5E26.png"
-      Length: 1771
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u5236\u8C31\u5668\u53C2\u8003\u56FE.png"
-      Length: 875671
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u6309\u94AE\u8FB9\u6846.png"
-      Length: 461
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u6309\u94AE\u8FB9\u6846\u9634\u5F71.png"
-      Length: 5652
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u64AD\u653E\u7EBF.png"
-      Length: 4436
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u6DFB\u52A0Note\u83DC\u5355.png"
-      Length: 84867
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u76F4\u89D2\u8FB9\u6846.png"
-      Length: 213
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u80CC\u666F\u6846.png"
-      Length: 2423199
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u957F\u529F\u80FD\u83DC\u5355.png"
-      Length: 101967
   - RelativePath: CysMultimediaAssets/Sprites/login.bundle
     DirectoryName: CysMultimediaAssets/Sprites
     BundleName: login.bundle
@@ -1165,17 +730,6 @@ MonoBehaviour:
       Length: 366056
     - Name: Assets/CysMultimediaAssets/Sprites/ScoreSettlementUI/The Sun/FC.png
       Length: 385903
-  - RelativePath: CysMultimediaAssets/Sprites/starsbackground.bundle
-    DirectoryName: CysMultimediaAssets/Sprites
-    BundleName: starsbackground.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 735722
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Sprites/StarsBackground/Background.png
-      Length: 735106
-    - Name: Assets/CysMultimediaAssets/Sprites/StarsBackground/LICENSE.txt
-      Length: 616
   - RelativePath: redundancy_0.bundle
     DirectoryName: 
     BundleName: redundancy_0.bundle
@@ -1194,12 +748,10 @@ MonoBehaviour:
     BundleName: redundancy_1.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 257900
+    AssetsLength: 204844
     Assets:
     - Name: Assets/CysMultimediaAssets/Sprites/Bg-16px.png
       Length: 139
-    - Name: Assets/TextMeshPro/Examples & Extras/Fonts/Oswald-Bold.ttf
-      Length: 53056
     - Name: Assets/TextMeshPro/Shaders/TMP_SDF.shader
       Length: 10917
     - Name: Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Font Asset
