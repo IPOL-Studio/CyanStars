@@ -10,8 +10,10 @@ namespace CyanStars.Framework.File
     /// </summary>
     public class FileManager : BaseManager
     {
-        // BaseManager 的优先级，可以根据你的框架需求调整
-        public override int Priority => 0;
+        [SerializeField]
+        private UISkin skin;
+
+        public override int Priority { get; }
 
         /// <summary>
         /// 管理器初始化，在此处对 FileBrowser 进行全局配置
@@ -39,6 +41,8 @@ namespace CyanStars.Framework.File
             // 这对于让玩家快速定位到常用目录非常有用
             FileBrowser.AddQuickLink("游戏数据目录", Application.persistentDataPath, null);
             FileBrowser.AddQuickLink("桌面", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), null);
+
+            FileBrowser.Skin = skin;
         }
 
         /// <summary>
@@ -71,7 +75,8 @@ namespace CyanStars.Framework.File
 
             FileBrowser.OnCancel cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
 
-            FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper, FileBrowser.PickMode.Files, false, null, null, title, "选择");
+            FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper, FileBrowser.PickMode.Files, false, null, null,
+                title, "选择");
         }
 
         /// <summary>
@@ -84,14 +89,12 @@ namespace CyanStars.Framework.File
         {
             if (IsBrowserOpen()) return;
 
-            FileBrowser.OnSuccess successWrapper = (paths) =>
-            {
-                onSuccess?.Invoke(paths);
-            };
+            FileBrowser.OnSuccess successWrapper = (paths) => { onSuccess?.Invoke(paths); };
 
             FileBrowser.OnCancel cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
 
-            FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper, FileBrowser.PickMode.Files, true, null, null, title, "选择");
+            FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper, FileBrowser.PickMode.Files, true, null, null,
+                title, "选择");
         }
 
         /// <summary>
@@ -114,7 +117,8 @@ namespace CyanStars.Framework.File
 
             FileBrowser.OnCancel cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
 
-            FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper, FileBrowser.PickMode.Folders, false, null, null, title, "选择");
+            FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper, FileBrowser.PickMode.Folders, false, null, null,
+                title, "选择");
         }
 
         /// <summary>
@@ -124,7 +128,8 @@ namespace CyanStars.Framework.File
         /// <param name="onCancel">取消回调</param>
         /// <param name="defaultFilename">默认文件名</param>
         /// <param name="title">对话框标题</param>
-        public void ShowSaveFileDialog(Action<string> onSuccess, Action onCancel = null, string defaultFilename = "NewFile.txt", string title = "保存文件")
+        public void ShowSaveFileDialog(Action<string> onSuccess, Action onCancel = null,
+            string defaultFilename = "NewFile.txt", string title = "保存文件")
         {
             if (IsBrowserOpen()) return;
 
@@ -138,7 +143,8 @@ namespace CyanStars.Framework.File
 
             FileBrowser.OnCancel cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
 
-            FileBrowser.ShowSaveDialog(successWrapper, cancelWrapper, FileBrowser.PickMode.Files, false, null, defaultFilename, title, "保存");
+            FileBrowser.ShowSaveDialog(successWrapper, cancelWrapper, FileBrowser.PickMode.Files, false, null,
+                defaultFilename, title, "保存");
         }
 
         #endregion
@@ -153,6 +159,7 @@ namespace CyanStars.Framework.File
                 Debug.LogWarning("无法打开新的文件对话框，因为已有对话框处于打开状态。");
                 return true;
             }
+
             return false;
         }
     }

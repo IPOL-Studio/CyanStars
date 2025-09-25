@@ -185,13 +185,6 @@
       },
       "url": "https://packages.unity.com"
     },
-    "com.yasirkula.simplefilebrowser": {
-      "version": "https://github.com/yasirkula/UnitySimpleFileBrowser.git",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "bce53b258059a5e6563e0be233f804a4f189649e"
-    },
     "me.qiankanglai.loopscrollrect": {
       "version": "https://github.com/qiankanglai/LoopScrollRect.git",
       "depth": 0,
