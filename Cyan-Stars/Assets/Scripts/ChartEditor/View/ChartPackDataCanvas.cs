@@ -1,4 +1,6 @@
 using CyanStars.ChartEditor.Model;
+using CyanStars.Framework;
+using CyanStars.Framework.File;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -85,6 +87,21 @@ namespace CyanStars.ChartEditor.View
             {
                 Model.UpdatePreviewStareBeat(previewEndField1.text, previewEndField2.text, previewEndField3.text);
             });
+
+            importCoverButton.onClick.AddListener(ImportChart);
+        }
+
+        private void ImportChart()
+        {
+            FileManager fileManager = GameRoot.GetManager<FileManager>();
+            fileManager.GetFilePath(async (path) => { LoadCover(path); },
+                filters: new[] { fileManager.SpriteFilter });
+        }
+
+        private async void LoadCover(string path)
+        {
+            FileManager fileManager = GameRoot.GetManager<FileManager>();
+            Sprite sprite = await fileManager.LoadAssetFromPathAsync<Sprite>(path);
         }
 
         private void RefreshUI()

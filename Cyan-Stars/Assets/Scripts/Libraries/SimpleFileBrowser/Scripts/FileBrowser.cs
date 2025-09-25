@@ -265,7 +265,7 @@ namespace SimpleFileBrowser
 			}
 		}
 
-		private string m_allFilesFilterText = "All Files (.*)";
+		private string m_allFilesFilterText = "全部文件（.*）";
 		public static string AllFilesFilterText
 		{
 			get { return Instance.m_allFilesFilterText; }

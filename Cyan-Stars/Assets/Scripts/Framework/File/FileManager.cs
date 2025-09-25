@@ -1,6 +1,8 @@
 using UnityEngine;
 using SimpleFileBrowser;
 using System;
+using System.Threading.Tasks;
+using CatAsset.Runtime;
 
 namespace CyanStars.Framework.File
 {
@@ -13,6 +15,11 @@ namespace CyanStars.Framework.File
         [SerializeField]
         private UISkin skin;
 
+        public readonly FileBrowser.Filter ChartFilter = new FileBrowser.Filter("谱面文件", ".json");
+        public readonly FileBrowser.Filter SpriteFilter = new FileBrowser.Filter("图片", ".jpg", ".png");
+        public readonly FileBrowser.Filter AudioFilter = new FileBrowser.Filter("音频", ".mp3", ".wav", ".ogg");
+
+
         public override int Priority { get; }
 
         /// <summary>
@@ -20,48 +27,40 @@ namespace CyanStars.Framework.File
         /// </summary>
         public override void OnInit()
         {
-            Debug.Log("FileManager Initialized.");
+            // 设置颜色主题
+            FileBrowser.Skin = skin;
 
-            // 1. 设置文件过滤器 (全局设置，只需一次)
-            // 参数1: 是否显示 "All Files (*.*)" 选项
-            FileBrowser.SetFilters(true,
-                new FileBrowser.Filter("谱面文件", ".json", ".csv"),
-                new FileBrowser.Filter("图片", ".jpg", ".png"),
-                new FileBrowser.Filter("音频", ".mp3", ".wav", ".ogg"),
-                new FileBrowser.Filter("文本文件", ".txt")
-            );
+            // 显示所有后缀的文件，包括默认排除的 .lnk 和 .tmp
+            FileBrowser.SetExcludedExtensions();
 
-            // 2. 设置默认选中的过滤器
-            FileBrowser.SetDefaultFilter(".json");
-
-            // 3. 设置需要排除显示的文件扩展名 (默认已排除 .lnk, .tmp)
-            FileBrowser.SetExcludedExtensions(".lnk", ".tmp", ".zip", ".rar", ".exe");
-
-            // 4. 添加快速链接 (例如：游戏存档目录、桌面)
-            // 这对于让玩家快速定位到常用目录非常有用
+            // 添加侧边栏快速链接
             FileBrowser.AddQuickLink("游戏数据目录", Application.persistentDataPath, null);
             FileBrowser.AddQuickLink("桌面", Environment.GetFolderPath(Environment.SpecialFolder.Desktop), null);
 
-            FileBrowser.Skin = skin;
+            Debug.Log("FileManager Initialized.");
         }
 
-        /// <summary>
-        /// 每帧更新，此管理器不需要在 Update 中执行逻辑
-        /// </summary>
         public override void OnUpdate(float deltaTime)
         {
-            // FileBrowser 内部会处理自己的 Update 逻辑，这里无需操作
         }
 
         #region --- Public API ---
 
         /// <summary>
-        /// 显示加载单个文件的对话框
+        /// 获取单个文件的路径
         /// </summary>
-        /// <param name="onSuccess">成功回调，返回选择的文件路径</param>
-        /// <param name="onCancel">取消回调</param>
-        /// <param name="title">对话框标题</param>
-        public void ShowLoadFileDialog(Action<string> onSuccess, Action onCancel = null, string title = "加载文件")
+        /// <param name="onSuccess">成功获取的回调</param>
+        /// <param name="onCancel">玩家取消的回调</param>
+        /// <param name="title">窗口标题</param>
+        /// <param name="showAllFilesFilter">是否允许玩家选择任意后缀的文件</param>
+        /// <param name="filters">依据后缀筛选文件</param>
+        /// <param name="defaultFilter">默认筛选后缀名</param>
+        public void GetFilePath(Action<string> onSuccess,
+            Action onCancel = null,
+            string title = "打开文件",
+            bool showAllFilesFilter = false,
+            FileBrowser.Filter[] filters = null,
+            string defaultFilter = null)
         {
             if (IsBrowserOpen()) return;
 
@@ -75,17 +74,27 @@ namespace CyanStars.Framework.File
 
             FileBrowser.OnCancel cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
 
-            FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper, FileBrowser.PickMode.Files, false, null, null,
-                title, "选择");
+            FileBrowser.SetFilters(showAllFilesFilter, filters);
+            FileBrowser.SetDefaultFilter(defaultFilter);
+            FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper,
+                FileBrowser.PickMode.Files, false, null, null, title, "选择");
         }
 
         /// <summary>
-        /// 显示加载多个文件的对话框
+        /// 获取多个文件的路径
         /// </summary>
-        /// <param name="onSuccess">成功回调，返回选择的文件路径数组</param>
-        /// <param name="onCancel">取消回调</param>
-        /// <param name="title">对话框标题</param>
-        public void ShowLoadFilesDialog(Action<string[]> onSuccess, Action onCancel = null, string title = "加载多个文件")
+        /// <param name="onSuccess">成功获取的回调，参数为文件路径数组</param>
+        /// <param name="onCancel">玩家取消的回调</param>
+        /// <param name="title">窗口标题</param>
+        /// <param name="showAllFilesFilter">是否允许玩家选择任意后缀的文件</param>
+        /// <param name="filters">依据后缀筛选文件</param>
+        /// <param name="defaultFilter">默认筛选后缀名</param>
+        public void GetMultipleFilePaths(Action<string[]> onSuccess,
+            Action onCancel = null,
+            string title = "打开文件",
+            bool showAllFilesFilter = false,
+            FileBrowser.Filter[] filters = null,
+            string defaultFilter = null)
         {
             if (IsBrowserOpen()) return;
 
@@ -93,17 +102,21 @@ namespace CyanStars.Framework.File
 
             FileBrowser.OnCancel cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
 
-            FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper, FileBrowser.PickMode.Files, true, null, null,
-                title, "选择");
+            FileBrowser.SetFilters(showAllFilesFilter, filters);
+            FileBrowser.SetDefaultFilter(defaultFilter);
+            FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper,
+                FileBrowser.PickMode.Files, true, null, null, title, "选择");
         }
 
         /// <summary>
-        /// 显示选择文件夹的对话框
+        /// 获取要加载的文件夹路径
         /// </summary>
-        /// <param name="onSuccess">成功回调，返回选择的文件夹路径</param>
-        /// <param name="onCancel">取消回调</param>
-        /// <param name="title">对话框标题</param>
-        public void ShowSelectFolderDialog(Action<string> onSuccess, Action onCancel = null, string title = "选择文件夹")
+        /// <param name="onSuccess">成功获取的回调</param>
+        /// <param name="onCancel">玩家取消的回调</param>
+        /// <param name="title">窗口标题</param>
+        public void GetLoadFolderPath(Action<string> onSuccess,
+            Action onCancel = null,
+            string title = "打开文件夹")
         {
             if (IsBrowserOpen()) return;
 
@@ -117,19 +130,19 @@ namespace CyanStars.Framework.File
 
             FileBrowser.OnCancel cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
 
-            FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper, FileBrowser.PickMode.Folders, false, null, null,
-                title, "选择");
+            FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper,
+                FileBrowser.PickMode.Folders, false, null, null, title, "选择");
         }
 
         /// <summary>
-        /// 显示保存文件的对话框
+        /// 获取要保存到的文件夹路径
         /// </summary>
-        /// <param name="onSuccess">成功回调，返回用户指定的保存路径</param>
-        /// <param name="onCancel">取消回调</param>
-        /// <param name="defaultFilename">默认文件名</param>
-        /// <param name="title">对话框标题</param>
-        public void ShowSaveFileDialog(Action<string> onSuccess, Action onCancel = null,
-            string defaultFilename = "NewFile.txt", string title = "保存文件")
+        /// <param name="onSuccess">成功获取的回调</param>
+        /// <param name="onCancel">玩家取消的回调</param>
+        /// <param name="title">窗口标题</param>
+        public void GetSaveFolderPath(Action<string> onSuccess,
+            Action onCancel = null,
+            string title = "保存到文件夹")
         {
             if (IsBrowserOpen()) return;
 
@@ -143,11 +156,49 @@ namespace CyanStars.Framework.File
 
             FileBrowser.OnCancel cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
 
-            FileBrowser.ShowSaveDialog(successWrapper, cancelWrapper, FileBrowser.PickMode.Files, false, null,
-                defaultFilename, title, "保存");
+            FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper,
+                FileBrowser.PickMode.Folders, false, null, null, title, "选择");
+        }
+
+        /// <summary>
+        /// 从指定的绝对路径加载资源（如图片、文本、音频等）
+        /// </summary>
+        /// <typeparam name="T">要加载的资源类型，如 Texture2D, TextAsset, AudioClip 等</typeparam>
+        /// <param name="absolutePath">文件的完整绝对路径</param>
+        /// <param name="target">资源加载后要绑定的游戏对象，用于自动管理生命周期</param>
+        /// <param name="priority">加载任务的优先级</param>
+        /// <returns>加载完成的资源，如果失败则为 null</returns>
+        public async Task<T> LoadAssetFromPathAsync<T>(string absolutePath, GameObject target = null,
+            TaskPriority priority = TaskPriority.Middle) where T : class
+        {
+            if (string.IsNullOrEmpty(absolutePath))
+            {
+                Debug.LogError("LoadAssetFromPathAsync Error: Provided path is null or empty.");
+                return null;
+            }
+
+            if (!System.IO.File.Exists(absolutePath))
+            {
+                Debug.LogError($"LoadAssetFromPathAsync Error: File does not exist at path: {absolutePath}");
+                return null;
+            }
+
+            try
+            {
+                // 直接将绝对路径传递给 CatAsset。CatAsset 会将其作为外部原生资源处理。
+                // CatAsset 内部会负责读取文件的 byte[] 并根据类型 T 进行转换。
+                T asset = await CatAssetManager.LoadAssetAsync<T>(absolutePath, target, priority);
+                return asset;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to load asset from path '{absolutePath}' using CatAsset. Exception: {e}");
+                return null;
+            }
         }
 
         #endregion
+
 
         /// <summary>
         /// 检查文件浏览器是否已经打开，并打印警告
