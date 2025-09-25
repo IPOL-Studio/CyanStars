@@ -3093,7 +3093,7 @@ namespace SimpleFileBrowser
 		public static void RequestPermissionAsync( PermissionCallback callback )
 		{
 #if !UNITY_EDITOR && UNITY_ANDROID
-			FBPermissionCallbackAndroid nativeCallback = new( callback );
+			FBPermissionCallbackAndroid nativeCallback = new FBPermissionCallbackAndroid(callback);
 			FileBrowserHelpers.AJC.CallStatic( "RequestPermission", FileBrowserHelpers.Context, nativeCallback );
 #else
 			callback( Permission.Granted );
