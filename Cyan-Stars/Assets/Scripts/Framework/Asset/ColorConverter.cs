@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-namespace CyanStars.Serialization
+namespace CyanStars.Framework.Asset
 {
     public class ColorConverter : JsonConverter<Color>
     {

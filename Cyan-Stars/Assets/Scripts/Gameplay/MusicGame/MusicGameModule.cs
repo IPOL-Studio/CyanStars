@@ -174,9 +174,9 @@ namespace CyanStars.Gameplay.MusicGame
                 await GameRoot.Asset.LoadAssetAsync<InternalChartPackListSO>(InternalMapListName);
             GameRoot.Asset.UnloadAsset(internalChartPackListSO);
 
-            foreach (string chartPath in internalChartPackListSO.InternalCharts)
+            foreach (string chartPackPath in internalChartPackListSO.InternalCharts)
             {
-                Serialization.JsonHelper.FromJson(chartPath, out ChartPackData chartPackData);
+                ChartPackData chartPackData = await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackPath);
                 packs.Add(new ChartPack() { ChartPackData = chartPackData, IsInternal = true });
             }
 
@@ -205,7 +205,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// 根据难度从谱包中获取谱面数据
         /// </summary>
         /// <remarks>难度为 null 时只能在制谱器内加载，不能在游戏内加载</remarks>
-        public ChartData GetChartData(ChartPack chartPack, ChartDifficulty? difficulty)
+        public async Task<ChartData> GetChartData(ChartPack chartPack, ChartDifficulty? difficulty)
         {
             if (difficulty is null)
             {
@@ -216,7 +216,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 if (metadata.Difficulty == difficulty)
                 {
-                    Serialization.JsonHelper.FromJson(metadata.FilePath, out chartData);
+                    ChartData chartData = await GameRoot.Asset.LoadAssetAsync<ChartData>(metadata.FilePath);
                     return chartData;
                 }
             }

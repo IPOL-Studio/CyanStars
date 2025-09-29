@@ -240,7 +240,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 谱包
             chartPack = dataModule.GetChartPack(dataModule.ChartPackIndex);
-            chartData = dataModule.GetChartData(chartPack, dataModule.Difficulty);
+            chartData = await dataModule.GetChartData(chartPack, dataModule.Difficulty);
 
             // 音乐
             MusicVersionData musicVersionData = chartPack.ChartPackData.MusicVersionDatas[dataModule.MusicVersionIndex];

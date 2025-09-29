@@ -1,8 +1,9 @@
 using System;
+using CyanStars.Chart;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CyanStars.Chart
+namespace CyanStars.Framework.Asset
 {
     public sealed class ChartNoteDataReadConverter : JsonConverter<BaseChartNoteData>
     {
