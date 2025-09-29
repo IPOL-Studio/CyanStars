@@ -603,25 +603,14 @@ namespace CyanStars.ChartEditor.Model
 
         public void UpdateDifficulty(ChartDifficulty? difficulty)
         {
-            if (difficulty == null && ChartData.Difficulty != null)
-            {
-                ChartData.Difficulty = null;
-                OnChartDataChanged?.Invoke();
-            }
-            else
-            {
-                // TODO: 校验谱包内是否存在其他相同难度谱面
-                throw new NotSupportedException();
-            }
+            // TODO
+            throw new NotSupportedException();
         }
 
         public void UpdateLevel(string text)
         {
-            if (text != ChartData.Level)
-            {
-                ChartData.Level = text;
-                OnChartDataChanged?.Invoke();
-            }
+            // TODO
+            throw new NotSupportedException();
         }
 
         public void UpdateReadyBeat(string text)

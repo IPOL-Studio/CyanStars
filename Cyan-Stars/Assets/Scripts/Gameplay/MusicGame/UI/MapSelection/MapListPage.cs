@@ -108,17 +108,17 @@ namespace CyanStars.Gameplay.MusicGame
         private async Task RefreshMusicList()
         {
             // List<MapManifest> maps = musicGameModule.GetMaps();
-            List<ChartPack> chartPacks = musicGameModule.GetChartPacks();
+            List<RuntimeChartPack> chartPacks = musicGameModule.GetChartPacks();
 
             for (int i = 0; i < chartPacks.Count; i++)
             {
-                ChartPack chartPack = chartPacks[i];
+                RuntimeChartPack runtimeChartPack = chartPacks[i];
                 MapItem mapItem = await GameRoot.UI.AwaitGetUIItem<MapItem>(mapItemTemplate, circularMapList.transform);
                 circularMapList.AddItem(mapItem);
                 mapItems.Add(mapItem);
                 mapItem.Index = i;
 
-                MapItemData data = MapItemData.Create(i, chartPack);
+                MapItemData data = MapItemData.Create(i, runtimeChartPack);
                 mapItem.RefreshItem(data);
                 mapItem.OnSelect += OnSelectMap;
             }
@@ -138,17 +138,17 @@ namespace CyanStars.Gameplay.MusicGame
 
             this.owner.CurrentSelectedMap = mapItem.Data;
 
-            Debug.Log("当前选中:" + mapItem.Data.ChartPack.ChartPackData.Title);
+            Debug.Log("当前选中:" + mapItem.Data.RuntimeChartPack.ChartPackData.Title);
 
             // 标题和Staff信息渐变动画
             mapTitleText.DOFade(0, 0.2f).OnComplete(() =>
             {
-                mapTitleText.text = mapItem.Data.ChartPack.ChartPackData.Title;
+                mapTitleText.text = mapItem.Data.RuntimeChartPack.ChartPackData.Title;
                 mapTitleText.DOFade(1, 0.2f);
             });
 
             // 将原始 Staff 文本传递给 StarsGenerator 以进一步处理
-            Dictionary<string, List<string>> staffs = mapItem.Data.ChartPack.ChartPackData
+            Dictionary<string, List<string>> staffs = mapItem.Data.RuntimeChartPack.ChartPackData
                 .MusicVersionDatas[musicGameModule.MusicVersionIndex].Staffs;
             if (staffs == null || staffs.Count == 0)
             {
@@ -156,7 +156,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
             else
             {
-                this.owner.StarController.ResetAllStaffGroup(mapItem.Data.ChartPack.ChartPackData
+                this.owner.StarController.ResetAllStaffGroup(mapItem.Data.RuntimeChartPack.ChartPackData
                     .MusicVersionDatas[musicGameModule.MusicVersionIndex].Staffs);
             }
         }

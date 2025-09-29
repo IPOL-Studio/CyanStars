@@ -25,7 +25,7 @@ namespace CyanStars.Gameplay.MusicGame
         private MusicGameTrackModule trackModule = GameRoot.GetDataModule<MusicGameTrackModule>();
 
         //  --- --- 音游相关数据 --- ---
-        private ChartPack chartPack;
+        private RuntimeChartPack runtimeChartPack;
         private ChartData chartData;
 
         private PromptToneCollection promptToneCollection;
@@ -115,7 +115,7 @@ namespace CyanStars.Gameplay.MusicGame
             band?.Dispose();
             band = null;
 
-            chartPack = null;
+            runtimeChartPack = null;
             chartData = null;
             musicClipData = null;
 
@@ -239,15 +239,15 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             // 谱包
-            chartPack = dataModule.GetChartPack(dataModule.ChartPackIndex);
-            chartData = await dataModule.GetChartData(chartPack, dataModule.Difficulty);
+            runtimeChartPack = dataModule.GetChartPack(dataModule.ChartPackIndex);
+            chartData = await dataModule.GetChartData(runtimeChartPack, dataModule.Difficulty);
 
             // 音乐
-            MusicVersionData musicVersionData = chartPack.ChartPackData.MusicVersionDatas[dataModule.MusicVersionIndex];
+            MusicVersionData musicVersionData = runtimeChartPack.ChartPackData.MusicVersionDatas[dataModule.MusicVersionIndex];
             AudioClip music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.AudioFilePath, sceneRoot);
             if (!music)
             {
-                Debug.LogError($"谱包 {chartPack.ChartPackData.Title} 的音乐加载失败");
+                Debug.LogError($"谱包 {runtimeChartPack.ChartPackData.Title} 的音乐加载失败");
             }
             else
             {
@@ -272,7 +272,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void InitLogger()
         {
-            ChartPack pack = dataModule.GetChartPack(dataModule.ChartPackIndex);
+            RuntimeChartPack pack = dataModule.GetChartPack(dataModule.ChartPackIndex);
             dataModule.InitLogger($"MusicGame - {pack.ChartPackData.Title}");
         }
 

@@ -9,16 +9,6 @@ namespace CyanStars.Chart
     [Serializable]
     public class ChartData
     {
-        /// <summary>
-        /// 谱面难度，谱包中每个难度最多仅允许有一个，为 null 时为未定义，数量不受限制
-        /// </summary>
-        public ChartDifficulty? Difficulty;
-
-        /// <summary>
-        /// 谱面定数，内置谱包必须可转为为 int [1, 20]
-        /// </summary>
-        public string Level;
-
         /// <summary>在第一个 BPM 组开始前播放几次预备拍音效</summary>
         /// <remarks>必须大于等于0，一般为4，预备拍的时间间隔取决于第一个 BPM 组的 bpm</remarks>
         public int ReadyBeat;

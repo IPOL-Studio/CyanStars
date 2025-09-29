@@ -67,8 +67,8 @@ namespace CyanStars.Gameplay.MusicGame
 
         public async void RefreshView()
         {
-            TxtName.text = Data.ChartPack.ChartPackData.Title;
-            if (!string.IsNullOrEmpty(Data.ChartPack.ChartPackData.CoverFilePath))
+            TxtName.text = Data.RuntimeChartPack.ChartPackData.Title;
+            if (!string.IsNullOrEmpty(Data.RuntimeChartPack.ChartPackData.CoverFilePath))
             {
                 // TODO
                 // // 从文件加载外部曲绘，并转为 MapItem 所需的 sprite 格式

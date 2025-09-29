@@ -7,9 +7,10 @@ using CatAsset.Runtime;
 namespace CyanStars.Framework.File
 {
     /// <summary>
-    /// 文件管理器，基于 Unity Simple File Browser 实现
-    /// 提供统一的文件和文件夹选择对话框接口
+    /// 文件管理器
     /// </summary>
+    /// <remarks>提供统一的文件和文件夹选择对话框接口，基于 Unity Simple File Browser 实现</remarks>
+    /// <remarks>提供对玩家文件的资源文件读写，.json 文件反序列化和序列化操作，其中读和反序列化操作将传给 AssetManager 实现</remarks>
     public class FileManager : BaseManager
     {
         [SerializeField]

@@ -3,8 +3,10 @@ namespace CyanStars.Chart
     /// <summary>
     /// 运行时谱包数据
     /// </summary>
-    public class ChartPack
+    public class RuntimeChartPack
     {
+        public ChartPackData ChartPackData;
+
         /// <summary>
         /// 是否为内置谱面，内置谱面的定数可用于计算玩家实力水平，内置谱面的定数要求为 1~20 的整数
         /// </summary>
@@ -13,6 +15,10 @@ namespace CyanStars.Chart
         /// </remarks>
         public bool IsInternal;
 
-        public ChartPackData ChartPackData;
+        public RuntimeChartPack(ChartPackData chartPackData, bool isInternal)
+        {
+            ChartPackData = chartPackData;
+            IsInternal = isInternal;
+        }
     }
 }

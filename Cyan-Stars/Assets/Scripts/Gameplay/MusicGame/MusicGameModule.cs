@@ -21,7 +21,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 所有谱包列表
         /// </summary>
-        private List<ChartPack> chartPacks;
+        private List<RuntimeChartPack> chartPacks;
 
         /// <summary>
         /// 选中的谱包序号
@@ -169,7 +169,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public async Task LoadChartPacks()
         {
-            List<ChartPack> packs = new List<ChartPack>();
+            List<RuntimeChartPack> packs = new List<RuntimeChartPack>();
             InternalChartPackListSO internalChartPackListSO =
                 await GameRoot.Asset.LoadAssetAsync<InternalChartPackListSO>(InternalMapListName);
             GameRoot.Asset.UnloadAsset(internalChartPackListSO);
@@ -177,7 +177,7 @@ namespace CyanStars.Gameplay.MusicGame
             foreach (string chartPackPath in internalChartPackListSO.InternalCharts)
             {
                 ChartPackData chartPackData = await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackPath);
-                packs.Add(new ChartPack() { ChartPackData = chartPackData, IsInternal = true });
+                packs.Add(new RuntimeChartPack(chartPackData, true));
             }
 
             // TODO: 从外部加载谱包
@@ -188,7 +188,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 获取所有谱包
         /// </summary>
-        public List<ChartPack> GetChartPacks()
+        public List<RuntimeChartPack> GetChartPacks()
         {
             return chartPacks;
         }
@@ -196,7 +196,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 根据下标获取谱包
         /// </summary>
-        public ChartPack GetChartPack(int index)
+        public RuntimeChartPack GetChartPack(int index)
         {
             return chartPacks[index];
         }
@@ -205,14 +205,14 @@ namespace CyanStars.Gameplay.MusicGame
         /// 根据难度从谱包中获取谱面数据
         /// </summary>
         /// <remarks>难度为 null 时只能在制谱器内加载，不能在游戏内加载</remarks>
-        public async Task<ChartData> GetChartData(ChartPack chartPack, ChartDifficulty? difficulty)
+        public async Task<ChartData> GetChartData(RuntimeChartPack runtimeChartPack, ChartDifficulty? difficulty)
         {
             if (difficulty is null)
             {
                 return null;
             }
 
-            foreach (ChartMetadata metadata in chartPack.ChartPackData.ChartMetaDatas)
+            foreach (ChartMetadata metadata in runtimeChartPack.ChartPackData.ChartMetaDatas)
             {
                 if (metadata.Difficulty == difficulty)
                 {

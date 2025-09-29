@@ -89,16 +89,8 @@ namespace CyanStars.ChartEditor.View
 
         private void RefreshUI()
         {
-            canvas.enabled = Model.ChartDataCanvasVisibleness;
-
-            kuiXingToggle.isOn = Model.ChartData.Difficulty == ChartDifficulty.KuiXing;
-            qiMingToggle.isOn = Model.ChartData.Difficulty == ChartDifficulty.QiMing;
-            tianShuToggle.isOn = Model.ChartData.Difficulty == ChartDifficulty.TianShu;
-            wuYinToggle.isOn = Model.ChartData.Difficulty == ChartDifficulty.WuYin;
-            undefinedToggle.isOn = Model.ChartData.Difficulty == null;
-
-            chartLevelField.text = Model.ChartData.Level;
-            readyBeatField.text = Model.ChartData.ReadyBeat.ToString();
+            // TODO
+            throw new NotSupportedException();
         }
 
         private void OnDestroy()
