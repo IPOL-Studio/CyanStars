@@ -169,20 +169,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public async Task LoadChartPacks()
         {
-            List<RuntimeChartPack> packs = new List<RuntimeChartPack>();
-            InternalChartPackListSO internalChartPackListSO =
-                await GameRoot.Asset.LoadAssetAsync<InternalChartPackListSO>(InternalMapListName);
-            GameRoot.Asset.UnloadAsset(internalChartPackListSO);
 
-            foreach (string chartPackPath in internalChartPackListSO.InternalCharts)
-            {
-                ChartPackData chartPackData = await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackPath);
-                packs.Add(new RuntimeChartPack(chartPackData, true));
-            }
-
-            // TODO: 从外部加载谱包
-
-            chartPacks = packs;
         }
 
         /// <summary>

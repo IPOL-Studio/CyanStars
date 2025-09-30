@@ -15,13 +15,13 @@ namespace CyanStars.Chart
         private const string InternalChartPackListFilePath =
             "Assets/BundleRes/ScriptObjects/InternalMap/InternalMapList.asset";
 
-        private string playerChartPacksFolderPath = Path.Combine(Application.persistentDataPath, "ChartPacks");
-
         private const string ChartPackFileName = "ChartPack.json";
+        private string PlayerChartPacksFolderPath { get; } = Path.Combine(Application.persistentDataPath, "ChartPacks");
 
 
         private Dictionary<string, Type> trackKeyToTypeMap;
-        public List<RuntimeChartPack> RuntimeChartPacks = new List<RuntimeChartPack>();
+        private List<RuntimeChartPack> runtimeChartPacks = new List<RuntimeChartPack>();
+        public IReadOnlyList<RuntimeChartPack> RuntimeChartPacks => runtimeChartPacks;
 
         public override async void OnInit()
         {
@@ -59,47 +59,59 @@ namespace CyanStars.Chart
         }
 
 
-        private async Task LoadRuntimeChartPacksFromDisk()
+        public async Task LoadRuntimeChartPacksFromDisk()
         {
             var loadingTasks = new List<Task<ChartPackData>>();
+            var allPaths = new List<string>();
+
+            // 将内置谱包添加到任务，并记录数量
             InternalChartPackListSO internalChartPackListSO =
                 await GameRoot.Asset.LoadAssetAsync<InternalChartPackListSO>(InternalChartPackListFilePath);
-
             foreach (var path in internalChartPackListSO.InternalCharts)
             {
                 loadingTasks.Add(GameRoot.Asset.LoadAssetAsync<ChartPackData>(path));
+                allPaths.Add(path);
             }
 
             int internalPacksCount = loadingTasks.Count;
 
-            var playerChartPaths = Directory.EnumerateFiles(playerChartPacksFolderPath, ChartPackFileName,
+            // 将玩家谱包添加到任务
+            var playerChartPaths = Directory.EnumerateFiles(PlayerChartPacksFolderPath, ChartPackFileName,
                 SearchOption.AllDirectories);
-
             foreach (var path in playerChartPaths)
             {
                 loadingTasks.Add(GameRoot.Asset.LoadAssetAsync<ChartPackData>(path));
+                allPaths.Add(path);
             }
 
+            // 启动加载任务
             ChartPackData[] loadedChartPackData = await Task.WhenAll(loadingTasks);
 
+            // 校验加载的谱包数据有效性，并实例化 RuntimeChartPack
             var newPacks = new List<RuntimeChartPack>();
             for (int i = 0; i < loadedChartPackData.Length; i++)
             {
                 var chartPackData = loadedChartPackData[i];
-                bool isInternal = i < internalPacksCount; // 判断是否是内置谱包
+                bool isInternal = i < internalPacksCount;
+                string workspacePath = Path.GetDirectoryName(allPaths[i]);
 
                 if (VerifyChartPacks(chartPackData, isInternal) != VerifyState.Error)
                 {
-                    newPacks.Add(new RuntimeChartPack(chartPackData, isInternal));
+                    newPacks.Add(new RuntimeChartPack(chartPackData, isInternal, workspacePath));
                 }
-                else
+                else if (isInternal)
                 {
-                    Debug.LogError($"谱包加载失败：{chartPackData.Title}");
+                    throw new Exception($"某个内置谱包加载失败：{chartPackData.Title}");
                 }
             }
 
-            RuntimeChartPacks.Clear();
-            RuntimeChartPacks.AddRange(newPacks);
+            runtimeChartPacks.Clear();
+            runtimeChartPacks.AddRange(newPacks);
+        }
+
+        public ChartData GetRuntimeChartPacks(RuntimeChartPack chartPackData)
+        {
+            return null;
         }
 
         /// <summary>
