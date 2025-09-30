@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Framework.UI;
 using CyanStars.Gameplay.Base;
@@ -15,6 +16,7 @@ namespace CyanStars.Gameplay.MusicGame
     {
         [SerializeField]
         private Toggle autoModeToggle;
+
         [SerializeField]
         private Button backButton;
 
@@ -36,11 +38,7 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
-            var args = new MapSelectionPageChangeArgs()
-            {
-                FadeTime = 1.2f,
-                AnimationEase = Ease.OutQuart
-            };
+            var args = new MapSelectionPageChangeArgs() { FadeTime = 1.2f, AnimationEase = Ease.OutQuart };
 
             var currentPage = pageStack.Count > 0 ? pageStack.Peek() : null;
 
@@ -50,7 +48,7 @@ namespace CyanStars.Gameplay.MusicGame
             starTween = DOTween.To(() => pageRatio, x => pageRatio = x, pageRatio + 1, args.FadeTime)
                 .SetEase(args.AnimationEase)
                 .OnUpdate(() => StarController.OnUpdate(pageRatio))
-                .OnComplete(() =>starTween = null);
+                .OnComplete(() => starTween = null);
 
             currentPage?.OnExit(args);
 
@@ -66,8 +64,10 @@ namespace CyanStars.Gameplay.MusicGame
 
         protected override void OnCreate()
         {
-            var musicGameModule = GameRoot.GetDataModule<MusicGameModule>();
-            CurrentSelectedMap = MapItemData.Create(musicGameModule.ChartPackIndex, musicGameModule.GetChartPacks()[musicGameModule.ChartPackIndex]);
+            var musicGamePlayingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
+            var chartModule = GameRoot.GetDataModule<ChartModule>();
+            CurrentSelectedMap = MapItemData.Create(musicGamePlayingDataModule.ChartPackIndex,
+                chartModule.RuntimeChartPacks[musicGamePlayingDataModule.ChartPackIndex]);
 
             var pages = this.GetComponentsInChildren<IMapSelectionPage>(true);
             pageDict = new Dictionary<Type, IMapSelectionPage>();
@@ -80,7 +80,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             autoModeToggle.onValueChanged.AddListener((isOn) =>
-                GameRoot.GetDataModule<MusicGameModule>().IsAutoMode = isOn
+                GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode = isOn
             );
 
             backButton.onClick.AddListener(() =>
@@ -106,11 +106,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         private void BackToPrePage()
         {
-            var args = new MapSelectionPageChangeArgs()
-            {
-                FadeTime = 1.2f,
-                AnimationEase = Ease.OutQuart
-            };
+            var args = new MapSelectionPageChangeArgs() { FadeTime = 1.2f, AnimationEase = Ease.OutQuart };
 
             if (starTween?.IsPlaying() ?? false)
                 starTween.Kill(false);
@@ -118,7 +114,7 @@ namespace CyanStars.Gameplay.MusicGame
             starTween = DOTween.To(() => pageRatio, x => pageRatio = x, pageRatio - 1, args.FadeTime)
                 .SetEase(args.AnimationEase)
                 .OnUpdate(() => StarController.OnUpdate(pageRatio))
-                .OnComplete(() =>starTween = null);
+                .OnComplete(() => starTween = null);
 
             pageStack.Pop().OnExit(args);
             pageStack.Peek().OnEnter(args);

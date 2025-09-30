@@ -26,7 +26,10 @@ namespace CyanStars.Gameplay.MusicGame
         private TextMeshProUGUI mapTitleText;
 
 
-        private MusicGameModule musicGameModule;
+        private MusicGamePlayingDataModule musicGamePlayingDataModule =
+            GameRoot.GetDataModule<MusicGamePlayingDataModule>();
+
+        private ChartModule chartModule = GameRoot.GetDataModule<ChartModule>();
 
         private List<BaseUIItem> mapItems = new List<BaseUIItem>();
 
@@ -39,7 +42,6 @@ namespace CyanStars.Gameplay.MusicGame
         public void OnInit(MapSelectionPanel owner)
         {
             this.owner = owner;
-            musicGameModule = GameRoot.GetDataModule<MusicGameModule>();
             canvasGroup = GetComponent<CanvasGroup>();
 
             animationElements = GetComponentsInChildren<IPageElementAnimation>(true);
@@ -108,7 +110,7 @@ namespace CyanStars.Gameplay.MusicGame
         private async Task RefreshMusicList()
         {
             // List<MapManifest> maps = musicGameModule.GetMaps();
-            List<RuntimeChartPack> chartPacks = musicGameModule.GetChartPacks();
+            IReadOnlyList<RuntimeChartPack> chartPacks = chartModule.RuntimeChartPacks;
 
             for (int i = 0; i < chartPacks.Count; i++)
             {
@@ -149,7 +151,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 将原始 Staff 文本传递给 StarsGenerator 以进一步处理
             Dictionary<string, List<string>> staffs = mapItem.Data.RuntimeChartPack.ChartPackData
-                .MusicVersionDatas[musicGameModule.MusicVersionIndex].Staffs;
+                .MusicVersionDatas[musicGamePlayingDataModule.MusicVersionIndex].Staffs;
             if (staffs == null || staffs.Count == 0)
             {
                 Debug.LogWarning("没有设置 Staff 文本");
@@ -157,7 +159,7 @@ namespace CyanStars.Gameplay.MusicGame
             else
             {
                 this.owner.StarController.ResetAllStaffGroup(mapItem.Data.RuntimeChartPack.ChartPackData
-                    .MusicVersionDatas[musicGameModule.MusicVersionIndex].Staffs);
+                    .MusicVersionDatas[musicGamePlayingDataModule.MusicVersionIndex].Staffs);
             }
         }
     }

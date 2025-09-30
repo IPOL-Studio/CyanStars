@@ -21,7 +21,8 @@ namespace CyanStars.Gameplay.MusicGame
     public class MusicGameProcedure : BaseState
     {
         //  --- --- 音游数据模块 --- ---
-        private MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
+        private MusicGamePlayingDataModule playingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
+        private ChartModule chartModule = GameRoot.GetDataModule<ChartModule>();
         private MusicGameTrackModule trackModule = GameRoot.GetDataModule<MusicGameTrackModule>();
 
         //  --- --- 音游相关数据 --- ---
@@ -31,8 +32,6 @@ namespace CyanStars.Gameplay.MusicGame
         private PromptToneCollection promptToneCollection;
 
         private MusicClipData musicClipData;
-        //private MapTimelineData timelineData;
-        //private string lrcText;
 
         //  --- --- 音游设置模块 --- ---
         private MusicGameSettingsModule settingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
@@ -190,7 +189,7 @@ namespace CyanStars.Gameplay.MusicGame
                 StopTimeline();
             }
 
-            dataModule.ResetPlayingData();
+            playingDataModule.ResetPlayingData();
             GameRoot.ChangeProcedure<MainHomeProcedure>();
         }
 
@@ -214,10 +213,10 @@ namespace CyanStars.Gameplay.MusicGame
         {
             // 输入映射数据
             InputMapSO inputMapSo =
-                await GameRoot.Asset.LoadAssetAsync<InputMapSO>(dataModule.InputMapDataName, sceneRoot);
+                await GameRoot.Asset.LoadAssetAsync<InputMapSO>(playingDataModule.InputMapDataName, sceneRoot);
             InputMapData inputMapData = inputMapSo.InputMapData;
 
-            if (!dataModule.IsAutoMode)
+            if (!playingDataModule.IsAutoMode)
             {
                 if (Application.platform == RuntimePlatform.Android ||
                     Application.platform == RuntimePlatform.IPhonePlayer)
@@ -239,11 +238,13 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             // 谱包
-            runtimeChartPack = dataModule.GetChartPack(dataModule.ChartPackIndex);
-            chartData = await dataModule.GetChartData(runtimeChartPack, dataModule.Difficulty);
+            runtimeChartPack = chartModule.RuntimeChartPacks[playingDataModule.ChartPackIndex];
+            chartData = await chartModule.LoadChartDataFromDisk(runtimeChartPack,
+                (ChartDifficulty)playingDataModule.Difficulty);
 
             // 音乐
-            MusicVersionData musicVersionData = runtimeChartPack.ChartPackData.MusicVersionDatas[dataModule.MusicVersionIndex];
+            MusicVersionData musicVersionData =
+                runtimeChartPack.ChartPackData.MusicVersionDatas[playingDataModule.MusicVersionIndex];
             AudioClip music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.AudioFilePath, sceneRoot);
             if (!music)
             {
@@ -256,8 +257,8 @@ namespace CyanStars.Gameplay.MusicGame
 
 
             // 时间轴
-            dataModule.CurTimelineLength = music.length + musicVersionData.Offset / 1000f;
-            dataModule.CalFullScore(chartData.Notes);
+            playingDataModule.CurTimelineLength = music.length + musicVersionData.Offset / 1000f;
+            playingDataModule.CalFullScore(chartData.Notes);
 
             // //歌词
             // if (!string.IsNullOrEmpty(mapManifest.LrcFileName))
@@ -272,8 +273,8 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void InitLogger()
         {
-            RuntimeChartPack pack = dataModule.GetChartPack(dataModule.ChartPackIndex);
-            dataModule.InitLogger($"MusicGame - {pack.ChartPackData.Title}");
+            RuntimeChartPack pack = chartModule.RuntimeChartPacks[playingDataModule.ChartPackIndex];
+            playingDataModule.InitLogger($"MusicGame - {pack.ChartPackData.Title}");
         }
 
         /// <summary>
@@ -281,11 +282,11 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void InitDistanceBarData()
         {
-            dataModule.InitDistanceBarData(settingsModule.EvaluateRange);
+            playingDataModule.InitDistanceBarData(settingsModule.EvaluateRange);
 
             var bandData = new Band.BandData
             {
-                Count = dataModule.DistanceBarData.Length,
+                Count = playingDataModule.DistanceBarData.Length,
                 XSize = 100,
                 YSize = 10,
                 XOffset = -0.5f,
@@ -294,7 +295,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (!Band.TryCreate(bandData, out Band band))
             {
-                dataModule.Logger.LogError("band 创建失败，可能被其他地方占用");
+                playingDataModule.Logger.LogError("band 创建失败，可能被其他地方占用");
             }
 
             this.band = band;
@@ -314,7 +315,7 @@ namespace CyanStars.Gameplay.MusicGame
                 builtin.Add(name, clip);
             }
 
-            promptToneCollection = new PromptToneCollection(builtin, dataModule.Logger);
+            promptToneCollection = new PromptToneCollection(builtin, playingDataModule.Logger);
         }
 
         /// <summary>
@@ -344,7 +345,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void Prewarm()
         {
-            foreach (KeyValuePair<NoteType, string> pair in dataModule.HitEffectPrefabNameDict)
+            foreach (KeyValuePair<NoteType, string> pair in playingDataModule.HitEffectPrefabNameDict)
             {
                 GameRoot.GameObjectPool.Prewarm(pair.Value, 10, null);
             }
@@ -355,7 +356,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void CreateTimeline()
         {
-            timeline = new Timeline(dataModule.CurTimelineLength);
+            timeline = new Timeline(playingDataModule.CurTimelineLength);
             timeline.OnStop += StopTimeline;
 
             // 添加音符轨道
@@ -444,7 +445,7 @@ namespace CyanStars.Gameplay.MusicGame
             //     effectTrack.ImgFrame = GameRoot.UI.GetUIPanel<MusicGameMainPanel>().ImgFrame;
             // }
 
-            dataModule.RunningTimeline = timeline;
+            playingDataModule.RunningTimeline = timeline;
 
             GameRoot.Timer.UpdateTimer.Add(UpdateTimeline);
 
@@ -474,7 +475,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void UpdateDistanceBar(float deltaTime)
         {
-            var data = dataModule.DistanceBarData;
+            var data = playingDataModule.DistanceBarData;
             data.ReduceHeight(deltaTime);
             if (data.IsDataChangedAndSet(ref preDistanceBarChangedCount))
             {
