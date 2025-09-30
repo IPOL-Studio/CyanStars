@@ -109,9 +109,30 @@ namespace CyanStars.Chart
             runtimeChartPacks.AddRange(newPacks);
         }
 
-        public ChartData GetRuntimeChartPacks(RuntimeChartPack chartPackData)
+        /// <summary>
+        /// 正式进入音游时加载谱面
+        /// </summary>
+        /// <param name="runtimeChartPack">运行时谱包</param>
+        /// <param name="chartMetaDataIndex">要加载的谱面元数据下标</param>
+        /// <returns>加载后的谱面数据</returns>
+        public async Task<ChartData> LoadChartDataFromDisk(RuntimeChartPack runtimeChartPack, int chartMetaDataIndex)
         {
-            return null;
+            // TODO：计算谱面哈希并校验/覆盖元数据内容
+            if (chartMetaDataIndex > runtimeChartPack.ChartPackData.ChartMetaDatas.Count - 1)
+            {
+                Debug.LogError("下标越界，无法加载谱面");
+                return null;
+            }
+
+            ChartMetadata metadata = runtimeChartPack.ChartPackData.ChartMetaDatas[chartMetaDataIndex];
+            string chartFilePath = Path.Combine(runtimeChartPack.WorkspacePath, metadata.FilePath);
+            ChartData chartData = await GameRoot.Asset.LoadAssetAsync<ChartData>(chartFilePath);
+            if (chartData == null)
+            {
+                Debug.LogError("获取谱面时异常");
+            }
+
+            return chartData;
         }
 
         /// <summary>
@@ -169,7 +190,6 @@ namespace CyanStars.Chart
                 }
             }
 
-            // TODO: 计算哈希
             return (VerifyState)state;
         }
 
