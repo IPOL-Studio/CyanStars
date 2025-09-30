@@ -112,6 +112,36 @@ namespace CyanStars.Chart
         /// <summary>
         /// 正式进入音游时加载谱面
         /// </summary>
+        /// <remarks>重载方法</remarks>
+        /// <param name="runtimeChartPack">运行时谱包</param>
+        /// <param name="difficulty">要加载的谱面难度</param>
+        /// <returns>加载后的谱面数据</returns>
+        public async Task<ChartData> LoadChartDataFromDisk(RuntimeChartPack runtimeChartPack,
+            ChartDifficulty difficulty)
+        {
+            int difficultyCount =
+                runtimeChartPack.ChartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == difficulty);
+            if (difficultyCount != 1)
+            {
+                Debug.LogError("此难度无对应谱面或存在多个谱面");
+                return null;
+            }
+
+            for (int index = 0; index < runtimeChartPack.ChartPackData.ChartMetaDatas.Count; index++)
+            {
+                ChartMetadata cmd = runtimeChartPack.ChartPackData.ChartMetaDatas[index];
+                if (cmd.Difficulty == difficulty)
+                {
+                    return await LoadChartDataFromDisk(runtimeChartPack, index);
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 正式进入音游时加载谱面
+        /// </summary>
         /// <param name="runtimeChartPack">运行时谱包</param>
         /// <param name="chartMetaDataIndex">要加载的谱面元数据下标</param>
         /// <returns>加载后的谱面数据</returns>
