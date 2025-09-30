@@ -57,24 +57,9 @@ namespace CyanStars.Chart
         public List<ChartMetadata> ChartMetaDatas;
 
 
-        // 元数据
-
-        /// <summary>谱包工程文件上一次保存时间</summary>
-        public DateTime SaveTime;
-
-        // /// <summary>谱包导出时间</summary>
-        // [CanBeNull]
-        // public DateTime? ExportTime;
-
-        /// <summary>谱包哈希</summary>
-        /// <remarks>保存谱包时更新</remarks>
-        public string PackHash;
-
-
         public ChartPackData(string title, List<MusicVersionData> musicVersionDatas = null,
             Beat? musicPreviewStartBeat = null, Beat? musicPreviewEndBeat = null, string coverFilePath = null,
-            string croppedCoverFilePath = null, List<ChartMetadata> chartMetaDatas = null,
-            DateTime? saveTime = null, string packHash = null)
+            string croppedCoverFilePath = null, List<ChartMetadata> chartMetaDatas = null)
         {
             DataVersion = 1;
             Title = title;
@@ -83,9 +68,6 @@ namespace CyanStars.Chart
             MusicPreviewEndBeat = musicPreviewEndBeat ?? new Beat(0, 0, 1);
             CoverFilePath = coverFilePath;
             ChartMetaDatas = chartMetaDatas ?? new List<ChartMetadata>();
-            SaveTime = saveTime ?? DateTime.UtcNow;
-            PackHash = packHash;
-            // ExportTime = null;
         }
     }
 }

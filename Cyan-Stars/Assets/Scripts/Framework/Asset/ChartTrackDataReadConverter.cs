@@ -41,9 +41,9 @@ namespace CyanStars.Framework.Asset
         private bool TryGetChartTrackType(string key, out Type type)
         {
             type = null;
-            ChartDataModule dataModule = GameRoot.GetDataModule<ChartDataModule>();
+            ChartModule module = GameRoot.GetDataModule<ChartModule>();
 
-            return dataModule is { } && dataModule.TryGetChartTrackType(key, out type);
+            return module is { } && module.TryGetChartTrackType(key, out type);
         }
     }
 }
