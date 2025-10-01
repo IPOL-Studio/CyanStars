@@ -26,18 +26,16 @@ namespace CyanStars.Gameplay.MusicGame
         private TextMeshProUGUI mapTitleText;
 
 
-        private MusicGamePlayingDataModule musicGamePlayingDataModule =
-            GameRoot.GetDataModule<MusicGamePlayingDataModule>();
-
-        private ChartModule chartModule = GameRoot.GetDataModule<ChartModule>();
-
-        private List<BaseUIItem> mapItems = new List<BaseUIItem>();
-
         private MapSelectionPanel owner;
         private CanvasGroup canvasGroup;
 
         private IPageElementAnimation[] animationElements;
         private Tween runningTween;
+
+        private MusicGamePlayingDataModule musicGamePlayingDataModule;
+        private ChartModule chartModule;
+        private List<BaseUIItem> mapItems;
+
 
         public void OnInit(MapSelectionPanel owner)
         {
@@ -45,6 +43,10 @@ namespace CyanStars.Gameplay.MusicGame
             canvasGroup = GetComponent<CanvasGroup>();
 
             animationElements = GetComponentsInChildren<IPageElementAnimation>(true);
+
+            musicGamePlayingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
+            chartModule = GameRoot.GetDataModule<ChartModule>();
+            mapItems = new List<BaseUIItem>();
 
             nextStepButton.onClick.AddListener(() => { this.owner.ChangePage<StaffPage>(); });
 
