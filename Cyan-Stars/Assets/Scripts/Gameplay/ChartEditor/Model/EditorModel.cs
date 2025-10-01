@@ -98,8 +98,6 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面数据，加载/保存时需要从读写磁盘。 ---
         public ChartPackData ChartPackData { get; private set; }
 
-        public int ChartIndex { get; private set; }
-
         public ChartData ChartData { get; private set; }
 
         public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
@@ -203,10 +201,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <param name="chartPackData">要加载到编辑器的谱包数据</param>
         /// <param name="chartIndex">谱面在此谱包中的下标</param>
         /// <param name="chartData">要加载到编辑器的谱面数据</param>
-        public EditorModel(ChartPackData chartPackData, int chartIndex, ChartData chartData)
+        public EditorModel(ChartPackData chartPackData, ChartData chartData)
         {
             ChartPackData = chartPackData;
-            ChartIndex = chartIndex;
             ChartData = chartData;
 
             IsSimplification = true;

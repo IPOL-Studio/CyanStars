@@ -23,7 +23,7 @@ namespace CyanStars.Chart
         private const string InternalChartPackListFilePath =
             "Assets/BundleRes/ScriptObjects/InternalMap/InternalMapList.asset";
 
-        private const string ChartPackFileName = "ChartPack.json";
+        public const string ChartPackFileName = "ChartPack.json";
         private string PlayerChartPacksFolderPath { get; } = Path.Combine(Application.persistentDataPath, "ChartPacks");
 
 
@@ -144,7 +144,7 @@ namespace CyanStars.Chart
         /// <param name="runtimeChartPack">运行时谱包</param>
         /// <param name="difficulty">要加载的谱面难度</param>
         /// <returns>加载后的谱面数据</returns>
-        public async Task<ChartData> LoadChartDataFromDisk(RuntimeChartPack runtimeChartPack,
+        public async Task<ChartData> GetChartDataFromDisk(RuntimeChartPack runtimeChartPack,
             ChartDifficulty difficulty)
         {
             int difficultyCount =
@@ -160,7 +160,7 @@ namespace CyanStars.Chart
                 ChartMetadata cmd = runtimeChartPack.ChartPackData.ChartMetaDatas[index];
                 if (cmd.Difficulty == difficulty)
                 {
-                    return await LoadChartDataFromDisk(runtimeChartPack, index);
+                    return await GetChartDataFromDisk(runtimeChartPack, index);
                 }
             }
 
@@ -173,7 +173,7 @@ namespace CyanStars.Chart
         /// <param name="runtimeChartPack">运行时谱包</param>
         /// <param name="chartMetaDataIndex">要加载的谱面元数据下标</param>
         /// <returns>加载后的谱面数据</returns>
-        public async Task<ChartData> LoadChartDataFromDisk(RuntimeChartPack runtimeChartPack, int chartMetaDataIndex)
+        public async Task<ChartData> GetChartDataFromDisk(RuntimeChartPack runtimeChartPack, int chartMetaDataIndex)
         {
             // TODO：计算谱面哈希并校验/覆盖元数据内容
             if (chartMetaDataIndex > runtimeChartPack.ChartPackData.ChartMetaDatas.Count - 1)

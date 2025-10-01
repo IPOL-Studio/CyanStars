@@ -245,7 +245,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
             else
             {
-                chartData = await chartModule.LoadChartDataFromDisk(runtimeChartPack,
+                chartData = await chartModule.GetChartDataFromDisk(runtimeChartPack,
                     (ChartDifficulty)chartModule.Difficulty);
             }
 
