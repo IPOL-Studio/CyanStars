@@ -66,8 +66,8 @@ namespace CyanStars.Gameplay.MusicGame
         {
             var musicGamePlayingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
             var chartModule = GameRoot.GetDataModule<ChartModule>();
-            CurrentSelectedMap = MapItemData.Create(musicGamePlayingDataModule.ChartPackIndex,
-                chartModule.RuntimeChartPacks[musicGamePlayingDataModule.ChartPackIndex]);
+            CurrentSelectedMap = MapItemData.Create(chartModule.SelectedChartPackIndex,
+                chartModule.RuntimeChartPacks[chartModule.SelectedChartPackIndex]);
 
             var pages = this.GetComponentsInChildren<IMapSelectionPage>(true);
             pageDict = new Dictionary<Type, IMapSelectionPage>();

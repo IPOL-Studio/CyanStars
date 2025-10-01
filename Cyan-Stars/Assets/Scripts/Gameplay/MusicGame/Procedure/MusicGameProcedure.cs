@@ -238,13 +238,20 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             // 谱包
-            runtimeChartPack = chartModule.RuntimeChartPacks[playingDataModule.ChartPackIndex];
-            await chartModule.LoadChartDataFromDisk(runtimeChartPack, playingDataModule.Difficulty);
-            chartData = chartModule.ChartData;
+            runtimeChartPack = chartModule.RuntimeChartPacks[chartModule.SelectedChartPackIndex];
+            if (chartModule.Difficulty == null)
+            {
+                Debug.LogError("难度为空，请检查");
+            }
+            else
+            {
+                chartData = await chartModule.LoadChartDataFromDisk(runtimeChartPack,
+                    (ChartDifficulty)chartModule.Difficulty);
+            }
 
             // 音乐
             MusicVersionData musicVersionData =
-                runtimeChartPack.ChartPackData.MusicVersionDatas[playingDataModule.MusicVersionIndex];
+                runtimeChartPack.ChartPackData.MusicVersionDatas[chartModule.MusicVersionIndex];
             AudioClip music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.AudioFilePath, sceneRoot);
             if (!music)
             {
@@ -273,7 +280,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void InitLogger()
         {
-            RuntimeChartPack pack = chartModule.RuntimeChartPacks[playingDataModule.ChartPackIndex];
+            RuntimeChartPack pack = chartModule.RuntimeChartPacks[chartModule.SelectedChartPackIndex];
             playingDataModule.InitLogger($"MusicGame - {pack.ChartPackData.Title}");
         }
 

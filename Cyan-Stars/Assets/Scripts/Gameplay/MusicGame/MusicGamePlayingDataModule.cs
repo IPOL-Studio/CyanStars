@@ -16,24 +16,6 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public class MusicGamePlayingDataModule : BaseDataModule
     {
-        // --- --- 谱包和谱面 --- ---
-
-        /// <summary>
-        /// 选中的谱包序号
-        /// </summary>
-        public int ChartPackIndex { get; set; }
-
-        /// <summary>
-        /// 选中的谱面难度
-        /// </summary>
-        public ChartDifficulty Difficulty { get; set; }
-
-        /// <summary>
-        /// 选中的音乐版本序号
-        /// </summary>
-        public int MusicVersionIndex { get; set; } = 0;
-
-
         // --- --- 时间轴和游玩时数据 --- ---
 
         /// <summary>
