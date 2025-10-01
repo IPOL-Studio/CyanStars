@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 
 namespace CyanStars.Chart
 {
+    /// <summary>
+    /// 谱包与谱面数据模块
+    /// </summary>
+    /// <remarks>提供给音游流程和制谱器流程使用。注意制谱器流程需要存一份深拷贝的谱包+谱面副本用于编辑。</remarks>
     public class ChartModule : BaseDataModule
     {
         private const string InternalChartPackListFilePath =
@@ -21,7 +25,16 @@ namespace CyanStars.Chart
 
         private Dictionary<string, Type> trackKeyToTypeMap;
         private List<RuntimeChartPack> runtimeChartPacks = new List<RuntimeChartPack>();
+
+        /// <summary>
+        /// 所有已加载的谱包
+        /// </summary>
         public IReadOnlyList<RuntimeChartPack> RuntimeChartPacks => runtimeChartPacks;
+
+        /// <summary>
+        /// 目前加载的谱面，仅用于音游流程
+        /// </summary>
+        public ChartData ChartData;
 
         public override async void OnInit()
         {
@@ -116,15 +129,14 @@ namespace CyanStars.Chart
         /// <param name="runtimeChartPack">运行时谱包</param>
         /// <param name="difficulty">要加载的谱面难度</param>
         /// <returns>加载后的谱面数据</returns>
-        public async Task<ChartData> LoadChartDataFromDisk(RuntimeChartPack runtimeChartPack,
-            ChartDifficulty difficulty)
+        public async Task LoadChartDataFromDisk(RuntimeChartPack runtimeChartPack, ChartDifficulty difficulty)
         {
             int difficultyCount =
                 runtimeChartPack.ChartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == difficulty);
             if (difficultyCount != 1)
             {
                 Debug.LogError("此难度无对应谱面或存在多个谱面");
-                return null;
+                return;
             }
 
             for (int index = 0; index < runtimeChartPack.ChartPackData.ChartMetaDatas.Count; index++)
@@ -132,11 +144,9 @@ namespace CyanStars.Chart
                 ChartMetadata cmd = runtimeChartPack.ChartPackData.ChartMetaDatas[index];
                 if (cmd.Difficulty == difficulty)
                 {
-                    return await LoadChartDataFromDisk(runtimeChartPack, index);
+                    await LoadChartDataFromDisk(runtimeChartPack, index);
                 }
             }
-
-            return null;
         }
 
         /// <summary>
@@ -145,13 +155,13 @@ namespace CyanStars.Chart
         /// <param name="runtimeChartPack">运行时谱包</param>
         /// <param name="chartMetaDataIndex">要加载的谱面元数据下标</param>
         /// <returns>加载后的谱面数据</returns>
-        public async Task<ChartData> LoadChartDataFromDisk(RuntimeChartPack runtimeChartPack, int chartMetaDataIndex)
+        public async Task LoadChartDataFromDisk(RuntimeChartPack runtimeChartPack, int chartMetaDataIndex)
         {
             // TODO：计算谱面哈希并校验/覆盖元数据内容
             if (chartMetaDataIndex > runtimeChartPack.ChartPackData.ChartMetaDatas.Count - 1)
             {
                 Debug.LogError("下标越界，无法加载谱面");
-                return null;
+                return;
             }
 
             ChartMetadata metadata = runtimeChartPack.ChartPackData.ChartMetaDatas[chartMetaDataIndex];
@@ -162,7 +172,7 @@ namespace CyanStars.Chart
                 Debug.LogError("获取谱面时异常");
             }
 
-            return chartData;
+            ChartData = chartData;
         }
 
         /// <summary>

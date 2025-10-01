@@ -21,8 +21,8 @@ namespace CyanStars.Gameplay.MusicGame
     public class MusicGameProcedure : BaseState
     {
         //  --- --- 音游数据模块 --- ---
-        private MusicGamePlayingDataModule playingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
         private ChartModule chartModule = GameRoot.GetDataModule<ChartModule>();
+        private MusicGamePlayingDataModule playingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
         private MusicGameTrackModule trackModule = GameRoot.GetDataModule<MusicGameTrackModule>();
 
         //  --- --- 音游相关数据 --- ---
@@ -239,8 +239,8 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 谱包
             runtimeChartPack = chartModule.RuntimeChartPacks[playingDataModule.ChartPackIndex];
-            chartData = await chartModule.LoadChartDataFromDisk(runtimeChartPack,
-                (ChartDifficulty)playingDataModule.Difficulty);
+            await chartModule.LoadChartDataFromDisk(runtimeChartPack, playingDataModule.Difficulty);
+            chartData = chartModule.ChartData;
 
             // 音乐
             MusicVersionData musicVersionData =

@@ -21,17 +21,17 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 选中的谱包序号
         /// </summary>
-        public int ChartPackIndex { get; set; } = 0;
-
-        /// <summary>
-        /// 选中的音乐版本序号
-        /// </summary>
-        public int MusicVersionIndex = 0;
+        public int ChartPackIndex { get; set; }
 
         /// <summary>
         /// 选中的谱面难度
         /// </summary>
-        public ChartDifficulty? Difficulty;
+        public ChartDifficulty Difficulty { get; set; }
+
+        /// <summary>
+        /// 选中的音乐版本序号
+        /// </summary>
+        public int MusicVersionIndex { get; set; } = 0;
 
 
         // --- --- 时间轴和游玩时数据 --- ---
