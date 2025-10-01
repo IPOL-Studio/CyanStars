@@ -1,4 +1,4 @@
-namespace CyanStars.ChartEditor.Model
+namespace CyanStars.GamePlay.ChartEditor.Model
 {
     public enum EditTool
     {

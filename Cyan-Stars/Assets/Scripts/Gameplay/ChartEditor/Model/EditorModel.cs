@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CyanStars.Chart;
 using UnityEngine;
 
-namespace CyanStars.ChartEditor.Model
+namespace CyanStars.GamePlay.ChartEditor.Model
 {
     /// <summary>
     /// 谱面编辑器 Model 层

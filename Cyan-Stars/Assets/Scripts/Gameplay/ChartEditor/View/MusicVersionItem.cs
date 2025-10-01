@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CyanStars.Chart;
-using CyanStars.ChartEditor.Model;
+using CyanStars.GamePlay.ChartEditor.Model;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CyanStars.ChartEditor.View
+namespace CyanStars.GamePlay.ChartEditor.View
 {
     public class MusicVersionItem : BaseView
     {

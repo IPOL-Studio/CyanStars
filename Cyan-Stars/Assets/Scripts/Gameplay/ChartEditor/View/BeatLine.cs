@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CyanStars.ChartEditor.View
+namespace CyanStars.GamePlay.ChartEditor.View
 {
     public class BeatLine : BaseView
     {

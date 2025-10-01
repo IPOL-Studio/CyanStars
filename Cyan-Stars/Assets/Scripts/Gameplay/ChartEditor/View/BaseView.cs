@@ -1,7 +1,7 @@
-using CyanStars.ChartEditor.Model;
+using CyanStars.GamePlay.ChartEditor.Model;
 using UnityEngine;
 
-namespace CyanStars.ChartEditor.View
+namespace CyanStars.GamePlay.ChartEditor.View
 {
     public class BaseView : MonoBehaviour
     {

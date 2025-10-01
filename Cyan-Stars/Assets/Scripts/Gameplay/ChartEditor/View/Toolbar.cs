@@ -1,9 +1,9 @@
 using System;
-using CyanStars.ChartEditor.Model;
+using CyanStars.GamePlay.ChartEditor.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CyanStars.ChartEditor.View
+namespace CyanStars.GamePlay.ChartEditor.View
 {
     [RequireComponent(typeof(ToggleGroup))]
     public class Toolbar : BaseView

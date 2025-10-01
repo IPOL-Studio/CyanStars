@@ -1,9 +1,8 @@
-using CyanStars.ChartEditor.Model;
-using CyanStars.ChartEditor.View;
+using CyanStars.GamePlay.ChartEditor.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CyanStars.ChatrEditor.View
+namespace CyanStars.GamePlay.ChartEditor.View
 {
     public class MenuButtons : BaseView
     {

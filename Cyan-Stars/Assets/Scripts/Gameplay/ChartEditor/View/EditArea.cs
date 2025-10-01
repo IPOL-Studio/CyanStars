@@ -2,12 +2,12 @@ using System;
 using System.Threading.Tasks;
 using CyanStars.Chart;
 using UnityEngine;
-using CyanStars.ChartEditor.Model;
 using CyanStars.Framework;
+using CyanStars.GamePlay.ChartEditor.Model;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace CyanStars.ChartEditor.View
+namespace CyanStars.GamePlay.ChartEditor.View
 {
     public class EditArea : BaseView, IPointerClickHandler
     {

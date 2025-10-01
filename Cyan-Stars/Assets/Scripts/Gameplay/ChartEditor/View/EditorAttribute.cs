@@ -1,11 +1,10 @@
 using System.Globalization;
-using CyanStars.ChartEditor.Model;
-using CyanStars.ChartEditor.View;
+using CyanStars.GamePlay.ChartEditor.Model;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CuanStars.ChartEditor.View
+namespace CyanStars.GamePlay.ChartEditor.View
 {
     public class EditorAttribute : BaseView
     {
