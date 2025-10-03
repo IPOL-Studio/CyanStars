@@ -12,5 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d0e7e12b4d34a3ea6aab87f1a10370c, type: 3}
   m_Name: InternalMapList
   m_EditorClassIdentifier: 
-  InternalCharts:
-  - Assets/CysMultimediaAssets/Charts/NewSong/ChartPackData.json
+  InternalChartPacks:
+  - Path: 
+    Levels:
+      KuiXingLevel: 0
+      QiMingLevel: 0
+      TianShuLevel: 0
+      WuYinLevel: 0
