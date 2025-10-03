@@ -108,7 +108,7 @@ namespace CyanStars.Gameplay.MusicGame
             var musicGamePlayingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
             var chartModule = GameRoot.GetDataModule<ChartModule>();
             MusicGamePlayData musicGamePlayData = musicGamePlayingDataModule.MusicGamePlayData;
-            Title.text = chartModule.RuntimeChartPacks[chartModule.SelectedChartPackIndex].ChartPackData.Title;
+            Title.text = chartModule.SelectedRuntimeChartPack.ChartPackData.Title;
             targetScoreNum = musicGamePlayData.FullScore == 0
                 ? 0 // 谱面没有 Note 时，展示得分为 0，见于调试谱面等情况
                 : Mathf.RoundToInt(musicGamePlayData.Score /

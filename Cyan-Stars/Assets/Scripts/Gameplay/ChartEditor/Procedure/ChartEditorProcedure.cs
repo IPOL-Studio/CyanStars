@@ -43,7 +43,7 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
             // 创建制谱器 Model，并为所有 View 添加绑定
             ChartModule module = GameRoot.GetDataModule<ChartModule>();
             string chartPackFilePath =
-                Path.Combine(module.RuntimeChartPacks[module.SelectedChartPackIndex].WorkspacePath,
+                Path.Combine(module.SelectedRuntimeChartPack.WorkspacePath,
                     ChartModule.ChartPackFileName);
 
             // TODO: 由 UI 传入选择的谱包和谱面

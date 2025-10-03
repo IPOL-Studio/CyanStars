@@ -238,7 +238,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             // 谱面
-            runtimeChartPack = chartModule.RuntimeChartPacks[chartModule.SelectedChartPackIndex];
+            runtimeChartPack = chartModule.SelectedRuntimeChartPack;
             if (chartModule.SelectedChartDifficulty != null)
             {
                 chartData = await chartModule.GetChartDataFromDisk(runtimeChartPack,
@@ -276,7 +276,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void InitLogger()
         {
-            RuntimeChartPack pack = chartModule.RuntimeChartPacks[chartModule.SelectedChartPackIndex];
+            RuntimeChartPack pack = chartModule.SelectedRuntimeChartPack;
             playingDataModule.InitLogger($"MusicGame - {pack.ChartPackData.Title}");
         }
 

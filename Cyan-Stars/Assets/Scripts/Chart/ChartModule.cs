@@ -50,7 +50,7 @@ namespace CyanStars.Chart
         /// <summary>
         /// 选中的谱包下标
         /// </summary>
-        public int SelectedChartPackIndex { get; private set; }
+        public int? SelectedChartPackIndex { get; private set; }
 
         /// <summary>
         /// 选中的音乐版本下标
@@ -62,7 +62,8 @@ namespace CyanStars.Chart
         /// </summary>
         public ChartDifficulty? SelectedChartDifficulty { get; private set; }
 
-        public RuntimeChartPack SelectedRuntimeChartPack => runtimeChartPacks[SelectedChartPackIndex];
+        public RuntimeChartPack SelectedRuntimeChartPack =>
+            SelectedChartPackIndex != null ? runtimeChartPacks[(int)SelectedChartPackIndex] : null;
 
 
         public override async void OnInit()
@@ -165,7 +166,7 @@ namespace CyanStars.Chart
         }
 
         /// <summary>
-        /// 选择一个谱包，并自动调整难度
+        /// 选择一个谱包，并自动调整选定的难度
         /// </summary>
         /// <param name="index">新的谱包下标</param>
         public void TrySelectChartPack(int index)
@@ -201,7 +202,12 @@ namespace CyanStars.Chart
             SelectedChartDifficulty = difficulty;
         }
 
-
+        /// <summary>
+        /// 根据难度加载谱面
+        /// </summary>
+        /// <param name="runtimeChartPack">要加载的运行时谱包</param>
+        /// <param name="difficulty">要加载的难度</param>
+        /// <returns></returns>
         public async Task<ChartData> GetChartDataFromDisk(RuntimeChartPack runtimeChartPack, ChartDifficulty difficulty)
         {
             if (!runtimeChartPack.DifficultiesAbleToPlay.Contains(difficulty))
@@ -223,9 +229,9 @@ namespace CyanStars.Chart
         }
 
         /// <summary>
-        /// 正式进入音游时加载谱面
+        /// 根据下标加载谱面
         /// </summary>
-        /// <param name="runtimeChartPack">运行时谱包</param>
+        /// <param name="runtimeChartPack">要加载的运行时谱包</param>
         /// <param name="chartIndex">要加载的谱面下标</param>
         /// <returns>加载后的谱面数据</returns>
         public async Task<ChartData> GetChartDataFromDisk(RuntimeChartPack runtimeChartPack, int chartIndex)
