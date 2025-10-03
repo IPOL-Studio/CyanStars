@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Framework.FSM;
@@ -6,7 +7,6 @@ using CyanStars.GamePlay.ChartEditor.Model;
 using CyanStars.GamePlay.ChartEditor.View;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Path = System.IO.Path;
 
 namespace CyanStars.GamePlay.ChartEditor.Procedure
 {
@@ -50,9 +50,8 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
             // 通过序列化获取深拷贝的谱包数据
             ChartPackData chartPackData = await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackFilePath);
             // 这个方法会直接序列化获取深拷贝
-            int chartIndexInPack = 0; // TODO: 从 UI 获取谱面下标
             ChartData chartData =
-                await module.GetChartDataFromDisk(module.SelectedRuntimeChartPack, chartIndexInPack);
+                await module.GetChartDataFromDisk(module.SelectedRuntimeChartPack, module.SelectedChartIndex);
             EditorModel editorModel = new EditorModel(chartPackData, chartData);
 
             foreach (var baseView in canvas.gameObject.GetComponentsInChildren<BaseView>())

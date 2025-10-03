@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using CyanStars.Framework;
 using CyanStars.Gameplay.MusicGame;
 using UnityEngine;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CyanStars.Chart
 {
@@ -58,9 +58,14 @@ namespace CyanStars.Chart
         public int SelectedMusicVersionIndex { get; private set; }
 
         /// <summary>
-        /// 选中的谱面难度
+        /// 选中的谱面难度（用于进入音游流程）
         /// </summary>
         public ChartDifficulty? SelectedChartDifficulty { get; private set; }
+
+        /// <summary>
+        /// 选中的谱面下标（用于进入制谱器流程）
+        /// </summary>
+        public int SelectedChartIndex { get; private set; }
 
         public RuntimeChartPack SelectedRuntimeChartPack =>
             SelectedChartPackIndex != null ? runtimeChartPacks[(int)SelectedChartPackIndex] : null;
