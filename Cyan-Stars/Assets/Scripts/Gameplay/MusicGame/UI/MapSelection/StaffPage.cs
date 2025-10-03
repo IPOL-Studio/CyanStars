@@ -36,7 +36,9 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 ChartModule module = GameRoot.GetDataModule<ChartModule>();
                 module.SelectedChartPackIndex = owner.CurrentSelectedMap.Index;
-                module.Difficulty = ChartDifficulty.KuiXing; // TODO: 从 UI 传入难度参数
+                module.SelectedChartIndex = (int)module.GetChartIndexByDifficulty(
+                    module.RuntimeChartPacks[module.SelectedChartPackIndex].ChartPackData,
+                    ChartDifficulty.KuiXing); // TODO: 从 UI 传入难度参数
                 GameRoot.ChangeProcedure<MusicGameProcedure>();
             });
 

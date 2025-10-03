@@ -237,21 +237,13 @@ namespace CyanStars.Gameplay.MusicGame
                 }
             }
 
-            // 谱包
+            // 谱面
             runtimeChartPack = chartModule.RuntimeChartPacks[chartModule.SelectedChartPackIndex];
-            if (chartModule.Difficulty == null)
-            {
-                Debug.LogError("难度为空，请检查");
-            }
-            else
-            {
-                chartData = await chartModule.GetChartDataFromDisk(runtimeChartPack,
-                    (ChartDifficulty)chartModule.Difficulty);
-            }
+            chartData = await chartModule.GetChartDataFromDisk(runtimeChartPack, chartModule.SelectedChartIndex);
 
             // 音乐
             MusicVersionData musicVersionData =
-                runtimeChartPack.ChartPackData.MusicVersionDatas[chartModule.MusicVersionIndex];
+                runtimeChartPack.ChartPackData.MusicVersionDatas[chartModule.SelectedMusicVersionIndex];
             AudioClip music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.AudioFilePath, sceneRoot);
             if (!music)
             {

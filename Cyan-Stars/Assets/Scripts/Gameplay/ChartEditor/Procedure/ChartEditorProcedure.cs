@@ -37,7 +37,7 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
 
             if (foundCount != 1)
             {
-                throw new Exception("未找到编辑器主 Canvas或找到了多个");
+                throw new Exception("未找到编辑器主 Canvas 或找到了多个");
             }
 
             // 创建制谱器 Model，并为所有 View 添加绑定
@@ -46,12 +46,14 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
                 Path.Combine(module.RuntimeChartPacks[module.SelectedChartPackIndex].WorkspacePath,
                     ChartModule.ChartPackFileName);
 
-            //通过序列化获取深拷贝的谱包数据
+            // TODO: 由 UI 传入选择的谱包和谱面
+            // 通过序列化获取深拷贝的谱包数据
             ChartPackData chartPackData = await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackFilePath);
-
-            //这个方法会直接序列化获取深拷贝
-            ChartData chartData = await module.GetChartDataFromDisk(
-                module.RuntimeChartPacks[module.SelectedChartPackIndex], (ChartDifficulty)module.Difficulty);
+            // 这个方法会直接序列化获取深拷贝
+            int chartIndexInPack = 0; // TODO: 从 UI 获取谱面下标
+            ChartData chartData =
+                await module.GetChartDataFromDisk(module.RuntimeChartPacks[module.SelectedChartPackIndex],
+                    chartIndexInPack);
             EditorModel editorModel = new EditorModel(chartPackData, chartData);
 
             foreach (var baseView in canvas.gameObject.GetComponentsInChildren<BaseView>())

@@ -153,7 +153,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 将原始 Staff 文本传递给 StarsGenerator 以进一步处理
             Dictionary<string, List<string>> staffs = mapItem.Data.RuntimeChartPack.ChartPackData
-                .MusicVersionDatas[chartModule.MusicVersionIndex].Staffs;
+                .MusicVersionDatas[chartModule.SelectedMusicVersionIndex].Staffs;
             if (staffs == null || staffs.Count == 0)
             {
                 Debug.LogWarning("没有设置 Staff 文本");
@@ -161,7 +161,7 @@ namespace CyanStars.Gameplay.MusicGame
             else
             {
                 this.owner.StarController.ResetAllStaffGroup(mapItem.Data.RuntimeChartPack.ChartPackData
-                    .MusicVersionDatas[chartModule.MusicVersionIndex].Staffs);
+                    .MusicVersionDatas[chartModule.SelectedMusicVersionIndex].Staffs);
             }
         }
     }
