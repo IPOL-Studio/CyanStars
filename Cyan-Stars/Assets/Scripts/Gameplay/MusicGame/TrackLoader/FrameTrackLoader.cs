@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using CyanStars.Framework;
 using CyanStars.Framework.Timeline;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -14,7 +14,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             var frameClipData = new FrameClipData(
                 trackAccessor.GetTrackData(chartData),
-                chartData.BpmGroups.CalculateTime
+                chartData.BpmGroup.CalculateTime
             );
 
             var frameTrackData = new FrameTrackData

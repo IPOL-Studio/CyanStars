@@ -1,6 +1,6 @@
 using CyanStars.Framework;
 using CyanStars.Framework.Timeline;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -17,7 +17,7 @@ namespace CyanStars.Gameplay.MusicGame
         private static BaseClip<NoteTrack> CreateClip(NoteTrack track, NoteTrackData trackData, int curIndex,
             ChartData chartData)
         {
-            NoteClip clip = new NoteClip(0, GameRoot.GetDataModule<MusicGameModule>().CurTimelineLength, track);
+            NoteClip clip = new NoteClip(0, GameRoot.GetDataModule<MusicGamePlayingDataModule>().CurTimelineLength, track);
             foreach (BaseChartNoteData noteData in chartData.Notes)
             {
                 BaseNote baseNote = CreateNote(noteData, chartData, clip);

@@ -1,4 +1,4 @@
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {

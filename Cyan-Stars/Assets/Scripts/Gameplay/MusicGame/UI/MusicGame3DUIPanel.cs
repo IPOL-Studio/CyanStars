@@ -21,11 +21,11 @@ namespace CyanStars.Gameplay.MusicGame
         public TextMeshProUGUI TxtScoreRatio;
         public TextMeshProUGUI TxtVisibleScore;
 
-        private MusicGameModule dataModule;
+        private MusicGamePlayingDataModule playingDataModule;
 
         protected override void OnCreate()
         {
-            dataModule = GameRoot.GetDataModule<MusicGameModule>();
+            playingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
         }
 
 
@@ -56,16 +56,16 @@ namespace CyanStars.Gameplay.MusicGame
         {
             //刷新评级
             Color color = Color.white;
-            if (dataModule.IsAutoMode)
+            if (playingDataModule.IsAutoMode)
             {
                 TxtGrade.text = "AUTO";
                 color = Color.green;
             }
             else
             {
-                TxtGrade.text = dataModule.MusicGamePlayData.Grade.ToString();
+                TxtGrade.text = playingDataModule.MusicGamePlayData.Grade.ToString();
 
-                switch (dataModule.MusicGamePlayData.Grade)
+                switch (playingDataModule.MusicGamePlayData.Grade)
                 {
                     case EvaluateType.Miss:
                         color = Color.white;
@@ -93,13 +93,13 @@ namespace CyanStars.Gameplay.MusicGame
             StartCoroutine(FadeGradeTMP());
 
             //刷新杂率
-            TxtImpurityRate.text = $"杂率:{dataModule.MusicGamePlayData.ImpurityRate:F3}ms";
+            TxtImpurityRate.text = $"杂率:{playingDataModule.MusicGamePlayData.ImpurityRate:F3}ms";
 
-            if (dataModule.MusicGamePlayData.ImpurityRate < 30)
+            if (playingDataModule.MusicGamePlayData.ImpurityRate < 30)
             {
                 TxtImpurityRate.color = Color.yellow;
             }
-            else if (dataModule.MusicGamePlayData.ImpurityRate < 50)
+            else if (playingDataModule.MusicGamePlayData.ImpurityRate < 50)
             {
                 TxtImpurityRate.color = Color.blue;
             }
@@ -110,21 +110,21 @@ namespace CyanStars.Gameplay.MusicGame
 
             //刷新得分率
             float scoreRatio = 0;
-            if (dataModule.MusicGamePlayData.MaxScore > 0)
+            if (playingDataModule.MusicGamePlayData.MaxScore > 0)
             {
-                scoreRatio = dataModule.MusicGamePlayData.Score / dataModule.MusicGamePlayData.MaxScore;
+                scoreRatio = playingDataModule.MusicGamePlayData.Score / playingDataModule.MusicGamePlayData.MaxScore;
             }
 
             TxtScoreRatio.text = $"{(scoreRatio * 100):F}%";
 
-            if (dataModule.MusicGamePlayData.GreatNum + dataModule.MusicGamePlayData.RightNum + dataModule.MusicGamePlayData.OutNum + dataModule.MusicGamePlayData.BadNum +
-                dataModule.MusicGamePlayData.MissNum == 0)
+            if (playingDataModule.MusicGamePlayData.GreatNum + playingDataModule.MusicGamePlayData.RightNum + playingDataModule.MusicGamePlayData.OutNum + playingDataModule.MusicGamePlayData.BadNum +
+                playingDataModule.MusicGamePlayData.MissNum == 0)
             {
                 TxtScoreRatio.color = Color.yellow;
             }
             else
             {
-                if (dataModule.MusicGamePlayData.MissNum + dataModule.MusicGamePlayData.BadNum == 0)
+                if (playingDataModule.MusicGamePlayData.MissNum + playingDataModule.MusicGamePlayData.BadNum == 0)
                 {
                     TxtScoreRatio.color = Color.cyan;
                 }
@@ -135,7 +135,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             //刷新当前分数
-            TxtVisibleScore.text = ((int)(dataModule.MusicGamePlayData.Score / dataModule.MusicGamePlayData.FullScore * 100000)).ToString().PadLeft(6, '0'); //更新文本
+            TxtVisibleScore.text = ((int)(playingDataModule.MusicGamePlayData.Score / playingDataModule.MusicGamePlayData.FullScore * 100000)).ToString().PadLeft(6, '0'); //更新文本
         }
 
         private IEnumerator FadeGradeTMP()

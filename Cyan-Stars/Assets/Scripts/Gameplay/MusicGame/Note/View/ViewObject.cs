@@ -1,7 +1,7 @@
 using System.Collections;
 using CyanStars.Framework;
 using CyanStars.Framework.Timer;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
@@ -26,9 +26,9 @@ namespace CyanStars.Gameplay.MusicGame
 
         protected virtual void Awake()
         {
-            MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
-            notePrefabName = dataModule.NotePrefabNameDict[noteType];
-            hitEffectPrefabName = dataModule.HitEffectPrefabNameDict[noteType];
+            MusicGamePlayingDataModule playingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
+            notePrefabName = playingDataModule.NotePrefabNameDict[noteType];
+            hitEffectPrefabName = playingDataModule.HitEffectPrefabNameDict[noteType];
             timerCallback = ReleaseHitEffectObj;
         }
 

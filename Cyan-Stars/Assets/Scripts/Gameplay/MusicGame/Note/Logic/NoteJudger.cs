@@ -1,7 +1,7 @@
 ﻿using System;
 using CyanStars.Framework;
 using CyanStars.Framework.Logging;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -10,7 +10,7 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public static class NoteJudger
     {
-        private static readonly MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
+        private static readonly MusicGamePlayingDataModule playingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
 
         /// <summary>
         /// 获取每个音符的总分
@@ -50,23 +50,23 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static void TapJudge(TapChartNoteData data, float distance)
         {
-            dataModule.DistanceBarData.AddHeight(distance);
+            playingDataModule.DistanceBarData.AddHeight(distance);
 
             EvaluateType et = EvaluateHelper.GetTapEvaluate(distance); //获取评价类型
 
             LogJudgedInfoR(new TapNoteJudgedInfoR(data, et)); //Log
 
-            dataModule.MusicGamePlayData.MaxScore += GetFullScore(NoteType.Tap); //更新理论最高分
+            playingDataModule.MusicGamePlayData.MaxScore += GetFullScore(NoteType.Tap); //更新理论最高分
 
             if (et != EvaluateType.Miss && et != EvaluateType.Bad) //Exact、Great、Right:加一combo，计算杂率
             {
-                dataModule.RefreshPlayingData(1,
+                playingDataModule.RefreshPlayingData(1,
                     EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Tap),
                     et, distance);
             }
             else //Bad、Miss:断combo，不计算杂率
             {
-                dataModule.RefreshPlayingData(-1,
+                playingDataModule.RefreshPlayingData(-1,
                     EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Tap),
                     et, float.MaxValue);
             }
@@ -77,15 +77,15 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static EvaluateType HoldHeadJudge(HoldChartNoteData data, float distance)
         {
-            dataModule.DistanceBarData.AddHeight(distance);
+            playingDataModule.DistanceBarData.AddHeight(distance);
 
             EvaluateType et = EvaluateHelper.GetTapEvaluate(distance);
             if (et == EvaluateType.Bad || et == EvaluateType.Miss) //Bad、Miss:断combo，不计算杂率
             {
                 //头判失败
                 LogJudgedInfoR(new HoldNoteHeadJudgedInfoR(data, et));
-                dataModule.MusicGamePlayData.MaxScore += GetFullScore(NoteType.Hold);
-                dataModule.RefreshPlayingData(-1,
+                playingDataModule.MusicGamePlayData.MaxScore += GetFullScore(NoteType.Hold);
+                playingDataModule.RefreshPlayingData(-1,
                     EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Hold),
                     et, float.MaxValue);
             }
@@ -93,8 +93,8 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 //头判成功
                 LogJudgedInfoR(new HoldNoteHeadJudgedInfoR(data, et));
-                dataModule.MusicGamePlayData.MaxScore++;
-                dataModule.RefreshPlayingData(1,
+                playingDataModule.MusicGamePlayData.MaxScore++;
+                playingDataModule.RefreshPlayingData(1,
                     EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Hold),
                     et, distance);
             }
@@ -107,11 +107,11 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static void HoldMiss(HoldChartNoteData data)
         {
-            dataModule.DistanceBarData.AddHeightWithMiss();
+            playingDataModule.DistanceBarData.AddHeightWithMiss();
             LogJudgedInfoR(new HoldNoteJudgedInfoR(data, EvaluateType.Miss, 0, 0));
 
-            dataModule.MusicGamePlayData.MaxScore += 2;
-            dataModule.RefreshPlayingData(-1, 0, EvaluateType.Miss, float.MaxValue); // Miss：断combo，不计算杂率
+            playingDataModule.MusicGamePlayData.MaxScore += 2;
+            playingDataModule.RefreshPlayingData(-1, 0, EvaluateType.Miss, float.MaxValue); // Miss：断combo，不计算杂率
         }
 
         /// <summary>
@@ -123,16 +123,16 @@ namespace CyanStars.Gameplay.MusicGame
 
             LogJudgedInfoR(new HoldNoteJudgedInfoR(data, et, pressTimeLength, value));
 
-            dataModule.MusicGamePlayData.MaxScore++;
+            playingDataModule.MusicGamePlayData.MaxScore++;
             if (et != EvaluateType.Miss) // Exact、Great、Right：不加combo，不计算杂率
             {
-                dataModule.RefreshPlayingData(0,
+                playingDataModule.RefreshPlayingData(0,
                     EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Hold),
                     et, float.MaxValue);
             }
             else // Miss：断combo，不计算杂率
             {
-                dataModule.RefreshPlayingData(-1,
+                playingDataModule.RefreshPlayingData(-1,
                     EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Hold),
                     et, float.MaxValue);
             }
@@ -151,17 +151,17 @@ namespace CyanStars.Gameplay.MusicGame
 
             LogJudgedInfoR(new DragNoteJudgedInfoR(data, et));
 
-            dataModule.MusicGamePlayData.MaxScore += GetFullScore(NoteType.Drag);
+            playingDataModule.MusicGamePlayData.MaxScore += GetFullScore(NoteType.Drag);
 
             if (!isMiss) // Exact：加一combo、不计算杂率
             {
-                dataModule.RefreshPlayingData(1,
+                playingDataModule.RefreshPlayingData(1,
                     EvaluateHelper.GetScoreWithEvaluate(EvaluateType.Exact) * GetMagnification(NoteType.Drag),
                     EvaluateType.Exact, float.MaxValue);
             }
             else // Miss：断combo、不计算杂率
             {
-                dataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue); //更新数据
+                playingDataModule.RefreshPlayingData(-1, -1, EvaluateType.Miss, float.MaxValue); //更新数据
             }
         }
 
@@ -170,13 +170,13 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static EvaluateType ClickHeadJudge(ClickChartNoteData data, float distance)
         {
-            dataModule.DistanceBarData.AddHeight(distance);
+            playingDataModule.DistanceBarData.AddHeight(distance);
             EvaluateType et = EvaluateHelper.GetTapEvaluate(distance);
-            dataModule.MusicGamePlayData.MaxScore += 1;
+            playingDataModule.MusicGamePlayData.MaxScore += 1;
 
             if (et != EvaluateType.Bad && et != EvaluateType.Miss) // Exact、Great、Right：加一combo，计算杂率
             {
-                dataModule.RefreshPlayingData(1,
+                playingDataModule.RefreshPlayingData(1,
                     EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Click),
                     et, distance);
 
@@ -187,8 +187,8 @@ namespace CyanStars.Gameplay.MusicGame
                 //头判失败直接销毁
 
                 LogJudgedInfoR(new ClickNoteHeadJudgedInfoR(data, et));
-                dataModule.MusicGamePlayData.MaxScore += 1;
-                dataModule.RefreshPlayingData(-1,
+                playingDataModule.MusicGamePlayData.MaxScore += 1;
+                playingDataModule.RefreshPlayingData(-1,
                     EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Click),
                     et, float.MaxValue);
             }
@@ -201,11 +201,11 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static void ClickMiss(ClickChartNoteData data)
         {
-            dataModule.DistanceBarData.AddHeightWithMiss();
+            playingDataModule.DistanceBarData.AddHeightWithMiss();
             LogJudgedInfoR(new ClickNoteJudgedInfoR(data, EvaluateType.Miss, 0));
 
-            dataModule.MusicGamePlayData.MaxScore += 2;
-            dataModule.RefreshPlayingData(-1, 0, EvaluateType.Miss, float.MaxValue); // Miss：断combo，不计算杂率
+            playingDataModule.MusicGamePlayData.MaxScore += 2;
+            playingDataModule.RefreshPlayingData(-1, 0, EvaluateType.Miss, float.MaxValue); // Miss：断combo，不计算杂率
         }
 
         /// <summary>
@@ -213,12 +213,12 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static void ClickTailJudge(ClickChartNoteData data, float timeLength)
         {
-            dataModule.MusicGamePlayData.MaxScore += 1;
+            playingDataModule.MusicGamePlayData.MaxScore += 1;
             EvaluateType et = EvaluateHelper.GetClickEvaluate(timeLength);
 
             LogJudgedInfoR(new ClickNoteJudgedInfoR(data, et, timeLength));
 
-            dataModule.RefreshPlayingData(0, EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Click),
+            playingDataModule.RefreshPlayingData(0, EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Click),
                 et, float.MaxValue); // Exact、Out：不断combo，不计算杂率
         }
 
@@ -227,29 +227,29 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static void BreakJudge(BreakChartNoteData data, float distance)
         {
-            dataModule.DistanceBarData.AddHeight(distance);
+            playingDataModule.DistanceBarData.AddHeight(distance);
             EvaluateType et = EvaluateHelper.GetTapEvaluate(distance);
 
             LogJudgedInfoR(new BreakNoteJudgedInfoR(data, et));
 
-            dataModule.MusicGamePlayData.MaxScore += GetFullScore(NoteType.Break);
+            playingDataModule.MusicGamePlayData.MaxScore += GetFullScore(NoteType.Break);
 
             if (et != EvaluateType.Miss && et != EvaluateType.Bad) //Exact、Great、Right:加一combo，计算杂率
             {
-                dataModule.RefreshPlayingData(1,
+                playingDataModule.RefreshPlayingData(1,
                     EvaluateHelper.GetScoreWithEvaluate(et) * GetMagnification(NoteType.Break),
                     et, distance);
             }
             else //Bad、Miss:断combo，不计算杂率
             {
-                dataModule.RefreshPlayingData(-1, 0, et, float.MaxValue);
+                playingDataModule.RefreshPlayingData(-1, 0, et, float.MaxValue);
             }
         }
 
         [HideInStackTrace]
         public static void LogJudgedInfoR<T>(T info) where T : INoteJudgedInfoR
         {
-            dataModule.Logger.LogInfo(info.GetJudgeMessage());
+            playingDataModule.Logger.LogInfo(info.GetJudgeMessage());
         }
     }
 }
