@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using CyanStars.Chart;
+using CyanStars.Framework;
 using UnityEngine;
 
 namespace CyanStars.GamePlay.ChartEditor.Model
@@ -96,14 +98,11 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
 
         // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面数据，加载/保存时需要从读写磁盘。 ---
-        public ChartPackData ChartPackData { get; private set; }
-
-        public ChartData ChartData { get; private set; }
-
+        public readonly string WorkspacePath;
+        public readonly ChartPackData ChartPackData;
+        public readonly ChartData ChartData;
         public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
-
         public List<BpmGroupItem> BpmGroupDatas => ChartData.BpmGroup.Data;
-
         public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
 
 
@@ -201,8 +200,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <param name="chartPackData">要加载到编辑器的谱包数据</param>
         /// <param name="chartIndex">谱面在此谱包中的下标</param>
         /// <param name="chartData">要加载到编辑器的谱面数据</param>
-        public EditorModel(ChartPackData chartPackData, ChartData chartData)
+        public EditorModel(string workspacePath, ChartPackData chartPackData, ChartData chartData)
         {
+            WorkspacePath = workspacePath;
             ChartPackData = chartPackData;
             ChartData = chartData;
 
@@ -399,6 +399,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
         }
 
+        /// <summary>
+        /// 更新预览开始拍
+        /// </summary>
         public void UpdatePreviewStareBeat(string integerPartString, string numeratorString, string denominatorString)
         {
             if (!(int.TryParse(integerPartString, out int integerPart) &&
@@ -423,6 +426,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
         }
 
+        /// <summary>
+        /// 更新预览结束拍
+        /// </summary>
         public void UpdatePreviewEndBeat(string integerPartString, string numeratorString, string denominatorString)
         {
             if (!(int.TryParse(integerPartString, out int integerPart) &&
@@ -448,18 +454,16 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 尝试更新曲绘大图
+        /// 更新曲绘大图
         /// </summary>
-        /// <param name="path">曲绘大图相对路径</param>
-        /// <remarks>如果路径一致，不会触发事件并返回 false</remarks>
-        /// <returns>是否发生了更新</returns>
+        /// <param name="path">曲绘大图外部绝对路径</param>
         public void UpdateCoverFilePath(string path)
         {
-            if (ChartPackData.CoverFilePath != path)
-            {
-                ChartPackData.CoverFilePath = path;
-                OnChartPackDataChanged?.Invoke();
-            }
+            string fileName = Path.GetFileName(path);
+            string fileRelativePath = Path.Combine("Assets", fileName);
+            string fileAbsolutePath = Path.Combine(WorkspacePath, fileRelativePath);
+            File.Copy(path, fileAbsolutePath, true);
+            OnChartPackDataChanged?.Invoke();
         }
 
         /// <summary>

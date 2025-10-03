@@ -55,7 +55,7 @@ namespace CyanStars.Chart
         /// <summary>
         /// 选中的音乐版本下标
         /// </summary>
-        public int SelectedMusicVersionIndex { get; private set; }
+        public int? SelectedMusicVersionIndex { get; private set; }
 
         /// <summary>
         /// 选中的谱面难度（用于进入音游流程）

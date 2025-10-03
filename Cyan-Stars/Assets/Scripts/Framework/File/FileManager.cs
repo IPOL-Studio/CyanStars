@@ -56,7 +56,7 @@ namespace CyanStars.Framework.File
         /// <param name="showAllFilesFilter">是否允许玩家选择任意后缀的文件</param>
         /// <param name="filters">依据后缀筛选文件</param>
         /// <param name="defaultFilter">默认筛选后缀名</param>
-        public void GetFilePath(Action<string> onSuccess,
+        public void OpenLoadFilePathBrowser(Action<string> onSuccess,
             Action onCancel = null,
             string title = "打开文件",
             bool showAllFilesFilter = false,
@@ -90,7 +90,7 @@ namespace CyanStars.Framework.File
         /// <param name="showAllFilesFilter">是否允许玩家选择任意后缀的文件</param>
         /// <param name="filters">依据后缀筛选文件</param>
         /// <param name="defaultFilter">默认筛选后缀名</param>
-        public void GetMultipleFilePaths(Action<string[]> onSuccess,
+        public void OpenLoadFilePathsBrowser(Action<string[]> onSuccess,
             Action onCancel = null,
             string title = "打开文件",
             bool showAllFilesFilter = false,
@@ -115,7 +115,7 @@ namespace CyanStars.Framework.File
         /// <param name="onSuccess">成功获取的回调</param>
         /// <param name="onCancel">玩家取消的回调</param>
         /// <param name="title">窗口标题</param>
-        public void GetLoadFolderPath(Action<string> onSuccess,
+        public void OpenLoadFolderPathBrowser(Action<string> onSuccess,
             Action onCancel = null,
             string title = "打开文件夹")
         {
@@ -141,7 +141,7 @@ namespace CyanStars.Framework.File
         /// <param name="onSuccess">成功获取的回调</param>
         /// <param name="onCancel">玩家取消的回调</param>
         /// <param name="title">窗口标题</param>
-        public void GetSaveFolderPath(Action<string> onSuccess,
+        public void OpenSaveFolderPathBrowser(Action<string> onSuccess,
             Action onCancel = null,
             string title = "保存到文件夹")
         {

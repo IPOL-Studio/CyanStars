@@ -7,6 +7,7 @@ using CyanStars.Framework.FSM;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.Audio;
 using CyanStars.Framework.Event;
+using CyanStars.Framework.File;
 using CyanStars.Framework.GameObjectPool;
 using CyanStars.Framework.Logging;
 using CyanStars.Framework.Timer;
@@ -27,7 +28,8 @@ namespace CyanStars.Framework
         /// <summary>
         /// 数据模块字典
         /// </summary>
-        private static readonly Dictionary<Type, BaseDataModule> DataModuleDict = new Dictionary<Type, BaseDataModule>();
+        private static readonly Dictionary<Type, BaseDataModule>
+            DataModuleDict = new Dictionary<Type, BaseDataModule>();
 
         /// <summary>
         /// 主相机
@@ -75,6 +77,11 @@ namespace CyanStars.Framework
         public static LoggerManager Logger { get; private set; }
 
         /// <summary>
+        /// 用户数据文件管理器
+        /// </summary>
+        public static FileManager File { get; private set; }
+
+        /// <summary>
         /// 流程状态机
         /// </summary>
         private static FSM.FSM procedureFSM;
@@ -101,6 +108,7 @@ namespace CyanStars.Framework
             Timer = GetManager<TimerManager>();
             UI = GetManager<UIManager>();
             Logger = GetManager<LoggerManager>();
+            File = GetManager<FileManager>();
 
             //按优先级排序并初始化所有Manager
             Managers.Sort((x, y) => x.Priority.CompareTo(y.Priority));
@@ -116,7 +124,7 @@ namespace CyanStars.Framework
             {
                 if (RegisterAssemblies.Contains(assembly.GetName().Name))
                 {
-                   types.AddRange(assembly.GetTypes());
+                    types.AddRange(assembly.GetTypes());
                 }
             }
 

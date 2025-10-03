@@ -246,22 +246,26 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             // 音乐
-            MusicVersionData musicVersionData =
-                runtimeChartPack.ChartPackData.MusicVersionDatas[chartModule.SelectedMusicVersionIndex];
-            AudioClip music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.AudioFilePath, sceneRoot);
-            if (!music)
+            if (chartModule.SelectedMusicVersionIndex != null)
             {
-                Debug.LogError($"谱包 {runtimeChartPack.ChartPackData.Title} 的音乐加载失败");
-            }
-            else
-            {
-                musicClipData = new MusicClipData(music, musicVersionData.Offset);
+                MusicVersionData musicVersionData =
+                    runtimeChartPack.ChartPackData.MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex];
+                AudioClip music =
+                    await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.AudioFilePath, sceneRoot);
+                if (!music)
+                {
+                    Debug.LogError($"谱包 {runtimeChartPack.ChartPackData.Title} 的音乐加载失败");
+                }
+                else
+                {
+                    musicClipData = new MusicClipData(music, musicVersionData.Offset);
+                }
+
+                // 时间轴
+                playingDataModule.CurTimelineLength = music.length + musicVersionData.Offset / 1000f;
+                playingDataModule.CalFullScore(chartData.Notes);
             }
 
-
-            // 时间轴
-            playingDataModule.CurTimelineLength = music.length + musicVersionData.Offset / 1000f;
-            playingDataModule.CalFullScore(chartData.Notes);
 
             // //歌词
             // if (!string.IsNullOrEmpty(mapManifest.LrcFileName))

@@ -42,9 +42,9 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
 
             // 创建制谱器 Model，并为所有 View 添加绑定
             ChartModule module = GameRoot.GetDataModule<ChartModule>();
+            string workspacePath = module.SelectedRuntimeChartPack.WorkspacePath;
             string chartPackFilePath =
-                Path.Combine(module.SelectedRuntimeChartPack.WorkspacePath,
-                    ChartModule.ChartPackFileName);
+                Path.Combine(workspacePath, ChartModule.ChartPackFileName);
 
             // TODO: 由 UI 传入选择的谱包和谱面
             // 通过序列化获取深拷贝的谱包数据
@@ -52,7 +52,7 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
             // 这个方法会直接序列化获取深拷贝
             ChartData chartData =
                 await module.GetChartDataFromDisk(module.SelectedRuntimeChartPack, module.SelectedChartIndex);
-            EditorModel editorModel = new EditorModel(chartPackData, chartData);
+            EditorModel editorModel = new EditorModel(workspacePath, chartPackData, chartData);
 
             foreach (var baseView in canvas.gameObject.GetComponentsInChildren<BaseView>())
             {

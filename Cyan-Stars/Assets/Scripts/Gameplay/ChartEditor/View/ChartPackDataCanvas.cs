@@ -1,6 +1,7 @@
 using CyanStars.Framework;
 using CyanStars.Framework.File;
 using CyanStars.GamePlay.ChartEditor.Model;
+using SimpleFileBrowser;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -77,32 +78,26 @@ namespace CyanStars.GamePlay.ChartEditor.View
             });
             previewEndField1.onEndEdit.AddListener((_) =>
             {
-                Model.UpdatePreviewStareBeat(previewEndField1.text, previewEndField2.text, previewEndField3.text);
+                Model.UpdatePreviewEndBeat(previewEndField1.text, previewEndField2.text, previewEndField3.text);
             });
             previewEndField2.onEndEdit.AddListener((_) =>
             {
-                Model.UpdatePreviewStareBeat(previewEndField1.text, previewEndField2.text, previewEndField3.text);
+                Model.UpdatePreviewEndBeat(previewEndField1.text, previewEndField2.text, previewEndField3.text);
             });
             previewEndField3.onEndEdit.AddListener((_) =>
             {
-                Model.UpdatePreviewStareBeat(previewEndField1.text, previewEndField2.text, previewEndField3.text);
+                Model.UpdatePreviewEndBeat(previewEndField1.text, previewEndField2.text, previewEndField3.text);
             });
 
-            importCoverButton.onClick.AddListener(ImportChart);
+            importCoverButton.onClick.AddListener(() =>
+            {
+                GameRoot.File.OpenLoadFilePathBrowser(
+                    (path) => { Model.UpdateCoverFilePath(path); },
+                    filters: new[] { GameRoot.File.SpriteFilter }
+                );
+            });
         }
 
-        private void ImportChart()
-        {
-            FileManager fileManager = GameRoot.GetManager<FileManager>();
-            fileManager.GetFilePath(async (path) => { LoadCover(path); },
-                filters: new[] { fileManager.SpriteFilter });
-        }
-
-        private async void LoadCover(string path)
-        {
-            FileManager fileManager = GameRoot.GetManager<FileManager>();
-            Sprite sprite = await fileManager.LoadAssetFromPathAsync<Sprite>(path);
-        }
 
         private void RefreshUI()
         {
