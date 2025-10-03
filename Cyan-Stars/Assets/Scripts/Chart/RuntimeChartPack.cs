@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace CyanStars.Chart
 {
     /// <summary>
@@ -28,20 +30,19 @@ namespace CyanStars.Chart
         public readonly string WorkspacePath;
 
         /// <summary>
-        /// 谱面校验成功，可供游玩
+        /// 校验后可供游玩的难度，即有且仅有一个对应谱面的难度
         /// </summary>
-        /// <remarks>为 false 的谱面只能被加载到编辑器，无法加载到游戏场景</remarks>
-        public readonly bool CanPlay;
+        public readonly HashSet<ChartDifficulty> DifficultiesAbleToPlay;
 
 
-        public RuntimeChartPack(ChartPackData chartPackData, bool isInternal, ChartPackLevels Levels,
-            string workspacePath, bool canPlay)
+        public RuntimeChartPack(ChartPackData chartPackData, bool isInternal, ChartPackLevels levels,
+            string workspacePath, HashSet<ChartDifficulty> difficultiesAbleToPlay)
         {
             ChartPackData = chartPackData;
             IsInternal = isInternal;
-            this.Levels = Levels;
+            Levels = levels;
             WorkspacePath = workspacePath;
-            CanPlay = canPlay;
+            DifficultiesAbleToPlay = difficultiesAbleToPlay;
         }
     }
 }

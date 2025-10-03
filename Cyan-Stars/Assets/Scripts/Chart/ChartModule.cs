@@ -19,36 +19,50 @@ namespace CyanStars.Chart
         /// <summary>
         /// 内置谱包 SO 文件路径
         /// </summary>
-        /// <remarks>内置谱包索引文件的位置（位于）需要在这个文件中注册</remarks>
+        /// <remarks>内置谱包索引文件的位置（位于多媒体目录）和定数需要在这个文件中注册</remarks>
         private const string InternalChartPackListFilePath =
             "Assets/BundleRes/ScriptObjects/InternalMap/InternalMapList.asset";
 
+        /// <summary>
+        /// 索引文件的文件名，将会在目录中查找此文件
+        /// </summary>
         public const string ChartPackFileName = "ChartPack.json";
+
+        /// <summary>
+        /// 玩家谱包路径，位于用户数据
+        /// </summary>
         private string PlayerChartPacksFolderPath { get; } = Path.Combine(Application.persistentDataPath, "ChartPacks");
 
 
+        /// <summary>
+        /// 谱面拓展轨道名称->轨道类型 映射表
+        /// </summary>
         private Dictionary<string, Type> trackKeyToTypeMap;
+
+
         private List<RuntimeChartPack> runtimeChartPacks = new List<RuntimeChartPack>();
 
         /// <summary>
-        /// 所有已加载的谱包
+        /// 目前所有已加载的运行时谱包（只读）
         /// </summary>
         public IReadOnlyList<RuntimeChartPack> RuntimeChartPacks => runtimeChartPacks;
 
         /// <summary>
-        /// 选中的谱包序号
+        /// 选中的谱包下标
         /// </summary>
-        public int SelectedChartPackIndex { get; set; }
+        public int SelectedChartPackIndex { get; private set; }
+
+        /// <summary>
+        /// 选中的音乐版本下标
+        /// </summary>
+        public int SelectedMusicVersionIndex { get; private set; }
 
         /// <summary>
         /// 选中的谱面难度
         /// </summary>
-        public int SelectedChartIndex { get; set; }
+        public ChartDifficulty? SelectedChartDifficulty { get; private set; }
 
-        /// <summary>
-        /// 选中的音乐版本序号
-        /// </summary>
-        public int SelectedMusicVersionIndex { get; set; }
+        public RuntimeChartPack SelectedRuntimeChartPack => runtimeChartPacks[SelectedChartPackIndex];
 
 
         public override async void OnInit()
@@ -56,6 +70,7 @@ namespace CyanStars.Chart
             SetTrackKeyToTypeMap();
             await LoadRuntimeChartPacksFromDisk();
         }
+
 
         private void SetTrackKeyToTypeMap()
         {
@@ -85,6 +100,7 @@ namespace CyanStars.Chart
         {
             return trackKeyToTypeMap.TryGetValue(key, out type);
         }
+
 
         /// <summary>
         /// 从磁盘加载全部谱包清单，包括内置和玩家谱包，不含谱面
@@ -129,18 +145,19 @@ namespace CyanStars.Chart
                 string workspacePath = Path.GetDirectoryName(paths[i]);
                 ChartPackLevels levels = levelsList[i];
 
-                if (VerifyChartPacks(chartPackData, isInternal) != VerifyState.Error)
+                VerifyChartPacks(chartPackData, out bool canLoad, out HashSet<ChartDifficulty> difficultiesAbleToPlay);
+                if (isInternal && (!canLoad || difficultiesAbleToPlay.Count != 4))
                 {
-                    newPacks.Add(new RuntimeChartPack(chartPackData, isInternal, levels, workspacePath, true));
+                    Debug.LogError($"某个内置谱包加载失败或有无法游玩的难度：{chartPackData.Title}");
                 }
-                else
+
+                if (!canLoad)
                 {
-                    newPacks.Add(new RuntimeChartPack(chartPackData, isInternal, levels, workspacePath, false));
-                    if (isInternal)
-                    {
-                        Debug.LogError($"某个内置谱包加载失败：{chartPackData.Title}");
-                    }
+                    continue;
                 }
+
+                newPacks.Add(new RuntimeChartPack(chartPackData, isInternal, levels, workspacePath,
+                    difficultiesAbleToPlay));
             }
 
             runtimeChartPacks.Clear();
@@ -148,49 +165,73 @@ namespace CyanStars.Chart
         }
 
         /// <summary>
-        /// 根据难度获取谱面下标
+        /// 选择一个谱包，并自动调整难度
         /// </summary>
-        /// <param name="chartPackData">运行时谱包</param>
-        /// <param name="difficulty">要加载的谱面难度</param>
-        /// <returns>谱面在谱包中的下标，不存在此难度或存在多个难度是返回 null</returns>
-        public int? GetChartIndexByDifficulty(ChartPackData chartPackData, ChartDifficulty difficulty)
+        /// <param name="index">新的谱包下标</param>
+        public void TrySelectChartPack(int index)
         {
-            int difficultyCount =
-                chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == difficulty);
-            if (difficultyCount != 1)
+            SelectedChartPackIndex = index;
+
+            HashSet<ChartDifficulty> difficultiesAbleToPlay = RuntimeChartPacks[index].DifficultiesAbleToPlay;
+            if (difficultiesAbleToPlay.Count == 0 || SelectedChartDifficulty == null)
             {
-                Debug.LogError("此难度无对应谱面或存在多个谱面");
+                SelectedChartDifficulty = null;
+                return;
+            }
+
+            // 将难度设为上个谱包选中难度中最接近的那一个
+            SelectedChartDifficulty = difficultiesAbleToPlay
+                .OrderBy(e => Math.Abs(Convert.ToInt32(e) - (int)SelectedChartDifficulty))
+                .ThenBy(e => Convert.ToInt32(e))
+                .First();
+        }
+
+
+        /// <summary>
+        /// 为当前选定的谱包设置难度
+        /// </summary>
+        /// <param name="difficulty">难度</param>
+        public void TrySetDifficulty(ChartDifficulty difficulty)
+        {
+            if (!SelectedRuntimeChartPack.DifficultiesAbleToPlay.Contains(difficulty))
+            {
+                throw new Exception("无法选择难度。不存在对应谱面或存在多个谱面？");
+            }
+
+            SelectedChartDifficulty = difficulty;
+        }
+
+
+        public async Task<ChartData> GetChartDataFromDisk(RuntimeChartPack runtimeChartPack, ChartDifficulty difficulty)
+        {
+            if (!runtimeChartPack.DifficultiesAbleToPlay.Contains(difficulty))
+            {
+                Debug.LogError("此难度不可游玩。缺少谱面或有多个谱面？");
                 return null;
             }
 
-            for (int index = 0; index < chartPackData.ChartMetaDatas.Count; index++)
+            int index;
+            for (index = 0; index < runtimeChartPack.ChartPackData.ChartMetaDatas.Count; index++)
             {
-                ChartMetadata cmd = chartPackData.ChartMetaDatas[index];
-                if (cmd.Difficulty == difficulty)
+                if (runtimeChartPack.ChartPackData.ChartMetaDatas[index].Difficulty == difficulty)
                 {
-                    return index;
+                    break;
                 }
             }
 
-            return null;
+            return await GetChartDataFromDisk(runtimeChartPack, index);
         }
 
         /// <summary>
         /// 正式进入音游时加载谱面
         /// </summary>
         /// <param name="runtimeChartPack">运行时谱包</param>
-        /// <param name="chartMetaDataIndex">要加载的谱面元数据下标</param>
+        /// <param name="chartIndex">要加载的谱面下标</param>
         /// <returns>加载后的谱面数据</returns>
-        public async Task<ChartData> GetChartDataFromDisk(RuntimeChartPack runtimeChartPack, int chartMetaDataIndex)
+        public async Task<ChartData> GetChartDataFromDisk(RuntimeChartPack runtimeChartPack, int chartIndex)
         {
             // TODO：计算谱面哈希并校验/覆盖元数据内容
-            if (chartMetaDataIndex > runtimeChartPack.ChartPackData.ChartMetaDatas.Count - 1)
-            {
-                Debug.LogError("下标越界，无法加载谱面");
-                return null;
-            }
-
-            ChartMetadata metadata = runtimeChartPack.ChartPackData.ChartMetaDatas[chartMetaDataIndex];
+            ChartMetadata metadata = runtimeChartPack.ChartPackData.ChartMetaDatas[chartIndex];
             string chartFilePath = Path.Combine(runtimeChartPack.WorkspacePath, metadata.FilePath);
             ChartData chartData = await GameRoot.Asset.LoadAssetAsync<ChartData>(chartFilePath);
             if (chartData == null)
@@ -205,66 +246,76 @@ namespace CyanStars.Chart
         /// 验证谱面文件
         /// </summary>
         /// <param name="chartPackData">谱包数据</param>
-        /// <param name="isInternal">是否为内置谱包，内置谱包校验会更严格</param>
-        /// <returns>校验结果</returns>
-        private VerifyState VerifyChartPacks(ChartPackData chartPackData, bool isInternal)
+        /// <param name="canLoad">谱面能够加载</param>
+        /// <param name="difficultiesAbleToPlay">可游玩的难度</param>
+        private void VerifyChartPacks(ChartPackData chartPackData, out bool canLoad,
+            out HashSet<ChartDifficulty> difficultiesAbleToPlay)
         {
+            canLoad = false;
+            difficultiesAbleToPlay = new HashSet<ChartDifficulty>();
+
             if (chartPackData == null)
             {
                 Debug.LogError("ChartPackData 为空");
-                return VerifyState.Error;
+                return;
             }
 
-            int difficulty0Count = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == ChartDifficulty.KuiXing);
-            int difficulty1Count = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == ChartDifficulty.QiMing);
-            int difficulty2Count = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == ChartDifficulty.TianShu);
-            int difficulty3Count = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == ChartDifficulty.WuYin);
-            int difficultyNullCount = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == null);
-
-            if (difficulty0Count > 1 || difficulty1Count > 1 || difficulty2Count > 1 || difficulty3Count > 1)
-            {
-                Debug.LogError("ChartPackData 某个难度有多个谱面");
-                return VerifyState.Error;
-            }
-
-            int state = 0;
-            if (difficulty0Count == 0 || difficulty1Count == 0 || difficulty2Count == 0 || difficulty3Count == 0)
-            {
-                if (isInternal)
-                {
-                    state = Math.Max(state, 2);
-                    Debug.LogWarning("ChartPackData 某些难度谱面缺失");
-                }
-                else
-                {
-                    state = Math.Max(state, 1);
-                    Debug.Log("ChartPackData 某些难度谱面缺失");
-                }
-            }
-
-            if (difficultyNullCount > 0)
-            {
-                if (isInternal)
-                {
-                    state = Math.Max(state, 2);
-                    Debug.LogWarning("ChartPackData 有未指定难度的冗余谱面");
-                }
-                else
-                {
-                    state = Math.Max(state, 1);
-                    Debug.Log("ChartPackData 有未指定难度的冗余谱面");
-                }
-            }
-
-            return (VerifyState)state;
+            canLoad = true;
+            CalculateDifficultiesCount(chartPackData, out _, out difficultiesAbleToPlay);
         }
 
-        private enum VerifyState
+
+        private readonly struct DifficultiesCount
         {
-            Success = 0, // 成功，没有任何问题
-            Suggestion = 1, // 可以进一步修改或完善
-            Warning = 2, // 有警告，但仍可加载
-            Error = 3 // 不能加载的谱面
+            public readonly int D0Count, D1Count, D2Count, D3Count, DNullCount;
+
+            public DifficultiesCount(int d0Count, int d1Count, int d2Count, int d3Count, int dNullCount)
+            {
+                D0Count = d0Count;
+                D1Count = d1Count;
+                D2Count = d2Count;
+                D3Count = d3Count;
+                DNullCount = dNullCount;
+            }
+        }
+
+        /// <summary>
+        /// 统计谱包中各个难度的数量
+        /// </summary>
+        /// <param name="chartPackData">要检查的谱包</param>
+        /// <param name="difficultiesCount">各难度的谱面计数</param>
+        /// <param name="difficultiesAbleToPlay">可以游玩的难度</param>
+        /// <returns>统计数据结构体</returns>
+        private void CalculateDifficultiesCount(ChartPackData chartPackData,
+            out DifficultiesCount difficultiesCount, out HashSet<ChartDifficulty> difficultiesAbleToPlay)
+        {
+            int c0 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == Chart.ChartDifficulty.KuiXing);
+            int c1 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == Chart.ChartDifficulty.QiMing);
+            int c2 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == Chart.ChartDifficulty.TianShu);
+            int c3 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == Chart.ChartDifficulty.WuYin);
+            int cN = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == null);
+            difficultiesCount = new DifficultiesCount(c0, c1, c2, c3, cN);
+
+            difficultiesAbleToPlay = new HashSet<ChartDifficulty>();
+            if (c0 == 1)
+            {
+                difficultiesAbleToPlay.Add(Chart.ChartDifficulty.KuiXing);
+            }
+
+            if (c1 == 1)
+            {
+                difficultiesAbleToPlay.Add(Chart.ChartDifficulty.QiMing);
+            }
+
+            if (c2 == 1)
+            {
+                difficultiesAbleToPlay.Add(Chart.ChartDifficulty.TianShu);
+            }
+
+            if (c3 == 1)
+            {
+                difficultiesAbleToPlay.Add(Chart.ChartDifficulty.WuYin);
+            }
         }
     }
 }

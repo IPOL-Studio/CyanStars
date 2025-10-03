@@ -52,8 +52,7 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
             // 这个方法会直接序列化获取深拷贝
             int chartIndexInPack = 0; // TODO: 从 UI 获取谱面下标
             ChartData chartData =
-                await module.GetChartDataFromDisk(module.RuntimeChartPacks[module.SelectedChartPackIndex],
-                    chartIndexInPack);
+                await module.GetChartDataFromDisk(module.SelectedRuntimeChartPack, chartIndexInPack);
             EditorModel editorModel = new EditorModel(chartPackData, chartData);
 
             foreach (var baseView in canvas.gameObject.GetComponentsInChildren<BaseView>())

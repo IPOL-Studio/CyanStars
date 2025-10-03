@@ -239,7 +239,11 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 谱面
             runtimeChartPack = chartModule.RuntimeChartPacks[chartModule.SelectedChartPackIndex];
-            chartData = await chartModule.GetChartDataFromDisk(runtimeChartPack, chartModule.SelectedChartIndex);
+            if (chartModule.SelectedChartDifficulty != null)
+            {
+                chartData = await chartModule.GetChartDataFromDisk(runtimeChartPack,
+                    (ChartDifficulty)chartModule.SelectedChartDifficulty);
+            }
 
             // 音乐
             MusicVersionData musicVersionData =
