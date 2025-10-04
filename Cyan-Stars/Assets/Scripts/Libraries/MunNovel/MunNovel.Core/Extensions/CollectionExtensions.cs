@@ -6,9 +6,9 @@ namespace System.Collections.Generic
 {
     internal static class CollectionExtensions
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TValue GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> self, TKey key) =>
-            GetValueOrDefault(self, key, default);
+        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        // public static TValue GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> self, TKey key) =>
+        //     GetValueOrDefault(self, key, default);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TValue GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> self, TKey key, TValue defaultValue) =>
