@@ -83,7 +83,6 @@ namespace CyanStars.Chart
 
         public override async void OnInit()
         {
-            CreateNewChartPackAndSelect("测试", out _);
             SetTrackKeyToTypeMap();
             await LoadRuntimeChartPacksFromDisk();
         }
@@ -217,7 +216,7 @@ namespace CyanStars.Chart
         /// 为当前选定的谱包设置难度
         /// </summary>
         /// <param name="difficulty">难度</param>
-        public void TrySetDifficulty(ChartDifficulty difficulty)
+        public void SelectedDifficulty(ChartDifficulty difficulty)
         {
             if (!SelectedRuntimeChartPack.DifficultiesAbleToPlay.Contains(difficulty))
             {
@@ -281,7 +280,7 @@ namespace CyanStars.Chart
         /// <param name="folderName">文件夹名字和谱包标题，必须是一个合法的文件夹名字，且不存在重名</param>
         /// <param name="errorMessage">失败信息</param>
         /// <returns>是否成功创建并选中？</returns>
-        public bool CreateNewChartPackAndSelect(string folderName, out string errorMessage)
+        public bool CreateAndSelectNewChartPack(string folderName, out string errorMessage)
         {
             errorMessage = "";
             try
@@ -313,7 +312,7 @@ namespace CyanStars.Chart
                 SelectedMusicVersionIndex = null;
 
                 // 创建、保存并选中新的谱面
-                if (!CreateNewChartAndSelect(runtimeChartPack, out errorMessage))
+                if (!CreateAndSelectNewChart(runtimeChartPack, out errorMessage))
                 {
                     return false;
                 }
@@ -339,7 +338,7 @@ namespace CyanStars.Chart
         /// <param name="runtimeChartPack">运行时谱包实例</param>
         /// <param name="errorMessage">失败信息</param>
         /// <returns>是否成功创建并选中？</returns>
-        public bool CreateNewChartAndSelect(RuntimeChartPack runtimeChartPack, out string errorMessage)
+        public bool CreateAndSelectNewChart(RuntimeChartPack runtimeChartPack, out string errorMessage)
         {
             errorMessage = "";
             try
