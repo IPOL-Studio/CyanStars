@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using CyanStars.Framework;
 using CyanStars.Gameplay.MusicGame;
+using CyanStars.Utils;
 using UnityEngine;
 
 namespace CyanStars.Chart
@@ -50,24 +53,31 @@ namespace CyanStars.Chart
         /// <summary>
         /// 选中的谱包下标
         /// </summary>
+        /// <remarks>为 null 时无法进入音游，但能在制谱器内创建新谱包</remarks>
         public int? SelectedChartPackIndex { get; private set; }
 
         /// <summary>
         /// 选中的音乐版本下标
         /// </summary>
+        /// <remarks>为 null 时无法进入音游</remarks>
         public int? SelectedMusicVersionIndex { get; private set; }
 
         /// <summary>
         /// 选中的谱面难度（用于进入音游流程）
         /// </summary>
+        /// <remarks>为 null 时无法进入音游</remarks>
         public ChartDifficulty? SelectedChartDifficulty { get; private set; }
 
         /// <summary>
         /// 选中的谱面下标（用于进入制谱器流程）
         /// </summary>
-        public int SelectedChartIndex { get; private set; }
+        /// <remarks>为 null 时将在制谱器中创建新谱面</remarks>
+        public int? SelectedChartIndex { get; private set; }
 
-        public RuntimeChartPack SelectedRuntimeChartPack =>
+        /// <summary>
+        /// 当前选中的谱包
+        /// </summary>
+        public RuntimeChartPack? SelectedRuntimeChartPack =>
             SelectedChartPackIndex != null ? runtimeChartPacks[(int)SelectedChartPackIndex] : null;
 
 
@@ -136,7 +146,7 @@ namespace CyanStars.Chart
             {
                 loadingTasks.Add(GameRoot.Asset.LoadAssetAsync<ChartPackData>(path));
                 paths.Add(path);
-                levelsList.Add(new ChartPackLevels(0, 0, 0, 0));
+                levelsList.Add(new ChartPackLevels());
             }
 
             // 启动加载任务
@@ -148,7 +158,14 @@ namespace CyanStars.Chart
             {
                 var chartPackData = loadedChartPackData[i];
                 bool isInternal = i < internalPacksCount;
-                string workspacePath = Path.GetDirectoryName(paths[i]);
+
+                string? workspacePath = Path.GetDirectoryName(paths[i]);
+                if (workspacePath == null)
+                {
+                    Debug.LogError($"谱包路径为空：{chartPackData.Title}");
+                    continue;
+                }
+
                 ChartPackLevels levels = levelsList[i];
 
                 VerifyChartPacks(chartPackData, out bool canLoad, out HashSet<ChartDifficulty> difficultiesAbleToPlay);
@@ -171,12 +188,15 @@ namespace CyanStars.Chart
         }
 
         /// <summary>
-        /// 选择一个谱包，并自动调整选定的难度
+        /// 选择一个谱包，并自动调整选定的谱面、音乐、难度
         /// </summary>
         /// <param name="index">新的谱包下标</param>
-        public void TrySelectChartPack(int index)
+        public void SelectChartPack(int index)
         {
             SelectedChartPackIndex = index;
+            SelectedChartIndex = (RuntimeChartPacks[index].ChartPackData.ChartMetaDatas.Count >= 1) ? (int?)0 : null;
+            SelectedMusicVersionIndex =
+                (RuntimeChartPacks[index].ChartPackData.MusicVersionDatas.Count >= 1) ? (int?)0 : null;
 
             HashSet<ChartDifficulty> difficultiesAbleToPlay = RuntimeChartPacks[index].DifficultiesAbleToPlay;
             if (difficultiesAbleToPlay.Count == 0 || SelectedChartDifficulty == null)
@@ -191,7 +211,6 @@ namespace CyanStars.Chart
                 .ThenBy(e => Convert.ToInt32(e))
                 .First();
         }
-
 
         /// <summary>
         /// 为当前选定的谱包设置难度
@@ -253,6 +272,109 @@ namespace CyanStars.Chart
             return chartData;
         }
 
+
+        /// <summary>
+        /// 创建并选中新谱包，用于进入制谱器。
+        /// </summary>
+        /// <remarks>也会自动创建一张新的谱面</remarks>
+        /// <param name="folderName">文件夹名字和谱包标题，必须是一个合法的文件夹名字，且不存在重名</param>
+        /// <param name="errorMessage">失败信息</param>
+        /// <returns>是否成功创建并选中？</returns>
+        public bool CreateNewChartPackAndSelect(string folderName, out string errorMessage)
+        {
+            errorMessage = "";
+            try
+            {
+                if (!PathValidator.IsValidFolderName(folderName, out errorMessage))
+                {
+                    Debug.LogWarning(errorMessage);
+                    return false;
+                }
+
+                string workspacePath = Path.Combine(PlayerChartPacksFolderPath, folderName);
+                if (Directory.Exists(workspacePath))
+                {
+                    errorMessage = "已经存同名文件夹，无法创建新的谱包";
+                    Debug.LogWarning(errorMessage);
+                    return false;
+                }
+
+                // 实例化谱包数据和运行时谱包
+                ChartPackData chartPackData = new ChartPackData(folderName);
+                RuntimeChartPack runtimeChartPack = new RuntimeChartPack(chartPackData, false, new ChartPackLevels(),
+                    workspacePath, new HashSet<ChartDifficulty>());
+
+                // 选中新的谱包，并更新其他选中状态
+                runtimeChartPacks.Add(runtimeChartPack);
+                SelectedChartPackIndex = runtimeChartPacks.IndexOf(runtimeChartPack);
+                SelectedChartDifficulty = null;
+                SelectedChartIndex = null;
+                SelectedMusicVersionIndex = null;
+
+                // 创建、保存并选中新的谱面
+                if (!CreateNewChartAndSelect(runtimeChartPack, out errorMessage))
+                {
+                    return false;
+                }
+
+                // 序列化并保存索引文件
+                Directory.CreateDirectory(workspacePath);
+                GameRoot.File.SerializationToJson(runtimeChartPack, Path.Combine(workspacePath, ChartPackFileName));
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"无法创建并保存谱包：{e}");
+                errorMessage = e.Message;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 创建并选中新谱面，用于进入制谱器。
+        /// </summary>
+        /// <remarks>也会自动在索引中注册文件位置。</remarks>
+        /// <param name="runtimeChartPack">运行时谱包实例</param>
+        /// <param name="errorMessage">失败信息</param>
+        /// <returns>是否成功创建并选中？</returns>
+        public bool CreateNewChartAndSelect(RuntimeChartPack runtimeChartPack, out string errorMessage)
+        {
+            errorMessage = "";
+            try
+            {
+                // 实例化谱面
+                string workspacePath = runtimeChartPack.WorkspacePath;
+                string chartsFolderAbsolutePath = Path.Combine(workspacePath, "Charts");
+                ChartData chartData = new ChartData();
+
+                // 向谱包索引文件中添加元数据，并选中此谱面
+                int fileNameNumber = 0;
+                while (File.Exists(Path.Combine(chartsFolderAbsolutePath, $"Chart{fileNameNumber}.json")))
+                {
+                    fileNameNumber++;
+                }
+
+                string chartFileRelativePath = Path.Combine("Charts", $"Chart{fileNameNumber}.json");
+                string chartFileAbsolutePath = Path.Combine(workspacePath, chartFileRelativePath);
+
+                ChartMetadata chartMetadata = new ChartMetadata(chartFileRelativePath);
+                runtimeChartPack.ChartPackData.ChartMetaDatas.Add(chartMetadata);
+                SelectedChartIndex = runtimeChartPack.ChartPackData.ChartMetaDatas.IndexOf(chartMetadata);
+
+                // 序列化并保存谱面文件
+                Directory.CreateDirectory(chartsFolderAbsolutePath);
+                GameRoot.File.SerializationToJson(chartData, chartFileAbsolutePath);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"无法创建并保存谱面：{e}");
+                errorMessage = e.Message;
+                return false;
+            }
+        }
+
+
         /// <summary>
         /// 验证谱面文件
         /// </summary>
@@ -300,32 +422,32 @@ namespace CyanStars.Chart
         private void CalculateDifficultiesCount(ChartPackData chartPackData,
             out DifficultiesCount difficultiesCount, out HashSet<ChartDifficulty> difficultiesAbleToPlay)
         {
-            int c0 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == Chart.ChartDifficulty.KuiXing);
-            int c1 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == Chart.ChartDifficulty.QiMing);
-            int c2 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == Chart.ChartDifficulty.TianShu);
-            int c3 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == Chart.ChartDifficulty.WuYin);
+            int c0 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == ChartDifficulty.KuiXing);
+            int c1 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == ChartDifficulty.QiMing);
+            int c2 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == ChartDifficulty.TianShu);
+            int c3 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == ChartDifficulty.WuYin);
             int cN = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == null);
             difficultiesCount = new DifficultiesCount(c0, c1, c2, c3, cN);
 
             difficultiesAbleToPlay = new HashSet<ChartDifficulty>();
             if (c0 == 1)
             {
-                difficultiesAbleToPlay.Add(Chart.ChartDifficulty.KuiXing);
+                difficultiesAbleToPlay.Add(ChartDifficulty.KuiXing);
             }
 
             if (c1 == 1)
             {
-                difficultiesAbleToPlay.Add(Chart.ChartDifficulty.QiMing);
+                difficultiesAbleToPlay.Add(ChartDifficulty.QiMing);
             }
 
             if (c2 == 1)
             {
-                difficultiesAbleToPlay.Add(Chart.ChartDifficulty.TianShu);
+                difficultiesAbleToPlay.Add(ChartDifficulty.TianShu);
             }
 
             if (c3 == 1)
             {
-                difficultiesAbleToPlay.Add(Chart.ChartDifficulty.WuYin);
+                difficultiesAbleToPlay.Add(ChartDifficulty.WuYin);
             }
         }
     }

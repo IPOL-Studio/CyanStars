@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.IO;
 using CyanStars.Chart;
 using CyanStars.Framework;
@@ -42,23 +44,24 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
 
             // 创建制谱器 Model，并为所有 View 添加绑定
             ChartModule module = GameRoot.GetDataModule<ChartModule>();
-            string workspacePath = module.SelectedRuntimeChartPack.WorkspacePath;
-            string chartPackFilePath =
-                Path.Combine(workspacePath, ChartModule.ChartPackFileName);
 
-            // TODO: 由 UI 传入选择的谱包和谱面
-            // 通过序列化获取深拷贝的谱包数据
-            ChartPackData chartPackData = await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackFilePath);
-            // 这个方法会直接序列化获取深拷贝
-            ChartData chartData =
-                await module.GetChartDataFromDisk(module.SelectedRuntimeChartPack, module.SelectedChartIndex);
-            EditorModel editorModel = new EditorModel(workspacePath, chartPackData, chartData);
 
-            foreach (var baseView in canvas.gameObject.GetComponentsInChildren<BaseView>())
-            {
-                // 为已有的静态 view 进行绑定，动态 view 需要在生成时由母 view 重新绑定
-                baseView.Bind(editorModel);
-            }
+            // string workspacePath = module.SelectedRuntimeChartPack.WorkspacePath;
+            // string chartPackFilePath =
+            //     Path.Combine(workspacePath, ChartModule.ChartPackFileName);
+            //
+            // // 通过序列化获取深拷贝的谱包数据
+            // ChartPackData chartPackData = await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackFilePath);
+            // // 这个方法会直接序列化获取深拷贝
+            // ChartData chartData =
+            //     await module.GetChartDataFromDisk(module.SelectedRuntimeChartPack, module.SelectedChartIndex);
+            // EditorModel editorModel = new EditorModel(workspacePath, chartPackData, chartData);
+
+            // foreach (var baseView in canvas.gameObject.GetComponentsInChildren<BaseView>())
+            // {
+            //     // 为已有的静态 view 进行绑定，动态 view 需要在生成时由母 view 重新绑定
+            //     baseView.Bind(editorModel);
+            // }
         }
 
         public override void OnUpdate(float deltaTime)

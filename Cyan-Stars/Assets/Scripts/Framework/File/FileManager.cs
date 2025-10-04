@@ -1,8 +1,13 @@
 using UnityEngine;
 using SimpleFileBrowser;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
 using CatAsset.Runtime;
+using CyanStars.Framework.Asset;
+using Newtonsoft.Json;
 
 namespace CyanStars.Framework.File
 {
@@ -198,6 +203,46 @@ namespace CyanStars.Framework.File
             }
         }
 
+
+        /// <summary>
+        /// 序列化对象为 Json 文件
+        /// </summary>
+        /// <param name="obj">要序列化的对象</param>
+        /// <param name="filePath">保存到的路径和文件全名</param>
+        /// <returns>是否成功序列化</returns>
+        public bool SerializationToJson(object obj, string filePath)
+        {
+            try
+            {
+                // 设置序列化格式参数
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.None,
+                    Formatting = Formatting.Indented,
+                    Culture = CultureInfo.InvariantCulture,
+                    DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                    Converters = Converters
+                };
+
+                // 如果目录不存在，创建目录
+                string directory = Path.GetDirectoryName(filePath);
+                if (!string.IsNullOrEmpty(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                string json = JsonConvert.SerializeObject(obj, settings);
+                System.IO.File.WriteAllText(filePath, json);
+                Debug.Log($"序列化完成，文件路径：{filePath}");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"序列化时出现异常：{e}");
+                return false;
+            }
+        }
+
         #endregion
 
 
@@ -214,5 +259,13 @@ namespace CyanStars.Framework.File
 
             return false;
         }
+
+        /// <summary>
+        /// 自定义 JsonConverter 列表
+        /// </summary>
+        private static readonly IList<JsonConverter> Converters = new List<JsonConverter>
+        {
+            new ColorConverter(), new ChartNoteDataReadConverter(), new ChartTrackDataReadConverter()
+        };
     }
 }

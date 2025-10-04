@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 
@@ -29,8 +31,9 @@ namespace CyanStars.Chart
         /// </summary>
         public List<ChartTrackData> TrackDatas;
 
-        public ChartData(int readyBeat = 4, BpmGroup bpmGroup = null, List<SpeedGroupData> speedGroupDatas = null,
-            List<BaseChartNoteData> notes = null, List<ChartTrackData> trackDatas = null)
+
+        public ChartData(int readyBeat = 4, BpmGroup? bpmGroup = null, List<SpeedGroupData>? speedGroupDatas = null,
+            List<BaseChartNoteData>? notes = null, List<ChartTrackData>? trackDatas = null)
         {
             ReadyBeat = readyBeat;
             BpmGroup = bpmGroup ?? new BpmGroup();

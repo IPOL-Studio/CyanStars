@@ -1,6 +1,7 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace CyanStars.Chart
@@ -26,7 +27,7 @@ namespace CyanStars.Chart
         public List<MusicVersionData> MusicVersionDatas;
 
         /// <summary>游戏内选中音乐后的预览开始时间</summary>
-        public Beat MusicPreviewStartBeat { get; set; }
+        public Beat MusicPreviewStartBeat;
 
         /// <summary>游戏内选中音乐后的预览结束时间</summary>
         public Beat MusicPreviewEndBeat;
@@ -35,8 +36,7 @@ namespace CyanStars.Chart
         // 曲绘文件
 
         /// <summary>原始曲绘相对路径（展示收藏品原图用）</summary>
-        [CanBeNull]
-        public string CoverFilePath;
+        public string? CoverFilePath;
 
         /// <summary>开始裁剪像素（相对于图片左下角）</summary>
         public Vector2 CropPosition;
@@ -57,9 +57,9 @@ namespace CyanStars.Chart
         public List<ChartMetadata> ChartMetaDatas;
 
 
-        public ChartPackData(string title, List<MusicVersionData> musicVersionDatas = null,
-            Beat? musicPreviewStartBeat = null, Beat? musicPreviewEndBeat = null, string coverFilePath = null,
-            string croppedCoverFilePath = null, List<ChartMetadata> chartMetaDatas = null)
+        public ChartPackData(string title, List<MusicVersionData>? musicVersionDatas = null,
+            Beat? musicPreviewStartBeat = null, Beat? musicPreviewEndBeat = null, string? coverFilePath = null,
+            Vector2? cropPosition = null, float? cropHeight = null, List<ChartMetadata>? chartMetaDatas = null)
         {
             DataVersion = 1;
             Title = title;
@@ -67,6 +67,8 @@ namespace CyanStars.Chart
             MusicPreviewStartBeat = musicPreviewStartBeat ?? new Beat(0, 0, 1);
             MusicPreviewEndBeat = musicPreviewEndBeat ?? new Beat(0, 0, 1);
             CoverFilePath = coverFilePath;
+            CropPosition = cropPosition ?? Vector2.zero;
+            CropHeight = cropHeight ?? 0;
             ChartMetaDatas = chartMetaDatas ?? new List<ChartMetadata>();
         }
     }

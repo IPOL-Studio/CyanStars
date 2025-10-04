@@ -197,8 +197,8 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="workspacePath">谱包工作区绝对路径（谱包索引文件所在的文件夹路径）</param>
         /// <param name="chartPackData">要加载到编辑器的谱包数据</param>
-        /// <param name="chartIndex">谱面在此谱包中的下标</param>
         /// <param name="chartData">要加载到编辑器的谱面数据</param>
         public EditorModel(string workspacePath, ChartPackData chartPackData, ChartData chartData)
         {
