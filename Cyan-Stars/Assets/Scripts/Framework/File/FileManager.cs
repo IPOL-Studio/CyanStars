@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using CatAsset.Runtime;
 using CyanStars.Framework.Asset;
+using CyanStars.Framework.Utils.JsonSerialization;
 using Newtonsoft.Json;
 
 namespace CyanStars.Framework.File
@@ -221,7 +222,7 @@ namespace CyanStars.Framework.File
                     Formatting = Formatting.Indented,
                     Culture = CultureInfo.InvariantCulture,
                     DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                    Converters = Converters
+                    Converters = JsonConverters.Converters
                 };
 
                 // 如果目录不存在，创建目录
@@ -259,16 +260,5 @@ namespace CyanStars.Framework.File
 
             return false;
         }
-
-        /// <summary>
-        /// 自定义 JsonConverter 列表
-        /// </summary>
-        private static readonly IList<JsonConverter> Converters = new List<JsonConverter>
-        {
-            new Vector2Converter(),
-            new ColorConverter(),
-            new ChartNoteDataReadConverter(),
-            new ChartTrackDataReadConverter()
-        };
     }
 }

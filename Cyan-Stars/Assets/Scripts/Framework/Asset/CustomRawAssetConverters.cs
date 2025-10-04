@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using CatAsset.Runtime;
 using CyanStars.Chart;
+using CyanStars.Framework.Utils.JsonSerialization;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -20,8 +21,7 @@ namespace CyanStars.Framework.Asset
             new Dictionary<Type, CustomRawAssetConverter>()
             {
                 // 当 AssetsManager 解析这些类型时，将会自动用下面的解析器
-                { typeof(ChartPackData), ChartPackDataConverter },
-                { typeof(ChartData), ChartDataConverter }
+                { typeof(ChartPackData), ChartPackDataConverter }, { typeof(ChartData), ChartDataConverter }
             };
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace CyanStars.Framework.Asset
                     Formatting = Formatting.Indented,
                     Culture = CultureInfo.InvariantCulture,
                     DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                    Converters = JsonConverters
+                    Converters = JsonConverters.Converters
                 };
 
                 // 将 byte[] 转换为 UTF-8 字符串
@@ -78,13 +78,5 @@ namespace CyanStars.Framework.Asset
                 return default;
             }
         }
-
-        private static readonly IList<JsonConverter> JsonConverters = new List<JsonConverter>
-        {
-            new Vector2Converter(),
-            new ColorConverter(),
-            new ChartNoteDataReadConverter(),
-            new ChartTrackDataReadConverter()
-        };
     }
 }

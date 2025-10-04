@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-namespace CyanStars.Framework.Asset
+namespace CyanStars.Framework.Utils.JsonSerialization
 {
     public class Vector2Converter : JsonConverter<Vector2>
     {
