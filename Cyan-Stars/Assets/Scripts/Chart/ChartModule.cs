@@ -83,6 +83,7 @@ namespace CyanStars.Chart
 
         public override async void OnInit()
         {
+            CreateNewChartPackAndSelect("测试", out _);
             SetTrackKeyToTypeMap();
             await LoadRuntimeChartPacksFromDisk();
         }
@@ -319,7 +320,8 @@ namespace CyanStars.Chart
 
                 // 序列化并保存索引文件
                 Directory.CreateDirectory(workspacePath);
-                GameRoot.File.SerializationToJson(runtimeChartPack, Path.Combine(workspacePath, ChartPackFileName));
+                GameRoot.File.SerializationToJson(runtimeChartPack.ChartPackData,
+                    Path.Combine(workspacePath, ChartPackFileName));
                 return true;
             }
             catch (Exception e)

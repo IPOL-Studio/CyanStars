@@ -265,7 +265,10 @@ namespace CyanStars.Framework.File
         /// </summary>
         private static readonly IList<JsonConverter> Converters = new List<JsonConverter>
         {
-            new ColorConverter(), new ChartNoteDataReadConverter(), new ChartTrackDataReadConverter()
+            new Vector2Converter(),
+            new ColorConverter(),
+            new ChartNoteDataReadConverter(),
+            new ChartTrackDataReadConverter()
         };
     }
 }

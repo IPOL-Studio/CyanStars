@@ -19,7 +19,8 @@ namespace CyanStars.Framework.Asset
         public static readonly Dictionary<Type, CustomRawAssetConverter> Converters =
             new Dictionary<Type, CustomRawAssetConverter>()
             {
-                { typeof(ChartPackData), ChartPackDataConverter }, // 当 AssetsManager 解析 ChartPackData 时，将会自动用下面的解析器
+                // 当 AssetsManager 解析这些类型时，将会自动用下面的解析器
+                { typeof(ChartPackData), ChartPackDataConverter },
                 { typeof(ChartData), ChartDataConverter }
             };
 
@@ -80,7 +81,10 @@ namespace CyanStars.Framework.Asset
 
         private static readonly IList<JsonConverter> JsonConverters = new List<JsonConverter>
         {
-            new ColorConverter(), new ChartNoteDataReadConverter(), new ChartTrackDataReadConverter()
+            new Vector2Converter(),
+            new ColorConverter(),
+            new ChartNoteDataReadConverter(),
+            new ChartTrackDataReadConverter()
         };
     }
 }

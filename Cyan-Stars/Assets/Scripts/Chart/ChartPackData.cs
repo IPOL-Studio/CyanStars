@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace CyanStars.Chart
@@ -49,6 +50,7 @@ namespace CyanStars.Chart
         /// <summary>
         /// 裁剪宽度
         /// </summary>
+        [JsonIgnore]
         public float CropWidth => CropHeight * 4;
 
         // 谱面元数据
