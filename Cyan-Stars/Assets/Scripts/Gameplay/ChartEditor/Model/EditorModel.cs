@@ -2,7 +2,6 @@
 using System.IO;
 using System.Collections.Generic;
 using CyanStars.Chart;
-using CyanStars.Framework;
 using UnityEngine;
 
 namespace CyanStars.GamePlay.ChartEditor.Model
@@ -105,8 +104,10 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public List<BpmGroupItem> BpmGroupDatas => ChartData.BpmGroup.Data;
         public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
 
+        // --- 内部变量 ---
+        private bool needCopyCoverWhenSave = false; // 在保存时需要复制外部的曲绘文件到 Assets 路径下
 
-        // --- Model 事件 ---
+        #region Model 事件
 
         /// <summary>
         /// 进入/退出精简模式
@@ -193,6 +194,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// </summary>
         public event Action OnBpmGroupCanvasVisiblenessChanged;
 
+        #endregion
 
         /// <summary>
         /// 构造函数
@@ -230,6 +232,28 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
 
         #region 编辑器管理
+
+        /// <summary>
+        /// 保存谱包和谱面文件到磁盘
+        /// </summary>
+        public void Save()
+        {
+            // 复制外部曲绘文件到 Assets 下
+            if (needCopyCoverWhenSave)
+            {
+                string oldFilePath = ChartPackData.CoverFilePath;
+
+                string assetsFolderPath = Path.Combine(WorkspacePath, "Assets");
+                if (!Directory.Exists(assetsFolderPath))
+                {
+                    Directory.CreateDirectory(Path.Combine(assetsFolderPath));
+                }
+
+                string fileName = Path.GetFileName(oldFilePath);
+                string newFilePath = Path.Combine(assetsFolderPath, fileName);
+                File.Copy(oldFilePath, newFilePath, true);
+            }
+        }
 
         public void SetEditTool(EditTool editTool)
         {
@@ -459,10 +483,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <param name="path">曲绘大图外部绝对路径</param>
         public void UpdateCoverFilePath(string path)
         {
-            string fileName = Path.GetFileName(path);
-            string fileRelativePath = Path.Combine("Assets", fileName);
-            string fileAbsolutePath = Path.Combine(WorkspacePath, fileRelativePath);
-            File.Copy(path, fileAbsolutePath, true);
+            // 临时用外部路径展示图片，在保存工程时检查路径是否为外部，复制文件到资源文件夹内并更新引用
+            ChartPackData.CoverFilePath = path;
+            needCopyCoverWhenSave = true;
             OnChartPackDataChanged?.Invoke();
         }
 
