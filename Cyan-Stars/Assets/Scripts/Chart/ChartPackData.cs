@@ -40,15 +40,15 @@ namespace CyanStars.Chart
         public string? CoverFilePath;
 
         /// <summary>开始裁剪像素（相对于图片左下角）</summary>
-        public Vector2 CropPosition;
+        public Vector2 CropStartPosition;
 
         /// <summary>
-        /// 裁剪高度
+        /// 裁剪像素高度
         /// </summary>
         public float CropHeight;
 
         /// <summary>
-        /// 裁剪宽度
+        /// 裁剪像素宽度
         /// </summary>
         [JsonIgnore]
         public float CropWidth => CropHeight * 4;
@@ -69,7 +69,7 @@ namespace CyanStars.Chart
             MusicPreviewStartBeat = musicPreviewStartBeat ?? new Beat(0, 0, 1);
             MusicPreviewEndBeat = musicPreviewEndBeat ?? new Beat(0, 0, 1);
             CoverFilePath = coverFilePath;
-            CropPosition = cropPosition ?? Vector2.zero;
+            CropStartPosition = cropPosition ?? Vector2.zero;
             CropHeight = cropHeight ?? 0;
             ChartMetaDatas = chartMetaDatas ?? new List<ChartMetadata>();
         }

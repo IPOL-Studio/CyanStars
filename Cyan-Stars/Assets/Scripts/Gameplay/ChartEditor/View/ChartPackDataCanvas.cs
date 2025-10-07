@@ -1,7 +1,7 @@
+#nullable enable
+
 using CyanStars.Framework;
-using CyanStars.Framework.File;
 using CyanStars.GamePlay.ChartEditor.Model;
-using SimpleFileBrowser;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,13 +39,22 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private TMP_InputField previewEndField3;
 
         [SerializeField]
-        private TMP_Text coverPath; // TODO
+        private TMP_Text coverPath;
 
         [SerializeField]
-        private Button importCoverButton; // TODO
+        private Button importCoverButton;
 
         [SerializeField]
-        private GameObject coverCropFrame; // TODO
+        private AspectRatioFitter aspectRatioFitter;
+
+        [SerializeField]
+        private RectMask2D rectMask;
+
+        [SerializeField]
+        private Image backImage;
+
+        [SerializeField]
+        private Image topImage;
 
         [SerializeField]
         private Button exportChartPackButton; // TODO
@@ -110,6 +119,11 @@ namespace CyanStars.GamePlay.ChartEditor.View
             previewEndField2.text = Model.ChartPackData.MusicPreviewEndBeat.Numerator.ToString();
             previewEndField3.text = Model.ChartPackData.MusicPreviewEndBeat.Denominator.ToString();
             coverPath.text = Model.ChartPackData.CoverFilePath;
+            backImage.sprite = Model.CoverSprite;
+            topImage.sprite = Model.CoverSprite;
+            aspectRatioFitter.aspectRatio = Model.CoverSprite != null
+                ? Model.CoverSprite.rect.width / Model.CoverSprite.rect.height
+                : Mathf.Infinity; // TODO: 没有图片的时候整点说明文本或者干脆隐藏整个 frame
         }
 
         private void OnDestroy()

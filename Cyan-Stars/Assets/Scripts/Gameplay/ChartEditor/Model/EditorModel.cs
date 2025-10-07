@@ -1,7 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CyanStars.Chart;
+using CyanStars.Framework;
+using CyanStars.GamePlay.ChartEditor.View;
 using UnityEngine;
 
 namespace CyanStars.GamePlay.ChartEditor.Model
@@ -96,105 +101,125 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public bool BpmGroupCanvasVisibleness { get; private set; }
 
 
-        // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面数据，加载/保存时需要从读写磁盘。 ---
+        // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面等数据，加载/保存时需要从读写磁盘。 ---
         public readonly string WorkspacePath;
         public readonly ChartPackData ChartPackData;
         public readonly ChartData ChartData;
         public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
         public List<BpmGroupItem> BpmGroupDatas => ChartData.BpmGroup.Data;
         public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
+        public Sprite? CoverSprite { get; private set; }
 
         // --- 内部变量 ---
         private bool needCopyCoverWhenSave = false; // 在保存时需要复制外部的曲绘文件到 Assets 路径下
+
 
         #region Model 事件
 
         /// <summary>
         /// 进入/退出精简模式
         /// </summary>
-        public event Action OnSimplificationChanged;
+        public event Action? OnSimplificationChanged;
 
         /// <summary>
         /// 选中的画笔发生变化
         /// </summary>
-        public event Action OnEditToolChanged;
+        public event Action? OnEditToolChanged;
 
         /// <summary>
         /// 编辑器属性侧边栏内容变化
         /// </summary>
-        public event Action OnEditorAttributeChanged;
+        public event Action? OnEditorAttributeChanged;
 
         /// <summary>
         /// 音符属性侧边栏内容变化
         /// </summary>
-        public event Action OnNoteAttributeChanged;
+        public event Action? OnNoteAttributeChanged;
 
         /// <summary>
         /// 当选中的音符发生了变化（被选中、被取消选中）
         /// </summary>
-        public event Action OnSelectedNotesChanged;
+        public event Action? OnSelectedNotesChanged;
 
         /// <summary>
         /// 谱包基本信息（名称、预览时间、曲绘）发生变化
         /// </summary>
-        public event Action OnChartPackDataChanged;
+        public event Action? OnChartPackDataChanged;
 
         /// <summary>
         /// 谱面基本信息（难度、定数、预备拍数）发生变化
         /// </summary>
-        public event Action OnChartDataChanged;
+        public event Action? OnChartDataChanged;
 
         /// <summary>
         /// 音乐版本数据发生变化时
         /// </summary>
-        public event Action OnMusicVersionDataChanged;
+        public event Action? OnMusicVersionDataChanged;
 
         /// <summary>
         /// Bpm 组发生变化
         /// </summary>
-        public event Action OnBpmGroupChanged;
+        public event Action? OnBpmGroupChanged;
 
         /// <summary>
         /// 选中的 Bpm 组发生变化
         /// </summary>
-        public event Action OnSelectedBpmItemChanged;
+        public event Action? OnSelectedBpmItemChanged;
 
         /// <summary>
         /// 变速组发生变化
         /// </summary>
-        public event Action OnSpeedGroupChanged;
+        public event Action? OnSpeedGroupChanged;
 
         /// <summary>
         /// 音符组发生变化
         /// </summary>
-        public event Action OnNoteDataChanged;
+        public event Action? OnNoteDataChanged;
 
         /// <summary>
         /// 暂存的 Hold 开始拍发生变化
         /// </summary>
-        public event Action OnTempHoldJudgeBeatChanged;
+        public event Action? OnTempHoldJudgeBeatChanged;
 
         /// <summary>
         /// 谱包弹窗打开或关闭
         /// </summary>
-        public event Action OnChartPackDataCanvasVisiblenessChanged;
+        public event Action? OnChartPackDataCanvasVisiblenessChanged;
 
         /// <summary>
         /// 谱面弹窗打开或关闭
         /// </summary>
-        public event Action OnChartDataCanvasVisiblenessChanged;
+        public event Action? OnChartDataCanvasVisiblenessChanged;
 
         /// <summary>
         /// 曲目弹窗打开或关闭
         /// </summary>
-        public event Action OnMusicVersionCanvasVisiblenessChanged;
+        public event Action? OnMusicVersionCanvasVisiblenessChanged;
 
         /// <summary>
         /// BPM 组弹窗打开或关闭
         /// </summary>
-        public event Action OnBpmGroupCanvasVisiblenessChanged;
+        public event Action? OnBpmGroupCanvasVisiblenessChanged;
 
         #endregion
+
+
+        /// <summary>
+        /// 构造函数异步工厂方法
+        /// </summary>
+        /// <param name="workspacePath">谱包工作区绝对路径（谱包索引文件所在的文件夹路径）</param>
+        /// <param name="chartPackData">要加载到编辑器的谱包数据</param>
+        /// <param name="chartData">要加载到编辑器的谱面数据</param>
+        /// <returns>异步返回 EditorModel 实例</returns>
+        public async Task<EditorModel> CreateEditorModel(string workspacePath, ChartPackData chartPackData,
+            ChartData chartData)
+        {
+            EditorModel editorModel = new EditorModel(workspacePath, chartPackData, chartData);
+            CoverSprite = ChartPackData.CoverFilePath != null
+                ? await LoadCoverSprite(Path.Combine(workspacePath, ChartPackData.CoverFilePath))
+                : null;
+            return editorModel;
+        }
 
         /// <summary>
         /// 构造函数
@@ -202,7 +227,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <param name="workspacePath">谱包工作区绝对路径（谱包索引文件所在的文件夹路径）</param>
         /// <param name="chartPackData">要加载到编辑器的谱包数据</param>
         /// <param name="chartData">要加载到编辑器的谱面数据</param>
-        public EditorModel(string workspacePath, ChartPackData chartPackData, ChartData chartData)
+        private EditorModel(string workspacePath, ChartPackData chartPackData, ChartData chartData)
         {
             WorkspacePath = workspacePath;
             ChartPackData = chartPackData;
@@ -230,6 +255,10 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             BpmGroupCanvasVisibleness = false;
         }
 
+        private async Task<Sprite?> LoadCoverSprite(string filePath)
+        {
+            return await GameRoot.Asset.LoadAssetAsync<Sprite>(filePath);
+        }
 
         #region 编辑器管理
 
@@ -518,18 +547,27 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnMusicVersionDataChanged?.Invoke();
         }
 
-        public void TopMusicVersionItem(MusicVersionData item)
+        /// <summary>
+        /// 置顶（设为默认）某个音乐版本
+        /// </summary>
+        /// <param name="musicVersionItem">音乐版本 item</param>
+        public void TopMusicVersionItem(MusicVersionData musicVersionItem)
         {
-            MusicVersionDatas.Remove(item);
-            MusicVersionDatas.Insert(0, item);
+            MusicVersionDatas.Remove(musicVersionItem);
+            MusicVersionDatas.Insert(0, musicVersionItem);
             OnMusicVersionDataChanged?.Invoke();
         }
 
-        public void CopyMusicVersionItem(MusicVersionData item)
+        /// <summary>
+        /// 复制某个音乐版本到列表尾
+        /// </summary>
+        /// <param name="musicVersionItem">音乐版本 item</param>
+        public void CopyMusicVersionItem(MusicVersionData musicVersionItem)
         {
-            MusicVersionData copiedItem = new MusicVersionData(item.VersionTitle, item.AudioFilePath, item.Offset,
+            MusicVersionData copiedItem = new MusicVersionData(musicVersionItem.VersionTitle,
+                musicVersionItem.AudioFilePath, musicVersionItem.Offset,
                 new Dictionary<string, List<string>>());
-            foreach (KeyValuePair<string, List<string>> staff in item.Staffs)
+            foreach (KeyValuePair<string, List<string>> staff in musicVersionItem.Staffs)
             {
                 List<string> copiedStaffJobs = new List<string>(staff.Value);
                 copiedItem.Staffs.Add(staff.Key, copiedStaffJobs);
@@ -539,9 +577,14 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnMusicVersionDataChanged?.Invoke();
         }
 
-        public void UpdateMusicVersionTitle(MusicVersionData oldItem, string newTitle)
+        /// <summary>
+        /// 更新某个音乐版本的标题
+        /// </summary>
+        /// <param name="musicVersionData">音乐版本 item</param>
+        /// <param name="newTitle">新的标题</param>
+        public void UpdateMusicVersionTitle(MusicVersionData musicVersionData, string newTitle)
         {
-            int itemIndex = MusicVersionDatas.IndexOf(oldItem);
+            int itemIndex = MusicVersionDatas.IndexOf(musicVersionData);
             if (MusicVersionDatas[itemIndex].VersionTitle != newTitle)
             {
                 MusicVersionDatas[itemIndex].VersionTitle = newTitle;
@@ -549,14 +592,19 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
         }
 
-        public void UpdateMusicVersionOffset(MusicVersionData oldItem, string newOffsetString)
+        /// <summary>
+        /// 校验并更新某个音乐版本的 offset
+        /// </summary>
+        /// <param name="musicVersionData">音乐版本 item</param>
+        /// <param name="newOffsetString">新的 offset</param>
+        public void UpdateMusicVersionOffset(MusicVersionData musicVersionData, string newOffsetString)
         {
             if (!int.TryParse(newOffsetString, out int newOffset))
             {
                 OnMusicVersionDataChanged?.Invoke();
             }
 
-            int itemIndex = MusicVersionDatas.IndexOf(oldItem);
+            int itemIndex = MusicVersionDatas.IndexOf(musicVersionData);
             if (MusicVersionDatas[itemIndex].Offset != newOffset)
             {
                 MusicVersionDatas[itemIndex].Offset = newOffset;
@@ -564,41 +612,62 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
         }
 
-        public void AddMusicVersionOffsetValue(MusicVersionData oldItem, int addNumber)
+        /// <summary>
+        /// 增加或减少音乐版本的 offset 指定时长
+        /// </summary>
+        /// <param name="musicVersionData">音乐版本 item</param>
+        /// <param name="addNumber">要增加的时长，ms（为负数时视为减少）</param>
+        public void AddMusicVersionOffsetValue(MusicVersionData musicVersionData, int addNumber)
         {
             if (addNumber == 0)
             {
                 return;
             }
 
-            int itemIndex = MusicVersionDatas.IndexOf(oldItem);
+            int itemIndex = MusicVersionDatas.IndexOf(musicVersionData);
             MusicVersionDatas[itemIndex].Offset += addNumber;
             OnMusicVersionDataChanged?.Invoke();
         }
 
-        public void AddStaffItem(MusicVersionData oldItem)
+        /// <summary>
+        /// 为指定音乐版本添加一行 Staff
+        /// </summary>
+        /// <param name="musicVersionData">要操作的音乐版本</param>
+        public void AddStaffItem(MusicVersionData musicVersionData)
         {
             int i = 1;
-            while (oldItem.Staffs.ContainsKey("Staff" + i.ToString()))
+            while (musicVersionData.Staffs.ContainsKey("Staff" + i.ToString()))
             {
                 i++;
             }
 
-            oldItem.Staffs.Add("Staff" + i.ToString(), new List<string>());
+            musicVersionData.Staffs.Add("Staff" + i.ToString(), new List<string>());
             OnMusicVersionDataChanged?.Invoke();
         }
 
-        public void DeleteStaffItem(MusicVersionData oldItem, KeyValuePair<string, List<string>> oldStaffItem)
+        /// <summary>
+        /// 为指定音乐版本删除一行 Staff
+        /// </summary>
+        /// <param name="musicVersionData">要操作的音乐版本</param>
+        /// <param name="staffItem">要删除的 Staff</param>
+        public void DeleteStaffItem(MusicVersionData musicVersionData, KeyValuePair<string, List<string>> staffItem)
         {
-            oldItem.Staffs.Remove(oldStaffItem.Key);
+            musicVersionData.Staffs.Remove(staffItem.Key);
             OnMusicVersionDataChanged?.Invoke();
         }
 
-        public void UpdateStaffItem(MusicVersionData oldMusicVersionItem,
+        /// <summary>
+        /// 更新指定音乐版本中的指定 Staff 信息
+        /// </summary>
+        /// <param name="musicVersionItem">要操作的音乐版本</param>
+        /// <param name="oldStaffItem">要更新的 Staff Item</param>
+        /// <param name="newName">新的 Staff 名字</param>
+        /// <param name="newJobString">新的 Staff 职务，多个职务斜杠分隔</param>
+        public void UpdateStaffItem(MusicVersionData musicVersionItem,
             KeyValuePair<string, List<string>> oldStaffItem, string newName, string newJobString)
         {
             if (oldStaffItem.Key == newName && string.Join("/", oldStaffItem.Value) == newJobString ||
-                oldStaffItem.Key != newName && oldMusicVersionItem.Staffs.ContainsKey(newName))
+                oldStaffItem.Key != newName && musicVersionItem.Staffs.ContainsKey(newName))
             {
                 OnMusicVersionDataChanged?.Invoke();
                 return;
@@ -608,17 +677,107 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
             if (oldStaffItem.Key != newName)
             {
-                oldMusicVersionItem.Staffs.Remove(oldStaffItem.Key);
-                oldMusicVersionItem.Staffs.Add(newName, newJob);
+                musicVersionItem.Staffs.Remove(oldStaffItem.Key);
+                musicVersionItem.Staffs.Add(newName, newJob);
                 OnMusicVersionDataChanged?.Invoke();
                 return;
             }
             else
             {
-                oldMusicVersionItem.Staffs[newName] = newJob;
+                musicVersionItem.Staffs[newName] = newJob;
                 OnMusicVersionDataChanged?.Invoke();
                 return;
             }
+        }
+
+        /// <summary>
+        /// 在裁剪框被拖动时更新裁剪起始位置和高度
+        /// </summary>
+        /// <remarks>裁剪后的图片必须为横向1:4，且必须在原图范围内</remarks>
+        /// <param name="type">裁剪框顶点类型</param>
+        /// <param name="pointPositionRatio">当前拖动时的指针位置（相对于原图的宽高比例，已归一化并限制范围在 [0,1]）</param>
+        public void UpdateCoverCropByHandles(CoverCropHandleType type, Vector2 pointPositionRatio)
+        {
+            // 检查数据
+            if (CoverSprite?.texture == null)
+            {
+                Debug.LogError("CoverSprite or its texture is not assigned.");
+                return;
+            }
+
+            float sourceWidth = CoverSprite.texture.width;
+            float sourceHeight = CoverSprite.texture.height;
+            if (sourceWidth <= 0 || sourceHeight <= 0) return;
+
+            // 将归一化的指针位置转换为像素坐标
+            Vector2 currentPointPixels = new Vector2(
+                pointPositionRatio.x * sourceWidth,
+                pointPositionRatio.y * sourceHeight
+            );
+
+            // 获取旧的裁剪框信息（像素单位）
+            Vector2 oldBottomLeft = ChartPackData.CropStartPosition;
+            float oldCropHeight = ChartPackData.CropHeight;
+            float oldCropWidth = oldCropHeight * 4;
+
+            // 确定固定点，即被拖动顶点的对角点
+            Vector2 anchorPoint = type switch
+            {
+                CoverCropHandleType.TopLeft => // 拖动左上角，则右下角固定
+                    new Vector2(oldBottomLeft.x + oldCropWidth, oldBottomLeft.y),
+                CoverCropHandleType.TopRight => // 拖动右上角，则左下角固定
+                    oldBottomLeft,
+                CoverCropHandleType.BottomLeft => // 拖动左下角，则右上角固定
+                    new Vector2(oldBottomLeft.x, oldBottomLeft.y + oldCropHeight),
+                CoverCropHandleType.BottomRight => // 拖动右下角，则左上角固定
+                    new Vector2(oldBottomLeft.x, oldBottomLeft.y + oldCropHeight),
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
+
+            // 计算由固定点和当前指针位置构成的包围盒的宽高
+            // 使用 Abs 确保宽高为正，允许用户将鼠标拖到固定点的另一侧
+            float boundsWidth = Mathf.Abs(currentPointPixels.x - anchorPoint.x);
+            float boundsHeight = Mathf.Abs(currentPointPixels.y - anchorPoint.y);
+
+            // 在包围盒内计算符合4:1比例的最大矩形尺寸
+            float newCropHeight;
+            // 比较包围盒的宽高比与目标宽高比(4:1)
+            if (boundsWidth / 4.0f >= boundsHeight)
+            {
+                // 如果包围盒相对“更宽”，则高度是限制因素。以包围盒高度为准计算。
+                newCropHeight = boundsHeight;
+            }
+            else
+            {
+                // 如果包围盒相对“更高”，则宽度是限制因素。以包围盒宽度为准计算。
+                newCropHeight = boundsWidth / 4.0f;
+            }
+
+            // 避免尺寸为负或过小
+            newCropHeight = Mathf.Max(0, newCropHeight);
+            float newCropWidth = newCropHeight * 4.0f;
+
+            // 根据拖动的顶点类型，计算新的裁剪起始位置
+            Vector2 newStartPosition = type switch
+            {
+                CoverCropHandleType.TopLeft =>
+                    // 新的左下角 = (右下角.x - 新宽度, 右下角.y)
+                    new Vector2(anchorPoint.x - newCropWidth, anchorPoint.y),
+                CoverCropHandleType.TopRight =>
+                    // 新的左下角 = 左下角 (固定点)
+                    anchorPoint,
+                CoverCropHandleType.BottomLeft =>
+                    // 新的左下角 = (右上角.x - 新宽度, 右上角.y - 新高度)
+                    new Vector2(anchorPoint.x - newCropWidth, anchorPoint.y - newCropHeight),
+                CoverCropHandleType.BottomRight =>
+                    // 新的左下角 = (左上角.x, 左上角.y - 新高度)
+                    new Vector2(anchorPoint.x, anchorPoint.y - newCropHeight),
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
+
+            ChartPackData.CropHeight = newCropHeight;
+            ChartPackData.CropStartPosition = newStartPosition;
+            OnChartPackDataChanged?.Invoke();
         }
 
         #endregion
