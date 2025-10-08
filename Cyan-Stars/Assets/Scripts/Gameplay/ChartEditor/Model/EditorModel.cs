@@ -519,6 +519,96 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
+        /// 在裁剪框被拖动时更新裁剪起始位置和高度
+        /// </summary>
+        /// <remarks>裁剪后的图片必须为横向1:4，且必须在原图范围内</remarks>
+        /// <param name="type">裁剪框顶点类型</param>
+        /// <param name="pointPositionRatio">当前拖动时的指针位置（相对于原图的宽高比例，已归一化并限制范围在 [0,1]）</param>
+        public void UpdateCoverCropByHandles(CoverCropHandleType type, Vector2 pointPositionRatio)
+        {
+            // 检查数据
+            if (CoverSprite?.texture == null)
+            {
+                Debug.LogError("CoverSprite or its texture is not assigned.");
+                return;
+            }
+
+            float sourceWidth = CoverSprite.texture.width;
+            float sourceHeight = CoverSprite.texture.height;
+            if (sourceWidth <= 0 || sourceHeight <= 0) return;
+
+            // 将归一化的指针位置转换为像素坐标
+            Vector2 currentPointPixels = new Vector2(
+                pointPositionRatio.x * sourceWidth,
+                pointPositionRatio.y * sourceHeight
+            );
+
+            // 获取旧的裁剪框信息（像素单位）
+            Vector2 oldBottomLeft = ChartPackData.CropStartPosition;
+            float oldCropHeight = ChartPackData.CropHeight;
+            float oldCropWidth = oldCropHeight * 4;
+
+            // 确定固定点，即被拖动顶点的对角点
+            Vector2 anchorPoint = type switch
+            {
+                CoverCropHandleType.TopLeft => // 拖动左上角，则右下角固定
+                    new Vector2(oldBottomLeft.x + oldCropWidth, oldBottomLeft.y),
+                CoverCropHandleType.TopRight => // 拖动右上角，则左下角固定
+                    oldBottomLeft,
+                CoverCropHandleType.BottomLeft => // 拖动左下角，则右上角固定
+                    new Vector2(oldBottomLeft.x, oldBottomLeft.y + oldCropHeight),
+                CoverCropHandleType.BottomRight => // 拖动右下角，则左上角固定
+                    new Vector2(oldBottomLeft.x, oldBottomLeft.y + oldCropHeight),
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
+
+            // 计算由固定点和当前指针位置构成的包围盒的宽高
+            // 使用 Abs 确保宽高为正，允许用户将鼠标拖到固定点的另一侧
+            float boundsWidth = Mathf.Abs(currentPointPixels.x - anchorPoint.x);
+            float boundsHeight = Mathf.Abs(currentPointPixels.y - anchorPoint.y);
+
+            // 在包围盒内计算符合4:1比例的最大矩形尺寸
+            float newCropHeight;
+            // 比较包围盒的宽高比与目标宽高比(4:1)
+            if (boundsWidth / 4.0f >= boundsHeight)
+            {
+                // 如果包围盒相对“更宽”，则高度是限制因素。以包围盒高度为准计算。
+                newCropHeight = boundsHeight;
+            }
+            else
+            {
+                // 如果包围盒相对“更高”，则宽度是限制因素。以包围盒宽度为准计算。
+                newCropHeight = boundsWidth / 4.0f;
+            }
+
+            // 避免尺寸为负或过小
+            newCropHeight = Mathf.Max(0, newCropHeight);
+            float newCropWidth = newCropHeight * 4.0f;
+
+            // 根据拖动的顶点类型，计算新的裁剪起始位置
+            Vector2 newStartPosition = type switch
+            {
+                CoverCropHandleType.TopLeft =>
+                    // 新的左下角 = (右下角.x - 新宽度, 右下角.y)
+                    new Vector2(anchorPoint.x - newCropWidth, anchorPoint.y),
+                CoverCropHandleType.TopRight =>
+                    // 新的左下角 = 左下角 (固定点)
+                    anchorPoint,
+                CoverCropHandleType.BottomLeft =>
+                    // 新的左下角 = (右上角.x - 新宽度, 右上角.y - 新高度)
+                    new Vector2(anchorPoint.x - newCropWidth, anchorPoint.y - newCropHeight),
+                CoverCropHandleType.BottomRight =>
+                    // 新的左下角 = (左上角.x, 左上角.y - 新高度)
+                    new Vector2(anchorPoint.x, anchorPoint.y - newCropHeight),
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
+
+            ChartPackData.CropHeight = newCropHeight;
+            ChartPackData.CropStartPosition = newStartPosition;
+            OnChartPackDataChanged?.Invoke();
+        }
+
+        /// <summary>
         /// 向列表添加一个新的音乐版本
         /// </summary>
         /// <param name="newData">要添加的音乐版本数据</param>
@@ -688,96 +778,6 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 OnMusicVersionDataChanged?.Invoke();
                 return;
             }
-        }
-
-        /// <summary>
-        /// 在裁剪框被拖动时更新裁剪起始位置和高度
-        /// </summary>
-        /// <remarks>裁剪后的图片必须为横向1:4，且必须在原图范围内</remarks>
-        /// <param name="type">裁剪框顶点类型</param>
-        /// <param name="pointPositionRatio">当前拖动时的指针位置（相对于原图的宽高比例，已归一化并限制范围在 [0,1]）</param>
-        public void UpdateCoverCropByHandles(CoverCropHandleType type, Vector2 pointPositionRatio)
-        {
-            // 检查数据
-            if (CoverSprite?.texture == null)
-            {
-                Debug.LogError("CoverSprite or its texture is not assigned.");
-                return;
-            }
-
-            float sourceWidth = CoverSprite.texture.width;
-            float sourceHeight = CoverSprite.texture.height;
-            if (sourceWidth <= 0 || sourceHeight <= 0) return;
-
-            // 将归一化的指针位置转换为像素坐标
-            Vector2 currentPointPixels = new Vector2(
-                pointPositionRatio.x * sourceWidth,
-                pointPositionRatio.y * sourceHeight
-            );
-
-            // 获取旧的裁剪框信息（像素单位）
-            Vector2 oldBottomLeft = ChartPackData.CropStartPosition;
-            float oldCropHeight = ChartPackData.CropHeight;
-            float oldCropWidth = oldCropHeight * 4;
-
-            // 确定固定点，即被拖动顶点的对角点
-            Vector2 anchorPoint = type switch
-            {
-                CoverCropHandleType.TopLeft => // 拖动左上角，则右下角固定
-                    new Vector2(oldBottomLeft.x + oldCropWidth, oldBottomLeft.y),
-                CoverCropHandleType.TopRight => // 拖动右上角，则左下角固定
-                    oldBottomLeft,
-                CoverCropHandleType.BottomLeft => // 拖动左下角，则右上角固定
-                    new Vector2(oldBottomLeft.x, oldBottomLeft.y + oldCropHeight),
-                CoverCropHandleType.BottomRight => // 拖动右下角，则左上角固定
-                    new Vector2(oldBottomLeft.x, oldBottomLeft.y + oldCropHeight),
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-            };
-
-            // 计算由固定点和当前指针位置构成的包围盒的宽高
-            // 使用 Abs 确保宽高为正，允许用户将鼠标拖到固定点的另一侧
-            float boundsWidth = Mathf.Abs(currentPointPixels.x - anchorPoint.x);
-            float boundsHeight = Mathf.Abs(currentPointPixels.y - anchorPoint.y);
-
-            // 在包围盒内计算符合4:1比例的最大矩形尺寸
-            float newCropHeight;
-            // 比较包围盒的宽高比与目标宽高比(4:1)
-            if (boundsWidth / 4.0f >= boundsHeight)
-            {
-                // 如果包围盒相对“更宽”，则高度是限制因素。以包围盒高度为准计算。
-                newCropHeight = boundsHeight;
-            }
-            else
-            {
-                // 如果包围盒相对“更高”，则宽度是限制因素。以包围盒宽度为准计算。
-                newCropHeight = boundsWidth / 4.0f;
-            }
-
-            // 避免尺寸为负或过小
-            newCropHeight = Mathf.Max(0, newCropHeight);
-            float newCropWidth = newCropHeight * 4.0f;
-
-            // 根据拖动的顶点类型，计算新的裁剪起始位置
-            Vector2 newStartPosition = type switch
-            {
-                CoverCropHandleType.TopLeft =>
-                    // 新的左下角 = (右下角.x - 新宽度, 右下角.y)
-                    new Vector2(anchorPoint.x - newCropWidth, anchorPoint.y),
-                CoverCropHandleType.TopRight =>
-                    // 新的左下角 = 左下角 (固定点)
-                    anchorPoint,
-                CoverCropHandleType.BottomLeft =>
-                    // 新的左下角 = (右上角.x - 新宽度, 右上角.y - 新高度)
-                    new Vector2(anchorPoint.x - newCropWidth, anchorPoint.y - newCropHeight),
-                CoverCropHandleType.BottomRight =>
-                    // 新的左下角 = (左上角.x, 左上角.y - 新高度)
-                    new Vector2(anchorPoint.x, anchorPoint.y - newCropHeight),
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-            };
-
-            ChartPackData.CropHeight = newCropHeight;
-            ChartPackData.CropStartPosition = newStartPosition;
-            OnChartPackDataChanged?.Invoke();
         }
 
         #endregion
