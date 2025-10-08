@@ -211,14 +211,14 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <param name="chartPackData">要加载到编辑器的谱包数据</param>
         /// <param name="chartData">要加载到编辑器的谱面数据</param>
         /// <returns>异步返回 EditorModel 实例</returns>
-        public async Task<EditorModel> CreateEditorModel(string workspacePath, ChartPackData chartPackData,
+        public static async Task<EditorModel> CreateEditorModel(string workspacePath, ChartPackData chartPackData,
             ChartData chartData)
         {
-            EditorModel editorModel = new EditorModel(workspacePath, chartPackData, chartData);
-            CoverSprite = ChartPackData.CoverFilePath != null
-                ? await LoadCoverSprite(Path.Combine(workspacePath, ChartPackData.CoverFilePath))
+            EditorModel model = new EditorModel(workspacePath, chartPackData, chartData);
+            model.CoverSprite = model.ChartPackData.CoverFilePath != null
+                ? await model.LoadCoverSprite(Path.Combine(workspacePath, model.ChartPackData.CoverFilePath))
                 : null;
-            return editorModel;
+            return model;
         }
 
         /// <summary>
