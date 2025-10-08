@@ -11,59 +11,59 @@ namespace CyanStars.GamePlay.ChartEditor.View
     public class ChartPackDataCanvas : BaseView
     {
         [SerializeField]
-        private Canvas canvas;
+        private Canvas canvas = null!;
 
         [SerializeField]
-        private Button closeCanvaButton;
+        private Button closeCanvaButton = null!;
 
 
         [SerializeField]
-        private TMP_InputField chartPackTitleField;
+        private TMP_InputField chartPackTitleField = null!;
 
         [SerializeField]
-        private TMP_InputField previewStartField1;
+        private TMP_InputField previewStartField1 = null!;
 
         [SerializeField]
-        private TMP_InputField previewStartField2;
+        private TMP_InputField previewStartField2 = null!;
 
         [SerializeField]
-        private TMP_InputField previewStartField3;
+        private TMP_InputField previewStartField3 = null!;
 
         [SerializeField]
-        private TMP_InputField previewEndField1;
+        private TMP_InputField previewEndField1 = null!;
 
         [SerializeField]
-        private TMP_InputField previewEndField2;
+        private TMP_InputField previewEndField2 = null!;
 
         [SerializeField]
-        private TMP_InputField previewEndField3;
+        private TMP_InputField previewEndField3 = null!;
 
         [SerializeField]
-        private TMP_Text coverPath;
+        private TMP_Text coverPath = null!;
 
         [SerializeField]
-        private Button importCoverButton;
+        private Button importCoverButton = null!;
 
         [SerializeField]
-        private AspectRatioFitter aspectRatioFitter;
+        private AspectRatioFitter aspectRatioFitter = null!;
 
         [SerializeField]
-        private Image backImage;
+        private Image backImage = null!;
 
         [SerializeField]
-        private Image topImage;
+        private Image topImage = null!;
 
         [SerializeField]
-        private RectMask2D rectMask;
+        private RectMask2D rectMask = null!;
 
         [SerializeField]
-        private RectTransform imageFrameRect;
+        private RectTransform imageFrameRect = null!;
 
         [SerializeField]
-        private RectTransform coverCropAreaRect;
+        private RectTransform coverCropAreaRect = null!;
 
         [SerializeField]
-        private Button exportChartPackButton; // TODO
+        private Button exportChartPackButton = null!; // TODO
 
 
         public override void Bind(EditorModel editorModel)
@@ -75,39 +75,38 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
             closeCanvaButton.onClick.AddListener(() => { Model.SetChartPackDataCanvasVisibleness(false); });
 
-            chartPackTitleField.onEndEdit.AddListener((text) => { Model.UpdateChartPackTitle(text); });
-            previewStartField1.onEndEdit.AddListener((_) =>
+            chartPackTitleField.onEndEdit.AddListener(text => { Model.UpdateChartPackTitle(text); });
+            previewStartField1.onEndEdit.AddListener(_ =>
             {
                 Model.UpdatePreviewStareBeat(previewStartField1.text, previewStartField2.text,
                     previewStartField3.text);
             });
-            previewStartField2.onEndEdit.AddListener((_) =>
+            previewStartField2.onEndEdit.AddListener(_ =>
             {
                 Model.UpdatePreviewStareBeat(previewStartField1.text, previewStartField2.text,
                     previewStartField3.text);
             });
-            previewStartField3.onEndEdit.AddListener((_) =>
+            previewStartField3.onEndEdit.AddListener(_ =>
             {
                 Model.UpdatePreviewStareBeat(previewStartField1.text, previewStartField2.text,
                     previewStartField3.text);
             });
-            previewEndField1.onEndEdit.AddListener((_) =>
+            previewEndField1.onEndEdit.AddListener(_ =>
             {
                 Model.UpdatePreviewEndBeat(previewEndField1.text, previewEndField2.text, previewEndField3.text);
             });
-            previewEndField2.onEndEdit.AddListener((_) =>
+            previewEndField2.onEndEdit.AddListener(_ =>
             {
                 Model.UpdatePreviewEndBeat(previewEndField1.text, previewEndField2.text, previewEndField3.text);
             });
-            previewEndField3.onEndEdit.AddListener((_) =>
+            previewEndField3.onEndEdit.AddListener(_ =>
             {
                 Model.UpdatePreviewEndBeat(previewEndField1.text, previewEndField2.text, previewEndField3.text);
             });
 
             importCoverButton.onClick.AddListener(() =>
             {
-                GameRoot.File.OpenLoadFilePathBrowser(
-                    (path) => { Model.UpdateCoverFilePath(path); },
+                GameRoot.File.OpenLoadFilePathBrowser(async path => { await Model.UpdateCoverFilePath(path); },
                     filters: new[] { GameRoot.File.SpriteFilter }
                 );
             });
