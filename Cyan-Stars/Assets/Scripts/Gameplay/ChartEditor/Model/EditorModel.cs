@@ -589,38 +589,59 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             float oldCropHeight = ChartPackData.CropHeight;
             float oldCropWidth = oldCropHeight * 4;
 
-            // 确定固定点，即被拖动顶点的对角点
-            Vector2 anchorPoint = type switch
+            // 确定固定点，即被拖动顶点的对角点，并计算 鼠标-固定点 矩形的宽高
+            Vector2 anchorPoint;
+            float boundsWidth;
+            float boundsHeight;
+            switch (type)
             {
-                CoverCropHandleType.TopLeft => // 拖动左上角，则右下角固定
-                    new Vector2(oldBottomLeft.x + oldCropWidth, oldBottomLeft.y),
-                CoverCropHandleType.TopRight => // 拖动右上角，则左下角固定
-                    oldBottomLeft,
-                CoverCropHandleType.BottomLeft => // 拖动左下角，则右上角固定
-                    new Vector2(oldBottomLeft.x, oldBottomLeft.y + oldCropHeight),
-                CoverCropHandleType.BottomRight => // 拖动右下角，则左上角固定
-                    new Vector2(oldBottomLeft.x, oldBottomLeft.y + oldCropHeight),
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-            };
-
-            // 计算由固定点和当前指针位置构成的包围盒的宽高
-            // 使用 Abs 确保宽高为正，允许用户将鼠标拖到固定点的另一侧
-            float boundsWidth = Mathf.Abs(currentPointPixels.x - anchorPoint.x);
-            float boundsHeight = Mathf.Abs(currentPointPixels.y - anchorPoint.y);
-
-            // 在包围盒内计算符合4:1比例的最大矩形尺寸
-            float newCropHeight;
-            // 比较包围盒的宽高比与目标宽高比(4:1)
-            if (boundsWidth / 4.0f >= boundsHeight)
-            {
-                // 如果包围盒相对“更宽”，则高度是限制因素。以包围盒高度为准计算。
-                newCropHeight = boundsHeight;
+                case CoverCropHandleType.TopLeft: // 拖动左上角，则右下角固定
+                    anchorPoint = new Vector2(oldBottomLeft.x + oldCropWidth, oldBottomLeft.y);
+                    boundsWidth = Mathf.Max(0, anchorPoint.x - currentPointPixels.x);
+                    boundsHeight = Mathf.Max(0, currentPointPixels.y - anchorPoint.y);
+                    break;
+                case CoverCropHandleType.TopRight: // 拖动右上角，则左下角固定
+                    anchorPoint = oldBottomLeft;
+                    boundsWidth = Mathf.Max(0, currentPointPixels.x - anchorPoint.x);
+                    boundsHeight = Mathf.Max(0, currentPointPixels.y - anchorPoint.y);
+                    break;
+                case CoverCropHandleType.BottomLeft: // 拖动左下角，则右上角固定
+                    anchorPoint = new Vector2(oldBottomLeft.x + oldCropWidth, oldBottomLeft.y + oldCropHeight);
+                    boundsWidth = Mathf.Max(0, anchorPoint.x - currentPointPixels.x);
+                    boundsHeight = Mathf.Max(0, anchorPoint.y - currentPointPixels.y);
+                    break;
+                case CoverCropHandleType.BottomRight: // 拖动右下角，则左上角固定
+                    anchorPoint = new Vector2(oldBottomLeft.x, oldBottomLeft.y + oldCropHeight);
+                    boundsWidth = Mathf.Max(0, currentPointPixels.x - anchorPoint.x);
+                    boundsHeight = Mathf.Max(0, anchorPoint.y - currentPointPixels.y);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
-            else
+
+            // 确定 鼠标-固定点 矩形中的关键因素
+            float newCropHeight = boundsWidth / 4.0f >= boundsHeight ? boundsWidth / 4.0f : boundsHeight;
+
+            float maxAllowedHeight;
+            switch (type)
             {
-                // 如果包围盒相对“更高”，则宽度是限制因素。以包围盒宽度为准计算。
-                newCropHeight = boundsWidth / 4.0f;
+                case CoverCropHandleType.TopLeft:
+                    maxAllowedHeight = Mathf.Min(anchorPoint.x / 4.0f, sourceHeight - anchorPoint.y);
+                    break;
+                case CoverCropHandleType.TopRight:
+                    maxAllowedHeight = Mathf.Min((sourceWidth - anchorPoint.x) / 4.0f, sourceHeight - anchorPoint.y);
+                    break;
+                case CoverCropHandleType.BottomLeft:
+                    maxAllowedHeight = Mathf.Min(anchorPoint.x / 4.0f, anchorPoint.y);
+                    break;
+                case CoverCropHandleType.BottomRight:
+                    maxAllowedHeight = Mathf.Min((sourceWidth - anchorPoint.x) / 4.0f, anchorPoint.y);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
+
+            newCropHeight = Mathf.Min(newCropHeight, maxAllowedHeight);
 
             // 避免尺寸为负或过小
             newCropHeight = Mathf.Max(0, newCropHeight);
