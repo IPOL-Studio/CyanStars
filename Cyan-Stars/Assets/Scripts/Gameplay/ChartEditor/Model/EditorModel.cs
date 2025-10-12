@@ -507,7 +507,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 更新曲绘大图
+        /// 更新曲绘大图路径，并自动重置裁剪区域（对齐图片中央，尝试裁剪 4:1 最大区域）
         /// </summary>
         /// <param name="path">曲绘大图外部绝对路径</param>
         public async Task UpdateCoverFilePath(string path)
@@ -515,7 +515,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             // 临时用外部路径展示图片，在保存工程时检查路径是否为外部，复制文件到资源文件夹内并更新引用
             ChartPackData.CoverFilePath = path;
             CoverSprite = await GameRoot.Asset.LoadAssetAsync<Sprite>(path);
-            if (CoverSprite == null)
+            if (CoverSprite != null)
             {
                 const float targetAspectRatio = 4.0f;
 
@@ -523,22 +523,22 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 float imageHeight = CoverSprite!.texture.height;
 
                 // 计算图片的实际宽高比
-                float imageAspectRatio = imageHeight / imageWidth;
+                float imageAspectRatio = imageWidth / imageHeight;
 
                 // 决定哪个维度是限制因素
                 float cropWidth;
                 float cropHeight;
-                if (imageAspectRatio < targetAspectRatio)
+                if (imageAspectRatio > targetAspectRatio)
                 {
                     // 图片相对“更宽”或“不够高”，高度是限制因素
                     cropHeight = imageHeight;
-                    cropWidth = cropHeight / targetAspectRatio;
+                    cropWidth = cropHeight * targetAspectRatio;
                 }
                 else
                 {
                     // 图片相对“更高”或“不够宽”，宽度是限制因素
                     cropWidth = imageWidth;
-                    cropHeight = cropWidth * targetAspectRatio;
+                    cropHeight = cropWidth / targetAspectRatio;
                 }
 
                 // 计算裁剪区域的左下角坐标，以使其居中

@@ -16,7 +16,7 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
     public class ChartEditorProcedure : BaseState
     {
         private const string ScenePath = "Assets/BundleRes/Scenes/ChartEditor.unity";
-        private const string SceneMainCanvaGameObjectName = "MainCanvas";
+        private const string SceneMainCanvaGameObjectName = "MainCanva";
 
         private Scene scene;
         private Canvas canvas;
@@ -30,10 +30,10 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
             int foundCount = 0;
             foreach (var rootGameObject in scene.GetRootGameObjects())
             {
-                if (rootGameObject.name != SceneMainCanvaGameObjectName)
+                if (rootGameObject.name == SceneMainCanvaGameObjectName)
                 {
-                    foundCount++;
                     canvas = rootGameObject.GetComponent<Canvas>();
+                    foundCount++;
                 }
             }
 
@@ -45,23 +45,29 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
             // 创建制谱器 Model，并为所有 View 添加绑定
             ChartModule module = GameRoot.GetDataModule<ChartModule>();
 
+            module.CreateAndSelectNewChartPack("Test", out _); // TODO: 改用从 UI 获取
+            string workspacePath = module.SelectedRuntimeChartPack.WorkspacePath;
+            string chartPackFilePath = Path.Combine(workspacePath, ChartModule.ChartPackFileName);
 
-            // string workspacePath = module.SelectedRuntimeChartPack.WorkspacePath;
-            // string chartPackFilePath =
-            //     Path.Combine(workspacePath, ChartModule.ChartPackFileName);
-            //
-            // // 通过序列化获取深拷贝的谱包数据
-            // ChartPackData chartPackData = await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackFilePath);
-            // // 这个方法会直接序列化获取深拷贝
-            // ChartData chartData =
-            //     await module.GetChartDataFromDisk(module.SelectedRuntimeChartPack, module.SelectedChartIndex);
-            // EditorModel editorModel = new EditorModel(workspacePath, chartPackData, chartData);
+            // 通过序列化获取深拷贝的谱包数据
+            ChartPackData chartPackData = await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackFilePath);
+            // 这个方法会直接序列化获取深拷贝
+            ChartData chartData =
+                await module.GetChartDataFromDisk(module.SelectedRuntimeChartPack, (int)module.SelectedChartIndex);
+            EditorModel editorModel = await EditorModel.CreateEditorModel(workspacePath, chartPackData, chartData);
 
-            // foreach (var baseView in canvas.gameObject.GetComponentsInChildren<BaseView>())
-            // {
-            //     // 为已有的静态 view 进行绑定，动态 view 需要在生成时由母 view 重新绑定
-            //     baseView.Bind(editorModel);
-            // }
+            foreach (var baseView in canvas.gameObject.GetComponentsInChildren<BaseView>())
+            {
+                // 为已有的静态 view 进行绑定，动态 view 需要在生成时由母 view 重新绑定
+                try
+                {
+                    baseView.Bind(editorModel);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e.Message);
+                }
+            }
         }
 
         public override void OnUpdate(float deltaTime)

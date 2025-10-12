@@ -131,22 +131,23 @@ namespace CyanStars.GamePlay.ChartEditor.View
                 : Mathf.Infinity; // TODO: 没有图片的时候整点说明文本或者干脆隐藏整个 frame
 
             float startX = Model.CoverSprite != null
-                ? Model.CoverSprite.rect.x * imageFrameRect.rect.width / Model.ChartPackData.CropStartPosition.x
+                ? Model.ChartPackData.CropStartPosition.x * imageFrameRect.rect.width / Model.CoverSprite.rect.width
                 : 0;
             float startY = Model.CoverSprite != null
-                ? Model.CoverSprite.rect.y * imageFrameRect.rect.height / Model.ChartPackData.CropStartPosition.y
+                ? Model.ChartPackData.CropStartPosition.y * imageFrameRect.rect.height / Model.CoverSprite.rect.height
                 : 0;
             startX = Mathf.Max(0, Mathf.Min(startX, imageFrameRect.rect.width));
             startY = Mathf.Max(0, Mathf.Min(startY, imageFrameRect.rect.height));
             coverCropAreaRect.anchoredPosition = new Vector2(startX, startY);
 
             float width = Model.CoverSprite != null
-                ? Model.CoverSprite.rect.x * imageFrameRect.rect.width / Model.ChartPackData.CropWidth
+                ? Model.ChartPackData.CropWidth * imageFrameRect.rect.width / Model.CoverSprite.rect.width
                 : 0;
             float height = width / 4;
             width = Mathf.Max(0, Mathf.Min(width, imageFrameRect.rect.width - startX));
             height = Mathf.Max(0, Mathf.Min(height, imageFrameRect.rect.height - startY));
-            coverCropAreaRect.sizeDelta = new Vector2(width, height);
+            coverCropAreaRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,width);
+            coverCropAreaRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,width);
 
             rectMask.padding = new Vector4(
                 startX,
