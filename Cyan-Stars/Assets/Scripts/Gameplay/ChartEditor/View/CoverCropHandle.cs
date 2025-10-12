@@ -23,9 +23,14 @@ namespace CyanStars.GamePlay.ChartEditor.View
         [SerializeField]
         private RectTransform imageFrameRect = null!;
 
+        private RectTransform selfRect;
+
+
         public override void Bind(EditorModel editorModel)
         {
             base.Bind(editorModel);
+
+            selfRect = gameObject.GetComponent<RectTransform>();
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -38,6 +43,9 @@ namespace CyanStars.GamePlay.ChartEditor.View
             {
                 return;
             }
+
+            // 在 UI 中将元素置顶，这样即使与其他 Handle 重叠也能正确拖动
+            selfRect.SetAsLastSibling();
 
             float x = localPoint.x / imageFrameRect.rect.width;
             float y = localPoint.y / imageFrameRect.rect.height;
