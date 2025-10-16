@@ -106,7 +106,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public readonly ChartPackData ChartPackData;
         public readonly ChartData ChartData;
         public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
-        public List<BpmGroupItem> BpmGroupDatas => ChartData.BpmGroup.Data;
+        public List<BpmGroupItem> BpmGroupDatas => ChartPackData.BpmGroup.Data;
         public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
         public Sprite? CoverSprite { get; private set; }
 

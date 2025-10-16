@@ -349,7 +349,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
         /// </summary>
         private void ResetTotalBeats()
         {
-            totalBeats = CalculateTotalBeats(Model.ActualMusicTime, Model.ChartData.BpmGroup);
+            totalBeats = CalculateTotalBeats(Model.ActualMusicTime, Model.ChartPackData.BpmGroup);
             RefreshUI();
         }
 

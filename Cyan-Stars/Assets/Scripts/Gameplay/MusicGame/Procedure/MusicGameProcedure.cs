@@ -367,7 +367,16 @@ namespace CyanStars.Gameplay.MusicGame
             timeline.OnStop += StopTimeline;
 
             // 添加音符轨道
-            NoteTrackData noteTrackData = new NoteTrackData() { ClipDataList = new List<ChartData>() { chartData } };
+            BpmGroup bpmGroup = new BpmGroup { Data = new List<BpmGroupItem>() };
+            foreach (var item in runtimeChartPack.ChartPackData.BpmGroup.Data)
+            {
+                bpmGroup.Data.Add(item);
+            }
+
+            NoteTrackData noteTrackData = new NoteTrackData()
+            {
+                BpmGroup = bpmGroup, ClipDataList = new List<ChartData>() { chartData }
+            };
             timeline.AddTrack(noteTrackData, NoteTrack.CreateClipFunc);
 
             // if (!string.IsNullOrEmpty(lrcText) && settingsModule.EnableLyricTrack)
@@ -406,7 +415,7 @@ namespace CyanStars.Gameplay.MusicGame
                 if (trackModule.TryGetTrackLoader(chartData.TrackDatas[i].TrackData.GetType(), out var trackLoader) &&
                     trackLoader.IsEnabled)
                 {
-                    trackLoader.LoadTrack(timeline, chartData, i);
+                    trackLoader.LoadTrack(timeline, noteTrackData.BpmGroup, chartData, i);
                 }
             }
 

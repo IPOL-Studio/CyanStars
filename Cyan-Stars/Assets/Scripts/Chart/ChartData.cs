@@ -15,10 +15,6 @@ namespace CyanStars.Chart
         /// <remarks>必须大于等于0，一般为4，预备拍的时间间隔取决于第一个 BPM 组的 bpm</remarks>
         public int ReadyBeat;
 
-        /// <summary>bpm 组</summary>
-        /// <remarks>控制不同时候的拍子所占时长（拍子可转换为时间）</remarks>
-        public BpmGroup BpmGroup;
-
         /// <summary>变速组</summary>
         /// <remarks>必定存在一个相对 1 速的变速组，不可编辑或删除</remarks>
         public List<SpeedGroupData> SpeedGroupDatas;
@@ -32,11 +28,10 @@ namespace CyanStars.Chart
         public List<ChartTrackData> TrackDatas;
 
 
-        public ChartData(int readyBeat = 4, BpmGroup? bpmGroup = null, List<SpeedGroupData>? speedGroupDatas = null,
+        public ChartData(int readyBeat = 4, List<SpeedGroupData>? speedGroupDatas = null,
             List<BaseChartNoteData>? notes = null, List<ChartTrackData>? trackDatas = null)
         {
             ReadyBeat = readyBeat;
-            BpmGroup = bpmGroup ?? new BpmGroup();
             SpeedGroupDatas = speedGroupDatas ??
                               new List<SpeedGroupData>()
                               {

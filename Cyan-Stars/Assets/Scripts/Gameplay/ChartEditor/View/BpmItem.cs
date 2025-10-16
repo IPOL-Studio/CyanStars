@@ -54,7 +54,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             indexText.text = index.ToString();
 
             Beat beat = Model.BpmGroupDatas[index].StartBeat;
-            int msTime = Model.ChartData.BpmGroup.CalculateTime(Model.BpmGroupDatas[index].StartBeat);
+            int msTime = Model.ChartPackData.BpmGroup.CalculateTime(Model.BpmGroupDatas[index].StartBeat);
             TimeSpan timeSpan = TimeSpan.FromMilliseconds(msTime); // 应该没人会写总时长超过 24 小时的变速谱面
             detailText.text = $"[{beat.IntegerPart}, {beat.Numerator}, {beat.Denominator}]" +
                               $"\n{timeSpan:hh\\:mm\\:ss\\.fff}";
