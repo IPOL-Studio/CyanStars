@@ -59,22 +59,22 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private Button topMusicVersionItemButton;
 
 
-        public void InitDataAndBind(EditorModel editorModel, MusicVersionData musicVersionData)
+        public void InitDataAndBind(ChartEditorModel chartEditorModel, MusicVersionData musicVersionData)
         {
             isInit = true;
             this.musicVersionData = musicVersionData;
             staffItems = musicVersionData.Staffs.ToList();
-            Bind(editorModel);
+            Bind(chartEditorModel);
         }
 
-        public override void Bind(EditorModel editorModel)
+        public override void Bind(ChartEditorModel chartEditorModel)
         {
             if (!isInit)
             {
                 throw new Exception("MusicVersionItem: 未初始化数据");
             }
 
-            base.Bind(editorModel);
+            base.Bind(chartEditorModel);
 
             titleField.onEndEdit.RemoveAllListeners();
             titleField.onEndEdit.AddListener((text) => { Model.UpdateMusicVersionTitle(musicVersionData, text); });

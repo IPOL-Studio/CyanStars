@@ -18,9 +18,9 @@ namespace CyanStars.GamePlay.ChartEditor.View
         public BaseChartNoteData Data;
 
 
-        public override void Bind(EditorModel editorModel)
+        public override void Bind(ChartEditorModel chartEditorModel)
         {
-            base.Bind(editorModel);
+            base.Bind(chartEditorModel);
             Button.onClick.RemoveAllListeners();
             Button.onClick.AddListener(Clicked);
         }
@@ -28,12 +28,12 @@ namespace CyanStars.GamePlay.ChartEditor.View
         /// <summary>
         /// 在创建/从对象池取回此物体时初始化数据
         /// </summary>
-        /// <param name="editorModel">Model 实例</param>
+        /// <param name="chartEditorModel">Model 实例</param>
         /// <param name="data">音符数据，用于哈希查询</param>
-        public void SetData(EditorModel editorModel, BaseChartNoteData data)
+        public void SetData(ChartEditorModel chartEditorModel, BaseChartNoteData data)
         {
             Data = data;
-            Bind(editorModel);
+            Bind(chartEditorModel);
         }
 
         private void Clicked()

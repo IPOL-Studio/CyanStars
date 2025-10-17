@@ -89,9 +89,9 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private GameObject speedOffsetAudioObject; // TODO
 
 
-        public override void Bind(EditorModel editorModel)
+        public override void Bind(ChartEditorModel chartEditorModel)
         {
-            base.Bind(editorModel);
+            base.Bind(chartEditorModel);
 
             judgeBeatField1.onEndEdit.AddListener((text) => Model.SetJudgeBeat(text, null, null));
             judgeBeatField2.onEndEdit.AddListener((text) => Model.SetJudgeBeat(null, text, null));

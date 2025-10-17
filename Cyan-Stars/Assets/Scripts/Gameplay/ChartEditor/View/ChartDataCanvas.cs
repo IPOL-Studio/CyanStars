@@ -38,9 +38,9 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private TMP_InputField readyBeatField;
 
 
-        public override void Bind(EditorModel editorModel)
+        public override void Bind(ChartEditorModel chartEditorModel)
         {
-            base.Bind(editorModel);
+            base.Bind(chartEditorModel);
 
             Model.OnChartDataChanged += RefreshUI;
             Model.OnChartDataCanvasVisiblenessChanged += RefreshUI;

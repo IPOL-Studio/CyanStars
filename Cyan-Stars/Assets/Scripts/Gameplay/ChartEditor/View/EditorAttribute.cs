@@ -35,9 +35,9 @@ namespace CyanStars.GamePlay.ChartEditor.View
         [SerializeField]
         private Button beatZoomIn;
 
-        public override void Bind(EditorModel editorModel)
+        public override void Bind(ChartEditorModel chartEditorModel)
         {
-            base.Bind(editorModel);
+            base.Bind(chartEditorModel);
 
             // 初始化字段
             posAccuracyField.text = Model.PosAccuracy.ToString();

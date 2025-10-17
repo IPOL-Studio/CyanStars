@@ -26,9 +26,9 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private RectTransform selfRect;
 
 
-        public override void Bind(EditorModel editorModel)
+        public override void Bind(ChartEditorModel chartEditorModel)
         {
-            base.Bind(editorModel);
+            base.Bind(chartEditorModel);
 
             selfRect = gameObject.GetComponent<RectTransform>();
         }

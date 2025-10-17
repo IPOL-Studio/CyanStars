@@ -26,21 +26,21 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private Button button;
 
 
-        public void InitDataAndBind(EditorModel editorModel, int index)
+        public void InitDataAndBind(ChartEditorModel chartEditorModel, int index)
         {
             isInit = true;
             this.index = index;
-            Bind(editorModel);
+            Bind(chartEditorModel);
         }
 
-        public override void Bind(EditorModel editorModel)
+        public override void Bind(ChartEditorModel chartEditorModel)
         {
             if (!isInit)
             {
                 throw new Exception("BpmItem: Bind called on uninitialized view");
             }
 
-            base.Bind(editorModel);
+            base.Bind(chartEditorModel);
 
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => { Model.SelectBpmItem(index); });
@@ -50,7 +50,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
         public void RefreshUI()
         {
-            led.enabled = (Model.SelectedBpmGroupIndex == index);
+            led.enabled = (Model.SelectedBpmItemIndex == index);
             indexText.text = index.ToString();
 
             Beat beat = Model.BpmGroupDatas[index].StartBeat;

@@ -63,9 +63,9 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private const float CentralMax = 400f;
 
 
-        public override void Bind(EditorModel editorModel)
+        public override void Bind(ChartEditorModel chartEditorModel)
         {
-            base.Bind(editorModel);
+            base.Bind(chartEditorModel);
 
             // 缓存一些物体
             contentRect = scrollRect.content.GetComponent<RectTransform>();

@@ -14,9 +14,9 @@ namespace CyanStars.GamePlay.ChartEditor.View
         [SerializeField]
         private Toggle[] toggles;
 
-        public override void Bind(EditorModel editorModel)
+        public override void Bind(ChartEditorModel chartEditorModel)
         {
-            base.Bind(editorModel);
+            base.Bind(chartEditorModel);
 
             if (!CheckToggles())
             {

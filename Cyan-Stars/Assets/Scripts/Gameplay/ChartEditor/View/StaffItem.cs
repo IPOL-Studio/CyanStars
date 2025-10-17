@@ -27,23 +27,23 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private Button deleteItemButton;
 
 
-        public void InitDataAndBind(EditorModel editorModel, MusicVersionData musicVersionData,
+        public void InitDataAndBind(ChartEditorModel chartEditorModel, MusicVersionData musicVersionData,
             KeyValuePair<string, List<string>> staffItemData)
         {
             isInit = true;
             this.musicVersionData = musicVersionData;
             this.staffItemData = staffItemData;
-            Bind(editorModel);
+            Bind(chartEditorModel);
         }
 
-        public override void Bind(EditorModel editorModel)
+        public override void Bind(ChartEditorModel chartEditorModel)
         {
             if (!isInit)
             {
                 throw new Exception("StaffItem: 未初始化数据");
             }
 
-            base.Bind(editorModel);
+            base.Bind(chartEditorModel);
 
             staffIdField.onEndEdit.RemoveAllListeners();
             staffIdField.onEndEdit.AddListener((newName) =>

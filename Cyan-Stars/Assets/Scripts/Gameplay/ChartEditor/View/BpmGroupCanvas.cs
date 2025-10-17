@@ -55,9 +55,9 @@ namespace CyanStars.GamePlay.ChartEditor.View
         [SerializeField]
         private Button testPlayButton;
 
-        public override void Bind(EditorModel editorModel)
+        public override void Bind(ChartEditorModel chartEditorModel)
         {
-            base.Bind(editorModel);
+            base.Bind(chartEditorModel);
 
             Model.OnBpmGroupCanvasVisiblenessChanged += RefreshUI;
             Model.OnBpmGroupChanged += RefreshUI;
@@ -122,12 +122,20 @@ namespace CyanStars.GamePlay.ChartEditor.View
                 itemList.SetActive(true);
             }
 
-            BpmGroupItem bpmGroupItem = Model.BpmGroupDatas[Model.SelectedBpmGroupIndex];
+            if (Model.SelectedBpmItemIndex != null)
+            {
+                BpmGroupItem bpmGroupItem = Model.BpmGroupDatas[(int)Model.SelectedBpmItemIndex];
+                bpmValueField.text = bpmGroupItem.Bpm.ToString(CultureInfo.InvariantCulture);
+                startBeatField1.text = bpmGroupItem.StartBeat.IntegerPart.ToString();
+                startBeatField2.text = bpmGroupItem.StartBeat.Numerator.ToString();
+                startBeatField3.text = bpmGroupItem.StartBeat.Denominator.ToString();
+            }
+            else
+            {
+                // TODO: 未选中 bpmItem 时改一下 UI
+            }
 
-            bpmValueField.text = bpmGroupItem.Bpm.ToString(CultureInfo.InvariantCulture);
-            startBeatField1.text = bpmGroupItem.StartBeat.IntegerPart.ToString();
-            startBeatField2.text = bpmGroupItem.StartBeat.Numerator.ToString();
-            startBeatField3.text = bpmGroupItem.StartBeat.Denominator.ToString();
+
         }
 
         private void OnDestroy()

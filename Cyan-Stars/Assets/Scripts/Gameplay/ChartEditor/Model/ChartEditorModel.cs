@@ -14,91 +14,97 @@ namespace CyanStars.GamePlay.ChartEditor.Model
     /// <summary>
     /// 谱面编辑器 Model 层
     /// </summary>
-    public class EditorModel
+    public class ChartEditorModel
     {
         // --- 在编辑器内初始化和临时存储的、经过校验后的数据，不会持久化 ---
         /// <summary>
         /// 编辑器精简模式
         /// </summary>
         /// <remarks>精简无关元素方便新手理解制谱器，只允许设置 1 个 BPM 组、曲目版本，隐藏变速和事件相关设置</remarks>
-        public bool IsSimplification { get; private set; }
+        public bool IsSimplification { get; private set; } = true;
 
         /// <summary>
         /// 当前选中的画笔（或者是橡皮？）
         /// </summary>
-        public EditTool SelectedEditTool { get; private set; }
+        public EditTool SelectedEditTool { get; private set; } = EditTool.Select;
 
         /// <summary>
         /// 当前选中编辑的 BPM 组下标
         /// </summary>
-        public int SelectedBpmGroupIndex { get; private set; }
+        public int? SelectedBpmItemIndex { get; private set; } = null;
 
 
         /// <summary>
         /// 当前设置的位置精度（等于屏幕上有几条竖直位置线）
         /// </summary>
-        public int PosAccuracy { get; private set; }
+        public int PosAccuracy { get; private set; } = 4;
 
         /// <summary>
         /// 是否开启了位置吸附
         /// </summary>
         /// <remarks>将会吸附到最近的位置线，或者是两条位置线的中点</remarks>
-        public bool PosMagnetState { get; private set; }
+        public bool PosMagnetState { get; private set; } = true;
 
         /// <summary>
         /// 节拍精度（等于将每小节均分为几分）
         /// </summary>
-        public int BeatAccuracy { get; private set; }
+        public int BeatAccuracy { get; private set; } = 2;
 
         /// <summary>
         /// 节拍缩放
         /// </summary>
         /// <remarks>编辑器纵向拉伸比例</remarks>
-        public float BeatZoom { get; private set; }
+        public float BeatZoom { get; private set; } = 1f;
 
         /// <summary>
         /// 创建 Hold 音符时暂存的开始拍
         /// </summary>
         /// <remarks>选中 Hold 画笔后第一次点击空白区域</remarks>
-        public Beat? TempHoldJudgeBeat;
+        public Beat? TempHoldJudgeBeat { get; private set; } = null;
 
 
         /// <summary>
         /// 用于 M 层的音符数据，在 Model 构造时指向 ChartData 中的对象
         /// </summary>
         /// <remarks>NoteView 在从对象池取回时会存储对应的单个音符数据，可以借此定位回来</remarks>
-        public HashSet<BaseChartNoteData> ChartNotes { get; private set; }
+        public HashSet<BaseChartNoteData> ChartNotes { get; private set; } = new HashSet<BaseChartNoteData>();
 
         /// <summary>
         /// 当前选中的 Note，用 HashSet 是考虑兼容后续框选多个 Note 一起修改
         /// </summary>
-        public HashSet<BaseChartNoteData> SelectedNotes { get; private set; }
+        public HashSet<BaseChartNoteData> SelectedNotes { get; private set; } = new HashSet<BaseChartNoteData>();
 
         /// <summary>
         /// 计算 offset 后，当前选中的音乐的实际时长（ms）
         /// </summary>
         /// <remarks>超过这个时长的内容都不可以编辑，包括音符编辑、事件等等</remarks>
-        public int ActualMusicTime { get; set; } // TODO：测试完成后改为 private set;
+        public int ActualMusicTime { get; set; } // TODO：修改为根据音乐长度自动确定
+
+        /// <summary>
+        /// 曲绘材质
+        /// </summary>
+        public Texture2D? CoverTexture { get; private set; } = null;
+
 
         /// <summary>
         /// 谱包信息弹窗可见性
         /// </summary>
-        public bool ChartPackDataCanvasVisibleness { get; private set; }
+        public bool ChartPackDataCanvasVisibleness { get; private set; } = false;
 
         /// <summary>
         /// 谱面信息弹窗可见性
         /// </summary>
-        public bool ChartDataCanvasVisibleness { get; private set; }
+        public bool ChartDataCanvasVisibleness { get; private set; } = false;
 
         /// <summary>
         /// 音乐版本弹窗可见性
         /// </summary>
-        public bool MusicVersionCanvasVisibleness { get; private set; }
+        public bool MusicVersionCanvasVisibleness { get; private set; } = false;
 
         /// <summary>
         /// BPM 组弹窗可见性
         /// </summary>
-        public bool BpmGroupCanvasVisibleness { get; private set; }
+        public bool BpmGroupCanvasVisibleness { get; private set; } = false;
 
 
         // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面等数据，加载/保存时需要从读写磁盘。 ---
@@ -108,10 +114,12 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
         public List<BpmGroupItem> BpmGroupDatas => ChartPackData.BpmGroup.Data;
         public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
-        public Sprite? CoverSprite { get; private set; }
+
 
         // --- 内部变量 ---
-        private bool needCopyCoverWhenSave = false; // 在保存时需要复制外部的曲绘文件到 Assets 路径下
+        private byte[]? coverBytes = null;
+        private string? coverFileName = null;
+        private bool needDumpCoverWhenSave = false; // 在保存时需要复制外部的曲绘文件到 Assets 路径下
 
 
         #region Model 事件
@@ -211,13 +219,15 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <param name="chartPackData">要加载到编辑器的谱包数据</param>
         /// <param name="chartData">要加载到编辑器的谱面数据</param>
         /// <returns>异步返回 EditorModel 实例</returns>
-        public static async Task<EditorModel> CreateEditorModel(string workspacePath, ChartPackData chartPackData,
+        public static async Task<ChartEditorModel> CreateEditorModel(string workspacePath, ChartPackData chartPackData,
             ChartData chartData)
         {
-            EditorModel model = new EditorModel(workspacePath, chartPackData, chartData);
-            model.CoverSprite = model.ChartPackData.CoverFilePath != null
-                ? await model.LoadCoverSprite(Path.Combine(workspacePath, model.ChartPackData.CoverFilePath))
+            ChartEditorModel model = new ChartEditorModel(workspacePath, chartPackData, chartData);
+            model.coverBytes = model.ChartPackData.CoverFilePath != null
+                ? await GameRoot.Asset.LoadAssetAsync<byte[]>(Path.Combine(workspacePath,
+                    model.ChartPackData.CoverFilePath))
                 : null;
+            model.CoverTexture.LoadImage(model.coverBytes);
             return model;
         }
 
@@ -227,23 +237,12 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <param name="workspacePath">谱包工作区绝对路径（谱包索引文件所在的文件夹路径）</param>
         /// <param name="chartPackData">要加载到编辑器的谱包数据</param>
         /// <param name="chartData">要加载到编辑器的谱面数据</param>
-        private EditorModel(string workspacePath, ChartPackData chartPackData, ChartData chartData)
+        private ChartEditorModel(string workspacePath, ChartPackData chartPackData, ChartData chartData)
         {
             WorkspacePath = workspacePath;
             ChartPackData = chartPackData;
             ChartData = chartData;
 
-            IsSimplification = true;
-            SelectedEditTool = EditTool.Select;
-            PosAccuracy = 4;
-            PosMagnetState = true;
-            BeatAccuracy = 2;
-            BeatZoom = 1f;
-            TempHoldJudgeBeat = null;
-            SelectedNotes = new HashSet<BaseChartNoteData>();
-            SelectedBpmGroupIndex = 0;
-
-            ChartNotes = new HashSet<BaseChartNoteData>();
             foreach (var note in ChartData.Notes)
             {
                 ChartNotes.Add(note);
@@ -255,11 +254,6 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             BpmGroupCanvasVisibleness = false;
         }
 
-        private async Task<Sprite?> LoadCoverSprite(string filePath)
-        {
-            return await GameRoot.Asset.LoadAssetAsync<Sprite>(filePath);
-        }
-
         #region 编辑器管理
 
         /// <summary>
@@ -267,10 +261,14 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// </summary>
         public void Save()
         {
-            // 复制外部曲绘文件到 Assets 下
-            if (needCopyCoverWhenSave)
+            // 将 byte[] 转为文件并储存
+            if (needDumpCoverWhenSave)
             {
-                string oldFilePath = ChartPackData.CoverFilePath;
+                if (coverFileName == null || coverBytes == null)
+                {
+                    Debug.LogError("文件名或比特为空，请检查");
+                    return;
+                }
 
                 string assetsFolderPath = Path.Combine(WorkspacePath, "Assets");
                 if (!Directory.Exists(assetsFolderPath))
@@ -278,9 +276,8 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                     Directory.CreateDirectory(Path.Combine(assetsFolderPath));
                 }
 
-                string fileName = Path.GetFileName(oldFilePath);
-                string newFilePath = Path.Combine(assetsFolderPath, fileName);
-                File.Copy(oldFilePath, newFilePath, true);
+                string newFilePath = Path.Combine(assetsFolderPath, coverFileName);
+                File.WriteAllBytes(newFilePath, coverBytes);
             }
         }
 
@@ -428,9 +425,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
         public void SelectBpmItem(int index)
         {
-            if (SelectedBpmGroupIndex != index)
+            if (SelectedBpmItemIndex != index)
             {
-                SelectedBpmGroupIndex = index;
+                SelectedBpmItemIndex = index;
                 OnSelectedBpmItemChanged?.Invoke();
             }
         }
@@ -512,15 +509,25 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <param name="path">曲绘大图外部绝对路径</param>
         public async Task UpdateCoverFilePath(string path)
         {
-            // 临时用外部路径展示图片，在保存工程时检查路径是否为外部，复制文件到资源文件夹内并更新引用
+            // 加载 byte[] 到内存，保存时检查是否需要替换文件，并将 byte[] 转为文件写入
+            needDumpCoverWhenSave = true;
             ChartPackData.CoverFilePath = path;
-            CoverSprite = await GameRoot.Asset.LoadAssetAsync<Sprite>(path);
-            if (CoverSprite != null)
+            coverFileName = Path.GetFileName(path);
+            coverBytes = await GameRoot.Asset.LoadAssetAsync<byte[]>(path);
+            if (coverBytes == null)
             {
+                CoverTexture.LoadImage(null);
+                ChartPackData.CropStartPosition = new Vector2(0, 0);
+                ChartPackData.CropHeight = 0;
+            }
+            else
+            {
+                CoverTexture.LoadImage(coverBytes);
+
                 const float targetAspectRatio = 4.0f;
 
-                float imageWidth = CoverSprite!.texture.width;
-                float imageHeight = CoverSprite!.texture.height;
+                float imageWidth = CoverTexture!.width;
+                float imageHeight = CoverTexture!.height;
 
                 // 计算图片的实际宽高比
                 float imageAspectRatio = imageWidth / imageHeight;
@@ -549,13 +556,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 ChartPackData.CropStartPosition = new Vector2(cropX, cropY);
                 ChartPackData.CropHeight = cropHeight;
             }
-            else
-            {
-                ChartPackData.CropStartPosition = Vector2.zero;
-                ChartPackData.CropHeight = 0;
-            }
 
-            needCopyCoverWhenSave = true;
             OnChartPackDataChanged?.Invoke();
         }
 
@@ -568,14 +569,14 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public void UpdateCoverCropByHandles(CoverCropHandleType type, Vector2 pointPositionRatio)
         {
             // 检查数据
-            if (CoverSprite?.texture == null)
+            if (CoverTexture == null)
             {
                 Debug.LogError("CoverSprite or its texture is not assigned.");
                 return;
             }
 
-            float sourceWidth = CoverSprite.texture.width;
-            float sourceHeight = CoverSprite.texture.height;
+            float sourceWidth = CoverTexture.width;
+            float sourceHeight = CoverTexture.height;
             if (sourceWidth <= 0 || sourceHeight <= 0) return;
 
             // 将归一化的指针位置转换为像素坐标
@@ -885,6 +886,13 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <remarks>将根据 beat 自动插入或更新 Bpm 组</remarks>
         public void UpdateBpmGroupItemBeat(string integerPartString, string numeratorString, string denominatorString)
         {
+            if (SelectedBpmItemIndex == null)
+            {
+                Debug.LogError("未选中 bpm 元素，无法修改开始拍！");
+                OnBpmGroupChanged?.Invoke();
+                return;
+            }
+
             if (!(int.TryParse(integerPartString, out int integerPart) &&
                   int.TryParse(numeratorString, out int numerator) &&
                   int.TryParse(denominatorString, out int denominator)))
@@ -899,7 +907,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 return;
             }
 
-            if ((Beat)beat == BpmGroupDatas[SelectedBpmGroupIndex].StartBeat)
+            if ((Beat)beat! == BpmGroupDatas[(int)SelectedBpmItemIndex].StartBeat)
             {
                 OnBpmGroupChanged?.Invoke();
                 return;
@@ -907,7 +915,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
             for (int i = 0; i < BpmGroupDatas.Count; i++)
             {
-                if (i == SelectedBpmGroupIndex)
+                if (i == SelectedBpmItemIndex)
                 {
                     continue;
                 }
@@ -920,18 +928,26 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 }
             }
 
-            BpmGroupItem itemToUpdate = BpmGroupDatas[SelectedBpmGroupIndex];
+            BpmGroupItem itemToUpdate = BpmGroupDatas[(int)SelectedBpmItemIndex];
             itemToUpdate.StartBeat = (Beat)beat;
             BpmGroupDatas.Sort((item1, item2) => item1.StartBeat.ToFloat().CompareTo(item2.StartBeat.ToFloat()));
-            SelectedBpmGroupIndex = BpmGroupDatas.IndexOf(itemToUpdate);
+            SelectedBpmItemIndex = BpmGroupDatas.IndexOf(itemToUpdate);
 
             OnBpmGroupChanged?.Invoke();
         }
 
         public void DeleteBpmGroupItem()
         {
-            BpmGroupDatas.RemoveAt(SelectedBpmGroupIndex);
-            SelectedBpmGroupIndex = Math.Min(BpmGroupDatas.Count - 1, SelectedBpmGroupIndex);
+            if (SelectedBpmItemIndex == null)
+            {
+                Debug.LogWarning("未选中 bpm 元素，无法移除。");
+                return;
+            }
+
+            BpmGroupDatas.RemoveAt((int)SelectedBpmItemIndex);
+            SelectedBpmItemIndex = (int)SelectedBpmItemIndex == 0
+                ? (int?)null // 如果移除了所有元素，则设为 null
+                : Math.Min(BpmGroupDatas.Count - 1, (int)SelectedBpmItemIndex); // 尝试让 index 在不越界的情况下不变
             OnBpmGroupChanged?.Invoke();
         }
 
@@ -942,7 +958,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             Beat newBeat = new Beat(beat.IntegerPart + 1, beat.Numerator, beat.Denominator);
             BpmGroupItem item = new BpmGroupItem(bpm, newBeat);
             BpmGroupDatas.Add(item);
-            SelectedBpmGroupIndex = BpmGroupDatas.Count - 1;
+            SelectedBpmItemIndex = BpmGroupDatas.Count - 1;
             OnBpmGroupChanged?.Invoke();
         }
 

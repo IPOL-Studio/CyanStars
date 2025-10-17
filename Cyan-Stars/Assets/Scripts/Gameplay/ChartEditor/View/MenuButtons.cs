@@ -50,9 +50,9 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private Button exitSimplificationModeButton;
 
 
-        public override void Bind(EditorModel editorModel)
+        public override void Bind(ChartEditorModel chartEditorModel)
         {
-            base.Bind(editorModel);
+            base.Bind(chartEditorModel);
 
             FunctionToggle.onValueChanged.AddListener((isOn) =>
             {

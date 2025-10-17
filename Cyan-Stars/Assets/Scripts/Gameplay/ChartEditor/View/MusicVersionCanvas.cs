@@ -26,9 +26,9 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private Button addItemButton;
 
 
-        public override void Bind(EditorModel editorModel)
+        public override void Bind(ChartEditorModel chartEditorModel)
         {
-            base.Bind(editorModel);
+            base.Bind(chartEditorModel);
 
             addItemButton = addItemButtonObject.GetComponent<Button>();
             closeCanvasButton.onClick.AddListener(() => { Model.SetMusicVersionCanvasVisibleness(false); });

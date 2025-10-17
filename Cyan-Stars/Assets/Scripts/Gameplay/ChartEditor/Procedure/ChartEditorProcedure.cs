@@ -54,14 +54,14 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
             // 这个方法会直接序列化获取深拷贝
             ChartData chartData =
                 await module.GetChartDataFromDisk(module.SelectedRuntimeChartPack, (int)module.SelectedChartIndex);
-            EditorModel editorModel = await EditorModel.CreateEditorModel(workspacePath, chartPackData, chartData);
+            ChartEditorModel chartEditorModel = await ChartEditorModel.CreateEditorModel(workspacePath, chartPackData, chartData);
 
             foreach (var baseView in canvas.gameObject.GetComponentsInChildren<BaseView>())
             {
                 // 为已有的静态 view 进行绑定，动态 view 需要在生成时由母 view 重新绑定
                 try
                 {
-                    baseView.Bind(editorModel);
+                    baseView.Bind(chartEditorModel);
                 }
                 catch (Exception e)
                 {
