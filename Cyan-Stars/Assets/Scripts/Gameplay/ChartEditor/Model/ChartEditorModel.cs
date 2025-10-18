@@ -24,6 +24,11 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public bool IsSimplification { get; private set; } = true;
 
         /// <summary>
+        /// 当前加载的音乐
+        /// </summary>
+        public AudioClip AudioClip { get; private set; }
+
+        /// <summary>
         /// 当前选中的画笔（或者是橡皮？）
         /// </summary>
         public EditTool SelectedEditTool { get; private set; } = EditTool.Select;
@@ -749,14 +754,12 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 置顶（设为默认）某个音乐版本
+        /// 在编辑器内应用某个音乐版本
         /// </summary>
         /// <param name="musicVersionItem">音乐版本 item</param>
-        public void TopMusicVersionItem(MusicVersionData musicVersionItem)
+        public void ApplyMusicVersionItem(MusicVersionData musicVersionItem)
         {
-            MusicVersionDatas.Remove(musicVersionItem);
-            MusicVersionDatas.Insert(0, musicVersionItem);
-            OnMusicVersionDataChanged?.Invoke();
+            // TODO
         }
 
         /// <summary>

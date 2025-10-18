@@ -15,7 +15,7 @@ namespace CyanStars.Framework.Asset
     public static class CustomRawAssetConverters
     {
         /// <summary>
-        /// 允许哪些类型通过 .json 解析
+        /// 类型-自定义解析器 字典
         /// </summary>
         public static readonly Dictionary<Type, CustomRawAssetConverter> Converters =
             new Dictionary<Type, CustomRawAssetConverter>()
@@ -41,7 +41,7 @@ namespace CyanStars.Framework.Asset
         }
 
         /// <summary>
-        /// .json 通用解析器，用于将以 byte[] 形式的 .json 内容解析为任意实例
+        /// .json 通用解析器，用于将以 byte[] 形式的 .json 内容解析为任意兼容实例
         /// </summary>
         /// <param name="bytes">包含 Json 数据的字节数组 (应为 UTF-8 编码)</param>
         /// <returns>是否成功反序列化</returns>

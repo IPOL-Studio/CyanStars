@@ -91,7 +91,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             copyMusicVersionItemButton.onClick.RemoveAllListeners();
             copyMusicVersionItemButton.onClick.AddListener(() => { Model.CopyMusicVersionItem(musicVersionData); });
             topMusicVersionItemButton.onClick.RemoveAllListeners();
-            topMusicVersionItemButton.onClick.AddListener(() => { Model.TopMusicVersionItem(musicVersionData); });
+            topMusicVersionItemButton.onClick.AddListener(() => { Model.ApplyMusicVersionItem(musicVersionData); });
             RefreshUI();
         }
 
