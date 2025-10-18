@@ -19,7 +19,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
         [SerializeField]
         private GameObject contentObject = null!;
 
-
+        [Header("谱包标题、预览拍、曲绘路径")]
         [SerializeField]
         private TMP_InputField chartPackTitleField = null!;
 
@@ -47,6 +47,10 @@ namespace CyanStars.GamePlay.ChartEditor.View
         [SerializeField]
         private Button importCoverButton = null!;
 
+        [Header("曲绘预览和裁剪")]
+        [SerializeField]
+        private GameObject chartCropFrame = null!;
+
         [SerializeField]
         private AspectRatioFitter aspectRatioFitter = null!;
 
@@ -65,6 +69,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
         [SerializeField]
         private RectTransform coverCropAreaRect = null!;
 
+        [Header("导出")]
         [SerializeField]
         private Button exportChartPackButton = null!; // TODO
 
@@ -113,6 +118,8 @@ namespace CyanStars.GamePlay.ChartEditor.View
                     filters: new[] { GameRoot.File.SpriteFilter }
                 );
             });
+
+            // TODO: 导出谱包
         }
 
 
@@ -129,15 +136,16 @@ namespace CyanStars.GamePlay.ChartEditor.View
             previewEndField2.text = Model.ChartPackData.MusicPreviewEndBeat.Numerator.ToString();
             previewEndField3.text = Model.ChartPackData.MusicPreviewEndBeat.Denominator.ToString();
 
-            // 刷新曲绘图片材质
+            // 刷新曲绘路径、预览区域可见性、图片材质
             coverPath.text = Model.ChartPackData.CoverFilePath;
+            chartCropFrame.SetActive(Model.ChartPackData.CoverFilePath != null);
             backRawImage.texture = Model.CoverTexture;
             topRawImage.texture = Model.CoverTexture;
 
             // 刷新曲绘高度
             aspectRatioFitter.aspectRatio = Model.CoverTexture != null
                 ? (float)Model.CoverTexture.width / Model.CoverTexture.height
-                : Mathf.Infinity; // TODO: 没有图片的时候整点说明文本或者干脆隐藏整个 frame
+                : Mathf.Infinity;
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(contentObject.GetComponent<RectTransform>());
 
