@@ -16,6 +16,9 @@ namespace CyanStars.GamePlay.ChartEditor.View
         [SerializeField]
         private Button closeCanvaButton = null!;
 
+        [SerializeField]
+        private GameObject contentObject = null!;
+
 
         [SerializeField]
         private TMP_InputField chartPackTitleField = null!;
@@ -116,6 +119,8 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private void RefreshUI()
         {
             canvas.enabled = Model.ChartPackDataCanvasVisibleness;
+
+            // 刷新标题和预览拍输入框
             chartPackTitleField.text = Model.ChartPackData.Title;
             previewStartField1.text = Model.ChartPackData.MusicPreviewStartBeat.IntegerPart.ToString();
             previewStartField2.text = Model.ChartPackData.MusicPreviewStartBeat.Numerator.ToString();
@@ -123,13 +128,20 @@ namespace CyanStars.GamePlay.ChartEditor.View
             previewEndField1.text = Model.ChartPackData.MusicPreviewEndBeat.IntegerPart.ToString();
             previewEndField2.text = Model.ChartPackData.MusicPreviewEndBeat.Numerator.ToString();
             previewEndField3.text = Model.ChartPackData.MusicPreviewEndBeat.Denominator.ToString();
+
+            // 刷新曲绘图片材质
             coverPath.text = Model.ChartPackData.CoverFilePath;
             backRawImage.texture = Model.CoverTexture;
             topRawImage.texture = Model.CoverTexture;
+
+            // 刷新曲绘高度
             aspectRatioFitter.aspectRatio = Model.CoverTexture != null
                 ? (float)Model.CoverTexture.width / Model.CoverTexture.height
                 : Mathf.Infinity; // TODO: 没有图片的时候整点说明文本或者干脆隐藏整个 frame
+            Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(contentObject.GetComponent<RectTransform>());
 
+            // 刷新曲绘裁剪框位置
             float startX = Model.CoverTexture != null
                 ? Model.ChartPackData.CropStartPosition.x * imageFrameRect.rect.width / Model.CoverTexture.width
                 : 0;
@@ -146,9 +158,10 @@ namespace CyanStars.GamePlay.ChartEditor.View
             float height = width / 4;
             width = Mathf.Max(0, Mathf.Min(width, imageFrameRect.rect.width - startX));
             height = Mathf.Max(0, Mathf.Min(height, imageFrameRect.rect.height - startY));
-            coverCropAreaRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,width);
-            coverCropAreaRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,width);
+            coverCropAreaRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+            coverCropAreaRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, width);
 
+            // 刷新曲绘裁剪遮罩位置
             rectMask.padding = new Vector4(
                 startX,
                 startY,

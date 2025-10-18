@@ -134,8 +134,6 @@ namespace CyanStars.GamePlay.ChartEditor.View
             {
                 // TODO: 未选中 bpmItem 时改一下 UI
             }
-
-
         }
 
         private void OnDestroy()
