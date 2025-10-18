@@ -117,7 +117,6 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
 
         // --- 内部变量 ---
-        private byte[]? coverBytes = null;
         private string? coverFileName = null;
         private bool needDumpCoverWhenSave = false; // 在保存时需要复制外部的曲绘文件到 Assets 路径下
 
@@ -223,11 +222,10 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             ChartData chartData)
         {
             ChartEditorModel model = new ChartEditorModel(workspacePath, chartPackData, chartData);
-            model.coverBytes = model.ChartPackData.CoverFilePath != null
-                ? await GameRoot.Asset.LoadAssetAsync<byte[]>(Path.Combine(workspacePath,
+            model.CoverTexture = model.ChartPackData.CoverFilePath != null
+                ? await GameRoot.Asset.LoadAssetAsync<Texture2D>(Path.Combine(workspacePath,
                     model.ChartPackData.CoverFilePath))
                 : null;
-            model.CoverTexture.LoadImage(model.coverBytes);
             return model;
         }
 
@@ -261,12 +259,13 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// </summary>
         public void Save()
         {
-            // 将 byte[] 转为文件并储存
+            // 将 Texture2D 转为文件并储存
             if (needDumpCoverWhenSave)
             {
-                if (coverFileName == null || coverBytes == null)
+                needDumpCoverWhenSave = false;
+                if (coverFileName == null || CoverTexture == null)
                 {
-                    Debug.LogError("文件名或比特为空，请检查");
+                    Debug.LogError("文件名或材质为空，请检查");
                     return;
                 }
 
@@ -277,6 +276,21 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 }
 
                 string newFilePath = Path.Combine(assetsFolderPath, coverFileName);
+
+                byte[] coverBytes;
+                switch (Path.GetExtension(coverFileName).ToLower())
+                {
+                    case ".jpg":
+                    case ".jpeg":
+                        coverBytes = CoverTexture.EncodeToJPG(100);
+                        break;
+                    case ".png":
+                        coverBytes = CoverTexture.EncodeToPNG();
+                        break;
+                    default:
+                        throw new Exception($"不支持的文件格式：{coverFileName}");
+                }
+
                 File.WriteAllBytes(newFilePath, coverBytes);
             }
         }
@@ -509,21 +523,18 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <param name="path">曲绘大图外部绝对路径</param>
         public async Task UpdateCoverFilePath(string path)
         {
-            // 加载 byte[] 到内存，保存时检查是否需要替换文件，并将 byte[] 转为文件写入
+            // 加载 Texture2D 到内存，保存时检查是否需要替换文件，并将 Texture2D 转为文件写入
             needDumpCoverWhenSave = true;
             ChartPackData.CoverFilePath = path;
             coverFileName = Path.GetFileName(path);
-            coverBytes = await GameRoot.Asset.LoadAssetAsync<byte[]>(path);
-            if (coverBytes == null)
+            CoverTexture = await GameRoot.Asset.LoadAssetAsync<Texture2D>(path);
+            if (CoverTexture == null)
             {
-                CoverTexture.LoadImage(null);
                 ChartPackData.CropStartPosition = new Vector2(0, 0);
                 ChartPackData.CropHeight = 0;
             }
             else
             {
-                CoverTexture.LoadImage(coverBytes);
-
                 const float targetAspectRatio = 4.0f;
 
                 float imageWidth = CoverTexture!.width;
