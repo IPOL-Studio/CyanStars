@@ -266,6 +266,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 if (coverFileName == null || CoverTexture == null)
                 {
                     Debug.LogError("文件名或材质为空，请检查");
+                    OnChartPackDataChanged?.Invoke();
                     return;
                 }
 
@@ -288,6 +289,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                     default:
                         Debug.LogError($"不支持的曲绘文件格式：{coverFileName}");
                         coverBytes = new byte[] { };
+                        OnChartPackDataChanged?.Invoke();
                         break;
                 }
 
