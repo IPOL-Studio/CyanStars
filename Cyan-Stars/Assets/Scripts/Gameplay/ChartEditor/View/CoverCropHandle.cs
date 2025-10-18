@@ -1,6 +1,5 @@
 #nullable enable
 
-using System;
 using CyanStars.GamePlay.ChartEditor.Model;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -23,7 +22,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
         [SerializeField]
         private RectTransform imageFrameRect = null!;
 
-        private RectTransform selfRect;
+        private RectTransform selfRect = null!;
 
 
         public override void Bind(ChartEditorModel chartEditorModel)

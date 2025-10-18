@@ -576,7 +576,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 在裁剪框被拖动时更新裁剪起始位置和高度
+        /// 在裁剪框顶点被拖动时更新裁剪起始位置和高度
         /// </summary>
         /// <remarks>裁剪后的图片必须为横向1:4，且必须在原图范围内</remarks>
         /// <param name="type">裁剪框顶点类型</param>
@@ -586,7 +586,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             // 检查数据
             if (CoverTexture == null)
             {
-                Debug.LogError("CoverSprite or its texture is not assigned.");
+                Debug.LogError("CoverTexture is not assigned.");
                 return;
             }
 
@@ -683,6 +683,39 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
             ChartPackData.CropHeight = newCropHeight;
             ChartPackData.CropStartPosition = newStartPosition;
+            OnChartPackDataChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// 在裁剪框中心区域被拖动时更新裁剪起始位置和高度
+        /// </summary>
+        /// <remarks>裁剪后的图片必须为横向1:4，且必须在原图范围内</remarks>
+        /// <param name="deltaPositionRatio">裁剪框的位移比例（相对于原图的宽高比例，限制在 [-1, 1]）</param>
+        public void UpdateCoverCropByFrame(Vector2 deltaPositionRatio)
+        {
+            if (CoverTexture == null)
+            {
+                Debug.LogError("CoverTexture is not assigned.");
+                return;
+            }
+
+            // 将移动的比例转换为移动的真实曲绘像素大小
+            float deltaPixelX = deltaPositionRatio.x * CoverTexture.width;
+            float deltaPixelY = deltaPositionRatio.y * CoverTexture.height;
+
+            // 根据目前的裁剪区域，计算能够移动的像素范围
+            float minDeltaX = -ChartPackData.CropStartPosition.x;
+            float maxDeltaX = CoverTexture.width - ChartPackData.CropStartPosition.x - ChartPackData.CropWidth;
+            float minDeltaY = -ChartPackData.CropStartPosition.y;
+            float maxDeltaY = CoverTexture.height - ChartPackData.CropStartPosition.y - ChartPackData.CropHeight;
+
+            // 将移动的像素限制在范围内
+            deltaPixelX = Mathf.Max(minDeltaX, Mathf.Min(deltaPixelX, maxDeltaX));
+            deltaPixelY = Mathf.Max(minDeltaY, Mathf.Min(deltaPixelY, maxDeltaY));
+            Vector2 deltaPixel = new Vector2(deltaPixelX, deltaPixelY);
+
+            // 修改裁剪开始点（左下角）坐标，并通知 view 刷新
+            ChartPackData.CropStartPosition += deltaPixel;
             OnChartPackDataChanged?.Invoke();
         }
 
