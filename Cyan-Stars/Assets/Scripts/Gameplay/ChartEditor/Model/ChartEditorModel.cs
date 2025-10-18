@@ -288,7 +288,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                         coverBytes = CoverTexture.EncodeToPNG();
                         break;
                     default:
-                        throw new Exception($"不支持的文件格式：{coverFileName}");
+                        Debug.LogError($"不支持的曲绘文件格式：{coverFileName}");
+                        coverBytes = new byte[]{};
+                        break;
                 }
 
                 File.WriteAllBytes(newFilePath, coverBytes);
