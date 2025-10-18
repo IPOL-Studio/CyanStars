@@ -5956,7 +5956,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 602.49994}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &442738496
 MonoBehaviour:
@@ -14142,6 +14142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   imageFrameRect: {fileID: 442738495}
+  mainCanva: {fileID: 1643976275}
 --- !u!114 &978114224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21051,8 +21052,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 702.49994, y: 0}
-  m_SizeDelta: {x: 1404.9999, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1514540016
 MonoBehaviour:
@@ -22209,8 +22210,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 468.33328, y: 0}
-  m_SizeDelta: {x: 896.66656, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1608852943
 MonoBehaviour:

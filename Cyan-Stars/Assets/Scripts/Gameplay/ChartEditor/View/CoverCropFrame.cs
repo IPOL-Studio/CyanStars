@@ -10,13 +10,19 @@ namespace CyanStars.GamePlay.ChartEditor.View
         [SerializeField]
         private RectTransform imageFrameRect = null!;
 
+        [SerializeField]
+        private Canvas mainCanva = null!;
+
         public void OnDrag(PointerEventData eventData)
         {
-            float x = eventData.delta.x / imageFrameRect.rect.width * 2;
-            float y = eventData.delta.y / imageFrameRect.rect.height * 2;
-            x = Mathf.Max(-1, Mathf.Min(x, 1));
-            y = Mathf.Max(-1, Mathf.Min(y, 1));
-            Vector2 deltaPositionRatio = new Vector2(x, y);
+            if (imageFrameRect.rect.width == 0 || imageFrameRect.rect.height == 0)
+            {
+                return;
+            }
+
+            float xRatioDelta = eventData.delta.x / imageFrameRect.rect.width / mainCanva.scaleFactor;
+            float yRatioDelta = eventData.delta.y / imageFrameRect.rect.height / mainCanva.scaleFactor;
+            Vector2 deltaPositionRatio = new Vector2(xRatioDelta, yRatioDelta);
             Model.UpdateCoverCropByFrame(deltaPositionRatio);
         }
     }
