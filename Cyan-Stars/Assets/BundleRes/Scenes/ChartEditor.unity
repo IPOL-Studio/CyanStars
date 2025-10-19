@@ -1448,7 +1448,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 646701638}
   m_HandleRect: {fileID: 646701636}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -3655,7 +3655,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1070775234}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.40864152
+  m_Size: 0.41596287
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -19311,8 +19311,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 616623954}
   m_HandleRect: {fileID: 616623953}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.54122204
+  m_Value: 1.0000002
+  m_Size: 0.5509188
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -22758,17 +22758,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2836e5c5bbb19bb4789a89ee041cf948, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FunctionToggle: {fileID: 7757076495158782890}
-  SaveButton: {fileID: 2049077260}
-  TestButton: {fileID: 720413775}
+  functionToggle: {fileID: 7757076495158782890}
+  saveButton: {fileID: 2049077260}
+  testButton: {fileID: 720413775}
   functionCanvas: {fileID: 74583997}
   chartPackDataButton: {fileID: 468356757}
   chartDataButton: {fileID: 1400299830}
   musicVersionButton: {fileID: 1463926677}
   bpmGroupButton: {fileID: 515994373}
   speedGroupButton: {fileID: 371389904}
-  enterSimplificationModeButton: {fileID: 1019238896}
   exitSimplificationModeButton: {fileID: 967489638}
+  enterSimplificationModeButton: {fileID: 1019238896}
 --- !u!1 &1643976272
 GameObject:
   m_ObjectHideFlags: 0
