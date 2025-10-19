@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace CyanStars.Chart
 {
@@ -66,6 +67,56 @@ namespace CyanStars.Chart
                        * (60 / Data[i].Bpm) * 1000f;
 
             return (int)sumTime;
+        }
+
+        /// <summary>
+        /// 根据拍数获取当前生效的 BpmGroupItem
+        /// </summary>
+        /// <param name="beat">拍数</param>
+        /// <returns>生效的 BpmGroupItem，如果找不到则返回 null</returns>
+        public BpmGroupItem GetBpmItemAtBeat(float beat)
+        {
+            SortGroup();
+
+            if (Data.Count == 0)
+            {
+                return null;
+            }
+
+            // 从后往前找，第一个 StartBeat 小于等于目标 beat 的就是当前生效的
+            for (int i = Data.Count - 1; i >= 0; i--)
+            {
+                if (Data[i].StartBeat.ToFloat() <= beat)
+                {
+                    return Data[i];
+                }
+            }
+
+            // 如果循环结束都没找到（例如 beat 是负数），理作为保障，返回第一个元素
+            return Data[0];
+        }
+
+
+        /// <summary>
+        /// 查找在指定拍数之后发生的下一个BPM变化项
+        /// </summary>
+        /// <param name="currentBeat">当前拍数</param>
+        /// <returns>下一个 BpmGroupItem，如果没有则返回 null</returns>
+        [CanBeNull]
+        public BpmGroupItem GetNextBpmItem(float currentBeat)
+        {
+            SortGroup();
+
+            foreach (var item in Data)
+            {
+                if (item.StartBeat.ToFloat() > currentBeat)
+                {
+                    return item;
+                }
+            }
+
+            // 遍历完都没有找到，说明已经是最后一个BPM段了
+            return null;
         }
     }
 }

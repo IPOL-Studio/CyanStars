@@ -45,7 +45,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private RectTransform contentRect;
         private RectTransform judgeLineRect;
 
-        private int totalBeats; // 当前选中的音乐（含offset）的向上取整拍子总数量
+        private float totalBeats; // 谱包总 beat 数量（小数）
         private float lastCanvaHeight; // 上次记录的 Canva 高度（刷新前）
         private float contentHeight; // 内容总高度
 
@@ -100,10 +100,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             float verticalNormalizedPosition = scrollRect.verticalNormalizedPosition;
 
             // 刷新 content 高度
-            contentHeight = Math.Max(
-                totalBeats * DefaultBeatLineInterval * Model.BeatZoom + judgeLineRect.anchoredPosition.y,
-                mainCanvaRect.rect.height
-            );
+            contentHeight = totalBeats * DefaultBeatLineInterval * Model.BeatZoom + mainCanvaRect.rect.height;
             contentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, contentHeight);
 
             // 恢复 content 位置
@@ -359,12 +356,12 @@ namespace CyanStars.GamePlay.ChartEditor.View
         /// </summary>
         /// <param name="actualMusicTime">计算 offset 后的音乐总时长（ms）</param>
         /// <param name="bpmGroup">bpm 组数据</param>
-        /// <returns>音乐总共有几拍（向上取整）</returns>
-        private int CalculateTotalBeats(int actualMusicTime, BpmGroup bpmGroup)
+        /// <returns>音乐总共有几拍</returns>
+        private float CalculateTotalBeats(int actualMusicTime, BpmGroup bpmGroup)
         {
             bpmGroup.SortGroup();
 
-            // 使用指数扩展 + 二分查找替代以提升性能
+            // 使用指数扩展 + 二分查找整数部分以提升性能
             if (bpmGroup.CalculateTime(0) >= actualMusicTime)
             {
                 return 0;
@@ -391,7 +388,49 @@ namespace CyanStars.GamePlay.ChartEditor.View
                 }
             }
 
-            return high;
+            // 计算小数拍部分
+            float currentBeat = low;
+            int currentTime = bpmGroup.CalculateTime(currentBeat);
+
+            while (true)
+            {
+                // 获取当前拍生效的BPM项
+                BpmGroupItem currentBpmItem = bpmGroup.GetBpmItemAtBeat(currentBeat);
+                if (currentBpmItem == null || currentBpmItem.Bpm <= 0)
+                {
+                    // 异常情况：没有BPM或BPM无效，返回当前整数拍
+                    return currentBeat;
+                }
+
+                // 查找下一个BPM变化点
+                BpmGroupItem nextBpmItem = bpmGroup.GetNextBpmItem(currentBeat);
+
+                // 如果没有下一个BPM变化点，说明当前BPM将持续到最后
+                if (nextBpmItem == null)
+                {
+                    float msPerBeat = 60000f / currentBpmItem.Bpm;
+                    int timeDelta = actualMusicTime - currentTime;
+                    float beatDelta = timeDelta / msPerBeat;
+                    return currentBeat + beatDelta;
+                }
+
+                // 计算下一个BPM变化点的时间
+                int timeAtNextBpmChange = bpmGroup.CalculateTime(nextBpmItem.StartBeat);
+
+                // 判断目标时间是否落在当前BPM段内
+                if (actualMusicTime <= timeAtNextBpmChange)
+                {
+                    float msPerBeat = 60000f / currentBpmItem.Bpm;
+                    int timeDelta = actualMusicTime - currentTime;
+                    float beatDelta = timeDelta / msPerBeat;
+                    return currentBeat + beatDelta;
+                }
+                else
+                {
+                    currentTime = timeAtNextBpmChange;
+                    currentBeat = nextBpmItem.StartBeat.ToFloat();
+                }
+            }
         }
 
 
@@ -462,14 +501,16 @@ namespace CyanStars.GamePlay.ChartEditor.View
             }
 
 
-            // 计算纵坐标，将鼠标位置解析到最近的节拍线（含细分）上
+            // 计算纵坐标，将鼠标位置解析到最近的节拍线（含细分）上，终止线上不能写音符
+            // TODO: 可能的bug：在终止线前几ms写音符，导致判定区间被裁剪，音游结束于miss判定前，之后再修
             float contentPos = (contentRect.rect.height - mainCanvaRect.rect.height) *
                                scrollRect.verticalNormalizedPosition;
             float clickOnContentPos = contentPos + localPosition.y;
             int subBeatLineIndex = Mathf.RoundToInt((clickOnContentPos - judgeLineRect.anchoredPosition.y) /
                                                     (DefaultBeatLineInterval * Model.BeatZoom / Model.BeatAccuracy));
             subBeatLineIndex = Math.Max(0, subBeatLineIndex);
-            subBeatLineIndex = Math.Min(subBeatLineIndex, totalBeats * Model.BeatAccuracy);
+            int lastValidBeat = (totalBeats % 1f == 0) ? (int)(totalBeats - 1) : (int)totalBeats;
+            subBeatLineIndex = Math.Min(subBeatLineIndex, lastValidBeat * Model.BeatAccuracy);
 
             int z = Model.BeatAccuracy;
             int x = subBeatLineIndex / Model.BeatAccuracy;
