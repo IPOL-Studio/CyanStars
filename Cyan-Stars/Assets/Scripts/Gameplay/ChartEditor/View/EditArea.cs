@@ -46,7 +46,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private RectTransform contentRect;
         private RectTransform judgeLineRect;
 
-        private float totalBeats; // 谱包总 beat 数量（小数）
+        private float totalBeat; // 谱包总 beat 数量（小数）
         private float lastCanvaHeight; // 上次记录的 Canva 高度（刷新前）
         private float contentHeight; // 内容总高度
 
@@ -86,7 +86,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private void RefreshUI()
         {
             RefreshScrollRect();
-            ReleaseContentGameObject();
+            ReleaseContentGameObject(); // TODO: 优化渲染：先计算并移动物体位置，再取回/放入对象池
             _ = RefreshPosLinesAsync();
             _ = RefreshBeatLinesAsync();
             _ = RefreshNotesAsync();
@@ -101,7 +101,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             float verticalNormalizedPosition = scrollRect.verticalNormalizedPosition;
 
             // 刷新 content 高度
-            contentHeight = totalBeats * DefaultBeatLineInterval * Model.BeatZoom + mainCanvaRect.rect.height;
+            contentHeight = totalBeat * DefaultBeatLineInterval * Model.BeatZoom + mainCanvaRect.rect.height;
             contentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, contentHeight);
 
             // 恢复 content 位置
@@ -182,17 +182,18 @@ namespace CyanStars.GamePlay.ChartEditor.View
             // 渲染所有的子节拍线
             while ((currentSubBeatLineCount - 1) * beatLineDistance <
                    contentPos + mainCanvaRect.rect.height && // 到达屏幕上边界后不再渲染
-                   (float)currentSubBeatLineCount / Model.BeatAccuracy < totalBeats) // 到达音乐结束点后也不再渲染
+                   (float)currentSubBeatLineCount / Model.BeatAccuracy < totalBeat) // 到达音乐结束点后也不再渲染
             {
                 GameObject go = await GameRoot.GameObjectPool.GetGameObjectAsync(BeatLinePrefabPath, contentRect);
                 BeatLine beatLine = go.GetComponent<BeatLine>();
                 RectTransform rect = beatLine.BeatLineRect;
                 rect.anchorMin = new Vector2(0.5f, 0f);
                 rect.anchorMax = new Vector2(0.5f, 0f);
+                rect.localScale = Vector3.one;
+
                 float anchoredPositionY =
                     judgeLineRect.anchoredPosition.y + beatLineDistance * (currentSubBeatLineCount - 1);
                 rect.anchoredPosition = new Vector2(0, anchoredPositionY);
-                rect.localScale = Vector3.one;
 
                 int beatAccNum = (currentSubBeatLineCount - 1) % Model.BeatAccuracy;
                 if (beatAccNum == 0)
@@ -225,7 +226,22 @@ namespace CyanStars.GamePlay.ChartEditor.View
                 currentSubBeatLineCount++;
             }
 
-            // 渲染终止线
+            // 尝试渲染终止线
+            float endLinePosY = totalBeat * DefaultBeatLineInterval;
+            if (contentPos - DefaultBeatLineInterval <= endLinePosY &&
+                contentPos <= contentPos + mainCanvaRect.rect.height + DefaultBeatLineInterval)
+            {
+                GameObject go = await GameRoot.GameObjectPool.GetGameObjectAsync(EndLinePrefabPath, contentRect);
+                BeatLine endLine = go.GetComponent<BeatLine>(); // EndLine 也是一种 BeatLine
+                RectTransform rect = endLine.BeatLineRect;
+                rect.anchorMin = new Vector2(0.5f, 0f);
+                rect.anchorMax = new Vector2(0.5f, 0f);
+                rect.localScale = Vector3.one;
+
+                float anchoredPositionY = judgeLineRect.anchoredPosition.y + endLinePosY;
+                endLine.Image.color = Color.white;
+                rect.anchoredPosition = new Vector2(0, anchoredPositionY);
+            }
         }
 
         /// <summary>
@@ -350,7 +366,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
         /// </summary>
         private void ResetTotalBeats()
         {
-            totalBeats = (Model.ActualMusicTime == null)
+            totalBeat = (Model.ActualMusicTime == null)
                 ? 0
                 : CalculateTotalBeats((int)Model.ActualMusicTime, Model.ChartPackData.BpmGroup);
 
@@ -516,7 +532,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             int subBeatLineIndex = Mathf.RoundToInt((clickOnContentPos - judgeLineRect.anchoredPosition.y) /
                                                     (DefaultBeatLineInterval * Model.BeatZoom / Model.BeatAccuracy));
             subBeatLineIndex = Math.Max(0, subBeatLineIndex);
-            int lastValidBeat = (totalBeats % 1f == 0) ? (int)(totalBeats - 1) : (int)totalBeats;
+            int lastValidBeat = (totalBeat % 1f == 0) ? (int)(totalBeat - 1) : (int)totalBeat;
             subBeatLineIndex = Math.Min(subBeatLineIndex, lastValidBeat * Model.BeatAccuracy);
 
             int z = Model.BeatAccuracy;
