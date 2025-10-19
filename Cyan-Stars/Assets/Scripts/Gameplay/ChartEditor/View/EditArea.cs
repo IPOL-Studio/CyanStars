@@ -80,7 +80,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
 
         /// <summary>
-        /// 画面变化后(而不是每帧)或在编辑器或音符属性修改后，重新绘制编辑器的节拍线、位置线、音符
+        /// 画面变化后(而不是每帧)或在制谱器或音符属性修改后，重新绘制制谱器的节拍线、位置线、音符
         /// </summary>
         private void RefreshUI()
         {
@@ -342,11 +342,14 @@ namespace CyanStars.GamePlay.ChartEditor.View
         }
 
         /// <summary>
-        /// 重计算总拍数并刷新编辑器视图
+        /// 重计算总拍数并刷新制谱器视图
         /// </summary>
         private void ResetTotalBeats()
         {
-            totalBeats = CalculateTotalBeats(Model.ActualMusicTime, Model.ChartPackData.BpmGroup);
+            totalBeats = (Model.ActualMusicTime == null)
+                ? 0
+                : CalculateTotalBeats((int)Model.ActualMusicTime, Model.ChartPackData.BpmGroup);
+
             RefreshUI();
         }
 

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace CyanStars.GamePlay.ChartEditor.View
 {
     /// <summary>
-    /// 编辑器音符类
+    /// 制谱器音符类
     /// </summary>
     public class EditorNote : BaseView
     {

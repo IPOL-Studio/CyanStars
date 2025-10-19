@@ -39,7 +39,7 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
 
             if (foundCount != 1)
             {
-                throw new Exception("未找到编辑器主 Canvas 或找到了多个");
+                throw new Exception("未找到制谱器主 Canvas 或找到了多个");
             }
 
             // 创建制谱器 Model，并为所有 View 添加绑定

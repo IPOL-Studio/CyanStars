@@ -76,7 +76,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
         private void SelectedNotesChanged()
         {
-            // 只有未选中音符，才展示编辑器属性（否则展示 Note 属性）
+            // 只有未选中音符，才展示制谱器属性（否则展示 Note 属性）
             foreach (Transform child in this.transform)
             {
                 child.gameObject.SetActive(Model.SelectedNotes.Count == 0);

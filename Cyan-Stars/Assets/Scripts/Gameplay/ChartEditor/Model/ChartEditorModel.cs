@@ -12,21 +12,44 @@ using UnityEngine;
 namespace CyanStars.GamePlay.ChartEditor.Model
 {
     /// <summary>
-    /// 谱面编辑器 Model 层
+    /// 制谱器 Model 层
     /// </summary>
     public class ChartEditorModel
     {
-        // --- 在编辑器内初始化和临时存储的、经过校验后的数据，不会持久化 ---
+        // --- 在制谱器内初始化和临时存储的、经过校验后的数据，不会持久化 ---
         /// <summary>
-        /// 编辑器精简模式
+        /// 制谱器精简模式
         /// </summary>
         /// <remarks>精简无关元素方便新手理解制谱器，只允许设置 1 个 BPM 组、曲目版本，隐藏变速和事件相关设置</remarks>
         public bool IsSimplification { get; private set; } = true;
 
         /// <summary>
-        /// 当前加载的音乐
+        /// 当前在制谱器内加载的音乐
         /// </summary>
-        public AudioClip? AudioClip { get; private set; } = null;
+        public AudioClip? PlayingAudioClip { get; private set; } = null;
+
+        /// <summary>
+        /// 当前在制谱器内加载的音乐的 offset（ms，可为负数或 0）
+        /// </summary>
+        public int? PlayingAudioOffset { get; private set; } = null;
+
+        /// <summary>
+        /// 计算 offset 后，当前选中的音乐的实际时长（ms）
+        /// </summary>
+        /// <remarks>超过这个时长的内容都不可以编辑，包括音符编辑、事件等等</remarks>
+        public int? ActualMusicTime
+        {
+            get
+            {
+                if (PlayingAudioClip == null || PlayingAudioOffset == null)
+                {
+                    Debug.LogWarning("未加载制谱器内音乐或 offset");
+                    return null;
+                }
+
+                return (int)(PlayingAudioClip.length * 1000) + (int)PlayingAudioOffset;
+            }
+        }
 
         /// <summary>
         /// 当前选中的画笔（或者是橡皮？）
@@ -58,7 +81,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <summary>
         /// 节拍缩放
         /// </summary>
-        /// <remarks>编辑器纵向拉伸比例</remarks>
+        /// <remarks>制谱器纵向拉伸比例</remarks>
         public float BeatZoom { get; private set; } = 1f;
 
         /// <summary>
@@ -78,12 +101,6 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 当前选中的 Note，用 HashSet 是考虑兼容后续框选多个 Note 一起修改
         /// </summary>
         public HashSet<BaseChartNoteData> SelectedNotes { get; private set; } = new HashSet<BaseChartNoteData>();
-
-        /// <summary>
-        /// 计算 offset 后，当前选中的音乐的实际时长（ms）
-        /// </summary>
-        /// <remarks>超过这个时长的内容都不可以编辑，包括音符编辑、事件等等</remarks>
-        public int ActualMusicTime { get; set; } // TODO：修改为根据音乐长度自动确定
 
         /// <summary>
         /// 曲绘材质
@@ -220,8 +237,8 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 构造函数异步工厂方法
         /// </summary>
         /// <param name="workspacePath">谱包工作区绝对路径（谱包索引文件所在的文件夹路径）</param>
-        /// <param name="chartPackData">要加载到编辑器的谱包数据</param>
-        /// <param name="chartData">要加载到编辑器的谱面数据</param>
+        /// <param name="chartPackData">要加载到制谱器的谱包数据</param>
+        /// <param name="chartData">要加载到制谱器的谱面数据</param>
         /// <returns>异步返回 EditorModel 实例</returns>
         public static async Task<ChartEditorModel> CreateEditorModel(string workspacePath, ChartPackData chartPackData,
             ChartData chartData)
@@ -238,8 +255,8 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 构造函数
         /// </summary>
         /// <param name="workspacePath">谱包工作区绝对路径（谱包索引文件所在的文件夹路径）</param>
-        /// <param name="chartPackData">要加载到编辑器的谱包数据</param>
-        /// <param name="chartData">要加载到编辑器的谱面数据</param>
+        /// <param name="chartPackData">要加载到制谱器的谱包数据</param>
+        /// <param name="chartData">要加载到制谱器的谱面数据</param>
         private ChartEditorModel(string workspacePath, ChartPackData chartPackData, ChartData chartData)
         {
             WorkspacePath = workspacePath;
@@ -257,7 +274,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             BpmGroupCanvasVisibleness = false;
         }
 
-        #region 编辑器管理
+        #region 制谱器管理
 
         /// <summary>
         /// 保存谱包和谱面文件到磁盘
@@ -305,7 +322,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 切换编辑器精简模式
+        /// 切换制谱器精简模式
         /// </summary>
         /// <param name="toggle">要进入精简模式？</param>
         public void SetSimplification(bool toggle)
@@ -767,13 +784,14 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 在编辑器内应用某个音乐版本
+        /// 在制谱器内应用某个音乐版本
         /// </summary>
         /// <param name="musicVersionItem">音乐版本 item</param>
         public async Task ApplyMusicVersionItem(MusicVersionData musicVersionItem)
         {
             string musicFilePath = Path.Combine(WorkspacePath, musicVersionItem.AudioFilePath);
-            AudioClip = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicFilePath);
+            PlayingAudioClip = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicFilePath);
+            PlayingAudioOffset = musicVersionItem.Offset;
             // TODO
         }
 
