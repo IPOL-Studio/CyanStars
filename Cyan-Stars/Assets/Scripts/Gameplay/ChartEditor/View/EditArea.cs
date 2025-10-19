@@ -167,6 +167,11 @@ namespace CyanStars.GamePlay.ChartEditor.View
         /// </summary>
         private async Task RefreshBeatLinesAsync()
         {
+            if (Model.BpmGroupDatas.Count == 0 || Model.PlayingAudioClip == null)
+            {
+                return;
+            }
+
             // 计算屏幕下沿对应的 content 位置
             float contentPos = (contentRect.rect.height - mainCanvaRect.rect.height) *
                                scrollRect.verticalNormalizedPosition;
@@ -228,8 +233,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
             // 尝试渲染终止线
             float endLinePosY = totalBeat * DefaultBeatLineInterval;
-            if (contentPos - DefaultBeatLineInterval <= endLinePosY &&
-                contentPos <= contentPos + mainCanvaRect.rect.height + DefaultBeatLineInterval)
+            if (contentPos - 100f <= endLinePosY && contentPos <= contentPos + mainCanvaRect.rect.height + 100f)
             {
                 GameObject go = await GameRoot.GameObjectPool.GetGameObjectAsync(EndLinePrefabPath, contentRect);
                 BeatLine endLine = go.GetComponent<BeatLine>(); // EndLine 也是一种 BeatLine

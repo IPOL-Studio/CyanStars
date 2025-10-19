@@ -46,6 +46,8 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
             ChartModule module = GameRoot.GetDataModule<ChartModule>();
 
             module.CreateAndSelectNewChartPack("Test", out _); // TODO: 改用从 UI 获取
+            Debug.LogWarning("作为调试生成了默认谱包，正式发布时请修改");
+
             string workspacePath = module.SelectedRuntimeChartPack.WorkspacePath;
             string chartPackFilePath = Path.Combine(workspacePath, ChartModule.ChartPackFileName);
 

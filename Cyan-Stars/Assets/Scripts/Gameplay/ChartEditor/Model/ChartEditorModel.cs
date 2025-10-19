@@ -1037,9 +1037,20 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
         public void AddBpmGroupItem()
         {
-            float bpm = BpmGroupDatas[BpmGroupDatas.Count - 1].Bpm;
-            Beat beat = BpmGroupDatas[BpmGroupDatas.Count - 1].StartBeat;
-            Beat newBeat = new Beat(beat.IntegerPart + 1, beat.Numerator, beat.Denominator);
+            float bpm;
+            Beat newBeat;
+            if (BpmGroupDatas.Count == 0)
+            {
+                bpm = 60;
+                newBeat = new Beat(0, 0, 1);
+            }
+            else
+            {
+                bpm = BpmGroupDatas[BpmGroupDatas.Count - 1].Bpm;
+                Beat lastBeat = BpmGroupDatas[BpmGroupDatas.Count - 1].StartBeat;
+                newBeat = new Beat(lastBeat.IntegerPart + 1, lastBeat.Numerator, lastBeat.Denominator);
+            }
+
             BpmGroupItem item = new BpmGroupItem(bpm, newBeat);
             BpmGroupDatas.Add(item);
             SelectedBpmItemIndex = BpmGroupDatas.Count - 1;
