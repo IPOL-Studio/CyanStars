@@ -18,6 +18,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
         // 对象池使用的预制体
         private const string BeatLinePrefabPath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/BeatLine.prefab";
+        private const string EndLinePrefabPath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/EndLine.prefab";
         private const string PosLinePrefabPath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/PosLine.prefab";
         private const string TapNotePrefabPath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/TapNote.prefab";
         private const string DragNotePrefabPath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/DragNote.prefab";
@@ -170,35 +171,36 @@ namespace CyanStars.GamePlay.ChartEditor.View
             float contentPos = (contentRect.rect.height - mainCanvaRect.rect.height) *
                                scrollRect.verticalNormalizedPosition;
 
-            // 计算每条节拍线（包括细分节拍线）占用的位置
+            // 计算每条子节拍线（包括细分节拍线）占用的位置
             float beatLineDistance = DefaultBeatLineInterval * Model.BeatZoom / Model.BeatAccuracy;
 
-            // 计算第一条需要渲染的节拍线的计数
-            int currentBeatLineCount =
+            // 计算第一条需要渲染的子节拍线的计数（index + 1）
+            int currentSubBeatLineCount =
                 (int)((contentPos - judgeLineRect.anchoredPosition.y) / beatLineDistance); // 屏幕外会多渲染几条节拍线，符合预期
-            currentBeatLineCount = Math.Max(1, currentBeatLineCount);
+            currentSubBeatLineCount = Math.Max(1, currentSubBeatLineCount);
 
-            while ((currentBeatLineCount - 1) * beatLineDistance < contentPos + mainCanvaRect.rect.height &&
-                   currentBeatLineCount / Model.BeatAccuracy <= totalBeats)
+            // 渲染所有的子节拍线
+            while ((currentSubBeatLineCount - 1) * beatLineDistance <
+                   contentPos + mainCanvaRect.rect.height && // 到达屏幕上边界后不再渲染
+                   (float)currentSubBeatLineCount / Model.BeatAccuracy < totalBeats) // 到达音乐结束点后也不再渲染
             {
-                // 渲染节拍线
                 GameObject go = await GameRoot.GameObjectPool.GetGameObjectAsync(BeatLinePrefabPath, contentRect);
                 BeatLine beatLine = go.GetComponent<BeatLine>();
                 RectTransform rect = beatLine.BeatLineRect;
                 rect.anchorMin = new Vector2(0.5f, 0f);
                 rect.anchorMax = new Vector2(0.5f, 0f);
                 float anchoredPositionY =
-                    judgeLineRect.anchoredPosition.y + beatLineDistance * (currentBeatLineCount - 1);
+                    judgeLineRect.anchoredPosition.y + beatLineDistance * (currentSubBeatLineCount - 1);
                 rect.anchoredPosition = new Vector2(0, anchoredPositionY);
                 rect.localScale = Vector3.one;
 
-                int beatAccNum = (currentBeatLineCount - 1) % Model.BeatAccuracy;
+                int beatAccNum = (currentSubBeatLineCount - 1) % Model.BeatAccuracy;
                 if (beatAccNum == 0)
                 {
                     // 整数节拍线
                     beatLine.Image.color = Color.white;
                     beatLine.BeatTextObject.SetActive(true);
-                    beatLine.BeatText.text = ((currentBeatLineCount - 1) / Model.BeatAccuracy).ToString();
+                    beatLine.BeatText.text = ((currentSubBeatLineCount - 1) / Model.BeatAccuracy).ToString();
                 }
                 else if (Model.BeatAccuracy % 2 == 0 && beatAccNum == Model.BeatAccuracy / 2)
                 {
@@ -220,8 +222,10 @@ namespace CyanStars.GamePlay.ChartEditor.View
                     beatLine.BeatTextObject.SetActive(false);
                 }
 
-                currentBeatLineCount++;
+                currentSubBeatLineCount++;
             }
+
+            // 渲染终止线
         }
 
         /// <summary>
