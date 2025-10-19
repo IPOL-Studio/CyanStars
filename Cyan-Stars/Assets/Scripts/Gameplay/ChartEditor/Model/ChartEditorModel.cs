@@ -26,7 +26,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <summary>
         /// 当前加载的音乐
         /// </summary>
-        public AudioClip AudioClip { get; private set; }
+        public AudioClip? AudioClip { get; private set; } = null;
 
         /// <summary>
         /// 当前选中的画笔（或者是橡皮？）
