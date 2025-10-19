@@ -1,3 +1,4 @@
+using System;
 using CyanStars.Chart;
 using CyanStars.GamePlay.ChartEditor.Model;
 using UnityEngine;
@@ -22,7 +23,6 @@ namespace CyanStars.GamePlay.ChartEditor.View
         [SerializeField]
         private GameObject addItemButtonObject;
 
-
         private Button addItemButton;
 
 
@@ -42,7 +42,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
         private void RefreshUI()
         {
-            canvas.gameObject.SetActive(Model.MusicVersionCanvasVisibleness);
+            canvas.enabled = Model.MusicVersionCanvasVisibleness;
 
             addItemButtonObject.SetActive(!Model.IsSimplification);
             if (Model.MusicVersionDatas.Count == 0 && Model.IsSimplification)

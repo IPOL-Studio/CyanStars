@@ -304,6 +304,19 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
         }
 
+        /// <summary>
+        /// 切换编辑器精简模式
+        /// </summary>
+        /// <param name="toggle">要进入精简模式？</param>
+        public void SetSimplification(bool toggle)
+        {
+            if (IsSimplification != toggle)
+            {
+                IsSimplification = toggle;
+                OnSimplificationChanged?.Invoke();
+            }
+        }
+
         public void SetEditTool(EditTool editTool)
         {
             if (SelectedEditTool == editTool)
@@ -757,8 +770,10 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 在编辑器内应用某个音乐版本
         /// </summary>
         /// <param name="musicVersionItem">音乐版本 item</param>
-        public void ApplyMusicVersionItem(MusicVersionData musicVersionItem)
+        public async Task ApplyMusicVersionItem(MusicVersionData musicVersionItem)
         {
+            string musicFilePath = Path.Combine(WorkspacePath, musicVersionItem.AudioFilePath);
+            AudioClip = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicFilePath);
             // TODO
         }
 

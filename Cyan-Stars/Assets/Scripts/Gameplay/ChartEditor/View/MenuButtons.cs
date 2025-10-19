@@ -10,19 +10,19 @@ namespace CyanStars.GamePlay.ChartEditor.View
         /// 功能按钮实例
         /// </summary>
         [SerializeField]
-        private Toggle FunctionToggle;
+        private Toggle functionToggle;
 
         /// <summary>
         /// 保存按钮实例
         /// </summary>
         [SerializeField]
-        private Button SaveButton;
+        private Button saveButton;
 
         /// <summary>
         /// 测试按钮实例
         /// </summary>
         [SerializeField]
-        private Button TestButton;
+        private Button testButton;
 
         [Header("功能按钮相关")]
         [SerializeField]
@@ -44,17 +44,17 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private Button speedGroupButton; // TODO
 
         [SerializeField]
-        private Button entrySimplificationModeButton;
+        private Button exitSimplificationModeButton;
 
         [SerializeField]
-        private Button exitSimplificationModeButton;
+        private Button enterSimplificationModeButton;
 
 
         public override void Bind(ChartEditorModel chartEditorModel)
         {
             base.Bind(chartEditorModel);
 
-            FunctionToggle.onValueChanged.AddListener((isOn) =>
+            functionToggle.onValueChanged.AddListener((isOn) =>
             {
                 RefreshFunctionCanvas(isOn, Model.IsSimplification);
             });
@@ -62,12 +62,15 @@ namespace CyanStars.GamePlay.ChartEditor.View
             chartDataButton.onClick.AddListener(() => { Model.SetChartDataCanvasVisibleness(true); });
             musicVersionButton.onClick.AddListener(() => { Model.SetMusicVersionCanvasVisibleness(true); });
             bpmGroupButton.onClick.AddListener(() => { Model.SetBpmGroupCanvasVisibleness(true); });
+            exitSimplificationModeButton.onClick.AddListener(() => { Model.SetSimplification(false); });
+            enterSimplificationModeButton.onClick.AddListener(() => { Model.SetSimplification(true); });
+
             Model.OnSimplificationChanged += SimplificationChanged;
         }
 
         private void SimplificationChanged()
         {
-            RefreshFunctionCanvas(FunctionToggle.isOn, Model.IsSimplification);
+            RefreshFunctionCanvas(functionToggle.isOn, Model.IsSimplification);
         }
 
         private void RefreshFunctionCanvas(bool isOn, bool isSimplificationMode)
@@ -76,11 +79,11 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
             chartPackDataButton.gameObject.SetActive(true);
             chartDataButton.gameObject.SetActive(true);
-            musicVersionButton.gameObject.SetActive(!isSimplificationMode);
+            musicVersionButton.gameObject.SetActive(true);
             bpmGroupButton.gameObject.SetActive(true);
             speedGroupButton.gameObject.SetActive(false); // TODO
-            entrySimplificationModeButton.gameObject.SetActive(!isSimplificationMode);
             exitSimplificationModeButton.gameObject.SetActive(isSimplificationMode);
+            enterSimplificationModeButton.gameObject.SetActive(!isSimplificationMode);
         }
 
         private void OnDestroy()

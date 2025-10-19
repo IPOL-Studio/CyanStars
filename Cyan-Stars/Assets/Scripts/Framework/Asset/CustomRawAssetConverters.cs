@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using CatAsset.Runtime;
 using CyanStars.Chart;
 using CyanStars.Framework.Utils.JsonSerialization;
 using Newtonsoft.Json;
 using UnityEngine;
+using NVorbis;
 
 namespace CyanStars.Framework.Asset
 {
@@ -21,8 +23,52 @@ namespace CyanStars.Framework.Asset
             new Dictionary<Type, CustomRawAssetConverter>()
             {
                 // 当 AssetsManager 解析这些类型时，将会自动用下面的解析器
-                { typeof(ChartPackData), ChartPackDataConverter }, { typeof(ChartData), ChartDataConverter }
+                { typeof(ChartPackData), ChartPackDataConverter },
+                { typeof(ChartData), ChartDataConverter },
+                { typeof(AudioClip), AudioClipConverter }
             };
+
+        private static object AudioClipConverter(byte[] bytes)
+        {
+            if (bytes == null || bytes.Length == 0)
+            {
+                return null;
+            }
+
+            try
+            {
+                // 使用 MemoryStream 将 byte[] 加载到内存中
+                using var memoryStream = new MemoryStream(bytes);
+
+                // 使用 NVorbis 的 VorbisReader 来读取 OGG 数据
+                using var vorbisReader = new VorbisReader(memoryStream, true);
+
+                // 获取音频信息
+                var channels = vorbisReader.Channels;
+                var sampleRate = vorbisReader.SampleRate;
+                var totalSamples = (int)vorbisReader.TotalSamples;
+
+                // 创建一个 float 数组来存放解码后的 PCM 数据
+                var pcmData = new float[totalSamples * channels];
+
+                // 读取所有样本
+                vorbisReader.ReadSamples(pcmData, 0, pcmData.Length);
+
+                // 创建 AudioClip
+                AudioClip audioClip =
+                    AudioClip.Create("ChartEditorAudioClip", totalSamples, channels, sampleRate, false);
+
+                // 将解码后的 PCM 数据设置到 AudioClip 中
+                audioClip.SetData(pcmData, 0);
+
+                return audioClip;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to convert OGG to AudioClip: {e.Message}");
+                return null;
+            }
+        }
 
         /// <summary>
         /// 解析 ChartPackData 的包装函数
