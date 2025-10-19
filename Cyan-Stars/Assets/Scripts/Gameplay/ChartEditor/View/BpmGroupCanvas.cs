@@ -85,7 +85,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             canvas.enabled = Model.BpmGroupCanvasVisibleness;
 
             // 开启了简易模式且只有一个 item 时，不显示左侧列表和添加按钮
-            if (!Model.IsSimplification && Model.BpmGroupDatas.Count >= 2)
+            if (!Model.IsSimplification || Model.BpmGroupDatas.Count >= 2)
             {
                 // 删除多余元素
                 BpmItem[] items = contentObject.GetComponentsInChildren<BpmItem>();
