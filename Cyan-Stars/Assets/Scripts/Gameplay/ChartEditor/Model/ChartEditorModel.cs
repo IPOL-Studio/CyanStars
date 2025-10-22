@@ -26,28 +26,25 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <summary>
         /// 当前在制谱器内加载的音乐
         /// </summary>
-        public AudioClip? PlayingAudioClip { get; private set; } = null;
+        public AudioClip? SelectedAudioClip { get; private set; } = null;
 
-        /// <summary>
-        /// 当前在制谱器内加载的音乐的 offset（ms，可为负数或 0）
-        /// </summary>
-        public int? PlayingAudioOffset { get; private set; } = null;
+        public MusicVersionData? AppliedMusicVersionData { get; private set; } = null;
 
         /// <summary>
         /// 计算 offset 后，当前选中的音乐的实际时长（ms）
         /// </summary>
         /// <remarks>超过这个时长的内容都不可以编辑，包括音符编辑、事件等等</remarks>
-        public int? ActualMusicTime
+        public int? TotalMusicTime
         {
             get
             {
-                if (PlayingAudioClip == null || PlayingAudioOffset == null)
+                if (!SelectedAudioClip || AppliedMusicVersionData == null)
                 {
                     Debug.LogWarning("未加载制谱器内音乐或 offset");
                     return null;
                 }
 
-                return (int)(PlayingAudioClip.length * 1000) + (int)PlayingAudioOffset;
+                return (int)(SelectedAudioClip!.length * 1000) + AppliedMusicVersionData.Offset;
             }
         }
 
@@ -128,6 +125,13 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// </summary>
         public bool BpmGroupCanvasVisibleness { get; private set; } = false;
 
+        public bool SpeedGroupCanvasVisibleness { get; private set; } = false; // TODO
+        public bool EffectTrackCanvasVisibleness { get; private set; } = false; // TODO
+
+        public bool IsAnyFloatingCanvasOn =>
+            ChartPackDataCanvasVisibleness || ChartDataCanvasVisibleness || MusicVersionCanvasVisibleness ||
+            BpmGroupCanvasVisibleness || SpeedGroupCanvasVisibleness || EffectTrackCanvasVisibleness;
+
 
         // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面等数据，加载/保存时需要从读写磁盘。 ---
         public readonly string WorkspacePath;
@@ -144,6 +148,8 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
 
         #region Model 事件
+
+        public event Action? OnPlayingAudioChanged;
 
         /// <summary>
         /// 进入/退出精简模式
@@ -790,8 +796,8 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public async Task ApplyMusicVersionItem(MusicVersionData musicVersionItem)
         {
             string musicFilePath = Path.Combine(WorkspacePath, musicVersionItem.AudioFilePath);
-            PlayingAudioClip = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicFilePath);
-            PlayingAudioOffset = musicVersionItem.Offset;
+            SelectedAudioClip = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicFilePath);
+            AppliedMusicVersionData = musicVersionItem;
             // TODO
         }
 

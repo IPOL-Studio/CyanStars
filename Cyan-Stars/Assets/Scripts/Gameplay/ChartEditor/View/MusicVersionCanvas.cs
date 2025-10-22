@@ -1,4 +1,3 @@
-using System;
 using CyanStars.Chart;
 using CyanStars.GamePlay.ChartEditor.Model;
 using UnityEngine;

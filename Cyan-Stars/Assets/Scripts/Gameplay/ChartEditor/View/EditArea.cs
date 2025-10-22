@@ -1,9 +1,13 @@
+#nullable enable
+
 using System;
+using System.Collections;
 using System.Threading.Tasks;
 using CyanStars.Chart;
 using UnityEngine;
 using CyanStars.Framework;
 using CyanStars.GamePlay.ChartEditor.Model;
+using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -26,29 +30,28 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private const string ClickNotePrefabPath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/ClickNote.prefab";
         private const string BreakNotePrefabPath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/BreakNote.prefab";
 
+        [SerializeField]
+        private AudioSource audioSource = null!;
 
         [SerializeField]
-        private RectTransform mainCanvaRect;
+        private RectTransform mainCanvaRect = null!;
 
         [SerializeField]
-        private GameObject tracks;
+        private GameObject tracks = null!;
 
         [SerializeField]
-        private GameObject posLines;
+        private GameObject posLines = null!;
 
         [SerializeField]
-        private GameObject judgeLine;
+        private GameObject judgeLine = null!;
 
         [SerializeField]
-        private ScrollRect scrollRect;
+        private ScrollRect scrollRect = null!;
 
 
-        private RectTransform contentRect;
-        private RectTransform judgeLineRect;
+        private RectTransform contentRect = null!;
+        private RectTransform judgeLineRect = null!;
 
-        private float totalBeat; // 谱包总 beat 数量（小数）
-        private float lastCanvaHeight; // 上次记录的 Canva 高度（刷新前）
-        private float contentHeight; // 内容总高度
 
         private static readonly Color BeatHalfColor = new Color(1f, 0.7f, 0.4f, 0.8f);
         private static readonly Color BeatQuarterColor = new Color(0.4f, 0.7f, 1f, 0.7f);
@@ -64,6 +67,18 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private const float CentralMax = 400f;
 
 
+        private float totalBeat; // 谱包总 beat 数量（小数）
+        private float lastCanvaHeight; // 上次记录的 Canva 高度（刷新前）
+        private float contentHeight; // 内容总高度
+
+        /// <summary>
+        /// 当前正在播放音乐
+        /// </summary>
+        private bool isChartEditorAudioPlaying = false;
+
+        private Coroutine? playCoroutine = null;
+
+
         public override void Bind(ChartEditorModel chartEditorModel)
         {
             base.Bind(chartEditorModel);
@@ -72,390 +87,460 @@ namespace CyanStars.GamePlay.ChartEditor.View
             contentRect = scrollRect.content.GetComponent<RectTransform>();
             judgeLineRect = judgeLine.GetComponent<RectTransform>();
 
-            Model.OnNoteDataChanged += RefreshUI;
-            Model.OnEditorAttributeChanged += RefreshUI;
-            Model.OnNoteAttributeChanged += RefreshUI;
+            Model.OnPlayingAudioChanged += RefreshAudioAndContent;
+            Model.OnNoteDataChanged += RefreshEditAreaUI;
+            Model.OnEditorAttributeChanged += RefreshEditAreaUI;
+            Model.OnNoteAttributeChanged += RefreshEditAreaUI;
 
-            ResetTotalBeats();
+            RefreshAudioAndContent();
         }
 
 
         /// <summary>
+        /// 切换音乐并重计算 content 高度
+        /// </summary>
+        private void RefreshAudioAndContent()
+        {
+            SetNewAudioClip();
+            CalculateTotalBeatsAndRefreshUI();
+            return;
+
+            // 当 Model 的音乐变化时，更新 audioClip
+            void SetNewAudioClip()
+            {
+                if (!Model.SelectedAudioClip)
+                {
+                    Debug.LogWarning("未选中 AudioClip");
+                }
+
+                audioSource.clip = Model.SelectedAudioClip;
+            }
+
+
+            // 重计算总拍数并刷新 UI
+            void CalculateTotalBeatsAndRefreshUI()
+            {
+                totalBeat = (Model.TotalMusicTime == null)
+                    ? 0
+                    : CalculateTotalBeats((int)Model.TotalMusicTime, Model.ChartPackData.BpmGroup);
+
+                RefreshEditAreaUI();
+            }
+
+            // 根据总时间和 bpm 组数据，计算总共有几个拍子。
+            float CalculateTotalBeats(int actualMusicTime, BpmGroup bpmGroup)
+            {
+                bpmGroup.SortGroup();
+
+                // 使用指数扩展 + 二分查找整数部分以提升性能
+                if (bpmGroup.CalculateTime(0) >= actualMusicTime)
+                {
+                    return 0;
+                }
+
+                int low = 0;
+                int high = 1;
+                while (bpmGroup.CalculateTime(high) < actualMusicTime)
+                {
+                    low = high;
+                    high <<= 1;
+                }
+
+                while (low + 1 < high)
+                {
+                    int mid = low + ((high - low) >> 1);
+                    if (bpmGroup.CalculateTime(mid) < actualMusicTime)
+                    {
+                        low = mid;
+                    }
+                    else
+                    {
+                        high = mid;
+                    }
+                }
+
+                // 计算小数拍部分
+                float currentBeat = low;
+                int currentTime = bpmGroup.CalculateTime(currentBeat);
+
+                while (true)
+                {
+                    // 获取当前拍生效的BPM项
+                    BpmGroupItem currentBpmItem = bpmGroup.GetBpmItemAtBeat(currentBeat);
+                    if (currentBpmItem == null || currentBpmItem.Bpm <= 0)
+                    {
+                        // 异常情况：没有BPM或BPM无效，返回当前整数拍
+                        return currentBeat;
+                    }
+
+                    // 查找下一个BPM变化点
+                    BpmGroupItem? nextBpmItem = bpmGroup.GetNextBpmItem(currentBeat);
+
+                    // 如果没有下一个BPM变化点，说明当前BPM将持续到最后
+                    if (nextBpmItem == null)
+                    {
+                        float msPerBeat = 60000f / currentBpmItem.Bpm;
+                        int timeDelta = actualMusicTime - currentTime;
+                        float beatDelta = timeDelta / msPerBeat;
+                        return currentBeat + beatDelta;
+                    }
+
+                    // 计算下一个BPM变化点的时间
+                    int timeAtNextBpmChange = bpmGroup.CalculateTime(nextBpmItem.StartBeat);
+
+                    // 判断目标时间是否落在当前BPM段内
+                    if (actualMusicTime <= timeAtNextBpmChange)
+                    {
+                        float msPerBeat = 60000f / currentBpmItem.Bpm;
+                        int timeDelta = actualMusicTime - currentTime;
+                        float beatDelta = timeDelta / msPerBeat;
+                        return currentBeat + beatDelta;
+                    }
+                    else
+                    {
+                        currentTime = timeAtNextBpmChange;
+                        currentBeat = nextBpmItem.StartBeat.ToFloat();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// 画面变化后(而不是每帧)或在制谱器或音符属性修改后，重新绘制制谱器的节拍线、位置线、音符
         /// </summary>
-        private void RefreshUI()
+        private void RefreshEditAreaUI()
         {
             RefreshScrollRect();
             ReleaseContentGameObject(); // TODO: 优化渲染：先计算并移动物体位置，再取回/放入对象池
             _ = RefreshPosLinesAsync();
             _ = RefreshBeatLinesAsync();
             _ = RefreshNotesAsync();
-        }
+            return;
 
-        /// <summary>
-        /// 刷新滚动窗口大小和位置
-        /// </summary>
-        private void RefreshScrollRect()
-        {
-            // 记录已滚动的位置百分比
-            float verticalNormalizedPosition = scrollRect.verticalNormalizedPosition;
-
-            // 刷新 content 高度
-            contentHeight = totalBeat * DefaultBeatLineInterval * Model.BeatZoom + mainCanvaRect.rect.height;
-            contentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, contentHeight);
-
-            // 恢复 content 位置
-            scrollRect.verticalNormalizedPosition = verticalNormalizedPosition;
-        }
-
-        /// <summary>
-        /// 将所有预制体归还到对象池
-        /// </summary>
-        private void ReleaseContentGameObject()
-        {
-            // 归还位置线
-            for (int i = posLines.transform.childCount - 1; i >= 0; i--)
+            // 刷新滚动窗口大小和位置
+            void RefreshScrollRect()
             {
-                Transform child = posLines.transform.GetChild(i);
-                // 不归还占位物体
-                if (child.TryGetComponent<PosLine>(out PosLine posLine))
-                {
-                    GameRoot.GameObjectPool.ReleaseGameObject(PosLinePrefabPath, posLine.gameObject);
-                    continue;
-                }
+                // 记录已滚动的位置百分比
+                float verticalNormalizedPosition = scrollRect.verticalNormalizedPosition;
+
+                // 刷新 content 高度
+                contentHeight = totalBeat * DefaultBeatLineInterval * Model.BeatZoom + mainCanvaRect.rect.height;
+                contentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, contentHeight);
+
+                // 恢复 content 位置
+                scrollRect.verticalNormalizedPosition = verticalNormalizedPosition;
             }
 
-            // 归还节拍线和音符
-            for (int i = contentRect.childCount - 1; i >= 0; i--)
+            // 将所有预制体归还到对象池
+            void ReleaseContentGameObject()
             {
-                Transform child = contentRect.GetChild(i);
-
-                if (child.TryGetComponent<BeatLine>(out BeatLine beatLine))
+                // 归还位置线
+                for (int i = posLines.transform.childCount - 1; i >= 0; i--)
                 {
-                    GameRoot.GameObjectPool.ReleaseGameObject(BeatLinePrefabPath, beatLine.gameObject);
-                    continue;
+                    Transform child = posLines.transform.GetChild(i);
+                    // 不归还最左侧的一条透明占位位置线，这样子可以让 Unity 自动布局到正确的位置
+                    if (child.TryGetComponent<PosLine>(out PosLine posLine))
+                    {
+                        GameRoot.GameObjectPool.ReleaseGameObject(PosLinePrefabPath, posLine.gameObject);
+                        continue;
+                    }
                 }
 
-                if (child.TryGetComponent<EditorNote>(out EditorNote editorNote))
+                // 归还节拍线和音符
+                for (int i = contentRect.childCount - 1; i >= 0; i--)
                 {
-                    switch (editorNote.NoteType)
+                    Transform child = contentRect.GetChild(i);
+
+                    if (child.TryGetComponent<BeatLine>(out BeatLine beatLine))
                     {
-                        case NoteType.Tap:
-                            GameRoot.GameObjectPool.ReleaseGameObject(TapNotePrefabPath, editorNote.gameObject);
-                            break;
-                        case NoteType.Hold:
-                            GameRoot.GameObjectPool.ReleaseGameObject(HoldNotePrefabPath, editorNote.gameObject);
-                            break;
-                        case NoteType.Drag:
-                            GameRoot.GameObjectPool.ReleaseGameObject(DragNotePrefabPath, editorNote.gameObject);
-                            break;
-                        case NoteType.Click:
-                            GameRoot.GameObjectPool.ReleaseGameObject(ClickNotePrefabPath, editorNote.gameObject);
-                            break;
-                        case NoteType.Break:
-                            GameRoot.GameObjectPool.ReleaseGameObject(BreakNotePrefabPath, editorNote.gameObject);
-                            break;
+                        GameRoot.GameObjectPool.ReleaseGameObject(BeatLinePrefabPath, beatLine.gameObject);
+                        continue;
                     }
 
-                    continue;
-                }
-            }
-        }
-
-        /// <summary>
-        /// 从对象池获取物体并刷新节拍线
-        /// </summary>
-        private async Task RefreshBeatLinesAsync()
-        {
-            if (Model.BpmGroupDatas.Count == 0 || Model.PlayingAudioClip == null)
-            {
-                return;
-            }
-
-            // 计算屏幕下沿对应的 content 位置
-            float contentPos = (contentRect.rect.height - mainCanvaRect.rect.height) *
-                               scrollRect.verticalNormalizedPosition;
-
-            // 计算每条子节拍线（包括细分节拍线）占用的位置
-            float beatLineDistance = DefaultBeatLineInterval * Model.BeatZoom / Model.BeatAccuracy;
-
-            // 计算第一条需要渲染的子节拍线的计数（index + 1）
-            int currentSubBeatLineCount =
-                (int)((contentPos - judgeLineRect.anchoredPosition.y) / beatLineDistance); // 屏幕外会多渲染几条节拍线，符合预期
-            currentSubBeatLineCount = Math.Max(1, currentSubBeatLineCount);
-
-            // 渲染所有的子节拍线
-            while ((currentSubBeatLineCount - 1) * beatLineDistance <
-                   contentPos + mainCanvaRect.rect.height && // 到达屏幕上边界后不再渲染
-                   (float)currentSubBeatLineCount / Model.BeatAccuracy < totalBeat) // 到达音乐结束点后也不再渲染
-            {
-                GameObject go = await GameRoot.GameObjectPool.GetGameObjectAsync(BeatLinePrefabPath, contentRect);
-                BeatLine beatLine = go.GetComponent<BeatLine>();
-                RectTransform rect = beatLine.BeatLineRect;
-                rect.anchorMin = new Vector2(0.5f, 0f);
-                rect.anchorMax = new Vector2(0.5f, 0f);
-                rect.localScale = Vector3.one;
-
-                float anchoredPositionY =
-                    judgeLineRect.anchoredPosition.y + beatLineDistance * (currentSubBeatLineCount - 1);
-                rect.anchoredPosition = new Vector2(0, anchoredPositionY);
-
-                int beatAccNum = (currentSubBeatLineCount - 1) % Model.BeatAccuracy;
-                if (beatAccNum == 0)
-                {
-                    // 整数节拍线
-                    beatLine.Image.color = Color.white;
-                    beatLine.BeatTextObject.SetActive(true);
-                    beatLine.BeatText.text = ((currentSubBeatLineCount - 1) / Model.BeatAccuracy).ToString();
-                }
-                else if (Model.BeatAccuracy % 2 == 0 && beatAccNum == Model.BeatAccuracy / 2)
-                {
-                    // 1/2 节拍线
-                    beatLine.Image.color = BeatHalfColor;
-                    beatLine.BeatTextObject.SetActive(false);
-                }
-                else if (Model.BeatAccuracy % 4 == 0 &&
-                         (beatAccNum == Model.BeatAccuracy / 4 || beatAccNum == Model.BeatAccuracy / 4 * 3))
-                {
-                    // 1/4 或 3/4 节拍线
-                    beatLine.Image.color = BeatQuarterColor;
-                    beatLine.BeatTextObject.SetActive(false);
-                }
-                else
-                {
-                    // 其他节拍线
-                    beatLine.Image.color = BeatOtherColor;
-                    beatLine.BeatTextObject.SetActive(false);
-                }
-
-                currentSubBeatLineCount++;
-            }
-
-            // 尝试渲染终止线
-            float endLinePosY = totalBeat * DefaultBeatLineInterval;
-            if (contentPos - 100f <= endLinePosY && contentPos <= contentPos + mainCanvaRect.rect.height + 100f)
-            {
-                GameObject go = await GameRoot.GameObjectPool.GetGameObjectAsync(EndLinePrefabPath, contentRect);
-                BeatLine endLine = go.GetComponent<BeatLine>(); // EndLine 也是一种 BeatLine
-                RectTransform rect = endLine.BeatLineRect;
-                rect.anchorMin = new Vector2(0.5f, 0f);
-                rect.anchorMax = new Vector2(0.5f, 0f);
-                rect.localScale = Vector3.one;
-
-                float anchoredPositionY = judgeLineRect.anchoredPosition.y + endLinePosY;
-                endLine.Image.color = Color.white;
-                rect.anchoredPosition = new Vector2(0, anchoredPositionY);
-            }
-        }
-
-        /// <summary>
-        /// 统一设定 Note Rect 值
-        /// </summary>
-        /// <param name="rect">Note 的 Rect 组件</param>
-        private void ConfigureNoteRect(RectTransform rect)
-        {
-            rect.localScale = Vector3.one;
-            rect.anchorMin = new Vector2(0.5f, 0f);
-            rect.anchorMax = new Vector2(0.5f, 0f);
-        }
-
-        /// <summary>
-        /// 从对象池获取物体并刷新音符
-        /// </summary>
-        private async Task RefreshNotesAsync()
-        {
-            // 计算屏幕下沿对应的 content 位置
-            float contentPos = (contentRect.rect.height - mainCanvaRect.rect.height) *
-                               scrollRect.verticalNormalizedPosition;
-
-            // 遍历并渲染在可视区域附近的 note
-            foreach (BaseChartNoteData noteData in Model.ChartNotes)
-            {
-                float noteCalculatePos = CalculatePosInContent(noteData.JudgeBeat.ToFloat());
-                float noteCalculateEndPos = noteData.Type == NoteType.Hold
-                    ? CalculatePosInContent((noteData as HoldChartNoteData).EndJudgeBeat.ToFloat())
-                    : noteCalculatePos;
-
-                if ((noteCalculateEndPos < (contentPos - 40f)) ||
-                    (noteCalculatePos > (contentPos + mainCanvaRect.rect.height + 40f)))
-                {
-                    continue;
-                }
-
-                GameObject go;
-                float xPos;
-                RectTransform rect;
-                EditorNote editorNote;
-
-                switch (noteData.Type)
-                {
-                    case NoteType.Tap:
-                    case NoteType.Drag:
-                    case NoteType.Click:
-                        string prefabPath = noteData.Type switch
+                    if (child.TryGetComponent<EditorNote>(out EditorNote editorNote))
+                    {
+                        switch (editorNote.NoteType)
                         {
-                            NoteType.Tap => TapNotePrefabPath,
-                            NoteType.Drag => DragNotePrefabPath,
-                            NoteType.Click => ClickNotePrefabPath,
-                            _ => throw new ArgumentOutOfRangeException()
-                        };
+                            case NoteType.Tap:
+                                GameRoot.GameObjectPool.ReleaseGameObject(TapNotePrefabPath, editorNote.gameObject);
+                                break;
+                            case NoteType.Hold:
+                                GameRoot.GameObjectPool.ReleaseGameObject(HoldNotePrefabPath, editorNote.gameObject);
+                                break;
+                            case NoteType.Drag:
+                                GameRoot.GameObjectPool.ReleaseGameObject(DragNotePrefabPath, editorNote.gameObject);
+                                break;
+                            case NoteType.Click:
+                                GameRoot.GameObjectPool.ReleaseGameObject(ClickNotePrefabPath, editorNote.gameObject);
+                                break;
+                            case NoteType.Break:
+                                GameRoot.GameObjectPool.ReleaseGameObject(BreakNotePrefabPath, editorNote.gameObject);
+                                break;
+                        }
 
-                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(prefabPath, contentRect);
-                        editorNote = go.GetComponent<EditorNote>();
-                        editorNote.SetData(Model, noteData);
-                        rect = editorNote.Rect;
-                        ConfigureNoteRect(rect);
-                        xPos = (noteData as IChartNoteNormalPos).Pos * NotePosScale + NotePosOffset;
-                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
-                        break;
-                    case NoteType.Hold:
-                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(HoldNotePrefabPath, contentRect);
-                        editorNote = go.GetComponent<EditorNote>();
-                        editorNote.SetData(Model, noteData);
-                        rect = editorNote.Rect;
-                        ConfigureNoteRect(rect);
-                        xPos = (noteData as HoldChartNoteData).Pos * NotePosScale + NotePosOffset;
-                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
-                        editorNote.HoldTailRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-                            Mathf.Max(0, noteCalculateEndPos - noteCalculatePos - 12.5f));
-                        break;
-                    case NoteType.Break:
-                        go = await GameRoot.GameObjectPool.GetGameObjectAsync(BreakNotePrefabPath, contentRect);
-                        editorNote = go.GetComponent<EditorNote>();
-                        editorNote.SetData(Model, noteData);
-                        rect = editorNote.Rect;
-                        ConfigureNoteRect(rect);
-                        xPos = (noteData as BreakChartNoteData).BreakNotePos == BreakNotePos.Left
-                            ? BreakLeftX
-                            : BreakRightX;
-                        rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                        continue;
+                    }
+                }
+            }
+
+            // 从对象池获取物体并刷新节拍线
+            async Task RefreshBeatLinesAsync()
+            {
+                if (Model.BpmGroupDatas.Count == 0 || Model.SelectedAudioClip == null)
+                {
+                    return;
+                }
+
+                // 计算屏幕下沿对应的 content 位置
+                float contentPos = (contentRect.rect.height - mainCanvaRect.rect.height) *
+                                   scrollRect.verticalNormalizedPosition;
+
+                // 计算每条子节拍线（包括细分节拍线）占用的位置
+                float beatLineDistance = DefaultBeatLineInterval * Model.BeatZoom / Model.BeatAccuracy;
+
+                // 计算第一条需要渲染的子节拍线的计数（index + 1）
+                int currentSubBeatLineCount =
+                    (int)((contentPos - judgeLineRect.anchoredPosition.y) / beatLineDistance); // 屏幕外会多渲染几条节拍线，符合预期
+                currentSubBeatLineCount = Math.Max(1, currentSubBeatLineCount);
+
+                // 渲染所有的子节拍线
+                while ((currentSubBeatLineCount - 1) * beatLineDistance <
+                       contentPos + mainCanvaRect.rect.height && // 到达屏幕上边界后不再渲染
+                       (float)currentSubBeatLineCount / Model.BeatAccuracy < totalBeat) // 到达音乐结束点后也不再渲染
+                {
+                    GameObject go = await GameRoot.GameObjectPool.GetGameObjectAsync(BeatLinePrefabPath, contentRect);
+                    BeatLine beatLine = go.GetComponent<BeatLine>();
+                    RectTransform rect = beatLine.BeatLineRect;
+                    rect.anchorMin = new Vector2(0.5f, 0f);
+                    rect.anchorMax = new Vector2(0.5f, 0f);
+                    rect.localScale = Vector3.one;
+
+                    float anchoredPositionY =
+                        judgeLineRect.anchoredPosition.y + beatLineDistance * (currentSubBeatLineCount - 1);
+                    rect.anchoredPosition = new Vector2(0, anchoredPositionY);
+
+                    int beatAccNum = (currentSubBeatLineCount - 1) % Model.BeatAccuracy;
+                    if (beatAccNum == 0)
+                    {
+                        // 整数节拍线
+                        beatLine.Image.color = Color.white;
+                        beatLine.BeatTextObject.SetActive(true);
+                        beatLine.BeatText.text = ((currentSubBeatLineCount - 1) / Model.BeatAccuracy).ToString();
+                    }
+                    else if (Model.BeatAccuracy % 2 == 0 && beatAccNum == Model.BeatAccuracy / 2)
+                    {
+                        // 1/2 节拍线
+                        beatLine.Image.color = BeatHalfColor;
+                        beatLine.BeatTextObject.SetActive(false);
+                    }
+                    else if (Model.BeatAccuracy % 4 == 0 &&
+                             (beatAccNum == Model.BeatAccuracy / 4 || beatAccNum == Model.BeatAccuracy / 4 * 3))
+                    {
+                        // 1/4 或 3/4 节拍线
+                        beatLine.Image.color = BeatQuarterColor;
+                        beatLine.BeatTextObject.SetActive(false);
+                    }
+                    else
+                    {
+                        // 其他节拍线
+                        beatLine.Image.color = BeatOtherColor;
+                        beatLine.BeatTextObject.SetActive(false);
+                    }
+
+                    currentSubBeatLineCount++;
+                }
+
+                // 尝试渲染终止线
+                float endLinePosY = totalBeat * DefaultBeatLineInterval;
+                if (contentPos - 100f <= endLinePosY && contentPos <= contentPos + mainCanvaRect.rect.height + 100f)
+                {
+                    GameObject go = await GameRoot.GameObjectPool.GetGameObjectAsync(EndLinePrefabPath, contentRect);
+                    BeatLine endLine = go.GetComponent<BeatLine>(); // EndLine 也是一种 BeatLine
+                    RectTransform rect = endLine.BeatLineRect;
+                    rect.anchorMin = new Vector2(0.5f, 0f);
+                    rect.anchorMax = new Vector2(0.5f, 0f);
+                    rect.localScale = Vector3.one;
+
+                    float anchoredPositionY = judgeLineRect.anchoredPosition.y + endLinePosY;
+                    endLine.Image.color = Color.white;
+                    rect.anchoredPosition = new Vector2(0, anchoredPositionY);
+                }
+            }
+
+            // 统一设定 Note Rect 值
+            void ConfigureNoteRect(RectTransform rect)
+            {
+                rect.localScale = Vector3.one;
+                rect.anchorMin = new Vector2(0.5f, 0f);
+                rect.anchorMax = new Vector2(0.5f, 0f);
+            }
+
+            // 从对象池获取物体并刷新音符
+            async Task RefreshNotesAsync()
+            {
+                // 计算屏幕下沿对应的 content 位置
+                float contentPos = (contentRect.rect.height - mainCanvaRect.rect.height) *
+                                   scrollRect.verticalNormalizedPosition;
+
+                // 遍历并渲染在可视区域附近的 note
+                foreach (BaseChartNoteData noteData in Model.ChartNotes)
+                {
+                    float noteCalculatePos = CalculatePosInContent(noteData.JudgeBeat.ToFloat());
+                    float noteCalculateEndPos = noteData.Type == NoteType.Hold
+                        ? CalculatePosInContent((noteData as HoldChartNoteData).EndJudgeBeat.ToFloat())
+                        : noteCalculatePos;
+
+                    if ((noteCalculateEndPos < (contentPos - 40f)) ||
+                        (noteCalculatePos > (contentPos + mainCanvaRect.rect.height + 40f)))
+                    {
+                        continue;
+                    }
+
+                    GameObject go;
+                    float xPos;
+                    RectTransform rect;
+                    EditorNote editorNote;
+
+                    switch (noteData.Type)
+                    {
+                        case NoteType.Tap:
+                        case NoteType.Drag:
+                        case NoteType.Click:
+                            string prefabPath = noteData.Type switch
+                            {
+                                NoteType.Tap => TapNotePrefabPath,
+                                NoteType.Drag => DragNotePrefabPath,
+                                NoteType.Click => ClickNotePrefabPath,
+                                _ => throw new ArgumentOutOfRangeException()
+                            };
+
+                            go = await GameRoot.GameObjectPool.GetGameObjectAsync(prefabPath, contentRect);
+                            editorNote = go.GetComponent<EditorNote>();
+                            editorNote.SetData(Model, noteData);
+                            rect = editorNote.Rect;
+                            ConfigureNoteRect(rect);
+                            xPos = (noteData as IChartNoteNormalPos).Pos * NotePosScale + NotePosOffset;
+                            rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
+                            break;
+                        case NoteType.Hold:
+                            go = await GameRoot.GameObjectPool.GetGameObjectAsync(HoldNotePrefabPath, contentRect);
+                            editorNote = go.GetComponent<EditorNote>();
+                            editorNote.SetData(Model, noteData);
+                            rect = editorNote.Rect;
+                            ConfigureNoteRect(rect);
+                            xPos = (noteData as HoldChartNoteData).Pos * NotePosScale + NotePosOffset;
+                            rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
+                            editorNote.HoldTailRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                                Mathf.Max(0, noteCalculateEndPos - noteCalculatePos - 12.5f));
+                            break;
+                        case NoteType.Break:
+                            go = await GameRoot.GameObjectPool.GetGameObjectAsync(BreakNotePrefabPath, contentRect);
+                            editorNote = go.GetComponent<EditorNote>();
+                            editorNote.SetData(Model, noteData);
+                            rect = editorNote.Rect;
+                            ConfigureNoteRect(rect);
+                            xPos = (noteData as BreakChartNoteData).BreakNotePos == BreakNotePos.Left
+                                ? BreakLeftX
+                                : BreakRightX;
+                            rect.anchoredPosition = new Vector2(xPos, noteCalculatePos);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+            }
+
+
+            // 根据 beat 计算内容在 Content 中的位置
+            float CalculatePosInContent(float beatFloat)
+            {
+                // 计算每拍占用的间隔
+                float beatDistance = DefaultBeatLineInterval * Model.BeatZoom;
+
+                // 乘算节拍位置
+                float pos = beatFloat * beatDistance;
+
+                // 添加判定线的位置偏移
+                return pos + judgeLineRect.anchoredPosition.y;
+            }
+
+            // 从对象池获取物体并刷新位置线
+            async Task RefreshPosLinesAsync()
+            {
+                for (int i = 0; i < Model.PosAccuracy; i++)
+                {
+                    GameObject _ =
+                        await GameRoot.GameObjectPool.GetGameObjectAsync(PosLinePrefabPath, posLines.transform);
                 }
             }
         }
 
         /// <summary>
-        /// 从对象池获取物体并刷新位置线
+        /// 切换音频播放状态
         /// </summary>
-        private async Task RefreshPosLinesAsync()
+        private void SwitchAudioPlayingState()
         {
-            for (int i = 0; i < Model.PosAccuracy; i++)
+            isChartEditorAudioPlaying = !isChartEditorAudioPlaying;
+            if (isChartEditorAudioPlaying)
             {
-                GameObject _ = await GameRoot.GameObjectPool.GetGameObjectAsync(PosLinePrefabPath, posLines.transform);
+                PlayAudio();
             }
-        }
-
-
-        /// <summary>
-        /// 根据 beat 计算内容在 Content 中的位置
-        /// </summary>
-        /// <param name="beatFloat">float 格式的 beat</param>
-        /// <returns>内容在 Content 中的位置（相对于 Content 下边缘）</returns>
-        private float CalculatePosInContent(float beatFloat)
-        {
-            // 计算每拍占用的间隔
-            float beatDistance = DefaultBeatLineInterval * Model.BeatZoom;
-
-            // 乘算节拍位置
-            float pos = beatFloat * beatDistance;
-
-            // 添加判定线的位置偏移
-            return pos + judgeLineRect.anchoredPosition.y;
-        }
-
-        /// <summary>
-        /// 重计算总拍数并刷新制谱器视图
-        /// </summary>
-        private void ResetTotalBeats()
-        {
-            totalBeat = (Model.ActualMusicTime == null)
-                ? 0
-                : CalculateTotalBeats((int)Model.ActualMusicTime, Model.ChartPackData.BpmGroup);
-
-            RefreshUI();
-        }
-
-        /// <summary>
-        /// 根据总时间和 bpm 组数据，计算并向上取整总共有几个拍子。
-        /// <para>将计算已经经过的拍子时，不要忘了 -1</para>
-        /// </summary>
-        /// <param name="actualMusicTime">计算 offset 后的音乐总时长（ms）</param>
-        /// <param name="bpmGroup">bpm 组数据</param>
-        /// <returns>音乐总共有几拍</returns>
-        private float CalculateTotalBeats(int actualMusicTime, BpmGroup bpmGroup)
-        {
-            bpmGroup.SortGroup();
-
-            // 使用指数扩展 + 二分查找整数部分以提升性能
-            if (bpmGroup.CalculateTime(0) >= actualMusicTime)
+            else
             {
-                return 0;
+                StopAudio();
             }
 
-            int low = 0;
-            int high = 1;
-            while (bpmGroup.CalculateTime(high) < actualMusicTime)
-            {
-                low = high;
-                high <<= 1;
-            }
+            return;
 
-            while (low + 1 < high)
+
+            // 根据当前的 content 进度和 offset 自动确定播放时机
+            void PlayAudio()
             {
-                int mid = low + ((high - low) >> 1);
-                if (bpmGroup.CalculateTime(mid) < actualMusicTime)
+                if (!audioSource.clip || Model.AppliedMusicVersionData == null)
                 {
-                    low = mid;
+                    Debug.LogError("未指定 Clip 或 MusicVersionData，EditArea 无法播放音频");
+                    return;
+                }
+
+                // 整个 content 对应的音乐时长（ms） = clip 时长 + offset
+                int totalTime = (int)audioSource.clip.length * 1000 + Model.AppliedMusicVersionData.Offset;
+                int currentTime = (int)(totalTime * scrollRect.verticalNormalizedPosition);
+                int audioTime = currentTime - Model.AppliedMusicVersionData.Offset;
+
+                if (audioTime >= 0)
+                {
+                    // 直接从指定时间开始播放
+                    audioSource.time = audioTime / 1000f;
+                    audioSource.Play();
                 }
                 else
                 {
-                    high = mid;
+                    // 延迟一段时间后从 0 开始播放
+                    playCoroutine = StartCoroutine(PlayAudioAfterDelay(-audioTime / 1000f));
                 }
             }
 
-            // 计算小数拍部分
-            float currentBeat = low;
-            int currentTime = bpmGroup.CalculateTime(currentBeat);
-
-            while (true)
+            // 迭代器协程，用于在指定时间后从头开始播放 audio（见于 offset 为正数且当前正在播放这段内容时）
+            IEnumerator PlayAudioAfterDelay(float delay)
             {
-                // 获取当前拍生效的BPM项
-                BpmGroupItem currentBpmItem = bpmGroup.GetBpmItemAtBeat(currentBeat);
-                if (currentBpmItem == null || currentBpmItem.Bpm <= 0)
+                yield return new WaitForSeconds(delay);
+                audioSource.time = 0f;
+                audioSource.Play();
+                playCoroutine = null;
+            }
+
+            // 立刻停止播放，或取消即将播放的协程
+            void StopAudio()
+            {
+                if (audioSource.isPlaying)
                 {
-                    // 异常情况：没有BPM或BPM无效，返回当前整数拍
-                    return currentBeat;
+                    audioSource.Stop();
                 }
 
-                // 查找下一个BPM变化点
-                BpmGroupItem nextBpmItem = bpmGroup.GetNextBpmItem(currentBeat);
-
-                // 如果没有下一个BPM变化点，说明当前BPM将持续到最后
-                if (nextBpmItem == null)
+                if (playCoroutine != null)
                 {
-                    float msPerBeat = 60000f / currentBpmItem.Bpm;
-                    int timeDelta = actualMusicTime - currentTime;
-                    float beatDelta = timeDelta / msPerBeat;
-                    return currentBeat + beatDelta;
-                }
-
-                // 计算下一个BPM变化点的时间
-                int timeAtNextBpmChange = bpmGroup.CalculateTime(nextBpmItem.StartBeat);
-
-                // 判断目标时间是否落在当前BPM段内
-                if (actualMusicTime <= timeAtNextBpmChange)
-                {
-                    float msPerBeat = 60000f / currentBpmItem.Bpm;
-                    int timeDelta = actualMusicTime - currentTime;
-                    float beatDelta = timeDelta / msPerBeat;
-                    return currentBeat + beatDelta;
-                }
-                else
-                {
-                    currentTime = timeAtNextBpmChange;
-                    currentBeat = nextBpmItem.StartBeat.ToFloat();
+                    StopCoroutine(playCoroutine);
+                    playCoroutine = null;
                 }
             }
         }
@@ -547,18 +632,11 @@ namespace CyanStars.GamePlay.ChartEditor.View
             Model.CreateNote(notePos, noteBeat);
         }
 
-        /// <summary>
-        /// 当窗口滚动时刷新界面
-        /// </summary>
-        private void OnScrollValueChanged(Vector2 _)
-        {
-            RefreshUI();
-        }
-
 
         private void Awake()
         {
-            scrollRect.onValueChanged.AddListener(OnScrollValueChanged);
+            // 当窗口滚动时刷新界面
+            scrollRect.onValueChanged.AddListener((_) => { RefreshEditAreaUI(); });
         }
 
         private void Update()
@@ -566,16 +644,42 @@ namespace CyanStars.GamePlay.ChartEditor.View
             // TODO: 改为由 GameRoot 下发事件
             if (!Mathf.Approximately(lastCanvaHeight, mainCanvaRect.rect.height))
             {
-                RefreshUI();
+                // 游戏窗口大小变化时刷新 UI
+                RefreshEditAreaUI();
                 lastCanvaHeight = mainCanvaRect.rect.height;
+            }
+
+            // 按下空格且没有打开任何悬浮窗或正在输入文本时，播放或暂停音乐
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                if (Model.IsAnyFloatingCanvasOn)
+                {
+                    return;
+                }
+
+                if (EventSystem.current.currentSelectedGameObject &&
+                    (EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() ||
+                     EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>()))
+                {
+                    return;
+                }
+
+                isChartEditorAudioPlaying = !isChartEditorAudioPlaying;
+            }
+
+            if (isChartEditorAudioPlaying)
+            {
+                scrollRect.verticalNormalizedPosition = audioSource.time / audioSource.clip.length; //TODO: 计算 offset
+                RefreshEditAreaUI();
             }
         }
 
         private void OnDestroy()
         {
-            Model.OnNoteDataChanged -= RefreshUI;
-            Model.OnEditorAttributeChanged -= RefreshUI;
-            Model.OnNoteAttributeChanged -= RefreshUI;
+            Model.OnPlayingAudioChanged -= RefreshAudioAndContent;
+            Model.OnNoteDataChanged -= RefreshEditAreaUI;
+            Model.OnEditorAttributeChanged -= RefreshEditAreaUI;
+            Model.OnNoteAttributeChanged -= RefreshEditAreaUI;
         }
     }
 }
