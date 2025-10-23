@@ -266,6 +266,7 @@ namespace CyanStars.Framework.File
 
         /// <summary>
         /// 将文件复制到缓存区
+        /// <para>如果 targetFilePath 已经存在，将会用新的 originalFilePath 覆盖，旧的临时文件将失效</para>
         /// </summary>
         /// <remarks>将会覆盖目标文件！</remarks>
         /// <param name="originalFilePath">原始文件绝对路径（含文件名和后缀）</param>
@@ -300,7 +301,19 @@ namespace CyanStars.Framework.File
             Directory.CreateDirectory(TempFolderPath);
             System.IO.File.Copy(originalFilePath, tempFilePath, true);
 
-            targetPathToTempPathMap.Add(targetFilePath, tempFilePath);
+            if (!targetPathToTempPathMap.TryGetValue(targetFilePath, out string oldTempPath))
+            {
+                // 不存在旧的临时文件，直接写入
+                targetPathToTempPathMap.Add(targetFilePath, tempFilePath);
+            }
+            else
+            {
+                // 存在旧的临时文件，删除旧的映射和文件，然后写入新的映射
+                System.IO.File.Delete(tempFilePath);
+                targetPathToTempPathMap.RemoveByKey(targetFilePath);
+                targetPathToTempPathMap.Add(targetFilePath, tempFilePath);
+            }
+
             return tempFilePath;
         }
 
@@ -378,13 +391,36 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 取消保存并清空缓存文件
         /// </summary>
-        public void ClearTempFiles()
+        public void ClearAllTempFiles()
         {
             targetPathToTempPathMap.Clear();
             if (Directory.Exists(TempFolderPath))
             {
                 Directory.Delete(TempFolderPath, true);
             }
+        }
+
+        /// <summary>
+        /// 尝试取消临时文件的映射并删除文件
+        /// </summary>
+        /// <param name="tempFilePath">临时文件绝对路径</param>
+        /// <returns>是否找到并移除了文件</returns>
+        public bool TryClearTempFile(string tempFilePath)
+        {
+            if (!targetPathToTempPathMap.TryGetKey(tempFilePath, out string _))
+            {
+                return false;
+            }
+
+            System.IO.File.Delete(tempFilePath);
+            targetPathToTempPathMap.RemoveByValue(tempFilePath);
+
+            if (targetPathToTempPathMap.Count == 0 && Directory.Exists(TempFolderPath))
+            {
+                Directory.Delete(TempFolderPath, true);
+            }
+
+            return true;
         }
 
         #endregion

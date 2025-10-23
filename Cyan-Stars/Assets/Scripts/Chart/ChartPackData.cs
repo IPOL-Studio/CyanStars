@@ -44,18 +44,18 @@ namespace CyanStars.Chart
         public string? CoverFilePath;
 
         /// <summary>开始裁剪像素（相对于图片左下角）</summary>
-        public Vector2 CropStartPosition;
+        public Vector2? CropStartPosition;
 
         /// <summary>
         /// 裁剪像素高度
         /// </summary>
-        public float CropHeight;
+        public float? CropHeight;
 
         /// <summary>
         /// 裁剪像素宽度
         /// </summary>
         [JsonIgnore]
-        public float CropWidth => CropHeight * 4;
+        public float? CropWidth => CropHeight * 4;
 
         // 谱面元数据
 

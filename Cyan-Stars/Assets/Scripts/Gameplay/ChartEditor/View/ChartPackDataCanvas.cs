@@ -114,7 +114,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
             importCoverButton.onClick.AddListener(() =>
             {
-                GameRoot.File.OpenLoadFilePathBrowser(async path => { await Model.UpdateCoverFilePath(path); },
+                GameRoot.File.OpenLoadFilePathBrowser(async path => { await Model.ImportCoverFile(path); },
                     filters: new[] { GameRoot.File.SpriteFilter }
                 );
             });
@@ -151,17 +151,18 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
             // 刷新曲绘裁剪框位置
             float startX = Model.CoverTexture != null
-                ? Model.ChartPackData.CropStartPosition.x * imageFrameRect.rect.width / Model.CoverTexture.width
+                ? Model.ChartPackData.CropStartPosition!.Value.x * imageFrameRect.rect.width / Model.CoverTexture.width
                 : 0;
             float startY = Model.CoverTexture != null
-                ? Model.ChartPackData.CropStartPosition.y * imageFrameRect.rect.height / Model.CoverTexture.height
+                ? Model.ChartPackData.CropStartPosition!.Value.y * imageFrameRect.rect.height /
+                  Model.CoverTexture.height
                 : 0;
             startX = Mathf.Max(0, Mathf.Min(startX, imageFrameRect.rect.width));
             startY = Mathf.Max(0, Mathf.Min(startY, imageFrameRect.rect.height));
             coverCropAreaRect.anchoredPosition = new Vector2(startX, startY);
 
             float width = Model.CoverTexture != null
-                ? Model.ChartPackData.CropWidth * imageFrameRect.rect.width / Model.CoverTexture.width
+                ? Model.ChartPackData.CropWidth!.Value * imageFrameRect.rect.width / Model.CoverTexture.width
                 : 0;
             float height = width / 4;
             width = Mathf.Max(0, Mathf.Min(width, imageFrameRect.rect.width - startX));

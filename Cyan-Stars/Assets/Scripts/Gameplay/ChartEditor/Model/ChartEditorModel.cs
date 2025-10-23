@@ -143,8 +143,8 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
 
         // --- 内部变量 ---
-        private string? coverFileName = null;
-        private bool needDumpCoverWhenSave = false; // 在保存时需要复制外部的曲绘文件到 Assets 路径下
+        private bool needCopyCoverWhenSave = false; // 在保存时需要复制临时曲绘文件到 Assets 路径下
+        private string? coverTempFilePath = null;
 
 
         #region Model 事件
@@ -288,10 +288,10 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public void Save()
         {
             // 将 Texture2D 转为文件并储存
-            if (needDumpCoverWhenSave)
+            if (needCopyCoverWhenSave)
             {
-                needDumpCoverWhenSave = false;
-                if (coverFileName == null || CoverTexture == null)
+                needCopyCoverWhenSave = false;
+                if (coverTempFilePath == null || CoverTexture == null)
                 {
                     Debug.LogError("文件名或材质为空，请检查");
                     OnChartPackDataChanged?.Invoke();
@@ -305,7 +305,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 }
 
                 byte[] coverBytes;
-                switch (Path.GetExtension(coverFileName).ToLower())
+                switch (Path.GetExtension(coverTempFilePath).ToLower())
                 {
                     case ".jpg":
                     case ".jpeg":
@@ -315,13 +315,13 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                         coverBytes = CoverTexture.EncodeToPNG();
                         break;
                     default:
-                        Debug.LogError($"不支持的曲绘文件格式：{coverFileName}");
+                        Debug.LogError($"不支持的曲绘文件格式：{coverTempFilePath}");
                         coverBytes = new byte[] { };
                         OnChartPackDataChanged?.Invoke();
                         break;
                 }
 
-                ChartPackData.CoverFilePath = Path.Combine(assetsFolderPath, coverFileName);
+                ChartPackData.CoverFilePath = Path.Combine(assetsFolderPath, coverTempFilePath);
                 File.WriteAllBytes(ChartPackData.CoverFilePath, coverBytes);
                 OnChartPackDataChanged?.Invoke();
             }
@@ -566,17 +566,18 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 更新曲绘大图路径，并自动重置裁剪区域（对齐图片中央，尝试裁剪 4:1 最大区域）
         /// </summary>
         /// <param name="path">曲绘大图外部绝对路径</param>
-        public async Task UpdateCoverFilePath(string path)
+        public async Task ImportCoverFile(string path)
         {
             // 加载 Texture2D 到内存，保存时检查是否需要替换文件，并将 Texture2D 转为文件写入
-            needDumpCoverWhenSave = true;
-            coverFileName = Path.GetFileName(path);
-            ChartPackData.CoverFilePath = coverFileName; // 未保存前只显示文件名
-            CoverTexture = await GameRoot.Asset.LoadAssetAsync<Texture2D>(path);
+            needCopyCoverWhenSave = true;
+            string fileName = Path.GetFileName(path);
+            coverTempFilePath = GameRoot.File.TempFile(path, Path.Combine(WorkspacePath, "Assets", fileName));
+            ChartPackData.CoverFilePath = coverTempFilePath; // 未保存前显示临时文件路径
+            CoverTexture = await GameRoot.Asset.LoadAssetAsync<Texture2D>(coverTempFilePath);
             if (CoverTexture == null)
             {
-                ChartPackData.CropStartPosition = new Vector2(0, 0);
-                ChartPackData.CropHeight = 0;
+                ChartPackData.CropStartPosition = null;
+                ChartPackData.CropHeight = null;
             }
             else
             {
@@ -625,9 +626,12 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public void UpdateCoverCropByHandles(CoverCropHandleType type, Vector2 pointPositionRatio)
         {
             // 检查数据
-            if (CoverTexture == null)
+            if (CoverTexture == null ||
+                ChartPackData.CoverFilePath == null ||
+                ChartPackData.CropStartPosition == null ||
+                ChartPackData.CropHeight == null)
             {
-                Debug.LogError("CoverTexture is not assigned.");
+                Debug.LogError("曲绘材质或数据无效");
                 return;
             }
 
@@ -642,9 +646,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             );
 
             // 获取旧的裁剪框信息（像素单位）
-            Vector2 oldBottomLeft = ChartPackData.CropStartPosition;
-            float oldCropHeight = ChartPackData.CropHeight;
-            float oldCropWidth = oldCropHeight * 4;
+            Vector2 oldBottomLeft = (Vector2)ChartPackData.CropStartPosition;
+            float oldCropHeight = (float)ChartPackData.CropHeight;
+            float oldCropWidth = (float)ChartPackData.CropWidth!;
 
             // 确定固定点，即被拖动顶点的对角点，并计算 鼠标-固定点 矩形的宽高
             Vector2 anchorPoint;
@@ -734,9 +738,13 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <param name="deltaPositionRatio">裁剪框的位移比例（相对于原图的宽高比例，限制在 [-1, 1]）</param>
         public void UpdateCoverCropByFrame(Vector2 deltaPositionRatio)
         {
-            if (CoverTexture == null)
+            // 检查数据
+            if (CoverTexture == null ||
+                ChartPackData.CoverFilePath == null ||
+                ChartPackData.CropStartPosition == null ||
+                ChartPackData.CropHeight == null)
             {
-                Debug.LogError("CoverTexture is not assigned.");
+                Debug.LogError("曲绘材质或数据无效");
                 return;
             }
 
@@ -745,10 +753,12 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             float deltaPixelY = deltaPositionRatio.y * CoverTexture.height;
 
             // 根据目前的裁剪区域，计算能够移动的像素范围
-            float minDeltaX = -ChartPackData.CropStartPosition.x;
-            float maxDeltaX = CoverTexture.width - ChartPackData.CropStartPosition.x - ChartPackData.CropWidth;
-            float minDeltaY = -ChartPackData.CropStartPosition.y;
-            float maxDeltaY = CoverTexture.height - ChartPackData.CropStartPosition.y - ChartPackData.CropHeight;
+            float minDeltaX = -ChartPackData.CropStartPosition.Value.x;
+            float maxDeltaX = CoverTexture.width - ChartPackData.CropStartPosition.Value.x -
+                              ChartPackData.CropWidth!.Value;
+            float minDeltaY = -ChartPackData.CropStartPosition.Value.y;
+            float maxDeltaY = CoverTexture.height - ChartPackData.CropStartPosition.Value.y -
+                              ChartPackData.CropHeight!.Value;
 
             // 将移动的像素限制在范围内
             deltaPixelX = Mathf.Max(minDeltaX, Mathf.Min(deltaPixelX, maxDeltaX));
