@@ -310,40 +310,61 @@ namespace CyanStars.Framework.File
         /// <remarks>将会覆盖目标文件！</remarks>
         public void SaveAllFiles()
         {
+            if (targetPathToTempPathMap.Count == 0)
+            {
+                Debug.Log("没有任何暂存内容要保存");
+                return;
+            }
+
+            BiDirectionalDictionary<string, string> newMap =
+                new BiDirectionalDictionary<string, string>(targetPathToTempPathMap);
+            foreach (var pair in newMap)
+            {
+                SaveFile(pair.Value);
+            }
+        }
+
+        /// <summary>
+        /// 将指定的临时文件保存
+        /// </summary>
+        /// <param name="tempFilePath">临时文件绝地路径</param>
+        public void SaveFile(string tempFilePath)
+        {
             try
             {
-                if (targetPathToTempPathMap.Count == 0)
+                if (string.IsNullOrEmpty(tempFilePath))
                 {
-                    Debug.Log("没有任何暂存内容要保存");
+                    Debug.LogError("获取临时文件路径出错！");
                     return;
                 }
 
-                BiDirectionalDictionary<string, string> newMap =
-                    new BiDirectionalDictionary<string, string>(targetPathToTempPathMap);
-                foreach (var pair in newMap)
+                if (!targetPathToTempPathMap.TryGetKey(tempFilePath, out string toggleFilePath))
                 {
-                    string? folderPath = Path.GetDirectoryName(pair.Key);
-                    if (string.IsNullOrEmpty(folderPath))
-                    {
-                        Debug.LogError("获取路径出错！");
-                        return;
-                    }
-
-                    // 如果文件夹路径不存在，创建路径
-                    Directory.CreateDirectory(folderPath);
-
-                    // 如果目标文件存在，删除并移动临时文件
-                    if (System.IO.File.Exists(pair.Key))
-                    {
-                        System.IO.File.Delete(pair.Key);
-                    }
-
-                    //TODO: 如果删除文件后异常导致无法移动，将导致数据丢失，考虑先移动后重命名或升级 .net 版本后的 Move() 方法重载
-                    System.IO.File.Move(pair.Value, pair.Key);
-
-                    // 从映射表中移除键值对
-                    targetPathToTempPathMap.RemoveByKey(pair.Key);
+                    Debug.LogError("无法获取目标文件路径！");
+                    return;
                 }
+
+                string? toggleFolderPath = Path.GetDirectoryName(toggleFilePath);
+                if (string.IsNullOrEmpty(toggleFolderPath))
+                {
+                    Debug.LogError("获取目标文件路径出错！");
+                    return;
+                }
+
+                // 如果目标文件夹路径不存在，创建路径
+                Directory.CreateDirectory(toggleFolderPath);
+
+                // 如果目标文件存在，删除并移动临时文件
+                if (System.IO.File.Exists(toggleFilePath))
+                {
+                    System.IO.File.Delete(toggleFilePath);
+                }
+
+                //TODO: 如果删除文件后异常导致无法移动，将导致数据丢失，考虑先移动后重命名或升级 .net 版本后的 Move() 方法重载
+                System.IO.File.Move(toggleFilePath, tempFilePath);
+
+                // 从映射表中移除键值对
+                targetPathToTempPathMap.RemoveByValue(tempFilePath);
             }
             finally
             {
