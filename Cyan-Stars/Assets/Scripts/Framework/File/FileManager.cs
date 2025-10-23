@@ -275,20 +275,27 @@ namespace CyanStars.Framework.File
         /// <exception cref="FileNotFoundException">原始文件不存在</exception>
         public string TempFile(string originalFilePath, string targetFilePath)
         {
-            if (string.IsNullOrEmpty(originalFilePath) || string.IsNullOrEmpty(targetFilePath))
+            if (string.IsNullOrEmpty(originalFilePath))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("原始文件路径不能为空。", nameof(originalFilePath));
+            }
+
+            if (string.IsNullOrEmpty(targetFilePath))
+            {
+                throw new ArgumentException("目标文件路径不能为空。", nameof(targetFilePath));
             }
 
             if (!System.IO.File.Exists(originalFilePath))
             {
-                throw new FileNotFoundException();
+                throw new FileNotFoundException($"原始文件未找到: {originalFilePath}", originalFilePath);
             }
 
-            // 复制文件到缓存区，并为缓存文件添加 7 位 .[GUID] 后缀名
-            string fileName = Path.GetFileName(originalFilePath);
+            // 复制文件到缓存区，缓存区文件格式为 [文件名].[7位GUID].[拓展名]
             string shortGuid = Guid.NewGuid().ToString("N").Substring(0, 7);
-            string tempFilePath = Path.Combine(TempFolderPath, $"{fileName}.{shortGuid}");
+            string fileNameWithoutExt = Path.GetFileNameWithoutExtension(originalFilePath);
+            string extension = Path.GetExtension(originalFilePath);
+            string tempFileName = $"{fileNameWithoutExt}.{shortGuid}{extension}";
+            string tempFilePath = Path.Combine(TempFolderPath, tempFileName);
 
             Directory.CreateDirectory(TempFolderPath);
             System.IO.File.Copy(originalFilePath, tempFilePath, true);
@@ -340,7 +347,7 @@ namespace CyanStars.Framework.File
             }
             finally
             {
-                if (targetPathToTempPathMap.Count == 0)
+                if (targetPathToTempPathMap.Count == 0 && Directory.Exists(TempFolderPath))
                 {
                     Directory.Delete(TempFolderPath, true);
                 }
