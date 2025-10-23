@@ -1,22 +1,26 @@
+#nullable enable
+
 using UnityEngine;
 using SimpleFileBrowser;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using CatAsset.Runtime;
-using CyanStars.Framework.Asset;
+using CyanStars.Framework.Utils;
 using CyanStars.Framework.Utils.JsonSerialization;
 using Newtonsoft.Json;
 
 namespace CyanStars.Framework.File
 {
     /// <summary>
-    /// 文件管理器
+    /// 文件管理器，用于在运行时处理 外部数据 ←---→ 用户数据
     /// </summary>
-    /// <remarks>提供统一的文件和文件夹选择对话框接口，基于 Unity Simple File Browser 实现</remarks>
-    /// <remarks>提供对玩家文件的资源文件读写，.json 文件反序列化和序列化操作，其中读和反序列化操作将传给 AssetManager 实现</remarks>
+    /// <remarks>
+    /// <para>提供统一的文件和文件夹选择对话框功能，基于 Unity Simple File Browser 实现</para>
+    /// <para>提供对玩家文件的资源文件读写，.json 文件反序列化和序列化功能，其中读和反序列化操作将传给 AssetManager 实现</para>
+    /// <para>提供 读取外部文件-复制到缓存区-复制到用户数据 功能，可根据 GUID 获取文件当前路径</para>
+    /// </remarks>
     public class FileManager : BaseManager
     {
         [SerializeField]
@@ -26,12 +30,19 @@ namespace CyanStars.Framework.File
         public readonly FileBrowser.Filter SpriteFilter = new FileBrowser.Filter("图片", ".jpg", ".png");
         public readonly FileBrowser.Filter AudioFilter = new FileBrowser.Filter("音频", ".mp3", ".wav", ".ogg");
 
+        private string TempFolderPath => Path.Combine(Application.temporaryCachePath, "FileManager");
+
+        /// <summary>
+        /// 目标路径:缓存文件路径 双向字典
+        /// </summary>
+        /// <remarks>键、值都不应该重复</remarks>
+        private BiDirectionalDictionary<string, string> targetPathToTempPathMap =
+            new BiDirectionalDictionary<string, string>();
+
 
         public override int Priority { get; }
 
-        /// <summary>
-        /// 管理器初始化，在此处对 FileBrowser 进行全局配置
-        /// </summary>
+
         public override void OnInit()
         {
             // 设置颜色主题
@@ -51,7 +62,8 @@ namespace CyanStars.Framework.File
         {
         }
 
-        #region --- Public API ---
+
+        #region --- FileBrowser API ---
 
         /// <summary>
         /// 获取单个文件的路径
@@ -167,6 +179,10 @@ namespace CyanStars.Framework.File
                 FileBrowser.PickMode.Folders, false, null, null, title, "选择");
         }
 
+        #endregion
+
+        #region --- Serialization API ---
+
         /// <summary>
         /// 从指定的绝对路径加载资源（如图片、文本、音频等）
         /// </summary>
@@ -246,6 +262,104 @@ namespace CyanStars.Framework.File
 
         #endregion
 
+        #region --- TempFiles API ---
+
+        /// <summary>
+        /// 将文件复制到缓存区
+        /// </summary>
+        /// <remarks>将会覆盖目标文件！</remarks>
+        /// <param name="originalFilePath">原始文件绝对路径（含文件名和后缀）</param>
+        /// <param name="targetFilePath">目标绝对路径（含文件名和后缀）</param>
+        /// <returns>缓存文件绝对路径（含文件名和后缀）</returns>
+        /// <exception cref="ArgumentException">参数为空或 null / 重复的目标路径或文件缓存路径</exception>
+        /// <exception cref="FileNotFoundException">原始文件不存在</exception>
+        public string TempFile(string originalFilePath, string targetFilePath)
+        {
+            if (string.IsNullOrEmpty(originalFilePath) || string.IsNullOrEmpty(targetFilePath))
+            {
+                throw new ArgumentException();
+            }
+
+            if (!System.IO.File.Exists(originalFilePath))
+            {
+                throw new FileNotFoundException();
+            }
+
+            // 复制文件到缓存区，并为缓存文件添加 7 位 .[GUID] 后缀名
+            string fileName = Path.GetFileName(originalFilePath);
+            string shortGuid = Guid.NewGuid().ToString("N").Substring(0, 7);
+            string tempFilePath = Path.Combine(TempFolderPath, $"{fileName}.{shortGuid}");
+
+            Directory.CreateDirectory(TempFolderPath);
+            System.IO.File.Copy(originalFilePath, tempFilePath, true);
+
+            targetPathToTempPathMap.Add(targetFilePath, tempFilePath);
+            return tempFilePath;
+        }
+
+        /// <summary>
+        /// 将缓存区的全部文件移动到目标路径，然后清空缓存区文件
+        /// </summary>
+        /// <remarks>将会覆盖目标文件！</remarks>
+        public void SaveAllFiles()
+        {
+            try
+            {
+                if (targetPathToTempPathMap.Count == 0)
+                {
+                    Debug.Log("没有任何暂存内容要保存");
+                    return;
+                }
+
+                BiDirectionalDictionary<string, string> newMap =
+                    new BiDirectionalDictionary<string, string>(targetPathToTempPathMap);
+                foreach (var pair in newMap)
+                {
+                    string? folderPath = Path.GetDirectoryName(pair.Key);
+                    if (string.IsNullOrEmpty(folderPath))
+                    {
+                        Debug.LogError("获取路径出错！");
+                        return;
+                    }
+
+                    // 如果文件夹路径不存在，创建路径
+                    Directory.CreateDirectory(folderPath);
+
+                    // 如果目标文件存在，删除并移动临时文件
+                    if (System.IO.File.Exists(pair.Key))
+                    {
+                        System.IO.File.Delete(pair.Key);
+                    }
+
+                    //TODO: 如果删除文件后异常导致无法移动，将导致数据丢失，考虑先移动后重命名或升级 .net 版本后的 Move() 方法重载
+                    System.IO.File.Move(pair.Value, pair.Key);
+
+                    // 从映射表中移除键值对
+                    targetPathToTempPathMap.RemoveByKey(pair.Key);
+                }
+            }
+            finally
+            {
+                if (targetPathToTempPathMap.Count == 0)
+                {
+                    Directory.Delete(TempFolderPath, true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 取消保存并清空缓存文件
+        /// </summary>
+        public void ClearTempFiles()
+        {
+            targetPathToTempPathMap.Clear();
+            if (Directory.Exists(TempFolderPath))
+            {
+                Directory.Delete(TempFolderPath, true);
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// 检查文件浏览器是否已经打开，并打印警告
