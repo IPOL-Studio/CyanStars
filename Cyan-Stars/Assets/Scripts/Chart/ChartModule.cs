@@ -140,6 +140,11 @@ namespace CyanStars.Chart
             int internalPacksCount = loadingTasks.Count;
 
             // 将玩家谱包添加到任务
+            if (!Directory.Exists(PlayerChartPacksFolderPath))
+            {
+                Directory.CreateDirectory(PlayerChartPacksFolderPath);
+            }
+
             var playerChartPaths = Directory.EnumerateFiles(PlayerChartPacksFolderPath, ChartPackFileName,
                 SearchOption.AllDirectories);
             foreach (var path in playerChartPaths)
