@@ -568,7 +568,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <param name="path">曲绘大图外部绝对路径</param>
         public async Task ImportCoverFile(string path)
         {
-            // 加载 Texture2D 到内存，保存时检查是否需要替换文件，并将 Texture2D 转为文件写入
+            // 加载 Texture2D 到内存，保存时检查是否需要替换文件，并将临时文件写入谱包 Assets 文件夹
             needCopyCoverWhenSave = true;
             string fileName = Path.GetFileName(path);
             coverTempFilePath = GameRoot.File.TempFile(path, Path.Combine(WorkspacePath, "Assets", fileName));
