@@ -101,6 +101,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
         /// </summary>
         private void RefreshAudioAndContent()
         {
+            StopAudio();
             SetNewAudioClip();
             CalculateTotalBeatsAndRefreshUI();
             return;
@@ -480,7 +481,16 @@ namespace CyanStars.GamePlay.ChartEditor.View
         /// </summary>
         private void SwitchAudioPlayingState()
         {
+            if (!audioSource.clip || Model.AppliedMusicVersionData == null)
+            {
+                Debug.LogError("未指定 Clip 或 MusicVersionData，EditArea 无法播放音频");
+                isChartEditorAudioPlaying = false;
+                StopAudio();
+                return;
+            }
+
             isChartEditorAudioPlaying = !isChartEditorAudioPlaying;
+
             if (isChartEditorAudioPlaying)
             {
                 PlayAudio();
@@ -489,36 +499,39 @@ namespace CyanStars.GamePlay.ChartEditor.View
             {
                 StopAudio();
             }
+        }
+
+        /// <summary>
+        /// 根据当前的 content 进度和 offset 自动确定播放时机
+        /// </summary>
+        private void PlayAudio()
+        {
+            if (!audioSource.clip || Model.AppliedMusicVersionData == null)
+            {
+                Debug.LogError("未指定 Clip 或 MusicVersionData，EditArea 无法播放音频");
+                isChartEditorAudioPlaying = false;
+                StopAudio();
+                return;
+            }
+
+            // 整个 content 对应的音乐时长（ms） = clip 时长 + offset
+            int totalTime = (int)audioSource.clip.length * 1000 + Model.AppliedMusicVersionData.Offset;
+            int currentTime = (int)(totalTime * scrollRect.verticalNormalizedPosition);
+            int audioTime = currentTime - Model.AppliedMusicVersionData.Offset;
+
+            if (audioTime >= 0)
+            {
+                // 直接从指定时间开始播放
+                audioSource.time = audioTime / 1000f;
+                audioSource.Play();
+            }
+            else
+            {
+                // 延迟一段时间后从 0 开始播放
+                playCoroutine = StartCoroutine(PlayAudioAfterDelay(-audioTime / 1000f));
+            }
 
             return;
-
-
-            // 根据当前的 content 进度和 offset 自动确定播放时机
-            void PlayAudio()
-            {
-                if (!audioSource.clip || Model.AppliedMusicVersionData == null)
-                {
-                    Debug.LogError("未指定 Clip 或 MusicVersionData，EditArea 无法播放音频");
-                    return;
-                }
-
-                // 整个 content 对应的音乐时长（ms） = clip 时长 + offset
-                int totalTime = (int)audioSource.clip.length * 1000 + Model.AppliedMusicVersionData.Offset;
-                int currentTime = (int)(totalTime * scrollRect.verticalNormalizedPosition);
-                int audioTime = currentTime - Model.AppliedMusicVersionData.Offset;
-
-                if (audioTime >= 0)
-                {
-                    // 直接从指定时间开始播放
-                    audioSource.time = audioTime / 1000f;
-                    audioSource.Play();
-                }
-                else
-                {
-                    // 延迟一段时间后从 0 开始播放
-                    playCoroutine = StartCoroutine(PlayAudioAfterDelay(-audioTime / 1000f));
-                }
-            }
 
             // 迭代器协程，用于在指定时间后从头开始播放 audio（见于 offset 为正数且当前正在播放这段内容时）
             IEnumerator PlayAudioAfterDelay(float delay)
@@ -528,20 +541,23 @@ namespace CyanStars.GamePlay.ChartEditor.View
                 audioSource.Play();
                 playCoroutine = null;
             }
+        }
 
-            // 立刻停止播放，或取消即将播放的协程
-            void StopAudio()
+
+        /// <summary>
+        /// 立刻停止播放，或取消即将播放的协程
+        /// </summary>
+        private void StopAudio()
+        {
+            if (audioSource.isPlaying)
             {
-                if (audioSource.isPlaying)
-                {
-                    audioSource.Stop();
-                }
+                audioSource.Stop();
+            }
 
-                if (playCoroutine != null)
-                {
-                    StopCoroutine(playCoroutine);
-                    playCoroutine = null;
-                }
+            if (playCoroutine != null)
+            {
+                StopCoroutine(playCoroutine);
+                playCoroutine = null;
             }
         }
 
@@ -552,6 +568,12 @@ namespace CyanStars.GamePlay.ChartEditor.View
         public void OnPointerClick(PointerEventData eventData)
         {
             // TODO: 优化计算
+
+            if (Model.TotalMusicTime == null || Model.TotalMusicTime == 0 || Model.BpmGroupDatas.Count == 0)
+            {
+                // 没有有效时间或 BPM 组时无法创建音符
+                return;
+            }
 
             // 将屏幕坐标转为局部坐标
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -657,14 +679,14 @@ namespace CyanStars.GamePlay.ChartEditor.View
                     return;
                 }
 
-                if (EventSystem.current.currentSelectedGameObject &&
-                    (EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() ||
-                     EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>()))
+                if (EventSystem.current.currentSelectedGameObject != null &&
+                    (EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() != null ||
+                     EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null))
                 {
                     return;
                 }
 
-                isChartEditorAudioPlaying = !isChartEditorAudioPlaying;
+                SwitchAudioPlayingState();
             }
 
             if (isChartEditorAudioPlaying)

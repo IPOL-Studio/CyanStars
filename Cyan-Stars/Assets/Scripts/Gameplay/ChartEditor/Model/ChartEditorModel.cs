@@ -23,12 +23,16 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <remarks>精简无关元素方便新手理解制谱器，只允许设置 1 个 BPM 组、曲目版本，隐藏变速和事件相关设置</remarks>
         public bool IsSimplification { get; private set; } = true;
 
+
+        /// <summary>
+        /// 当前制谱器应用的音乐版本数据
+        /// </summary>
+        public MusicVersionData? AppliedMusicVersionData { get; private set; } = null;
+
         /// <summary>
         /// 当前在制谱器内加载的音乐
         /// </summary>
         public AudioClip? SelectedAudioClip { get; private set; } = null;
-
-        public MusicVersionData? AppliedMusicVersionData { get; private set; } = null;
 
         /// <summary>
         /// 计算 offset 后，当前选中的音乐的实际时长（ms）
@@ -125,9 +129,19 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// </summary>
         public bool BpmGroupCanvasVisibleness { get; private set; } = false;
 
+        /// <summary>
+        /// 变速组弹窗可见性
+        /// </summary>
         public bool SpeedGroupCanvasVisibleness { get; private set; } = false; // TODO
+
+        /// <summary>
+        /// 视觉效果 Track 弹窗可见性
+        /// </summary>
         public bool EffectTrackCanvasVisibleness { get; private set; } = false; // TODO
 
+        /// <summary>
+        /// 是否有任一弹窗处于打开状态
+        /// </summary>
         public bool IsAnyFloatingCanvasOn =>
             ChartPackDataCanvasVisibleness || ChartDataCanvasVisibleness || MusicVersionCanvasVisibleness ||
             BpmGroupCanvasVisibleness || SpeedGroupCanvasVisibleness || EffectTrackCanvasVisibleness;
@@ -774,9 +788,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 向列表添加一个新的音乐版本
         /// </summary>
         /// <param name="newData">要添加的音乐版本数据</param>
-        public void AddMusicVersionItem(MusicVersionData newData = null)
+        public void AddMusicVersionItem(MusicVersionData? newData = null)
         {
-            newData = newData ?? new MusicVersionData();
+            newData ??= new MusicVersionData();
             foreach (MusicVersionData musicVersionData in MusicVersionDatas)
             {
                 if (musicVersionData.AudioFilePath == newData.AudioFilePath)
@@ -805,9 +819,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <param name="musicVersionItem">音乐版本 item</param>
         public async Task ApplyMusicVersionItem(MusicVersionData musicVersionItem)
         {
+            AppliedMusicVersionData = musicVersionItem;
             string musicFilePath = Path.Combine(WorkspacePath, musicVersionItem.AudioFilePath);
             SelectedAudioClip = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicFilePath);
-            AppliedMusicVersionData = musicVersionItem;
             // TODO
         }
 
@@ -843,6 +857,15 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 MusicVersionDatas[itemIndex].VersionTitle = newTitle;
                 OnMusicVersionDataChanged?.Invoke();
             }
+        }
+
+        /// <summary>
+        /// 导入音频文件
+        /// </summary>
+        /// <param name="filePath">音频文件绝对路径</param>
+        public void ImportMusicFile(string filePath)
+        {
+
         }
 
         /// <summary>
