@@ -58,6 +58,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             {
                 RefreshFunctionCanvas(isOn, Model.IsSimplification);
             });
+            saveButton.onClick.AddListener(() => { Model.Save(); });
             chartPackDataButton.onClick.AddListener(() => { Model.SetChartPackDataCanvasVisibleness(true); });
             chartDataButton.onClick.AddListener(() => { Model.SetChartDataCanvasVisibleness(true); });
             musicVersionButton.onClick.AddListener(() => { Model.SetMusicVersionCanvasVisibleness(true); });

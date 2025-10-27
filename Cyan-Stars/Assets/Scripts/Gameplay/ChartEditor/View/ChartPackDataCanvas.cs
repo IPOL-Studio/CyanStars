@@ -137,7 +137,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             previewEndField3.text = Model.ChartPackData.MusicPreviewEndBeat.Denominator.ToString();
 
             // 刷新曲绘路径、预览区域可见性、图片材质
-            coverPath.text = Model.ChartPackData.CoverFilePath;
+            coverPath.text = Model.ChartPackData.CoverFilePath?.Replace("\\", "/");
             chartCropFrame.SetActive(Model.ChartPackData.CoverFilePath != null);
             backRawImage.texture = Model.CoverTexture;
             topRawImage.texture = Model.CoverTexture;

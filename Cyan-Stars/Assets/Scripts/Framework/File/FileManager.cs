@@ -333,7 +333,7 @@ namespace CyanStars.Framework.File
                 new BiDirectionalDictionary<string, string>(targetPathToTempPathMap);
             foreach (var pair in newMap)
             {
-                SaveFile(pair.Value);
+                _ = SaveFile(pair.Value, out _);
             }
         }
 
@@ -341,27 +341,30 @@ namespace CyanStars.Framework.File
         /// 将指定的临时文件保存
         /// </summary>
         /// <param name="tempFilePath">临时文件绝地路径</param>
-        public void SaveFile(string tempFilePath)
+        /// <param name="toggleFilePath">目标文件路径</param>
+        /// <returns>是否成功保存</returns>
+        public bool SaveFile(string tempFilePath, out string? toggleFilePath)
         {
+            toggleFilePath = null;
             try
             {
                 if (string.IsNullOrEmpty(tempFilePath))
                 {
                     Debug.LogError("获取临时文件路径出错！");
-                    return;
+                    return false;
                 }
 
-                if (!targetPathToTempPathMap.TryGetKey(tempFilePath, out string toggleFilePath))
+                if (!targetPathToTempPathMap.TryGetKey(tempFilePath, out toggleFilePath))
                 {
-                    Debug.LogError("无法获取目标文件路径！");
-                    return;
+                    Debug.LogWarning("无法获取目标文件路径，传入的不是临时文件路径或文件已保存？");
+                    return false;
                 }
 
                 string? toggleFolderPath = Path.GetDirectoryName(toggleFilePath);
                 if (string.IsNullOrEmpty(toggleFolderPath))
                 {
                     Debug.LogError("获取目标文件路径出错！");
-                    return;
+                    return false;
                 }
 
                 // 如果目标文件夹路径不存在，创建路径
@@ -374,10 +377,12 @@ namespace CyanStars.Framework.File
                 }
 
                 //TODO: 如果删除文件后异常导致无法移动，将导致数据丢失，考虑先移动后重命名或升级 .net 版本后的 Move() 方法重载
-                System.IO.File.Move(toggleFilePath, tempFilePath);
+                System.IO.File.Move(tempFilePath, toggleFilePath);
 
                 // 从映射表中移除键值对
                 targetPathToTempPathMap.RemoveByValue(tempFilePath);
+
+                return true;
             }
             finally
             {

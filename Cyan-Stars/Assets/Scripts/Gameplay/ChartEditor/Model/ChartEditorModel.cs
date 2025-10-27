@@ -149,6 +149,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
         // --- 从磁盘加载到内存中的、经过校验后的谱包和谱面等数据，加载/保存时需要从读写磁盘。 ---
         public readonly string WorkspacePath;
+        public readonly string ChartFilePath;
         public readonly ChartPackData ChartPackData;
         public readonly ChartData ChartData;
         public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
@@ -158,6 +159,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
         // --- 内部变量 ---
         private bool needCopyCoverWhenSave = false; // 在保存时需要复制临时曲绘文件到 Assets 路径下
+        private bool needCopyAudioWhenSave = false; // 在保存时需要复制临时音乐文件到 Assets 路径下
         private string? coverTempFilePath = null;
 
 
@@ -257,13 +259,14 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 构造函数异步工厂方法
         /// </summary>
         /// <param name="workspacePath">谱包工作区绝对路径（谱包索引文件所在的文件夹路径）</param>
+        /// <param name="chartFilePath">谱面文件绝对路径</param>
         /// <param name="chartPackData">要加载到制谱器的谱包数据</param>
         /// <param name="chartData">要加载到制谱器的谱面数据</param>
         /// <returns>异步返回 EditorModel 实例</returns>
-        public static async Task<ChartEditorModel> CreateEditorModel(string workspacePath, ChartPackData chartPackData,
-            ChartData chartData)
+        public static async Task<ChartEditorModel> CreateEditorModel(string workspacePath, string chartFilePath,
+            ChartPackData chartPackData, ChartData chartData)
         {
-            ChartEditorModel model = new ChartEditorModel(workspacePath, chartPackData, chartData);
+            ChartEditorModel model = new ChartEditorModel(workspacePath, chartFilePath, chartPackData, chartData);
             model.CoverTexture = model.ChartPackData.CoverFilePath != null
                 ? await GameRoot.Asset.LoadAssetAsync<Texture2D>(Path.Combine(workspacePath,
                     model.ChartPackData.CoverFilePath))
@@ -275,11 +278,14 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 构造函数
         /// </summary>
         /// <param name="workspacePath">谱包工作区绝对路径（谱包索引文件所在的文件夹路径）</param>
+        /// <param name="chartFilePath">谱面文件绝对路径</param>
         /// <param name="chartPackData">要加载到制谱器的谱包数据</param>
         /// <param name="chartData">要加载到制谱器的谱面数据</param>
-        private ChartEditorModel(string workspacePath, ChartPackData chartPackData, ChartData chartData)
+        private ChartEditorModel(string workspacePath, string chartFilePath, ChartPackData chartPackData,
+            ChartData chartData)
         {
             WorkspacePath = workspacePath;
+            ChartFilePath = chartFilePath;
             ChartPackData = chartPackData;
             ChartData = chartData;
 
@@ -297,48 +303,64 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         #region 制谱器管理
 
         /// <summary>
-        /// 保存谱包和谱面文件到磁盘
+        /// 保存谱包和谱面文件到磁盘，并将相对路径统一为正斜杠
         /// </summary>
         public void Save()
         {
-            // 将 Texture2D 转为文件并储存
+            // 复制临时文件到资源目录，并更新路径引用
             if (needCopyCoverWhenSave)
             {
                 needCopyCoverWhenSave = false;
-                if (coverTempFilePath == null || CoverTexture == null)
+
+                if (ChartPackData.CoverFilePath == null)
                 {
-                    Debug.LogError("文件名或材质为空，请检查");
-                    OnChartPackDataChanged?.Invoke();
                     return;
                 }
 
-                string assetsFolderPath = Path.Combine(WorkspacePath, "Assets");
-                if (!Directory.Exists(assetsFolderPath))
+                if (GameRoot.File.SaveFile(ChartPackData.CoverFilePath, out string? toggleFilePath) &&
+                    toggleFilePath != null)
                 {
-                    Directory.CreateDirectory(Path.Combine(assetsFolderPath));
+                    toggleFilePath = toggleFilePath.Replace("\\", "/");
+                    Uri workspaceUri = new Uri(WorkspacePath + "/");
+                    Uri absoluteUri = new Uri(toggleFilePath);
+                    Uri relativeUri = workspaceUri.MakeRelativeUri(absoluteUri);
+                    ChartPackData.CoverFilePath = Uri.UnescapeDataString(relativeUri.ToString());
                 }
-
-                byte[] coverBytes;
-                switch (Path.GetExtension(coverTempFilePath).ToLower())
-                {
-                    case ".jpg":
-                    case ".jpeg":
-                        coverBytes = CoverTexture.EncodeToJPG(100);
-                        break;
-                    case ".png":
-                        coverBytes = CoverTexture.EncodeToPNG();
-                        break;
-                    default:
-                        Debug.LogError($"不支持的曲绘文件格式：{coverTempFilePath}");
-                        coverBytes = new byte[] { };
-                        OnChartPackDataChanged?.Invoke();
-                        break;
-                }
-
-                ChartPackData.CoverFilePath = Path.Combine(assetsFolderPath, coverTempFilePath);
-                File.WriteAllBytes(ChartPackData.CoverFilePath, coverBytes);
-                OnChartPackDataChanged?.Invoke();
             }
+
+            // 复制音乐文件到资源目录，并更新路径引用
+            if (needCopyAudioWhenSave)
+            {
+                needCopyAudioWhenSave = false;
+
+                foreach (var item in ChartPackData.MusicVersionDatas)
+                {
+                    if (GameRoot.File.SaveFile(item.AudioFilePath, out string? toggleFilePath) &&
+                        toggleFilePath != null)
+                    {
+                        toggleFilePath = toggleFilePath.Replace("\\", "/");
+                        Uri workspaceUri = new Uri(WorkspacePath + "/");
+                        Uri absoluteUri = new Uri(toggleFilePath);
+                        Uri relativeUri = workspaceUri.MakeRelativeUri(absoluteUri);
+                        item.AudioFilePath = Uri.UnescapeDataString(relativeUri.ToString());
+                    }
+                }
+            }
+
+            // 将谱包和谱面文件保存到磁盘
+            if (!Directory.Exists(WorkspacePath))
+            {
+                Directory.CreateDirectory(WorkspacePath);
+            }
+
+            GameRoot.File.SerializationToJson(ChartPackData, Path.Combine(WorkspacePath, "ChartPack.json"));
+
+            if (!Directory.Exists(Path.GetDirectoryName(ChartFilePath)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(ChartFilePath));
+            }
+
+            GameRoot.File.SerializationToJson(ChartData, ChartFilePath);
         }
 
         /// <summary>
@@ -862,10 +884,19 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <summary>
         /// 导入音频文件
         /// </summary>
-        /// <param name="filePath">音频文件绝对路径</param>
-        public void ImportMusicFile(string filePath)
+        /// <param name="musicVersionData">要编辑的音频版本数据</param>
+        /// <param name="originalFilePath">音频文件绝对路径</param>
+        public void ImportMusicFile(MusicVersionData musicVersionData, string originalFilePath)
         {
+            needCopyAudioWhenSave = true;
 
+            string shortGuid = Guid.NewGuid().ToString("N").Substring(0, 7);
+            string fileNameWithoutExt = Path.GetFileNameWithoutExtension(originalFilePath);
+            string extension = Path.GetExtension(originalFilePath);
+            string targetFileName = $"{fileNameWithoutExt}.{shortGuid}{extension}";
+            string targetFilePath = Path.Combine(WorkspacePath, "Assets", targetFileName);
+
+            musicVersionData.AudioFilePath = GameRoot.File.TempFile(originalFilePath, targetFilePath);
         }
 
         /// <summary>
@@ -966,41 +997,6 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
         }
 
-        #endregion
-
-        #region 谱面管理
-
-        public void UpdateDifficulty(ChartDifficulty? difficulty)
-        {
-            // TODO
-            throw new NotSupportedException();
-        }
-
-        public void UpdateLevel(string text)
-        {
-            // TODO
-            throw new NotSupportedException();
-        }
-
-        public void UpdateReadyBeat(string text)
-        {
-            if (!int.TryParse(text, out int value))
-            {
-                OnChartDataChanged?.Invoke();
-            }
-
-            if (value < 0)
-            {
-                OnChartDataChanged?.Invoke();
-            }
-
-            if (value != ChartData.ReadyBeat)
-            {
-                ChartData.ReadyBeat = value;
-                OnChartDataChanged?.Invoke();
-            }
-        }
-
         #region BPM 组管理
 
         /// <summary>
@@ -1097,6 +1093,42 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         #endregion
+
+        #endregion
+
+        #region 谱面管理
+
+        public void UpdateDifficulty(ChartDifficulty? difficulty)
+        {
+            // TODO
+            throw new NotSupportedException();
+        }
+
+        public void UpdateLevel(string text)
+        {
+            // TODO
+            throw new NotSupportedException();
+        }
+
+        public void UpdateReadyBeat(string text)
+        {
+            if (!int.TryParse(text, out int value))
+            {
+                OnChartDataChanged?.Invoke();
+            }
+
+            if (value < 0)
+            {
+                OnChartDataChanged?.Invoke();
+            }
+
+            if (value != ChartData.ReadyBeat)
+            {
+                ChartData.ReadyBeat = value;
+                OnChartDataChanged?.Invoke();
+            }
+        }
+
 
         #region 变速组管理
 

@@ -54,9 +54,13 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
             // 通过序列化获取深拷贝的谱包数据
             ChartPackData chartPackData = await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackFilePath);
             // 这个方法会直接序列化获取深拷贝
+            ChartMetadata metadata =
+                module.SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas[(int)module.SelectedChartIndex];
+            string chartFilePath = Path.Combine(workspacePath, metadata.FilePath);
             ChartData chartData =
                 await module.GetChartDataFromDisk(module.SelectedRuntimeChartPack, (int)module.SelectedChartIndex);
-            ChartEditorModel chartEditorModel = await ChartEditorModel.CreateEditorModel(workspacePath, chartPackData, chartData);
+            ChartEditorModel chartEditorModel =
+                await ChartEditorModel.CreateEditorModel(workspacePath, chartFilePath, chartPackData, chartData);
 
             foreach (var baseView in canvas.gameObject.GetComponentsInChildren<BaseView>())
             {
