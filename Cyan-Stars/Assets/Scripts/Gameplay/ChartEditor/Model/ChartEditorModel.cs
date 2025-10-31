@@ -252,6 +252,11 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// </summary>
         public event Action? OnBpmGroupCanvasVisiblenessChanged;
 
+        /// <summary>
+        /// 打开提示弹窗
+        /// </summary>
+        public event Action<PopupData>? OnShowPopupRequest;
+
         #endregion
 
 
@@ -807,7 +812,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 向列表添加一个新的音乐版本
+        /// 向列表末尾添加一个新的音乐版本
         /// </summary>
         /// <param name="newData">要添加的音乐版本数据</param>
         public void AddMusicVersionItem(MusicVersionData? newData = null)

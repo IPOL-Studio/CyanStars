@@ -136,7 +136,7 @@ MonoBehaviour:
     BundleName: charteditor.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 482172
+    AssetsLength: 494837
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/BeatInputField.prefab
       Length: 49161
@@ -161,7 +161,7 @@ MonoBehaviour:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/DragNote.prefab
       Length: 5786
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/EndLine.prefab
-      Length: 6767
+      Length: 7000
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/HoldNote.prefab
       Length: 8075
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/MusicVersionItem.prefab
@@ -174,6 +174,8 @@ MonoBehaviour:
       Length: 5754
     - Name: Assets/BundleRes/Prefabs/ChartEditor/InputFieldWithButton.prefab
       Length: 27917
+    - Name: Assets/BundleRes/Prefabs/ChartEditor/PopupCanvasButton.prefab
+      Length: 12432
     - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u5F39\u7A97Canvas.prefab"
       Length: 12412
     - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u65B0\u5EFA\u6309\u94AE\u6D6E\u6761Canvas.prefab"
@@ -304,10 +306,10 @@ MonoBehaviour:
     BundleName: scenes.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 1284856
+    AssetsLength: 1364301
     Assets:
     - Name: Assets/BundleRes/Scenes/ChartEditor.unity
-      Length: 1168303
+      Length: 1247748
     - Name: Assets/BundleRes/Scenes/Dark.unity
       Length: 57120
     - Name: Assets/BundleRes/Scenes/Warm.unity
@@ -357,10 +359,10 @@ MonoBehaviour:
     BundleName: internalmap.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 429
+    AssetsLength: 444
     Assets:
     - Name: Assets/BundleRes/ScriptObjects/InternalMap/InternalMapList.asset
-      Length: 429
+      Length: 444
   - RelativePath: "CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973/cover_png.bundle"
     DirectoryName: "CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973"
     BundleName: cover_png.bundle
@@ -733,7 +735,7 @@ MonoBehaviour:
     BundleName: charteditor.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 5233865
+    AssetsLength: 5245677
     Assets:
     - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/DropdownBackground.png
       Length: 46445
@@ -763,6 +765,8 @@ MonoBehaviour:
       Length: 3081
     - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Apply.png
       Length: 4526
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Arrow.png
+      Length: 11812
     - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Bell.png
       Length: 3767
     - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Copy.png
