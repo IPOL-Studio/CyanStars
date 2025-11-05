@@ -90,6 +90,13 @@ namespace CyanStars.GamePlay.ChartEditor.View
             addItemButton = addItemButtonObject.GetComponent<Button>();
             closeCanvasButton.onClick.AddListener(() => { Model.SetMusicVersionCanvasVisibleness(false); });
             addItemButton.onClick.AddListener(() => { Model.AddMusicVersionItem(); });
+            deleteMusicVersionButton.onClick.AddListener(() =>
+            {
+                if (Model.SelectedMusicVersionItemIndex != null)
+                {
+                    Model.DeleteMusicVersionItem((int)Model.SelectedMusicVersionItemIndex);
+                }
+            });
 
             Model.OnMusicVersionDataChanged += RefreshUI;
             Model.OnMusicVersionCanvasVisiblenessChanged += RefreshUI;

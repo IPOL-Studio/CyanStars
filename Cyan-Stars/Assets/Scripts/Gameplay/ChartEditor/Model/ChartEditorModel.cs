@@ -862,6 +862,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <summary>
         /// 从列表删除音乐版本数据元素
         /// </summary>
+        /// <param name="index">音乐版本 item 下标</param>
         public void DeleteMusicVersionItem(int index)
         {
             MusicVersionDatas.RemoveAt(index);
@@ -872,6 +873,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             {
                 AddMusicVersionItem();
             }
+
 
             if (MusicVersionDatas.Count == 0 && SelectedBpmItemIndex != null)
             {
@@ -888,27 +890,16 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 在制谱器内应用某个音乐版本
+        /// 复制某个音乐版本 item，并将副本置于列表尾
         /// </summary>
-        /// <param name="musicVersionItem">音乐版本 item</param>
-        public async Task ApplyMusicVersionItem(MusicVersionData musicVersionItem)
+        /// <param name="index">音乐版本 item 下标</param>
+        public void CopyMusicVersionItem(int index)
         {
-            AppliedMusicVersionData = musicVersionItem;
-            string musicFilePath = Path.Combine(WorkspacePath, musicVersionItem.AudioFilePath);
-            SelectedAudioClip = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicFilePath);
-            // TODO
-        }
-
-        /// <summary>
-        /// 复制某个音乐版本到列表尾
-        /// </summary>
-        /// <param name="musicVersionItem">音乐版本 item</param>
-        public void CopyMusicVersionItem(MusicVersionData musicVersionItem)
-        {
-            MusicVersionData copiedItem = new MusicVersionData(musicVersionItem.VersionTitle,
-                musicVersionItem.AudioFilePath, musicVersionItem.Offset,
+            MusicVersionData data = MusicVersionDatas[index];
+            MusicVersionData copiedItem = new MusicVersionData(data.VersionTitle,
+                data.AudioFilePath, data.Offset,
                 new Dictionary<string, List<string>>());
-            foreach (KeyValuePair<string, List<string>> staff in musicVersionItem.Staffs)
+            foreach (KeyValuePair<string, List<string>> staff in data.Staffs)
             {
                 List<string> copiedStaffJobs = new List<string>(staff.Value);
                 copiedItem.Staffs.Add(staff.Key, copiedStaffJobs);
@@ -916,6 +907,89 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
             MusicVersionDatas.Add(copiedItem);
             OnMusicVersionDataChanged?.Invoke();
+        }
+
+        public void MoveUpMusicVersionItem(int index)
+        {
+            if (index == 0)
+            {
+                Debug.Log("无需上移第一个音乐版本 item");
+                return;
+            }
+
+            MusicVersionData data = MusicVersionDatas[index];
+            MusicVersionDatas.RemoveAt(index);
+            MusicVersionDatas.Insert(index - 1, data);
+            OnMusicVersionDataChanged?.Invoke();
+
+            if (SelectedMusicVersionItemIndex == index)
+            {
+                SelectedMusicVersionItemIndex--;
+                OnSelectedMusicVersionItemChanged?.Invoke();
+            }
+            else if (SelectedBpmItemIndex == index - 1)
+            {
+                SelectedBpmItemIndex++;
+                OnSelectedBpmItemChanged?.Invoke();
+            }
+
+            if (index - 1 == 0)
+            {
+                // TODO：移动到顶了，更新 audioClip
+            }
+        }
+
+        public void MoveDownMusicVersionItem(int index)
+        {
+            if (index == MusicVersionDatas.Count - 1)
+            {
+                Debug.Log("无需下移最后一个音乐版本 item");
+                return;
+            }
+
+            MusicVersionData data = MusicVersionDatas[index];
+            MusicVersionDatas.RemoveAt(index);
+            MusicVersionDatas.Insert(index + 1, data);
+            OnMusicVersionDataChanged?.Invoke();
+
+            if (SelectedMusicVersionItemIndex == index)
+            {
+                SelectedMusicVersionItemIndex++;
+                OnSelectedMusicVersionItemChanged?.Invoke();
+            }
+            else if (SelectedBpmItemIndex == index + 1)
+            {
+                SelectedBpmItemIndex--;
+                OnSelectedBpmItemChanged?.Invoke();
+            }
+
+            if (index == 0)
+            {
+                // TODO：第一个元素被下移了，更新 audioClip
+            }
+        }
+
+        /// <summary>
+        /// 在制谱器内置顶某个音乐版本 item
+        /// </summary>
+        /// <param name="index">音乐版本 item 下标</param>
+        public async Task TopMusicVersionItem(int index)
+        {
+            MusicVersionData data = MusicVersionDatas[index];
+            MusicVersionDatas.RemoveAt(index);
+            MusicVersionDatas.Insert(0, data);
+
+            if (SelectedBpmItemIndex < index)
+            {
+                SelectedBpmItemIndex++;
+                OnSelectedMusicVersionItemChanged?.Invoke();
+            }
+            else if (SelectedBpmItemIndex == index)
+            {
+                SelectedBpmItemIndex = 0;
+                OnSelectedMusicVersionItemChanged?.Invoke();
+            }
+            // TODO: 更新 audioClip
         }
 
         /// <summary>
