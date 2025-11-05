@@ -428,6 +428,12 @@ namespace CyanStars.Framework.File
             return true;
         }
 
+        public bool TrySearchByTogglePath(string toggleFilePath, out string? tempFilePath)
+        {
+            tempFilePath = null;
+            return targetPathToTempPathMap.TryGetValue(toggleFilePath, out tempFilePath);
+        }
+
         #endregion
 
         /// <summary>

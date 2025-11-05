@@ -73,7 +73,7 @@ namespace CyanStars.Framework.Utils
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="value">当此方法返回时，如果找到该键，则包含与指定键关联的值；否则，包含 value 参数的类型的默认值。</param>
-        /// <returns>如果成功找到键，则为 true；否则为 false。</returns>
+        /// <returns>如果成功找到值，则为 true；否则为 false。</returns>
         public bool TryGetValue(TKey key, out TValue value)
         {
             return Forward.TryGetValue(key, out value);

@@ -1,5 +1,8 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CyanStars.Chart;
 using CyanStars.GamePlay.ChartEditor.Model;
 using TMPro;
@@ -11,28 +14,35 @@ namespace CyanStars.GamePlay.ChartEditor.View
     public class StaffItem : BaseView
     {
         private bool isInit = false;
-        private MusicVersionData musicVersionData;
+        private int staffItemIndex;
+        private MusicVersionData musicVersionData = null!;
         private KeyValuePair<string, List<string>> staffItemData;
 
         [SerializeField]
-        private TMP_InputField staffIdField;
+        private TMP_InputField staffIdField = null!;
 
         [SerializeField]
-        private TMP_InputField staffJobField;
+        private TMP_InputField staffJobField = null!;
 
         [SerializeField]
-        private TMP_Dropdown staffJobDropdown;
+        private TMP_Dropdown staffJobDropdown = null!;
 
         [SerializeField]
-        private Button deleteItemButton;
+        private Button deleteItemButton = null!;
 
 
-        public void InitDataAndBind(ChartEditorModel chartEditorModel, MusicVersionData musicVersionData,
-            KeyValuePair<string, List<string>> staffItemData)
+        public void InitAndBind(ChartEditorModel chartEditorModel, int staffItemIndex)
         {
+            if (Model.SelectedMusicVersionItemIndex == null)
+            {
+                throw new NullReferenceException("StaffItem：未选中音乐版本，无法绑定");
+            }
+
             isInit = true;
-            this.musicVersionData = musicVersionData;
-            this.staffItemData = staffItemData;
+            this.staffItemIndex = staffItemIndex;
+            musicVersionData = Model.MusicVersionDatas[(int)Model.SelectedMusicVersionItemIndex];
+            staffItemData = musicVersionData.Staffs.ElementAt(this.staffItemIndex);
+
             Bind(chartEditorModel);
         }
 
@@ -44,6 +54,11 @@ namespace CyanStars.GamePlay.ChartEditor.View
             }
 
             base.Bind(chartEditorModel);
+
+            Model.OnMusicVersionDataChanged -= RefreshUI;
+            Model.OnMusicVersionDataChanged += RefreshUI;
+            Model.OnSelectedMusicVersionItemChanged -= RefreshUI;
+            Model.OnSelectedMusicVersionItemChanged += RefreshUI;
 
             staffIdField.onEndEdit.RemoveAllListeners();
             staffIdField.onEndEdit.AddListener((newName) =>

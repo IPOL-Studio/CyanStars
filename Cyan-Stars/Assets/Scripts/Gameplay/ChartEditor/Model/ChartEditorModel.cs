@@ -58,9 +58,14 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public EditTool SelectedEditTool { get; private set; } = EditTool.Select;
 
         /// <summary>
-        /// 当前选中编辑的 BPM 组下标
+        /// 当前选中编辑的 BPM 组 item 下标
         /// </summary>
         public int? SelectedBpmItemIndex { get; private set; } = null;
+
+        /// <summary>
+        /// 当前选中编辑的音乐版本 item 下标
+        /// </summary>
+        public int? SelectedMusicVersionItemIndex { get; private set; } = null;
 
 
         /// <summary>
@@ -216,6 +221,11 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 选中的 Bpm 组发生变化
         /// </summary>
         public event Action? OnSelectedBpmItemChanged;
+
+        /// <summary>
+        /// 选中的音乐版本发生变化
+        /// </summary>
+        public event Action? OnSelectedMusicVersionItemChanged;
 
         /// <summary>
         /// 变速组发生变化
@@ -523,7 +533,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnBpmGroupCanvasVisiblenessChanged?.Invoke();
         }
 
-        public void SelectBpmItem(int index)
+        public void SelectBpmItem(int? index)
         {
             if (SelectedBpmItemIndex != index)
             {
@@ -812,6 +822,19 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
+        /// 选中一个音乐版本 item
+        /// </summary>
+        /// <param name="index">item 下标</param>
+        public void SelectMusicVersionItem(int? index)
+        {
+            if (SelectedMusicVersionItemIndex != index)
+            {
+                SelectedMusicVersionItemIndex = index;
+                OnSelectedMusicVersionItemChanged?.Invoke();
+            }
+        }
+
+        /// <summary>
         /// 向列表末尾添加一个新的音乐版本
         /// </summary>
         /// <param name="newData">要添加的音乐版本数据</param>
@@ -827,17 +850,41 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
 
             MusicVersionDatas.Add(newData);
-
             OnMusicVersionDataChanged?.Invoke();
+
+            if (SelectedBpmItemIndex == null)
+            {
+                SelectedMusicVersionItemIndex = 0;
+                OnSelectedMusicVersionItemChanged?.Invoke();
+            }
         }
 
         /// <summary>
         /// 从列表删除音乐版本数据元素
         /// </summary>
-        public void DeleteMusicVersionItem(MusicVersionData oldItem)
+        public void DeleteMusicVersionItem(int index)
         {
-            MusicVersionDatas.Remove(oldItem);
+            MusicVersionDatas.RemoveAt(index);
             OnMusicVersionDataChanged?.Invoke();
+
+            // 如果删掉了所有的元素，且当前处于简易模式，则自动创建一个 item
+            if (MusicVersionDatas.Count == 0 && IsSimplification)
+            {
+                AddMusicVersionItem();
+            }
+
+            if (MusicVersionDatas.Count == 0 && SelectedBpmItemIndex != null)
+            {
+                // 如果删除后没有元素，则不选择元素
+                SelectedBpmItemIndex = null;
+                OnSelectedMusicVersionItemChanged?.Invoke();
+            }
+            else if (SelectedBpmItemIndex != null && SelectedBpmItemIndex > MusicVersionDatas.Count - 1)
+            {
+                // 如果删除后下标越界，则将下标改为最后一个元素
+                SelectedBpmItemIndex = MusicVersionDatas.Count - 1;
+                OnSelectedMusicVersionItemChanged?.Invoke();
+            }
         }
 
         /// <summary>
@@ -887,7 +934,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 导入音频文件
+        /// 为指定音乐版本导入音频文件
         /// </summary>
         /// <param name="musicVersionData">要编辑的音频版本数据</param>
         /// <param name="originalFilePath">音频文件绝对路径</param>
@@ -895,13 +942,34 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         {
             needCopyAudioWhenSave = true;
 
-            string shortGuid = Guid.NewGuid().ToString("N").Substring(0, 7);
             string fileNameWithoutExt = Path.GetFileNameWithoutExtension(originalFilePath);
             string extension = Path.GetExtension(originalFilePath);
-            string targetFileName = $"{fileNameWithoutExt}.{shortGuid}{extension}";
+            string targetFileName = $"{fileNameWithoutExt}{extension}";
             string targetFilePath = Path.Combine(WorkspacePath, "Assets", targetFileName);
 
-            musicVersionData.AudioFilePath = GameRoot.File.TempFile(originalFilePath, targetFilePath);
+            if (!GameRoot.File.TrySearchByTogglePath(targetFilePath, out string? tempFilePath))
+            {
+                // 缓存区不存在路径目标文件，可直接写入缓存
+                musicVersionData.AudioFilePath = GameRoot.File.TempFile(originalFilePath, targetFilePath);
+            }
+
+            // 存在目标文件，弹窗询问用户 覆盖/自动重命名/取消
+            OnShowPopupRequest?.Invoke(new PopupData("警告",
+                $"已存在同名文件，你希望如何处理？\n旧文件路径：{targetFilePath}",
+                true,
+                // 定义按钮文本和点击后行为
+                new KeyValuePair<string, Action?>("覆盖",
+                    () =>
+                    {
+                        musicVersionData.AudioFilePath = GameRoot.File.TempFile(originalFilePath, targetFilePath);
+                    }),
+                new KeyValuePair<string, Action?>("重命名", () =>
+                {
+                    string shortGuid = Guid.NewGuid().ToString("N").Substring(0, 7);
+                    targetFileName = $"{fileNameWithoutExt}.{shortGuid}{extension}";
+                    targetFilePath = Path.Combine(WorkspacePath, "Assets", targetFileName);
+                }),
+                new KeyValuePair<string, Action?>("取消", null)));
         }
 
         /// <summary>

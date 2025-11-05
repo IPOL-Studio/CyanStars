@@ -1,7 +1,6 @@
+#nullable enable
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using CyanStars.Chart;
 using CyanStars.GamePlay.ChartEditor.Model;
 using TMPro;
 using UnityEngine;
@@ -9,61 +8,26 @@ using UnityEngine.UI;
 
 namespace CyanStars.GamePlay.ChartEditor.View
 {
+    [RequireComponent(typeof(Button))]
     public class MusicVersionItem : BaseView
     {
-        private const int OffsetStep = 10;
+        [SerializeField]
+        private Button itemButton;
+
+        [SerializeField]
+        private GameObject itemLedObject;
+
+        [SerializeField]
+        private TMP_Text itemTitleText;
 
 
         private bool isInit = false;
-        private MusicVersionData musicVersionData;
-        private List<KeyValuePair<string, List<string>>> staffItems = new List<KeyValuePair<string, List<string>>>();
+        private int index;
 
-
-        [SerializeField]
-        private TMP_InputField titleField;
-
-        [SerializeField]
-        private TMP_Text audioFilePath;
-
-        [SerializeField]
-        private Button importMusicButton; //TODO: 从操作系统导入音频文件路径
-
-        [SerializeField]
-        private TMP_InputField offsetField;
-
-        [SerializeField]
-        private Button subOffsetButton;
-
-        [SerializeField]
-        private Button addOffsetButton;
-
-        [SerializeField]
-        private Button testOffsetButton;
-
-        [SerializeField]
-        private GameObject staffInfoFrameObject;
-
-        [SerializeField]
-        private GameObject staffItemPrefab;
-
-        [SerializeField]
-        private Button addStaffItemButton;
-
-        [SerializeField]
-        private Button deleteMusicVersionItemButton;
-
-        [SerializeField]
-        private Button copyMusicVersionItemButton;
-
-        [SerializeField]
-        private Button topMusicVersionItemButton;
-
-
-        public void InitDataAndBind(ChartEditorModel chartEditorModel, MusicVersionData musicVersionData)
+        public void InitAndBind(ChartEditorModel chartEditorModel, int index)
         {
             isInit = true;
-            this.musicVersionData = musicVersionData;
-            staffItems = musicVersionData.Staffs.ToList();
+            this.index = index;
             Bind(chartEditorModel);
         }
 
@@ -76,52 +40,30 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
             base.Bind(chartEditorModel);
 
-            titleField.onEndEdit.RemoveAllListeners();
-            titleField.onEndEdit.AddListener((text) => { Model.UpdateMusicVersionTitle(musicVersionData, text); });
-            offsetField.onEndEdit.RemoveAllListeners();
-            offsetField.onEndEdit.AddListener((text) => { Model.UpdateMusicVersionOffset(musicVersionData, text); });
-            subOffsetButton.onClick.RemoveAllListeners();
-            subOffsetButton.onClick.AddListener(() => { Model.AddMusicVersionOffsetValue(musicVersionData, -OffsetStep); });
-            addOffsetButton.onClick.RemoveAllListeners();
-            addOffsetButton.onClick.AddListener(() => { Model.AddMusicVersionOffsetValue(musicVersionData, OffsetStep); });
-            addStaffItemButton.onClick.RemoveAllListeners();
-            addStaffItemButton.onClick.AddListener(() => { Model.AddStaffItem(musicVersionData); });
-            deleteMusicVersionItemButton.onClick.RemoveAllListeners();
-            deleteMusicVersionItemButton.onClick.AddListener(() => { Model.DeleteMusicVersionItem(musicVersionData); });
-            copyMusicVersionItemButton.onClick.RemoveAllListeners();
-            copyMusicVersionItemButton.onClick.AddListener(() => { Model.CopyMusicVersionItem(musicVersionData); });
-            topMusicVersionItemButton.onClick.RemoveAllListeners();
-            topMusicVersionItemButton.onClick.AddListener(() => { Model.ApplyMusicVersionItem(musicVersionData); });
+            Model.OnMusicVersionDataChanged -= RefreshUI;
+            Model.OnMusicVersionDataChanged += RefreshUI;
+            Model.OnSelectedMusicVersionItemChanged -= RefreshUI;
+            Model.OnSelectedMusicVersionItemChanged += RefreshUI;
+
+            itemButton.onClick.RemoveAllListeners();
+            itemButton.onClick.AddListener(() => { Model.SelectMusicVersionItem(index); });
+
             RefreshUI();
         }
 
         private void RefreshUI()
         {
-            titleField.text = musicVersionData.VersionTitle;
-            audioFilePath.text = musicVersionData.AudioFilePath;
-            offsetField.text = musicVersionData.Offset.ToString();
+            // 如果 Model 中选中编辑此 item，就启用 led
+            itemLedObject.SetActive(Model.SelectedMusicVersionItemIndex != null &&
+                                    (int)Model.SelectedMusicVersionItemIndex == index);
 
-            // 删除多余元素
-            StaffItem[] items = staffInfoFrameObject.GetComponentsInChildren<StaffItem>();
-            for (int i = items.Length - 1; i >= musicVersionData.Staffs.Count; i--)
-            {
-                Destroy(items[i].gameObject);
-            }
+            itemTitleText.text = Model.MusicVersionDatas[index].VersionTitle;
+        }
 
-            // 刷新已有元素的内容
-            items = staffInfoFrameObject.GetComponentsInChildren<StaffItem>();
-            for (int i = 0; i < items.Length; i++)
-            {
-                items[i].InitDataAndBind(Model, musicVersionData, staffItems[i]);
-            }
-
-            // 添加并刷新新元素
-            for (int i = items.Length; i < musicVersionData.Staffs.Count; i++)
-            {
-                GameObject go = Instantiate(staffItemPrefab, staffInfoFrameObject.transform);
-                go.transform.SetSiblingIndex(staffInfoFrameObject.transform.childCount - 3);
-                go.GetComponent<StaffItem>().InitDataAndBind(Model, musicVersionData, staffItems[i]);
-            }
+        public void OnDestroy()
+        {
+            Model.OnMusicVersionDataChanged -= RefreshUI;
+            Model.OnSelectedMusicVersionItemChanged -= RefreshUI;
         }
     }
 }

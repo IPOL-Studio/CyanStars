@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using CyanStars.Chart;
 using CyanStars.GamePlay.ChartEditor.Model;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,16 +15,72 @@ namespace CyanStars.GamePlay.ChartEditor.View
         [SerializeField]
         private Button closeCanvasButton;
 
+        [Header("列表区域")]
         [SerializeField]
-        private GameObject musicVersionItemPrefab;
+        private GameObject listObject;
 
         [SerializeField]
-        private GameObject contentObject;
+        private GameObject listContentObject;
 
         [SerializeField]
         private GameObject addItemButtonObject;
 
+        [SerializeField]
+        private GameObject musicVersionItemPrefab;
+
+        [Header("数据编辑区域")]
+        [SerializeField]
+        private Canvas dataAreaCanvas;
+
+        [SerializeField]
+        private TMP_InputField titleField;
+
+        [SerializeField]
+        private TMP_Text filePathText;
+
+        [SerializeField]
+        private Button importFileButton;
+
+        [SerializeField]
+        private Button minusOffsetButton;
+
+        [SerializeField]
+        private TMP_InputField offsetField;
+
+        [SerializeField]
+        private Button addOffsetButton;
+
+        [SerializeField]
+        private Button testPlayButton;
+
+        [SerializeField]
+        private GameObject staffInfoAreaObject;
+
+        [SerializeField]
+        private Button addStaffItemButton;
+
+        [SerializeField]
+        private Button deleteMusicVersionButton;
+
+        [SerializeField]
+        private Button cloneMusicVersionButton;
+
+        [SerializeField]
+        private Button moveUpMusicVersionButton;
+
+        [SerializeField]
+        private Button moveDownMusicVersionButton;
+
+        [SerializeField]
+        private Button topMusicVersionButton;
+
+        [SerializeField]
+        private GameObject staffItemPrefab;
+
+
         private Button addItemButton;
+        private readonly List<MusicVersionItem> ListItems = new List<MusicVersionItem>();
+        private readonly List<StaffItem> StaffItems = new List<StaffItem>();
 
 
         public override void Bind(ChartEditorModel chartEditorModel)
@@ -44,36 +102,79 @@ namespace CyanStars.GamePlay.ChartEditor.View
             canvas.enabled = Model.MusicVersionCanvasVisibleness;
 
             addItemButtonObject.SetActive(!Model.IsSimplification);
+
+            // 精简模式下至少存在1个音乐版本，没有时自动补齐至1个
             if (Model.MusicVersionDatas.Count == 0 && Model.IsSimplification)
             {
                 Model.AddMusicVersionItem(new MusicVersionData());
             }
 
-
-            // 删除多余元素
-            MusicVersionItem[] items = contentObject.GetComponentsInChildren<MusicVersionItem>();
-            for (int i = items.Length - 1; i >= Model.MusicVersionDatas.Count; i--)
+            // 如果不处于精简模式，或存在多个版本，则显示列表栏，并允许添加版本
+            bool showList = !Model.IsSimplification || Model.MusicVersionDatas.Count > 1;
+            listObject.SetActive(showList);
+            if (showList)
             {
-                Destroy(items[i].gameObject);
+                listObject.SetActive(true);
+
+                // 删除列表栏多余 item
+                for (int i = ListItems.Count - 1; i >= Model.MusicVersionDatas.Count; i--)
+                {
+                    Destroy(ListItems[i].gameObject);
+                    ListItems.RemoveAt(i);
+                }
+
+                // 补齐列表栏 item
+                for (int i = ListItems.Count; i < Model.MusicVersionDatas.Count; i++)
+                {
+                    GameObject go = Instantiate(musicVersionItemPrefab, listContentObject.transform);
+                    go.transform.SetSiblingIndex(listContentObject.transform.childCount - 2); // 置于倒数第二个
+                    MusicVersionItem item = go.GetComponent<MusicVersionItem>();
+                    ListItems.Add(item);
+                }
+
+                // 重新初始化、绑定、刷新所有列表 item TODO：优化性能
+                for (int i = 0; i < ListItems.Count; i++)
+                {
+                    ListItems[i].InitAndBind(Model, i);
+                }
+
+                // 刷新 UI 自动布局
+                Canvas.ForceUpdateCanvases();
+                LayoutRebuilder.ForceRebuildLayoutImmediate(listContentObject.GetComponent<RectTransform>());
             }
 
-            // 添加新元素
-            for (int i = items.Length; i < Model.MusicVersionDatas.Count; i++)
+            // 根据目前选中编辑的音乐版本显示数据
+            bool selected = Model.SelectedMusicVersionItemIndex != null;
+            dataAreaCanvas.enabled = selected;
+            if (selected)
             {
-                GameObject go = Instantiate(musicVersionItemPrefab, contentObject.transform);
-                go.transform.SetSiblingIndex(contentObject.transform.childCount - 2);
-            }
+                MusicVersionData data = Model.MusicVersionDatas[(int)Model.SelectedMusicVersionItemIndex];
+                titleField.text = data.VersionTitle ?? "";
+                filePathText.text = data.AudioFilePath ?? "";
+                offsetField.text = data.Offset.ToString();
 
-            // 刷新已有元素的内容
-            items = contentObject.GetComponentsInChildren<MusicVersionItem>();
-            for (int i = 0; i < Model.MusicVersionDatas.Count; i++)
-            {
-                items[i].InitDataAndBind(Model, Model.MusicVersionDatas[i]);
-            }
+                // 删除多余的 Staff item
+                for (int i = StaffItems.Count - 1; i >= data.Staffs.Count; i--)
+                {
+                    Destroy(StaffItems[i].gameObject);
+                    StaffItems.RemoveAt(i);
+                }
 
-            // 刷新 UI 自动布局
-            Canvas.ForceUpdateCanvases();
-            LayoutRebuilder.ForceRebuildLayoutImmediate(contentObject.GetComponent<RectTransform>());
+                // 补齐 Staff item
+                for (int i = StaffItems.Count; i < data.Staffs.Count; i++)
+                {
+                    GameObject go = Instantiate(musicVersionItemPrefab, listContentObject.transform);
+                    go.transform.SetSiblingIndex(listContentObject.transform.childCount - 3); // 置于倒数第三个
+                    StaffItem item = go.GetComponent<StaffItem>();
+                    StaffItems.Add(item);
+                }
+
+                // 重新绑定并刷新 Staff item
+                for (int i = 0; i < ListItems.Count; i++)
+                {
+                    StaffItems[i].InitAndBind(Model, i);
+                }
+            }
         }
 
         private void OnDestroy()
