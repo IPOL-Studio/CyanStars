@@ -87,7 +87,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             contentRect = scrollRect.content.GetComponent<RectTransform>();
             judgeLineRect = judgeLine.GetComponent<RectTransform>();
 
-            Model.OnPlayingAudioChanged += RefreshAudioAndContent;
+            Model.OnLoadedAudioClipChanged += RefreshAudioAndContent;
             Model.OnNoteDataChanged += RefreshEditAreaUI;
             Model.OnEditorAttributeChanged += RefreshEditAreaUI;
             Model.OnNoteAttributeChanged += RefreshEditAreaUI;
@@ -109,12 +109,12 @@ namespace CyanStars.GamePlay.ChartEditor.View
             // 当 Model 的音乐变化时，更新 audioClip
             void SetNewAudioClip()
             {
-                if (!Model.SelectedAudioClip)
+                if (!Model.LoadedAudioClip)
                 {
                     Debug.LogWarning("未选中 AudioClip");
                 }
 
-                audioSource.clip = Model.SelectedAudioClip;
+                audioSource.clip = Model.LoadedAudioClip;
             }
 
 
@@ -287,7 +287,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             // 从对象池获取物体并刷新节拍线
             async Task RefreshBeatLinesAsync()
             {
-                if (Model.BpmGroupDatas.Count == 0 || Model.SelectedAudioClip == null)
+                if (Model.BpmGroupDatas.Count == 0 || Model.LoadedAudioClip == null)
                 {
                     return;
                 }
@@ -698,7 +698,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
         private void OnDestroy()
         {
-            Model.OnPlayingAudioChanged -= RefreshAudioAndContent;
+            Model.OnLoadedAudioClipChanged -= RefreshAudioAndContent;
             Model.OnNoteDataChanged -= RefreshEditAreaUI;
             Model.OnEditorAttributeChanged -= RefreshEditAreaUI;
             Model.OnNoteAttributeChanged -= RefreshEditAreaUI;

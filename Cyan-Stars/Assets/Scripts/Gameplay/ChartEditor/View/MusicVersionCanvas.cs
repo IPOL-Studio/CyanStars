@@ -97,6 +97,34 @@ namespace CyanStars.GamePlay.ChartEditor.View
                     Model.DeleteMusicVersionItem((int)Model.SelectedMusicVersionItemIndex);
                 }
             });
+            cloneMusicVersionButton.onClick.AddListener(() =>
+            {
+                if (Model.SelectedMusicVersionItemIndex != null)
+                {
+                    Model.CloneMusicVersionItem((int)Model.SelectedMusicVersionItemIndex);
+                }
+            });
+            moveUpMusicVersionButton.onClick.AddListener(() =>
+            {
+                if (Model.SelectedMusicVersionItemIndex != null)
+                {
+                    Model.MoveUpMusicVersionItem((int)Model.SelectedMusicVersionItemIndex);
+                }
+            });
+            moveDownMusicVersionButton.onClick.AddListener(() =>
+            {
+                if (Model.SelectedMusicVersionItemIndex != null)
+                {
+                    Model.MoveDownMusicVersionItem((int)Model.SelectedMusicVersionItemIndex);
+                }
+            });
+            topMusicVersionButton.onClick.AddListener(() =>
+            {
+                if (Model.SelectedMusicVersionItemIndex != null)
+                {
+                    Model.TopMusicVersionItem((int)Model.SelectedMusicVersionItemIndex);
+                }
+            });
 
             Model.OnMusicVersionDataChanged += RefreshUI;
             Model.OnMusicVersionCanvasVisiblenessChanged += RefreshUI;

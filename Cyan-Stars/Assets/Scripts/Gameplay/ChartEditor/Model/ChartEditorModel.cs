@@ -30,25 +30,25 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public MusicVersionData? AppliedMusicVersionData { get; private set; } = null;
 
         /// <summary>
-        /// 当前在制谱器内加载的音乐
+        /// 当前在制谱器内加载的音乐（第一个 MusicVersion item 对应的音乐）
         /// </summary>
-        public AudioClip? SelectedAudioClip { get; private set; } = null;
+        public AudioClip? LoadedAudioClip { get; private set; } = null;
 
         /// <summary>
-        /// 计算 offset 后，当前选中的音乐的实际时长（ms）
+        /// 计算 offset 后，当前加载的音乐的实际时长（ms）
         /// </summary>
         /// <remarks>超过这个时长的内容都不可以编辑，包括音符编辑、事件等等</remarks>
         public int? TotalMusicTime
         {
             get
             {
-                if (!SelectedAudioClip || AppliedMusicVersionData == null)
+                if (!LoadedAudioClip || AppliedMusicVersionData == null)
                 {
                     Debug.LogWarning("未加载制谱器内音乐或 offset");
                     return null;
                 }
 
-                return (int)(SelectedAudioClip!.length * 1000) + AppliedMusicVersionData.Offset;
+                return (int)(LoadedAudioClip!.length * 1000) + AppliedMusicVersionData.Offset;
             }
         }
 
@@ -170,7 +170,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
         #region Model 事件
 
-        public event Action? OnPlayingAudioChanged;
+        public event Action? OnLoadedAudioClipChanged;
 
         /// <summary>
         /// 进入/退出精简模式
@@ -863,10 +863,15 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 从列表删除音乐版本数据元素
         /// </summary>
         /// <param name="index">音乐版本 item 下标</param>
-        public void DeleteMusicVersionItem(int index)
+        public async void DeleteMusicVersionItem(int index)
         {
             MusicVersionDatas.RemoveAt(index);
             OnMusicVersionDataChanged?.Invoke();
+
+            if (index == 0)
+            {
+                // TODO：更新 audioClip
+            }
 
             // 如果删掉了所有的元素，且当前处于简易模式，则自动创建一个 item
             if (MusicVersionDatas.Count == 0 && IsSimplification)
@@ -893,7 +898,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 复制某个音乐版本 item，并将副本置于列表尾
         /// </summary>
         /// <param name="index">音乐版本 item 下标</param>
-        public void CopyMusicVersionItem(int index)
+        public void CloneMusicVersionItem(int index)
         {
             MusicVersionData data = MusicVersionDatas[index];
             MusicVersionData copiedItem = new MusicVersionData(data.VersionTitle,
@@ -909,7 +914,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnMusicVersionDataChanged?.Invoke();
         }
 
-        public void MoveUpMusicVersionItem(int index)
+        public async void MoveUpMusicVersionItem(int index)
         {
             if (index == 0)
             {
@@ -939,7 +944,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
         }
 
-        public void MoveDownMusicVersionItem(int index)
+        public async void MoveDownMusicVersionItem(int index)
         {
             if (index == MusicVersionDatas.Count - 1)
             {
@@ -973,7 +978,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 在制谱器内置顶某个音乐版本 item
         /// </summary>
         /// <param name="index">音乐版本 item 下标</param>
-        public async Task TopMusicVersionItem(int index)
+        public async void TopMusicVersionItem(int index)
         {
             MusicVersionData data = MusicVersionDatas[index];
             MusicVersionDatas.RemoveAt(index);
@@ -990,6 +995,30 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 OnSelectedMusicVersionItemChanged?.Invoke();
             }
             // TODO: 更新 audioClip
+        }
+
+        private async Task LoadAudioClip(int index)
+        {
+            LoadedAudioClip = null;
+
+            if (string.IsNullOrEmpty(MusicVersionDatas[index].AudioFilePath))
+            {
+                Debug.LogWarning("字段为空，无法加载音乐");
+                return;
+            }
+
+            string filePath = MusicVersionDatas[index].AudioFilePath;
+            string fileName = Path.GetFileName(filePath);
+            string toggleFilePath = Path.Combine(WorkspacePath, "Assets", fileName);
+
+            if (!GameRoot.File.TrySearchByTogglePath(toggleFilePath, out _))
+            {
+                // AudioFilePath 存储的是相对路径
+                filePath = toggleFilePath;
+            }
+
+            LoadedAudioClip = await GameRoot.Asset.LoadAssetAsync<AudioClip>(filePath);
+            OnLoadedAudioClipChanged?.Invoke();
         }
 
         /// <summary>
@@ -1150,7 +1179,8 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 更新 BPM 元素开始时间，并将其自动放在合适的位置
         /// </summary>
         /// <remarks>将根据 beat 自动插入或更新 Bpm 组</remarks>
-        public void UpdateBpmGroupItemBeat(string integerPartString, string numeratorString, string denominatorString)
+        public void UpdateBpmGroupItemBeat(string integerPartString, string numeratorString,
+            string denominatorString)
         {
             if (SelectedBpmItemIndex == null)
             {
