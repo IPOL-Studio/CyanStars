@@ -263,7 +263,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
                 }
 
                 // 重新绑定并刷新 Staff item
-                for (int i = 0; i < ListItems.Count; i++)
+                for (int i = 0; i < StaffItems.Count; i++)
                 {
                     StaffItems[i].InitAndBind(Model, i);
                 }
