@@ -1119,15 +1119,15 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 为指定音乐版本添加一行 Staff
         /// </summary>
         /// <param name="musicVersionData">要操作的音乐版本</param>
-        public void AddStaffItem(MusicVersionData musicVersionData)
+        public void AddStaffItem(int index)
         {
             int i = 1;
-            while (musicVersionData.Staffs.ContainsKey("Staff" + i.ToString()))
+            while (MusicVersionDatas[index].Staffs.ContainsKey("Staff" + i.ToString()))
             {
                 i++;
             }
 
-            musicVersionData.Staffs.Add("Staff" + i.ToString(), new List<string>());
+            MusicVersionDatas[index].Staffs.Add("Staff" + i.ToString(), new List<string>());
             OnMusicVersionDataChanged?.Invoke();
         }
 

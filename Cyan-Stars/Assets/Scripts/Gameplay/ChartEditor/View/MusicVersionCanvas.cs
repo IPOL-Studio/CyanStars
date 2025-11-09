@@ -138,6 +138,15 @@ namespace CyanStars.GamePlay.ChartEditor.View
                         (Model.MusicVersionDatas[(int)index].Offset + 10).ToString());
                 }
             });
+            testPlayButton.onClick.AddListener(() => { Debug.LogError("未实现"); }); //TODO
+
+            addStaffItemButton.onClick.AddListener(() =>
+            {
+                if (Model.SelectedMusicVersionItemIndex != null)
+                {
+                    Model.AddStaffItem((int)Model.SelectedMusicVersionItemIndex);
+                }
+            });
 
             deleteMusicVersionButton.onClick.AddListener(() =>
             {

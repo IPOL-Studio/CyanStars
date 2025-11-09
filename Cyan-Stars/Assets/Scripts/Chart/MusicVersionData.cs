@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
@@ -32,9 +34,9 @@ namespace CyanStars.Chart
         public Dictionary<string, List<string>> Staffs;
 
         public MusicVersionData(string versionTitle = "",
-            string audioFilePath = null,
+            string audioFilePath = "",
             int offset = 0,
-            Dictionary<string, List<string>> staffs = null)
+            Dictionary<string, List<string>>? staffs = null)
         {
             VersionTitle = versionTitle;
             AudioFilePath = audioFilePath;
