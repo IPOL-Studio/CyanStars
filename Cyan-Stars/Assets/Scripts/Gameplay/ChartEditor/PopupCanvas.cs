@@ -30,7 +30,7 @@ public class PopupCanvas : BaseView
     private GameObject buttonPrefab = null!; // 单个按钮的预制体
 
     [SerializeField]
-    private Transform buttonContainer = null!; // 存放按钮的容器 (通常是一个有 Horizontal Layout Group 的 Panel)
+    private Transform buttonContainer = null!; // 存放按钮的容器
 
     // 存储当前弹窗的按钮，方便清理
     private readonly List<GameObject> CurrentButtons = new List<GameObject>();
@@ -63,7 +63,7 @@ public class PopupCanvas : BaseView
     private void Show(string title,
         string message,
         bool showCloseButton = true,
-        params KeyValuePair<string, Action?>[] buttons)
+        params KeyValuePair<string, Action?>[]? buttons)
     {
         // 设置基础信息
         if (titleText != null)

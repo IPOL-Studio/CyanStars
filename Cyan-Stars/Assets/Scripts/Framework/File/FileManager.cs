@@ -28,7 +28,7 @@ namespace CyanStars.Framework.File
 
         public readonly FileBrowser.Filter ChartFilter = new FileBrowser.Filter("谱面文件", ".json");
         public readonly FileBrowser.Filter SpriteFilter = new FileBrowser.Filter("图片", ".jpg", ".png");
-        public readonly FileBrowser.Filter AudioFilter = new FileBrowser.Filter("音频", ".mp3", ".wav", ".ogg");
+        public readonly FileBrowser.Filter AudioFilter = new FileBrowser.Filter("音频", ".ogg");
 
         private string TempFolderPath => Path.Combine(Application.temporaryCachePath, "FileManager");
 
@@ -74,12 +74,12 @@ namespace CyanStars.Framework.File
         /// <param name="showAllFilesFilter">是否允许玩家选择任意后缀的文件</param>
         /// <param name="filters">依据后缀筛选文件</param>
         /// <param name="defaultFilter">默认筛选后缀名</param>
-        public void OpenLoadFilePathBrowser(Action<string> onSuccess,
-            Action onCancel = null,
+        public void OpenLoadFilePathBrowser(Action<string>? onSuccess,
+            Action? onCancel = null,
             string title = "打开文件",
             bool showAllFilesFilter = false,
-            FileBrowser.Filter[] filters = null,
-            string defaultFilter = null)
+            FileBrowser.Filter[]? filters = null,
+            string? defaultFilter = null)
         {
             if (IsBrowserOpen()) return;
 
@@ -91,7 +91,7 @@ namespace CyanStars.Framework.File
                 }
             };
 
-            FileBrowser.OnCancel cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
+            FileBrowser.OnCancel? cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
 
             FileBrowser.SetFilters(showAllFilesFilter, filters);
             FileBrowser.SetDefaultFilter(defaultFilter);
@@ -108,18 +108,18 @@ namespace CyanStars.Framework.File
         /// <param name="showAllFilesFilter">是否允许玩家选择任意后缀的文件</param>
         /// <param name="filters">依据后缀筛选文件</param>
         /// <param name="defaultFilter">默认筛选后缀名</param>
-        public void OpenLoadFilePathsBrowser(Action<string[]> onSuccess,
-            Action onCancel = null,
+        public void OpenLoadFilePathsBrowser(Action<string[]>? onSuccess,
+            Action? onCancel = null,
             string title = "打开文件",
             bool showAllFilesFilter = false,
-            FileBrowser.Filter[] filters = null,
-            string defaultFilter = null)
+            FileBrowser.Filter[]? filters = null,
+            string? defaultFilter = null)
         {
             if (IsBrowserOpen()) return;
 
             FileBrowser.OnSuccess successWrapper = (paths) => { onSuccess?.Invoke(paths); };
 
-            FileBrowser.OnCancel cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
+            FileBrowser.OnCancel? cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
 
             FileBrowser.SetFilters(showAllFilesFilter, filters);
             FileBrowser.SetDefaultFilter(defaultFilter);
@@ -133,8 +133,8 @@ namespace CyanStars.Framework.File
         /// <param name="onSuccess">成功获取的回调</param>
         /// <param name="onCancel">玩家取消的回调</param>
         /// <param name="title">窗口标题</param>
-        public void OpenLoadFolderPathBrowser(Action<string> onSuccess,
-            Action onCancel = null,
+        public void OpenLoadFolderPathBrowser(Action<string>? onSuccess,
+            Action? onCancel = null,
             string title = "打开文件夹")
         {
             if (IsBrowserOpen()) return;
@@ -147,7 +147,7 @@ namespace CyanStars.Framework.File
                 }
             };
 
-            FileBrowser.OnCancel cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
+            FileBrowser.OnCancel? cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
 
             FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper,
                 FileBrowser.PickMode.Folders, false, null, null, title, "选择");
@@ -159,8 +159,8 @@ namespace CyanStars.Framework.File
         /// <param name="onSuccess">成功获取的回调</param>
         /// <param name="onCancel">玩家取消的回调</param>
         /// <param name="title">窗口标题</param>
-        public void OpenSaveFolderPathBrowser(Action<string> onSuccess,
-            Action onCancel = null,
+        public void OpenSaveFolderPathBrowser(Action<string>? onSuccess,
+            Action? onCancel = null,
             string title = "保存到文件夹")
         {
             if (IsBrowserOpen()) return;
@@ -173,7 +173,7 @@ namespace CyanStars.Framework.File
                 }
             };
 
-            FileBrowser.OnCancel cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
+            FileBrowser.OnCancel? cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
 
             FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper,
                 FileBrowser.PickMode.Folders, false, null, null, title, "选择");

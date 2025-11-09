@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CyanStars.Chart;
+using CyanStars.Framework;
 using CyanStars.GamePlay.ChartEditor.Model;
 using TMPro;
 using UnityEngine;
@@ -30,7 +31,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
         [Header("数据编辑区域")]
         [SerializeField]
-        private Canvas dataAreaCanvas;
+        private GameObject dataAreaFrameObject;
 
         [SerializeField]
         private TMP_InputField titleField;
@@ -90,6 +91,54 @@ namespace CyanStars.GamePlay.ChartEditor.View
             addItemButton = addItemButtonObject.GetComponent<Button>();
             closeCanvasButton.onClick.AddListener(() => { Model.SetMusicVersionCanvasVisibleness(false); });
             addItemButton.onClick.AddListener(() => { Model.AddMusicVersionItem(); });
+
+            titleField.onEndEdit.AddListener((text) =>
+            {
+                if (Model.SelectedMusicVersionItemIndex != null)
+                {
+                    Model.UpdateMusicVersionTitle((int)Model.SelectedMusicVersionItemIndex, text);
+                }
+            });
+            importFileButton.onClick.AddListener(() =>
+            {
+                if (Model.SelectedMusicVersionItemIndex != null)
+                {
+                    GameRoot.File.OpenLoadFilePathBrowser(
+                        (musicFilePath) =>
+                        {
+                            Model.ImportMusicFile((int)Model.SelectedMusicVersionItemIndex, musicFilePath);
+                        },
+                        title: "导入音频",
+                        filters: new[] { GameRoot.File.AudioFilter });
+                }
+            });
+            minusOffsetButton.onClick.AddListener(() =>
+            {
+                int? index = Model.SelectedMusicVersionItemIndex;
+                if (index != null)
+                {
+                    Model.UpdateMusicVersionOffset((int)index,
+                        (Model.MusicVersionDatas[(int)index].Offset - 10).ToString());
+                }
+            });
+            offsetField.onEndEdit.AddListener((text) =>
+            {
+                int? index = Model.SelectedMusicVersionItemIndex;
+                if (index != null)
+                {
+                    Model.UpdateMusicVersionOffset((int)index, text);
+                }
+            });
+            addOffsetButton.onClick.AddListener(() =>
+            {
+                int? index = Model.SelectedMusicVersionItemIndex;
+                if (index != null)
+                {
+                    Model.UpdateMusicVersionOffset((int)index,
+                        (Model.MusicVersionDatas[(int)index].Offset + 10).ToString());
+                }
+            });
+
             deleteMusicVersionButton.onClick.AddListener(() =>
             {
                 if (Model.SelectedMusicVersionItemIndex != null)
@@ -180,7 +229,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
             // 根据目前选中编辑的音乐版本显示数据
             bool selected = Model.SelectedMusicVersionItemIndex != null;
-            dataAreaCanvas.enabled = selected;
+            dataAreaFrameObject.SetActive(selected);
             if (selected)
             {
                 MusicVersionData data = Model.MusicVersionDatas[(int)Model.SelectedMusicVersionItemIndex];
