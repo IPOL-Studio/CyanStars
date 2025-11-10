@@ -255,8 +255,8 @@ namespace CyanStars.GamePlay.ChartEditor.View
                 // 补齐 Staff item
                 for (int i = StaffItems.Count; i < data.Staffs.Count; i++)
                 {
-                    GameObject go = Instantiate(musicVersionItemPrefab, listContentObject.transform);
-                    go.transform.SetSiblingIndex(listContentObject.transform.childCount - 3); // 置于倒数第三个
+                    GameObject go = Instantiate(staffItemPrefab, staffInfoAreaObject.transform);
+                    go.transform.SetSiblingIndex(staffInfoAreaObject.transform.childCount - 3); // 置于倒数第三个
                     StaffItem item = go.GetComponent<StaffItem>();
                     StaffItems.Add(item);
                 }

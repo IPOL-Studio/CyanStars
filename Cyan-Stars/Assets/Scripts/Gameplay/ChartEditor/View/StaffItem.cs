@@ -33,17 +33,19 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
         public void InitAndBind(ChartEditorModel chartEditorModel, int staffItemIndex)
         {
+            isInit = true;
+            Bind(chartEditorModel);
+
             if (Model.SelectedMusicVersionItemIndex == null)
             {
                 throw new NullReferenceException("StaffItem：未选中音乐版本，无法绑定");
             }
 
-            isInit = true;
             this.staffItemIndex = staffItemIndex;
             musicVersionData = Model.MusicVersionDatas[(int)Model.SelectedMusicVersionItemIndex];
             staffItemData = musicVersionData.Staffs.ElementAt(this.staffItemIndex);
 
-            Bind(chartEditorModel);
+            RefreshUI();
         }
 
         public override void Bind(ChartEditorModel chartEditorModel)
@@ -72,8 +74,6 @@ namespace CyanStars.GamePlay.ChartEditor.View
             });
             deleteItemButton.onClick.RemoveAllListeners();
             deleteItemButton.onClick.AddListener(() => { Model.DeleteStaffItem(musicVersionData, staffItemData); });
-
-            RefreshUI();
         }
 
         private void RefreshUI()
