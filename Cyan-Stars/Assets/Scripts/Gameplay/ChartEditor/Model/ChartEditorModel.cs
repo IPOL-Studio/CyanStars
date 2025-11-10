@@ -840,14 +840,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <param name="newData">要添加的音乐版本数据</param>
         public void AddMusicVersionItem(MusicVersionData? newData = null)
         {
-            newData ??= new MusicVersionData();
-            foreach (MusicVersionData musicVersionData in MusicVersionDatas)
-            {
-                if (musicVersionData.AudioFilePath == newData.AudioFilePath)
-                {
-                    return;
-                }
-            }
+            newData ??= new MusicVersionData(versionTitle: "新音乐版本");
 
             MusicVersionDatas.Add(newData);
             OnMusicVersionDataChanged?.Invoke();
@@ -866,11 +859,18 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public async void DeleteMusicVersionItem(int index)
         {
             MusicVersionDatas.RemoveAt(index);
-            OnMusicVersionDataChanged?.Invoke();
 
+            // 更新或卸载 audioClip
             if (index == 0)
             {
-                // TODO：更新 audioClip
+                if (MusicVersionDatas.Count == 0)
+                {
+                    await LoadAudioClip(null);
+                }
+                else
+                {
+                    await LoadAudioClip(0);
+                }
             }
 
             // 如果删掉了所有的元素，且当前处于简易模式，则自动创建一个 item
@@ -879,19 +879,21 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 AddMusicVersionItem();
             }
 
-
-            if (MusicVersionDatas.Count == 0 && SelectedBpmItemIndex != null)
+            if (MusicVersionDatas.Count == 0 && SelectedMusicVersionItemIndex != null)
             {
                 // 如果删除后没有元素，则不选择元素
-                SelectedBpmItemIndex = null;
+                SelectedMusicVersionItemIndex = null;
                 OnSelectedMusicVersionItemChanged?.Invoke();
             }
-            else if (SelectedBpmItemIndex != null && SelectedBpmItemIndex > MusicVersionDatas.Count - 1)
+            else if (SelectedMusicVersionItemIndex != null &&
+                     SelectedMusicVersionItemIndex > MusicVersionDatas.Count - 1)
             {
                 // 如果删除后下标越界，则将下标改为最后一个元素
-                SelectedBpmItemIndex = MusicVersionDatas.Count - 1;
+                SelectedMusicVersionItemIndex = MusicVersionDatas.Count - 1;
                 OnSelectedMusicVersionItemChanged?.Invoke();
             }
+
+            OnMusicVersionDataChanged?.Invoke();
         }
 
         /// <summary>
@@ -1004,17 +1006,24 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 加载指定的音乐
         /// </summary>
         /// <param name="index">音乐版本下标（默认为0）</param>
-        private async Task LoadAudioClip(int index = 0)
+        private async Task LoadAudioClip(int? index = 0)
         {
             LoadedAudioClip = null;
 
-            if (string.IsNullOrEmpty(MusicVersionDatas[index].AudioFilePath))
+            if (index == null)
+            {
+                LoadedAudioClip = null;
+                OnLoadedAudioClipChanged?.Invoke();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(MusicVersionDatas[(int)index].AudioFilePath))
             {
                 Debug.LogWarning("字段为空，无法加载音乐");
                 return;
             }
 
-            string filePath = MusicVersionDatas[index].AudioFilePath;
+            string filePath = MusicVersionDatas[(int)index].AudioFilePath;
             string fileName = Path.GetFileName(filePath);
             string toggleFilePath = Path.Combine(WorkspacePath, "Assets", fileName);
 

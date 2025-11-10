@@ -185,6 +185,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             });
 
             Model.OnMusicVersionDataChanged += RefreshUI;
+            Model.OnSelectedMusicVersionItemChanged += RefreshUI;
             Model.OnMusicVersionCanvasVisiblenessChanged += RefreshUI;
 
             RefreshUI();
@@ -199,7 +200,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             // 精简模式下至少存在1个音乐版本，没有时自动补齐至1个
             if (Model.MusicVersionDatas.Count == 0 && Model.IsSimplification)
             {
-                Model.AddMusicVersionItem(new MusicVersionData());
+                Model.AddMusicVersionItem();
             }
 
             // 如果不处于精简模式，或存在多个版本，则显示列表栏，并允许添加版本
@@ -207,8 +208,6 @@ namespace CyanStars.GamePlay.ChartEditor.View
             listObject.SetActive(showList);
             if (showList)
             {
-                listObject.SetActive(true);
-
                 // 删除列表栏多余 item
                 for (int i = ListItems.Count - 1; i >= Model.MusicVersionDatas.Count; i--)
                 {

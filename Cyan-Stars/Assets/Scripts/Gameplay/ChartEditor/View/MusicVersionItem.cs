@@ -40,11 +40,6 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
             base.Bind(chartEditorModel);
 
-            Model.OnMusicVersionDataChanged -= RefreshUI;
-            Model.OnMusicVersionDataChanged += RefreshUI;
-            Model.OnSelectedMusicVersionItemChanged -= RefreshUI;
-            Model.OnSelectedMusicVersionItemChanged += RefreshUI;
-
             itemButton.onClick.RemoveAllListeners();
             itemButton.onClick.AddListener(() => { Model.SelectMusicVersionItem(index); });
 
