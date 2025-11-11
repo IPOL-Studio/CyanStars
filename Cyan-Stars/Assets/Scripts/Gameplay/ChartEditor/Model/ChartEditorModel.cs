@@ -1024,13 +1024,11 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
 
             string filePath = MusicVersionDatas[(int)index].AudioFilePath;
-            string fileName = Path.GetFileName(filePath);
-            string toggleFilePath = Path.Combine(WorkspacePath, "Assets", fileName);
 
-            if (!GameRoot.File.TrySearchByTogglePath(toggleFilePath, out _))
+            if (!GameRoot.File.TrySearchByTempPath(filePath, out _))
             {
-                // AudioFilePath 存储的是相对路径
-                filePath = toggleFilePath;
+                // AudioFilePath 存储的是相对路径，需要拼接为完整路径
+                filePath = Path.Combine(WorkspacePath, filePath);
             }
 
             LoadedAudioClip = await GameRoot.Asset.LoadAssetAsync<AudioClip>(filePath);

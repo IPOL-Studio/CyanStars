@@ -94,7 +94,10 @@ public class PopupCanvas : BaseView
                 CurrentButtons.Add(buttonGO);
 
                 Button button = buttonGO.GetComponent<Button>();
-                TextMeshProUGUI buttonText = buttonGO.GetComponentInChildren<TextMeshProUGUI>();
+                ChartEditorButton chartEditorButton = buttonGO.GetComponent<ChartEditorButton>();
+                chartEditorButton.IconObject.SetActive(false);
+                chartEditorButton.TextObject.SetActive(true);
+                TMP_Text buttonText = chartEditorButton.Text;
 
                 if (buttonText != null)
                 {
