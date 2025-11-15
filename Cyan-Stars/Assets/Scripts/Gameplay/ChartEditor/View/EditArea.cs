@@ -121,7 +121,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             // 重计算总拍数并刷新 UI
             void CalculateTotalBeatsAndRefreshUI()
             {
-                totalBeat = (Model.TotalMusicTime == null)
+                totalBeat = (Model.TotalMusicTime == null || Model.BpmGroupDatas.Count == 0)
                     ? 0
                     : CalculateTotalBeats((int)Model.TotalMusicTime, Model.ChartPackData.BpmGroup);
 
