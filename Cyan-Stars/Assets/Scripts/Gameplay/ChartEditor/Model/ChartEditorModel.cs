@@ -27,11 +27,6 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
 
         /// <summary>
-        /// 当前制谱器加载的音乐版本数据（第一个 MusicVersion item）
-        /// </summary>
-        public MusicVersionData? LoadedMusicVersionData => MusicVersionDatas.Count >= 1 ? MusicVersionDatas[0] : null;
-
-        /// <summary>
         /// 当前在制谱器内加载的音乐（第一个 MusicVersion item 对应的音乐）
         /// </summary>
         public AudioClip? LoadedAudioClip { get; private set; } = null;
@@ -44,13 +39,13 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         {
             get
             {
-                if (LoadedAudioClip == null || LoadedMusicVersionData == null)
+                if (LoadedAudioClip == null || MusicVersionDatas.Count == 0)
                 {
                     Debug.LogWarning("未加载制谱器内音乐或 offset");
                     return null;
                 }
 
-                return (int)(LoadedAudioClip!.length * 1000) + LoadedMusicVersionData.Offset;
+                return (int)(LoadedAudioClip!.length * 1000) + MusicVersionDatas[0].Offset;
             }
         }
 
