@@ -16,6 +16,8 @@ namespace CyanStars.GamePlay.ChartEditor.Model
     /// </summary>
     public class ChartEditorModel
     {
+        #region 字段和属性
+
         // --- 在制谱器内初始化和临时存储的、经过校验后的数据，不会持久化 ---
         /// <summary>
         /// 制谱器精简模式
@@ -27,7 +29,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <summary>
         /// 当前制谱器加载的音乐版本数据（第一个 MusicVersion item）
         /// </summary>
-        public MusicVersionData? AppliedMusicVersionData => MusicVersionDatas.Count >= 1 ? MusicVersionDatas[0] : null;
+        public MusicVersionData? LoadedMusicVersionData => MusicVersionDatas.Count >= 1 ? MusicVersionDatas[0] : null;
 
         /// <summary>
         /// 当前在制谱器内加载的音乐（第一个 MusicVersion item 对应的音乐）
@@ -42,13 +44,13 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         {
             get
             {
-                if (LoadedAudioClip == null || AppliedMusicVersionData == null)
+                if (LoadedAudioClip == null || LoadedMusicVersionData == null)
                 {
                     Debug.LogWarning("未加载制谱器内音乐或 offset");
                     return null;
                 }
 
-                return (int)(LoadedAudioClip!.length * 1000) + AppliedMusicVersionData.Offset;
+                return (int)(LoadedAudioClip!.length * 1000) + LoadedMusicVersionData.Offset;
             }
         }
 
@@ -167,9 +169,13 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         private bool needCopyAudioWhenSave = false; // 在保存时需要复制临时音乐文件到 Assets 路径下
         private string? coverTempFilePath = null;
 
+        #endregion
 
         #region Model 事件
 
+        /// <summary>
+        /// 编辑器内加载的 AudioClip 变化了
+        /// </summary>
         public event Action? OnLoadedAudioClipChanged;
 
         /// <summary>
@@ -270,6 +276,8 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         #endregion
 
 
+        #region 构造方法
+
         /// <summary>
         /// 构造函数异步工厂方法
         /// </summary>
@@ -315,7 +323,10 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             BpmGroupCanvasVisibleness = false;
         }
 
-        #region 制谱器管理
+        #endregion
+
+
+        #region 制谱器
 
         /// <summary>
         /// 保存谱包和谱面文件到磁盘，并将相对路径统一为正斜杠
@@ -391,6 +402,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
         }
 
+        /// <summary>
+        /// 设置编辑工具（画笔）
+        /// </summary>
         public void SetEditTool(EditTool editTool)
         {
             if (SelectedEditTool == editTool)
@@ -402,6 +416,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnEditToolChanged?.Invoke();
         }
 
+        /// <summary>
+        /// 设置位置细分
+        /// </summary>
         public void SetPosAccuracy(string posAccuracyStr)
         {
             if (!int.TryParse(posAccuracyStr, out int posAccuracy) ||
@@ -420,6 +437,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnEditorAttributeChanged?.Invoke();
         }
 
+        /// <summary>
+        /// 切换位置吸附
+        /// </summary>
         public void SetPosMagnetState(bool isOn)
         {
             if (PosMagnetState == isOn)
@@ -431,6 +451,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnEditorAttributeChanged?.Invoke();
         }
 
+        /// <summary>
+        /// 设置节拍精度
+        /// </summary>
         public void SetBeatAccuracy(string beatAccuracyStr)
         {
             if (!int.TryParse(beatAccuracyStr, out int beatAccuracy) ||
@@ -449,6 +472,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnEditorAttributeChanged?.Invoke();
         }
 
+        /// <summary>
+        /// 设置节拍缩放
+        /// </summary>
         public void SetBeatZoom(string beatZoomStr)
         {
             if (!float.TryParse(beatZoomStr, out float beatZoom) ||
@@ -470,6 +496,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnEditorAttributeChanged?.Invoke();
         }
 
+        /// <summary>
+        /// 设置音乐版本弹窗可见性
+        /// </summary>
         public void SetMusicVersionCanvasVisibleness(bool isVisible)
         {
             if (MusicVersionCanvasVisibleness == isVisible)
@@ -481,6 +510,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnMusicVersionCanvasVisiblenessChanged?.Invoke();
         }
 
+        /// <summary>
+        /// 设置谱包数据弹窗可见性
+        /// </summary>
         public void SetChartPackDataCanvasVisibleness(bool isVisible)
         {
             if (ChartPackDataCanvasVisibleness == isVisible)
@@ -492,6 +524,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnChartPackDataCanvasVisiblenessChanged?.Invoke();
         }
 
+        /// <summary>
+        /// 设置谱面数据弹窗可见性
+        /// </summary>
         public void SetChartDataCanvasVisibleness(bool isVisible)
         {
             if (ChartDataCanvasVisibleness == isVisible)
@@ -504,7 +539,21 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 点击某个已存在的音符，由 note 的 button 组件触发
+        /// 设置 BPM 组弹窗可见性
+        /// </summary>
+        public void SetBpmGroupCanvasVisibleness(bool isVisible)
+        {
+            if (BpmGroupCanvasVisibleness == isVisible)
+            {
+                return;
+            }
+
+            BpmGroupCanvasVisibleness = isVisible;
+            OnBpmGroupCanvasVisiblenessChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// 点击并选中某个已存在的音符，由 note 的 button 组件触发
         /// </summary>
         /// <param name="note">音符数据</param>
         public void SelectNote(BaseChartNoteData note)
@@ -522,29 +571,9 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnSelectedNotesChanged?.Invoke();
         }
 
-        public void SetBpmGroupCanvasVisibleness(bool isVisible)
-        {
-            if (BpmGroupCanvasVisibleness == isVisible)
-            {
-                return;
-            }
-
-            BpmGroupCanvasVisibleness = isVisible;
-            OnBpmGroupCanvasVisiblenessChanged?.Invoke();
-        }
-
-        public void SelectBpmItem(int? index)
-        {
-            if (SelectedBpmItemIndex != index)
-            {
-                SelectedBpmItemIndex = index;
-                OnSelectedBpmItemChanged?.Invoke();
-            }
-        }
-
         #endregion
 
-        #region 谱包信息和谱面元数据管理
+        #region 谱包基本数据
 
         /// <summary>
         /// 更新谱包标题
@@ -1183,7 +1212,21 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
         }
 
-        #region BPM 组管理
+        #endregion
+
+        #region BPM 组
+
+        /// <summary>
+        /// 选中并编辑 BPM item
+        /// </summary>
+        public void SelectBpmItem(int? index)
+        {
+            if (SelectedBpmItemIndex != index)
+            {
+                SelectedBpmItemIndex = index;
+                OnSelectedBpmItemChanged?.Invoke();
+            }
+        }
 
         /// <summary>
         /// 更新 BPM 元素开始时间，并将其自动放在合适的位置
@@ -1281,43 +1324,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
         #endregion
 
-        #endregion
-
-        #region 谱面管理
-
-        public void UpdateDifficulty(ChartDifficulty? difficulty)
-        {
-            // TODO
-            throw new NotSupportedException();
-        }
-
-        public void UpdateLevel(string text)
-        {
-            // TODO
-            throw new NotSupportedException();
-        }
-
-        public void UpdateReadyBeat(string text)
-        {
-            if (!int.TryParse(text, out int value))
-            {
-                OnChartDataChanged?.Invoke();
-            }
-
-            if (value < 0)
-            {
-                OnChartDataChanged?.Invoke();
-            }
-
-            if (value != ChartData.ReadyBeat)
-            {
-                ChartData.ReadyBeat = value;
-                OnChartDataChanged?.Invoke();
-            }
-        }
-
-
-        #region 变速组管理
+        #region 变速组
 
         /// <summary>
         /// 在变速组列表末尾添加变速组
@@ -1363,7 +1370,42 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
         #endregion
 
-        #region 音符组管理
+        #region 谱面基本数据
+
+        public void UpdateDifficulty(ChartDifficulty? difficulty)
+        {
+            // TODO
+            throw new NotSupportedException();
+        }
+
+        public void UpdateLevel(string text)
+        {
+            // TODO
+            throw new NotSupportedException();
+        }
+
+        public void UpdateReadyBeat(string text)
+        {
+            if (!int.TryParse(text, out int value))
+            {
+                OnChartDataChanged?.Invoke();
+            }
+
+            if (value < 0)
+            {
+                OnChartDataChanged?.Invoke();
+            }
+
+            if (value != ChartData.ReadyBeat)
+            {
+                ChartData.ReadyBeat = value;
+                OnChartDataChanged?.Invoke();
+            }
+        }
+
+        #endregion
+
+        #region 音符组
 
         /// <summary>
         /// 点击 Content 空白处以创建音符
@@ -1661,7 +1703,5 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         #endregion
 
         // TODO: ChartTrackData 轨道拓展数据下个版本再说
-
-        #endregion
     }
 }
