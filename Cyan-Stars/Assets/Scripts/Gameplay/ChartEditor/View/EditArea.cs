@@ -106,6 +106,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             CalculateTotalBeatsAndRefreshUI();
             return;
 
+
             // 当 Model 的音乐变化时，更新 audioClip
             void SetNewAudioClip()
             {
@@ -116,7 +117,6 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
                 audioSource.clip = Model.LoadedAudioClip;
             }
-
 
             // 重计算总拍数并刷新 UI
             void CalculateTotalBeatsAndRefreshUI()

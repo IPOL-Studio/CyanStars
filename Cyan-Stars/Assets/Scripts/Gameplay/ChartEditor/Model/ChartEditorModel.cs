@@ -168,6 +168,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         private bool needCopyCoverWhenSave = false; // 在保存时需要复制临时曲绘文件到 Assets 路径下
         private bool needCopyAudioWhenSave = false; // 在保存时需要复制临时音乐文件到 Assets 路径下
         private string? coverTempFilePath = null;
+        private bool needLoadAudioClipWhenCloseCanva = false; //在关闭音乐版本弹窗时加载 audioClip？
 
         #endregion
 
@@ -499,7 +500,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <summary>
         /// 设置音乐版本弹窗可见性
         /// </summary>
-        public void SetMusicVersionCanvasVisibleness(bool isVisible)
+        public async void SetMusicVersionCanvasVisibleness(bool isVisible)
         {
             if (MusicVersionCanvasVisibleness == isVisible)
             {
@@ -508,6 +509,45 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
             MusicVersionCanvasVisibleness = isVisible;
             OnMusicVersionCanvasVisiblenessChanged?.Invoke();
+
+
+            // 加载 AudioClip
+            if (isVisible || !needLoadAudioClipWhenCloseCanva)
+            {
+                return;
+            }
+
+            needLoadAudioClipWhenCloseCanva = false;
+
+            if (SelectedMusicVersionItemIndex == null && LoadedAudioClip != null)
+            {
+                LoadedAudioClip = null;
+                OnLoadedAudioClipChanged?.Invoke();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(MusicVersionDatas[0].AudioFilePath))
+            {
+                Debug.LogWarning("字段为空，无法加载音乐");
+                if (LoadedAudioClip != null)
+                {
+                    LoadedAudioClip = null;
+                    OnLoadedAudioClipChanged?.Invoke();
+                }
+
+                return;
+            }
+
+            string filePath = MusicVersionDatas[0].AudioFilePath;
+
+            if (!GameRoot.File.TrySearchByTempPath(filePath, out _))
+            {
+                // AudioFilePath 存储的是相对路径，需要拼接为完整路径
+                filePath = Path.Combine(WorkspacePath, filePath);
+            }
+
+            LoadedAudioClip = await GameRoot.Asset.LoadAssetAsync<AudioClip>(filePath);
+            OnLoadedAudioClipChanged?.Invoke();
         }
 
         /// <summary>
@@ -885,21 +925,14 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 从列表删除音乐版本数据元素
         /// </summary>
         /// <param name="index">音乐版本 item 下标</param>
-        public async void DeleteMusicVersionItem(int index)
+        public void DeleteMusicVersionItem(int index)
         {
             MusicVersionDatas.RemoveAt(index);
 
             // 更新或卸载 audioClip
             if (index == 0)
             {
-                if (MusicVersionDatas.Count == 0)
-                {
-                    await LoadAudioClip(null);
-                }
-                else
-                {
-                    await LoadAudioClip(0);
-                }
+                needLoadAudioClipWhenCloseCanva = true;
             }
 
             // 如果删掉了所有的元素，且当前处于简易模式，则自动创建一个 item
@@ -945,7 +978,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnMusicVersionDataChanged?.Invoke();
         }
 
-        public async void MoveUpMusicVersionItem(int index)
+        public void MoveUpMusicVersionItem(int index)
         {
             if (index == 0)
             {
@@ -972,11 +1005,11 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             if (index - 1 == 0)
             {
                 // 移动到顶了，更新 audioClip
-                await LoadAudioClip();
+                needLoadAudioClipWhenCloseCanva = true;
             }
         }
 
-        public async void MoveDownMusicVersionItem(int index)
+        public void MoveDownMusicVersionItem(int index)
         {
             if (index == MusicVersionDatas.Count - 1)
             {
@@ -1003,7 +1036,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             if (index == 0)
             {
                 // 第一个元素被下移了，更新 audioClip
-                await LoadAudioClip();
+                needLoadAudioClipWhenCloseCanva = true;
             }
         }
 
@@ -1011,7 +1044,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// 在制谱器内置顶某个音乐版本 item
         /// </summary>
         /// <param name="index">音乐版本 item 下标</param>
-        public async void TopMusicVersionItem(int index)
+        public void TopMusicVersionItem(int index)
         {
             MusicVersionData data = MusicVersionDatas[index];
             MusicVersionDatas.RemoveAt(index);
@@ -1028,40 +1061,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 OnSelectedMusicVersionItemChanged?.Invoke();
             }
 
-            await LoadAudioClip();
-        }
-
-        /// <summary>
-        /// 加载指定的音乐
-        /// </summary>
-        /// <param name="index">音乐版本下标（默认为0）</param>
-        private async Task LoadAudioClip(int? index = 0)
-        {
-            LoadedAudioClip = null;
-
-            if (index == null)
-            {
-                LoadedAudioClip = null;
-                OnLoadedAudioClipChanged?.Invoke();
-                return;
-            }
-
-            if (string.IsNullOrEmpty(MusicVersionDatas[(int)index].AudioFilePath))
-            {
-                Debug.LogWarning("字段为空，无法加载音乐");
-                return;
-            }
-
-            string filePath = MusicVersionDatas[(int)index].AudioFilePath;
-
-            if (!GameRoot.File.TrySearchByTempPath(filePath, out _))
-            {
-                // AudioFilePath 存储的是相对路径，需要拼接为完整路径
-                filePath = Path.Combine(WorkspacePath, filePath);
-            }
-
-            LoadedAudioClip = await GameRoot.Asset.LoadAssetAsync<AudioClip>(filePath);
-            OnLoadedAudioClipChanged?.Invoke();
+            needLoadAudioClipWhenCloseCanva = true;
         }
 
         /// <summary>
@@ -1079,11 +1079,11 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 为指定音乐版本导入更新文件路径
+        /// 为指定音乐版本导入音乐文件路径
         /// </summary>
         /// <param name="index">要编辑的音频版本下标</param>
         /// <param name="originalFilePath">原始音频文件绝对路径</param>
-        public void ImportMusicFile(int index, string originalFilePath)
+        public async void ImportMusicFile(int index, string originalFilePath)
         {
             needCopyAudioWhenSave = true;
 
@@ -1094,6 +1094,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             string targetFileName = $"{fileNameWithoutExt}{extension}";
             string targetFilePath = Path.Combine(WorkspacePath, "Assets", targetFileName);
 
+            // 将原始文件复制到缓存路径
             if (!GameRoot.File.TrySearchByTogglePath(targetFilePath, out _))
             {
                 // 缓存区不存在路径目标文件，可直接写入缓存
@@ -1111,11 +1112,13 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                     new KeyValuePair<string, Action?>("覆盖",
                         () =>
                         {
+                            needLoadAudioClipWhenCloseCanva = true;
                             musicVersionData.AudioFilePath = GameRoot.File.TempFile(originalFilePath, targetFilePath);
                             OnMusicVersionDataChanged?.Invoke();
                         }),
                     new KeyValuePair<string, Action?>("重命名", () =>
                     {
+                        needLoadAudioClipWhenCloseCanva = true;
                         // 生成一个不重名的文件名
                         int i = 1;
                         while (GameRoot.File.TrySearchByTogglePath(targetFilePath, out _))
