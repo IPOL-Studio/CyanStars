@@ -87,19 +87,20 @@ namespace CyanStars.GamePlay.ChartEditor.View
             contentRect = scrollRect.content.GetComponent<RectTransform>();
             judgeLineRect = judgeLine.GetComponent<RectTransform>();
 
-            Model.OnLoadedAudioClipChanged += RefreshAudioAndContent;
-            Model.OnNoteDataChanged += RefreshEditAreaUI;
-            Model.OnEditorAttributeChanged += RefreshEditAreaUI;
-            Model.OnNoteAttributeChanged += RefreshEditAreaUI;
+            Model.OnLoadedAudioClipChanged += RefreshContentUI;
+            Model.OnBpmGroupChanged += RefreshContentUI;
+            Model.OnNoteDataChanged += RefreshUI;
+            Model.OnEditorAttributeChanged += RefreshUI;
+            Model.OnNoteAttributeChanged += RefreshUI;
 
-            RefreshAudioAndContent();
+            RefreshContentUI();
         }
 
 
         /// <summary>
         /// 切换音乐并重计算 content 高度
         /// </summary>
-        private void RefreshAudioAndContent()
+        private void RefreshContentUI()
         {
             StopAudio();
             SetNewAudioClip();
@@ -125,7 +126,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
                     ? 0
                     : CalculateTotalBeats((int)Model.TotalMusicTime, Model.ChartPackData.BpmGroup);
 
-                RefreshEditAreaUI();
+                RefreshUI();
             }
 
             // 根据总时间和 bpm 组数据，计算总共有几个拍子。
@@ -209,7 +210,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
         /// <summary>
         /// 画面变化后(而不是每帧)或在制谱器或音符属性修改后，重新绘制制谱器的节拍线、位置线、音符
         /// </summary>
-        private void RefreshEditAreaUI()
+        private void RefreshUI()
         {
             RefreshScrollRect();
             ReleaseContentGameObject(); // TODO: 优化渲染：先计算并移动物体位置，再取回/放入对象池
@@ -658,7 +659,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private void Awake()
         {
             // 当窗口滚动时刷新界面
-            scrollRect.onValueChanged.AddListener((_) => { RefreshEditAreaUI(); });
+            scrollRect.onValueChanged.AddListener((_) => { RefreshUI(); });
         }
 
         private void Update()
@@ -667,7 +668,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             if (!Mathf.Approximately(lastCanvaHeight, mainCanvaRect.rect.height))
             {
                 // 游戏窗口大小变化时刷新 UI
-                RefreshEditAreaUI();
+                RefreshUI();
                 lastCanvaHeight = mainCanvaRect.rect.height;
             }
 
@@ -692,16 +693,16 @@ namespace CyanStars.GamePlay.ChartEditor.View
             if (isChartEditorAudioPlaying)
             {
                 scrollRect.verticalNormalizedPosition = audioSource.time / audioSource.clip.length; //TODO: 计算 offset
-                RefreshEditAreaUI();
+                RefreshUI();
             }
         }
 
         private void OnDestroy()
         {
-            Model.OnLoadedAudioClipChanged -= RefreshAudioAndContent;
-            Model.OnNoteDataChanged -= RefreshEditAreaUI;
-            Model.OnEditorAttributeChanged -= RefreshEditAreaUI;
-            Model.OnNoteAttributeChanged -= RefreshEditAreaUI;
+            Model.OnLoadedAudioClipChanged -= RefreshContentUI;
+            Model.OnNoteDataChanged -= RefreshUI;
+            Model.OnEditorAttributeChanged -= RefreshUI;
+            Model.OnNoteAttributeChanged -= RefreshUI;
         }
     }
 }

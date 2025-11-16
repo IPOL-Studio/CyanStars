@@ -916,6 +916,17 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &43651022 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7757076495624774826, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+  m_PrefabInstance: {fileID: 43651018}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 43651020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &57909429
 GameObject:
   m_ObjectHideFlags: 0
@@ -6905,7 +6916,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 602.50006}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &442738496
 MonoBehaviour:
@@ -11315,7 +11326,7 @@ MonoBehaviour:
   closeCanvasButton: {fileID: 651228599}
   listObject: {fileID: 82778093}
   listContentObject: {fileID: 1896763735}
-  addItemButtonObject: {fileID: 43651020}
+  addItemButton: {fileID: 43651022}
   musicVersionItemPrefab: {fileID: 3465736307737091252, guid: d0c774b79e1a1ad4589d9a085e82e557, type: 3}
   dataAreaFrameObject: {fileID: 1134447016}
   titleField: {fileID: 1618376875376546139}
@@ -23052,8 +23063,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 702.50006, y: 0}
-  m_SizeDelta: {x: 1405.0001, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1514540016
 MonoBehaviour:
@@ -33299,8 +33310,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 468.66675, y: 0}
-  m_SizeDelta: {x: 857.3335, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1618376876673323538
 MonoBehaviour:

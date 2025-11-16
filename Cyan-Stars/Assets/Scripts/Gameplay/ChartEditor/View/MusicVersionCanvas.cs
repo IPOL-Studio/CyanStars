@@ -24,7 +24,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private GameObject listContentObject;
 
         [SerializeField]
-        private GameObject addItemButtonObject;
+        private Button addItemButton;
 
         [SerializeField]
         private GameObject musicVersionItemPrefab;
@@ -79,7 +79,6 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private GameObject staffItemPrefab;
 
 
-        private Button addItemButton;
         private readonly List<MusicVersionItem> ListItems = new List<MusicVersionItem>();
         private readonly List<StaffItem> StaffItems = new List<StaffItem>();
 
@@ -88,7 +87,6 @@ namespace CyanStars.GamePlay.ChartEditor.View
         {
             base.Bind(chartEditorModel);
 
-            addItemButton = addItemButtonObject.GetComponent<Button>();
             closeCanvasButton.onClick.AddListener(() => { Model.SetMusicVersionCanvasVisibleness(false); });
             addItemButton.onClick.AddListener(() => { Model.AddMusicVersionItem(); });
 
@@ -194,8 +192,6 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private void RefreshUI()
         {
             canvas.enabled = Model.MusicVersionCanvasVisibleness;
-
-            addItemButtonObject.SetActive(!Model.IsSimplification);
 
             // 精简模式下至少存在1个音乐版本，没有时自动补齐至1个
             if (Model.MusicVersionDatas.Count == 0 && Model.IsSimplification)
