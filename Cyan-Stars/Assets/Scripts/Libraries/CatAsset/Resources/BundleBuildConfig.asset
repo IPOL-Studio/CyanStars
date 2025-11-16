@@ -136,7 +136,7 @@ MonoBehaviour:
     BundleName: charteditor.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 403676
+    AssetsLength: 404263
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/BeatInputField.prefab
       Length: 49161
@@ -149,7 +149,7 @@ MonoBehaviour:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/Button.controller
       Length: 37714
     - Name: Assets/BundleRes/Prefabs/ChartEditor/Button.prefab
-      Length: 14471
+      Length: 15159
     - Name: Assets/BundleRes/Prefabs/ChartEditor/Dropdown.prefab
       Length: 39590
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/BeatLine.prefab
@@ -175,9 +175,9 @@ MonoBehaviour:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/PopupCanvasButton.prefab
       Length: 12432
     - Name: Assets/BundleRes/Prefabs/ChartEditor/StaffItem.prefab
-      Length: 55528
+      Length: 55836
     - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u5F39\u7A97Canvas.prefab"
-      Length: 12412
+      Length: 12003
     - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u65B0\u5EFA\u6309\u94AE\u6D6E\u6761Canvas.prefab"
       Length: 6895
     - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u6B63\u89E3\u97F3\u6D6E\u6761Canvas.prefab"
@@ -306,10 +306,10 @@ MonoBehaviour:
     BundleName: scenes.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 1301591
+    AssetsLength: 1334609
     Assets:
     - Name: Assets/BundleRes/Scenes/ChartEditor.unity
-      Length: 1185038
+      Length: 1218056
     - Name: Assets/BundleRes/Scenes/Dark.unity
       Length: 57120
     - Name: Assets/BundleRes/Scenes/Warm.unity
