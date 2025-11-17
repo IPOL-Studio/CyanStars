@@ -933,12 +933,17 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 从列表删除音乐版本数据元素
+        /// 从列表删除选中的音乐版本数据元素
         /// </summary>
-        /// <param name="index">音乐版本 item 下标</param>
-        public void DeleteMusicVersionItem(int index)
+        public void DeleteMusicVersionItem()
         {
-            MusicVersionDatas.RemoveAt(index);
+            if (SelectedMusicVersionItemIndex == null)
+            {
+                Debug.LogWarning("未选中音乐版本，无法删除");
+                return;
+            }
+
+            MusicVersionDatas.RemoveAt((int)SelectedMusicVersionItemIndex);
 
             // 如果删掉了所有的元素，且当前处于简易模式，则自动创建一个 item
             if (MusicVersionDatas.Count == 0 && IsSimplification)
@@ -966,10 +971,15 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         /// <summary>
         /// 复制某个音乐版本 item，并将副本置于列表尾
         /// </summary>
-        /// <param name="index">音乐版本 item 下标</param>
-        public void CloneMusicVersionItem(int index)
+        public void CloneMusicVersionItem()
         {
-            MusicVersionData data = MusicVersionDatas[index];
+            if (SelectedMusicVersionItemIndex == null)
+            {
+                Debug.LogWarning("未选中音乐版本，无法复制");
+                return;
+            }
+
+            MusicVersionData data = MusicVersionDatas[(int)SelectedMusicVersionItemIndex];
             MusicVersionData copiedItem = new MusicVersionData(data.VersionTitle,
                 data.AudioFilePath, data.Offset,
                 new Dictionary<string, List<string>>());
@@ -983,8 +993,19 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnMusicVersionDataChanged?.Invoke();
         }
 
-        public void MoveUpMusicVersionItem(int index)
+        /// <summary>
+        /// 上移选中的音乐版本
+        /// </summary>
+        public void MoveUpMusicVersionItem()
         {
+            if (SelectedMusicVersionItemIndex == null)
+            {
+                Debug.LogWarning("未选中音乐版本，无法移动");
+                return;
+            }
+
+            int index = (int)SelectedMusicVersionItemIndex;
+
             if (index == 0)
             {
                 Debug.Log("无需上移第一个音乐版本 item");
@@ -1008,8 +1029,19 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
         }
 
-        public void MoveDownMusicVersionItem(int index)
+        /// <summary>
+        /// 下移选中的音乐版本
+        /// </summary>
+        public void MoveDownMusicVersionItem()
         {
+            if (SelectedMusicVersionItemIndex == null)
+            {
+                Debug.LogWarning("未选中音乐版本，无法移动");
+                return;
+            }
+
+            int index = (int)SelectedMusicVersionItemIndex;
+
             if (index == MusicVersionDatas.Count - 1)
             {
                 Debug.Log("无需下移最后一个音乐版本 item");
@@ -1034,11 +1066,18 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 在制谱器内置顶某个音乐版本 item
+        /// 在制谱器内置顶当前选中的音乐版本 item
         /// </summary>
-        /// <param name="index">音乐版本 item 下标</param>
-        public void TopMusicVersionItem(int index)
+        public void TopMusicVersionItem()
         {
+            if (SelectedMusicVersionItemIndex == null)
+            {
+                Debug.LogWarning("未选中音乐版本，无法移动");
+                return;
+            }
+
+            int index = (int)SelectedMusicVersionItemIndex;
+
             MusicVersionData data = MusicVersionDatas[index];
             MusicVersionDatas.RemoveAt(index);
             MusicVersionDatas.Insert(0, data);
@@ -1056,12 +1095,18 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 更新某个音乐版本的标题
+        /// 更新当前选中的音乐版本的标题
         /// </summary>
-        /// <param name="index">音乐版本下标</param>
         /// <param name="newTitle">新的标题</param>
-        public void UpdateMusicVersionTitle(int index, string newTitle)
+        public void UpdateMusicVersionTitle(string newTitle)
         {
+            if (SelectedMusicVersionItemIndex == null)
+            {
+                Debug.LogWarning("未选中音乐版本，无法修改");
+                return;
+            }
+
+            int index = (int)SelectedMusicVersionItemIndex;
             if (MusicVersionDatas[index].VersionTitle != newTitle)
             {
                 MusicVersionDatas[index].VersionTitle = newTitle;
@@ -1070,12 +1115,18 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 为指定音乐版本导入音乐文件路径
+        /// 为当前选中的音乐版本导入音乐文件路径
         /// </summary>
-        /// <param name="index">要编辑的音频版本下标</param>
         /// <param name="originalFilePath">原始音频文件绝对路径</param>
-        public void ImportMusicFile(int index, string originalFilePath)
+        public void ImportMusicFile(string originalFilePath)
         {
+            if (SelectedMusicVersionItemIndex == null)
+            {
+                Debug.LogWarning("未选中音乐版本，无法修改");
+                return;
+            }
+
+            int index = (int)SelectedMusicVersionItemIndex;
             needCopyAudioWhenSave = true;
 
             MusicVersionData musicVersionData = MusicVersionDatas[index];
@@ -1125,12 +1176,18 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 校验并更新某个音乐版本的 offset
+        /// 校验并更新当前选中的音乐版本的 offset
         /// </summary>
-        /// <param name="index">音乐版本下标</param>
         /// <param name="newOffsetString">新的 offset</param>
-        public void UpdateMusicVersionOffset(int index, string newOffsetString)
+        public void UpdateMusicVersionOffset(string newOffsetString)
         {
+            if (SelectedMusicVersionItemIndex == null)
+            {
+                Debug.LogWarning("未选中音乐版本，无法修改");
+                return;
+            }
+
+            int index = (int)SelectedMusicVersionItemIndex;
             if (!int.TryParse(newOffsetString, out int newOffset))
             {
                 OnMusicVersionDataChanged?.Invoke();
@@ -1144,11 +1201,17 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 为指定音乐版本添加一行 Staff
+        /// 在当前选中的音乐版本中添加一行 Staff
         /// </summary>
-        /// <param name="index">音乐版本下标</param>
-        public void AddStaffItem(int index)
+        public void AddStaffItem()
         {
+            if (SelectedMusicVersionItemIndex == null)
+            {
+                Debug.LogWarning("未选中音乐版本，无法修改");
+                return;
+            }
+
+            int index = (int)SelectedMusicVersionItemIndex;
             int i = 1;
             while (MusicVersionDatas[index].Staffs.ContainsKey($"Staff{i}"))
             {
@@ -1160,28 +1223,40 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         }
 
         /// <summary>
-        /// 为指定音乐版本删除一行 Staff
+        /// 在当前选中的音乐版本中删除一行 Staff
         /// </summary>
-        /// <param name="musicVersionData">要操作的音乐版本</param>
         /// <param name="staffItem">要删除的 Staff</param>
-        public void DeleteStaffItem(MusicVersionData musicVersionData, KeyValuePair<string, List<string>> staffItem)
+        public void DeleteStaffItem(KeyValuePair<string, List<string>> staffItem)
         {
-            musicVersionData.Staffs.Remove(staffItem.Key);
+            if (SelectedMusicVersionItemIndex == null)
+            {
+                Debug.LogWarning("未选中音乐版本，无法修改");
+                return;
+            }
+
+            MusicVersionDatas[(int)SelectedMusicVersionItemIndex].Staffs.Remove(staffItem.Key);
             OnMusicVersionDataChanged?.Invoke();
         }
 
         /// <summary>
-        /// 更新指定音乐版本中的指定 Staff 信息
+        /// 更新当前选中的音乐版本中的指定 Staff 信息
         /// </summary>
-        /// <param name="musicVersionItem">要操作的音乐版本</param>
         /// <param name="oldStaffItem">要更新的 Staff Item</param>
         /// <param name="newName">新的 Staff 名字</param>
         /// <param name="newJobString">新的 Staff 职务，多个职务斜杠分隔</param>
-        public void UpdateStaffItem(MusicVersionData musicVersionItem,
-            KeyValuePair<string, List<string>> oldStaffItem, string newName, string newJobString)
+        public void UpdateStaffItem(KeyValuePair<string, List<string>> oldStaffItem, string newName,
+            string newJobString)
         {
+            if (SelectedMusicVersionItemIndex == null)
+            {
+                Debug.LogWarning("未选中音乐版本，无法修改");
+                return;
+            }
+
+            MusicVersionData musicVersionData = MusicVersionDatas[(int)SelectedMusicVersionItemIndex];
+
             if (oldStaffItem.Key == newName && string.Join("/", oldStaffItem.Value) == newJobString ||
-                oldStaffItem.Key != newName && musicVersionItem.Staffs.ContainsKey(newName))
+                oldStaffItem.Key != newName && musicVersionData.Staffs.ContainsKey(newName))
             {
                 OnMusicVersionDataChanged?.Invoke();
                 return;
@@ -1191,14 +1266,14 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
             if (oldStaffItem.Key != newName)
             {
-                musicVersionItem.Staffs.Remove(oldStaffItem.Key);
-                musicVersionItem.Staffs.Add(newName, newJob);
+                musicVersionData.Staffs.Remove(oldStaffItem.Key);
+                musicVersionData.Staffs.Add(newName, newJob);
                 OnMusicVersionDataChanged?.Invoke();
                 return;
             }
             else
             {
-                musicVersionItem.Staffs[newName] = newJob;
+                musicVersionData.Staffs[newName] = newJob;
                 OnMusicVersionDataChanged?.Invoke();
                 return;
             }
@@ -1218,6 +1293,28 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 SelectedBpmItemIndex = index;
                 OnSelectedBpmItemChanged?.Invoke();
             }
+        }
+
+        public void AddBpmGroupItem()
+        {
+            float bpm;
+            Beat newBeat;
+            if (BpmGroupDatas.Count == 0)
+            {
+                bpm = 60;
+                newBeat = new Beat(0, 0, 1);
+            }
+            else
+            {
+                bpm = BpmGroupDatas[BpmGroupDatas.Count - 1].Bpm;
+                Beat lastBeat = BpmGroupDatas[BpmGroupDatas.Count - 1].StartBeat;
+                newBeat = new Beat(lastBeat.IntegerPart + 1, lastBeat.Numerator, lastBeat.Denominator);
+            }
+
+            BpmGroupItem item = new BpmGroupItem(bpm, newBeat);
+            BpmGroupDatas.Add(item);
+            SelectedBpmItemIndex = BpmGroupDatas.Count - 1;
+            OnBpmGroupChanged?.Invoke();
         }
 
         /// <summary>
@@ -1289,28 +1386,6 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             SelectedBpmItemIndex = (int)SelectedBpmItemIndex == 0
                 ? (int?)null // 如果移除了所有元素，则设为 null
                 : Math.Min(BpmGroupDatas.Count - 1, (int)SelectedBpmItemIndex); // 尝试让 index 在不越界的情况下不变
-            OnBpmGroupChanged?.Invoke();
-        }
-
-        public void AddBpmGroupItem()
-        {
-            float bpm;
-            Beat newBeat;
-            if (BpmGroupDatas.Count == 0)
-            {
-                bpm = 60;
-                newBeat = new Beat(0, 0, 1);
-            }
-            else
-            {
-                bpm = BpmGroupDatas[BpmGroupDatas.Count - 1].Bpm;
-                Beat lastBeat = BpmGroupDatas[BpmGroupDatas.Count - 1].StartBeat;
-                newBeat = new Beat(lastBeat.IntegerPart + 1, lastBeat.Numerator, lastBeat.Denominator);
-            }
-
-            BpmGroupItem item = new BpmGroupItem(bpm, newBeat);
-            BpmGroupDatas.Add(item);
-            SelectedBpmItemIndex = BpmGroupDatas.Count - 1;
             OnBpmGroupChanged?.Invoke();
         }
 

@@ -15,7 +15,6 @@ namespace CyanStars.GamePlay.ChartEditor.View
     {
         private bool isInit = false;
         private int staffItemIndex;
-        private MusicVersionData musicVersionData = null!;
         private KeyValuePair<string, List<string>> staffItemData;
 
         [SerializeField]
@@ -42,7 +41,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             }
 
             this.staffItemIndex = staffItemIndex;
-            musicVersionData = Model.MusicVersionDatas[(int)Model.SelectedMusicVersionItemIndex];
+            MusicVersionData musicVersionData = Model.MusicVersionDatas[(int)Model.SelectedMusicVersionItemIndex];
             staffItemData = musicVersionData.Staffs.ElementAt(this.staffItemIndex);
 
             RefreshUI();
@@ -65,15 +64,15 @@ namespace CyanStars.GamePlay.ChartEditor.View
             staffIdField.onEndEdit.RemoveAllListeners();
             staffIdField.onEndEdit.AddListener((newName) =>
             {
-                Model.UpdateStaffItem(musicVersionData, staffItemData, newName, staffJobField.text);
+                Model.UpdateStaffItem(staffItemData, newName, staffJobField.text);
             });
             staffJobField.onEndEdit.RemoveAllListeners();
             staffJobField.onEndEdit.AddListener((newJob) =>
             {
-                Model.UpdateStaffItem(musicVersionData, staffItemData, staffIdField.text, newJob);
+                Model.UpdateStaffItem(staffItemData, staffIdField.text, newJob);
             });
             deleteItemButton.onClick.RemoveAllListeners();
-            deleteItemButton.onClick.AddListener(() => { Model.DeleteStaffItem(musicVersionData, staffItemData); });
+            deleteItemButton.onClick.AddListener(() => { Model.DeleteStaffItem(staffItemData); });
         }
 
         private void RefreshUI()

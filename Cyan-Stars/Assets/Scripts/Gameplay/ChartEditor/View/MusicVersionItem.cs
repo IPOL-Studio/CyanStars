@@ -12,13 +12,13 @@ namespace CyanStars.GamePlay.ChartEditor.View
     public class MusicVersionItem : BaseView
     {
         [SerializeField]
-        private Button itemButton;
+        private Button itemButton = null!;
 
         [SerializeField]
-        private GameObject itemLedObject;
+        private GameObject itemLedObject = null!;
 
         [SerializeField]
-        private TMP_Text itemTitleText;
+        private TMP_Text itemTitleText = null!;
 
 
         private bool isInit = false;

@@ -15,19 +15,23 @@ namespace CyanStars.GamePlay.ChartEditor.View
         [SerializeField]
         private Canvas canvas;
 
-
+        [Header("列表区域")]
         [SerializeField]
-        private GameObject itemList;
+        private GameObject listObject;
 
         [SerializeField]
         private GameObject contentObject;
 
         [SerializeField]
-        private GameObject bpmItemPrefab;
-
-        [SerializeField]
         private Button addItemButton;
 
+        [SerializeField]
+        private GameObject bpmItemPrefab;
+
+
+        [Header("数据编辑区域")]
+        [SerializeField]
+        private TMP_Text titleText;
 
         [SerializeField]
         private TMP_InputField bpmValueField;
@@ -115,11 +119,11 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
             if (Model.IsSimplification && Model.BpmGroupDatas.Count <= 1)
             {
-                itemList.SetActive(false);
+                listObject.SetActive(false);
             }
             else
             {
-                itemList.SetActive(true);
+                listObject.SetActive(true);
             }
 
             if (Model.SelectedBpmItemIndex != null)

@@ -21,7 +21,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
         private GameObject listObject;
 
         [SerializeField]
-        private GameObject listContentObject;
+        private GameObject contentObject;
 
         [SerializeField]
         private Button addItemButton;
@@ -90,22 +90,13 @@ namespace CyanStars.GamePlay.ChartEditor.View
             closeCanvasButton.onClick.AddListener(() => { Model.SetMusicVersionCanvasVisibleness(false); });
             addItemButton.onClick.AddListener(() => { Model.AddMusicVersionItem(); });
 
-            titleField.onEndEdit.AddListener((text) =>
-            {
-                if (Model.SelectedMusicVersionItemIndex != null)
-                {
-                    Model.UpdateMusicVersionTitle((int)Model.SelectedMusicVersionItemIndex, text);
-                }
-            });
+            titleField.onEndEdit.AddListener(Model.UpdateMusicVersionTitle);
             importFileButton.onClick.AddListener(() =>
             {
                 if (Model.SelectedMusicVersionItemIndex != null)
                 {
                     GameRoot.File.OpenLoadFilePathBrowser(
-                        (musicFilePath) =>
-                        {
-                            Model.ImportMusicFile((int)Model.SelectedMusicVersionItemIndex, musicFilePath);
-                        },
+                        (musicFilePath) => { Model.ImportMusicFile(musicFilePath); },
                         title: "导入音频",
                         filters: new[] { GameRoot.File.AudioFilter });
                 }
@@ -115,72 +106,26 @@ namespace CyanStars.GamePlay.ChartEditor.View
                 int? index = Model.SelectedMusicVersionItemIndex;
                 if (index != null)
                 {
-                    Model.UpdateMusicVersionOffset((int)index,
-                        (Model.MusicVersionDatas[(int)index].Offset - 10).ToString());
+                    Model.UpdateMusicVersionOffset((Model.MusicVersionDatas[(int)index].Offset - 10).ToString());
                 }
             });
-            offsetField.onEndEdit.AddListener((text) =>
-            {
-                int? index = Model.SelectedMusicVersionItemIndex;
-                if (index != null)
-                {
-                    Model.UpdateMusicVersionOffset((int)index, text);
-                }
-            });
+            offsetField.onEndEdit.AddListener(Model.UpdateMusicVersionOffset);
             addOffsetButton.onClick.AddListener(() =>
             {
                 int? index = Model.SelectedMusicVersionItemIndex;
                 if (index != null)
                 {
-                    Model.UpdateMusicVersionOffset((int)index,
-                        (Model.MusicVersionDatas[(int)index].Offset + 10).ToString());
+                    Model.UpdateMusicVersionOffset((Model.MusicVersionDatas[(int)index].Offset + 10).ToString());
                 }
             });
             testPlayButton.onClick.AddListener(() => { Debug.LogError("未实现"); }); //TODO
 
-            addStaffItemButton.onClick.AddListener(() =>
-            {
-                if (Model.SelectedMusicVersionItemIndex != null)
-                {
-                    Model.AddStaffItem((int)Model.SelectedMusicVersionItemIndex);
-                }
-            });
-
-            deleteMusicVersionButton.onClick.AddListener(() =>
-            {
-                if (Model.SelectedMusicVersionItemIndex != null)
-                {
-                    Model.DeleteMusicVersionItem((int)Model.SelectedMusicVersionItemIndex);
-                }
-            });
-            cloneMusicVersionButton.onClick.AddListener(() =>
-            {
-                if (Model.SelectedMusicVersionItemIndex != null)
-                {
-                    Model.CloneMusicVersionItem((int)Model.SelectedMusicVersionItemIndex);
-                }
-            });
-            moveUpMusicVersionButton.onClick.AddListener(() =>
-            {
-                if (Model.SelectedMusicVersionItemIndex != null)
-                {
-                    Model.MoveUpMusicVersionItem((int)Model.SelectedMusicVersionItemIndex);
-                }
-            });
-            moveDownMusicVersionButton.onClick.AddListener(() =>
-            {
-                if (Model.SelectedMusicVersionItemIndex != null)
-                {
-                    Model.MoveDownMusicVersionItem((int)Model.SelectedMusicVersionItemIndex);
-                }
-            });
-            topMusicVersionButton.onClick.AddListener(() =>
-            {
-                if (Model.SelectedMusicVersionItemIndex != null)
-                {
-                    Model.TopMusicVersionItem((int)Model.SelectedMusicVersionItemIndex);
-                }
-            });
+            addStaffItemButton.onClick.AddListener(Model.AddStaffItem);
+            deleteMusicVersionButton.onClick.AddListener(Model.DeleteMusicVersionItem);
+            cloneMusicVersionButton.onClick.AddListener(Model.CloneMusicVersionItem);
+            moveUpMusicVersionButton.onClick.AddListener(Model.MoveUpMusicVersionItem);
+            moveDownMusicVersionButton.onClick.AddListener(Model.MoveDownMusicVersionItem);
+            topMusicVersionButton.onClick.AddListener(Model.TopMusicVersionItem);
 
             Model.OnMusicVersionDataChanged += RefreshUI;
             Model.OnSelectedMusicVersionItemChanged += RefreshUI;
@@ -214,8 +159,8 @@ namespace CyanStars.GamePlay.ChartEditor.View
                 // 补齐列表栏 item
                 for (int i = ListItems.Count; i < Model.MusicVersionDatas.Count; i++)
                 {
-                    GameObject go = Instantiate(musicVersionItemPrefab, listContentObject.transform);
-                    go.transform.SetSiblingIndex(listContentObject.transform.childCount - 2); // 置于倒数第二个
+                    GameObject go = Instantiate(musicVersionItemPrefab, contentObject.transform);
+                    go.transform.SetSiblingIndex(contentObject.transform.childCount - 2); // 置于倒数第二个
                     MusicVersionItem item = go.GetComponent<MusicVersionItem>();
                     ListItems.Add(item);
                 }
@@ -228,7 +173,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
                 // 刷新 UI 自动布局
                 Canvas.ForceUpdateCanvases();
-                LayoutRebuilder.ForceRebuildLayoutImmediate(listContentObject.GetComponent<RectTransform>());
+                LayoutRebuilder.ForceRebuildLayoutImmediate(contentObject.GetComponent<RectTransform>());
             }
 
             // 根据目前选中编辑的音乐版本显示数据
