@@ -146,6 +146,7 @@ GameObject:
   - component: {fileID: 8961577680985612683}
   - component: {fileID: 8961577680985612682}
   - component: {fileID: 2515084839524321402}
+  - component: {fileID: 7462684316679821209}
   m_Layer: 5
   m_Name: BeatLine
   m_TagString: Untagged
@@ -231,3 +232,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &7462684316679821209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8961577680985612680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38fe57356d1546843b03bc6e3d23d0cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BeatLineRect: {fileID: 8961577680985612681}
+  Image: {fileID: 8961577680985612682}
+  BeatTextObject: {fileID: 8416694074777862368}
+  BeatText: {fileID: 5429304127019559458}

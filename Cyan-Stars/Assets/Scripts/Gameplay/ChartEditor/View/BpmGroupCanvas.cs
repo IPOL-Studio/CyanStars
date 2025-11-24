@@ -82,11 +82,19 @@ namespace CyanStars.GamePlay.ChartEditor.View
             {
                 Model.UpdateBpmGroupItemBeat(startBeatField1.text, startBeatField2.text, startBeatField3.text);
             });
+
+            RefreshUI();
         }
 
         private void RefreshUI()
         {
             canvas.enabled = Model.BpmGroupCanvasVisibleness;
+
+            // 简易模式下至少存在1个BPM组，没有时自动补齐至1个
+            if (Model.BpmGroupDatas.Count == 0 && Model.IsSimplification)
+            {
+                Model.AddBpmGroupItem();
+            }
 
             // 开启了简易模式且只有一个 item 时，不显示左侧列表和添加按钮
             if (!Model.IsSimplification || Model.BpmGroupDatas.Count >= 2)

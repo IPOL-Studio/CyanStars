@@ -138,13 +138,13 @@ namespace CyanStars.GamePlay.ChartEditor.View
         {
             canvas.enabled = Model.MusicVersionCanvasVisibleness;
 
-            // 精简模式下至少存在1个音乐版本，没有时自动补齐至1个
+            // 简易模式下至少存在1个音乐版本，没有时自动补齐至1个
             if (Model.MusicVersionDatas.Count == 0 && Model.IsSimplification)
             {
                 Model.AddMusicVersionItem();
             }
 
-            // 如果不处于精简模式，或存在多个版本，则显示列表栏，并允许添加版本
+            // 如果不处于简易模式，或存在多个版本，则显示列表栏，并允许添加版本
             bool showList = !Model.IsSimplification || Model.MusicVersionDatas.Count > 1;
             listObject.SetActive(showList);
             if (showList)
