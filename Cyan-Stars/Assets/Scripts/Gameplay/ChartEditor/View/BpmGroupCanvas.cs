@@ -68,19 +68,21 @@ namespace CyanStars.GamePlay.ChartEditor.View
             Model.OnSelectedBpmItemChanged += RefreshUI;
 
             closeCanvasButton.onClick.AddListener(() => { Model.SetBpmGroupCanvasVisibleness(false); });
-            addItemButton.onClick.AddListener(() => { Model.AddBpmGroupItem(); });
-            deleteItemButton.onClick.AddListener(() => { Model.DeleteBpmGroupItem(); });
+            addItemButton.onClick.AddListener(() => { Model.AddBpmItem(); });
+            deleteItemButton.onClick.AddListener(() => { Model.DeleteBpmItem(); });
+
+            bpmValueField.onEndEdit.AddListener((text) => { Model.UpdateBpmItemBpm(text); });
             startBeatField1.onEndEdit.AddListener((_) =>
             {
-                Model.UpdateBpmGroupItemBeat(startBeatField1.text, startBeatField2.text, startBeatField3.text);
+                Model.UpdateBpmItemStartBeat(startBeatField1.text, startBeatField2.text, startBeatField3.text);
             });
             startBeatField2.onEndEdit.AddListener((_) =>
             {
-                Model.UpdateBpmGroupItemBeat(startBeatField1.text, startBeatField2.text, startBeatField3.text);
+                Model.UpdateBpmItemStartBeat(startBeatField1.text, startBeatField2.text, startBeatField3.text);
             });
             startBeatField3.onEndEdit.AddListener((_) =>
             {
-                Model.UpdateBpmGroupItemBeat(startBeatField1.text, startBeatField2.text, startBeatField3.text);
+                Model.UpdateBpmItemStartBeat(startBeatField1.text, startBeatField2.text, startBeatField3.text);
             });
 
             RefreshUI();
@@ -93,7 +95,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             // 简易模式下至少存在1个BPM组，没有时自动补齐至1个
             if (Model.BpmGroupDatas.Count == 0 && Model.IsSimplification)
             {
-                Model.AddBpmGroupItem();
+                Model.AddBpmItem();
             }
 
             // 开启了简易模式且只有一个 item 时，不显示左侧列表和添加按钮

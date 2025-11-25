@@ -308,7 +308,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
                 // 渲染所有的子节拍线
                 while ((currentSubBeatLineCount - 1) * beatLineDistance <
                        contentPos + mainCanvaRect.rect.height && // 到达屏幕上边界后不再渲染
-                       (float)currentSubBeatLineCount / Model.BeatAccuracy < totalBeat) // 到达音乐结束点后也不再渲染
+                       (float)(currentSubBeatLineCount - 1) / Model.BeatAccuracy < totalBeat) // 到达音乐结束点后也不再渲染
                 {
                     GameObject go = await GameRoot.GameObjectPool.GetGameObjectAsync(BeatLinePrefabPath, contentRect);
                     BeatLine beatLine = go.GetComponent<BeatLine>();

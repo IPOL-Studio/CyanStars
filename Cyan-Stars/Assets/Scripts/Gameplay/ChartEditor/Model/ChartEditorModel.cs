@@ -1295,7 +1295,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
         }
 
-        public void AddBpmGroupItem()
+        public void AddBpmItem()
         {
             float bpm;
             Beat newBeat;
@@ -1317,11 +1317,34 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnBpmGroupChanged?.Invoke();
         }
 
+        public void UpdateBpmItemBpm(string bpmString)
+        {
+            if (SelectedBpmItemIndex == null)
+            {
+                Debug.LogError("未选中 bpm 元素，无法修改 bpm！");
+                OnBpmGroupChanged?.Invoke();
+                return;
+            }
+
+            if (!float.TryParse(bpmString, out float bpm))
+            {
+                OnBpmGroupChanged?.Invoke();
+                return;
+            }
+
+            BpmGroupItem bpmItem = BpmGroupDatas[(int)SelectedBpmItemIndex];
+            if (!Mathf.Approximately(bpmItem.Bpm, bpm))
+            {
+                bpmItem.Bpm = bpm;
+                OnBpmGroupChanged?.Invoke();
+            }
+        }
+
         /// <summary>
         /// 更新 BPM 元素开始时间，并将其自动放在合适的位置
         /// </summary>
         /// <remarks>将根据 beat 自动插入或更新 Bpm 组</remarks>
-        public void UpdateBpmGroupItemBeat(string integerPartString, string numeratorString,
+        public void UpdateBpmItemStartBeat(string integerPartString, string numeratorString,
             string denominatorString)
         {
             if (SelectedBpmItemIndex == null)
@@ -1374,7 +1397,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             OnBpmGroupChanged?.Invoke();
         }
 
-        public void DeleteBpmGroupItem()
+        public void DeleteBpmItem()
         {
             if (SelectedBpmItemIndex == null)
             {
