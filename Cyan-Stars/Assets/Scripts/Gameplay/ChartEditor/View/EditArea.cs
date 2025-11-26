@@ -259,6 +259,12 @@ namespace CyanStars.GamePlay.ChartEditor.View
                         continue;
                     }
 
+                    if (child.TryGetComponent<EndLine>(out EndLine endLine))
+                    {
+                        GameRoot.GameObjectPool.ReleaseGameObject(EndLinePrefabPath, endLine.gameObject);
+                        continue;
+                    }
+
                     if (child.TryGetComponent<EditorNote>(out EditorNote editorNote))
                     {
                         switch (editorNote.NoteType)
@@ -357,7 +363,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
                 if (contentPos - 100f <= endLinePosY && contentPos <= contentPos + mainCanvaRect.rect.height + 100f)
                 {
                     GameObject go = await GameRoot.GameObjectPool.GetGameObjectAsync(EndLinePrefabPath, contentRect);
-                    BeatLine endLine = go.GetComponent<BeatLine>(); // EndLine 也是一种 BeatLine
+                    EndLine endLine = go.GetComponent<EndLine>();
                     RectTransform rect = endLine.BeatLineRect;
                     rect.anchorMin = new Vector2(0.5f, 0f);
                     rect.anchorMax = new Vector2(0.5f, 0f);
