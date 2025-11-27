@@ -15,6 +15,10 @@ namespace CyanStars.GamePlay.ChartEditor.View
         [SerializeField]
         private Canvas canvas;
 
+        [Header("进度条")]
+        [SerializeField]
+        private GameObject progressBarObject; // TODO
+
         [Header("列表区域")]
         [SerializeField]
         private GameObject listObject;
@@ -97,6 +101,10 @@ namespace CyanStars.GamePlay.ChartEditor.View
             {
                 Model.AddBpmItem();
             }
+
+            // 如果选中的是第一个 item，不允许修改起始拍
+            startBeatField1.readOnly = startBeatField2.readOnly = startBeatField3.readOnly =
+                (Model.SelectedBpmItemIndex != 0);
 
             // 开启了简易模式且只有一个 item 时，不显示左侧列表和添加按钮
             if (!Model.IsSimplification || Model.BpmGroupDatas.Count >= 2)
