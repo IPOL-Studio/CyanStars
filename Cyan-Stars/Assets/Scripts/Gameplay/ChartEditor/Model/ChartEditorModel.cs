@@ -154,6 +154,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public readonly string ChartFilePath;
         public readonly ChartPackData ChartPackData;
         public readonly ChartData ChartData;
+        public readonly ChartMetadata ChartMetadata;
         public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
         public List<BpmGroupItem> BpmGroupDatas => ChartPackData.BpmGroup.Data;
         public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
@@ -307,6 +308,20 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             ChartFilePath = chartFilePath;
             ChartPackData = chartPackData;
             ChartData = chartData;
+
+            foreach (var chartMetadata in ChartPackData.ChartMetaDatas)
+            {
+                if (Path.Combine(WorkspacePath, chartMetadata.FilePath) == chartFilePath)
+                {
+                    ChartMetadata = chartMetadata;
+                    break;
+                }
+            }
+
+            if (ChartMetadata == null)
+            {
+                throw new Exception("未在元数据中找到此谱面");
+            }
 
             foreach (var note in ChartData.Notes)
             {
@@ -1464,14 +1479,20 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
         public void UpdateDifficulty(ChartDifficulty? difficulty)
         {
-            // TODO
-            throw new NotSupportedException();
+            if (ChartMetadata.Difficulty != difficulty)
+            {
+                ChartMetadata.Difficulty = difficulty;
+                OnChartDataChanged?.Invoke();
+            }
         }
 
-        public void UpdateLevel(string text)
+        public void UpdateLevel(string levelString)
         {
-            // TODO
-            throw new NotSupportedException();
+            if (ChartMetadata.Level != levelString)
+            {
+                ChartMetadata.Level = levelString;
+                OnChartDataChanged?.Invoke();
+            }
         }
 
         public void UpdateReadyBeat(string text)

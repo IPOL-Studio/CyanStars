@@ -522,7 +522,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             }
 
             // 整个 content 对应的音乐时长（ms） = clip 时长 + offset
-            int totalTime = (int)audioSource.clip.length * 1000 + Model.MusicVersionDatas[0].Offset;
+            int totalTime = (int)(audioSource.clip.length * 1000) + Model.MusicVersionDatas[0].Offset;
             int currentTime = (int)(totalTime * scrollRect.verticalNormalizedPosition);
             int audioTime = currentTime - Model.MusicVersionDatas[0].Offset;
 

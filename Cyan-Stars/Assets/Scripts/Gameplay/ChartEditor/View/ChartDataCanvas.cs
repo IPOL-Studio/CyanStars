@@ -1,4 +1,6 @@
-using System;
+#nullable enable
+
+
 using CyanStars.Chart;
 using CyanStars.GamePlay.ChartEditor.Model;
 using TMPro;
@@ -89,8 +91,16 @@ namespace CyanStars.GamePlay.ChartEditor.View
 
         private void RefreshUI()
         {
-            // TODO
-            throw new NotSupportedException();
+            canvas.enabled = Model.ChartDataCanvasVisibleness;
+
+            kuiXingToggle.isOn = Model.ChartMetadata.Difficulty == ChartDifficulty.KuiXing;
+            qiMingToggle.isOn = Model.ChartMetadata.Difficulty == ChartDifficulty.QiMing;
+            tianShuToggle.isOn = Model.ChartMetadata.Difficulty == ChartDifficulty.TianShu;
+            wuYinToggle.isOn = Model.ChartMetadata.Difficulty == ChartDifficulty.WuYin;
+            undefinedToggle.isOn = Model.ChartMetadata.Difficulty == null;
+
+            chartLevelField.text = Model.ChartMetadata.Level;
+            readyBeatField.text = Model.ChartData.ReadyBeat.ToString();
         }
 
         private void OnDestroy()
