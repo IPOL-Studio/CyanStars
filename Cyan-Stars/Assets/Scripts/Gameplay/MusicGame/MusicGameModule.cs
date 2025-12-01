@@ -5,7 +5,7 @@ using CyanStars.Framework;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.Timeline;
 using CyanStars.Framework.Logging;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 using UnityEngine;
 
 

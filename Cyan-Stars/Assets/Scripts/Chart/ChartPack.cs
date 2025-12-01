@@ -1,4 +1,4 @@
-namespace CyanStars.Gameplay.Chart
+namespace CyanStars.Chart
 {
     /// <summary>
     /// 运行时谱包数据

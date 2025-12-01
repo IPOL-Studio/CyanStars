@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyanStars.Framework;
 using CyanStars.Framework.UI;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;

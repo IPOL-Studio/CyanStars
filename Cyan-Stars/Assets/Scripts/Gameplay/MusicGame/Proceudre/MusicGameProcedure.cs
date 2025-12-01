@@ -8,7 +8,7 @@ using CyanStars.Framework.FSM;
 using CyanStars.Framework.Logging;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Base;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 using CyanStars.Graphics.Band;
 using UnityEngine;
 using UnityEngine.SceneManagement;

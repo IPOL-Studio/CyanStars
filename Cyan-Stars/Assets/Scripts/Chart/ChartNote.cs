@@ -1,7 +1,7 @@
 using System;
 using JetBrains.Annotations;
 
-namespace CyanStars.Gameplay.Chart
+namespace CyanStars.Chart
 {
     public enum BreakNotePos
     {
