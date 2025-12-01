@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace CyanStars.Framework.Utils
+namespace CyanStars.Utils
 {
     /// <summary>
     /// 一个双向字典，其中键和值都必须是唯一的。

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace CyanStars.Framework.Utils.JsonSerialization
+namespace CyanStars.Utils.JsonSerialization
 {
     public static class JsonConverters
     {

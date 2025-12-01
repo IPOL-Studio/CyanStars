@@ -3,7 +3,7 @@ using CyanStars.Chart;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CyanStars.Framework.Utils.JsonSerialization
+namespace CyanStars.Utils.JsonSerialization
 {
     public sealed class ChartNoteDataReadConverter : JsonConverter<BaseChartNoteData>
     {

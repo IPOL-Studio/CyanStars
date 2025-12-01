@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using CyanStars.Chart;
+using CyanStars.Framework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CyanStars.Framework.Utils.JsonSerialization
+namespace CyanStars.Utils.JsonSerialization
 {
     public sealed class ChartTrackDataReadConverter : JsonConverter<ChartTrackData>
     {

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using CatAsset.Runtime;
 using CyanStars.Chart;
-using CyanStars.Framework.Utils.JsonSerialization;
+using CyanStars.Utils.JsonSerialization;
 using Newtonsoft.Json;
 using UnityEngine;
 using NVorbis;

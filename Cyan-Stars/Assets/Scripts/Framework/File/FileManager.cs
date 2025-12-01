@@ -7,8 +7,8 @@ using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using CatAsset.Runtime;
-using CyanStars.Framework.Utils;
-using CyanStars.Framework.Utils.JsonSerialization;
+using CyanStars.Utils;
+using CyanStars.Utils.JsonSerialization;
 using Newtonsoft.Json;
 
 namespace CyanStars.Framework.File
