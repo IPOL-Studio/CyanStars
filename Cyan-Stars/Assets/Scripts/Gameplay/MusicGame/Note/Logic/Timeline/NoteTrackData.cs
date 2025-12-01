@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CyanStars.Framework.Timeline;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -12,7 +12,7 @@ namespace CyanStars.Gameplay.MusicGame
     public class NoteTrackData : ITrackData<ChartData>
     {
         public int ClipCount => 1;
-
+        public BpmGroup BpmGroup { get; set; }
         public List<ChartData> ClipDataList { get; set; }
     }
 }

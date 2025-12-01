@@ -58,9 +58,9 @@ git submodule update --init --recursive
 
 ### 下载 Unity 编辑器
 
-若您已安装 Unity Hub，可将此链接复制到浏览器，调起 Unity Hub 内下载：`unityhub://2020.3.28f1/f5400f52e03f`。
+若您已安装 Unity Hub，可将此链接复制到浏览器，调起 Unity Hub 内下载：`unityhub://2020.3.49f1/18249dd5551b`。
 
-或从 [Unity 官网](https://unity3d.com/get-unity/download/archive) 手动下载 `2020.3.28f1` 版本的编辑器。
+或从 [Unity 官网](https://unity3d.com/get-unity/download/archive) 手动下载 `2020.3.49f1` 版本的编辑器。
 
 ### 下载其他必要资源
 

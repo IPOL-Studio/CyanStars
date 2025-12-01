@@ -80,3 +80,12 @@ StreamingAssets/
 StreamingAssets.meta
 AssetBundles
 BuildPlayer
+
+
+# 忽略 NuGet packages，但保留配置文件
+/Packages/nuget-packages/*
+!/Packages/nuget-packages/NuGet.config
+!/Packages/nuget-packages/packages.config
+!/Packages/nuget-packages/NuGet.config.meta
+!/Packages/nuget-packages/packages.config.meta
+!/Packages/nuget-packages.meta

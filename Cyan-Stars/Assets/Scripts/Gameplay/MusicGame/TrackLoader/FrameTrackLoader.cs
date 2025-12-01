@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using CyanStars.Framework;
 using CyanStars.Framework.Timeline;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -10,17 +10,15 @@ namespace CyanStars.Gameplay.MusicGame
     {
         public override bool IsEnabled => GameRoot.GetDataModule<MusicGameSettingsModule>().EnableFrameTrack;
 
-        public override void LoadTrack(Timeline timeline, ChartData chartData, ChartTrackAccessor<FrameChartTrackData> trackAccessor)
+        public override void LoadTrack(Timeline timeline, BpmGroup bpmGroup, ChartData chartData,
+            ChartTrackAccessor<FrameChartTrackData> trackAccessor)
         {
             var frameClipData = new FrameClipData(
                 trackAccessor.GetTrackData(chartData),
-                chartData.BpmGroups.CalculateTime
+                bpmGroup.CalculateTime
             );
 
-            var frameTrackData = new FrameTrackData
-            {
-                ClipDataList = new List<FrameClipData> { frameClipData }
-            };
+            var frameTrackData = new FrameTrackData { ClipDataList = new List<FrameClipData> { frameClipData } };
 
             var track = timeline.AddTrack(frameTrackData, FrameTrack.CreateClipFunc);
             track.ImgFrame = GameRoot.UI.GetUIPanel<MusicGameMainPanel>().ImgFrame;
