@@ -5,7 +5,7 @@
 using System;
 using System.Text;
 
-namespace CyanStars.Framework.Utils
+namespace CyanStars.Utils
 {
     internal static class StringBuilderCache
     {
