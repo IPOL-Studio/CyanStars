@@ -207,6 +207,13 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.yasirkula.simplefilebrowser": {
+      "version": "https://github.com/IPOL-Studio/UnitySimpleFileBrowser.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "7264ad83cf78c3d609afa7b05a9486b645d14300"
+    },
     "nuget-packages": {
       "version": "file:nuget-packages",
       "depth": 0,
