@@ -1,4 +1,4 @@
-namespace CyanStars.Gameplay.Chart
+namespace CyanStars.Chart
 {
     public sealed class ChartMetadata
     {
