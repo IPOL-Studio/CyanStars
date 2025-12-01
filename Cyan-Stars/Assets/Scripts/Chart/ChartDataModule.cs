@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using CyanStars.Framework;
 
-namespace CyanStars.Gameplay.Chart
+namespace CyanStars.Chart
 {
     public class ChartDataModule : BaseDataModule
     {

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 using CyanStars.Gameplay.MusicGame;
 
 namespace CyanStars.GameSave

@@ -2,7 +2,7 @@ using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CyanStars.Gameplay.Chart
+namespace CyanStars.Chart
 {
     public sealed class ChartNoteDataReadConverter : JsonConverter<BaseChartNoteData>
     {

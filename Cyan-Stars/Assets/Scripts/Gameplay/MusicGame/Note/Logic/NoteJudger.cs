@@ -1,7 +1,7 @@
 ﻿using System;
 using CyanStars.Framework;
 using CyanStars.Framework.Logging;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {

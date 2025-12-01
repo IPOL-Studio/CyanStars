@@ -4,7 +4,7 @@ using CyanStars.Framework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CyanStars.Gameplay.Chart
+namespace CyanStars.Chart
 {
     public sealed class ChartTrackDataReadConverter : JsonConverter<ChartTrackData>
     {

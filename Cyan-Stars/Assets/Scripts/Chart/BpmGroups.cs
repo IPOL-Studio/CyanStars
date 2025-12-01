@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CyanStars.Gameplay.Chart
+namespace CyanStars.Chart
 {
     [Serializable]
     public class BpmGroups

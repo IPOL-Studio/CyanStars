@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using UnityEngine;
 using UnityLoggingHack;
-using CyanStars.Framework.Utils;
+using CyanStars.Utils;
 
 namespace CyanStars.Framework.Logging
 {

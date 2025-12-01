@@ -1,4 +1,4 @@
-namespace CyanStars.Gameplay.Chart
+namespace CyanStars.Chart
 {
     /// <summary>
     /// 谱面难度
