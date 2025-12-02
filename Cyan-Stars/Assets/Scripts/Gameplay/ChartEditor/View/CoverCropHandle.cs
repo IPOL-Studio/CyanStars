@@ -6,14 +6,6 @@ using UnityEngine.EventSystems;
 
 namespace CyanStars.GamePlay.ChartEditor.View
 {
-    public enum CoverCropHandleType
-    {
-        TopLeft,
-        TopRight,
-        BottomLeft,
-        BottomRight
-    }
-
     public class CoverCropHandle : BaseView, IDragHandler
     {
         [SerializeField]

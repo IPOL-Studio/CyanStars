@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyanStars.Chart;
 using CyanStars.Framework;
-using CyanStars.GamePlay.ChartEditor.View;
 using UnityEngine;
 
 namespace CyanStars.GamePlay.ChartEditor.Model
