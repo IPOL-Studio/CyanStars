@@ -662,16 +662,16 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 return;
             }
 
-            if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat? newBeat) ||
-                ((Beat)newBeat).ToFloat() > ChartPackData.MusicPreviewEndBeat.ToFloat())
+            if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat newBeat) ||
+                newBeat.ToFloat() > ChartPackData.MusicPreviewEndBeat.ToFloat())
             {
                 OnChartPackDataChanged?.Invoke();
                 return;
             }
 
-            if (ChartPackData.MusicPreviewStartBeat != (Beat)newBeat)
+            if (ChartPackData.MusicPreviewStartBeat != newBeat)
             {
-                ChartPackData.MusicPreviewStartBeat = (Beat)newBeat;
+                ChartPackData.MusicPreviewStartBeat = newBeat;
                 OnChartPackDataChanged?.Invoke();
             }
         }
@@ -689,16 +689,16 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 return;
             }
 
-            if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat? newBeat) ||
-                ((Beat)newBeat).ToFloat() < ChartPackData.MusicPreviewStartBeat.ToFloat())
+            if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat newBeat) ||
+                newBeat.ToFloat() < ChartPackData.MusicPreviewStartBeat.ToFloat())
             {
                 OnChartPackDataChanged?.Invoke();
                 return;
             }
 
-            if (ChartPackData.MusicPreviewEndBeat != (Beat)newBeat)
+            if (ChartPackData.MusicPreviewEndBeat != newBeat)
             {
-                ChartPackData.MusicPreviewEndBeat = (Beat)newBeat;
+                ChartPackData.MusicPreviewEndBeat = newBeat;
                 OnChartPackDataChanged?.Invoke();
             }
         }
@@ -1316,13 +1316,20 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             if (BpmGroupDatas.Count == 0)
             {
                 bpm = 60;
-                newBeat = new Beat(0, 0, 1);
+                if (!Beat.TryCreateBeat(0, 0, 1, out newBeat))
+                {
+                    throw new Exception("Couldn't create beat");
+                }
             }
             else
             {
                 bpm = BpmGroupDatas[BpmGroupDatas.Count - 1].Bpm;
                 Beat lastBeat = BpmGroupDatas[BpmGroupDatas.Count - 1].StartBeat;
-                newBeat = new Beat(lastBeat.IntegerPart + 1, lastBeat.Numerator, lastBeat.Denominator);
+                if (!Beat.TryCreateBeat(lastBeat.IntegerPart + 1, lastBeat.Numerator, lastBeat.Denominator,
+                        out newBeat))
+                {
+                    throw new Exception("Couldn't create beat");
+                }
             }
 
             BpmGroupItem item = new BpmGroupItem(bpm, newBeat);
@@ -1376,13 +1383,13 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 return;
             }
 
-            if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat? beat))
+            if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat beat))
             {
                 OnBpmGroupChanged?.Invoke();
                 return;
             }
 
-            if ((Beat)beat! == BpmGroupDatas[(int)SelectedBpmItemIndex].StartBeat)
+            if (beat != BpmGroupDatas[(int)SelectedBpmItemIndex].StartBeat)
             {
                 OnBpmGroupChanged?.Invoke();
                 return;
@@ -1649,21 +1656,19 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 if (!Beat.TryCreateBeat(integerPart ?? note.JudgeBeat.IntegerPart,
                         numerator ?? note.JudgeBeat.Numerator,
                         denominator ?? note.JudgeBeat.Denominator,
-                        out Beat? beat))
+                        out Beat beat))
                 {
                     // 合法性校验失败，通知刷新
                     OnNoteAttributeChanged?.Invoke();
                     continue;
                 }
 
-                Beat newJudgeBeat = (Beat)beat;
-
-                if (note.JudgeBeat == newJudgeBeat)
+                if (note.JudgeBeat == beat)
                 {
                     continue;
                 }
 
-                note.JudgeBeat = newJudgeBeat;
+                note.JudgeBeat = beat;
                 isChangedFlag = true;
             }
 
@@ -1713,7 +1718,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 if (!Beat.TryCreateBeat(integerPart ?? holdNote.EndJudgeBeat.IntegerPart,
                         numerator ?? holdNote.EndJudgeBeat.Numerator,
                         denominator ?? holdNote.EndJudgeBeat.Denominator,
-                        out Beat? beat))
+                        out Beat beat))
                 {
                     // 合法性校验失败，通知刷新
                     OnNoteAttributeChanged?.Invoke();

@@ -656,7 +656,10 @@ namespace CyanStars.GamePlay.ChartEditor.View
             int z = Model.BeatAccuracy;
             int x = subBeatLineIndex / Model.BeatAccuracy;
             int y = subBeatLineIndex % Model.BeatAccuracy;
-            Beat noteBeat = new Beat(x, y, z);
+            if (!Beat.TryCreateBeat(x, y, z, out Beat noteBeat))
+            {
+                throw new Exception("Couldn't create beat");
+            }
 
             Model.CreateNote(notePos, noteBeat);
         }
