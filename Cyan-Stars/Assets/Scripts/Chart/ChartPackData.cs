@@ -71,8 +71,31 @@ namespace CyanStars.Chart
             Title = title;
             MusicVersionDatas = musicVersionDatas ?? new List<MusicVersionData>();
             BpmGroup = bpmGroup ?? new BpmGroup();
-            MusicPreviewStartBeat = musicPreviewStartBeat ?? new Beat(0, 0, 1);
-            MusicPreviewEndBeat = musicPreviewEndBeat ?? new Beat(0, 0, 1);
+
+            if (musicPreviewStartBeat != null)
+            {
+                MusicPreviewStartBeat = (Beat)musicPreviewStartBeat;
+            }
+            else
+            {
+                if (!Beat.TryCreateBeat(0, 0, 1, out MusicPreviewStartBeat))
+                {
+                    throw new Exception("Couldn't create beat");
+                }
+            }
+
+            if (musicPreviewStartBeat != null)
+            {
+                MusicPreviewEndBeat = (Beat)musicPreviewStartBeat;
+            }
+            else
+            {
+                if (!Beat.TryCreateBeat(0, 0, 1, out MusicPreviewEndBeat))
+                {
+                    throw new Exception("Couldn't create beat");
+                }
+            }
+
             CoverFilePath = coverFilePath;
             CropStartPosition = cropPosition ?? Vector2.zero;
             CropHeight = cropHeight ?? 0;
