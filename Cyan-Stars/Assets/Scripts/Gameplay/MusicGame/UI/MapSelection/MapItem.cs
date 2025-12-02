@@ -67,14 +67,14 @@ namespace CyanStars.Gameplay.MusicGame
 
         public async void RefreshView()
         {
-            TxtName.text = Data.ChartPack.ChartPackData.Title;
-            if (!string.IsNullOrEmpty(Data.ChartPack.ChartPackData.CoverFilePath))
+            TxtName.text = Data.RuntimeChartPack.ChartPackData.Title;
+            if (!string.IsNullOrEmpty(Data.RuntimeChartPack.ChartPackData.CoverFilePath))
             {
-                // 从文件加载外部曲绘，并转为 MapItem 所需的 sprite 格式
-                var imageHandler = await GameRoot.Asset.LoadAssetAsync<byte[]>(
-                    Data.ChartPack.ChartPackData.CroppedCoverFilePath).BindTo(gameObject);
+                // TODO: 从文件加载外部曲绘，并转为 MapItem 所需的 sprite 格式
+                byte[] imageBytes = await GameRoot.Asset.LoadAssetAsync<byte[]>(
+                    Data.ChartPack.ChartPackData.CroppedCoverFilePath, gameObject);
                 Texture2D texture = new Texture2D(2,2);
-                texture.LoadImage(imageHandler.Asset);
+                texture.LoadImage(imageBytes);
 
                 Sprite sprite = Sprite.Create(
                     texture,

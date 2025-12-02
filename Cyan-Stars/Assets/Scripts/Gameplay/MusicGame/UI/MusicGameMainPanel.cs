@@ -25,11 +25,11 @@ namespace CyanStars.Gameplay.MusicGame
         public TextMeshProUGUI TxtLrc;
         public Button BtnPause;
 
-        private MusicGameModule dataModule;
+        private MusicGamePlayingDataModule playingDataModule;
 
         protected override void OnCreate()
         {
-            dataModule = GameRoot.GetDataModule<MusicGameModule>();
+            playingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
 
             BtnStart.onClick.AddListener(() =>
             {
@@ -63,9 +63,9 @@ namespace CyanStars.Gameplay.MusicGame
 
         private void OnUpdate(float deltaTime, object userdata)
         {
-            if (dataModule.RunningTimeline != null)
+            if (playingDataModule.RunningTimeline != null)
             {
-                ImgProgress.fillAmount = dataModule.RunningTimeline.CurrentTime / dataModule.RunningTimeline.Length;
+                ImgProgress.fillAmount = playingDataModule.RunningTimeline.CurrentTime / playingDataModule.RunningTimeline.Length;
             }
         }
 
@@ -74,10 +74,10 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void OnMusicGameDataRefresh(object sender, EventArgs args)
         {
-            TxtCombo.text = dataModule.MusicGamePlayData.Combo < 2
+            TxtCombo.text = playingDataModule.MusicGamePlayData.Combo < 2
                 ? string.Empty
-                : dataModule.MusicGamePlayData.Combo.ToString();
-            TxtScore.text = "SCORE(DEBUG):" + dataModule.MusicGamePlayData.Score;
+                : playingDataModule.MusicGamePlayData.Combo.ToString();
+            TxtScore.text = "SCORE(DEBUG):" + playingDataModule.MusicGamePlayData.Score;
         }
     }
 }

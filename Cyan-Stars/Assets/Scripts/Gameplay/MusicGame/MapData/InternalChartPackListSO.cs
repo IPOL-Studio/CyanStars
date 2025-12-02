@@ -10,6 +10,6 @@ namespace CyanStars.Gameplay.MusicGame
     public class InternalChartPackListSO : ScriptableObject
     {
         [Header("内置谱包列表")]
-        public List<string> InternalCharts;
+        public List<InternalChartPackItem> InternalChartPacks;
     }
 }

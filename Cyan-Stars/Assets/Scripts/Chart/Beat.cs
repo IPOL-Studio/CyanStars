@@ -2,7 +2,7 @@
 
 namespace CyanStars.Chart
 {
-    public readonly struct Beat
+    public readonly struct Beat : IEquatable<Beat>
     {
         /// <summary>带分数拍子的整数部分</summary>
         public readonly int IntegerPart;
@@ -13,7 +13,7 @@ namespace CyanStars.Chart
         /// <summary>带分数拍子的分母，也作为节拍的细分精度</summary>
         public readonly int Denominator;
 
-        /// <summary>Beat 的构造参数</summary>
+        /// <summary>Beat 结构体的构造参数重载</summary>
         /// <param name="integerPart">拍子的整数部分</param>
         /// <param name="numerator">拍子的小数部分的分数</param>
         /// <param name="denominator">拍子的小数部分的分母（细分精度），如果为 0，numerator 也视为0（只取 integerPart 部分）</param>
@@ -28,7 +28,7 @@ namespace CyanStars.Chart
 
         /// <summary>校验 Beat 的三个参数是否都大于等于 0</summary>
         /// <returns>数据合法性</returns>
-        public void Verify()
+        private void Verify()
         {
             if (IntegerPart < 0)
             {
@@ -51,6 +51,18 @@ namespace CyanStars.Chart
             }
         }
 
+        public static bool TryCreateBeat(int integerPart, int numerator, int denominator, out Beat? beat)
+        {
+            beat = null;
+            if (integerPart < 0 || numerator < 0 || denominator <= 0 || numerator >= denominator)
+            {
+                return false;
+            }
+
+            beat = new Beat(integerPart, numerator, denominator);
+            return true;
+        }
+
         /// <summary>将 Beat 转换为小数表示的拍子</summary>
         public float ToFloat()
         {
@@ -60,6 +72,37 @@ namespace CyanStars.Chart
             }
 
             return IntegerPart + (float)Numerator / Denominator;
+        }
+
+        public bool Equals(Beat other)
+        {
+            return IntegerPart == other.IntegerPart && Numerator == other.Numerator && Denominator == other.Denominator;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Beat other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = IntegerPart;
+                hashCode = (hashCode * 397) ^ Numerator;
+                hashCode = (hashCode * 397) ^ Denominator;
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(Beat left, Beat right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Beat left, Beat right)
+        {
+            return !left.Equals(right);
         }
     }
 }

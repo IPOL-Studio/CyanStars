@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using CyanStars.Chart;
 using CyanStars.Framework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CyanStars.Chart
+namespace CyanStars.Utils.JsonSerialization
 {
     public sealed class ChartTrackDataReadConverter : JsonConverter<ChartTrackData>
     {
@@ -41,9 +42,9 @@ namespace CyanStars.Chart
         private bool TryGetChartTrackType(string key, out Type type)
         {
             type = null;
-            ChartDataModule dataModule = GameRoot.GetDataModule<ChartDataModule>();
+            ChartModule module = GameRoot.GetDataModule<ChartModule>();
 
-            return dataModule is { } && dataModule.TryGetChartTrackType(key, out type);
+            return module is { } && module.TryGetChartTrackType(key, out type);
         }
     }
 }

@@ -22,18 +22,17 @@ namespace CyanStars.Gameplay.MusicGame
     public class MusicGameProcedure : BaseState
     {
         //  --- --- 音游数据模块 --- ---
-        private MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
+        private ChartModule chartModule = GameRoot.GetDataModule<ChartModule>();
+        private MusicGamePlayingDataModule playingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
         private MusicGameTrackModule trackModule = GameRoot.GetDataModule<MusicGameTrackModule>();
 
         //  --- --- 音游相关数据 --- ---
-        private ChartPack chartPack;
+        private RuntimeChartPack runtimeChartPack;
         private ChartData chartData;
 
         private PromptToneCollection promptToneCollection;
 
         private MusicClipData musicClipData;
-        //private MapTimelineData timelineData;
-        //private string lrcText;
 
         //  --- --- 音游设置模块 --- ---
         private MusicGameSettingsModule settingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
@@ -118,7 +117,7 @@ namespace CyanStars.Gameplay.MusicGame
             band?.Dispose();
             band = null;
 
-            chartPack = null;
+            runtimeChartPack = null;
             chartData = null;
             musicClipData = null;
 
@@ -193,7 +192,7 @@ namespace CyanStars.Gameplay.MusicGame
                 StopTimeline();
             }
 
-            dataModule.ResetPlayingData();
+            playingDataModule.ResetPlayingData();
             GameRoot.ChangeProcedure<MainHomeProcedure>();
         }
 
@@ -216,10 +215,10 @@ namespace CyanStars.Gameplay.MusicGame
         private async Task LoadDataFile()
         {
             // 输入映射数据
-            var inputMapSoHandler = await GameRoot.Asset.LoadAssetAsync<InputMapSO>(dataModule.InputMapDataName).BindTo(sceneRoot);
+            var inputMapSoHandler = await GameRoot.Asset.LoadAssetAsync<InputMapSO>(playingDataModule.InputMapDataName).BindTo(sceneRoot);
             InputMapData inputMapData = inputMapSoHandler.Asset.InputMapData;
 
-            if (!dataModule.IsAutoMode)
+            if (!playingDataModule.IsAutoMode)
             {
                 if (Application.platform == RuntimePlatform.Android ||
                     Application.platform == RuntimePlatform.IPhonePlayer)
@@ -240,27 +239,35 @@ namespace CyanStars.Gameplay.MusicGame
                 }
             }
 
-            // 谱包
-            chartPack = dataModule.GetChartPack(dataModule.ChartPackIndex);
-            chartData = dataModule.GetChartData(chartPack, dataModule.Difficulty);
+            // 谱面
+            runtimeChartPack = chartModule.SelectedRuntimeChartPack;
+            if (chartModule.SelectedChartDifficulty != null)
+            {
+                chartData = await chartModule.GetChartDataFromDisk(runtimeChartPack,
+                    (ChartDifficulty)chartModule.SelectedChartDifficulty);
+            }
 
             // 音乐
-            MusicVersionData musicVersionData = chartPack.ChartPackData.MusicVersionDatas[dataModule.MusicVersionIndex];
-            var musicHandler = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.MusicFilePath).BindTo(sceneRoot);
-            AudioClip music = musicHandler.Asset;
-            if (!music)
+            if (chartModule.SelectedMusicVersionIndex != null)
             {
-                Debug.LogError($"谱包 {chartPack.ChartPackData.Title} 的音乐加载失败");
-            }
-            else
-            {
-                musicClipData = new MusicClipData(music, musicVersionData.Offset);
+                MusicVersionData musicVersionData =
+                    runtimeChartPack.ChartPackData.MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex];
+                AudioClip music =
+                    (await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.AudioFilePath)).BindTo(sceneRoot).Asset;
+                if (!music)
+                {
+                    Debug.LogError($"谱包 {runtimeChartPack.ChartPackData.Title} 的音乐加载失败");
+                }
+                else
+                {
+                    musicClipData = new MusicClipData(music, musicVersionData.Offset);
+                }
+
+                // 时间轴
+                playingDataModule.CurTimelineLength = music.length + musicVersionData.Offset / 1000f;
+                playingDataModule.CalFullScore(chartData.Notes);
             }
 
-
-            // 时间轴
-            dataModule.CurTimelineLength = music.length + musicVersionData.Offset / 1000f;
-            dataModule.CalFullScore(chartData.Notes);
 
             // //歌词
             // if (!string.IsNullOrEmpty(mapManifest.LrcFileName))
@@ -275,8 +282,8 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void InitLogger()
         {
-            ChartPack pack = dataModule.GetChartPack(dataModule.ChartPackIndex);
-            dataModule.InitLogger($"MusicGame - {pack.ChartPackData.Title}");
+            RuntimeChartPack pack = chartModule.SelectedRuntimeChartPack;
+            playingDataModule.InitLogger($"MusicGame - {pack.ChartPackData.Title}");
         }
 
         /// <summary>
@@ -284,11 +291,11 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void InitDistanceBarData()
         {
-            dataModule.InitDistanceBarData(settingsModule.EvaluateRange);
+            playingDataModule.InitDistanceBarData(settingsModule.EvaluateRange);
 
             var bandData = new Band.BandData
             {
-                Count = dataModule.DistanceBarData.Length,
+                Count = playingDataModule.DistanceBarData.Length,
                 XSize = 100,
                 YSize = 10,
                 XOffset = -0.5f,
@@ -297,7 +304,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             if (!Band.TryCreate(bandData, out Band band))
             {
-                dataModule.Logger.LogError("band 创建失败，可能被其他地方占用");
+                playingDataModule.Logger.LogError("band 创建失败，可能被其他地方占用");
             }
 
             this.band = band;
@@ -317,7 +324,7 @@ namespace CyanStars.Gameplay.MusicGame
                 builtin.Add(name, clipHandler.Asset);
             }
 
-            promptToneCollection = new PromptToneCollection(builtin, dataModule.Logger);
+            promptToneCollection = new PromptToneCollection(builtin, playingDataModule.Logger);
         }
 
         /// <summary>
@@ -347,7 +354,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void Prewarm()
         {
-            foreach (KeyValuePair<NoteType, string> pair in dataModule.HitEffectPrefabNameDict)
+            foreach (KeyValuePair<NoteType, string> pair in playingDataModule.HitEffectPrefabNameDict)
             {
                 GameRoot.GameObjectPool.PrewarmAsync(pair.Value, 10, null);
             }
@@ -358,11 +365,20 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void CreateTimeline()
         {
-            timeline = new Timeline(dataModule.CurTimelineLength);
+            timeline = new Timeline(playingDataModule.CurTimelineLength);
             timeline.OnStop += StopTimeline;
 
             // 添加音符轨道
-            NoteTrackData noteTrackData = new NoteTrackData() { ClipDataList = new List<ChartData>() { chartData } };
+            BpmGroup bpmGroup = new BpmGroup { Data = new List<BpmGroupItem>() };
+            foreach (var item in runtimeChartPack.ChartPackData.BpmGroup.Data)
+            {
+                bpmGroup.Data.Add(item);
+            }
+
+            NoteTrackData noteTrackData = new NoteTrackData()
+            {
+                BpmGroup = bpmGroup, ClipDataList = new List<ChartData>() { chartData }
+            };
             timeline.AddTrack(noteTrackData, NoteTrack.CreateClipFunc);
 
             // if (!string.IsNullOrEmpty(lrcText) && settingsModule.EnableLyricTrack)
@@ -401,7 +417,7 @@ namespace CyanStars.Gameplay.MusicGame
                 if (trackModule.TryGetTrackLoader(chartData.TrackDatas[i].TrackData.GetType(), out var trackLoader) &&
                     trackLoader.IsEnabled)
                 {
-                    trackLoader.LoadTrack(timeline, chartData, i);
+                    trackLoader.LoadTrack(timeline, noteTrackData.BpmGroup, chartData, i);
                 }
             }
 
@@ -447,7 +463,7 @@ namespace CyanStars.Gameplay.MusicGame
             //     effectTrack.ImgFrame = GameRoot.UI.GetUIPanel<MusicGameMainPanel>().ImgFrame;
             // }
 
-            dataModule.RunningTimeline = timeline;
+            playingDataModule.RunningTimeline = timeline;
 
             GameRoot.Timer.UpdateTimer.Add(UpdateTimeline);
 
@@ -477,7 +493,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void UpdateDistanceBar(float deltaTime)
         {
-            var data = dataModule.DistanceBarData;
+            var data = playingDataModule.DistanceBarData;
             data.ReduceHeight(deltaTime);
             if (data.IsDataChangedAndSet(ref preDistanceBarChangedCount))
             {

@@ -37,6 +37,12 @@ namespace CyanStars.Framework.Asset
             CatAssetManager.UnloadAssetDelayTime = UnloadAssetDelayTime;
             CatAssetManager.MaxTaskRunCount = MaxTaskRunCount;
 
+            // 注册一些自定义原生资源解析器
+            foreach (var converter in CustomRawAssetConverters.Converters)
+            {
+                RegisterCustomRawAssetConverter(converter.Key, converter.Value);
+            }
+
             //添加调试分析器组件
             gameObject.AddComponent<ProfilerComponent>();
 
@@ -68,7 +74,7 @@ namespace CyanStars.Framework.Asset
         /// </summary>
         public void RegisterCustomRawAssetConverter(Type type, CustomRawAssetConverter converter)
         {
-            CatAssetManager.RegisterCustomRawAssetConverter(type,converter);
+            CatAssetManager.RegisterCustomRawAssetConverter(type, converter);
         }
 
         /// <summary>
@@ -85,7 +91,7 @@ namespace CyanStars.Framework.Asset
         public void ImportInternalAsset(string manifestPath, Action<bool> callback,
             string bundleRelativePathPrefix = null)
         {
-            CatAssetManager.ImportReadWriteManifest(manifestPath,callback,bundleRelativePathPrefix);
+            CatAssetManager.ImportReadWriteManifest(manifestPath, callback, bundleRelativePathPrefix);
         }
 
         /// <summary>
@@ -93,7 +99,7 @@ namespace CyanStars.Framework.Asset
         /// </summary>
         public void UpdateGroup(string group, BundleUpdatedCallback callback)
         {
-            CatAssetManager.UpdateGroup(group,callback);
+            CatAssetManager.UpdateGroup(group, callback);
         }
 
         /// <summary>
@@ -126,7 +132,7 @@ namespace CyanStars.Framework.Asset
         /// 批量加载资源
         /// </summary>
         public BatchAssetHandler BatchLoadAssetAsync(List<string> assetNames, CancellationToken cancellationToken = default,
-                                                TaskPriority priority = TaskPriority.Middle)
+            TaskPriority priority = TaskPriority.Middle)
         {
             return CatAssetManager.BatchLoadAssetAsync(assetNames, cancellationToken, priority);
         }
@@ -169,7 +175,7 @@ namespace CyanStars.Framework.Asset
         /// </summary>
         public void BindToScene(Scene scene, IBindableHandler handler)
         {
-            CatAssetManager.BindToScene(scene,handler);
+            CatAssetManager.BindToScene(scene, handler);
         }
 
         /// <summary>

@@ -14,36 +14,8 @@ namespace CyanStars.Gameplay.MusicGame
     /// <summary>
     /// 音游数据模块
     /// </summary>
-    public class MusicGameModule : BaseDataModule
+    public class MusicGamePlayingDataModule : BaseDataModule
     {
-        // --- --- 谱包和谱面 --- ---
-
-        /// <summary>
-        /// 所有谱包列表
-        /// </summary>
-        private List<ChartPack> chartPacks;
-
-        /// <summary>
-        /// 选中的谱包序号
-        /// </summary>
-        public int ChartPackIndex { get; set; } = 0;
-
-        /// <summary>
-        /// 选中的音乐版本序号
-        /// </summary>
-        public int MusicVersionIndex = 0;
-
-        /// <summary>
-        /// 选中的谱面难度
-        /// </summary>
-        public ChartDifficulty? Difficulty;
-
-        /// <summary>
-        /// 选中的谱包和难度对应的谱面数据
-        /// </summary>
-        private ChartData chartData;
-
-
         // --- --- 时间轴和游玩时数据 --- ---
 
         /// <summary>
@@ -157,72 +129,6 @@ namespace CyanStars.Gameplay.MusicGame
                 "Assets/VEG/CircleFireEffect(VEG).prefab",
                 "Assets/VEG/SpaceJumpEffect(VEG).prefab"
             };
-        }
-
-        #endregion
-
-
-        #region 谱面加载和查询
-
-        /// <summary>
-        /// 加载谱包
-        /// </summary>
-        public async Task LoadChartPacks()
-        {
-            List<ChartPack> packs = new List<ChartPack>();
-            var internalChartPackListSOHandler =
-                await GameRoot.Asset.LoadAssetAsync<InternalChartPackListSO>(InternalMapListName);
-
-            foreach (string chartPath in internalChartPackListSOHandler.Asset.InternalCharts)
-            {
-                Serialization.JsonHelper.FromJson(chartPath, out ChartPackData chartPackData);
-                packs.Add(new ChartPack() { ChartPackData = chartPackData, IsInternal = true });
-            }
-
-            GameRoot.Asset.UnloadAsset(internalChartPackListSOHandler);
-
-            // TODO: 从外部加载谱包
-
-            chartPacks = packs;
-        }
-
-        /// <summary>
-        /// 获取所有谱包
-        /// </summary>
-        public List<ChartPack> GetChartPacks()
-        {
-            return chartPacks;
-        }
-
-        /// <summary>
-        /// 根据下标获取谱包
-        /// </summary>
-        public ChartPack GetChartPack(int index)
-        {
-            return chartPacks[index];
-        }
-
-        /// <summary>
-        /// 根据难度从谱包中获取谱面数据
-        /// </summary>
-        /// <remarks>难度为 null 时只能在制谱器内加载，不能在游戏内加载</remarks>
-        public ChartData GetChartData(ChartPack chartPack, ChartDifficulty? difficulty)
-        {
-            if (difficulty is null)
-            {
-                return null;
-            }
-
-            foreach (ChartMetadata metadata in chartPack.ChartPackData.Charts)
-            {
-                if (metadata.Difficulty == difficulty)
-                {
-                    Serialization.JsonHelper.FromJson(metadata.FilePath, out chartData);
-                    return chartData;
-                }
-            }
-
-            return null;
         }
 
         #endregion
