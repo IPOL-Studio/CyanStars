@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CyanStars.Gameplay.Utils
+namespace CyanStars.Utils
 {
     [RequireComponent(typeof(Button))]
     public class OpenUrlButton : MonoBehaviour

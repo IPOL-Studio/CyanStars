@@ -6,7 +6,7 @@ namespace CyanStars.Gameplay.MusicGame
     public interface ITrackLoader
     {
         public bool IsEnabled { get; }
-        public void LoadTrack(Timeline timeline, ChartData chartData, int trackIndex);
+        public void LoadTrack(Timeline timeline, BpmGroup bpmGroup, ChartData chartData, int trackIndex);
     }
 
     public abstract class BaseTrackLoader<TChartTrackData> : ITrackLoader
@@ -14,12 +14,13 @@ namespace CyanStars.Gameplay.MusicGame
     {
         public virtual bool IsEnabled => true;
 
-        public void LoadTrack(Timeline timeline, ChartData chartData, int trackIndex)
+        public void LoadTrack(Timeline timeline, BpmGroup bpmGroup, ChartData chartData, int trackIndex)
         {
             var accessor = new ChartTrackAccessor<TChartTrackData>(trackIndex);
-            LoadTrack(timeline, chartData, accessor);
+            LoadTrack(timeline, bpmGroup, chartData, accessor);
         }
 
-        public abstract void LoadTrack(Timeline timeline, ChartData chartData, ChartTrackAccessor<TChartTrackData> trackAccessor);
+        public abstract void LoadTrack(Timeline timeline, BpmGroup bpmGroup, ChartData chartData,
+            ChartTrackAccessor<TChartTrackData> trackAccessor);
     }
 }

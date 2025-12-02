@@ -1,6 +1,9 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
+using Newtonsoft.Json;
+using UnityEngine;
 
 namespace CyanStars.Chart
 {
@@ -24,44 +27,56 @@ namespace CyanStars.Chart
         /// <summary>音频信息</summary>
         public List<MusicVersionData> MusicVersionDatas;
 
+        /// <summary>bpm 组</summary>
+        /// <remarks>控制不同时候的拍子所占时长（拍子可转换为时间）</remarks>
+        public BpmGroup BpmGroup;
+
         /// <summary>游戏内选中音乐后的预览开始时间</summary>
-        [CanBeNull]
-        public Beat? MusicPreviewStartBeat;
+        public Beat MusicPreviewStartBeat;
 
         /// <summary>游戏内选中音乐后的预览结束时间</summary>
-        [CanBeNull]
-        public Beat? MusicPreviewEndBeat;
+        public Beat MusicPreviewEndBeat;
 
 
         // 曲绘文件
 
         /// <summary>原始曲绘相对路径（展示收藏品原图用）</summary>
-        [CanBeNull]
-        public string CoverFilePath;
+        public string? CoverFilePath;
 
-        /// <summary>裁剪后的1:4横向小图（在选取页展示用）</summary>
-        [CanBeNull]
-        public string CroppedCoverFilePath;
+        /// <summary>开始裁剪像素（相对于图片左下角）</summary>
+        public Vector2? CropStartPosition;
 
+        /// <summary>
+        /// 裁剪像素高度
+        /// </summary>
+        public float? CropHeight;
+
+        /// <summary>
+        /// 裁剪像素宽度
+        /// </summary>
+        [JsonIgnore]
+        public float? CropWidth => CropHeight * 4;
 
         // 谱面元数据
 
         /// <summary>谱面元数据</summary>
-        public List<ChartMetadata> Charts;
+        public List<ChartMetadata> ChartMetaDatas;
 
 
-        // 元数据
-
-        /// <summary>谱包工程文件上一次保存时间</summary>
-        public DateTime SaveTime;
-
-        /// <summary>谱包导出时间</summary>
-        [CanBeNull]
-        public DateTime? ExportTime;
-
-        /// <summary>谱包哈希</summary>
-        /// <remarks>导出谱包时固定</remarks>
-        [CanBeNull]
-        public string PackHash;
+        public ChartPackData(string title, List<MusicVersionData>? musicVersionDatas = null, BpmGroup? bpmGroup = null,
+            Beat? musicPreviewStartBeat = null, Beat? musicPreviewEndBeat = null, string? coverFilePath = null,
+            Vector2? cropPosition = null, float? cropHeight = null, List<ChartMetadata>? chartMetaDatas = null)
+        {
+            DataVersion = 1;
+            Title = title;
+            MusicVersionDatas = musicVersionDatas ?? new List<MusicVersionData>();
+            BpmGroup = bpmGroup ?? new BpmGroup();
+            MusicPreviewStartBeat = musicPreviewStartBeat ?? new Beat(0, 0, 1);
+            MusicPreviewEndBeat = musicPreviewEndBeat ?? new Beat(0, 0, 1);
+            CoverFilePath = coverFilePath;
+            CropStartPosition = cropPosition ?? Vector2.zero;
+            CropHeight = cropHeight ?? 0;
+            ChartMetaDatas = chartMetaDatas ?? new List<ChartMetadata>();
+        }
     }
 }

@@ -52,7 +52,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnUpdate(float currentTime, float previousTime)
         {
-            if (GameRoot.GetDataModule<MusicGameModule>().IsAutoMode)
+            if (GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode)
             {
                 LinkedListNode<BaseNote> node = Notes.Last;
                 while (node != null)

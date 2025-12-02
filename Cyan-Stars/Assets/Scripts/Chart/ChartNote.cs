@@ -1,4 +1,3 @@
-using System;
 using JetBrains.Annotations;
 
 namespace CyanStars.Chart
@@ -9,8 +8,13 @@ namespace CyanStars.Chart
         Right
     }
 
+    public interface IChartNoteNormalPos
+    {
+        /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
+        /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
+        public float Pos { get; set; }
+    }
 
-    [Serializable]
     public class BaseChartNoteData
     {
         /// <summary>音符类型</summary>
@@ -19,8 +23,14 @@ namespace CyanStars.Chart
         /// <summary>
         /// 引用的变速组下标
         /// </summary>
-        /// <remarks>从 0 开始，如果变速组在编辑器内发生变化，刷新所有 Note 的引用</remarks>
+        /// <remarks>从 0 开始，如果变速组在制谱器内发生变化，刷新所有 Note 的引用</remarks>
         public int SpeedGroupIndex;
+
+        /// <summary>
+        /// 音符的变速 Offset，用于协调多个音符的整体变速效果
+        /// TODO: 实装计算逻辑
+        /// </summary>
+        public int SpeedGroupOffset = 0;
 
         /// <summary>正解提示音</summary>
         /// <remarks>
@@ -46,7 +56,7 @@ namespace CyanStars.Chart
         /// 可被判定
         /// </summary>
         /// <remarks>
-        /// 为 false 时，音符不接收判定，仅用于表演
+        /// 为 false 时，音符不接收判定，仅用于表演 TODO: 在 GamePlay 实装此内容
         /// </remarks>
         public bool JudgeAble = true;
 
@@ -54,56 +64,105 @@ namespace CyanStars.Chart
         /// 可被展示
         /// </summary>
         /// <remarks>
-        /// 为 false 时，音符不展示，仅用于搭配其他效果时的表演
+        /// 为 false 时，音符不展示，仅用于搭配其他效果时的表演 TODO: 在 GamePlay 实装此内容
         /// </remarks>
         public bool ViewAble = true;
+
+        public BaseChartNoteData(NoteType type,
+            Beat judgeBeat,
+            int speedGroupIndex = 0,
+            int speedGroupOffset = 0,
+            string correctAudioName = null,
+            string hitAudioName = null,
+            bool judgeAble = true,
+            bool viewAble = true)
+        {
+            Type = type;
+            JudgeBeat = judgeBeat;
+            SpeedGroupIndex = speedGroupIndex;
+            SpeedGroupOffset = speedGroupOffset;
+            CorrectAudioName = correctAudioName;
+            HitAudioName = hitAudioName;
+            JudgeAble = judgeAble;
+            ViewAble = viewAble;
+        }
     }
 
-    [Serializable]
-    public class TapChartNoteData : BaseChartNoteData
+    public class TapChartNoteData : BaseChartNoteData, IChartNoteNormalPos
     {
-        /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
-        /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
-        public float Pos;
+        public float Pos { get; set; }
+
+        public TapChartNoteData(float pos, Beat judgeBeat, int speedGroupIndex = 0,
+            int speedGroupOffset = 0, string correctAudioName = null, string hitAudioName = null, bool judgeAble = true,
+            bool viewAble = true) : base(NoteType.Tap, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName,
+            hitAudioName, judgeAble, viewAble)
+        {
+            Pos = pos;
+        }
     }
 
-    [Serializable]
-    public class HoldChartNoteData : BaseChartNoteData
+    public class HoldChartNoteData : BaseChartNoteData, IChartNoteNormalPos
     {
+        public float Pos { get; set; }
+
         /// <summary>
         /// 音符尾引用的变速组
         /// </summary>
         public int HoldEndSpeedGroupIndex;
 
-        /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
-        /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
-        public float Pos;
 
         /// <summary>长按音符结束判定拍</summary>
         /// <remarks>必须大于 JudgeBeat</remarks>
         public Beat EndJudgeBeat;
+
+        public HoldChartNoteData(float pos, Beat judgeBeat, Beat endJudgeBeat, int speedGroupIndex = 0,
+            int holdEndSpeedGroupIndex = 0, int speedGroupOffset = 0, string correctAudioName = null,
+            string hitAudioName = null, bool judgeAble = true, bool viewAble = true) : base(NoteType.Hold, judgeBeat,
+            speedGroupIndex, speedGroupOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
+        {
+            HoldEndSpeedGroupIndex = holdEndSpeedGroupIndex;
+            EndJudgeBeat = endJudgeBeat;
+            Pos = pos;
+        }
     }
 
-    [Serializable]
-    public class DragChartNoteData : BaseChartNoteData
+    public class DragChartNoteData : BaseChartNoteData, IChartNoteNormalPos
     {
-        /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
-        /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
-        public float Pos;
+        public float Pos { get; set; }
+
+        public DragChartNoteData(float pos, Beat judgeBeat, int speedGroupIndex = 0,
+            int speedGroupOffset = 0, string correctAudioName = null, string hitAudioName = null, bool judgeAble = true,
+            bool viewAble = true) : base(NoteType.Drag, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName,
+            hitAudioName, judgeAble, viewAble)
+        {
+            Pos = pos;
+        }
     }
 
-    [Serializable]
-    public class ClickChartNoteData : BaseChartNoteData
+    public class ClickChartNoteData : BaseChartNoteData, IChartNoteNormalPos
     {
-        /// <summary>音符左侧端点在水平轨道上的位置比例</summary>
-        /// <remarks>范围 0~0.8（音符宽 0.2）</remarks>
-        public float Pos;
+        public float Pos { get; set; }
+
+        public ClickChartNoteData(float pos, Beat judgeBeat, int speedGroupIndex = 0,
+            int speedGroupOffset = 0, string correctAudioName = null, string hitAudioName = null, bool judgeAble = true,
+            bool viewAble = true) : base(NoteType.Click, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName,
+            hitAudioName, judgeAble, viewAble)
+        {
+            Pos = pos;
+        }
     }
 
-    [Serializable]
     public class BreakChartNoteData : BaseChartNoteData
     {
         /// <summary>Break 音符位于哪条轨道</summary>
         public BreakNotePos BreakNotePos;
+
+        public BreakChartNoteData(BreakNotePos breakNotePos, Beat judgeBeat, int speedGroupIndex = 0,
+            int speedGroupOffset = 0, string correctAudioName = null, string hitAudioName = null, bool judgeAble = true,
+            bool viewAble = true) : base(NoteType.Break, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName,
+            hitAudioName, judgeAble, viewAble)
+        {
+            BreakNotePos = breakNotePos;
+        }
     }
 }
