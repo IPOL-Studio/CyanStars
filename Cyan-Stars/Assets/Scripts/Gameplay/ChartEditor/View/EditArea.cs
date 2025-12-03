@@ -124,84 +124,9 @@ namespace CyanStars.GamePlay.ChartEditor.View
             {
                 totalBeat = (Model.TotalMusicTime == null || Model.BpmGroupDatas.Count == 0)
                     ? 0
-                    : CalculateTotalBeats((int)Model.TotalMusicTime, Model.ChartPackData.BpmGroup);
+                    : Model.ChartPackData.BpmGroup.CalculateBeat((int)Model.TotalMusicTime);
 
                 RefreshUI();
-            }
-
-            // 根据总时间和 bpm 组数据，计算总共有几个拍子。
-            float CalculateTotalBeats(int actualMusicTime, BpmGroup bpmGroup)
-            {
-                // 使用指数扩展 + 二分查找整数部分以提升性能
-                if (bpmGroup.CalculateTime(0) >= actualMusicTime)
-                {
-                    return 0;
-                }
-
-                int low = 0;
-                int high = 1;
-                while (bpmGroup.CalculateTime(high) < actualMusicTime)
-                {
-                    low = high;
-                    high <<= 1;
-                }
-
-                while (low + 1 < high)
-                {
-                    int mid = low + ((high - low) >> 1);
-                    if (bpmGroup.CalculateTime(mid) < actualMusicTime)
-                    {
-                        low = mid;
-                    }
-                    else
-                    {
-                        high = mid;
-                    }
-                }
-
-                // 计算小数拍部分
-                float currentBeat = low;
-                int currentTime = bpmGroup.CalculateTime(currentBeat);
-
-                while (true)
-                {
-                    // 获取当前拍生效的BPM项
-                    BpmGroupItem currentBpmItem = bpmGroup.GetBpmItemAtBeat(currentBeat);
-                    if (currentBpmItem == null || currentBpmItem.Bpm <= 0)
-                    {
-                        // 异常情况：没有BPM或BPM无效，返回当前整数拍
-                        return currentBeat;
-                    }
-
-                    // 查找下一个BPM变化点
-                    BpmGroupItem? nextBpmItem = bpmGroup.GetNextBpmItem(currentBeat);
-
-                    // 如果没有下一个BPM变化点，说明当前BPM将持续到最后
-                    if (nextBpmItem == null)
-                    {
-                        float msPerBeat = 60000f / currentBpmItem.Bpm;
-                        int timeDelta = actualMusicTime - currentTime;
-                        float beatDelta = timeDelta / msPerBeat;
-                        return currentBeat + beatDelta;
-                    }
-
-                    // 计算下一个BPM变化点的时间
-                    int timeAtNextBpmChange = bpmGroup.CalculateTime(nextBpmItem.StartBeat);
-
-                    // 判断目标时间是否落在当前BPM段内
-                    if (actualMusicTime <= timeAtNextBpmChange)
-                    {
-                        float msPerBeat = 60000f / currentBpmItem.Bpm;
-                        int timeDelta = actualMusicTime - currentTime;
-                        float beatDelta = timeDelta / msPerBeat;
-                        return currentBeat + beatDelta;
-                    }
-                    else
-                    {
-                        currentTime = timeAtNextBpmChange;
-                        currentBeat = nextBpmItem.StartBeat.ToFloat();
-                    }
-                }
             }
         }
 
