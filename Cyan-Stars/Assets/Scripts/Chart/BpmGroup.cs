@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using JetBrains.Annotations;
 
 namespace CyanStars.Chart
 {
@@ -90,49 +89,54 @@ namespace CyanStars.Chart
         }
 
         /// <summary>
-        /// 根据拍数获取当前生效的 BpmGroupItem
+        /// 根据给定的毫秒时间，计算对应的 Beat (float)
         /// </summary>
-        /// <param name="beat">拍数</param>
-        /// <returns>生效的 BpmGroupItem，如果找不到则返回 null</returns>
-        public BpmGroupItem GetBpmItemAtBeat(float beat)
+        /// <param name="msTime">已经计算 offset 后的毫秒时间</param>
+        /// <returns>float 形式的拍子</returns>
+        public float CalculateBeat(int msTime)
         {
             if (Data.Count == 0)
             {
-                return null;
+                return 0f;
             }
 
-            // 从后往前找，第一个 StartBeat 小于等于目标 beat 的就是当前生效的
-            for (int i = Data.Count - 1; i >= 0; i--)
+            // 如果只有一个 BPM 组，直接转换
+            if (Data.Count == 1)
             {
-                if (Data[i].StartBeat.ToFloat() <= beat)
-                {
-                    return Data[i];
-                }
+                return (msTime / 1000f) * (Data[0].Bpm / 60f);
             }
 
-            // 如果循环结束都没找到（例如 beat 是负数），理作为保障，返回第一个元素
-            return Data[0];
-        }
+            float remainingMs = msTime;
 
-
-        /// <summary>
-        /// 查找在指定拍数之后发生的下一个BPM变化项
-        /// </summary>
-        /// <param name="currentBeat">当前拍数</param>
-        /// <returns>下一个 BpmGroupItem，如果没有则返回 null</returns>
-        [CanBeNull]
-        public BpmGroupItem GetNextBpmItem(float currentBeat)
-        {
-            foreach (var item in Data)
+            // 遍历除了最后一个之外的所有 BPM 组
+            for (int i = 0; i < Data.Count - 1; i++)
             {
-                if (item.StartBeat.ToFloat() > currentBeat)
+                var currentItem = Data[i];
+                var nextItem = Data[i + 1];
+
+                // 计算当前 BPM 段持续了多少拍
+                float beatDuration = nextItem.StartBeat.ToFloat() - currentItem.StartBeat.ToFloat();
+
+                // 将拍数转换为毫秒：拍数 * (60 / BPM) * 1000
+                float timeDuration = beatDuration * (60f / currentItem.Bpm) * 1000f;
+
+                // 如果给定的时间在这个段内
+                if (remainingMs < timeDuration)
                 {
-                    return item;
+                    // 计算这段时间对应的拍数：时间(s) * (BPM / 60)
+                    float beatInSegment = (remainingMs / 1000f) * (currentItem.Bpm / 60f);
+                    return currentItem.StartBeat.ToFloat() + beatInSegment;
                 }
+
+                // 如果时间超过了这个段，减去这段的时间，继续检查下一段
+                remainingMs -= timeDuration;
             }
 
-            // 遍历完都没有找到，说明已经是最后一个BPM段了
-            return null;
+            // 如果遍历完还没有返回，说明时间落在了最后一个 BPM 组（无限延伸）
+            var lastItem = Data[Data.Count - 1];
+            float finalBeatInSegment = (remainingMs / 1000f) * (lastItem.Bpm / 60f);
+
+            return lastItem.StartBeat.ToFloat() + finalBeatInSegment;
         }
     }
 }
