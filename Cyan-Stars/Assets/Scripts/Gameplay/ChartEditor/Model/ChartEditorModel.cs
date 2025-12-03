@@ -155,7 +155,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public readonly ChartData ChartData;
         public readonly ChartMetadata ChartMetadata;
         public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
-        public List<BpmGroupItem> BpmGroupDatas => ChartPackData.BpmGroup.Data;
+        public IReadOnlyList<BpmGroupItem> BpmGroupDatas => ChartPackData.BpmGroup.Data;
         public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
 
 
@@ -1333,7 +1333,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
 
             BpmGroupItem item = new BpmGroupItem(bpm, newBeat);
-            BpmGroupDatas.Add(item);
+            ChartPackData.BpmGroup.Add(item);
             SelectedBpmItemIndex = BpmGroupDatas.Count - 1;
             OnBpmGroupChanged?.Invoke();
         }
@@ -1411,9 +1411,8 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             }
 
             BpmGroupItem itemToUpdate = BpmGroupDatas[(int)SelectedBpmItemIndex];
-            itemToUpdate.StartBeat = (Beat)beat;
-            BpmGroupDatas.Sort((item1, item2) => item1.StartBeat.ToFloat().CompareTo(item2.StartBeat.ToFloat()));
-            SelectedBpmItemIndex = BpmGroupDatas.IndexOf(itemToUpdate);
+            itemToUpdate.StartBeat = beat;
+            SelectedBpmItemIndex = ChartPackData.BpmGroup.IndexOf(itemToUpdate);
 
             OnBpmGroupChanged?.Invoke();
         }
@@ -1426,7 +1425,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 return;
             }
 
-            BpmGroupDatas.RemoveAt((int)SelectedBpmItemIndex);
+            ChartPackData.BpmGroup.RemoveAt((int)SelectedBpmItemIndex);
             SelectedBpmItemIndex = (int)SelectedBpmItemIndex == 0
                 ? (int?)null // 如果移除了所有元素，则设为 null
                 : Math.Min(BpmGroupDatas.Count - 1, (int)SelectedBpmItemIndex); // 尝试让 index 在不越界的情况下不变

@@ -132,8 +132,6 @@ namespace CyanStars.GamePlay.ChartEditor.View
             // 根据总时间和 bpm 组数据，计算总共有几个拍子。
             float CalculateTotalBeats(int actualMusicTime, BpmGroup bpmGroup)
             {
-                bpmGroup.SortGroup();
-
                 // 使用指数扩展 + 二分查找整数部分以提升性能
                 if (bpmGroup.CalculateTime(0) >= actualMusicTime)
                 {
