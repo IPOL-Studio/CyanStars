@@ -71,18 +71,6 @@ namespace CyanStars.Gameplay.MusicGame
             if (!string.IsNullOrEmpty(Data.RuntimeChartPack.ChartPackData.CoverFilePath))
             {
                 // TODO: 从文件加载外部曲绘，并转为 MapItem 所需的 sprite 格式
-                byte[] imageBytes = await GameRoot.Asset.LoadAssetAsync<byte[]>(
-                    Data.ChartPack.ChartPackData.CroppedCoverFilePath, gameObject);
-                Texture2D texture = new Texture2D(2,2);
-                texture.LoadImage(imageBytes);
-
-                Sprite sprite = Sprite.Create(
-                    texture,
-                    new Rect(0, 0, texture.width, texture.height),
-                    new Vector2(0.5f, 0.5f)
-                );
-
-                ImgCover.sprite = sprite;
             }
             else
             {

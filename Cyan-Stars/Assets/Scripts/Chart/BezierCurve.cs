@@ -7,7 +7,6 @@ namespace CyanStars.Chart
     /// <summary>
     /// 贝塞尔曲线
     /// </summary>
-    /// <remarks>一整条曲线，即一个变速组，由多个贝赛尔曲线控制点组成</remarks>
     public class BezierCurve
     {
         private List<BezierControlPoint> controlPoints;
@@ -267,7 +266,6 @@ namespace CyanStars.Chart
         {
             if (position.x > 0)
             {
-                Debug.LogError("BezierCurve: 曲线时间必须小于等于0");
                 throw new ArgumentException("BezierCurve: 曲线时间必须小于等于0");
             }
 
