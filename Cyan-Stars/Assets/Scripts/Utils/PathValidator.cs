@@ -36,7 +36,7 @@ namespace CyanStars.Utils
                 "LPT9"
             };
 
-        private static readonly string CachedErrorMessage = $"文件夹名不能包含以下字符: {string.Join(" ", InvalidChars)}";
+        private static readonly string ContainsInvalidCharsMessage = $"文件夹名不能包含以下字符: {string.Join(" ", InvalidChars)}";
 
 
         public static bool IsValidFolderName(string name, out string errorMessage, int maxLength = 240)
@@ -65,7 +65,7 @@ namespace CyanStars.Utils
             // 检查是否包含非法字符
             if (name.IndexOfAny(InvalidChars) >= 0)
             {
-                errorMessage = CachedErrorMessage;
+                errorMessage = ContainsInvalidCharsMessage;
                 return false;
             }
 
