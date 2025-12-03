@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CyanStars.Chart
 {
@@ -14,15 +16,42 @@ namespace CyanStars.Chart
         public delegate int BeatToTimeDelegate(Beat beat);
 
 
-        public void Add(BpmGroupItem item)
+        // --- 重写 List 方法，使其在 Add 后自动排序 ---
+
+        public void AddRange(IEnumerable<BpmGroupItem> items)
         {
-            data.Add(item);
-            data.Sort((item1, item2) => item1.StartBeat.ToFloat().CompareTo(item2.StartBeat.ToFloat()));
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            foreach (var item in items)
+            {
+                if (item == null)
+                {
+                    throw new ArgumentException("BpmGroupItem collection cannot contain null elements.", nameof(items));
+                }
+
+                data.Add(item);
+            }
+
+            SortData();
         }
 
-        public void Remove(BpmGroupItem item)
+        public void Add(BpmGroupItem item)
         {
-            data.Remove(item);
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            data.Add(item);
+            SortData();
+        }
+
+        public bool Remove(BpmGroupItem item)
+        {
+            return data.Remove(item);
         }
 
         public void Clear()
@@ -38,6 +67,11 @@ namespace CyanStars.Chart
         public void RemoveAt(int index)
         {
             data.RemoveAt(index);
+        }
+
+        private void SortData()
+        {
+            data.Sort((item1, item2) => item1.StartBeat.ToFloat().CompareTo(item2.StartBeat.ToFloat()));
         }
 
 
