@@ -368,10 +368,8 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 添加音符轨道
             BpmGroup bpmGroup = new BpmGroup();
-            foreach (var item in runtimeChartPack.ChartPackData.BpmGroup.Data)
-            {
-                bpmGroup.Add(item);
-            }
+            bpmGroup.AddRange(runtimeChartPack.ChartPackData.BpmGroup.Data);
+
 
             NoteTrackData noteTrackData = new NoteTrackData()
             {
