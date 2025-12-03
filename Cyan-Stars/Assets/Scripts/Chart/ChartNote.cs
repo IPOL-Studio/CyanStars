@@ -92,10 +92,16 @@ namespace CyanStars.Chart
     {
         public float Pos { get; set; }
 
-        public TapChartNoteData(float pos, Beat judgeBeat, int speedGroupIndex = 0,
-            int speedGroupOffset = 0, string correctAudioName = null, string hitAudioName = null, bool judgeAble = true,
-            bool viewAble = true) : base(NoteType.Tap, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName,
-            hitAudioName, judgeAble, viewAble)
+        public TapChartNoteData(float pos,
+            Beat judgeBeat,
+            int speedGroupIndex = 0,
+            int speedGroupOffset = 0,
+            string correctAudioName = null,
+            string hitAudioName = null,
+            bool judgeAble = true,
+            bool viewAble = true)
+            : base(NoteType.Tap, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName, hitAudioName,
+                judgeAble, viewAble)
         {
             Pos = pos;
         }
@@ -115,10 +121,18 @@ namespace CyanStars.Chart
         /// <remarks>必须大于 JudgeBeat</remarks>
         public Beat EndJudgeBeat;
 
-        public HoldChartNoteData(float pos, Beat judgeBeat, Beat endJudgeBeat, int speedGroupIndex = 0,
-            int holdEndSpeedGroupIndex = 0, int speedGroupOffset = 0, string correctAudioName = null,
-            string hitAudioName = null, bool judgeAble = true, bool viewAble = true) : base(NoteType.Hold, judgeBeat,
-            speedGroupIndex, speedGroupOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
+        public HoldChartNoteData(float pos,
+            Beat judgeBeat,
+            Beat endJudgeBeat,
+            int speedGroupIndex = 0,
+            int holdEndSpeedGroupIndex = 0,
+            int speedGroupOffset = 0,
+            string correctAudioName = null,
+            string hitAudioName = null,
+            bool judgeAble = true,
+            bool viewAble = true)
+            : base(NoteType.Hold, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName, hitAudioName,
+                judgeAble, viewAble)
         {
             HoldEndSpeedGroupIndex = holdEndSpeedGroupIndex;
             EndJudgeBeat = endJudgeBeat;
@@ -130,10 +144,16 @@ namespace CyanStars.Chart
     {
         public float Pos { get; set; }
 
-        public DragChartNoteData(float pos, Beat judgeBeat, int speedGroupIndex = 0,
-            int speedGroupOffset = 0, string correctAudioName = null, string hitAudioName = null, bool judgeAble = true,
-            bool viewAble = true) : base(NoteType.Drag, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName,
-            hitAudioName, judgeAble, viewAble)
+        public DragChartNoteData(float pos,
+            Beat judgeBeat,
+            int speedGroupIndex = 0,
+            int speedGroupOffset = 0,
+            string correctAudioName = null,
+            string hitAudioName = null,
+            bool judgeAble = true,
+            bool viewAble = true)
+            : base(NoteType.Drag, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName, hitAudioName,
+                judgeAble, viewAble)
         {
             Pos = pos;
         }
@@ -143,10 +163,16 @@ namespace CyanStars.Chart
     {
         public float Pos { get; set; }
 
-        public ClickChartNoteData(float pos, Beat judgeBeat, int speedGroupIndex = 0,
-            int speedGroupOffset = 0, string correctAudioName = null, string hitAudioName = null, bool judgeAble = true,
-            bool viewAble = true) : base(NoteType.Click, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName,
-            hitAudioName, judgeAble, viewAble)
+        public ClickChartNoteData(float pos,
+            Beat judgeBeat,
+            int speedGroupIndex = 0,
+            int speedGroupOffset = 0,
+            string correctAudioName = null,
+            string hitAudioName = null,
+            bool judgeAble = true,
+            bool viewAble = true)
+            : base(NoteType.Click, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName, hitAudioName,
+                judgeAble, viewAble)
         {
             Pos = pos;
         }
@@ -157,10 +183,16 @@ namespace CyanStars.Chart
         /// <summary>Break 音符位于哪条轨道</summary>
         public BreakNotePos BreakNotePos;
 
-        public BreakChartNoteData(BreakNotePos breakNotePos, Beat judgeBeat, int speedGroupIndex = 0,
-            int speedGroupOffset = 0, string correctAudioName = null, string hitAudioName = null, bool judgeAble = true,
-            bool viewAble = true) : base(NoteType.Break, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName,
-            hitAudioName, judgeAble, viewAble)
+        public BreakChartNoteData(BreakNotePos breakNotePos,
+            Beat judgeBeat,
+            int speedGroupIndex = 0,
+            int speedGroupOffset = 0,
+            string correctAudioName = null,
+            string hitAudioName = null,
+            bool judgeAble = true,
+            bool viewAble = true)
+            : base(NoteType.Break, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName, hitAudioName,
+                judgeAble, viewAble)
         {
             BreakNotePos = breakNotePos;
         }

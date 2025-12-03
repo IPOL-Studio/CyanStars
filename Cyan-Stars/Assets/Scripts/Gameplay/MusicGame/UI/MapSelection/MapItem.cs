@@ -70,8 +70,7 @@ namespace CyanStars.Gameplay.MusicGame
             TxtName.text = Data.RuntimeChartPack.ChartPackData.Title;
             if (!string.IsNullOrEmpty(Data.RuntimeChartPack.ChartPackData.CoverFilePath))
             {
-                // TODO
-                // // 从文件加载外部曲绘，并转为 MapItem 所需的 sprite 格式
+                // TODO: 从文件加载外部曲绘，并转为 MapItem 所需的 sprite 格式
                 // byte[] imageBytes = await GameRoot.Asset.LoadAssetAsync<byte[]>(
                 //     Data.ChartPack.ChartPackData.CroppedCoverFilePath, gameObject);
                 // Texture2D texture = new Texture2D(2,2);

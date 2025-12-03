@@ -28,8 +28,8 @@ namespace CyanStars.Framework
         /// <summary>
         /// 数据模块字典
         /// </summary>
-        private static readonly Dictionary<Type, BaseDataModule>
-            DataModuleDict = new Dictionary<Type, BaseDataModule>();
+        private static readonly Dictionary<Type, BaseDataModule> DataModuleDict =
+            new Dictionary<Type, BaseDataModule>();
 
         /// <summary>
         /// 主相机
