@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using CatAsset.Runtime;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 
 namespace CyanStars.Framework.Asset
 {
- /// <summary>
+    /// <summary>
     /// 资源管理器
     /// </summary>
     public partial class AssetManager : BaseManager
@@ -28,10 +27,16 @@ namespace CyanStars.Framework.Asset
 
         public override void OnInit()
         {
-            CatAssetManager.RuntimeMode= RuntimeMode;
+            CatAssetManager.RuntimeMode = RuntimeMode;
             CatAssetManager.IsEditorMode = IsEditorMode;
             CatAssetManager.UnloadDelayTime = UnloadDelayTime;
             CatAssetManager.MaxTaskRunCount = MaxTaskRunCount;
+
+            // 注册一些自定义原生资源解析器
+            foreach (var converter in CustomRawAssetConverters.Converters)
+            {
+                RegisterCustomRawAssetConverter(converter.Key, converter.Value);
+            }
         }
 
         public override void OnUpdate(float deltaTime)
@@ -44,7 +49,7 @@ namespace CyanStars.Framework.Asset
         /// </summary>
         public void RegisterCustomRawAssetConverter(Type type, CustomRawAssetConverter converter)
         {
-            CatAssetManager.RegisterCustomRawAssetConverter(type,converter);
+            CatAssetManager.RegisterCustomRawAssetConverter(type, converter);
         }
 
         /// <summary>
@@ -69,7 +74,7 @@ namespace CyanStars.Framework.Asset
         public void ImportInternalAsset(string manifestPath, Action<bool> callback,
             string bundleRelativePathPrefix = null)
         {
-            CatAssetManager.ImportInternalAsset(manifestPath,callback,bundleRelativePathPrefix);
+            CatAssetManager.ImportInternalAsset(manifestPath, callback, bundleRelativePathPrefix);
         }
 
         /// <summary>
@@ -77,7 +82,7 @@ namespace CyanStars.Framework.Asset
         /// </summary>
         public void UpdateGroup(string group, OnBundleUpdated callback)
         {
-            CatAssetManager.UpdateGroup(group,callback);
+            CatAssetManager.UpdateGroup(group, callback);
         }
 
         /// <summary>
@@ -85,7 +90,7 @@ namespace CyanStars.Framework.Asset
         /// </summary>
         public void PauseGroupUpdater(string group, bool isPause)
         {
-            CatAssetManager.PauseGroupUpdater(group,isPause);
+            CatAssetManager.PauseGroupUpdater(group, isPause);
         }
 
         /// <summary>
@@ -106,13 +111,14 @@ namespace CyanStars.Framework.Asset
             return CatAssetManager.LoadAssetAsync<T>(assetName, callback, priority);
         }
 
-                /// <summary>
+        /// <summary>
         /// 批量加载资源
         /// </summary>
-        public int BatchLoadAsset(List<string> assetNames, BatchLoadAssetCallback callback, TaskPriority priority = TaskPriority.Middle)
-                {
-                    return CatAssetManager.BatchLoadAssetAsync(assetNames, callback);
-                }
+        public int BatchLoadAsset(List<string> assetNames, BatchLoadAssetCallback callback,
+            TaskPriority priority = TaskPriority.Middle)
+        {
+            return CatAssetManager.BatchLoadAssetAsync(assetNames, callback);
+        }
 
         /// <summary>
         /// 加载场景
@@ -152,15 +158,15 @@ namespace CyanStars.Framework.Asset
         /// </summary>
         public void BindToGameObject(GameObject target, object asset)
         {
-            CatAssetManager.BindToGameObject(target,asset);
+            CatAssetManager.BindToGameObject(target, asset);
         }
 
         /// <summary>
         /// 将资源绑定到场景上，会在指定场景卸载时卸载绑定的资源
         /// </summary>
-        public void BindToScene(Scene scene,object asset)
+        public void BindToScene(Scene scene, object asset)
         {
-            CatAssetManager.BindToScene(scene,asset);
+            CatAssetManager.BindToScene(scene, asset);
         }
 
         /// <summary>
