@@ -282,7 +282,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
                 }
 
                 // 尝试渲染终止线
-                float endLinePosY = totalBeat * DefaultBeatLineInterval;
+                float endLinePosY = totalBeat * DefaultBeatLineInterval * Model.BeatZoom;
                 if (contentPos - 100f <= endLinePosY && contentPos <= contentPos + mainCanvaRect.rect.height + 100f)
                 {
                     GameObject go = await GameRoot.GameObjectPool.GetGameObjectAsync(EndLinePrefabPath, contentRect);

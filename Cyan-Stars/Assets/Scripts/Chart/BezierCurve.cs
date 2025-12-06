@@ -5,117 +5,109 @@ using UnityEngine;
 namespace CyanStars.Chart
 {
     /// <summary>
-    /// 贝塞尔曲线
+    /// 用于变速模板的贝塞尔曲线类
     /// </summary>
+    /// <remarks>
+    /// 此曲线由至少 1 个 BezierControlPointItem 组成，首个 BezierControlPointItem.Position.x == 0，
+    /// 后续 BezierControlPointItem.Position.x 必须小于前一个 BezierControlPointItem.Position.x，详见 BezierControlPointItem 类
+    /// 曲线 x 值相对于音符判定时间，由 x==0 开始，向左侧 x 轴负方向延伸。例如 x=-100 代表此时为对应音符到达判定线前 100ms
+    /// </remarks>
     public class BezierCurve
     {
-        private List<BezierControlPoint> controlPoints;
-        public IReadOnlyList<BezierControlPoint> ControlPoints => controlPoints.AsReadOnly();
+        private List<BezierControlPointItem> controlPoints;
+        public IReadOnlyList<BezierControlPointItem> ControlPoints => controlPoints.AsReadOnly();
 
         public BezierCurve()
         {
             Vector2 vector2 = new Vector2(0, 1);
-            controlPoints = new List<BezierControlPoint> { new BezierControlPoint(vector2, vector2, vector2) };
+            controlPoints = new List<BezierControlPointItem> { new BezierControlPointItem(vector2, vector2, vector2) };
         }
 
         /// <summary>
         /// 校验并在列表合适位置插入新的控制点
         /// </summary>
-        /// <param name="newPoint">要插入的新控制点</param>
+        /// <param name="newPointItem">要插入的新控制点</param>
         /// <returns>如果成功插入则返回true，否则返回false</returns>
-        public bool InsertPoint(BezierControlPoint newPoint)
+        public bool InsertPoint(BezierControlPointItem newPointItem)
         {
-            // 边界检查：不能插入到 x >= 0 的位置，因为x=0的点必须是第一个
-            if (newPoint.Position.x >= 0)
+            if (newPointItem.Position.x >= 0)
             {
-                Debug.LogWarning("无法在 x >= 0 的位置插入新点。");
+                Debug.LogError("无法在 x >= 0 的位置插入新点。");
                 return false;
             }
 
-            // 检查是否存在相同x坐标的点
-            if (controlPoints.Exists(p => Mathf.Approximately(p.Position.x, newPoint.Position.x)))
+            if (controlPoints.Exists(p => Mathf.Approximately(p.Position.x, newPointItem.Position.x)))
             {
-                Debug.LogWarning($"已存在 x = {newPoint.Position.x} 的控制点，无法插入。");
+                Debug.LogError($"已存在 x = {newPointItem.Position.x} 的控制点，无法插入。");
                 return false;
             }
 
-            // 寻找插入位置（列表按x坐标降序排列）
-            // 找到第一个x坐标小于新点的现有控制点，新点应插入其前面
-            int insertIndex = controlPoints.FindIndex(p => p.Position.x < newPoint.Position.x);
+            int insertIndex = controlPoints.FindIndex(p => p.Position.x < newPointItem.Position.x);
             if (insertIndex == -1)
             {
-                // 如果没找到，说明新点的x坐标是最小的，应插在列表末尾
                 insertIndex = controlPoints.Count;
             }
 
-            // 校验新点
-            bool isValid = ValidatePoint(newPoint, insertIndex);
+            bool isValid = ValidatePoint(newPointItem, insertIndex);
 
             if (isValid)
             {
-                controlPoints.Insert(insertIndex, newPoint);
+                controlPoints.Insert(insertIndex, newPointItem);
                 return true;
             }
 
-            Debug.LogWarning("新控制点校验失败，无法插入。");
+            Debug.LogError("新控制点校验失败，无法插入。");
             return false;
         }
 
         /// <summary>
         /// 校验待插入点的控制点是否满足曲线不折返的条件
         /// </summary>
-        /// <param name="pointToValidate">待校验的点</param>
+        /// <param name="pointItemToValidate">待校验的点</param>
         /// <param name="index">该点将要插入的索引</param>
         /// <returns>是否通过校验</returns>
-        private bool ValidatePoint(BezierControlPoint pointToValidate, int index)
+        private bool ValidatePoint(BezierControlPointItem pointItemToValidate, int index)
         {
-            // 获取相邻点（基于插入后的位置）
-            // rightNeighbor 是坐标轴上右边的点（x更大），在列表中索引更小
-            BezierControlPoint rightNeighbor = (index > 0) ? controlPoints[index - 1] : null;
-            // leftNeighbor 是坐标轴上左边的点（x更小），在列表中索引更大
-            BezierControlPoint leftNeighbor = (index < controlPoints.Count) ? controlPoints[index] : null;
+            BezierControlPointItem rightNeighbor = (index > 0) ? controlPoints[index - 1] : null;
+            BezierControlPointItem leftNeighbor = (index < controlPoints.Count) ? controlPoints[index] : null;
 
-            // 校验RightControlPoint.x
-            // 必须介于 [Position.x, 右侧相邻点的LeftControlPoint.x] 之间
             if (rightNeighbor != null)
             {
-                if (pointToValidate.RightControlPoint.x < pointToValidate.Position.x ||
-                    pointToValidate.RightControlPoint.x > rightNeighbor.LeftControlPoint.x)
+                if (pointItemToValidate.RightControlPoint.x < pointItemToValidate.Position.x ||
+                    pointItemToValidate.RightControlPoint.x > rightNeighbor.LeftControlPoint.x)
                 {
-                    Debug.LogWarning($"RightControlPoint.x ({pointToValidate.RightControlPoint.x}) 校验失败. " +
-                                     $"它必须介于 [{pointToValidate.Position.x}, {rightNeighbor.LeftControlPoint.x}] 之间。");
+                    Debug.LogError($"RightControlPoint.x ({pointItemToValidate.RightControlPoint.x}) 校验失败. " +
+                                   $"它必须介于 [{pointItemToValidate.Position.x}, {rightNeighbor.LeftControlPoint.x}] 之间。");
                     return false;
                 }
             }
-            else // 如果没有右侧相邻点（即插入点为第一个点，但在本代码中此情况已排除），则只需满足自身约束
+            else
             {
-                if (pointToValidate.RightControlPoint.x < pointToValidate.Position.x)
+                if (pointItemToValidate.RightControlPoint.x < pointItemToValidate.Position.x)
                 {
-                    Debug.LogWarning(
-                        $"RightControlPoint.x ({pointToValidate.RightControlPoint.x}) 必须大于等于 Position.x ({pointToValidate.Position.x})。");
+                    Debug.LogError(
+                        $"RightControlPoint.x ({pointItemToValidate.RightControlPoint.x}) 必须大于等于 Position.x ({pointItemToValidate.Position.x})。");
                     return false;
                 }
             }
 
 
-            // 校验LeftControlPoint.x
-            // 必须介于 [左侧相邻点的RightControlPoint.x, Position.x] 之间
             if (leftNeighbor != null)
             {
-                if (pointToValidate.LeftControlPoint.x > pointToValidate.Position.x ||
-                    pointToValidate.LeftControlPoint.x < leftNeighbor.RightControlPoint.x)
+                if (pointItemToValidate.LeftControlPoint.x > pointItemToValidate.Position.x ||
+                    pointItemToValidate.LeftControlPoint.x < leftNeighbor.RightControlPoint.x)
                 {
-                    Debug.LogWarning($"LeftControlPoint.x ({pointToValidate.LeftControlPoint.x}) 校验失败. " +
-                                     $"它必须介于 [{leftNeighbor.RightControlPoint.x}, {pointToValidate.Position.x}] 之间。");
+                    Debug.LogError($"LeftControlPoint.x ({pointItemToValidate.LeftControlPoint.x}) 校验失败. " +
+                                   $"它必须介于 [{leftNeighbor.RightControlPoint.x}, {pointItemToValidate.Position.x}] 之间。");
                     return false;
                 }
             }
-            else // 如果没有左侧相邻点（即插入点为最后一个点），则只需满足自身约束
+            else
             {
-                if (pointToValidate.LeftControlPoint.x > pointToValidate.Position.x)
+                if (pointItemToValidate.LeftControlPoint.x > pointItemToValidate.Position.x)
                 {
-                    Debug.LogWarning(
-                        $"LeftControlPoint.x ({pointToValidate.LeftControlPoint.x}) 必须小于等于 Position.x ({pointToValidate.Position.x})。");
+                    Debug.LogError(
+                        $"LeftControlPoint.x ({pointItemToValidate.LeftControlPoint.x}) 必须小于等于 Position.x ({pointItemToValidate.Position.x})。");
                     return false;
                 }
             }
@@ -131,7 +123,6 @@ namespace CyanStars.Chart
         /// <returns>如果成功删除则返回true</returns>
         public bool DeletePoint(int index)
         {
-            // 控制点0是基准点，不能删除
             if (index == 0)
             {
                 Debug.LogError("不能删除索引为0的控制点。");
@@ -155,23 +146,19 @@ namespace CyanStars.Chart
         /// <returns>对应的y坐标</returns>
         public float GetValue(int x)
         {
-            // 当x大于0时，返回列表第一个控制点位置的y
             if (x >= 0)
             {
                 return controlPoints[0].Position.y;
             }
 
-            // 当x小于曲线最左侧控制点位置的x时，返回列表最后一个控制点位置的y
             if (x <= controlPoints[controlPoints.Count - 1].Position.x)
             {
                 return controlPoints[controlPoints.Count - 1].Position.y;
             }
 
-            // 寻找x所在的曲线段
             int segmentIndex = -1;
             for (int i = 0; i < controlPoints.Count - 1; i++)
             {
-                // x 位于点 i 和点 i+1 之间
                 if (x <= controlPoints[i].Position.x && x >= controlPoints[i + 1].Position.x)
                 {
                     segmentIndex = i;
@@ -185,16 +172,12 @@ namespace CyanStars.Chart
                 return controlPoints[controlPoints.Count - 1].Position.y;
             }
 
-            // 获取定义该段曲线的四个点
             Vector2 p0 = controlPoints[segmentIndex].Position;
             Vector2 p1 = controlPoints[segmentIndex].LeftControlPoint;
             Vector2 p2 = controlPoints[segmentIndex + 1].RightControlPoint;
             Vector2 p3 = controlPoints[segmentIndex + 1].Position;
 
-            // 使用二分法查找对应x的参数t (0到1之间)
             float t = FindTForX(x, p0.x, p1.x, p2.x, p3.x);
-
-            // 根据t计算y值
             return CalculateBezierPoint(t, p0.y, p1.y, p2.y, p3.y);
         }
 
@@ -227,8 +210,8 @@ namespace CyanStars.Chart
             float t = 0.5f;
             float currentX;
             int iterations = 0;
-            const int maxIterations = 100; // 防止无限循环
-            const float epsilon = 0.0001f; // 精度
+            const int maxIterations = 100; // 查找深度
+            const float epsilon = 0.0001f; // 查找精度
 
             do
             {
@@ -253,16 +236,21 @@ namespace CyanStars.Chart
 
 
     /// <summary>
-    /// 贝塞尔控制点
+    /// 贝塞尔控制点元素
     /// </summary>
-    /// <remarks>Vector2 的 x 单位为 ms，必须小于等于 0</remarks>
-    public class BezierControlPoint
+    /// <remarks>
+    /// 每个 Item 由三个点组成：
+    ///  - Position：位置点，曲线必然穿过此点
+    ///  - LeftControlPoint：左形变控制点，调整本条曲线和下一条曲线的形状
+    ///  - RightControlPoint：右形变控制点，调整本条曲线和上一条曲线的形状
+    /// </remarks>
+    public class BezierControlPointItem
     {
         public Vector2 Position;
         public Vector2 LeftControlPoint;
         public Vector2 RightControlPoint;
 
-        public BezierControlPoint(Vector2 position, Vector2 leftControlPoint, Vector2 rightControlPoint)
+        public BezierControlPointItem(Vector2 position, Vector2 leftControlPoint, Vector2 rightControlPoint)
         {
             if (position.x > 0)
             {
