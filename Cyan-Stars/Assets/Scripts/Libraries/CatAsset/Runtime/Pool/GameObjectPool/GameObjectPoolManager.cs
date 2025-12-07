@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -10,6 +11,13 @@ namespace CatAsset.Runtime
     /// </summary>
     public static partial class GameObjectPoolManager
     {
+        private struct InstantiateParam
+        {
+            public InstantiateHandler Handler;
+            public object Userdata;
+            public Action<GameObject, object> Callback;
+        }
+
         /// <summary>
         /// 预制体名字->加载好的预制体
         /// </summary>
@@ -18,7 +26,8 @@ namespace CatAsset.Runtime
         /// <summary>
         /// 模板->对象池
         /// </summary>
-        private static Dictionary<GameObject, GameObjectPool> poolDict = new Dictionary<GameObject, GameObjectPool>();
+        internal static Dictionary<GameObject, GameObjectPool> PoolDict = new Dictionary<GameObject, GameObjectPool>();
+
 
         /// <summary>
         /// 游戏对象池管理器的根节点
@@ -28,12 +37,12 @@ namespace CatAsset.Runtime
         /// <summary>
         /// 默认对象失效时间
         /// </summary>
-        public static float DefaultObjectExpireTime = 30;
+        public static float DefaultObjectExpireTime = 60;
 
         /// <summary>
         /// 默认对象池失效时间
         /// </summary>
-        public static float DefaultPoolExpireTime = 60;
+        public static float DefaultPoolExpireTime = 120;
 
         /// <summary>
         /// 单帧最大实例化数
@@ -48,237 +57,349 @@ namespace CatAsset.Runtime
         /// <summary>
         /// 等待实例化的游戏对象队列
         /// </summary>
-        private static Queue<ValueTuple<GameObject, Transform, Action<GameObject>>> waitInstantiateQueue = new Queue<(GameObject, Transform, Action<GameObject>)>();
+        private static Queue<InstantiateParam> handlerQueue = new Queue<InstantiateParam>();
 
         /// <summary>
         /// 等待卸载的预制体名字列表
         /// </summary>
         private static List<string> waitUnloadPrefabNames = new List<string>();
 
+        private static List<GameObject> tempList = new List<GameObject>();
+
         /// <summary>
-        /// 轮询游戏对象池管理器
+        /// 轮询管理器
         /// </summary>
         public static void Update(float deltaTime)
         {
-            //轮询池子
-            foreach (KeyValuePair<GameObject, GameObjectPool> pair in poolDict)
+
+            foreach (var pair in PoolDict)
             {
+                //轮询对象池
                 pair.Value.OnUpdate(deltaTime);
             }
 
-            //销毁长时间未使用的，且是由对象池管理器加载了预制体资源的对象池
+            //销毁长时间未使用的，且是由管理器加载了预制体资源的对象池
             foreach (KeyValuePair<string, GameObject> pair in loadedPrefabDict)
             {
-                GameObjectPool pool = poolDict[pair.Value];
-                if (pool.UnusedTimer > DefaultPoolExpireTime)
+                GameObjectPool pool = PoolDict[pair.Value];
+                if (pool.UnusedTimer > pool.PoolExpireTime)
                 {
                     waitUnloadPrefabNames.Add(pair.Key);
                 }
             }
-
             foreach (string prefabName in waitUnloadPrefabNames)
             {
                 DestroyPool(prefabName);
             }
-
             waitUnloadPrefabNames.Clear();
 
             //处理分帧实例化
-            while (instantiateCounter < MaxInstantiateCount && waitInstantiateQueue.Count > 0)
+            while (instantiateCounter < MaxInstantiateCount && handlerQueue.Count > 0)
             {
-                var (prefab, parent, callback) = waitInstantiateQueue.Dequeue();
-                callback?.Invoke(Object.Instantiate(prefab, parent));
-                instantiateCounter++;
+
+                InstantiateParam param = handlerQueue.Dequeue();
+                GameObject instance = null;
+                if (!param.Handler.IsTokenCanceled)
+                {
+                    //未被取消才会实例化游戏对象
+                    instance = Object.Instantiate(param.Handler.Template, param.Handler.Parent);
+                    param.Callback?.Invoke(instance,param.Userdata);
+                    instantiateCounter++;
+                }
+                param.Handler.SetInstance(instance);
             }
 
             instantiateCounter = 0;
         }
 
         /// <summary>
-        /// 使用预制体名从池中获取一个游戏对象
+        /// 获取对象池，若不存在则创建
         /// </summary>
-        public static void GetGameObjectAsync(string prefabName, Transform parent, Action<GameObject> callback)
+        private static GameObjectPool GetOrCreatePool(GameObject template)
         {
-            if (loadedPrefabDict.ContainsKey(prefabName))
-            {
-                GetGameObjectAsync(loadedPrefabDict[prefabName], parent, callback);
-                return;
-            }
-
-            //此prefab未加载过，先加载
-            CatAssetManager.LoadAssetAsync<GameObject>(prefabName, (prefab, result) =>
-            {
-                if (prefab == null)
-                {
-                    return;
-                }
-
-                loadedPrefabDict[prefabName] = prefab;
-
-                //这里要先调用GetGameObject 才能保证 poolDict[prefab] 不为空
-                GetGameObjectAsync(prefab, parent, callback);
-
-                //进行资源绑定
-                GameObject root = poolDict[prefab].Root.gameObject;
-                CatAssetManager.BindToGameObject(root,prefab);
-            });
-        }
-
-        /// <summary>
-        /// 使用模板中从池中获取一个游戏对象
-        /// </summary>
-        public static void GetGameObjectAsync(GameObject template, Transform parent, Action<GameObject> callback)
-        {
-            if (!poolDict.TryGetValue(template, out GameObjectPool pool))
+            if (!PoolDict.TryGetValue(template,out var pool))
             {
                 GameObject root = new GameObject($"Pool-{template.name}");
                 root.transform.SetParent(Root);
 
-                pool = new GameObjectPool(template, DefaultObjectExpireTime, root.transform);
-                poolDict.Add(template, pool);
+                pool = new GameObjectPool(template, root.transform,DefaultPoolExpireTime,DefaultObjectExpireTime);
+                PoolDict.Add(template,pool);
             }
 
-            pool.GetGameObjectAsync(parent, callback);
+            return pool;
         }
 
         /// <summary>
-        ///  使用预制体名将游戏对象归还池中
+        /// 使用资源名异步创建对象池，此方法创建的对象池会自动销毁
         /// </summary>
-        public static void ReleaseGameObject(string prefabName, GameObject go)
+        public static void CreatePoolAsync(string assetName, Action<bool> callback, CancellationToken token = default,
+            CanceledCallback onCanceled = null)
         {
-            if (!loadedPrefabDict.ContainsKey(prefabName))
+            if (loadedPrefabDict.ContainsKey(assetName))
             {
+                //对象池已存在
+                callback?.Invoke(true);
                 return;
             }
 
-            ReleaseGameObject(loadedPrefabDict[prefabName], go);
+            var handler = CatAssetManager.LoadAssetAsync<GameObject>(assetName,token);
+            handler.OnCanceled += onCanceled;
+            handler.OnLoaded += assetHandler =>
+            {
+                if (!assetHandler.IsSuccess)
+                {
+                    Debug.LogError($"对象池异步创建失败：{assetName}");
+                    assetHandler.Unload();
+                    callback?.Invoke(false);
+                    return;
+                }
+
+                GameObject prefab = assetHandler.Asset;
+                loadedPrefabDict[assetName] = prefab;
+
+                //创建对象池
+                GameObjectPool pool = GetOrCreatePool(prefab);
+
+                //进行资源绑定
+                GameObject root = pool.Root.gameObject;
+                root.BindTo(assetHandler);
+
+                callback?.Invoke(true);
+            };
         }
 
         /// <summary>
-        /// 使用模板将游戏对象归还池中
+        /// 使用模板同步创建对象池，此方法创建的对象池需要由创建者销毁
         /// </summary>
-        public static void ReleaseGameObject(GameObject template, GameObject go)
+        public static void CreatePool(GameObject template)
         {
-            if (!poolDict.TryGetValue(template, out GameObjectPool pool))
+            GetOrCreatePool(template);
+        }
+
+        /// <summary>
+        /// 使用资源名销毁对象池
+        /// </summary>
+        public static void DestroyPool(string assetName)
+        {
+            if (!loadedPrefabDict.TryGetValue(assetName,out var prefab))
             {
                 return;
             }
-
-            pool.ReleaseGameObject(go);
+            
+            loadedPrefabDict.Remove(assetName);
+            DestroyPool(prefab);
         }
 
         /// <summary>
-        /// 销毁对象池
-        /// </summary>
-        public static void DestroyPool(string prefabName)
-        {
-            if (!loadedPrefabDict.ContainsKey(prefabName))
-            {
-                return;
-            }
-
-            DestroyPool(loadedPrefabDict[prefabName]);
-
-            loadedPrefabDict.Remove(prefabName);
-        }
-
-        /// <summary>
-        /// 销毁对象池
+        /// 使用模板销毁对象池
         /// </summary>
         public static void DestroyPool(GameObject template)
         {
-            if (!poolDict.TryGetValue(template, out GameObjectPool pool))
+            var pool = GetOrCreatePool(template);
+            pool.OnDestroy();
+            PoolDict.Remove(template);
+        }
+
+        /// <summary>
+        /// 使用资源名异步获取游戏对象
+        /// </summary>
+        public static void GetAsync(string assetName, Action<GameObject> callback, Transform parent = null,
+            CancellationToken token = default, CanceledCallback onCanceled = null)
+        {
+            if (loadedPrefabDict.TryGetValue(assetName,out var prefab))
+            {
+                //此对象池已存在
+                GetAsync(prefab, callback, parent, token,onCanceled);
+                return;
+            }
+
+            //此对象池不存在 创建对象池
+            CreatePoolAsync(assetName,(success =>
+            {
+                if (!success)
+                {
+                    callback?.Invoke(null);
+                    return;
+                }
+
+                prefab = loadedPrefabDict[assetName];
+
+                GetAsync(prefab, callback, parent, token,onCanceled);
+
+            }),token,onCanceled);
+        }
+
+        /// <summary>
+        /// 使用模板异步获取游戏对象
+        /// </summary>
+        public static void GetAsync(GameObject template, Action<GameObject> callback, Transform parent = null,
+            CancellationToken token = default,CanceledCallback onCanceled = null)
+        {
+            var pool = GetOrCreatePool(template);
+            var handler = pool.GetAsync(parent,token);
+            handler.OnCanceled += onCanceled;
+            handler.OnInstantiated += instantiateHandler =>
+            {
+                callback?.Invoke(handler.Instance);
+                handler.Unload();
+            };
+
+        }
+
+        /// <summary>
+        /// 使用资源名同步获取游戏对象，此方法需要先保证对象池已创建
+        /// </summary>
+        public static GameObject Get(string assetName,Transform parent = null)
+        {
+            if (!loadedPrefabDict.TryGetValue(assetName,out var prefab))
+            {
+                Debug.LogError($"使用资源名同步获取游戏对象的对象池不存在，需要先创建:{assetName}");
+                return null;
+            }
+
+            return Get(prefab, parent);
+        }
+
+        /// <summary>
+        /// 使用模板同步获取游戏对象
+        /// </summary>
+        public static GameObject Get(GameObject template, Transform parent = null)
+        {
+            var pool = GetOrCreatePool(template);
+            GameObject go = pool.Get(parent);
+            return go;
+        }
+
+        /// <summary>
+        /// 使用资源名释放游戏对象
+        /// </summary>
+        public static void Release(string assetName, GameObject go)
+        {
+            if (!loadedPrefabDict.TryGetValue(assetName,out var prefab))
+            {
+                Debug.LogWarning($"要释放游戏对象的对象池不存在：{assetName}");
+                return;
+            }
+
+            Release(prefab,go);
+        }
+
+        /// <summary>
+        /// 使用模板释放游戏对象
+        /// </summary>
+        public static void Release(GameObject template, GameObject go)
+        {
+            if (!PoolDict.TryGetValue(template, out var pool))
+            {
+                Debug.LogWarning($"要释放游戏对象的对象池不存在：{go.name}");
+                return;
+            }
+            pool.Release(go);
+        }
+
+        /// <summary>
+        /// 锁定游戏对象，被锁定后不会被销毁
+        /// </summary>
+        public static void LockGameObject(string assetName, GameObject go, bool isLock = true)
+        {
+            if (!loadedPrefabDict.TryGetValue(assetName,out var prefab))
+            {
+                return;
+            }
+            LockGameObject(prefab,go,isLock);
+        }
+        
+        /// <summary>
+        /// 锁定游戏对象，被锁定后不会被销毁
+        /// </summary>
+        public static void LockGameObject(GameObject template, GameObject go, bool isLock = true)
+        {
+            if (!PoolDict.TryGetValue(template, out var pool))
+            {
+                return;
+            }
+            pool.LockGameObject(go,isLock);
+        }
+
+        /// <summary>
+        /// 设置对象池的失效时间
+        /// </summary>
+        public static void SetExpireTime(string assetName, float poolExpireTime,float objExpireTime)
+        {
+            if (!loadedPrefabDict.TryGetValue(assetName,out var prefab))
+            {
+                return;
+            }
+            SetExpireTime(prefab,poolExpireTime,objExpireTime);
+        }
+        
+        /// <summary>
+        /// 设置对象池的失效时间
+        /// </summary>
+        public static void SetExpireTime(GameObject template, float poolExpireTime,float objExpireTime)
+        {
+            if (!PoolDict.TryGetValue(template, out var pool))
             {
                 return;
             }
 
-            pool.OnDestroy();
-            poolDict.Remove(template);
-            Debug.Log($"{template.name}的对象池被销毁了");
+            pool.PoolExpireTime = poolExpireTime;
+            pool.ObjExpireTime = objExpireTime;
         }
 
-
+        
         /// <summary>
         /// 分帧异步实例化
         /// </summary>
-        public static void InstantiateAsync(GameObject prefab, Transform parent, Action<GameObject> callback)
+        internal static void InstantiateAsync(InstantiateHandler handler,object userdata,Action<GameObject,object> callback)
         {
-            waitInstantiateQueue.Enqueue((prefab, parent, callback));
+            InstantiateParam param = new InstantiateParam();
+            param.Handler = handler;
+            param.Userdata = userdata;
+            param.Callback = callback;
+            handlerQueue.Enqueue(param);
         }
 
-
         /// <summary>
-        /// 预热对象
+        /// 使用资源名异步预热对象
         /// </summary>
-        public static void Prewarm(string prefabName,int count,Action callback)
+        public static void PrewarmAsync(string assetName,int count,Action callback,CancellationToken token = default,CanceledCallback onCanceled = null)
         {
-            List<GameObject> objects = new List<GameObject>(count);
+            bool hasPool = loadedPrefabDict.TryGetValue(assetName,out var prefab);
 
-            Prewarm(prefabName,count,0,objects, () =>
+            void Prewarm(GameObject template)
             {
+                var pool = GetOrCreatePool(template);
+                for (int i = 0; i < count; i++)
+                {
+                    GameObject go = pool.Get(Root);
+                    tempList.Add(go);
+                }
+
+                //预热完毕 统一释放
+                foreach (GameObject go in tempList)
+                {
+                    Release(template,go);
+                }
+                tempList.Clear();
                 callback?.Invoke();
-            });
-        }
+            }
 
-        /// <summary>
-        /// 递归预热对象
-        /// </summary>
-        private static void Prewarm(string prefabName,int count,int counter, List<GameObject> objects,Action callback)
-        {
-            GetGameObjectAsync(prefabName,Root,(go =>
+            if (!hasPool)
             {
-                ReleaseGameObject(prefabName,go);
-
-                counter++;
-                objects.Add(go);
-                if (counter < count)
+                CreatePoolAsync(assetName,(result =>
                 {
-                    //预热未结束
-                    //递归预热下去
-                    Prewarm(prefabName,count,counter,objects,callback);
-                }
-                else
-                {
-                    //预热结束
-                    callback();
-                }
-            }));
-        }
+                    if (result)
+                    {
+                        Prewarm(loadedPrefabDict[assetName]);
+                    }
 
-
-        /// <summary>
-        /// 预热对象
-        /// </summary>
-        public static void Prewarm(GameObject template,int count,Action callback)
-        {
-            Prewarm(template,count,0, () =>
+                }),token,onCanceled);
+            }
+            else
             {
-                callback?.Invoke();
-            });
+                Prewarm(prefab);
+            }
         }
-
-        /// <summary>
-        /// 递归预热对象
-        /// </summary>
-        private static void Prewarm(GameObject template,int count,int counter,Action callback)
-        {
-            GetGameObjectAsync(template,Root,(go =>
-            {
-                counter++;
-                ReleaseGameObject(template,go);
-                if (counter < count)
-                {
-                    //预热未结束
-                    //递归预热下去
-                    Prewarm(template,count,counter,callback);
-                }
-                else
-                {
-                    //预热结束
-                    callback();
-                }
-            }));
-        }
-
     }
 }

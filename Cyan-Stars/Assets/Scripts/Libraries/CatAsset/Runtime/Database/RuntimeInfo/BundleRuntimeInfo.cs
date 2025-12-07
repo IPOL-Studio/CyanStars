@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace CatAsset.Runtime
@@ -7,8 +10,51 @@ namespace CatAsset.Runtime
     /// <summary>
     /// 资源包运行时信息
     /// </summary>
-    public class BundleRuntimeInfo : IComparable<BundleRuntimeInfo>,IEquatable<BundleRuntimeInfo>
+    public class BundleRuntimeInfo : IComparable<BundleRuntimeInfo>, IEquatable<BundleRuntimeInfo>
     {
+#if UNITY_EDITOR
+        static BundleRuntimeInfo()
+        {
+            EditorApplication.playModeStateChanged += change =>
+            {
+                if (change == PlayModeStateChange.ExitingPlayMode)
+                {
+                    //编辑器下退出游戏 需要把所有Stream都关了
+                    foreach (var pair in CatAssetDatabase.GetAllBundleRuntimeInfo())
+                    {
+                        var info = pair.Value;
+                        info.Stream?.Close();
+                        info.Stream?.Dispose();
+                        info.Stream = null;
+                    }
+                }
+            };
+        }
+#endif
+        
+        /// <summary>
+        /// 状态
+        /// </summary>
+        public enum State
+        {
+            None,
+
+            /// <summary>
+            /// 位于只读区
+            /// </summary>
+            InReadOnly,
+
+            /// <summary>
+            /// 位于读写区
+            /// </summary>
+            InReadWrite,
+
+            /// <summary>
+            /// 位于远端
+            /// </summary>
+            InRemote,
+        }
+
         /// <summary>
         /// 资源包清单信息
         /// </summary>
@@ -20,12 +66,17 @@ namespace CatAsset.Runtime
         public AssetBundle Bundle;
 
         /// <summary>
-        /// 是否位于读写区
+        /// 资源包状态
         /// </summary>
-        public bool InReadWrite;
+        public State BundleState;
 
-        private string loadPath;
+        /// <summary>
+        /// 异或解密文件流
+        /// </summary>
+        public DecryptXOrStream Stream;
         
+        private string loadPath;
+
         /// <summary>
         /// 加载地址
         /// </summary>
@@ -35,98 +86,73 @@ namespace CatAsset.Runtime
             {
                 if (loadPath == null)
                 {
-                    if (InReadWrite)
+                    switch (BundleState)
                     {
-                        loadPath = Util.GetReadWritePath(Manifest.RelativePath);
-                    }
-                    else
-                    {
-                        loadPath = Util.GetReadOnlyPath(Manifest.RelativePath);
+                        case State.InReadOnly:
+                            loadPath = RuntimeUtil.GetReadOnlyPath(Manifest.RelativePath,Manifest.IsRaw);
+                            break;
+                        case State.InReadWrite:
+                        case State.InRemote:
+                            loadPath = RuntimeUtil.GetReadWritePath(Manifest.RelativePath,Manifest.IsRaw);
+                            break;
+                        default:
+                            Debug.LogError($"资源包：{this}的loadPath获取错误，资源包状态：{BundleState}");
+                            break;
                     }
                 }
+
                 return loadPath;
             }
         }
 
         /// <summary>
-        /// 当前使用中的资源集合，这里面的资源的引用计数都大于0
+        /// 加载耗时(包含加载时的下载时间)
         /// </summary>
-        public readonly HashSet<AssetRuntimeInfo> UsingAssets = new HashSet<AssetRuntimeInfo>();
+        public float LoadTime;
+        
+        /// <summary>
+        /// 当前被引用中的资源集合，这里面的资源的引用计数都大于0
+        /// </summary>
+        public HashSet<AssetRuntimeInfo> ReferencingAssets { get; } = new HashSet<AssetRuntimeInfo>();
 
         /// <summary>
         /// 资源包依赖链
         /// </summary>
-        public readonly BundleDependencyLink DependencyLink = new BundleDependencyLink();
+        public DependencyChain<BundleRuntimeInfo> DependencyChain { get; } =
+            new DependencyChain<BundleRuntimeInfo>();
 
         /// <summary>
-        /// 添加使用中的资源
+        /// 添加引用中的资源
         /// </summary>
-        public void AddUsingAsset(AssetRuntimeInfo assetRuntimeInfo)
+        public void AddReferencingAsset(AssetRuntimeInfo assetRuntimeInfo)
         {
-            UsingAssets.Add(assetRuntimeInfo);
-        }
-        
-        /// <summary>
-        /// 移除使用中的资源
-        /// </summary>
-        public void RemoveUsingAsset(AssetRuntimeInfo assetRuntimeInfo)
-        {
-            UsingAssets.Remove(assetRuntimeInfo);
-            CheckLifeCycle();
+            ReferencingAssets.Add(assetRuntimeInfo);
         }
 
         /// <summary>
-        /// 检查资源包生命周期
+        /// 移除引用中的资源
         /// </summary>
-        public void CheckLifeCycle()
+        public void RemoveReferencingAsset(AssetRuntimeInfo assetRuntimeInfo)
         {
-            if (UsingAssets.Count == 0 && DependencyLink.DownStream.Count == 0)
-            {
-                //此资源包没有资源在使用中了 并且没有下游资源包 卸载资源包
-                if (!Manifest.IsRaw)
-                {
-                    CatAssetManager.UnloadBundle(this);
-                }
-                else
-                {
-                    //一个原生资源包只对应一个唯一的原生资源
-                    AssetRuntimeInfo assetRuntimeInfo = CatAssetDatabase.GetAssetRuntimeInfo(Manifest.Assets[0]);
-                    CatAssetManager.UnloadRawAsset(this,assetRuntimeInfo);
-                }
-                
-            }
+            ReferencingAssets.Remove(assetRuntimeInfo);
+
+            //尝试卸载资源包
+            CatAssetManager.TryUnloadBundle(this);
         }
 
         /// <summary>
-        /// 添加下游资源包（依赖此资源包的资源包）
+        /// 是否可卸载
         /// </summary>
-        public void AddDownStream(BundleRuntimeInfo bundleRuntimeInfo)
+        public bool CanUnload()
         {
-            DependencyLink.DownStream.Add(bundleRuntimeInfo);
+            //此资源包不是原生资源包 没有资源被引用中 没有下游资源包
+            //就是可被卸载的
+            return !Manifest.IsRaw && ReferencingAssets.Count == 0 && DependencyChain.DownStream.Count == 0;
         }
 
-        /// <summary>
-        /// 移除下游资源包（依赖此资源包的资源包）
-        /// </summary>
-        public void RemoveDownStream(BundleRuntimeInfo bundleRuntimeInfo)
+        public override string ToString()
         {
-            DependencyLink.DownStream.Remove(bundleRuntimeInfo);
-        }
-
-        /// <summary>
-        /// 添加上游资源包（此资源包依赖的资源包）
-        /// </summary>
-        public void AddUpStream(BundleRuntimeInfo bundleRuntimeInfo)
-        {
-            DependencyLink.UpStream.Add(bundleRuntimeInfo);
-        }
-        
-        /// <summary>
-        /// 清空上游资源包（此资源包依赖的资源包）
-        /// </summary>
-        public void ClearUpStream()
-        {
-            DependencyLink.UpStream.Clear();
+            return Manifest.ToString();
         }
 
         public int CompareTo(BundleRuntimeInfo other)
@@ -134,14 +160,25 @@ namespace CatAsset.Runtime
             return Manifest.CompareTo(other.Manifest);
         }
 
+
         public bool Equals(BundleRuntimeInfo other)
         {
-            return Manifest.Equals(other.Manifest);
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(Manifest, other.Manifest);
         }
 
-        public override string ToString()
+        public override bool Equals(object obj)
         {
-            return Manifest.ToString();
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((BundleRuntimeInfo)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Manifest != null ? Manifest.GetHashCode() : 0);
         }
     }
 }

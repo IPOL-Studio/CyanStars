@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using CatAsset.Runtime;
 
@@ -15,17 +16,39 @@ namespace CatAsset.Runtime
         public bool IsEditorMode = true;
 
         [Header("资源包卸载延迟")]
-        public float UnloadDelayTime = 60f;
+        public float UnloadBundleDelayTime = 120f;
 
-        [Header("单帧最大任务运行数量")]
+        [Header("资源卸载延迟")]
+        public float UnloadAssetDelayTime = 60f;
+
+        [Header("最大任务同时运行数量")]
         public int MaxTaskRunCount = 30;
 
         private void Awake()
         {
-            CatAssetManager.RuntimeMode= RuntimeMode;
-            CatAssetManager.IsEditorMode = IsEditorMode;
-            CatAssetManager.UnloadDelayTime = UnloadDelayTime;
+            CatAssetManager.UnloadBundleDelayTime = UnloadBundleDelayTime;
+            CatAssetManager.UnloadAssetDelayTime = UnloadAssetDelayTime;
             CatAssetManager.MaxTaskRunCount = MaxTaskRunCount;
+
+            //添加调试分析器组件
+            gameObject.AddComponent<ProfilerComponent>();
+
+#if UNITY_EDITOR
+            if (IsEditorMode)
+            {
+                CatAssetManager.SetAssetLoader<EditorAssetLoader>();
+                return;
+            }
+#endif
+            switch (RuntimeMode)
+            {
+                case RuntimeMode.PackageOnly:
+                    CatAssetManager.SetAssetLoader<PackageOnlyAssetLoader>();
+                    break;
+                case RuntimeMode.Updatable:
+                    CatAssetManager.SetAssetLoader<UpdatableAssetLoader>();
+                    break;
+            }
         }
 
         private void Update()

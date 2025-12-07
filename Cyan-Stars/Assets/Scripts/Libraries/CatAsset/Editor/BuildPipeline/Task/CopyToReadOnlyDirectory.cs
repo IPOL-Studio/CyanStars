@@ -16,11 +16,14 @@ namespace CatAsset.Editor
         /// <inheritdoc />
         public int Version => 1;
 
-        [InjectContext(ContextUsage.In)] private IBundleBuildParameters buildParam;
+        [InjectContext(ContextUsage.In)] 
+        private IBundleBuildParameters buildParam;
 
-        [InjectContext(ContextUsage.In)] private IBundleBuildConfigParam configParam;
+        [InjectContext(ContextUsage.In)] 
+        private IBundleBuildConfigParam configParam;
 
-        [InjectContext(ContextUsage.InOut)] private IManifestParam manifestParam;
+        [InjectContext(ContextUsage.InOut)] 
+        private IManifestParam manifestParam;
 
 
         /// <inheritdoc />
@@ -32,7 +35,6 @@ namespace CatAsset.Editor
 
             CatAssetManifest manifest = manifestParam.Manifest;
 
-
             //复制指定资源组的资源到只读目录下
 
             //要复制的资源组的Set
@@ -43,7 +45,7 @@ namespace CatAsset.Editor
                 copyGroupSet = new HashSet<string>(copyGroup.Split(';'));
             }
 
-            Util.CreateEmptyDirectory(Application.streamingAssetsPath);
+            EditorUtil.CreateEmptyDirectory(Application.streamingAssetsPath);
 
             List<BundleManifestInfo> copiedBundles = new List<BundleManifestInfo>();
 
@@ -62,13 +64,12 @@ namespace CatAsset.Editor
 
                 FileInfo fi = new FileInfo(Path.Combine(directory, bundleManifestInfo.RelativePath));
 
-                string fullPath = CatAsset.Runtime.Util.GetReadOnlyPath(bundleManifestInfo.RelativePath);
+                string fullPath = RuntimeUtil.GetReadOnlyPath(bundleManifestInfo.RelativePath);
 
                 //冗余资源包没有bundleManifestInfo.Directory
                 if (!string.IsNullOrEmpty(bundleManifestInfo.Directory))
                 {
-                    string fullDirectory =
-                        CatAsset.Runtime.Util.GetReadOnlyPath(bundleManifestInfo.Directory);
+                    string fullDirectory = RuntimeUtil.GetReadOnlyPath(bundleManifestInfo.Directory);
                     if (!Directory.Exists(fullDirectory))
                     {
                         //StreamingAssets下的目录不存在则创建
