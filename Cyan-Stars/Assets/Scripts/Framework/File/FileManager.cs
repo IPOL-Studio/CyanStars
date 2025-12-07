@@ -5,6 +5,7 @@ using SimpleFileBrowser;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using CatAsset.Runtime;
 using CyanStars.Utils;
@@ -75,11 +76,11 @@ namespace CyanStars.Framework.File
         /// <param name="filters">依据后缀筛选文件</param>
         /// <param name="defaultFilter">默认筛选后缀名</param>
         public void OpenLoadFilePathBrowser(Action<string>? onSuccess,
-            Action? onCancel = null,
-            string title = "打开文件",
-            bool showAllFilesFilter = false,
-            FileBrowser.Filter[]? filters = null,
-            string? defaultFilter = null)
+                                            Action? onCancel = null,
+                                            string title = "打开文件",
+                                            bool showAllFilesFilter = false,
+                                            FileBrowser.Filter[]? filters = null,
+                                            string? defaultFilter = null)
         {
             if (IsBrowserOpen()) return;
 
@@ -109,15 +110,18 @@ namespace CyanStars.Framework.File
         /// <param name="filters">依据后缀筛选文件</param>
         /// <param name="defaultFilter">默认筛选后缀名</param>
         public void OpenLoadFilePathsBrowser(Action<string[]>? onSuccess,
-            Action? onCancel = null,
-            string title = "打开文件",
-            bool showAllFilesFilter = false,
-            FileBrowser.Filter[]? filters = null,
-            string? defaultFilter = null)
+                                             Action? onCancel = null,
+                                             string title = "打开文件",
+                                             bool showAllFilesFilter = false,
+                                             FileBrowser.Filter[]? filters = null,
+                                             string? defaultFilter = null)
         {
             if (IsBrowserOpen()) return;
 
-            FileBrowser.OnSuccess successWrapper = (paths) => { onSuccess?.Invoke(paths); };
+            FileBrowser.OnSuccess successWrapper = (paths) =>
+            {
+                onSuccess?.Invoke(paths);
+            };
 
             FileBrowser.OnCancel? cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
 
@@ -134,8 +138,8 @@ namespace CyanStars.Framework.File
         /// <param name="onCancel">玩家取消的回调</param>
         /// <param name="title">窗口标题</param>
         public void OpenLoadFolderPathBrowser(Action<string>? onSuccess,
-            Action? onCancel = null,
-            string title = "打开文件夹")
+                                              Action? onCancel = null,
+                                              string title = "打开文件夹")
         {
             if (IsBrowserOpen()) return;
 
@@ -160,8 +164,8 @@ namespace CyanStars.Framework.File
         /// <param name="onCancel">玩家取消的回调</param>
         /// <param name="title">窗口标题</param>
         public void OpenSaveFolderPathBrowser(Action<string>? onSuccess,
-            Action? onCancel = null,
-            string title = "保存到文件夹")
+                                              Action? onCancel = null,
+                                              string title = "保存到文件夹")
         {
             if (IsBrowserOpen()) return;
 
@@ -191,8 +195,8 @@ namespace CyanStars.Framework.File
         /// <param name="target">资源加载后要绑定的游戏对象，用于自动管理生命周期</param>
         /// <param name="priority">加载任务的优先级</param>
         /// <returns>加载完成的资源，如果失败则为 null</returns>
-        public async Task<T> LoadAssetFromPathAsync<T>(string absolutePath, GameObject target = null,
-            TaskPriority priority = TaskPriority.Middle) where T : class
+        public async Task<T> LoadAssetFromPathAsync<T>(string absolutePath, CancellationToken cancellationToken = default,
+                                                       TaskPriority priority = TaskPriority.Middle) where T : class
         {
             if (string.IsNullOrEmpty(absolutePath))
             {
@@ -210,8 +214,7 @@ namespace CyanStars.Framework.File
             {
                 // 直接将绝对路径传递给 CatAsset。CatAsset 会将其作为外部原生资源处理。
                 // CatAsset 内部会负责读取文件的 byte[] 并根据类型 T 进行转换。
-                T asset = await CatAssetManager.LoadAssetAsync<T>(absolutePath, target, priority);
-                return asset;
+                return (await CatAssetManager.LoadAssetAsync<T>(absolutePath, cancellationToken, priority)).Asset;
             }
             catch (Exception e)
             {

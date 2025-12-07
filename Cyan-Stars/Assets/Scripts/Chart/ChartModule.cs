@@ -123,23 +123,22 @@ namespace CyanStars.Chart
         /// </summary>
         public async Task LoadRuntimeChartPacksFromDisk()
         {
-            var loadingTasks = new List<Task<ChartPackData>>();
             var paths = new List<string>();
             var levelsList = new List<ChartPackLevels>();
 
-            // 将内置谱包添加到任务，并记录数量
+            // 将内置谱包路径添加到列表
             InternalChartPackListSO internalChartPackListSO =
-                await GameRoot.Asset.LoadAssetAsync<InternalChartPackListSO>(InternalChartPackListFilePath);
+                (await GameRoot.Asset.LoadAssetAsync<InternalChartPackListSO>(InternalChartPackListFilePath)).Asset;
             foreach (var item in internalChartPackListSO.InternalChartPacks)
             {
-                loadingTasks.Add(GameRoot.Asset.LoadAssetAsync<ChartPackData>(item.Path));
                 paths.Add(item.Path);
                 levelsList.Add(item.Levels);
             }
 
-            int internalPacksCount = loadingTasks.Count;
+            // 记录内置谱包的数量
+            int internalPacksCount = paths.Count;
 
-            // 将玩家谱包添加到任务
+            // 将玩家谱包路径添加到列表
             if (!Directory.Exists(PlayerChartPacksFolderPath))
             {
                 Directory.CreateDirectory(PlayerChartPacksFolderPath);
@@ -149,19 +148,24 @@ namespace CyanStars.Chart
                 SearchOption.AllDirectories);
             foreach (var path in playerChartPaths)
             {
-                loadingTasks.Add(GameRoot.Asset.LoadAssetAsync<ChartPackData>(path));
                 paths.Add(path);
                 levelsList.Add(new ChartPackLevels());
             }
 
-            // 启动加载任务
-            ChartPackData[] loadedChartPackData = await Task.WhenAll(loadingTasks);
+            // 批量加载谱包
+            var batchAssetHandler = await GameRoot.Asset.BatchLoadAssetAsync(paths);
 
             // 校验加载的谱包数据有效性，并实例化 RuntimeChartPack
             var newPacks = new List<RuntimeChartPack>();
-            for (int i = 0; i < loadedChartPackData.Length; i++)
+            for (int i = 0; i < paths.Count; i++)
             {
-                var chartPackData = loadedChartPackData[i];
+                ChartPackData chartPackData = batchAssetHandler.Handlers[i].AssetAs<ChartPackData>();
+                if (batchAssetHandler.Handlers[i].AssetAs<ChartPackData>() == null)
+                {
+                    Debug.LogError($"无法将 {paths[i]} 转换为 {nameof(ChartPackData)}，相关谱包无法加载！");
+                    continue;
+                }
+
                 bool isInternal = i < internalPacksCount;
 
                 string? workspacePath = Path.GetDirectoryName(paths[i]);
@@ -268,7 +272,7 @@ namespace CyanStars.Chart
             // TODO：计算谱面哈希并校验/覆盖元数据内容
             ChartMetadata metadata = runtimeChartPack.ChartPackData.ChartMetaDatas[chartIndex];
             string chartFilePath = Path.Combine(runtimeChartPack.WorkspacePath, metadata.FilePath);
-            ChartData chartData = await GameRoot.Asset.LoadAssetAsync<ChartData>(chartFilePath);
+            ChartData chartData = (await GameRoot.Asset.LoadAssetAsync<ChartData>(chartFilePath)).Asset;
             if (chartData == null)
             {
                 Debug.LogError("获取谱面时异常");
@@ -388,7 +392,7 @@ namespace CyanStars.Chart
         /// <param name="canLoad">谱面能够加载</param>
         /// <param name="difficultiesAbleToPlay">可游玩的难度</param>
         private void VerifyChartPacks(ChartPackData chartPackData, out bool canLoad,
-            out HashSet<ChartDifficulty> difficultiesAbleToPlay)
+                                      out HashSet<ChartDifficulty> difficultiesAbleToPlay)
         {
             canLoad = false;
             difficultiesAbleToPlay = new HashSet<ChartDifficulty>();
@@ -426,7 +430,7 @@ namespace CyanStars.Chart
         /// <param name="difficultiesAbleToPlay">可以游玩的难度</param>
         /// <returns>统计数据结构体</returns>
         private void CalculateDifficultiesCount(ChartPackData chartPackData,
-            out DifficultiesCount difficultiesCount, out HashSet<ChartDifficulty> difficultiesAbleToPlay)
+                                                out DifficultiesCount difficultiesCount, out HashSet<ChartDifficulty> difficultiesAbleToPlay)
         {
             int c0 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == ChartDifficulty.KuiXing);
             int c1 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == ChartDifficulty.QiMing);
