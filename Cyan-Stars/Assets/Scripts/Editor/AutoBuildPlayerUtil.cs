@@ -39,7 +39,7 @@ namespace CyanStars.Editor
         private static void BuildAssetBundle(BuildTarget buildTarget)
         {
             BundleBuildConfigSO.Instance.RefreshBundleBuildInfos();
-            CatAsset.Editor.BuildPipeline.BuildBundles(BundleBuildConfigSO.Instance, buildTarget);
+            CatAsset.Editor.BuildPipeline.BuildBundles(buildTarget, false);
         }
 
 
