@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CyanStars.Framework.UI
@@ -42,25 +43,20 @@ namespace CyanStars.Framework.UI
         /// <summary>
         /// 打开UI面板
         /// </summary>
-        public void OpenUIPanel<T>(UIDataAttribute uiData, Action<T> callback) where T : BaseUIPanel
+        public async ValueTask<T> OpenUIPanelAsync<T>(UIDataAttribute uiData) where T : BaseUIPanel
         {
-            GameRoot.GameObjectPool.GetGameObjectAsync(uiData.UIPrefabName, UIRoot.transform, (go) =>
-            {
-                BaseUIPanel uiPanel = InternalOpenUIPanel(go);
-                callback?.Invoke((T)uiPanel);
-            });
+            var go = await GameRoot.GameObjectPool.GetGameObjectAsync(uiData.UIPrefabName, UIRoot.transform);
+            BaseUIPanel uiPanel = InternalOpenUIPanel(go);
+            return (T)uiPanel;
         }
 
         /// <summary>
         /// 打开UI面板
         /// </summary>
-        public void OpenUIPanel(UIDataAttribute uiData, Action<BaseUIPanel> callback)
+        public async ValueTask<BaseUIPanel> OpenUIPanelAsync(UIDataAttribute uiData)
         {
-            GameRoot.GameObjectPool.GetGameObjectAsync(uiData.UIPrefabName, UIRoot.transform, (go) =>
-            {
-                BaseUIPanel uiPanel = InternalOpenUIPanel(go);
-                callback?.Invoke(uiPanel);
-            });
+            var go = await GameRoot.GameObjectPool.GetGameObjectAsync(uiData.UIPrefabName, UIRoot.transform);
+            return InternalOpenUIPanel(go);
         }
 
         private BaseUIPanel InternalOpenUIPanel(GameObject go)

@@ -11,7 +11,7 @@ namespace CatAsset.Runtime
     /// 版本检查完毕回调的原型
     /// </summary>
     public delegate void OnVersionChecked(VersionCheckResult result);
-    
+
     /// <summary>
     /// 版本检查器
     /// </summary>
@@ -26,11 +26,16 @@ namespace CatAsset.Runtime
         private static OnVersionChecked onVersionChecked;
 
         private static bool isChecking;
-        
+
         //三方资源清单的加载完毕标记
         private static bool isReadOnlyLoaded;
         private static bool isReadWriteLoaded;
         private static bool isRemoteLoaded;
+
+        /// <summary>
+        /// 是否有读写区资源清单
+        /// </summary>
+        private static bool hasReadWriteManifest;
 
         /// <summary>
         /// 检查版本
@@ -41,87 +46,128 @@ namespace CatAsset.Runtime
             {
                 return;
             }
+
             isChecking = true;
-            
+
             onVersionChecked = callback;
-            
+
             //进行只读区 读写区 远端三方的资源清单检查
-            string readOnlyManifestPath = Util.GetReadOnlyPath(Util.ManifestFileName);
-            string readWriteManifestPath = Util.GetReadWritePath(Util.ManifestFileName);
-            string remoteManifestPath = Util.GetRemotePath(Util.ManifestFileName);
-            
-            CatAssetManager.CheckUpdatableManifest(readOnlyManifestPath,CheckReadOnlyManifest);
-            CatAssetManager.CheckUpdatableManifest(readWriteManifestPath,CheckReadWriteManifest);
-            CatAssetManager.CheckUpdatableManifest(remoteManifestPath, CheckRemoteManifest);
-            
+            string readOnlyManifestPath = RuntimeUtil.GetReadOnlyPath(CatAssetManifest.ManifestBinaryFileName,true);
+            string readWriteManifestPath = RuntimeUtil.GetReadWritePath(CatAssetManifest.ManifestBinaryFileName, true);
+            string remoteManifestPath = RuntimeUtil.GetRemotePath(CatAssetManifest.ManifestBinaryFileName);
+
+
+            CatAssetManager.AddWebRequestTask(readOnlyManifestPath, readOnlyManifestPath, CheckReadOnlyManifest,
+                TaskPriority.VeryLow);
+            CatAssetManager.AddWebRequestTask(readWriteManifestPath, readWriteManifestPath, CheckReadWriteManifest,
+                TaskPriority.VeryLow);
+            CatAssetManager.AddWebRequestTask(remoteManifestPath, remoteManifestPath, CheckRemoteManifest,
+                TaskPriority.VeryLow);
+
         }
 
         /// <summary>
         /// 检查只读区资源清单
         /// </summary>
-        private static void CheckReadOnlyManifest(bool success, UnityWebRequest uwr, object userdata)
+        private static void CheckReadOnlyManifest(bool success, UnityWebRequest uwr)
         {
             if (!success)
             {
                 isReadOnlyLoaded = true;
                 RefreshCheckInfos();
+                Debug.Log($"未加载到只读区资源清单:{uwr.error}");
+                return;
+            }
+
+            CatAssetManifest manifest = CatAssetManifest.DeserializeFromBinary(uwr.downloadHandler.data);
+            
+            if (manifest == null)
+            {
+                string error = "只读区资源清单校验失败";
+                ManifestVerifyFailed(error);
                 return;
             }
             
-            CatAssetManifest manifest = JsonUtility.FromJson<CatAssetManifest>(uwr.downloadHandler.text);
             foreach (BundleManifestInfo item in manifest.Bundles)
             {
-                CheckInfo checkInfo = GetOrAddCheckInfo(item.RelativePath);
+                CheckInfo checkInfo = GetOrAddCheckInfo(item.BundleIdentifyName);
                 checkInfo.ReadOnlyInfo = item;
             }
 
             isReadOnlyLoaded = true;
             RefreshCheckInfos();
-            
+
         }
-        
+
         /// <summary>
         /// 检查读写区资源清单
         /// </summary>
-        private static void CheckReadWriteManifest(bool success, UnityWebRequest uwr, object userdata)
+        private static void CheckReadWriteManifest(bool success, UnityWebRequest uwr)
         {
+            hasReadWriteManifest = success;
+
             if (!success)
             {
                 isReadWriteLoaded = true;
                 RefreshCheckInfos();
+                Debug.Log($"未加载到读写区资源清单：{uwr.error}");
+                return;
+            }
+
+            CatAssetManifest manifest = CatAssetManifest.DeserializeFromBinary(uwr.downloadHandler.data);
+            
+            if (manifest == null)
+            {
+                string error = "读写区资源清单校验失败";
+                ManifestVerifyFailed(error);
                 return;
             }
             
-            CatAssetManifest manifest = JsonUtility.FromJson<CatAssetManifest>(uwr.downloadHandler.text);
-            foreach (BundleManifestInfo item in manifest.Bundles)
+            foreach (BundleManifestInfo info in manifest.Bundles)
             {
-                CheckInfo checkInfo = GetOrAddCheckInfo(item.RelativePath);
-                checkInfo.ReadWriteInfo = item;
+                string path = RuntimeUtil.GetReadWritePath(info.RelativePath);
+                bool isVerify = RuntimeUtil.VerifyReadWriteBundle(path,info, true);
+                if (!isVerify)
+                {
+                    //读写区资源清单中记录的资源不能通过校验 就视为其清单信息不存在
+                    //防止读写区资源被删除或修改
+                    continue;
+                }
+
+                CheckInfo checkInfo = GetOrAddCheckInfo(info.BundleIdentifyName);
+                checkInfo.ReadWriteInfo = info;
             }
 
             isReadWriteLoaded = true;
             RefreshCheckInfos();
         }
-        
+
         /// <summary>
         /// 检查远端资源清单
         /// </summary>
-        private static void CheckRemoteManifest(bool success, UnityWebRequest uwr, object userdata)
+        private static void CheckRemoteManifest(bool success, UnityWebRequest uwr)
         {
             if (!success)
             {
                 Debug.LogError($"远端资源清单检查失败:{uwr.error}");
-                VersionCheckResult result = new VersionCheckResult(uwr.error,default,default);
+                VersionCheckResult result = new VersionCheckResult(false, uwr.error,0,0);
                 onVersionChecked?.Invoke(result);
                 Clear();
-                
+                return;
+            }
+
+            CatAssetManifest manifest = CatAssetManifest.DeserializeFromBinary(uwr.downloadHandler.data);
+            
+            if (manifest == null)
+            {
+                string error = "远端资源清单校验失败";
+                ManifestVerifyFailed(error);
                 return;
             }
             
-            CatAssetManifest manifest = JsonUtility.FromJson<CatAssetManifest>(uwr.downloadHandler.text);
             foreach (BundleManifestInfo item in manifest.Bundles)
             {
-                CheckInfo checkInfo = GetOrAddCheckInfo(item.RelativePath);
+                CheckInfo checkInfo = GetOrAddCheckInfo(item.BundleIdentifyName);
                 checkInfo.RemoteInfo = item;
             }
 
@@ -129,6 +175,17 @@ namespace CatAsset.Runtime
             RefreshCheckInfos();
         }
 
+        /// <summary>
+        /// 清单校验失败时调用
+        /// </summary>
+        private static void ManifestVerifyFailed(string error)
+        {
+            Debug.LogError(error);
+            VersionCheckResult result = new VersionCheckResult(false, error,0,0);
+            onVersionChecked?.Invoke(result);
+            Clear();
+        }
+        
         /// <summary>
         /// 获取资源检查信息，若不存在则添加
         /// </summary>
@@ -143,7 +200,7 @@ namespace CatAsset.Runtime
 
             return checkInfo;
         }
-        
+
         /// <summary>
         /// 刷新资源检查信息
         /// </summary>
@@ -154,10 +211,12 @@ namespace CatAsset.Runtime
                 //三方资源清单未加载完毕
                 return;
             }
+            CatAssetDatabase.ClearAllGroupInfo();
+            CatAssetUpdater.ClearAllGroupUpdater();
 
             //需要更新的所有资源包的数量与长度
             int totalCount = 0;
-            long totalLength = 0;
+            ulong totalLength = 0;
 
             bool needGenerateReadWriteManifest = false;
 
@@ -166,15 +225,27 @@ namespace CatAsset.Runtime
                 CheckInfo checkInfo = pair.Value;
                 checkInfo.RefreshState();
 
+                //如果此资源需要更新 并且 不存在读写区资源清单
+                if (checkInfo.State == CheckState.NeedUpdate && !hasReadWriteManifest)
+                {
+                    //可能是读写区资源清单被意外删除了
+                    //尝试修复此资源的读写区资源信息
+                    if (TryFixReadWriteInfo(checkInfo))
+                    {
+                        //修复成功 就重新刷新下资源检查状态
+                        checkInfo.RefreshState();
+                        needGenerateReadWriteManifest = true;
+                    }
+                }
+
                 if (checkInfo.State != CheckState.Disuse)
                 {
                     //添加资源组的远端资源包信息
                     GroupInfo groupInfo = CatAssetDatabase.GetOrAddGroupInfo(checkInfo.RemoteInfo.Group);
-                    groupInfo.AddRemoteBundle(checkInfo.RemoteInfo.RelativePath);
-                    groupInfo.RemoteCount++;
+                    groupInfo.AddRemoteBundle(checkInfo.RemoteInfo.BundleIdentifyName);
                     groupInfo.RemoteLength += checkInfo.RemoteInfo.Length;
                 }
-                
+
                 switch (checkInfo.State)
                 {
 
@@ -183,43 +254,42 @@ namespace CatAsset.Runtime
                         totalCount++;
                         totalLength += checkInfo.RemoteInfo.Length;
 
+                        //添加至更新器中
                         GroupUpdater groupUpdater = CatAssetUpdater.GetOrAddGroupUpdater(checkInfo.RemoteInfo.Group);
-                        groupUpdater.AddUpdateBundle(checkInfo.RemoteInfo);
-                        groupUpdater.TotalCount++;
+                        groupUpdater.AddUpdaterBundle(checkInfo.RemoteInfo);
                         groupUpdater.TotalLength += checkInfo.RemoteInfo.Length;
-                        
+
+                        //添加运行时信息 此资源如果在更新前就被加载了 需要先下载到本地
+                        CatAssetDatabase.InitRuntimeInfo(checkInfo.RemoteInfo,BundleRuntimeInfo.State.InRemote);
+
                         break;
-                    
+
                     case CheckState.InReadWrite:
                         //不需要更新 最新版本存在于读写区
-                        
-                        GroupInfo groupInfo = CatAssetDatabase.GetOrAddGroupInfo(checkInfo.ReadWriteInfo.Group);
-                        groupInfo.AddLocalBundle(checkInfo.ReadWriteInfo.RelativePath);
-                        groupInfo.LocalCount++;
-                        groupInfo.LocalLength += checkInfo.ReadWriteInfo.Length;
-                        
-                        CatAssetDatabase.InitRuntimeInfo(checkInfo.ReadWriteInfo,true);
-                        CatAssetUpdater.AddReadWriteManifestInfo(checkInfo.ReadWriteInfo);
-                        
+                        GroupInfo groupInfo = CatAssetDatabase.GetOrAddGroupInfo(checkInfo.RemoteInfo.Group);
+                        groupInfo.AddLocalBundle(checkInfo.RemoteInfo.BundleIdentifyName);
+                        groupInfo.LocalLength += checkInfo.RemoteInfo.Length;
+
+                        //添加运行时信息 此资源可从本地读写区加载
+                        CatAssetDatabase.InitRuntimeInfo(checkInfo.RemoteInfo,BundleRuntimeInfo.State.InReadWrite);
                         break;
-                    
+
                     case CheckState.InReadOnly:
                         //不需要更新 最新版本存在于只读区
+                        groupInfo = CatAssetDatabase.GetOrAddGroupInfo(checkInfo.RemoteInfo.Group);
+                        groupInfo.AddLocalBundle(checkInfo.RemoteInfo.BundleIdentifyName);
+                        groupInfo.LocalLength += checkInfo.RemoteInfo.Length;
 
-                        groupInfo = CatAssetDatabase.GetOrAddGroupInfo(checkInfo.ReadOnlyInfo.Group);
-                        groupInfo.AddLocalBundle(checkInfo.ReadOnlyInfo.RelativePath);
-                        groupInfo.LocalCount++;
-                        groupInfo.LocalLength += checkInfo.ReadOnlyInfo.Length;
-                        
-                        CatAssetDatabase.InitRuntimeInfo(checkInfo.ReadOnlyInfo,false);
+                        //添加运行时信息 此资源可从本地只读区加载
+                        CatAssetDatabase.InitRuntimeInfo(checkInfo.RemoteInfo,BundleRuntimeInfo.State.InReadOnly);
                         break;
                 }
 
                 if (checkInfo.NeedRemove)
                 {
                     //需要删除读写区的那份
-                    Debug.Log($"删除读写区资源:{checkInfo.Name}");
-                    string path = Util.GetReadWritePath(checkInfo.Name);
+                    Debug.Log($"删除读写区资源:{checkInfo.ReadWriteInfo.RelativePath}");
+                    string path = RuntimeUtil.GetReadWritePath(checkInfo.ReadWriteInfo.RelativePath);
                     File.Delete(path);
 
                     needGenerateReadWriteManifest = true;
@@ -228,15 +298,42 @@ namespace CatAsset.Runtime
 
             if (needGenerateReadWriteManifest)
             {
-                //删除过读写区资源 需要重新生成读写区资源清单
+                //删除过读写区资源 或修复过读写区资源信息 需要重新生成新的读写区资源清单
                 CatAssetUpdater.GenerateReadWriteManifest();
             }
-            
+
             //调用版本检查完毕回调
-            VersionCheckResult result = new VersionCheckResult(string.Empty,totalCount, totalLength);
+            VersionCheckResult result = new VersionCheckResult(true, null,totalCount, totalLength);
             onVersionChecked?.Invoke(result);
-                
+
             Clear();
+        }
+
+        /// <summary>
+        /// 尝试修复读写区资源信息
+        /// </summary>
+        private static bool TryFixReadWriteInfo(CheckInfo checkInfo)
+        {
+            //如果修复过 就要重新生成新的读写区资源清单
+            bool needGenerateReadWriteManifest = false;
+
+            if (checkInfo.RemoteInfo != null)
+            {
+                //没有读写区资源清单信息 尝试修复 防止读写区资源清单被意外删除了
+                string path = RuntimeUtil.GetReadWritePath(checkInfo.RemoteInfo.RelativePath);
+                if (File.Exists(path))
+                {
+                    bool isVerify = RuntimeUtil.VerifyReadWriteBundle(path, checkInfo.RemoteInfo);
+                    if (isVerify)
+                    {
+                        checkInfo.ReadWriteInfo = checkInfo.RemoteInfo;
+                        needGenerateReadWriteManifest = true;
+                        Debug.LogWarning($"修复读写区资源信息:{checkInfo.RemoteInfo.RelativePath}");
+                    }
+                }
+            }
+
+            return needGenerateReadWriteManifest;
         }
 
         private static void Clear()
@@ -247,7 +344,8 @@ namespace CatAsset.Runtime
             isRemoteLoaded = false;
             isReadOnlyLoaded = false;
             isReadWriteLoaded = false;
-            
+            hasReadWriteManifest = false;
+
         }
     }
 }

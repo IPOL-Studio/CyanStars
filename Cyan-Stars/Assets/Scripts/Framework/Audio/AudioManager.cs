@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using CatAsset.Runtime;
 using UnityEngine;
 
 namespace CyanStars.Framework.Audio
@@ -25,6 +27,7 @@ namespace CyanStars.Framework.Audio
         /// 播放音乐中的音频代理列表
         /// </summary>
         private List<AudioAgent> playingAudioAgents = new List<AudioAgent>();
+        private Dictionary<AudioAgent, AssetHandler<AudioClip>> audioAssetHandlerMap = new Dictionary<AudioAgent, AssetHandler<AudioClip>>();
 
         public override int Priority { get; }
 
@@ -61,7 +64,7 @@ namespace CyanStars.Framework.Audio
         /// </summary>
         public void PlayMusicAsync(string musicName,Action<AudioAgent> callback,float volume = 1f,bool loop = true)
         {
-            GetAgent(musicName,(agent =>
+            GetAgentAsync(musicName,(agent =>
             {
                 agent.PlayAudio(volume,loop);
                 callback?.Invoke(agent);
@@ -73,7 +76,7 @@ namespace CyanStars.Framework.Audio
         /// </summary>
         public void Play2DSound(string soundName,float volume = 1f)
         {
-            GetAgent(soundName,(agent =>
+            GetAgentAsync(soundName,(agent =>
             {
                 agent.PlayAudio(volume,false);
             }));
@@ -84,7 +87,7 @@ namespace CyanStars.Framework.Audio
         /// </summary>
         public void Play3DSound(string soundName,Vector3 position,float volume = 1f)
         {
-            GetAgent(soundName,(agent =>
+            GetAgentAsync(soundName,(agent =>
             {
                 agent.gameObject.transform.position = position;
                 agent.Source.spatialBlend = 1f;
@@ -95,25 +98,25 @@ namespace CyanStars.Framework.Audio
         /// <summary>
         /// 获取音频代理
         /// </summary>
-        private void GetAgent(string assetName,Action<AudioAgent> callback,Vector3 position = default)
+        private async void GetAgentAsync(string assetName, Action<AudioAgent> callback, Vector3 position = default)
         {
-            GameRoot.Asset.LoadAssetAsync<AudioClip>(assetName, ((asset, result) =>
+            var handler = await GameRoot.Asset.LoadAssetAsync<AudioClip>(assetName);
+            
+            if (!handler.IsSuccess)
             {
-                if (asset == null)
-                {
-                    Debug.LogError($"音频资源加载失败:{assetName}");
-                    return;
-                }
+                Debug.LogError($"音频资源加载失败:{assetName}");
+                return;
+            }
 
-                GameRoot.GameObjectPool.GetGameObjectAsync(audioAgentTemplate,transform,(go =>
-                {
-                    go.transform.position = position;
-                    AudioAgent agent = go.GetComponent<AudioAgent>();
-                    agent.Source.clip = asset;
-                    playingAudioAgents.Add(agent);
-                    callback?.Invoke(agent);
-                }));
-            }));
+            var go = await GameRoot.GameObjectPool.GetGameObjectAsync(audioAgentTemplate,transform);
+
+            go.transform.position = position;
+            AudioAgent agent = go.GetComponent<AudioAgent>();
+            agent.Source.clip = handler.Asset;
+            playingAudioAgents.Add(agent);
+            audioAssetHandlerMap.Add(agent, handler);
+
+            callback?.Invoke(agent);
         }
 
         /// <summary>
@@ -121,7 +124,11 @@ namespace CyanStars.Framework.Audio
         /// </summary>
         private void ReleaseAgent(AudioAgent agent)
         {
-            GameRoot.Asset.UnloadAsset(agent.Source.clip);
+            if (audioAssetHandlerMap.TryGetValue(agent, out var handler))
+            {
+                GameRoot.Asset.UnloadAsset(handler);
+                audioAssetHandlerMap.Remove(agent);
+            }
             agent.Reset();
             GameRoot.GameObjectPool.ReleaseGameObject(audioAgentTemplate,agent.gameObject);
         }

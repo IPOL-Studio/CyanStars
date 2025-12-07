@@ -8,36 +8,30 @@ namespace CatAsset.Runtime
     /// </summary>
     public class AssetBinder : MonoBehaviour
     {
-        [SerializeField]
-        private List<Object> bindingAssets = new List<Object>();
-
-        private List<byte[]> bindingRawAssets = new List<byte[]>();
+        public readonly List<IBindableHandler> Handlers = new List<IBindableHandler>();
 
         /// <summary>
-        /// 绑定资源
+        /// 绑定句柄
         /// </summary>
-        public void BindTo(object asset)
+        public void BindTo(IBindableHandler handler)
         {
-            if (asset is Object unityObj)
+            if (handler.State == HandlerState.InValid)
             {
-                bindingAssets.Add(unityObj);
-            }else if (asset is byte[] rawAsset)
-            {
-                bindingRawAssets.Add(rawAsset);
+                //不可绑定无效句柄
+                return;
             }
+            
+            Handlers.Add(handler);
         }
+        
 
         private void OnDestroy()
         {
-            foreach (Object asset in bindingAssets)
+            foreach (IBindableHandler handler in Handlers)
             {
-                CatAssetManager.UnloadAsset(asset);
+                handler.Unload();
             }
-
-            foreach (byte[] rawAsset in bindingRawAssets)
-            {
-                CatAssetManager.UnloadAsset(rawAsset);
-            }
+            Handlers.Clear();
 
         }
     }

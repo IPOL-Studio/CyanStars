@@ -1,6 +1,8 @@
 using System;
 using System.IO;
+using System.Reflection;
 using UnityEditor;
+using UnityEngine;
 
 namespace CatAsset.Editor
 {
@@ -10,28 +12,50 @@ namespace CatAsset.Editor
     [Serializable]
     public class AssetBuildInfo : IComparable<AssetBuildInfo>,IEquatable<AssetBuildInfo>
     {
+        private static MethodInfo getStorageMemorySizeLongMethod =
+            typeof(EditorWindow).Assembly.GetType("UnityEditor.TextureUtil").GetMethod("GetStorageMemorySizeLong",
+                BindingFlags.Static | BindingFlags.Public);
+
+        private static object[] paramCache = new object[1];
+        
         /// <summary>
         /// 资源名
         /// </summary>
         public string Name;
 
         private Type type;
+
         /// <summary>
         /// 资源类型
         /// </summary>
-        public Type Type => type ??= AssetDatabase.GetMainAssetTypeAtPath(Name);
+        public Type Type => type ?? (type = AssetDatabase.GetMainAssetTypeAtPath(Name));
 
         /// <summary>
         /// 资源文件长度
         /// </summary>
-        public long Length;
+        public ulong Length;
         
         public AssetBuildInfo(string name)
         {
             Name = name;
-            Length = new FileInfo(name).Length;
-        }
 
+            if (BundleBuildConfigSO.Instance.IsExactTextureSize && Type == typeof(Texture2D))
+            {
+                //记录精准的贴图大小
+                Texture2D texture2D = AssetDatabase.LoadAssetAtPath<Texture2D>(name);
+                paramCache[0] = texture2D;
+                long size = (long)getStorageMemorySizeLongMethod.Invoke(null, paramCache);
+                Length = (ulong)size;
+                Resources.UnloadAsset(texture2D);
+            }
+            else
+            {
+                //直接使用文件长度
+                Length = (ulong)new FileInfo(name).Length;
+            }
+            
+        }
+        
         public override string ToString()
         {
             return Name;

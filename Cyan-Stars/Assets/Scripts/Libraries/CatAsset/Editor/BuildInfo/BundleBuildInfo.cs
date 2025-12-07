@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CatAsset.Runtime;
 using UnityEditor;
 
 namespace CatAsset.Editor
@@ -13,11 +14,6 @@ namespace CatAsset.Editor
     public class BundleBuildInfo : IComparable<BundleBuildInfo>,IEquatable<BundleBuildInfo>
     {
         /// <summary>
-        /// 相对路径
-        /// </summary>
-        public string RelativePath;
-        
-        /// <summary>
         /// 目录名
         /// </summary>
         public string DirectoryName;
@@ -27,6 +23,11 @@ namespace CatAsset.Editor
         /// </summary>
         public string BundleName;
 
+        /// <summary>
+        /// 资源包标识名
+        /// </summary>
+        public string BundleIdentifyName;
+        
         /// <summary>
         /// 资源组
         /// </summary>
@@ -40,28 +41,42 @@ namespace CatAsset.Editor
         /// <summary>
         /// 总资源长度
         /// </summary>
-        public long AssetsLength;
+        public ulong AssetsLength;
+        
+        /// <summary>
+        /// 资源包压缩设置
+        /// </summary>
+        public BundleCompressOptions CompressOption;
+        
+        /// <summary>
+        /// 资源包加密设置
+        /// </summary>
+        public BundleEncryptOptions EncryptOption; 
         
         /// <summary>
         /// 资源构建信息列表
         /// </summary>
         public List<AssetBuildInfo> Assets = new List<AssetBuildInfo>();
 
-        public BundleBuildInfo(string directoryName, string bundleName,string group,bool isRaw)
+        public static string GetBundleIdentifyName(string dirName, string bundleName)
+        {
+            return RuntimeUtil.GetRegularPath(Path.Combine(dirName, bundleName));
+        }
+        
+        public BundleBuildInfo(string directoryName, string bundleName,string group,bool isRaw,BundleCompressOptions compressOption,BundleEncryptOptions encryptOption)
         {
             DirectoryName = directoryName;
             BundleName = bundleName;
             Group = group;
             IsRaw = isRaw;
-
-            if (!isRaw)
+            CompressOption = compressOption;
+            EncryptOption = encryptOption;
+            if (isRaw && encryptOption == BundleEncryptOptions.Offset)
             {
-                //非原生资源 BundleName转为小写的
-                BundleName = BundleName.ToLower();
+                EncryptOption = BundleEncryptOptions.XOr;
             }
 
-            RelativePath = Runtime.Util.GetRegularPath(Path.Combine(DirectoryName, BundleName));
-            
+            BundleIdentifyName = GetBundleIdentifyName(DirectoryName, BundleName);
         }
 
         /// <summary>
@@ -82,7 +97,7 @@ namespace CatAsset.Editor
         {
             AssetBundleBuild bundleBuild = new AssetBundleBuild
             {
-                assetBundleName = RelativePath
+                assetBundleName = BundleIdentifyName
             };
 
             List<string> assetNames = new List<string>();
@@ -98,22 +113,22 @@ namespace CatAsset.Editor
         
         public override string ToString()
         {
-            return RelativePath;
+            return BundleIdentifyName;
         }
         
         public int CompareTo(BundleBuildInfo other)
         {
-            return RelativePath.CompareTo(other.RelativePath);
+            return BundleIdentifyName.CompareTo(other.BundleIdentifyName);
         }
         
         public bool Equals(BundleBuildInfo other)
         {
-            return RelativePath.Equals(other.RelativePath);
+            return BundleIdentifyName.Equals(other.BundleIdentifyName);
         }
 
         public override int GetHashCode()
         {
-            return RelativePath.GetHashCode();
+            return BundleIdentifyName.GetHashCode();
         }
         
         

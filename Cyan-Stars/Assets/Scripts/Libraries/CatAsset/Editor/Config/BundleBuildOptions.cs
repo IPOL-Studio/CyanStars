@@ -19,13 +19,13 @@ namespace CatAsset.Editor
         ForceRebuild = 1 << 1,
         
         /// <summary>
-        /// 附加MD5到资源包名中
+        /// 附加Hash到资源包名中
         /// </summary>
-        AppendMD5 = 1 << 2,
-
+        AppendHash = 1 << 2,
+        
         /// <summary>
-        /// LZ4压缩
+        /// 关闭TypeTree
         /// </summary>
-        ChunkBasedCompression = 1 << 3,
+        DisableTypeTree = 1 << 3,
     }
 }

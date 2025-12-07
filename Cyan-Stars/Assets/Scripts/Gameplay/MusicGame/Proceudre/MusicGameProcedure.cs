@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CatAsset.Runtime;
 using CyanStars.Framework;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.FSM;
@@ -42,7 +43,7 @@ namespace CyanStars.Gameplay.MusicGame
         private MusicGameSceneInfo currentSceneInfo;
 
         //  --- --- 场景物体与组件 --- ---
-        private Scene scene;
+        private SceneHandler sceneHandler;
         private GameObject sceneRoot;
         private Transform sceneCameraTrans;
         private AudioSource audioSource;
@@ -72,10 +73,12 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Event.AddListener(EventConst.MusicGameExitEvent, OnMusicGameExit);
 
             //打开游戏场景
-            scene = await GameRoot.Asset.LoadSceneAsync(currentSceneInfo.ScenePath);
+            var sceneHandler = await GameRoot.Asset.LoadSceneAsync(currentSceneInfo.ScenePath);
 
-            if (scene != default)
+            if (sceneHandler.IsValid && sceneHandler.IsSuccess)
             {
+                this.sceneHandler = sceneHandler;
+
                 //获取场景物体与组件
                 GetSceneObj();
 
@@ -136,9 +139,9 @@ namespace CyanStars.Gameplay.MusicGame
 
             CloseMusicGameUI();
 
-            GameRoot.Asset.UnloadScene(scene);
+            GameRoot.Asset.UnloadScene(sceneHandler);
             currentSceneInfo = null;
-            scene = default;
+            sceneHandler = default;
         }
 
 
@@ -213,9 +216,8 @@ namespace CyanStars.Gameplay.MusicGame
         private async Task LoadDataFile()
         {
             // 输入映射数据
-            InputMapSO inputMapSo =
-                await GameRoot.Asset.LoadAssetAsync<InputMapSO>(dataModule.InputMapDataName, sceneRoot);
-            InputMapData inputMapData = inputMapSo.InputMapData;
+            var inputMapSoHandler = await GameRoot.Asset.LoadAssetAsync<InputMapSO>(dataModule.InputMapDataName).BindTo(sceneRoot);
+            InputMapData inputMapData = inputMapSoHandler.Asset.InputMapData;
 
             if (!dataModule.IsAutoMode)
             {
@@ -244,7 +246,8 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 音乐
             MusicVersionData musicVersionData = chartPack.ChartPackData.MusicVersionDatas[dataModule.MusicVersionIndex];
-            AudioClip music = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.MusicFilePath, sceneRoot);
+            var musicHandler = await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.MusicFilePath).BindTo(sceneRoot);
+            AudioClip music = musicHandler.Asset;
             if (!music)
             {
                 Debug.LogError($"谱包 {chartPack.ChartPackData.Title} 的音乐加载失败");
@@ -310,8 +313,8 @@ namespace CyanStars.Gameplay.MusicGame
 
             foreach (var (name, path) in builtinPath)
             {
-                var clip = await GameRoot.Asset.LoadAssetAsync<AudioClip>(path, sceneRoot);
-                builtin.Add(name, clip);
+                var clipHandler = await GameRoot.Asset.LoadAssetAsync<AudioClip>(path).BindTo(sceneRoot);
+                builtin.Add(name, clipHandler.Asset);
             }
 
             promptToneCollection = new PromptToneCollection(builtin, dataModule.Logger);
@@ -324,7 +327,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             foreach (var type in this.currentSceneInfo.UITypes)
             {
-                GameRoot.UI.OpenUIPanel(type, null);
+                GameRoot.UI.OpenUIPanelAsync(type);
             }
         }
 
@@ -346,7 +349,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             foreach (KeyValuePair<NoteType, string> pair in dataModule.HitEffectPrefabNameDict)
             {
-                GameRoot.GameObjectPool.Prewarm(pair.Value, 10, null);
+                GameRoot.GameObjectPool.PrewarmAsync(pair.Value, 10, null);
             }
         }
 
@@ -465,7 +468,7 @@ namespace CyanStars.Gameplay.MusicGame
             //音游流程中 按下ESC打开暂停
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                GameRoot.UI.OpenUIPanel<MusicGamePausePanel>(null);
+                GameRoot.UI.OpenUIPanelAsync<MusicGamePausePanel>();
             }
         }
 

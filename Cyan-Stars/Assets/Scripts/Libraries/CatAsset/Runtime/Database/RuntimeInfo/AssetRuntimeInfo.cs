@@ -24,6 +24,11 @@ namespace CatAsset.Runtime
         /// 已加载的资源实例
         /// </summary>
         public object Asset;
+
+        /// <summary>
+        /// 资源实例占用的内存大小
+        /// </summary>
+        public ulong MemorySize;
         
         /// <summary>
         /// 引用计数
@@ -31,23 +36,40 @@ namespace CatAsset.Runtime
         public int RefCount { get; private set; }
 
         /// <summary>
-        /// 下游资源集合（依赖此资源的资源）
+        /// 加载耗时(包含加载依赖的时间)
         /// </summary>
-        public readonly HashSet<AssetRuntimeInfo> DownStream = new HashSet<AssetRuntimeInfo>();
+        public float LoadTime;
+        
+        /// <summary>
+        /// 资源依赖链
+        /// </summary>
+        public DependencyChain<AssetRuntimeInfo> DependencyChain { get; } = new DependencyChain<AssetRuntimeInfo>();
+
+        /// <summary>
+        /// 下游资源记录（运行过程中至少依赖加载过此资源一次的资源）
+        /// </summary>
+        public HashSet<AssetRuntimeInfo> DownStreamRecord { get; } = new HashSet<AssetRuntimeInfo>();
 
         /// <summary>
         /// 增加引用计数
         /// </summary>
-        public void AddRefCount(int count = 1)
+        public void AddRefCount()
         {
-            RefCount += count;
-            CheckLifeCycle();
+            RefCount += 1;
+
+            if (RefCount == 1)
+            {
+                //被重新使用了
+                BundleRuntimeInfo bundleRuntimeInfo =
+                    CatAssetDatabase.GetBundleRuntimeInfo(BundleManifest.BundleIdentifyName);
+                bundleRuntimeInfo.AddReferencingAsset(this);
+            }
         }
 
         /// <summary>
         /// 减少引用计数
         /// </summary>
-        public void SubRefCount(int count = 1)
+        public void SubRefCount()
         {
             if (RefCount == 0)
             {
@@ -55,10 +77,22 @@ namespace CatAsset.Runtime
                 return;
             }
 
-            RefCount -= count;
-            CheckLifeCycle();
+            RefCount -= 1;
+
+            if (IsUnused())
+            {
+                //未被使用了
+
+                //从资源包的引用中资源集合删除
+                BundleRuntimeInfo bundleRuntimeInfo =
+                    CatAssetDatabase.GetBundleRuntimeInfo(BundleManifest.BundleIdentifyName);
+                bundleRuntimeInfo.RemoveReferencingAsset(this);
+
+                //尝试从内存卸载
+                CatAssetManager.TryUnloadAssetFromMemory(this);
+            }
         }
-        
+
         /// <summary>
         /// 是否未被使用
         /// </summary>
@@ -68,61 +102,102 @@ namespace CatAsset.Runtime
         }
 
         /// <summary>
-        /// 检查资源生命周期
+        /// 是否有还在内存中的下游资源
         /// </summary>
-        public void CheckLifeCycle()
+        private bool IsDownStreamInMemory()
         {
-            BundleRuntimeInfo bundleRuntimeInfo =
-                CatAssetDatabase.GetBundleRuntimeInfo(BundleManifest.RelativePath);
-            
-            if (IsUnused())
+            foreach (AssetRuntimeInfo info in DownStreamRecord)
             {
-                //从资源包的使用中资源集合删除
-                bundleRuntimeInfo.RemoveUsingAsset(this);
+                if (info.Asset != null)
+                {
+                    return true;
+                }
             }
-            else
-            {
-                bundleRuntimeInfo.AddUsingAsset(this);
-            }
+
+            return false;
         }
 
         /// <summary>
-        /// 添加上游资源（依赖此资源的资源）
+        /// 是否可被卸载
         /// </summary>
-        public void AddDownStream(AssetRuntimeInfo assetRuntimeInfo)
+        public bool CanUnload()
         {
             if (Asset == null)
             {
-                return;
+                //Asset为空 也可能是个场景资源 也是无法被UnloadAsset卸载的
+                return false;
             }
-            DownStream.Add(assetRuntimeInfo);
+
+            if (!IsUnused())
+            {
+                //不可卸载使用中的资源
+                return false;
+            }
+
+            if (Asset is GameObject)
+            {
+                //不可卸载Prefab资源
+                return false;
+            }
+
+            if (AssetManifest.IsAtlasPackable)
+            {
+                //不可卸载图集散图 因为会导致整个图集都被卸载了
+                return false;
+            }
+
+            if (IsDownStreamInMemory())
+            {
+                //不可卸载下游资源还在内存中的 防止下游资源错误丢失依赖
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
-        /// 移除上游资源（依赖此资源的资源）
+        /// 清空依赖链上游
         /// </summary>
-        public void RemoveUpStream(AssetRuntimeInfo assetRuntimeInfo)
+        public void ClearDependencyChainUpStream()
         {
-            if (Asset == null)
+            foreach (AssetRuntimeInfo upStream in DependencyChain.UpStream)
             {
-                return;
+                upStream.DependencyChain.DownStream.Remove(this);
             }
-            DownStream.Remove(assetRuntimeInfo);
+            DependencyChain.UpStream.Clear();
         }
-        
+
         public int CompareTo(AssetRuntimeInfo other)
         {
             return AssetManifest.CompareTo(other.AssetManifest);
         }
 
-        public bool Equals(AssetRuntimeInfo other)
-        {
-            return BundleManifest.Equals(other.BundleManifest) && AssetManifest.Equals(other.AssetManifest);
-        }
-
         public override string ToString()
         {
             return AssetManifest.ToString();
+        }
+
+        public bool Equals(AssetRuntimeInfo other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(BundleManifest, other.BundleManifest) && Equals(AssetManifest, other.AssetManifest);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((AssetRuntimeInfo)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((BundleManifest != null ? BundleManifest.GetHashCode() : 0) * 397) ^ (AssetManifest != null ? AssetManifest.GetHashCode() : 0);
+            }
         }
     }
 }

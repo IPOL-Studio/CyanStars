@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CyanStars.Framework.UI
@@ -7,7 +8,7 @@ namespace CyanStars.Framework.UI
     /// <summary>
     /// UI管理器
     /// </summary>
-    public partial class UIManager : BaseManager
+    public class UIManager : BaseManager
     {
         [Header("UI相机")]
         public Camera UICamera;
@@ -62,26 +63,26 @@ namespace CyanStars.Framework.UI
         /// <summary>
         /// 打开UI面板
         /// </summary>
-        public void OpenUIPanel<T>(Action<T> callback) where T : BaseUIPanel
+        public ValueTask<T> OpenUIPanelAsync<T>() where T : BaseUIPanel
         {
             Type type = typeof(T);
             if (!InternalOpenUIPanel(type,out var uiGroup,out var uiData))
             {
-                return;
+                return default;
             }
-            uiGroup.OpenUIPanel(uiData, callback);
+            return uiGroup.OpenUIPanelAsync<T>(uiData);
         }
 
         /// <summary>
         /// 打开UI面板
         /// </summary>
-        public void OpenUIPanel(Type type, Action<BaseUIPanel> callback)
+        public ValueTask<BaseUIPanel> OpenUIPanelAsync(Type type)
         {
             if (!InternalOpenUIPanel(type,out var uiGroup,out var uiData))
             {
-                return;
+                return default;
             }
-            uiGroup.OpenUIPanel(uiData, callback);
+            return uiGroup.OpenUIPanelAsync(uiData);
         }
 
         private bool InternalOpenUIPanel(Type type, out UIGroup uiGroup,out UIDataAttribute uiData)
@@ -193,39 +194,33 @@ namespace CyanStars.Framework.UI
         /// <summary>
         /// 使用预制体名获取UIItem
         /// </summary>
-        public void GetUIItem<T>(string prefabName, Transform parent, Action<T> callback) where T : BaseUIItem
+        public async ValueTask<T> GetUIItemAsync<T>(string prefabName, Transform parent) where T : BaseUIItem
         {
-            GameRoot.GameObjectPool.GetGameObjectAsync(prefabName, parent, (go) =>
-            {
-                T item = OnGetUIItem(callback, go);
-
-                item.PrefabName = prefabName;
-            });
+            var go = await GameRoot.GameObjectPool.GetGameObjectAsync(prefabName, parent);
+            T item = OnGetUIItem<T>(go);
+            item.PrefabName = prefabName;
+            return item;
         }
-
 
 
         /// <summary>
         /// 使用模板获取UIItem
         /// </summary>
-        public void GetUIItem<T>(GameObject itemTemplate, Transform parent, Action<T> callback) where T : BaseUIItem
+        public async ValueTask<T> GetUIItemAsync<T>(GameObject itemTemplate, Transform parent) where T : BaseUIItem
         {
-            GameRoot.GameObjectPool.GetGameObjectAsync(itemTemplate, parent, (go) =>
-            {
-                T item = OnGetUIItem(callback, go);
-
-                item.Template = itemTemplate;
-            });
+            var go = await GameRoot.GameObjectPool.GetGameObjectAsync(itemTemplate, parent);
+            T item = OnGetUIItem<T>(go);
+            item.Template = itemTemplate;
+            return item;
         }
 
         /// <summary>
         /// 从对象池中获取UIItem时调用
         /// </summary>
-        private T OnGetUIItem<T>(Action<T> callback, GameObject go) where T : BaseUIItem
+        private T OnGetUIItem<T>(GameObject go) where T : BaseUIItem
         {
             T item = go.GetComponent<T>();
             item.OnGet();
-            callback?.Invoke(item);
             return item;
         }
 

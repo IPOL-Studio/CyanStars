@@ -37,7 +37,7 @@ namespace CyanStars.Gameplay.MusicGame
                 BtnStart.gameObject.SetActive(false);
             });
 
-            BtnPause.onClick.AddListener(() => { GameRoot.UI.OpenUIPanel<MusicGamePausePanel>(null); });
+            BtnPause.onClick.AddListener(() => { GameRoot.UI.OpenUIPanelAsync<MusicGamePausePanel>(); });
         }
 
         public override void OnOpen()

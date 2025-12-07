@@ -3,7 +3,6 @@ using System.IO;
 using UnityEditor.Build.Pipeline;
 using UnityEditor.Build.Pipeline.Injector;
 using UnityEditor.Build.Pipeline.Interfaces;
-
 namespace CatAsset.Editor
 {
     /// <summary>
@@ -37,13 +36,13 @@ namespace CatAsset.Editor
             foreach (BundleBuildInfo rawBundleBuildInfo in rawBundleBuilds)
             {
                 string rawAssetName = rawBundleBuildInfo.Assets[0].Name;
-                string rawBundleDirectory = Path.Combine(directory, rawBundleBuildInfo.DirectoryName.ToLower());
+                string rawBundleDirectory = Path.Combine(directory, rawBundleBuildInfo.DirectoryName);
                 if (!Directory.Exists(rawBundleDirectory))
                 {
                     Directory.CreateDirectory(rawBundleDirectory);
                 }
 
-                string targetFileName = Path.Combine(directory, rawBundleBuildInfo.RelativePath);
+                string targetFileName = Path.Combine(directory, rawBundleBuildInfo.BundleIdentifyName);
                 File.Copy(rawAssetName, targetFileName); //直接将原生资源复制过去
             }
 
