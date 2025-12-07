@@ -113,7 +113,7 @@ namespace CyanStars.Gameplay.MusicGame
             for (int i = 0; i < chartPacks.Count; i++)
             {
                 ChartPack chartPack = chartPacks[i];
-                MapItem mapItem = await GameRoot.UI.AwaitGetUIItem<MapItem>(mapItemTemplate, circularMapList.transform);
+                MapItem mapItem = await GameRoot.UI.GetUIItemAsync<MapItem>(mapItemTemplate, circularMapList.transform);
                 circularMapList.AddItem(mapItem);
                 mapItems.Add(mapItem);
                 mapItem.Index = i;

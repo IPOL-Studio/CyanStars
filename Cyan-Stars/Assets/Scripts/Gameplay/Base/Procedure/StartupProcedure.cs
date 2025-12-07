@@ -26,14 +26,16 @@ namespace CyanStars.Gameplay.Base
             }
 #endif
             //否则需要先检查资源清单
-            bool success = await GameRoot.Asset.CheckPackageManifest();
-            if (success)
+            GameRoot.Asset.CheckVersion(async result =>
             {
-                //加载内置谱面清单
-                await GameRoot.GetDataModule<MusicGameModule>().LoadChartPacks();
+                if (result.Success)
+                {
+                    //加载内置谱面清单
+                    await GameRoot.GetDataModule<MusicGameModule>().LoadChartPacks();
 
-                GameRoot.ChangeProcedure<MainHomeProcedure>();
-            }
+                    GameRoot.ChangeProcedure<MainHomeProcedure>();
+                }
+            });
         }
 
         public override void OnUpdate(float deltaTime)
