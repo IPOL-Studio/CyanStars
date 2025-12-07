@@ -74,7 +74,6 @@ namespace CyanStars.Gameplay.MusicGame
 
             //打开游戏场景
             var sceneHandler = await GameRoot.Asset.LoadSceneAsync(currentSceneInfo.ScenePath);
-            await sceneHandler;
 
             if (sceneHandler.IsValid && sceneHandler.IsSuccess)
             {
