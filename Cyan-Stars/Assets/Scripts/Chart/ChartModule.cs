@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using CatAsset.Runtime;
 using CyanStars.Framework;
 using CyanStars.Gameplay.MusicGame;
 using CyanStars.Utils;
@@ -79,6 +80,12 @@ namespace CyanStars.Chart
         /// </summary>
         public RuntimeChartPack? SelectedRuntimeChartPack =>
             SelectedChartPackIndex != null ? runtimeChartPacks[(int)SelectedChartPackIndex] : null;
+
+
+        private string? lastChartDataHash;
+        private AssetHandler<ChartData>? lastChartDataHandler;
+
+        public ChartData? ChartData;
 
 
         public override async void OnInit()
@@ -241,12 +248,12 @@ namespace CyanStars.Chart
         /// <param name="runtimeChartPack">要加载的运行时谱包</param>
         /// <param name="difficulty">要加载的难度</param>
         /// <returns></returns>
-        public async Task<ChartData> GetChartDataFromDisk(RuntimeChartPack runtimeChartPack, ChartDifficulty difficulty)
+        public async Task GetChartDataFromDisk(RuntimeChartPack runtimeChartPack, ChartDifficulty difficulty)
         {
             if (!runtimeChartPack.DifficultiesAbleToPlay.Contains(difficulty))
             {
                 Debug.LogError("此难度不可游玩。缺少谱面或有多个谱面？");
-                return null;
+                return;
             }
 
             int index;
@@ -258,7 +265,7 @@ namespace CyanStars.Chart
                 }
             }
 
-            return await GetChartDataFromDisk(runtimeChartPack, index);
+            await GetChartDataFromDisk(runtimeChartPack, index);
         }
 
         /// <summary>
@@ -267,18 +274,28 @@ namespace CyanStars.Chart
         /// <param name="runtimeChartPack">要加载的运行时谱包</param>
         /// <param name="chartIndex">要加载的谱面下标</param>
         /// <returns>加载后的谱面数据</returns>
-        public async Task<ChartData> GetChartDataFromDisk(RuntimeChartPack runtimeChartPack, int chartIndex)
+        public async Task GetChartDataFromDisk(RuntimeChartPack runtimeChartPack, int chartIndex)
         {
-            // TODO：计算谱面哈希并校验/覆盖元数据内容
-            ChartMetadata metadata = runtimeChartPack.ChartPackData.ChartMetaDatas[chartIndex];
-            string chartFilePath = Path.Combine(runtimeChartPack.WorkspacePath, metadata.FilePath);
-            ChartData chartData = (await GameRoot.Asset.LoadAssetAsync<ChartData>(chartFilePath)).Asset;
-            if (chartData == null)
-            {
-                Debug.LogError("获取谱面时异常");
-            }
+            // TODO：计算谱面哈希并校验/覆盖元数据内容，目前假定 metadata.ChartHash 提供了正确的 Hash
 
-            return chartData;
+            ChartMetadata metadata = runtimeChartPack.ChartPackData.ChartMetaDatas[chartIndex];
+            if (lastChartDataHash != metadata.ChartHash)
+            {
+                lastChartDataHandler?.Unload();
+                string chartFilePath = Path.Combine(runtimeChartPack.WorkspacePath, metadata.FilePath);
+                var handler = await GameRoot.Asset.LoadAssetAsync<ChartData>(chartFilePath);
+                ChartData = handler.Asset;
+
+                if (ChartData == null)
+                {
+                    Debug.LogError("获取谱面时异常，未加载");
+                    return;
+                }
+
+                Debug.Log("已加载了新的的谱面");
+                lastChartDataHash = metadata.ChartHash;
+                lastChartDataHandler = handler;
+            }
         }
 
 
