@@ -244,7 +244,7 @@ namespace CyanStars.Gameplay.MusicGame
             if (chartModule.SelectedChartDifficulty != null)
             {
                 chartData = await chartModule.GetChartDataFromDisk(runtimeChartPack,
-                    (ChartDifficulty)chartModule.SelectedChartDifficulty, sceneRoot);
+                    (ChartDifficulty)chartModule.SelectedChartDifficulty);
             }
 
             // 音乐
@@ -373,7 +373,10 @@ namespace CyanStars.Gameplay.MusicGame
             bpmGroup.AddRange(runtimeChartPack.ChartPackData.BpmGroup.Data);
 
 
-            NoteTrackData noteTrackData = new NoteTrackData() { BpmGroup = bpmGroup, ClipDataList = new List<ChartData>() { chartData } };
+            NoteTrackData noteTrackData = new NoteTrackData()
+            {
+                BpmGroup = bpmGroup, ClipDataList = new List<ChartData>() { chartData }
+            };
             timeline.AddTrack(noteTrackData, NoteTrack.CreateClipFunc);
 
             // if (!string.IsNullOrEmpty(lrcText) && settingsModule.EnableLyricTrack)
@@ -398,7 +401,10 @@ namespace CyanStars.Gameplay.MusicGame
             // 添加音乐轨道
             if (musicClipData != null)
             {
-                MusicTrackData musicTrackData = new MusicTrackData() { ClipDataList = new List<MusicClipData>() { musicClipData } };
+                MusicTrackData musicTrackData = new MusicTrackData()
+                {
+                    ClipDataList = new List<MusicClipData>() { musicClipData }
+                };
 
                 MusicTrack musicTrack = timeline.AddTrack(musicTrackData, MusicTrack.CreateClipFunc);
                 musicTrack.AudioSource = audioSource;

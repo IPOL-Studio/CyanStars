@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using CatAsset.Runtime;
 using CyanStars.Framework;
 using CyanStars.Gameplay.MusicGame;
 using CyanStars.Utils;
@@ -241,11 +240,8 @@ namespace CyanStars.Chart
         /// </summary>
         /// <param name="runtimeChartPack">要加载的运行时谱包</param>
         /// <param name="difficulty">要加载的难度</param>
-        /// <param name="sceneRoot">场景根物体，用于随场景自动卸载谱面</param>
         /// <returns></returns>
-        public async Task<ChartData> GetChartDataFromDisk(RuntimeChartPack runtimeChartPack,
-                                                          ChartDifficulty difficulty,
-                                                          GameObject sceneRoot)
+        public async Task<ChartData> GetChartDataFromDisk(RuntimeChartPack runtimeChartPack, ChartDifficulty difficulty)
         {
             if (!runtimeChartPack.DifficultiesAbleToPlay.Contains(difficulty))
             {
@@ -262,7 +258,7 @@ namespace CyanStars.Chart
                 }
             }
 
-            return await GetChartDataFromDisk(runtimeChartPack, index, sceneRoot);
+            return await GetChartDataFromDisk(runtimeChartPack, index);
         }
 
         /// <summary>
@@ -270,14 +266,13 @@ namespace CyanStars.Chart
         /// </summary>
         /// <param name="runtimeChartPack">要加载的运行时谱包</param>
         /// <param name="chartIndex">要加载的谱面下标</param>
-        /// <param name="sceneRoot">场景根物体，用于随场景自动卸载谱面</param>
         /// <returns>加载后的谱面数据</returns>
-        public async Task<ChartData> GetChartDataFromDisk(RuntimeChartPack runtimeChartPack, int chartIndex, GameObject sceneRoot)
+        public async Task<ChartData> GetChartDataFromDisk(RuntimeChartPack runtimeChartPack, int chartIndex)
         {
             // TODO：计算谱面哈希并校验/覆盖元数据内容
             ChartMetadata metadata = runtimeChartPack.ChartPackData.ChartMetaDatas[chartIndex];
             string chartFilePath = Path.Combine(runtimeChartPack.WorkspacePath, metadata.FilePath);
-            ChartData chartData = (await GameRoot.Asset.LoadAssetAsync<ChartData>(chartFilePath)).BindTo(sceneRoot).Asset;
+            ChartData chartData = (await GameRoot.Asset.LoadAssetAsync<ChartData>(chartFilePath)).Asset;
             if (chartData == null)
             {
                 Debug.LogError("获取谱面时异常");
