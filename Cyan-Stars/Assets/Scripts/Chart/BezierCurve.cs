@@ -1,204 +1,266 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace CyanStars.Chart
 {
     /// <summary>
-    /// 贝塞尔曲线
+    /// 用于变速模板的贝塞尔曲线类
     /// </summary>
-    /// <remarks>一整条曲线，由首尾相连的多个贝塞尔区间组成，即一个变速组</remarks>
+    /// <remarks>
+    /// 此曲线由至少 1 个 BezierControlPointItem 组成，首个 BezierControlPointItem.Position.x == 0，
+    /// 后续 BezierControlPointItem.Position.x 必须小于前一个 BezierControlPointItem.Position.x，详见 BezierControlPointItem 类
+    /// 曲线 x 值相对于音符判定时间，由 x==0 开始，向左侧 x 轴负方向延伸。例如 x=-100 代表此时为对应音符到达判定线前 100ms
+    /// </remarks>
     public class BezierCurve
     {
-        public List<CubicBezierCurve> CubicBeziers = new List<CubicBezierCurve>();
+        private List<BezierControlPointItem> controlPoints;
+        public IReadOnlyList<BezierControlPointItem> ControlPoints => controlPoints.AsReadOnly();
 
+        public BezierCurve()
+        {
+            Vector2 vector2 = new Vector2(0, 1);
+            controlPoints = new List<BezierControlPointItem> { new BezierControlPointItem(vector2, vector2, vector2) };
+        }
 
         /// <summary>
-        /// 排序列表，并舍弃不连续的曲线
+        /// 校验并在列表合适位置插入新的控制点
         /// </summary>
-        /// <exception cref="InvalidOperationException">未找到起始曲线或找到多个起始曲线（起始曲线：Time = 0 的曲线）</exception>
-        private void Sort()
+        /// <param name="newPointItem">要插入的新控制点</param>
+        /// <returns>如果成功插入则返回true，否则返回false</returns>
+        public bool InsertPoint(BezierControlPointItem newPointItem)
         {
-            // 搜索 P0.Time=0 的曲线，作为第一条曲线，未找到或找到多条则抛异常
-            // 获取这条曲线的 P3 坐标，搜索下一个 P0 等于这个坐标的曲线，作为下一条曲线，重复
-            // 如果搜索时出现任何重复，抛异常
-            // 如果搜索结束，舍弃掉未连接的曲线
-
-            List<CubicBezierCurve> sortedList = new List<CubicBezierCurve>();
-            List<CubicBezierCurve> remainingCurves = new List<CubicBezierCurve>(CubicBeziers);
-
-            // 查找起始曲线（P0.Time == 0）
-            CubicBezierCurve startCurve = remainingCurves.FirstOrDefault(c => c.P0.Time == 0);
-            if (startCurve == null)
+            if (newPointItem.Position.x >= 0)
             {
-                throw new InvalidOperationException("No starting curve with P0.Time = 0.");
+                Debug.LogError("无法在 x >= 0 的位置插入新点。");
+                return false;
             }
 
-            if (remainingCurves.Count(c => c.P0.Time == 0) > 1)
+            if (controlPoints.Exists(p => Mathf.Approximately(p.Position.x, newPointItem.Position.x)))
             {
-                throw new InvalidOperationException("Multiple curves with P0.Time = 0.");
+                Debug.LogError($"已存在 x = {newPointItem.Position.x} 的控制点，无法插入。");
+                return false;
             }
 
-            sortedList.Add(startCurve);
-            remainingCurves.Remove(startCurve);
-
-            CubicBezierCurve current = startCurve;
-            while (true)
+            int insertIndex = controlPoints.FindIndex(p => p.Position.x < newPointItem.Position.x);
+            if (insertIndex == -1)
             {
-                // 根据右侧曲线的 P3 作为左侧曲线（待查找曲线）的 P0
-                BezierControlPoint targetP0 = current.P3;
-                CubicBezierCurve nextCurve = remainingCurves.FirstOrDefault(c =>
-                    c.P0.Time == targetP0.Time &&
-                    Mathf.Approximately(c.P0.Value, targetP0.Value));
+                insertIndex = controlPoints.Count;
+            }
 
-                if (nextCurve == null)
+            bool isValid = ValidatePoint(newPointItem, insertIndex);
+
+            if (isValid)
+            {
+                controlPoints.Insert(insertIndex, newPointItem);
+                return true;
+            }
+
+            Debug.LogError("新控制点校验失败，无法插入。");
+            return false;
+        }
+
+        /// <summary>
+        /// 校验待插入点的控制点是否满足曲线不折返的条件
+        /// </summary>
+        /// <param name="pointItemToValidate">待校验的点</param>
+        /// <param name="index">该点将要插入的索引</param>
+        /// <returns>是否通过校验</returns>
+        private bool ValidatePoint(BezierControlPointItem pointItemToValidate, int index)
+        {
+            BezierControlPointItem rightNeighbor = (index > 0) ? controlPoints[index - 1] : null;
+            BezierControlPointItem leftNeighbor = (index < controlPoints.Count) ? controlPoints[index] : null;
+
+            if (rightNeighbor != null)
+            {
+                if (pointItemToValidate.RightControlPoint.x < pointItemToValidate.Position.x ||
+                    pointItemToValidate.RightControlPoint.x > rightNeighbor.LeftControlPoint.x)
                 {
-                    // 未找到下一条曲线，结束排序，未被排序的曲线将被舍弃
+                    Debug.LogError($"RightControlPoint.x ({pointItemToValidate.RightControlPoint.x}) 校验失败. " +
+                                   $"它必须介于 [{pointItemToValidate.Position.x}, {rightNeighbor.LeftControlPoint.x}] 之间。");
+                    return false;
+                }
+            }
+            else
+            {
+                if (pointItemToValidate.RightControlPoint.x < pointItemToValidate.Position.x)
+                {
+                    Debug.LogError(
+                        $"RightControlPoint.x ({pointItemToValidate.RightControlPoint.x}) 必须大于等于 Position.x ({pointItemToValidate.Position.x})。");
+                    return false;
+                }
+            }
+
+
+            if (leftNeighbor != null)
+            {
+                if (pointItemToValidate.LeftControlPoint.x > pointItemToValidate.Position.x ||
+                    pointItemToValidate.LeftControlPoint.x < leftNeighbor.RightControlPoint.x)
+                {
+                    Debug.LogError($"LeftControlPoint.x ({pointItemToValidate.LeftControlPoint.x}) 校验失败. " +
+                                   $"它必须介于 [{leftNeighbor.RightControlPoint.x}, {pointItemToValidate.Position.x}] 之间。");
+                    return false;
+                }
+            }
+            else
+            {
+                if (pointItemToValidate.LeftControlPoint.x > pointItemToValidate.Position.x)
+                {
+                    Debug.LogError(
+                        $"LeftControlPoint.x ({pointItemToValidate.LeftControlPoint.x}) 必须小于等于 Position.x ({pointItemToValidate.Position.x})。");
+                    return false;
+                }
+            }
+
+
+            return true;
+        }
+
+        /// <summary>
+        /// 删除指定的控制点
+        /// </summary>
+        /// <param name="index">要删除的控制点的索引</param>
+        /// <returns>如果成功删除则返回true</returns>
+        public bool DeletePoint(int index)
+        {
+            if (index == 0)
+            {
+                Debug.LogError("不能删除索引为0的控制点。");
+                return false;
+            }
+
+            if (index < 0 || index >= controlPoints.Count)
+            {
+                Debug.LogError("索引超出范围。");
+                return false;
+            }
+
+            controlPoints.RemoveAt(index);
+            return true;
+        }
+
+        /// <summary>
+        /// 根据传入的x（时间），返回唯一的y值
+        /// </summary>
+        /// <param name="x">x坐标（通常为负数）</param>
+        /// <returns>对应的y坐标</returns>
+        public float GetValue(int x)
+        {
+            if (x >= 0)
+            {
+                return controlPoints[0].Position.y;
+            }
+
+            if (x <= controlPoints[controlPoints.Count - 1].Position.x)
+            {
+                return controlPoints[controlPoints.Count - 1].Position.y;
+            }
+
+            int segmentIndex = -1;
+            for (int i = 0; i < controlPoints.Count - 1; i++)
+            {
+                if (x <= controlPoints[i].Position.x && x >= controlPoints[i + 1].Position.x)
+                {
+                    segmentIndex = i;
                     break;
                 }
-
-                if (sortedList.Contains(nextCurve))
-                {
-                    // 检测到循环引用
-                    throw new InvalidOperationException("Circular reference detected.");
-                }
-
-                // 将这条曲线加入排序列表，并从待查找曲线列表中移除，继续查找下一条曲线
-                sortedList.Add(nextCurve);
-                remainingCurves.Remove(nextCurve);
-                current = nextCurve;
             }
 
-            CubicBeziers.Clear();
-            CubicBeziers.AddRange(sortedList);
+            if (segmentIndex == -1)
+            {
+                // 理论上在边界检查后不会发生
+                return controlPoints[controlPoints.Count - 1].Position.y;
+            }
+
+            Vector2 p0 = controlPoints[segmentIndex].Position;
+            Vector2 p1 = controlPoints[segmentIndex].LeftControlPoint;
+            Vector2 p2 = controlPoints[segmentIndex + 1].RightControlPoint;
+            Vector2 p3 = controlPoints[segmentIndex + 1].Position;
+
+            float t = FindTForX(x, p0.x, p1.x, p2.x, p3.x);
+            return CalculateBezierPoint(t, p0.y, p1.y, p2.y, p3.y);
         }
 
         /// <summary>
-        /// 根据传入的时间，返回瞬时速度
+        /// 计算一维三次贝塞尔曲线在t处的值
         /// </summary>
-        /// <param name="time">相对于判定点时间（ms），必须为负数或 0</param>
-        /// <returns>贝塞尔曲线上的瞬时速度，如果时间小于最前一个曲线，返回最前一个曲线的速度</returns>
-        /// <exception cref="ArgumentOutOfRangeException">time 大于 0 时将会抛出异常</exception>
-        public float GetSpeed(int time)
+        private float CalculateBezierPoint(float t, float p0, float p1, float p2, float p3)
         {
-            Sort();
+            float u = 1 - t;
+            float tt = t * t;
+            float uu = u * u;
+            float uuu = uu * u;
+            float ttt = tt * t;
 
-            if (time > 0)
-            {
-                // 过线后返回判定时瞬时速度
-                return CubicBeziers[0].P0.Value;
-            }
+            float p = uuu * p0; // (1-t)^3 * P0
+            p += 3 * uu * t * p1; // 3 * (1-t)^2 * t * P1
+            p += 3 * u * tt * p2; // 3 * (1-t) * t^2 * P2
+            p += ttt * p3; // t^3 * P3
 
-            if (time <= CubicBeziers[CubicBeziers.Count - 1].P3.Time)
-            {
-                // 超出最左侧曲线的时间时，直接返回最左侧曲线 P3 的速度
-                return CubicBeziers[CubicBeziers.Count - 1].P3.Value;
-            }
-
-            foreach (CubicBezierCurve cubic in CubicBeziers)
-            {
-                if (cubic.P3.Time <= time && time <= cubic.P0.Time)
-                {
-                    // time 落在这个曲线里
-                    return cubic.Calculate(time);
-                }
-            }
-
-            throw new ArgumentException("Time not in any curve range."); // But how?
+            return p;
         }
-    }
-
-    /// <summary>
-    /// 贝塞尔曲线区间
-    /// </summary>
-    /// <remarks>一个不“折返”的三次贝塞尔曲线</remarks>
-    public class CubicBezierCurve
-    {
-        /// <summary>
-        /// 二分法求值时的最大迭代次数，达到此次数即停止迭代
-        /// </summary>
-        private const int MaxIter = 100;
 
         /// <summary>
-        /// 二分法求值时的精度，达到此精度即停止迭代
+        /// 二分法查找给定x值在贝塞尔曲线段上的参数t
         /// </summary>
-        private const float Epsilon = 0.0001f;
-
-        // 所有 Time 必须小于等于 0（即距离判定点的时间，单位 ms），且通过以下限制来确保整条曲线从右往左绘制，不出现“折返”（即每个 x 总是有且仅有一个对应的 y 值）
-        // P3.Time < P0.Time
-        // P3.Time < P1.Time <= P0.Time
-        // P3.Time <= P2.Time < P1.Time
-        // TODO: 优化限制条件：目前通过 P1 P2 的 Time 范围来确保一定不会出现折返（更严格），但排除了某些控制点出界但未发生折返的情况，后续可以通过对三次曲线求导为二次斜率来限制折返（更宽松但依然不会有折返）
-        public BezierControlPoint P0; // 最右侧的位置点，如果是第一条曲线，P0.Time=0
-        public BezierControlPoint P1; // 控制点
-        public BezierControlPoint P2; // 控制点
-        public BezierControlPoint P3; // 最左侧的位置点，也是下一组曲线的 P0
-
-        /// <summary>
-        /// 在单个曲线区间上计算时间对应的速度
-        /// </summary>
-        /// <remarks>如非必要，请调用 BezierCurve 类的 GetSpeed()</remarks>
-        public float Calculate(int time)
+        private float FindTForX(float x, float p0X, float p1X, float p2X, float p3X)
         {
-            if (time > 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(time), "Time must be negative or zero.");
-            }
-
-            // 通过二分法求 time（即 x） 对应的近似 t 值
-            // 关于 t 值的更多信息，请自行查找贝塞尔曲线的相关知识
-            float targetX = time;
-            float tLow = 0f, tHigh = 1f;
-
+            float tLow = 0;
+            float tHigh = 1;
             float t = 0.5f;
-            for (int i = 0; i < MaxIter; i++)
+            float currentX;
+            int iterations = 0;
+            const int maxIterations = 100; // 查找深度
+            const float epsilon = 0.0001f; // 查找精度
+
+            do
             {
                 t = (tLow + tHigh) / 2;
-                float xMid = CalculateX(t);
+                currentX = CalculateBezierPoint(t, p0X, p1X, p2X, p3X);
 
-                if (Mathf.Abs(xMid - targetX) < Epsilon)
-                {
-                    break;
-                }
-
-                if (xMid > targetX)
-                {
-                    tLow = t;
-                }
-                else
+                if (currentX > x)
                 {
                     tHigh = t;
                 }
-            }
+                else
+                {
+                    tLow = t;
+                }
 
-            // 通过 t 值计算 y 值
-            return CalculateY(t);
-        }
+                iterations++;
+            } while (Mathf.Abs(currentX - x) > epsilon && iterations < maxIterations);
 
-        private float CalculateX(float t)
-        {
-            float u = 1f - t;
-            return u * u * u * P0.Time + 3 * u * u * t * P1.Time + 3 * u * t * t * P2.Time + t * t * t * P3.Time;
-        }
-
-        private float CalculateY(float t)
-        {
-            float u = 1f - t;
-            return u * u * u * P0.Value + 3 * u * u * t * P1.Value + 3 * u * t * t * P2.Value +
-                   t * t * t * P3.Value;
+            return t;
         }
     }
 
+
     /// <summary>
-    /// 贝塞尔控制点
+    /// 贝塞尔控制点元素
     /// </summary>
     /// <remarks>
-    /// 在三次贝塞尔曲线中，曲线会穿过首尾控制点，另外两个点将控制曲线形变
+    /// 每个 Item 由三个点组成：
+    ///  - Position：位置点，曲线必然穿过此点
+    ///  - LeftControlPoint：左形变控制点，调整本条曲线和下一条曲线的形状
+    ///  - RightControlPoint：右形变控制点，调整本条曲线和上一条曲线的形状
     /// </remarks>
-    public class BezierControlPoint
+    public class BezierControlPointItem
     {
-        public int Time;
-        public float Value;
+        public Vector2 Position;
+        public Vector2 LeftControlPoint;
+        public Vector2 RightControlPoint;
+
+        public BezierControlPointItem(Vector2 position, Vector2 leftControlPoint, Vector2 rightControlPoint)
+        {
+            if (position.x > 0)
+            {
+                throw new ArgumentException("BezierCurve: 曲线时间必须小于等于0");
+            }
+
+            position = new Vector2((int)position.x, position.y);
+            Position = position;
+            LeftControlPoint = leftControlPoint;
+            RightControlPoint = rightControlPoint;
+        }
     }
 }

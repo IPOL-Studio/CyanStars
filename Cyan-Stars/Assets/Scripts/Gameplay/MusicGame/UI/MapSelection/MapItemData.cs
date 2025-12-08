@@ -17,20 +17,20 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 谱面清单
         /// </summary>
-        public ChartPack ChartPack {get; private set; }
+        public RuntimeChartPack RuntimeChartPack {get; private set; }
 
-        public static MapItemData Create(int index, ChartPack chartPack)
+        public static MapItemData Create(int index, RuntimeChartPack runtimeChartPack)
         {
             MapItemData data = ReferencePool.Get<MapItemData>();
             data.Index = index;
-            data.ChartPack = chartPack;
+            data.RuntimeChartPack = runtimeChartPack;
             return data;
         }
 
         public void Clear()
         {
             Index = default;
-            ChartPack = default;
+            RuntimeChartPack = default;
         }
 
         public bool Equals(MapItemData other)
@@ -38,7 +38,7 @@ namespace CyanStars.Gameplay.MusicGame
             if (other is null)
                 return false;
 
-            return this.Index == other.Index && this.ChartPack.Equals(other.ChartPack);
+            return this.Index == other.Index && this.RuntimeChartPack.Equals(other.RuntimeChartPack);
         }
 
         public override bool Equals(object obj)
@@ -48,7 +48,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override int GetHashCode()
         {
-            return Index ^ 23 ^ ChartPack.GetHashCode();
+            return Index ^ 23 ^ RuntimeChartPack.GetHashCode();
         }
     }
 }

@@ -30,9 +30,9 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static async Task<IView> CreateViewObject(BaseChartNoteData data, BaseNote note)
         {
-            MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
+            MusicGamePlayingDataModule playingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
             GameObject go = null;
-            string prefabName = dataModule.NotePrefabNameDict[data.Type];
+            string prefabName = playingDataModule.NotePrefabNameDict[data.Type];
 
             go = await GameRoot.GameObjectPool.GetGameObjectAsync(prefabName, ViewRoot);
 
