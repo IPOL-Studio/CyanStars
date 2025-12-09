@@ -14,16 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ManifestVersion: 2
   TargetPlatforms: 13000000
-  Options: 8
+  Options: 1
   GlobalCompress: 2
   GlobalEncrypt: 1
-  OutputRootDirectory: ./Library/AssetBundlesOutput
+  OutputRootDirectory: ./AssetBundles
   IsCopyToReadOnlyDirectory: 1
   CopyGroup: Base
   Directories:
   - directoryName: Assets/BundleRes/Audio
     DirectoryObj: {fileID: 102900000, guid: 276143675e95e3344ab767671545859a, type: 3}
     BuildRuleName: NAssetToOneBundle
+    Filter: 
+    Regex: 
+    Group: Base
+    CompressOption: 0
+    EncryptOption: 0
+  - directoryName: Assets/BundleRes/Audio/PromptTone/ns_ding.ogg
+    DirectoryObj: {fileID: 8300000, guid: f1fbe14f0384b7145ade582b22d0f5f5, type: 3}
+    BuildRuleName: OneAssetToOneBundle
     Filter: 
     Regex: 
     Group: Base
@@ -99,16 +107,25 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Audio.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 20727
+    AssetsLength: 12507
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/BundleRes/Audio/PromptTone/ns_ka.ogg
+      Length: 6614
+    - Name: Assets/BundleRes/Audio/PromptTone/ns_tambourine.ogg
+      Length: 5893
+  - DirectoryName: BundleRes/Audio/PromptTone
+    BundleName: ns_ding_ogg.bundle
+    BundleIdentifyName: BundleRes/Audio/PromptTone/ns_ding_ogg.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 8220
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Audio/PromptTone/ns_ding.ogg
       Length: 8220
-    - Name: Assets/BundleRes/Audio/PromptTone/ns_ka.ogg
-      Length: 6614
-    - Name: Assets/BundleRes/Audio/PromptTone/ns_tambourine.ogg
-      Length: 5893
   - DirectoryName: BundleRes
     BundleName: NoteModelsV1.2.bundle
     BundleIdentifyName: BundleRes/NoteModelsV1.2.bundle
@@ -177,12 +194,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/BeatInputField_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 49161
+    AssetsLength: 52208
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/BeatInputField.prefab
-      Length: 49161
+      Length: 52208
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: BpmItem_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/BpmItem_prefab.bundle
@@ -232,12 +249,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/Button_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 14471
+    AssetsLength: 15159
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/Button.prefab
-      Length: 14471
+      Length: 15159
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: Dropdown_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/Dropdown_prefab.bundle
@@ -397,34 +414,34 @@ MonoBehaviour:
     BundleIdentifyName: "BundleRes/Prefabs/ChartEditor/\u65B0\u5EFA\u6309\u94AE\u6D6E\u6761Canvas_prefab.bundle"
     Group: Base
     IsRaw: 0
-    AssetsLength: 7330
+    AssetsLength: 6895
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u65B0\u5EFA\u6309\u94AE\u6D6E\u6761Canvas.prefab"
-      Length: 7330
+      Length: 6895
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: "\u6B63\u89E3\u97F3\u6D6E\u6761Canvas_prefab.bundle"
     BundleIdentifyName: "BundleRes/Prefabs/ChartEditor/\u6B63\u89E3\u97F3\u6D6E\u6761Canvas_prefab.bundle"
     Group: Base
     IsRaw: 0
-    AssetsLength: 14401
+    AssetsLength: 13861
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u6B63\u89E3\u97F3\u6D6E\u6761Canvas.prefab"
-      Length: 14401
+      Length: 13861
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: "\u8282\u62CD\u7EBF_prefab.bundle"
     BundleIdentifyName: "BundleRes/Prefabs/ChartEditor/\u8282\u62CD\u7EBF_prefab.bundle"
     Group: Base
     IsRaw: 0
-    AssetsLength: 3325
+    AssetsLength: 2908
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u8282\u62CD\u7EBF.prefab"
-      Length: 3325
+      Length: 2908
   - DirectoryName: BundleRes/Prefabs/Effect
     BundleName: BreakHitEffect_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/Effect/BreakHitEffect_prefab.bundle
@@ -475,7 +492,7 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/Effect/HoldHitEffect_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 625788
+    AssetsLength: 624735
     CompressOption: 2
     EncryptOption: 1
     Assets:
@@ -489,8 +506,6 @@ MonoBehaviour:
       Length: 1177
     - Name: Packages/com.unity.render-pipelines.core/Runtime/Debugging/Prefabs/Textures/White1px.png
       Length: 927
-    - Name: Packages/com.unity.shadergraph/Editor/Resources/Shaders/FallbackError.shader
-      Length: 1053
   - DirectoryName: BundleRes/Prefabs/Effect
     BundleName: TapHitEffect_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/Effect/TapHitEffect_prefab.bundle
@@ -1005,6 +1020,28 @@ MonoBehaviour:
     - Name: Assets/CysMultimediaAssets/Font/Oswald/LICENSE.txt
       Length: 4483
   - DirectoryName: CysMultimediaAssets/Font/Oswald
+    BundleName: Oswald-Bold SDF_asset.bundle
+    BundleIdentifyName: CysMultimediaAssets/Font/Oswald/Oswald-Bold SDF_asset.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 8452
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-Bold SDF.asset
+      Length: 8452
+  - DirectoryName: CysMultimediaAssets/Font/Oswald
+    BundleName: Oswald-Bold_ttf.bundle
+    BundleIdentifyName: CysMultimediaAssets/Font/Oswald/Oswald-Bold_ttf.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 53056
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-Bold.ttf
+      Length: 53056
+  - DirectoryName: CysMultimediaAssets/Font/Oswald
     BundleName: Oswald-ExtraLight_ttf.bundle
     BundleIdentifyName: CysMultimediaAssets/Font/Oswald/Oswald-ExtraLight_ttf.bundle
     Group: Base
@@ -1445,6 +1482,116 @@ MonoBehaviour:
     Assets:
     - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/DropdownBackground.png
       Length: 46445
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/EditArea
+    BundleName: Break_png.bundle
+    BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/EditArea/Break_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 85614
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/Break.png
+      Length: 85614
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/EditArea
+    BundleName: Click_png.bundle
+    BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/EditArea/Click_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 99419
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/Click.png
+      Length: 99419
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/EditArea
+    BundleName: Drag_png.bundle
+    BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/EditArea/Drag_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 116645
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/Drag.png
+      Length: 116645
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/EditArea
+    BundleName: HoldTail_png.bundle
+    BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/EditArea/HoldTail_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 418816
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/HoldTail.png
+      Length: 418816
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/EditArea
+    BundleName: HoleHead_png.bundle
+    BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/EditArea/HoleHead_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 119728
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/HoleHead.png
+      Length: 119728
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/EditArea
+    BundleName: JudgeLine_png.bundle
+    BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/EditArea/JudgeLine_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 7099
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/JudgeLine.png
+      Length: 7099
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/EditArea
+    BundleName: Tap_png.bundle
+    BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/EditArea/Tap_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 95889
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/Tap.png
+      Length: 95889
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/EditArea
+    BundleName: "\u4F4D\u7F6E\u7EBF_png.bundle"
+    BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/EditArea/\u4F4D\u7F6E\u7EBF_png.bundle"
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 2011
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/\u4F4D\u7F6E\u7EBF.png"
+      Length: 2011
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/EditArea
+    BundleName: "\u7EC8\u6B62\u7EBF_png.bundle"
+    BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/EditArea/\u7EC8\u6B62\u7EBF_png.bundle"
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 18967
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/\u7EC8\u6B62\u7EBF.png"
+      Length: 18967
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/EditArea
+    BundleName: "\u8282\u62CD\u7EBF_png.bundle"
+    BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/EditArea/\u8282\u62CD\u7EBF_png.bundle"
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 1495
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/EditArea/\u8282\u62CD\u7EBF.png"
+      Length: 1495
   - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor
     BundleName: EditorFrame_png.bundle
     BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/EditorFrame_png.bundle
@@ -1478,6 +1625,17 @@ MonoBehaviour:
     Assets:
     - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Apply.png
       Length: 4526
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/Icons
+    BundleName: Arrow_png.bundle
+    BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/Icons/Arrow_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 11812
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Arrow.png
+      Length: 11812
   - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/Icons
     BundleName: Bell_png.bundle
     BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/Icons/Bell_png.bundle
@@ -1710,6 +1868,17 @@ MonoBehaviour:
     - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u672A\u9009\u4E2D.png"
       Length: 1735
   - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/Icons
+    BundleName: "\u6A61\u76AE_png.bundle"
+    BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/Icons/\u6A61\u76AE_png.bundle"
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 4550
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u6A61\u76AE.png"
+      Length: 4550
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/Icons
     BundleName: "\u6D4B\u5B9ABPM_png.bundle"
     BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/Icons/\u6D4B\u5B9ABPM_png.bundle"
     Group: Base
@@ -1753,28 +1922,28 @@ MonoBehaviour:
     Assets:
     - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u9009\u62E9.png"
       Length: 4544
-  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor
-    BundleName: JudgeLine_png.bundle
-    BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/JudgeLine_png.bundle
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/Icons
+    BundleName: "\u94C5\u7B14_png.bundle"
+    BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/Icons/\u94C5\u7B14_png.bundle"
     Group: Base
     IsRaw: 0
-    AssetsLength: 7099
+    AssetsLength: 3556
     CompressOption: 2
     EncryptOption: 1
     Assets:
-    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/JudgeLine.png
-      Length: 7099
-  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor
-    BundleName: "\u4F4D\u7F6E\u7EBF_png.bundle"
-    BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/\u4F4D\u7F6E\u7EBF_png.bundle"
+    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u94C5\u7B14.png"
+      Length: 3556
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/Icons
+    BundleName: "\u989C\u8272\u6761\u5E26_png.bundle"
+    BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/Icons/\u989C\u8272\u6761\u5E26_png.bundle"
     Group: Base
     IsRaw: 0
-    AssetsLength: 2011
+    AssetsLength: 1771
     CompressOption: 2
     EncryptOption: 1
     Assets:
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u4F4D\u7F6E\u7EBF.png"
-      Length: 2011
+    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u989C\u8272\u6761\u5E26.png"
+      Length: 1771
   - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor
     BundleName: "\u5236\u8C31\u5668\u53C2\u8003\u56FE_png.bundle"
     BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/\u5236\u8C31\u5668\u53C2\u8003\u56FE_png.bundle"
@@ -1852,17 +2021,6 @@ MonoBehaviour:
     Assets:
     - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u80CC\u666F\u6846.png"
       Length: 2423199
-  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor
-    BundleName: "\u8282\u62CD\u7EBF_png.bundle"
-    BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/\u8282\u62CD\u7EBF_png.bundle"
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 1495
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/\u8282\u62CD\u7EBF.png"
-      Length: 1495
   - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor
     BundleName: "\u957F\u529F\u80FD\u83DC\u5355_png.bundle"
     BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/\u957F\u529F\u80FD\u83DC\u5355_png.bundle"
@@ -2450,7 +2608,7 @@ MonoBehaviour:
       Length: 4368
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
       Length: 6958
-  BundleCount: 201
-  AssetCount: 269
+  BundleCount: 215
+  AssetCount: 281
   IsExactTextureSize: 0
   IsDrawDesc: 0
