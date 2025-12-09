@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 8961577680985612683}
   - component: {fileID: 8961577680985612682}
   - component: {fileID: 2515084839524321402}
+  - component: {fileID: 39752465633792764}
   m_Layer: 5
-  m_Name: "\u8282\u62CD\u7EBF"
+  m_Name: EndLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,7 +37,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1170, y: 4}
+  m_SizeDelta: {x: 1170, y: 24}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8961577680985612683
 CanvasRenderer:
@@ -66,7 +67,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 07c4a2d0646d7dc4388ee36f199e12a4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 721b61b428e20ab48b60047dfc285829, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -96,3 +97,17 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &39752465633792764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8961577680985612680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf66a52163d595044a9894ed99d2b47f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BeatLineRect: {fileID: 8961577680985612681}
+  Image: {fileID: 8961577680985612682}
