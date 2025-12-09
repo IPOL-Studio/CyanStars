@@ -11,6 +11,7 @@ using CyanStars.Framework;
 using CyanStars.Gameplay.MusicGame;
 using CyanStars.Utils;
 using UnityEngine;
+using Utils;
 
 namespace CyanStars.Chart
 {
@@ -35,7 +36,7 @@ namespace CyanStars.Chart
         /// <summary>
         /// 玩家谱包路径，位于用户数据
         /// </summary>
-        private string PlayerChartPacksFolderPath { get; } = Path.Combine(Application.persistentDataPath, "ChartPacks");
+        private string PlayerChartPacksFolderPath { get; } = PathUtil.Combine(Application.persistentDataPath, "ChartPacks");
 
 
         /// <summary>
@@ -154,7 +155,7 @@ namespace CyanStars.Chart
                 SearchOption.AllDirectories);
             foreach (var path in playerChartPaths)
             {
-                paths.Add(path);
+                paths.Add(path.Replace('\\', '/'));
                 levelsList.Add(new ChartPackLevels());
             }
 
@@ -279,10 +280,10 @@ namespace CyanStars.Chart
 
             ChartMetadata metadata = runtimeChartPack.ChartPackData.ChartMetaDatas[chartIndex];
             // if (lastChartDataHash != metadata.ChartHash)
-            if(true) // TODO: 实现了 hash 计算后改用上面一行，暂时先每次都强制加载谱面
+            if (true) // TODO: 实现了 hash 计算后改用上面一行，暂时先每次都强制加载谱面
             {
                 lastChartDataHandler?.Unload();
-                string chartFilePath = Path.Combine(runtimeChartPack.WorkspacePath, metadata.FilePath);
+                string chartFilePath = PathUtil.Combine(runtimeChartPack.WorkspacePath, metadata.FilePath);
                 var handler = await GameRoot.Asset.LoadAssetAsync<ChartData>(chartFilePath);
                 ChartData = handler.Asset;
 
@@ -317,7 +318,7 @@ namespace CyanStars.Chart
                     return false;
                 }
 
-                string workspacePath = Path.Combine(PlayerChartPacksFolderPath, folderName);
+                string workspacePath = PathUtil.Combine(PlayerChartPacksFolderPath, folderName);
                 if (Directory.Exists(workspacePath))
                 {
                     errorMessage = "已经存同名文件夹，无法创建新的谱包";
@@ -346,7 +347,7 @@ namespace CyanStars.Chart
                 // 序列化并保存索引文件
                 Directory.CreateDirectory(workspacePath);
                 GameRoot.File.SerializationToJson(runtimeChartPack.ChartPackData,
-                    Path.Combine(workspacePath, ChartPackFileName));
+                    PathUtil.Combine(workspacePath, ChartPackFileName));
                 return true;
             }
             catch (Exception e)
@@ -371,18 +372,18 @@ namespace CyanStars.Chart
             {
                 // 实例化谱面
                 string workspacePath = runtimeChartPack.WorkspacePath;
-                string chartsFolderAbsolutePath = Path.Combine(workspacePath, "Charts");
+                string chartsFolderAbsolutePath = PathUtil.Combine(workspacePath, "Charts");
                 ChartData chartData = new ChartData();
 
                 // 向谱包索引文件中添加元数据，并选中此谱面
                 int fileNameNumber = 0;
-                while (File.Exists(Path.Combine(chartsFolderAbsolutePath, $"Chart{fileNameNumber}.json")))
+                while (File.Exists(PathUtil.Combine(chartsFolderAbsolutePath, $"Chart{fileNameNumber}.json")))
                 {
                     fileNameNumber++;
                 }
 
-                string chartFileRelativePath = Path.Combine("Charts", $"Chart{fileNameNumber}.json");
-                string chartFileAbsolutePath = Path.Combine(workspacePath, chartFileRelativePath);
+                string chartFileRelativePath = PathUtil.Combine("Charts", $"Chart{fileNameNumber}.json");
+                string chartFileAbsolutePath = PathUtil.Combine(workspacePath, chartFileRelativePath);
 
                 ChartMetadata chartMetadata = new ChartMetadata(chartFileRelativePath);
                 runtimeChartPack.ChartPackData.ChartMetaDatas.Add(chartMetadata);

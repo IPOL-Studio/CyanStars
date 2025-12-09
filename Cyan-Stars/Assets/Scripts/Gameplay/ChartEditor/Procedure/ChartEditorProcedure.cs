@@ -9,6 +9,7 @@ using CyanStars.GamePlay.ChartEditor.Model;
 using CyanStars.GamePlay.ChartEditor.View;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utils;
 
 namespace CyanStars.GamePlay.ChartEditor.Procedure
 {
@@ -46,19 +47,19 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
             ChartModule module = GameRoot.GetDataModule<ChartModule>();
 // Debug
             Debug.LogWarning("作为调试生成了默认谱包，正式发布时请修改");
-            if (Directory.Exists(Path.Combine(Application.persistentDataPath, "ChartPacks")))
-                Directory.Delete(Path.Combine(Application.persistentDataPath, "ChartPacks"), true);
+            if (Directory.Exists(PathUtil.Combine(Application.persistentDataPath, "ChartPacks")))
+                Directory.Delete(PathUtil.Combine(Application.persistentDataPath, "ChartPacks"), true);
             module.CreateAndSelectNewChartPack("Test", out _); // TODO: 改用从 UI 获取
 // EndDebug
             string workspacePath = module.SelectedRuntimeChartPack.WorkspacePath;
-            string chartPackFilePath = Path.Combine(workspacePath, ChartModule.ChartPackFileName);
+            string chartPackFilePath = PathUtil.Combine(workspacePath, ChartModule.ChartPackFileName);
 
             // 通过序列化获取深拷贝的谱包数据
             ChartPackData chartPackData;
             chartPackData = (await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackFilePath)).Asset;
             ChartMetadata metadata =
                 module.SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas[(int)module.SelectedChartIndex];
-            string chartFilePath = Path.Combine(workspacePath, metadata.FilePath);
+            string chartFilePath = PathUtil.Combine(workspacePath, metadata.FilePath);
             await module.GetChartDataFromDisk(module.SelectedRuntimeChartPack, (int)module.SelectedChartIndex);
             ChartData chartData = module.ChartData;
             ChartEditorModel chartEditorModel =

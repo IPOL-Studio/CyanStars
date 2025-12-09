@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CyanStars.Chart;
 using CyanStars.Framework;
 using UnityEngine;
+using Utils;
 
 namespace CyanStars.GamePlay.ChartEditor.Model
 {
@@ -287,7 +288,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         {
             ChartEditorModel model = new ChartEditorModel(workspacePath, chartFilePath, chartPackData, chartData);
             model.CoverTexture = model.ChartPackData.CoverFilePath != null
-                ? (await GameRoot.Asset.LoadAssetAsync<Texture2D>(Path.Combine(workspacePath, model.ChartPackData.CoverFilePath))).Asset
+                ? (await GameRoot.Asset.LoadAssetAsync<Texture2D>(PathUtil.Combine(workspacePath, model.ChartPackData.CoverFilePath))).Asset
                 : null;
 
             return model;
@@ -310,7 +311,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
             foreach (var chartMetadata in ChartPackData.ChartMetaDatas)
             {
-                if (Path.Combine(WorkspacePath, chartMetadata.FilePath) == chartFilePath)
+                if (PathUtil.Combine(WorkspacePath, chartMetadata.FilePath) == chartFilePath)
                 {
                     ChartMetadata = chartMetadata;
                     break;
@@ -390,7 +391,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                 Directory.CreateDirectory(WorkspacePath);
             }
 
-            GameRoot.File.SerializationToJson(ChartPackData, Path.Combine(WorkspacePath, "ChartPack.json"));
+            GameRoot.File.SerializationToJson(ChartPackData, PathUtil.Combine(WorkspacePath, "ChartPack.json"));
 
             if (!Directory.Exists(Path.GetDirectoryName(ChartFilePath)))
             {
@@ -564,7 +565,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             if (!GameRoot.File.TrySearchByTempPath(filePath, out _))
             {
                 // AudioFilePath 存储的是相对路径，需要拼接为完整路径
-                filePath = Path.Combine(WorkspacePath, filePath);
+                filePath = PathUtil.Combine(WorkspacePath, filePath);
             }
 
             // TODO: 优化这里的卡顿
@@ -713,7 +714,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             // 加载 Texture2D 到内存，保存时检查是否需要替换文件，并将临时文件写入谱包 Assets 文件夹
             needCopyCoverWhenSave = true;
             string fileName = Path.GetFileName(path);
-            coverTempFilePath = GameRoot.File.TempFile(path, Path.Combine(WorkspacePath, "Assets", fileName));
+            coverTempFilePath = GameRoot.File.TempFile(path, PathUtil.Combine(WorkspacePath, "Assets", fileName));
             ChartPackData.CoverFilePath = coverTempFilePath; // 未保存前显示临时文件路径
             CoverTexture = (await GameRoot.Asset.LoadAssetAsync<Texture2D>(coverTempFilePath)).Asset;
             if (CoverTexture == null)
@@ -1149,7 +1150,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
             string fileNameWithoutExt = Path.GetFileNameWithoutExtension(originalFilePath);
             string extension = Path.GetExtension(originalFilePath);
             string targetFileName = $"{fileNameWithoutExt}{extension}";
-            string targetFilePath = Path.Combine(WorkspacePath, "Assets", targetFileName);
+            string targetFilePath = PathUtil.Combine(WorkspacePath, "Assets", targetFileName);
 
             // 将原始文件复制到缓存路径
             if (!GameRoot.File.TrySearchByTogglePath(targetFilePath, out _))
@@ -1179,7 +1180,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
                         while (GameRoot.File.TrySearchByTogglePath(targetFilePath, out _))
                         {
                             targetFileName = $"{fileNameWithoutExt}.({i}){extension}";
-                            targetFilePath = Path.Combine(WorkspacePath, "Assets", targetFileName);
+                            targetFilePath = PathUtil.Combine(WorkspacePath, "Assets", targetFileName);
                             i++;
                         }
 

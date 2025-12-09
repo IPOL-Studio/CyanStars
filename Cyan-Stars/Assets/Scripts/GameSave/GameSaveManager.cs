@@ -5,6 +5,7 @@ using System.Text;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
+using Utils;
 
 namespace CyanStars.GameSave
 {
@@ -144,13 +145,13 @@ namespace CyanStars.GameSave
             // 查找一个可用的备份文件名
             int backupNumber = 1;
             string backupFileName = $"CyanStarsGameSaveBackup{backupNumber}.json";
-            string backupFilePath = Path.Combine(saveDirectory, backupFileName);
+            string backupFilePath = PathUtil.Combine(saveDirectory, backupFileName);
 
             while (File.Exists(backupFilePath))
             {
                 backupNumber++;
                 backupFileName = $"CyanStarsGameSaveBackup{backupNumber}.json";
-                backupFilePath = Path.Combine(saveDirectory, backupFileName);
+                backupFilePath = PathUtil.Combine(saveDirectory, backupFileName);
             }
 
             File.Move(saveFilePath, backupFilePath);
