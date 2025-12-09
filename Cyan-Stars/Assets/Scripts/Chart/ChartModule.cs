@@ -91,7 +91,6 @@ namespace CyanStars.Chart
         public override async void OnInit()
         {
             SetTrackKeyToTypeMap();
-            await LoadRuntimeChartPacksFromDisk();
         }
 
 

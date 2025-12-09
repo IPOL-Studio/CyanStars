@@ -1,3 +1,4 @@
+using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Asset;
@@ -21,6 +22,7 @@ namespace CyanStars.Gameplay.Base
                 // //加载内置谱面清单
                 // await GameRoot.GetDataModule<MusicGamePlayingDataModule>().LoadChartPacks();
 
+                await GameRoot.GetDataModule<ChartModule>().LoadRuntimeChartPacksFromDisk();
                 GameRoot.ChangeProcedure<MainHomeProcedure>();
                 return;
             }
@@ -29,9 +31,11 @@ namespace CyanStars.Gameplay.Base
             GameRoot.Asset.CheckVersion(async result =>
             {
                 if (result.Success)
-                {// //加载内置谱面清单
+                {
+                    // //加载内置谱面清单
                     // await GameRoot.GetDataModule<MusicGamePlayingDataModule>().LoadChartPacks();
 
+                    await GameRoot.GetDataModule<ChartModule>().LoadRuntimeChartPacksFromDisk();
                     GameRoot.ChangeProcedure<MainHomeProcedure>();
                 }
             });
