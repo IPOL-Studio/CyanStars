@@ -210,8 +210,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RuntimeMode: 0
-  IsEditorMode: 1
-  UnloadDelayTime: 60
+  IsEditorMode: 0
+  UnloadBundleDelayTime: 120
+  UnloadAssetDelayTime: 60
   MaxTaskRunCount: 10
 --- !u!1 &567121861
 GameObject:
