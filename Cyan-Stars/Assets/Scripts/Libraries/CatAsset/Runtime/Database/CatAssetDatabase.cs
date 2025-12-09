@@ -39,9 +39,9 @@ namespace CatAsset.Runtime
         private static Dictionary<int, List<IBindableHandler>> sceneBindHandlers =
             new Dictionary<int, List<IBindableHandler>>();
 
-      
-        
-        
+
+
+
         /// <summary>
         /// 使用资源清单进行运行时信息的初始化
         /// </summary>
@@ -49,7 +49,7 @@ namespace CatAsset.Runtime
         {
             lazyBundleInfoDict.Clear();
             lazyAssetInfoDict.Clear();
-            
+
             bundleRuntimeInfoDict.Clear();
             assetRuntimeInfoDict.Clear();
 
@@ -98,7 +98,7 @@ namespace CatAsset.Runtime
                 bundleRuntimeInfoDict[bundleIdentifyName] = info;
                 return info;
             }
-            
+
             bundleRuntimeInfoDict.TryGetValue(bundleIdentifyName, out info);
             return info;
         }
@@ -126,7 +126,7 @@ namespace CatAsset.Runtime
                 assetRuntimeInfoDict[assetName] = info;
                 return info;
             }
-            
+
             assetRuntimeInfoDict.TryGetValue(assetName, out info);
             return info;
         }
@@ -196,7 +196,7 @@ namespace CatAsset.Runtime
                 if (index >= 0)
                 {
                     //处理多级路径
-                    dir = assetName.Substring(0, index - 1);
+                    dir = assetName.Substring(0, index);
                     name = assetName.Substring(index + 1);
                 }
                 else
@@ -260,8 +260,8 @@ namespace CatAsset.Runtime
             handlers.Add(handler);
         }
 
-        
 
-      
+
+
     }
 }
