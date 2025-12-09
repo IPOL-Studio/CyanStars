@@ -279,7 +279,8 @@ namespace CyanStars.Chart
             // TODO：计算谱面哈希并校验/覆盖元数据内容，目前假定 metadata.ChartHash 提供了正确的 Hash
 
             ChartMetadata metadata = runtimeChartPack.ChartPackData.ChartMetaDatas[chartIndex];
-            if (lastChartDataHash != metadata.ChartHash)
+            // if (lastChartDataHash != metadata.ChartHash)
+            if(true) // TODO: 实现了 hash 计算后改用上面一行，暂时先每次都强制加载谱面
             {
                 lastChartDataHandler?.Unload();
                 string chartFilePath = Path.Combine(runtimeChartPack.WorkspacePath, metadata.FilePath);
