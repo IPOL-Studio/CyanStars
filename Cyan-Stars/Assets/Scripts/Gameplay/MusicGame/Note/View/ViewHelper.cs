@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CyanStars.Framework;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
@@ -30,9 +30,9 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         public static async Task<IView> CreateViewObject(BaseChartNoteData data, BaseNote note)
         {
-            MusicGameModule dataModule = GameRoot.GetDataModule<MusicGameModule>();
+            MusicGamePlayingDataModule playingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
             GameObject go = null;
-            string prefabName = dataModule.NotePrefabNameDict[data.Type];
+            string prefabName = playingDataModule.NotePrefabNameDict[data.Type];
 
             go = await GameRoot.GameObjectPool.GetGameObjectAsync(prefabName, ViewRoot);
 

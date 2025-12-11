@@ -1,4 +1,4 @@
-﻿using CyanStars.Gameplay.Chart;
+﻿using CyanStars.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -6,9 +6,9 @@ namespace CyanStars.Gameplay.MusicGame
     {
         public FrameChartTrackData FrameChartTrackData;
 
-        public BpmGroups.BeatToTimeDelegate BeatToTimeDelegate;
+        public BpmGroup.BeatToTimeDelegate BeatToTimeDelegate;
 
-        public FrameClipData(FrameChartTrackData frameChartTrackData, BpmGroups.BeatToTimeDelegate beatToTimeDelegate)
+        public FrameClipData(FrameChartTrackData frameChartTrackData, BpmGroup.BeatToTimeDelegate beatToTimeDelegate)
         {
             this.FrameChartTrackData = frameChartTrackData;
             this.BeatToTimeDelegate = beatToTimeDelegate;

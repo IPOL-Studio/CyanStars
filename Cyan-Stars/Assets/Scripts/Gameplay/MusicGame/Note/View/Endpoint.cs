@@ -1,4 +1,4 @@
-using CyanStars.Framework.Utils;
+using CyanStars.Utils;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame

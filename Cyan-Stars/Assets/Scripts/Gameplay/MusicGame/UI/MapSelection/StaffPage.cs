@@ -1,6 +1,6 @@
 using System.Collections;
 using CyanStars.Framework;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -34,8 +34,9 @@ namespace CyanStars.Gameplay.MusicGame
 
             startButton.onClick.AddListener(() =>
             {
-                GameRoot.GetDataModule<MusicGameModule>().ChartPackIndex = owner.CurrentSelectedMap.Index;
-                GameRoot.GetDataModule<MusicGameModule>().Difficulty = ChartDifficulty.KuiXing; // TODO: 从 UI 传入难度参数
+                ChartModule module = GameRoot.GetDataModule<ChartModule>();
+                // module.TrySelectChartPack(owner.CurrentSelectedMap.Index);
+                module.SelectedDifficulty(ChartDifficulty.KuiXing); // TODO: 从 UI 传入难度参数
                 GameRoot.ChangeProcedure<MusicGameProcedure>();
             });
 

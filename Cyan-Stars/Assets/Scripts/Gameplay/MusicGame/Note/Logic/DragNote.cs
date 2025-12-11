@@ -1,4 +1,4 @@
-﻿using CyanStars.Gameplay.Chart;
+﻿using CyanStars.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -16,9 +16,9 @@ namespace CyanStars.Gameplay.MusicGame
                    LogicTimeDistance >= -EvaluateHelper.DragJudgeDistanceRange;
         }
 
-        public override void Init(BaseChartNoteData data, ChartData chartData, NoteClip clip)
+        public override void Init(BaseChartNoteData data, BpmGroup bpmGroup, ChartData chartData, NoteClip clip)
         {
-            base.Init(data, chartData, clip);
+            base.Init(data, bpmGroup, chartData, clip);
             Pos = (data as DragChartNoteData).Pos;
         }
 

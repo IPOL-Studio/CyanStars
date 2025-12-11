@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyanStars.Framework;
 using CyanStars.Framework.UI;
-using CyanStars.Gameplay.Chart;
+using CyanStars.Chart;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -26,23 +26,27 @@ namespace CyanStars.Gameplay.MusicGame
         private TextMeshProUGUI mapTitleText;
 
 
-        private MusicGameModule musicGameModule;
-
-        private List<BaseUIItem> mapItems = new List<BaseUIItem>();
-
         private MapSelectionPanel owner;
         private CanvasGroup canvasGroup;
 
         private IPageElementAnimation[] animationElements;
         private Tween runningTween;
 
+        private MusicGamePlayingDataModule musicGamePlayingDataModule;
+        private ChartModule chartModule;
+        private List<BaseUIItem> mapItems;
+
+
         public void OnInit(MapSelectionPanel owner)
         {
             this.owner = owner;
-            musicGameModule = GameRoot.GetDataModule<MusicGameModule>();
             canvasGroup = GetComponent<CanvasGroup>();
 
             animationElements = GetComponentsInChildren<IPageElementAnimation>(true);
+
+            musicGamePlayingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
+            chartModule = GameRoot.GetDataModule<ChartModule>();
+            mapItems = new List<BaseUIItem>();
 
             nextStepButton.onClick.AddListener(() => { this.owner.ChangePage<StaffPage>(); });
 
@@ -108,17 +112,17 @@ namespace CyanStars.Gameplay.MusicGame
         private async Task RefreshMusicList()
         {
             // List<MapManifest> maps = musicGameModule.GetMaps();
-            List<ChartPack> chartPacks = musicGameModule.GetChartPacks();
+            IReadOnlyList<RuntimeChartPack> chartPacks = chartModule.RuntimeChartPacks;
 
             for (int i = 0; i < chartPacks.Count; i++)
             {
-                ChartPack chartPack = chartPacks[i];
+                RuntimeChartPack runtimeChartPack = chartPacks[i];
                 MapItem mapItem = await GameRoot.UI.GetUIItemAsync<MapItem>(mapItemTemplate, circularMapList.transform);
                 circularMapList.AddItem(mapItem);
                 mapItems.Add(mapItem);
                 mapItem.Index = i;
 
-                MapItemData data = MapItemData.Create(i, chartPack);
+                MapItemData data = MapItemData.Create(i, runtimeChartPack);
                 mapItem.RefreshItem(data);
                 mapItem.OnSelect += OnSelectMap;
             }
@@ -138,26 +142,32 @@ namespace CyanStars.Gameplay.MusicGame
 
             this.owner.CurrentSelectedMap = mapItem.Data;
 
-            Debug.Log("当前选中:" + mapItem.Data.ChartPack.ChartPackData.Title);
+            Debug.Log("当前选中:" + mapItem.Data.RuntimeChartPack.ChartPackData.Title);
 
             // 标题和Staff信息渐变动画
             mapTitleText.DOFade(0, 0.2f).OnComplete(() =>
             {
-                mapTitleText.text = mapItem.Data.ChartPack.ChartPackData.Title;
+                mapTitleText.text = mapItem.Data.RuntimeChartPack.ChartPackData.Title;
                 mapTitleText.DOFade(1, 0.2f);
             });
 
             // 将原始 Staff 文本传递给 StarsGenerator 以进一步处理
-            Dictionary<string, List<string>> staffs = mapItem.Data.ChartPack.ChartPackData
-                .MusicVersionDatas[musicGameModule.MusicVersionIndex].Staffs;
+            if (chartModule.SelectedMusicVersionIndex == null)
+            {
+                Debug.LogWarning("没有设置音乐版本");
+                return;
+            }
+
+            Dictionary<string, List<string>> staffs = mapItem.Data.RuntimeChartPack.ChartPackData
+                .MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex].Staffs;
             if (staffs == null || staffs.Count == 0)
             {
                 Debug.LogWarning("没有设置 Staff 文本");
             }
             else
             {
-                this.owner.StarController.ResetAllStaffGroup(mapItem.Data.ChartPack.ChartPackData
-                    .MusicVersionDatas[musicGameModule.MusicVersionIndex].Staffs);
+                this.owner.StarController.ResetAllStaffGroup(mapItem.Data.RuntimeChartPack.ChartPackData
+                    .MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex].Staffs);
             }
         }
     }
