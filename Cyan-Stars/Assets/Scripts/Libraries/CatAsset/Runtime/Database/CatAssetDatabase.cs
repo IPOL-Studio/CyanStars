@@ -193,7 +193,13 @@ namespace CatAsset.Runtime
                 int index = assetName.LastIndexOf('/');
                 string dir = null;
                 string name;
-                if (index >= 0)
+                if (index == 0)
+                {
+                    // 虽然不应该出现这种情况，但也先处理一下
+                    dir = "/";
+                    name = assetName.Substring(1);
+                }
+                else if (index > 0)
                 {
                     //处理多级路径
                     dir = assetName.Substring(0, index);
