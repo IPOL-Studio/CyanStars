@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using CyanStars.Chart;
 using CyanStars.Framework;
 using UnityEngine;
-using Utils;
+using CyanStars.Utils;
 
 namespace CyanStars.GamePlay.ChartEditor.Model
 {

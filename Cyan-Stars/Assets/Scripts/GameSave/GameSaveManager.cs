@@ -5,7 +5,7 @@ using System.Text;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
-using Utils;
+using CyanStars.Utils;
 
 namespace CyanStars.GameSave
 {

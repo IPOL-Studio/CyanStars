@@ -11,7 +11,6 @@ using CatAsset.Runtime;
 using CyanStars.Utils;
 using CyanStars.Utils.JsonSerialization;
 using Newtonsoft.Json;
-using Utils;
 
 namespace CyanStars.Framework.File
 {

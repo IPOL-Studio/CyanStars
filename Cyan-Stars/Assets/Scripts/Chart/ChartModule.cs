@@ -11,7 +11,6 @@ using CyanStars.Framework;
 using CyanStars.Gameplay.MusicGame;
 using CyanStars.Utils;
 using UnityEngine;
-using Utils;
 
 namespace CyanStars.Chart
 {
