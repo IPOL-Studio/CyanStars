@@ -31,7 +31,7 @@ namespace CyanStars.Framework.File
         public readonly FileBrowser.Filter SpriteFilter = new FileBrowser.Filter("图片", ".jpg", ".png");
         public readonly FileBrowser.Filter AudioFilter = new FileBrowser.Filter("音频", ".ogg");
 
-        private string TempFolderPath => Path.Combine(Application.temporaryCachePath, "FileManager");
+        private string TempFolderPath => PathUtil.Combine(Application.temporaryCachePath, "FileManager");
 
         /// <summary>
         /// 目标路径:缓存文件路径 双向字典
@@ -299,7 +299,7 @@ namespace CyanStars.Framework.File
             string fileNameWithoutExt = Path.GetFileNameWithoutExtension(originalFilePath);
             string extension = Path.GetExtension(originalFilePath);
             string tempFileName = $"{fileNameWithoutExt}.{shortGuid}{extension}";
-            string tempFilePath = Path.Combine(TempFolderPath, tempFileName);
+            string tempFilePath = PathUtil.Combine(TempFolderPath, tempFileName);
 
             Directory.CreateDirectory(TempFolderPath);
             System.IO.File.Copy(originalFilePath, tempFilePath, true);

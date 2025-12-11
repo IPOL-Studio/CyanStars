@@ -108,6 +108,7 @@ namespace CyanStars.Framework
             Timer = GetManager<TimerManager>();
             UI = GetManager<UIManager>();
             Logger = GetManager<LoggerManager>();
+            File = GetManager<FileManager>();
 
             //按优先级排序并初始化所有Manager
             Managers.Sort((x, y) => x.Priority.CompareTo(y.Priority));
