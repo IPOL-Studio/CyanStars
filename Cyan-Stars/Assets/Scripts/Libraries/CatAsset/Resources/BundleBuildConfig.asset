@@ -79,7 +79,7 @@ MonoBehaviour:
     EncryptOption: 0
   - directoryName: Assets/CysMultimediaAssets/Font
     DirectoryObj: {fileID: 102900000, guid: 3fe20c2a749d63f46ad59fa05128884b, type: 3}
-    BuildRuleName: NAssetToNBundle
+    BuildRuleName: SecondDirectoryBasedNAssetToOneBundle
     Filter: 
     Regex: 
     Group: Base
@@ -194,12 +194,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/BeatInputField_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 52208
+    AssetsLength: 50637
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/BeatInputField.prefab
-      Length: 52208
+      Length: 50637
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: BpmItem_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/BpmItem_prefab.bundle
@@ -624,12 +624,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Scenes.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 1352703
+    AssetsLength: 1353038
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Scenes/ChartEditor.unity
-      Length: 1236150
+      Length: 1236485
     - Name: Assets/BundleRes/Scenes/Dark.unity
       Length: 57120
     - Name: Assets/BundleRes/Scenes/Warm.unity
@@ -876,445 +876,183 @@ MonoBehaviour:
     Assets:
     - Name: Assets/CysMultimediaAssets/Charts/NewSong/ChartPack.json
       Length: 2113
-  - DirectoryName: CysMultimediaAssets/Font
-    BundleName: "3500\u5E38\u7528\u6C49\u5B57+\u7B26\u53F7+\u82F1\u6587\u5B57\u7B26\u96C6_txt.bundle"
-    BundleIdentifyName: "CysMultimediaAssets/Font/3500\u5E38\u7528\u6C49\u5B57+\u7B26\u53F7+\u82F1\u6587\u5B57\u7B26\u96C6_txt.bundle"
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 11794
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: "Assets/CysMultimediaAssets/Font/3500\u5E38\u7528\u6C49\u5B57+\u7B26\u53F7+\u82F1\u6587\u5B57\u7B26\u96C6.txt"
-      Length: 11794
-  - DirectoryName: CysMultimediaAssets/Font
-    BundleName: gb2312_txt.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/gb2312_txt.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 23151
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/gb2312.txt
-      Length: 23151
   - DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: LICENSE_txt.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/LICENSE_txt.bundle
+    BundleName: Blod.bundle
+    BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/Blod.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 4540
+    AssetsLength: 53070713
     CompressOption: 2
     EncryptOption: 1
     Assets:
-    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LICENSE.txt
-      Length: 4540
-  - DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: LXGWWenKaiMono-Bold_ttf.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold_ttf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 15455768
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold.ttf
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/Blod/LXGWWenKaiMono-Bold.ttf
       Length: 15455768
-  - DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: LXGWWenKaiMono-Bold-Dynamic-SDF_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold-Dynamic-SDF_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2105208
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold-Dynamic-SDF.asset
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/Blod/LXGWWenKaiMono-Bold-Dynamic-SDF.asset
       Length: 2105208
-  - DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: LXGWWenKaiMono-Bold-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35509737
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Bold-Static-3500Chinese-SDF(FastPacking).asset
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/Blod/LXGWWenKaiMono-Bold-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35509737
   - DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: LXGWWenKaiMono-Light_ttf.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Light_ttf.bundle
+    BundleName: Light.bundle
+    BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/Light.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 18912262
+    AssetsLength: 54443793
     CompressOption: 2
     EncryptOption: 1
     Assets:
-    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Light.ttf
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/Light/LXGWWenKaiMono-Light.ttf
       Length: 18912262
-  - DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: LXGWWenKaiMono-Light-Dynamic-SDF_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Light-Dynamic-SDF_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 7676
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Light-Dynamic-SDF.asset
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/Light/LXGWWenKaiMono-Light-Dynamic-SDF.asset
       Length: 7676
-  - DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: LXGWWenKaiMono-Light-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Light-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35523855
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Light-Static-3500Chinese-SDF(FastPacking).asset
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/Light/LXGWWenKaiMono-Light-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35523855
   - DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: LXGWWenKaiMono-Regular_ttf.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Regular_ttf.bundle
+    BundleName: Regular.bundle
+    BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/Regular.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 15445214
+    AssetsLength: 50937737
     CompressOption: 2
     EncryptOption: 1
     Assets:
-    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Regular.ttf
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/Regular/LXGWWenKaiMono-Regular.ttf
       Length: 15445214
-  - DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: LXGWWenKaiMono-Regular-Dynamic-SDF_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Regular-Dynamic-SDF_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 7686
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Regular-Dynamic-SDF.asset
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/Regular/LXGWWenKaiMono-Regular-Dynamic-SDF.asset
       Length: 7686
-  - DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
-    BundleName: LXGWWenKaiMono-Regular-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Regular-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35484837
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/LXGWWenKaiMono-Regular-Static-3500Chinese-SDF(FastPacking).asset
+    - Name: Assets/CysMultimediaAssets/Font/LxgwWenKai/Regular/LXGWWenKaiMono-Regular-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35484837
   - DirectoryName: CysMultimediaAssets/Font/Oswald
-    BundleName: LICENSE_txt.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/Oswald/LICENSE_txt.bundle
+    BundleName: Blod.bundle
+    BundleIdentifyName: CysMultimediaAssets/Font/Oswald/Blod.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 4483
+    AssetsLength: 61508
     CompressOption: 2
     EncryptOption: 1
     Assets:
-    - Name: Assets/CysMultimediaAssets/Font/Oswald/LICENSE.txt
-      Length: 4483
-  - DirectoryName: CysMultimediaAssets/Font/Oswald
-    BundleName: Oswald-Bold SDF_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/Oswald/Oswald-Bold SDF_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 8452
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-Bold SDF.asset
+    - Name: Assets/CysMultimediaAssets/Font/Oswald/Blod/Oswald-Bold SDF.asset
       Length: 8452
-  - DirectoryName: CysMultimediaAssets/Font/Oswald
-    BundleName: Oswald-Bold_ttf.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/Oswald/Oswald-Bold_ttf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 53056
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-Bold.ttf
+    - Name: Assets/CysMultimediaAssets/Font/Oswald/Blod/Oswald-Bold.ttf
       Length: 53056
   - DirectoryName: CysMultimediaAssets/Font/Oswald
-    BundleName: Oswald-ExtraLight_ttf.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/Oswald/Oswald-ExtraLight_ttf.bundle
+    BundleName: ExtraLight.bundle
+    BundleIdentifyName: CysMultimediaAssets/Font/Oswald/ExtraLight.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 87208
+    AssetsLength: 4349521
     CompressOption: 2
     EncryptOption: 1
     Assets:
-    - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-ExtraLight.ttf
+    - Name: Assets/CysMultimediaAssets/Font/Oswald/ExtraLight/Oswald-ExtraLight.ttf
       Length: 87208
-  - DirectoryName: CysMultimediaAssets/Font/Oswald
-    BundleName: Oswald-ExtraLight-Dynamic-SDF_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/Oswald/Oswald-ExtraLight-Dynamic-SDF_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2107984
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-ExtraLight-Dynamic-SDF.asset
+    - Name: Assets/CysMultimediaAssets/Font/Oswald/ExtraLight/Oswald-ExtraLight-Dynamic-SDF.asset
       Length: 2107984
-  - DirectoryName: CysMultimediaAssets/Font/Oswald
-    BundleName: Oswald-ExtraLight-Static-ASCII-SDF(FastPacking)_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/Oswald/Oswald-ExtraLight-Static-ASCII-SDF(FastPacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2154329
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/Oswald/Oswald-ExtraLight-Static-ASCII-SDF(FastPacking).asset
+    - Name: Assets/CysMultimediaAssets/Font/Oswald/ExtraLight/Oswald-ExtraLight-Static-ASCII-SDF(FastPacking).asset
       Length: 2154329
   - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: LICENSE_txt.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/LICENSE_txt.bundle
+    BundleName: Blod.bundle
+    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/Blod.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 4559
+    AssetsLength: 49753269
     CompressOption: 2
     EncryptOption: 1
     Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/LICENSE.txt
-      Length: 4559
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Bold_otf.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Bold_otf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 12094680
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Bold.otf
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Blod/SourceHanSerifCN-Bold.otf
       Length: 12094680
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Bold-Dynamic-SDF_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Bold-Dynamic-SDF_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2107242
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Bold-Dynamic-SDF.asset
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Blod/SourceHanSerifCN-Bold-Dynamic-SDF.asset
       Length: 2107242
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Bold-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Bold-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35551347
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Bold-Static-3500Chinese-SDF(FastPacking).asset
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Blod/SourceHanSerifCN-Bold-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35551347
   - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-ExtraLight_otf.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-ExtraLight_otf.bundle
+    BundleName: ExtraLight.bundle
+    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/ExtraLight.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 10444316
+    AssetsLength: 45952514
     CompressOption: 2
     EncryptOption: 1
     Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-ExtraLight.otf
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/ExtraLight/SourceHanSerifCN-ExtraLight.otf
       Length: 10444316
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-ExtraLight-Dynamic-SDF_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-ExtraLight-Dynamic-SDF_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 7708
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-ExtraLight-Dynamic-SDF.asset
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/ExtraLight/SourceHanSerifCN-ExtraLight-Dynamic-SDF.asset
       Length: 7708
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-ExtraLight-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-ExtraLight-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35500490
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-ExtraLight-Static-3500Chinese-SDF(FastPacking).asset
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/ExtraLight/SourceHanSerifCN-ExtraLight-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35500490
   - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Heavy_otf.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy_otf.bundle
+    BundleName: Heavy.bundle
+    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/Heavy.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 11304840
+    AssetsLength: 48968654
     CompressOption: 2
     EncryptOption: 1
     Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy.otf
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Heavy/SourceHanSerifCN-Heavy.otf
       Length: 11304840
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Heavy-Dynamic-SDF_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy-Dynamic-SDF_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2108911
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy-Dynamic-SDF.asset
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Heavy/SourceHanSerifCN-Heavy-Dynamic-SDF.asset
       Length: 2108911
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Heavy-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35554903
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Heavy-Static-3500Chinese-SDF(FastPacking).asset
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Heavy/SourceHanSerifCN-Heavy-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35554903
   - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Light_otf.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Light_otf.bundle
+    BundleName: Light.bundle
+    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/Light.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 11495436
+    AssetsLength: 49102114
     CompressOption: 2
     EncryptOption: 1
     Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Light.otf
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Light/SourceHanSerifCN-Light.otf
       Length: 11495436
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Light-Dynamic-SDF_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Light-Dynamic-SDF_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2105397
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Light-Dynamic-SDF.asset
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Light/SourceHanSerifCN-Light-Dynamic-SDF.asset
       Length: 2105397
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Light-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Light-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35501281
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Light-Static-3500Chinese-SDF(FastPacking).asset
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Light/SourceHanSerifCN-Light-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35501281
   - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Medium_otf.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium_otf.bundle
+    BundleName: Medium.bundle
+    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/Medium.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 11373656
+    AssetsLength: 48975459
     CompressOption: 2
     EncryptOption: 1
     Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium.otf
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Medium/SourceHanSerifCN-Medium.otf
       Length: 11373656
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Medium-Dynamic-SDF_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium-Dynamic-SDF_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2123311
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium-Dynamic-SDF.asset
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Medium/SourceHanSerifCN-Medium-Dynamic-SDF.asset
       Length: 2123311
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Medium-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35478492
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Medium-Static-3500Chinese-SDF(FastPacking).asset
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Medium/SourceHanSerifCN-Medium-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35478492
   - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Regular_otf.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Regular_otf.bundle
+    BundleName: Regular.bundle
+    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/Regular.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 11626108
+    AssetsLength: 49175877
     CompressOption: 2
     EncryptOption: 1
     Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Regular.otf
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Regular/SourceHanSerifCN-Regular.otf
       Length: 11626108
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Regular-Dynamic-SDF_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Regular-Dynamic-SDF_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2124157
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Regular-Dynamic-SDF.asset
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Regular/SourceHanSerifCN-Regular-Dynamic-SDF.asset
       Length: 2124157
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Regular/SourceHanSerifCN-Regular-Static-3500Chinese-SDF(FastPacking).asset
+      Length: 35425612
   - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-Regular-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Regular-Static-3500Chinese-SDF(FastPacking)_asset.bundle
+    BundleName: SemiBold.bundle
+    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SemiBold.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 35517472
+    AssetsLength: 49403854
     CompressOption: 2
     EncryptOption: 1
     Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-Regular-Static-3500Chinese-SDF(FastPacking).asset
-      Length: 35517472
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-SemiBold_otf.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-SemiBold_otf.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 11771824
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-SemiBold.otf
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SemiBold/SourceHanSerifCN-SemiBold.otf
       Length: 11771824
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-SemiBold-Dynamic-SDF_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-SemiBold-Dynamic-SDF_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 2109449
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-SemiBold-Dynamic-SDF.asset
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SemiBold/SourceHanSerifCN-SemiBold-Dynamic-SDF.asset
       Length: 2109449
-  - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
-    BundleName: SourceHanSerifCN-SemiBold-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-SemiBold-Static-3500Chinese-SDF(FastPacking)_asset.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 35522581
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SourceHanSerifCN-SemiBold-Static-3500Chinese-SDF(FastPacking).asset
+    - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/SemiBold/SourceHanSerifCN-SemiBold-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35522581
   - DirectoryName: CysMultimediaAssets/Live2D/LuoTianYi_Pilot
     BundleName: LICENSE_txt.bundle
@@ -2608,7 +2346,7 @@ MonoBehaviour:
       Length: 4368
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
       Length: 6958
-  BundleCount: 215
-  AssetCount: 281
+  BundleCount: 187
+  AssetCount: 276
   IsExactTextureSize: 0
   IsDrawDesc: 0
