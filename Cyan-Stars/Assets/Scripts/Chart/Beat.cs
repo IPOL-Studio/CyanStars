@@ -3,12 +3,15 @@ using UnityEngine;
 
 namespace CyanStars.Chart
 {
-    public readonly struct Beat : IEquatable<Beat>
+    public readonly struct Beat : IEquatable<Beat>, IComparable<Beat>
     {
         /// <summary>带分数拍子的整数部分</summary>
         public readonly int IntegerPart;
 
-        /// <summary>带分数拍子的分子</summary>
+        /// <summary>
+        /// 带分数拍子的分子
+        /// <para>当 <see cref="Denominator"/> 为 0 时，分子应始终视为 0</para>
+        /// </summary>
         public readonly int Numerator;
 
         /// <summary>带分数拍子的分母，也作为节拍的细分精度</summary>
@@ -90,6 +93,24 @@ namespace CyanStars.Chart
             return IntegerPart == other.IntegerPart && Numerator == other.Numerator && Denominator == other.Denominator;
         }
 
+        /// <summary>
+        /// 对两个 beat 进行等价性比较，返回 0 时代表比较对象等价，不代表按字段相等
+        /// <remarks>可使用 <see cref="Equals"/> 或 <see cref="op_Equality"/> <see cref="op_Inequality"/> 进行按字段相等性比较</remarks>
+        /// </summary>
+        public int CompareTo(Beat other)
+        {
+            if (IntegerPart != other.IntegerPart)
+                return IntegerPart.CompareTo(other.IntegerPart);
+
+            if (Denominator == other.Denominator)
+                return Denominator != 0 ? Numerator.CompareTo(other.Numerator) : 0;
+
+            ulong n1 = (ulong)Numerator * (ulong)other.Denominator;
+            ulong n2 = (ulong)other.Numerator * (ulong)Denominator;
+
+            return n1.CompareTo(n2);
+        }
+
         public override bool Equals(object obj)
         {
             return obj is Beat other && Equals(other);
@@ -106,11 +127,17 @@ namespace CyanStars.Chart
             }
         }
 
+        /// <summary>
+        /// 按字段相等性比较
+        /// </summary>
         public static bool operator ==(Beat left, Beat right)
         {
             return left.Equals(right);
         }
 
+        /// <summary>
+        /// 按字段相等性比较
+        /// </summary>
         public static bool operator !=(Beat left, Beat right)
         {
             return !left.Equals(right);
@@ -118,12 +145,35 @@ namespace CyanStars.Chart
 
         public static bool operator <(Beat left, Beat right)
         {
-            return left.ToFloat() < right.ToFloat();
+            return left.CompareTo(right) < 0;
         }
 
         public static bool operator >(Beat left, Beat right)
         {
-            return left.ToFloat() > right.ToFloat();
+            return left.CompareTo(right) > 0;
+        }
+
+        /// <summary>
+        /// 返回分数部分约分后的最简形式
+        /// </summary>
+        public Beat Simplify()
+        {
+            if (Denominator == 0 || Numerator == 0)
+            {
+                return new Beat(IntegerPart, 0, 0);
+            }
+
+            int a = Numerator;
+            int b = Denominator;
+            while (b != 0)
+            {
+                int temp = b;
+                b = a % b;
+                a = temp;
+            }
+            int gcd = a;
+
+            return new Beat(IntegerPart, Numerator / gcd, Denominator / gcd);
         }
     }
 }

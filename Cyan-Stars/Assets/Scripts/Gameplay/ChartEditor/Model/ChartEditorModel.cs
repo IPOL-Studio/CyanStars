@@ -1414,7 +1414,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
             BpmGroupItem itemToUpdate = BpmGroupDatas[(int)SelectedBpmItemIndex];
             itemToUpdate.StartBeat = beat;
-            SelectedBpmItemIndex = ChartPackData.BpmGroup.IndexOf(itemToUpdate);
+            SelectedBpmItemIndex = ChartPackData.BpmGroup.IndexOf(itemToUpdate.StartBeat);
 
             OnBpmGroupChanged?.Invoke();
         }
