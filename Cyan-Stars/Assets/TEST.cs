@@ -1,5 +1,5 @@
 using CyanStars.Framework;
-using CyanStars.GamePlay.ChartEditor.Procedure;
+using CyanStars.Gameplay.ChartEditor.Procedure;
 using UnityEngine;
 using UnityEngine.UI;
 

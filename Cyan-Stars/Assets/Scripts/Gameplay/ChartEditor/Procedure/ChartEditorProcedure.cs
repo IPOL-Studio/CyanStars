@@ -5,13 +5,13 @@ using System.IO;
 using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Framework.FSM;
-using CyanStars.GamePlay.ChartEditor.Model;
-using CyanStars.GamePlay.ChartEditor.View;
+using CyanStars.Gameplay.ChartEditor.Model;
+using CyanStars.Gameplay.ChartEditor.View;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using CyanStars.Utils;
 
-namespace CyanStars.GamePlay.ChartEditor.Procedure
+namespace CyanStars.Gameplay.ChartEditor.Procedure
 {
     [ProcedureState]
     public class ChartEditorProcedure : BaseState
