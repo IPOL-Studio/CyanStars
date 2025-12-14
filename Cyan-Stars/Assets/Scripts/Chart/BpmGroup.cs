@@ -1,13 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 
 namespace CyanStars.Chart
 {
+    // 如果有人在非压力测试场景中使用了超过 200 个 BPM 组
+    // 请在 github 开启一个 issue 并提供用例
+    // 帮助进行基准测试以改进性能
     public class BpmGroup
     {
-        private List<BpmGroupItem> data = new List<BpmGroupItem>();
-        public IReadOnlyList<BpmGroupItem> Data => data;
+        private SortedList<Beat, BpmGroupItem> data = new SortedList<Beat, BpmGroupItem>(16);
+
+        private ReadOnlyCollection<BpmGroupItem> readOnlyData;
+        public IReadOnlyList<BpmGroupItem> Data => readOnlyData ??= new ReadOnlyCollection<BpmGroupItem>(data.Values);
 
 
         /// <summary>
@@ -16,42 +22,27 @@ namespace CyanStars.Chart
         public delegate int BeatToTimeDelegate(Beat beat);
 
 
-        // --- 重写 List 方法，使其在 Add 后自动排序 ---
-
         public void AddRange(IEnumerable<BpmGroupItem> items)
         {
             if (items == null)
-            {
                 throw new ArgumentNullException(nameof(items));
-            }
 
             foreach (var item in items)
             {
-                if (item == null)
-                {
-                    throw new ArgumentException("BpmGroupItem collection cannot contain null elements.", nameof(items));
-                }
-
-                data.Add(item);
+                _ = item ?? throw new ArgumentException("BpmGroupItem collection cannot contain null elements.", nameof(items));
+                data.Add(item.StartBeat.Simplify(), item);
             }
-
-            SortData();
         }
 
         public void Add(BpmGroupItem item)
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            data.Add(item);
-            SortData();
+            _ = item ?? throw new ArgumentNullException(nameof(item));
+            data.Add(item.StartBeat.Simplify(), item);
         }
 
-        public bool Remove(BpmGroupItem item)
+        public bool Remove(Beat item)
         {
-            return data.Remove(item);
+            return data.Remove(item.Simplify());
         }
 
         public void Clear()
@@ -59,19 +50,14 @@ namespace CyanStars.Chart
             data.Clear();
         }
 
-        public int IndexOf(BpmGroupItem item)
+        public int IndexOf(Beat item)
         {
-            return data.IndexOf(item);
+            return data.IndexOfKey(item.Simplify());
         }
 
         public void RemoveAt(int index)
         {
             data.RemoveAt(index);
-        }
-
-        private void SortData()
-        {
-            data.Sort((item1, item2) => item1.StartBeat.ToFloat().CompareTo(item2.StartBeat.ToFloat()));
         }
 
 
@@ -92,33 +78,30 @@ namespace CyanStars.Chart
         /// <returns>int 形式的毫秒时间（相对于时间轴开始）</returns>
         public int CalculateTime(float fBeat)
         {
-            if (Data.Count == 1)
-            {
-                return (int)((60 / Data[0].Bpm) * fBeat * 1000);
-            }
+            if (Data.Count == 0)
+                throw new InvalidOperationException("BpmGroup Data 元素为空，无法计算 Beat 对应的时间");
 
-            int i = 0; // i 代表 fBeat 所在的 bpm 组下标
-            while (i < Data.Count - 1)
+            if (Data.Count == 1)
+                return (int)(60 / Data[0].Bpm * fBeat * 1000);
+
+            double sumTime = 0;
+            for (int i = 0; i < Data.Count - 1; i++)
             {
-                if (fBeat < Data[i + 1].StartBeat.ToFloat())
+                var cur = Data[i];
+                var next = Data[i + 1];
+                if (fBeat < next.StartBeat.ToFloat())
                 {
-                    break;
+                    // fBeat 落在当前 bpm 组中
+                    sumTime += CalculateMsDurationInSegment(cur.StartBeat.ToFloat(), fBeat, cur.Bpm);
+                    return (int)sumTime;
                 }
 
-                i++;
+                sumTime += CalculateMsDurationInSegment(cur.StartBeat, next.StartBeat, cur.Bpm);
             }
 
-
-            float sumTime = 0f;
-            for (int j = 0; j < i; j++)
-            {
-                sumTime += (Data[j + 1].StartBeat.ToFloat() - Data[j].StartBeat.ToFloat())
-                           * (60 / Data[j].Bpm) * 1000f;
-            }
-
-            sumTime += (fBeat - Data[i].StartBeat.ToFloat())
-                       * (60 / Data[i].Bpm) * 1000f;
-
+            // fBeat 落在最后的 bpm 组中
+            var last = Data[Data.Count - 1];
+            sumTime += CalculateMsDurationInSegment(last.StartBeat.ToFloat(), fBeat, last.Bpm);
             return (int)sumTime;
         }
 
@@ -148,11 +131,8 @@ namespace CyanStars.Chart
                 var currentItem = Data[i];
                 var nextItem = Data[i + 1];
 
-                // 计算当前 BPM 段持续了多少拍
-                float beatDuration = nextItem.StartBeat.ToFloat() - currentItem.StartBeat.ToFloat();
-
-                // 将拍数转换为毫秒：拍数 * (60 / BPM) * 1000
-                float timeDuration = beatDuration * (60f / currentItem.Bpm) * 1000f;
+                // 计算当前 BPM 段的持续时间
+                float timeDuration = CalculateMsDurationInSegment(currentItem.StartBeat, nextItem.StartBeat, currentItem.Bpm);
 
                 // 如果给定的时间在这个段内
                 if (remainingMs < timeDuration)
@@ -171,6 +151,18 @@ namespace CyanStars.Chart
             float finalBeatInSegment = (remainingMs / 1000f) * (lastItem.Bpm / 60f);
 
             return lastItem.StartBeat.ToFloat() + finalBeatInSegment;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static float CalculateMsDurationInSegment(Beat start, Beat end, float bpm)
+        {
+            return CalculateMsDurationInSegment(start.ToFloat(), end.ToFloat(), bpm);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static float CalculateMsDurationInSegment(float fStartBeat, float fEndBeat, float bpm)
+        {
+            return (fEndBeat - fStartBeat) * (60 / bpm) * 1000f;
         }
     }
 }

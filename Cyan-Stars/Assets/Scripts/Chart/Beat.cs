@@ -3,21 +3,41 @@ using UnityEngine;
 
 namespace CyanStars.Chart
 {
-    public readonly struct Beat : IEquatable<Beat>
+    public readonly struct Beat : IEquatable<Beat>, IComparable<Beat>
     {
         /// <summary>带分数拍子的整数部分</summary>
         public readonly int IntegerPart;
 
-        /// <summary>带分数拍子的分子</summary>
+        /// <summary>
+        /// 带分数拍子的分子
+        /// </summary>
         public readonly int Numerator;
 
         /// <summary>带分数拍子的分母，也作为节拍的细分精度</summary>
         public readonly int Denominator;
 
+        /// <summary>
+        /// 构造并验证 Beat
+        /// </summary>
+        /// <param name="integerPart">拍子的整数部分</param>
+        /// <param name="beat">返回的 Beat，验证失败返回 default</param>
+        public static bool TryCreateBeat(int integerPart, out Beat beat)
+        {
+            if (integerPart < 0)
+            {
+                Debug.LogError("integerPart必须大于等于 0");
+                beat = default;
+                return false;
+            }
+
+            beat = new Beat(integerPart, 0, 0);
+            return true;
+        }
+
         /// <summary>构造并验证 Beat</summary>
         /// <param name="integerPart">拍子的整数部分</param>
-        /// <param name="numerator">拍子的小数部分的分数</param>
-        /// <param name="denominator">拍子的小数部分的分母（细分精度），如果为 0，numerator 也视为0（只取 integerPart 部分）</param>
+        /// <param name="numerator">拍子的小数部分的分数，0 &lt;= value &lt; denominator </param>
+        /// <param name="denominator">拍子的小数部分的分母（细分精度），必须大于 0</param>
         /// <param name="beat">返回的 Beat，验证失败返回 default</param>
         public static bool TryCreateBeat(int integerPart, int numerator, int denominator, out Beat beat)
         {
@@ -90,6 +110,24 @@ namespace CyanStars.Chart
             return IntegerPart == other.IntegerPart && Numerator == other.Numerator && Denominator == other.Denominator;
         }
 
+        /// <summary>
+        /// 对两个 beat 进行等价性比较，返回 0 时代表比较对象等价，不代表按字段相等
+        /// <remarks>可使用 <see cref="Equals"/> 或 <see cref="op_Equality"/> <see cref="op_Inequality"/> 进行按字段相等性比较</remarks>
+        /// </summary>
+        public int CompareTo(Beat other)
+        {
+            if (IntegerPart != other.IntegerPart)
+                return IntegerPart.CompareTo(other.IntegerPart);
+
+            if (Denominator == other.Denominator)
+                return Denominator != 0 ? Numerator.CompareTo(other.Numerator) : 0;
+
+            ulong n1 = (ulong)Numerator * (ulong)other.Denominator;
+            ulong n2 = (ulong)other.Numerator * (ulong)Denominator;
+
+            return n1.CompareTo(n2);
+        }
+
         public override bool Equals(object obj)
         {
             return obj is Beat other && Equals(other);
@@ -106,11 +144,17 @@ namespace CyanStars.Chart
             }
         }
 
+        /// <summary>
+        /// 按字段相等性比较
+        /// </summary>
         public static bool operator ==(Beat left, Beat right)
         {
             return left.Equals(right);
         }
 
+        /// <summary>
+        /// 按字段相等性比较
+        /// </summary>
         public static bool operator !=(Beat left, Beat right)
         {
             return !left.Equals(right);
@@ -118,12 +162,33 @@ namespace CyanStars.Chart
 
         public static bool operator <(Beat left, Beat right)
         {
-            return left.ToFloat() < right.ToFloat();
+            return left.CompareTo(right) < 0;
         }
 
         public static bool operator >(Beat left, Beat right)
         {
-            return left.ToFloat() > right.ToFloat();
+            return left.CompareTo(right) > 0;
+        }
+
+        /// <summary>
+        /// 返回分数部分约分后的最简形式
+        /// </summary>
+        public Beat Simplify()
+        {
+            if (Denominator == 0 || Numerator == 0)
+            {
+                return new Beat(IntegerPart, 0, 0);
+            }
+
+            int a = Numerator;
+            int b = Denominator;
+            while (b != 0)
+            {
+                (a, b) = (b, a % b);
+            }
+            int gcd = a;
+
+            return new Beat(IntegerPart, Numerator / gcd, Denominator / gcd);
         }
     }
 }
