@@ -64,8 +64,8 @@ namespace CyanStars.Chart
 
 
         public ChartPackData(string title, List<MusicVersionData>? musicVersionDatas = null, BpmGroup? bpmGroup = null,
-            Beat? musicPreviewStartBeat = null, Beat? musicPreviewEndBeat = null, string? coverFilePath = null,
-            Vector2? cropPosition = null, float? cropHeight = null, List<ChartMetadata>? chartMetaDatas = null)
+                             Beat? musicPreviewStartBeat = null, Beat? musicPreviewEndBeat = null, string? coverFilePath = null,
+                             Vector2? cropPosition = null, float? cropHeight = null, List<ChartMetadata>? chartMetaDatas = null)
         {
             DataVersion = 1;
             Title = title;
@@ -84,9 +84,9 @@ namespace CyanStars.Chart
                 }
             }
 
-            if (musicPreviewStartBeat != null)
+            if (musicPreviewEndBeat != null)
             {
-                MusicPreviewEndBeat = (Beat)musicPreviewStartBeat;
+                MusicPreviewEndBeat = (Beat)musicPreviewEndBeat;
             }
             else
             {
