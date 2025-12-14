@@ -10,7 +10,6 @@ namespace CyanStars.Chart
 
         /// <summary>
         /// 带分数拍子的分子
-        /// <para>当 <see cref="Denominator"/> 为 0 时，分子应始终视为 0</para>
         /// </summary>
         public readonly int Numerator;
 
@@ -19,8 +18,8 @@ namespace CyanStars.Chart
 
         /// <summary>构造并验证 Beat</summary>
         /// <param name="integerPart">拍子的整数部分</param>
-        /// <param name="numerator">拍子的小数部分的分数</param>
-        /// <param name="denominator">拍子的小数部分的分母（细分精度），如果为 0，numerator 也视为0（只取 integerPart 部分）</param>
+        /// <param name="numerator">拍子的小数部分的分数，0 &lt;= value &lt; denominator </param>
+        /// <param name="denominator">拍子的小数部分的分母（细分精度），必须大于 0</param>
         /// <param name="beat">返回的 Beat，验证失败返回 default</param>
         public static bool TryCreateBeat(int integerPart, int numerator, int denominator, out Beat beat)
         {
@@ -167,9 +166,7 @@ namespace CyanStars.Chart
             int b = Denominator;
             while (b != 0)
             {
-                int temp = b;
-                b = a % b;
-                a = temp;
+                (a, b) = (b, a % b);
             }
             int gcd = a;
 

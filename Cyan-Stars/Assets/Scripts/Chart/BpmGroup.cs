@@ -78,12 +78,13 @@ namespace CyanStars.Chart
         /// <returns>int 形式的毫秒时间（相对于时间轴开始）</returns>
         public int CalculateTime(float fBeat)
         {
-            if (Data.Count == 1)
-            {
-                return (int)(60 / Data[0].Bpm * fBeat * 1000);
-            }
+            if (Data.Count == 0)
+                throw new InvalidOperationException("BpmGroup Data 元素为空，无法计算 Beat 对应的时间");
 
-            float sumTime = 0f;
+            if (Data.Count == 1)
+                return (int)(60 / Data[0].Bpm * fBeat * 1000);
+
+            double sumTime = 0;
             for (int i = 0; i < Data.Count - 1; i++)
             {
                 var cur = Data[i];
