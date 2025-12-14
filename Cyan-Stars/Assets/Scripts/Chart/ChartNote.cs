@@ -15,7 +15,7 @@ namespace CyanStars.Chart
         public float Pos { get; set; }
     }
 
-    public class BaseChartNoteData
+    public abstract class BaseChartNoteData
     {
         /// <summary>音符类型</summary>
         public NoteType Type;

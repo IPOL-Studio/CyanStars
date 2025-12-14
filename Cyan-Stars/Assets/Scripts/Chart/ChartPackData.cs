@@ -87,9 +87,9 @@ namespace CyanStars.Chart
                 }
             }
 
-            if (musicPreviewStartBeat != null)
+            if (musicPreviewEndBeat != null)
             {
-                MusicPreviewEndBeat = (Beat)musicPreviewStartBeat;
+                MusicPreviewEndBeat = (Beat)musicPreviewEndBeat;
             }
             else
             {
