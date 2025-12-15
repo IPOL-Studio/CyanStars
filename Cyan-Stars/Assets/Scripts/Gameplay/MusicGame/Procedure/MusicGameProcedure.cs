@@ -241,8 +241,11 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 谱面
             runtimeChartPack = chartModule.SelectedRuntimeChartPack;
-            chartModule.SelectChartData(0); // TODO: 根据选择的难度来加载谱面
-            chartData = await chartModule.GetChartDataAsync();
+            await chartModule.SelectChartDataAsync(0); // TODO: 根据选择的难度来加载谱面
+            if (chartModule.ChartData is null)
+            {
+                Debug.LogError("谱面加载失败");
+            }
 
 
             // 音乐
@@ -263,7 +266,7 @@ namespace CyanStars.Gameplay.MusicGame
 
                 // 时间轴
                 playingDataModule.CurTimelineLength = music.length + musicVersionData.Offset / 1000f;
-                playingDataModule.CalFullScore(chartData.Notes);
+                playingDataModule.CalFullScore(chartModule.ChartData.Notes);
             }
 
 

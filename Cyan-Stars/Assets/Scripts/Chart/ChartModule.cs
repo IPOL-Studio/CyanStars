@@ -35,7 +35,7 @@ namespace CyanStars.Chart
         /// <summary>
         /// 玩家谱包路径，位于用户数据
         /// </summary>
-        private string PlayerChartPacksFolderPath { get; } = PathUtil.Combine(Application.persistentDataPath, "ChartPacks");
+        public string PlayerChartPacksFolderPath { get; } = PathUtil.Combine(Application.persistentDataPath, "ChartPacks");
 
 
         /// <summary>
@@ -78,8 +78,7 @@ namespace CyanStars.Chart
         /// <summary>
         /// 当前加载的谱面
         /// </summary>
-        /// <remarks>外部调用时用 GetChartDataAsync()</remarks>
-        private ChartData? chartData;
+        public ChartData? ChartData { get; private set; }
 
         private string? lastChartDataHash;
         private AssetHandler<ChartData>? lastChartDataHandler;
@@ -229,7 +228,7 @@ namespace CyanStars.Chart
         /// 根据难度选中谱面
         /// </summary>
         /// <param name="difficulty">难度</param>
-        public void SelectChartData(ChartDifficulty difficulty)
+        public async Task SelectChartDataAsync(ChartDifficulty difficulty)
         {
             if (SelectedRuntimeChartPack is null)
             {
@@ -254,13 +253,14 @@ namespace CyanStars.Chart
             }
 
             SelectedChartIndex = index;
+            await LoadChartDataAsync();
         }
 
         /// <summary>
         /// 根据下标选中谱面
         /// </summary>
         /// <param name="index">谱面下标</param>
-        public void SelectChartData(int index)
+        public async Task SelectChartDataAsync(int index)
         {
             if (SelectedRuntimeChartPack is null)
             {
@@ -274,6 +274,7 @@ namespace CyanStars.Chart
             }
 
             SelectedChartIndex = index;
+            await LoadChartDataAsync();
         }
 
         /// <summary>
@@ -292,7 +293,7 @@ namespace CyanStars.Chart
         /// </summary>
         public void CancelSelectChartData()
         {
-            chartData = null;
+            ChartData = null;
             lastChartDataHash = null;
             lastChartDataHandler?.Unload();
             lastChartDataHandler = null;
@@ -302,18 +303,18 @@ namespace CyanStars.Chart
         /// 根据已选择的谱包和谱面下标加载谱面
         /// </summary>
         /// <returns>加载后的谱面数据</returns>
-        public async Task<ChartData?> GetChartDataAsync()
+        private async Task LoadChartDataAsync()
         {
             if (SelectedRuntimeChartPack is null)
             {
                 Debug.LogError("尚未选择谱包，无法加载谱面数据。");
-                return null;
+                return;
             }
 
             if (SelectedChartIndex is null)
             {
                 Debug.LogError("尚未选择谱面，无法加载谱面数据。");
-                return null;
+                return;
             }
 
             // TODO：计算谱面哈希并校验/覆盖元数据内容，目前假定 metadata.ChartHash 提供了正确的 Hash
@@ -325,20 +326,19 @@ namespace CyanStars.Chart
                 lastChartDataHandler?.Unload();
                 string chartFilePath = PathUtil.Combine(SelectedRuntimeChartPack.WorkspacePath, metadata.FilePath);
                 var handler = await GameRoot.Asset.LoadAssetAsync<ChartData>(chartFilePath);
-                chartData = handler.Asset;
+                var chartData = handler.Asset;
 
                 if (chartData == null)
                 {
                     Debug.LogError("获取谱面时异常，未加载");
-                    return null;
+                    return;
                 }
 
                 Debug.Log("已加载了新的的谱面");
+                ChartData = chartData;
                 lastChartDataHash = metadata.ChartHash;
                 lastChartDataHandler = handler;
             }
-
-            return chartData;
         }
 
 
