@@ -241,11 +241,9 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 谱面
             runtimeChartPack = chartModule.SelectedRuntimeChartPack;
-            if (chartModule.SelectedChartDifficulty != null)
-            {
-                await chartModule.GetChartDataFromDisk(runtimeChartPack, (ChartDifficulty)chartModule.SelectedChartDifficulty);
-                chartData = chartModule.ChartData;
-            }
+            chartModule.SelectChartData(0); // TODO: 根据选择的难度来加载谱面
+            chartData = await chartModule.GetChartDataAsync();
+
 
             // 音乐
             if (chartModule.SelectedMusicVersionIndex != null)
