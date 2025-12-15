@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ce91b17c92145649aa4ffff367f9ade, type: 3}
   m_Name: BundleBuildConfig
   m_EditorClassIdentifier: 
-  ManifestVersion: 4
+  ManifestVersion: 5
   TargetPlatforms: 13000000
   Options: 1
   GlobalCompress: 2
@@ -624,12 +624,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Scenes.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 1316854
+    AssetsLength: 1316931
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Scenes/ChartEditor.unity
-      Length: 1200301
+      Length: 1200378
     - Name: Assets/BundleRes/Scenes/Dark.unity
       Length: 57120
     - Name: Assets/BundleRes/Scenes/Warm.unity
