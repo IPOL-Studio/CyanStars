@@ -1,16 +1,21 @@
-﻿using CyanStars.Chart;
+﻿#nullable enable
+
+using CyanStars.Chart;
 
 namespace CyanStars.Gameplay.ChartEditor.Model
 {
     public class ChartEditorModel
     {
-        // 运行时数据，在实例化 Model 时固定
+        // 元数据，在实例化 Model 时固定
         private readonly string WorkspacePath; // 当前的工作区绝对路径（谱包索引文件所在路径）
         private readonly ChartMetadata ChartMetadata; // 当前编辑的谱面对应的谱包中的元数据
 
         // 当前正在编辑的谱包和谱面内容
-        public ChartPackData ChartPackData;
-        public ChartData ChartData;
+        public BindableProperty<ChartPackData> ChartPackData;
+        public BindableProperty<ChartData> ChartData;
+
+        // 运行时数据
+        public readonly BindableProperty<EditTool> SelectedEditTool = new BindableProperty<EditTool>();
 
 
         // 构造函数
@@ -22,8 +27,8 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             WorkspacePath = workspacePath;
             ChartMetadata = chartMetadata;
 
-            ChartPackData = chartPackData;
-            ChartData = chartData;
+            ChartPackData = new BindableProperty<ChartPackData>(chartPackData);
+            ChartData = new BindableProperty<ChartData>(chartData);
         }
     }
 }

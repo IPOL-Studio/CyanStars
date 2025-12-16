@@ -1,5 +1,5 @@
-﻿using CyanStars.Chart;
-using CyanStars.Framework;
+﻿using System.Collections.Generic;
+using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
@@ -9,6 +9,9 @@ namespace CyanStars.Gameplay.ChartEditor
 {
     public class MvvmBindManager : MonoBehaviour
     {
+        [SerializeField]
+        private List<ToolbarItemView> toolbarItemViews;
+
         /// <summary>
         /// 创建 Model 、ViewModel 并启动绑定
         /// </summary>
@@ -20,6 +23,12 @@ namespace CyanStars.Gameplay.ChartEditor
                               CommandManager commandManager)
         {
             ChartEditorModel model = new ChartEditorModel(workspacePath, chartMetadata, chartPackData, chartData);
+
+            var toolbarViewModel = new ToolbarViewModel(model, commandManager);
+            foreach (var item in toolbarItemViews)
+            {
+                item.Bind(toolbarViewModel);
+            }
         }
     }
 }
