@@ -1181,8 +1181,8 @@ RectTransform:
   - {fileID: 1463926676}
   - {fileID: 515994372}
   - {fileID: 371389903}
-  - {fileID: 1019238895}
   - {fileID: 967489637}
+  - {fileID: 1019238895}
   m_Father: {fileID: 7757076495158782889}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1369,8 +1369,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1595764879}
   m_HandleRect: {fileID: 1595764877}
   m_Direction: 2
-  m_Value: 1.0000031
-  m_Size: 0.6310428
+  m_Value: 1.0000029
+  m_Size: 0.61728644
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4525,7 +4525,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1070775234}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.41596287
+  m_Size: 0.40864152
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6977,7 +6977,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 602.49994}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &442738496
 MonoBehaviour:
@@ -8081,7 +8081,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 510722460}
-  tool: 0
+  editToolType: 0
 --- !u!1 &515994371
 GameObject:
   m_ObjectHideFlags: 0
@@ -10625,7 +10625,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 629978654}
-  tool: 6
+  editToolType: 0
 --- !u!1001 &632414240
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14908,6 +14908,7 @@ MonoBehaviour:
   - {fileID: 978119768}
   - {fileID: 1072960161}
   - {fileID: 629978655}
+  menuButtonsView: {fileID: 1633411530}
 --- !u!1001 &931541485
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15619,7 +15620,7 @@ RectTransform:
   m_Children:
   - {fileID: 711606493}
   m_Father: {fileID: 74583993}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -16229,7 +16230,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 978119767}
-  tool: 4
+  editToolType: 0
 --- !u!1 &995905886
 GameObject:
   m_ObjectHideFlags: 0
@@ -16552,7 +16553,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1486000169}
   m_HandleRect: {fileID: 1486000168}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -16782,7 +16783,7 @@ RectTransform:
   m_Children:
   - {fileID: 277405298}
   m_Father: {fileID: 74583993}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -17830,7 +17831,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 1072960160}
-  tool: 5
+  editToolType: 0
 --- !u!1 &1078332145
 GameObject:
   m_ObjectHideFlags: 0
@@ -23358,8 +23359,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 702.49994, y: 0}
-  m_SizeDelta: {x: 1404.9999, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1514540016
 MonoBehaviour:
@@ -25191,7 +25192,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1633411524}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2836e5c5bbb19bb4789a89ee041cf948, type: 3}
+  m_Script: {fileID: 11500000, guid: ee913eb16a3c482eb0b6fcf0e097bcca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   functionToggle: {fileID: 7757076495158782890}
@@ -25202,7 +25203,7 @@ MonoBehaviour:
   chartDataButton: {fileID: 1400299830}
   musicVersionButton: {fileID: 1463926677}
   bpmGroupButton: {fileID: 515994373}
-  speedGroupButton: {fileID: 371389904}
+  speedTemplateButton: {fileID: 371389904}
   exitSimplificationModeButton: {fileID: 967489638}
   enterSimplificationModeButton: {fileID: 1019238896}
 --- !u!1 &1643976272
@@ -26012,7 +26013,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 1718087323}
-  tool: 1
+  editToolType: 0
 --- !u!1 &1725687547
 GameObject:
   m_ObjectHideFlags: 0
@@ -27736,7 +27737,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 1936457939}
-  tool: 2
+  editToolType: 0
 --- !u!1 &1939229441
 GameObject:
   m_ObjectHideFlags: 0
@@ -29056,7 +29057,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 2061097426}
-  tool: 3
+  editToolType: 0
 --- !u!1 &2075881149
 GameObject:
   m_ObjectHideFlags: 0
@@ -33889,8 +33890,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 468.6667, y: 0}
-  m_SizeDelta: {x: 857.3334, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1618376876673323538
 MonoBehaviour:

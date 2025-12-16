@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
@@ -11,7 +13,11 @@ namespace CyanStars.Gameplay.ChartEditor
     public class MvvmBindManager : MonoBehaviour
     {
         [SerializeField]
-        private List<ToolbarItemView> toolbarItemViews;
+        private List<ToolbarItemView> toolbarItemViews = null!;
+
+        [SerializeField]
+        private MenuButtonsView menuButtonsView = null!;
+
 
         /// <summary>
         /// 创建 Model 、ViewModel 并启动绑定
@@ -30,6 +36,9 @@ namespace CyanStars.Gameplay.ChartEditor
             {
                 item.Bind(toolbarViewModel);
             }
+
+            var menuButtonsViewModel = new MenuButtonsViewModel(model, commandManager);
+            menuButtonsView.Bind(menuButtonsViewModel);
         }
     }
 }

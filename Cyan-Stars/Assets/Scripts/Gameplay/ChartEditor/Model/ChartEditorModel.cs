@@ -15,7 +15,12 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public BindableProperty<ChartData> ChartData;
 
         // 运行时数据
-        public readonly BindableProperty<EditTool> SelectedEditTool = new BindableProperty<EditTool>();
+        public readonly BindableProperty<EditToolType> SelectedEditTool = new BindableProperty<EditToolType>();
+        public readonly BindableProperty<bool> ChartPackDataCanvasVisibility = new BindableProperty<bool>();
+        public readonly BindableProperty<bool> ChartDataCanvasVisibility = new BindableProperty<bool>();
+        public readonly BindableProperty<bool> MusicVersionCanvasVisibility = new BindableProperty<bool>();
+        public readonly BindableProperty<bool> BpmGroupCanvasVisibility = new BindableProperty<bool>();
+        public readonly BindableProperty<bool> SpeedTemplateCanvasVisibility = new BindableProperty<bool>(); // TODO
 
 
         // 构造函数

@@ -13,7 +13,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private Toggle toggle = null!;
 
         [SerializeField]
-        private EditTool tool;
+        private EditToolType editToolType;
 
 
         public override void Bind(ToolbarViewModel viewModel)
@@ -28,13 +28,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     return;
                 }
 
-                ViewModel.SelectTool(this.tool);
+                ViewModel.SelectTool(this.editToolType);
             });
         }
 
-        private void RefreshUI(EditTool editTool)
+        private void RefreshUI(EditToolType editToolType)
         {
-            if (tool == editTool && !toggle.isOn)
+            if (this.editToolType == editToolType && !toggle.isOn)
             {
                 toggle.isOn = true;
             }

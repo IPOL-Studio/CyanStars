@@ -11,7 +11,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         /// <summary>
         /// 选中的 EditTool 变化时通知 View 刷新
         /// </summary>
-        public event Action<EditTool>? OnEditToolChanged;
+        public event Action<EditToolType>? OnEditToolChanged;
 
         /// <summary>
         /// 构造与绑定
@@ -28,15 +28,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         /// <summary>
         /// View 传入绑定
         /// </summary>
-        public void SelectTool(EditTool tool)
+        public void SelectTool(EditToolType editToolType)
         {
-            if (tool == Model.SelectedEditTool.Value)
+            if (editToolType == Model.SelectedEditTool.Value)
             {
                 return;
             }
 
             // 修改工具的行为目前不需要支持撤销重做，直接修改即可
-            Model.SelectedEditTool.Value = tool;
+            Model.SelectedEditTool.Value = editToolType;
         }
     }
 }

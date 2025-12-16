@@ -1,6 +1,6 @@
 namespace CyanStars.Gameplay.ChartEditor.Model
 {
-    public enum EditTool
+    public enum EditToolType
     {
         Select,
         TapPen,
