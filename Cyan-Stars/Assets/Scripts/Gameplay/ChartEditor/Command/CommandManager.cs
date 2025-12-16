@@ -1,17 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace CyanStars.Gameplay.ChartEditor
+namespace CyanStars.Gameplay.ChartEditor.Command
 {
-    /// <summary>
-    /// 用于撤销重做系统的接口
-    /// </summary>
-    public interface ICommand
-    {
-        void Execute();
-        void Undo();
-    }
-
     public class CommandManager : MonoBehaviour
     {
         private readonly Stack<ICommand> UndoStack = new Stack<ICommand>();
