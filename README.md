@@ -62,6 +62,14 @@ git submodule update --init --recursive
 
 或从 [Unity 官网](https://unity3d.com/get-unity/download/archive) 手动下载 `2020.3.49f1` 版本的编辑器。
 
+### 导入项目和依赖包
+
+在 Unity 中选择打开 `Cyan-Stars` 项目目录。
+
+项目依赖于 Unity 包和 Nuget 包，首次启动时将通过 Unity 编辑器自动下载安装 Unity 包，选择 `Ignore` 忽略编译错误后 Nuget For Unity 将自动下载安装 Nuget 包。
+
+重启编辑器并打开 `CyanStarsEntry` 场景。
+
 ### 下载其他必要资源
 
 [Live2D Cubism SDK for Unity](https://www.live2d.com/zh-CHS/sdk/download/unity/) - 一个第三方 Unity 包，用于在 Unity 项目中播放 Live2D 资源。在同意协议后、下载并拖动到 Unity 编辑器内导入，然后重启一次编辑器。
