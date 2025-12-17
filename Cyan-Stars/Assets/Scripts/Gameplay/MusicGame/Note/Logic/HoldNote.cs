@@ -15,7 +15,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// Hold 音符尾对应的变速组
         /// </summary>
-        private SpeedGroup endSpeedGroup;
+        private SpeedTemplate endSpeedTemplate;
 
         /// <summary>
         /// 音符尾判定时间（s）
@@ -67,8 +67,8 @@ namespace CyanStars.Gameplay.MusicGame
             Pos = (data as HoldChartNoteData).Pos;
             endTime = BpmGroupHelper.CalculateTime(bpmGroup, (data as HoldChartNoteData).EndJudgeBeat) / 1000f;
 
-            endSpeedGroup =
-                new SpeedGroup(chartData.SpeedGroupDatas[(data as HoldChartNoteData).HoldEndSpeedGroupIndex],
+            endSpeedTemplate =
+                new SpeedTemplate(chartData.SpeedGroupDatas[(data as HoldChartNoteData).HoldEndSpeedGroupIndex],
                     1f);
         }
 
@@ -82,7 +82,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnUpdateInAutoMode(curLogicTime);
 
-            EndViewDistance = endSpeedGroup.GetDistance(LogicTimeDistance * 1000f);
+            EndViewDistance = endSpeedTemplate.GetDistance(LogicTimeDistance * 1000f);
 
             HoldViewObject holdViewObject = ViewObject as HoldViewObject;
 
@@ -116,7 +116,7 @@ namespace CyanStars.Gameplay.MusicGame
             float deltaTime = curLogicTime - CurLogicTime;
             base.OnUpdate(curLogicTime);
 
-            EndViewDistance = endSpeedGroup.GetDistance((CurLogicTime - endTime) * 1000);
+            EndViewDistance = endSpeedTemplate.GetDistance((CurLogicTime - endTime) * 1000);
 
             // 头判 Miss
             if (!headChecked && EvaluateHelper.IsMiss(LogicTimeDistance))

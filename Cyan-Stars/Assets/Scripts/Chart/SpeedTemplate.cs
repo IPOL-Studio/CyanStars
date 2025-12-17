@@ -6,7 +6,7 @@ namespace CyanStars.Chart
     /// <summary>
     /// 加载到游戏内的速度组
     /// </summary>
-    public class SpeedGroup
+    public class SpeedTemplate
     {
         /// <summary>
         /// 从曲线转为离散速度时，采样时间间隔（ms）
@@ -29,23 +29,23 @@ namespace CyanStars.Chart
         /// <summary>
         /// 构造实例并生成速度和距离采样点
         /// </summary>
-        public SpeedGroup(SpeedGroupData speedGroupData, float playerSpeed = 1f) // TODO: 外部传入玩家速度
+        public SpeedTemplate(SpeedTemplateData speedTemplateData, float playerSpeed = 1f) // TODO: 外部传入玩家速度
         {
-            if (speedGroupData.Type == SpeedGroupType.Absolute)
+            if (speedTemplateData.Type == SpeedGroupType.Absolute)
             {
                 playerSpeed = 1f;
             }
 
             // 根据持续时间计算采样点数量
-            int length = (int)Mathf.Abs(speedGroupData.BezierCurve
-                .ControlPoints[speedGroupData.BezierCurve.ControlPoints.Count - 1].Position.x);
+            int length = (int)Mathf.Abs(speedTemplateData.BezierCurve
+                .ControlPoints[speedTemplateData.BezierCurve.ControlPoints.Count - 1].Position.x);
             int count = length / SampleInterval + 1;
 
             // 生成speedList
             for (int i = 0; i < count; i++)
             {
                 int time = i * SampleInterval * -1;
-                float speed = speedGroupData.BezierCurve.GetValue(time) * playerSpeed;
+                float speed = speedTemplateData.BezierCurve.GetValue(time) * playerSpeed;
                 speedList.Add(speed);
             }
 

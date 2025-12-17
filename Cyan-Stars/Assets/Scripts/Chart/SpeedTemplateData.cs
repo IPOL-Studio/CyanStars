@@ -14,7 +14,7 @@ namespace CyanStars.Chart
     }
 
     [Serializable]
-    public class SpeedGroupData
+    public class SpeedTemplateData
     {
         /// <summary>变速组名称</summary>
         /// <remarks>方便谱师识别，相当于备注，没有其他作用</remarks>
@@ -30,7 +30,7 @@ namespace CyanStars.Chart
         /// </remarks>
         public BezierCurve BezierCurve;
 
-        public SpeedGroupData(SpeedGroupType type, BezierCurve bezierCurve = null)
+        public SpeedTemplateData(SpeedGroupType type, BezierCurve bezierCurve = null)
         {
             Name = "";
             Type = type;

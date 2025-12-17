@@ -17,7 +17,7 @@ namespace CyanStars.Chart
 
         /// <summary>变速组</summary>
         /// <remarks>必定存在一个相对 1 速的变速组，不可编辑或删除</remarks>
-        public List<SpeedGroupData> SpeedGroupDatas;
+        public List<SpeedTemplateData> SpeedGroupDatas;
 
         /// <summary>谱面音符数据</summary>
         public List<BaseChartNoteData> Notes;
@@ -28,14 +28,14 @@ namespace CyanStars.Chart
         public List<ChartTrackData> TrackDatas;
 
 
-        public ChartData(int readyBeat = 4, List<SpeedGroupData>? speedGroupDatas = null,
+        public ChartData(int readyBeat = 4, List<SpeedTemplateData>? speedGroupDatas = null,
             List<BaseChartNoteData>? notes = null, List<ChartTrackData>? trackDatas = null)
         {
             ReadyBeat = readyBeat;
             SpeedGroupDatas = speedGroupDatas ??
-                              new List<SpeedGroupData>()
+                              new List<SpeedTemplateData>()
                               {
-                                  new SpeedGroupData(SpeedGroupType.Relative, new BezierCurve())
+                                  new SpeedTemplateData(SpeedGroupType.Relative, new BezierCurve())
                               };
             Notes = notes ?? new List<BaseChartNoteData>();
             TrackDatas = trackDatas ?? new List<ChartTrackData>();
