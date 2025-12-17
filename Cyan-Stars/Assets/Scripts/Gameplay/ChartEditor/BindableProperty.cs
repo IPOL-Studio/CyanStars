@@ -28,5 +28,13 @@ namespace CyanStars.Gameplay.ChartEditor
         {
             this.value = initialValue;
         }
+
+        /// <summary>
+        /// 强制触发一次 OnValueChanged，无论值是否变化，用于 VM 强制刷新 V 中的脏数据
+        /// </summary>
+        public void ForceNotify()
+        {
+            OnValueChanged?.Invoke(this.value);
+        }
     }
 }

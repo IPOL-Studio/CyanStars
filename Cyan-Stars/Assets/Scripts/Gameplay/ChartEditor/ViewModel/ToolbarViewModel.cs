@@ -8,10 +8,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class ToolbarViewModel : BaseViewModel
     {
-        /// <summary>
-        /// 选中的 EditTool 变化时通知 View 刷新
-        /// </summary>
-        public event Action<EditToolType>? OnEditToolChanged;
+        public readonly BindableProperty<EditToolType> SelectedEditTool = new BindableProperty<EditToolType>();
 
         /// <summary>
         /// 构造与绑定
@@ -19,9 +16,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ToolbarViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
-            Model.SelectedEditTool.OnValueChanged += (tool) =>
+            SelectedEditTool.Value = Model.SelectedEditTool.Value;
+
+            Model.SelectedEditTool.OnValueChanged += value =>
             {
-                OnEditToolChanged?.Invoke(tool);
+                SelectedEditTool.Value = value;
             };
         }
 

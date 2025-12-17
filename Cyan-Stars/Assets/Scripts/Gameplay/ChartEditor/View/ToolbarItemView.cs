@@ -20,7 +20,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(viewModel);
 
-            ViewModel.OnEditToolChanged += RefreshUI;
+            toggle.isOn = ViewModel.SelectedEditTool.Value == editToolType;
+
+            ViewModel.SelectedEditTool.OnValueChanged += RefreshUI;
             toggle.onValueChanged.AddListener((isOn) =>
             {
                 if (!isOn)
@@ -32,9 +34,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
             });
         }
 
-        private void RefreshUI(EditToolType editToolType)
+        private void RefreshUI(EditToolType type)
         {
-            if (this.editToolType == editToolType && !toggle.isOn)
+            if (this.editToolType == type && !toggle.isOn)
             {
                 toggle.isOn = true;
             }
@@ -42,7 +44,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected override void OnDestroy()
         {
-            ViewModel.OnEditToolChanged -= RefreshUI;
+            ViewModel.SelectedEditTool.OnValueChanged += RefreshUI;
             toggle.onValueChanged.RemoveAllListeners();
         }
     }

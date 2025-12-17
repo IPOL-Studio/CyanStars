@@ -18,6 +18,9 @@ namespace CyanStars.Gameplay.ChartEditor
         [SerializeField]
         private MenuButtonsView menuButtonsView = null!;
 
+        [SerializeField]
+        private EditorAttributeView editorAttributeView = null!;
+
 
         /// <summary>
         /// 创建 Model 、ViewModel 并启动绑定
@@ -39,6 +42,9 @@ namespace CyanStars.Gameplay.ChartEditor
 
             var menuButtonsViewModel = new MenuButtonsViewModel(model, commandManager);
             menuButtonsView.Bind(menuButtonsViewModel);
+
+            var editorAttributeViewModel = new EditorAttributeViewModel(model, commandManager);
+            editorAttributeView.Bind(editorAttributeViewModel);
         }
     }
 }
