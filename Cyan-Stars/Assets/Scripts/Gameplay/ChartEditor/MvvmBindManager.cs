@@ -21,6 +21,9 @@ namespace CyanStars.Gameplay.ChartEditor
         [SerializeField]
         private EditorAttributeView editorAttributeView = null!;
 
+        [SerializeField]
+        private ChartPackDataView chartPackDataView = null!;
+
 
         /// <summary>
         /// 创建 Model 、ViewModel 并启动绑定
@@ -45,6 +48,9 @@ namespace CyanStars.Gameplay.ChartEditor
 
             var editorAttributeViewModel = new EditorAttributeViewModel(model, commandManager);
             editorAttributeView.Bind(editorAttributeViewModel);
+
+            var chartPackDataViewModel = new ChartPackDataViewModel(model, commandManager);
+            chartPackDataView.Bind(chartPackDataViewModel);
         }
     }
 }

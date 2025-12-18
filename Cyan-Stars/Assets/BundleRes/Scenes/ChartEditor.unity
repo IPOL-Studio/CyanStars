@@ -776,28 +776,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 42740033}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e0ddf7bc8f34804a98aaa34dee7d9d2, type: 3}
+  m_Script: {fileID: 11500000, guid: f28c219c91c54bbe8b3af49bdc8e1715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 42740036}
-  closeCanvaButton: {fileID: 1393088944}
-  contentObject: {fileID: 2138882008}
   chartPackTitleField: {fileID: 261047217}
-  previewStartField1: {fileID: 876355761}
-  previewStartField2: {fileID: 563092408}
-  previewStartField3: {fileID: 618115980}
-  previewEndField1: {fileID: 1802403467}
-  previewEndField2: {fileID: 1709331786}
-  previewEndField3: {fileID: 521328391}
-  coverPath: {fileID: 1668466727}
+  previewStartBeatField1: {fileID: 876355761}
+  previewStartBeatField2: {fileID: 563092408}
+  previewStartBeatField3: {fileID: 618115980}
+  previewEndBeatField1: {fileID: 1802403467}
+  previewEndBeatField2: {fileID: 1709331786}
+  previewEndBeatField3: {fileID: 521328391}
+  coverPathText: {fileID: 1668466727}
   importCoverButton: {fileID: 1925911995}
-  chartCropFrame: {fileID: 1514540014}
-  aspectRatioFitter: {fileID: 442738496}
-  backRawImage: {fileID: 1975465786}
-  topRawImage: {fileID: 549145903}
-  rectMask: {fileID: 141663278}
-  imageFrameRect: {fileID: 442738495}
-  coverCropAreaRect: {fileID: 978114220}
   exportChartPackButton: {fileID: 1354379450}
 --- !u!223 &42740036 stripped
 Canvas:
@@ -14888,6 +14879,7 @@ MonoBehaviour:
   - {fileID: 629978655}
   menuButtonsView: {fileID: 1633411530}
   editorAttributeView: {fileID: 1037237909}
+  chartPackDataView: {fileID: 42740034}
 --- !u!1001 &931541485
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21448,17 +21440,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1389153729}
   m_CullTransparentMesh: 1
---- !u!114 &1393088944 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 994941278905508766, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
-  m_PrefabInstance: {fileID: 945222145}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1400299828
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using CyanStars.Chart;
+using CyanStars.Gameplay.ChartEditor.BindableProperty;
 
 namespace CyanStars.Gameplay.ChartEditor.Model
 {

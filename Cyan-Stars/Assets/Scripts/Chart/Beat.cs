@@ -25,7 +25,6 @@ namespace CyanStars.Chart
         {
             if (integerPart < 0)
             {
-                Debug.LogError("integerPart必须大于等于 0");
                 beat = default;
                 return false;
             }

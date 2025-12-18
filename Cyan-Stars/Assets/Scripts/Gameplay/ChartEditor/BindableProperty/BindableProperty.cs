@@ -1,32 +1,35 @@
 ﻿using System;
 
-namespace CyanStars.Gameplay.ChartEditor
+namespace CyanStars.Gameplay.ChartEditor.BindableProperty
 {
     /// <summary>
     /// 用于 MVVM 绑定的可观察的属性包装，在属性引用变化时自动触发 OnValueChanged
     /// </summary>
     /// <remarks>不适用于 List 等集合类，因为修改集合内数据不会修改引用</remarks>
-    public class BindableProperty<T>
+    public class BindableProperty<T> : IReadonlyBindableProperty<T>
     {
         private T value;
         public event Action<T> OnValueChanged;
 
+
         public T Value
         {
-            get => this.value;
+            get => value;
             set
             {
-                if (!Equals(this.value, value))
+                if (Equals(this.value, value))
                 {
-                    this.value = value;
-                    OnValueChanged?.Invoke(this.value);
+                    return;
                 }
+
+                this.value = value;
+                OnValueChanged?.Invoke(this.value);
             }
         }
 
         public BindableProperty(T initialValue = default)
         {
-            this.value = initialValue;
+            value = initialValue;
         }
 
         /// <summary>
@@ -34,7 +37,7 @@ namespace CyanStars.Gameplay.ChartEditor
         /// </summary>
         public void ForceNotify()
         {
-            OnValueChanged?.Invoke(this.value);
+            OnValueChanged?.Invoke(value);
         }
     }
 }
