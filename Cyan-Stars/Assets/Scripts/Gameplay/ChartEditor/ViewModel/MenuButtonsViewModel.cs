@@ -9,28 +9,30 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class MenuButtonsViewModel : BaseViewModel
     {
-        public readonly BindableProperty<bool> FunctionCanvasVisibility = new BindableProperty<bool>(false);
+        private readonly BindableProperty<bool> functionCanvasVisibility;
+        public IReadonlyBindableProperty<bool> FunctionCanvasVisibility => functionCanvasVisibility;
 
 
         public MenuButtonsViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
+            functionCanvasVisibility = new BindableProperty<bool>(false);
         }
 
         public void SetFunctionCanvasVisibility(bool newValue)
         {
-            if (FunctionCanvasVisibility.Value == newValue)
+            if (functionCanvasVisibility.Value == newValue)
             {
                 return;
             }
 
-            bool oldValue = FunctionCanvasVisibility.Value;
+            bool oldValue = functionCanvasVisibility.Value;
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
-                    FunctionCanvasVisibility.Value = newValue;
+                    functionCanvasVisibility.Value = newValue;
                 }, () =>
                 {
-                    FunctionCanvasVisibility.Value = oldValue;
+                    functionCanvasVisibility.Value = oldValue;
                 }
             ));
         }
