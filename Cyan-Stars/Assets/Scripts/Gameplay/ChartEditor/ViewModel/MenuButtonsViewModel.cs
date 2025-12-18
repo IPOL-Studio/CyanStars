@@ -8,7 +8,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class MenuButtonsViewModel : BaseViewModel
     {
-        public readonly BindableProperty<bool> FunctionCanvasVisibility = new BindableProperty<bool>();
+        public readonly BindableProperty<bool> FunctionCanvasVisibility = new BindableProperty<bool>(false);
 
 
         public MenuButtonsViewModel(ChartEditorModel model, CommandManager commandManager)

@@ -48,6 +48,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
+            functionToggle.isOn = false;
+            functionCanvas.enabled = ViewModel.FunctionCanvasVisibility.Value;
+
             ViewModel.FunctionCanvasVisibility.OnValueChanged += RefreshFunctionCanvas;
 
             functionToggle.onValueChanged.AddListener(ViewModel.SetFunctionCanvasVisibility);
