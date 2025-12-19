@@ -1,4 +1,7 @@
-﻿using CyanStars.Gameplay.ChartEditor.ViewModel;
+﻿#nullable enable
+
+using CyanStars.Chart;
+using CyanStars.Gameplay.ChartEditor.ViewModel;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +10,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
 {
     public class ChartDataView : BaseView<ChartDataViewModel>
     {
+        [SerializeField]
+        private Canvas chartDataCanvas = null!;
+
+        [SerializeField]
+        private Button closeCanvasButton = null!;
+
         [SerializeField]
         private Toggle kuiXingToggle = null!;
 
@@ -32,10 +41,68 @@ namespace CyanStars.Gameplay.ChartEditor.View
         public override void Bind(ChartDataViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
+
+            chartDataCanvas.enabled = ViewModel.ChartDataCanvasVisibility.Value;
+
+            ViewModel.ChartDataCanvasVisibility.OnValueChanged += SetCanvasVisibility;
+
+            closeCanvasButton.onClick.AddListener(ViewModel.CloseCanvas);
+            kuiXingToggle.onValueChanged.AddListener(isOn =>
+            {
+                if (isOn)
+                {
+                    ViewModel.SetChartDifficulty(ChartDifficulty.KuiXing);
+                }
+            });
+            qiMingToggle.onValueChanged.AddListener(isOn =>
+            {
+                if (isOn)
+                {
+                    ViewModel.SetChartDifficulty(ChartDifficulty.QiMing);
+                }
+            });
+            tianShuToggle.onValueChanged.AddListener(isOn =>
+            {
+                if (isOn)
+                {
+                    ViewModel.SetChartDifficulty(ChartDifficulty.TianShu);
+                }
+            });
+            wuYinToggle.onValueChanged.AddListener(isOn =>
+            {
+                if (isOn)
+                {
+                    ViewModel.SetChartDifficulty(ChartDifficulty.WuYin);
+                }
+            });
+            undefinedToggle.onValueChanged.AddListener(isOn =>
+            {
+                if (isOn)
+                {
+                    ViewModel.SetChartDifficulty(null);
+                }
+            });
+            levelField.onValueChanged.AddListener(ViewModel.SetChartLevelString);
+            readyBeatField.onValueChanged.AddListener(ViewModel.SetReadyBeatCount);
+        }
+
+        private void SetCanvasVisibility(bool visible)
+        {
+            chartDataCanvas.enabled = visible;
         }
 
         protected override void OnDestroy()
         {
+            ViewModel.ChartDataCanvasVisibility.OnValueChanged -= SetCanvasVisibility;
+
+            closeCanvasButton.onClick.RemoveAllListeners();
+            kuiXingToggle.onValueChanged.RemoveAllListeners();
+            qiMingToggle.onValueChanged.RemoveAllListeners();
+            tianShuToggle.onValueChanged.RemoveAllListeners();
+            wuYinToggle.onValueChanged.RemoveAllListeners();
+            undefinedToggle.onValueChanged.RemoveAllListeners();
+            levelField.onValueChanged.RemoveAllListeners();
+            readyBeatField.onValueChanged.RemoveAllListeners();
         }
     }
 }
