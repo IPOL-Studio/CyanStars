@@ -22,7 +22,7 @@ public class ChartEditorSceneRoot : MonoBehaviour
         var chartModule = GameRoot.GetDataModule<ChartModule>();
 
         string workspacePath;
-        ChartMetadata chartMetadata;
+        int chartMetadataIndex;
         ChartPackData chartPackData;
         ChartData chartData;
 
@@ -33,8 +33,10 @@ public class ChartEditorSceneRoot : MonoBehaviour
 
             workspacePath = PathUtil.Combine(chartModule.PlayerChartPacksFolderPath, randomName);
             chartData = new ChartData();
-            chartMetadata = new ChartMetadata(randomName);
+            ChartMetadata chartMetadata = new ChartMetadata(randomName);
             chartPackData = new ChartPackData(randomName, chartMetaDatas: new List<ChartMetadata> { chartMetadata });
+
+            chartMetadataIndex = 0;
         }
         else if (chartModule.ChartData is null)
         {
@@ -49,7 +51,7 @@ public class ChartEditorSceneRoot : MonoBehaviour
             throw new NotImplementedException(); //TODO
         }
 
-        mvvmBindManager.StartBind(workspacePath, chartMetadata, chartPackData, chartData, commandManager);
+        mvvmBindManager.StartBind(workspacePath, chartMetadataIndex, chartPackData, chartData, commandManager);
     }
 
     /// <summary>

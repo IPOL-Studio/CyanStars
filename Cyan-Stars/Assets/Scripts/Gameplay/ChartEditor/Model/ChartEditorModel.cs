@@ -8,8 +8,8 @@ namespace CyanStars.Gameplay.ChartEditor.Model
     public class ChartEditorModel
     {
         // 元数据，在实例化 Model 时固定
-        private readonly string WorkspacePath; // 当前的工作区绝对路径（谱包索引文件所在路径）
-        private readonly ChartMetadata ChartMetadata; // 当前编辑的谱面对应的谱包中的元数据
+        public string WorkspacePath { get; } // 当前的工作区绝对路径（谱包索引文件所在路径）
+        public int ChartMetadataIndex { get; } // 当前编辑的谱面对应的谱包中的元数据
 
         // 当前正在编辑的谱包和谱面内容
         public BindableProperty<ChartPackData> ChartPackData;
@@ -32,12 +32,12 @@ namespace CyanStars.Gameplay.ChartEditor.Model
 
         // 构造函数
         public ChartEditorModel(string workspacePath,
-                                ChartMetadata chartMetadata,
+                                int chartMetadataIndex,
                                 ChartPackData chartPackData,
                                 ChartData chartData)
         {
             WorkspacePath = workspacePath;
-            ChartMetadata = chartMetadata;
+            ChartMetadataIndex = chartMetadataIndex;
 
             ChartPackData = new BindableProperty<ChartPackData>(chartPackData);
             ChartData = new BindableProperty<ChartData>(chartData);

@@ -30,12 +30,12 @@ namespace CyanStars.Gameplay.ChartEditor
         /// </summary>
         /// <remarks>注意：由于引用关系，制谱器会修改传入的谱包和谱面实例内的数据。请先深拷贝一个谱包和谱面，再调用制谱器初始化</remarks>
         public void StartBind(string workspacePath,
-                              ChartMetadata chartMetadata,
+                              int chartMetadataIndex,
                               ChartPackData chartPackData,
                               ChartData chartData,
                               CommandManager commandManager)
         {
-            ChartEditorModel model = new ChartEditorModel(workspacePath, chartMetadata, chartPackData, chartData);
+            ChartEditorModel model = new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData);
 
             var toolbarViewModel = new ToolbarViewModel(model, commandManager);
             foreach (var item in toolbarItemViews)

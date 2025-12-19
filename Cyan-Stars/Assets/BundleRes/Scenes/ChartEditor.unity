@@ -780,6 +780,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 42740036}
+  closeCanvasButton: {fileID: 0}
   chartPackTitleField: {fileID: 261047217}
   previewStartBeatField1: {fileID: 876355761}
   previewStartBeatField2: {fileID: 563092408}
@@ -6957,7 +6958,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 602.49994}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &442738496
 MonoBehaviour:
@@ -21551,7 +21552,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320301, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320303, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Pivot.x
@@ -21658,34 +21659,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1403133576}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c3cdf55ce4ae6844a75e08fabb9d40b, type: 3}
+  m_Script: {fileID: 11500000, guid: 78a4a17fc7654fe79045bdf1edcb1f2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  closeCanvaButton: {fileID: 1403133578}
-  canvas: {fileID: 1403133579}
-  kuiXingToggle: {fileID: 1518154088}
-  qiMingToggle: {fileID: 647143056}
-  tianShuToggle: {fileID: 1523947241}
-  wuYinToggle: {fileID: 950255369}
-  undefinedToggle: {fileID: 756143979}
-  chartLevelField: {fileID: 1246807945}
-  readyBeatField: {fileID: 1452472937}
---- !u!114 &1403133578 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 994941278905508766, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
-  m_PrefabInstance: {fileID: 1403133574}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!223 &1403133579 stripped
-Canvas:
-  m_CorrespondingSourceObject: {fileID: 994941279456320301, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
-  m_PrefabInstance: {fileID: 1403133574}
-  m_PrefabAsset: {fileID: 0}
+  kuiXingToggle: {fileID: 0}
+  qiMingToggle: {fileID: 0}
+  tianShuToggle: {fileID: 0}
+  wuYinToggle: {fileID: 0}
+  undefinedToggle: {fileID: 0}
+  levelField: {fileID: 0}
+  readyBeatField: {fileID: 0}
 --- !u!1 &1419857833
 GameObject:
   m_ObjectHideFlags: 0
@@ -23304,8 +23287,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 702.49994, y: 0}
-  m_SizeDelta: {x: 1404.9999, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1514540016
 MonoBehaviour:
@@ -33824,8 +33807,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 468.6667, y: 0}
-  m_SizeDelta: {x: 857.3334, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1618376876673323538
 MonoBehaviour:
