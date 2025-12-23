@@ -8,8 +8,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public abstract class BaseViewModel : IDisposable
     {
-        protected readonly ChartEditorModel Model;
         protected readonly CommandManager CommandManager;
+        protected readonly ChartEditorModel Model;
 
 
         protected BaseViewModel(ChartEditorModel model, CommandManager commandManager)
