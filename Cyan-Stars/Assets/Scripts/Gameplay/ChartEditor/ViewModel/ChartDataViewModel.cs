@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using System.Collections.Generic;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.BindableProperty;
 using CyanStars.Gameplay.ChartEditor.Command;
@@ -27,33 +26,28 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             chartDataCanvasVisibility = new BindableProperty<bool>(Model.ChartDataCanvasVisibility.Value);
 
-            ChartMetadata metaData = Model.ChartPackData.Value.ChartMetaDatas[Model.ChartMetadataIndex];
+            ChartMetadata metaData = Model.ChartPackData.ChartMetaDatas[Model.ChartMetadataIndex];
 
             chartDifficulty = new BindableProperty<ChartDifficulty?>(metaData.Difficulty);
             chartLevelString = new BindableProperty<string>(metaData.Level);
-            readyBeatCountString = new BindableProperty<string>(Model.ChartData.Value.ReadyBeat.ToString());
+            readyBeatCountString = new BindableProperty<string>(Model.ChartData.ReadyBeat.ToString());
 
-            Model.ChartDataCanvasVisibility.OnValueChanged += data =>
+            Model.ChartDataCanvasVisibility.OnValueChanged += visibility =>
             {
-                chartDataCanvasVisibility.Value = data;
+                chartDataCanvasVisibility.Value = visibility;
             };
-            Model.ChartPackData.OnValueChanged += data =>
+            Model.OnChartBasicDataChanged += (chartPackData, chartData) =>
             {
-                chartDifficulty.Value = data.ChartMetaDatas[Model.ChartMetadataIndex].Difficulty;
-                chartLevelString.Value = data.ChartMetaDatas[Model.ChartMetadataIndex].Level;
-            };
-            Model.ChartData.OnValueChanged += data =>
-            {
-                readyBeatCountString.Value = data.ReadyBeat.ToString();
+                chartDifficulty.Value = chartPackData.ChartMetaDatas[Model.ChartMetadataIndex].Difficulty;
+                chartLevelString.Value = chartPackData.ChartMetaDatas[Model.ChartMetadataIndex].Level;
+                readyBeatCountString.Value = chartData.ReadyBeat.ToString();
             };
         }
 
         public void CloseCanvas()
         {
             if (!chartDataCanvasVisibility.Value)
-            {
                 return;
-            }
 
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
@@ -65,105 +59,80 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             ));
         }
 
-        public void SetChartDifficulty(ChartDifficulty? difficulty)
+        public void SetChartDifficulty(ChartDifficulty? newDifficulty)
         {
-            if (difficulty == chartDifficulty.Value)
-            {
-                return;
-            }
+            var metaDatas = Model.ChartPackData.ChartMetaDatas;
+            var oldDifficulty = metaDatas[Model.ChartMetadataIndex].Difficulty;
 
-            var metaDatas = Model.ChartPackData.Value.ChartMetaDatas;
-            if (difficulty != null)
+            if (newDifficulty == oldDifficulty)
+                return;
+
+            // 如果 newDifficulty 不为 null，则不允许与谱包中其他谱面的难度重复
+            if (newDifficulty != null)
             {
                 for (int i = 0; i < metaDatas.Count; i++)
                 {
                     if (Model.ChartMetadataIndex == i)
-                    {
                         continue;
-                    }
 
-                    if (metaDatas[i].Difficulty == difficulty)
-                    {
-                        Debug.LogWarning($"谱包有其他谱面已经使用了难度 {difficulty}，无法修改到目标难度！");
-                        chartDifficulty.ForceNotify();
-                        return;
-                    }
+                    if (metaDatas[i].Difficulty != newDifficulty)
+                        continue;
+
+                    Debug.LogWarning($"谱包有其他谱面已经使用了难度 {newDifficulty}，无法修改到目标难度！");
+                    chartDifficulty.ForceNotify();
+                    return;
                 }
             }
 
-            var oldChartPackData = Model.ChartPackData.Value;
-            var newMetaDatas = new List<ChartMetadata>(oldChartPackData.ChartMetaDatas);
-            newMetaDatas[Model.ChartMetadataIndex].Difficulty = difficulty;
-            var newChartPackData = new ChartPackData(
-                oldChartPackData.Title, oldChartPackData.MusicVersionDatas, oldChartPackData.BpmGroup,
-                oldChartPackData.MusicPreviewStartBeat, oldChartPackData.MusicPreviewEndBeat, oldChartPackData.CoverFilePath,
-                oldChartPackData.CropStartPosition, oldChartPackData.CropHeight, newMetaDatas
-            );
-
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
-                    Model.ChartPackData.Value = newChartPackData;
+                    Model.SetChartDifficulty(newDifficulty);
                 },
                 () =>
                 {
-                    Model.ChartPackData.Value = oldChartPackData;
+                    Model.SetChartDifficulty(oldDifficulty);
                 }
             ));
         }
 
-        public void SetChartLevelString(string level)
+        public void SetChartLevelString(string newLevel)
         {
-            if (level == ChartLevelString.Value)
-            {
-                return;
-            }
+            var metaDatas = Model.ChartPackData.ChartMetaDatas;
+            var oldLevel = metaDatas[Model.ChartMetadataIndex].Level;
 
-            ChartPackData oldChartPackData = Model.ChartPackData.Value;
-            var newMetaDatas = new List<ChartMetadata>(oldChartPackData.ChartMetaDatas);
-            newMetaDatas[Model.ChartMetadataIndex].Level = level;
-            var newChartPackData = new ChartPackData(
-                oldChartPackData.Title, oldChartPackData.MusicVersionDatas, oldChartPackData.BpmGroup,
-                oldChartPackData.MusicPreviewStartBeat, oldChartPackData.MusicPreviewEndBeat, oldChartPackData.CoverFilePath,
-                oldChartPackData.CropStartPosition, oldChartPackData.CropHeight, newMetaDatas
-            );
+            if (newLevel == oldLevel)
+                return;
 
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
-                    Model.ChartPackData.Value = newChartPackData;
+                    Model.SetChartLevel(newLevel);
                 },
                 () =>
                 {
-                    Model.ChartPackData.Value = oldChartPackData;
+                    Model.SetChartLevel(oldLevel);
                 }
             ));
         }
 
-        public void SetReadyBeatCount(string beatCount)
+        public void SetReadyBeatCount(string newBeatCount)
         {
-            if (readyBeatCountString.Value == beatCount)
-            {
-                return;
-            }
-
-            if (!int.TryParse(beatCount, out int beatCountInt) || beatCountInt < 0)
+            if (!int.TryParse(newBeatCount, out int newBeatCountInt) || newBeatCountInt < 0)
             {
                 readyBeatCountString.ForceNotify();
                 return;
             }
 
-            ChartData oldChartData = Model.ChartData.Value;
-            var newChartData = new ChartData(
-                beatCountInt, oldChartData.SpeedGroupDatas,
-                oldChartData.Notes, oldChartData.TrackDatas
-            );
+            var oldBeatIntCount = Model.ChartData.ReadyBeat;
+            if (newBeatCountInt == oldBeatIntCount)
+                return;
 
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
-                    Model.ChartData.Value = newChartData;
+                    Model.SetChartReadyBeatCount(newBeatCountInt);
                 },
                 () =>
                 {
-                    Model.ChartData.Value = oldChartData;
+                    Model.SetChartReadyBeatCount(oldBeatIntCount);
                 }
             ));
         }

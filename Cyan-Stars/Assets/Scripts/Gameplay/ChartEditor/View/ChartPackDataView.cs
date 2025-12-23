@@ -60,22 +60,23 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.PreviewEndBeatField3String.OnValueChanged += SetPreviewEndBeatField3;
 
             closeCanvasButton.onClick.AddListener(ViewModel.CloseCanvas);
+            chartPackTitleField.onEndEdit.AddListener(ViewModel.SetChartPackTitle);
             previewStartBeatField1.onEndEdit.AddListener(_ =>
-                ViewModel.SetPreviewEndBeat(
+                ViewModel.SetPreviewStartBeat(
                     previewStartBeatField1.text,
                     previewStartBeatField2.text,
                     previewStartBeatField3.text
                 )
             );
             previewStartBeatField2.onEndEdit.AddListener(_ =>
-                ViewModel.SetPreviewEndBeat(
+                ViewModel.SetPreviewStartBeat(
                     previewStartBeatField1.text,
                     previewStartBeatField2.text,
                     previewStartBeatField3.text
                 )
             );
             previewStartBeatField3.onEndEdit.AddListener(_ =>
-                ViewModel.SetPreviewEndBeat(
+                ViewModel.SetPreviewStartBeat(
                     previewStartBeatField1.text,
                     previewStartBeatField2.text,
                     previewStartBeatField3.text

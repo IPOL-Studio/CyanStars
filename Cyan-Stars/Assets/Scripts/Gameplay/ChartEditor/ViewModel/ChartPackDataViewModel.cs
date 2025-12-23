@@ -39,26 +39,26 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             canvasVisible =
                 new BindableProperty<bool>(Model.ChartPackDataCanvasVisibility.Value);
             chartPackTitle =
-                new BindableProperty<string>(Model.ChartPackData.Value.Title);
+                new BindableProperty<string>(Model.ChartPackData.Title);
             previewStartBeatField1String =
-                new BindableProperty<string>(Model.ChartPackData.Value.MusicPreviewStartBeat.IntegerPart.ToString());
+                new BindableProperty<string>(Model.ChartPackData.MusicPreviewStartBeat.IntegerPart.ToString());
             previewStartBeatField2String =
-                new BindableProperty<string>(Model.ChartPackData.Value.MusicPreviewStartBeat.Numerator.ToString());
+                new BindableProperty<string>(Model.ChartPackData.MusicPreviewStartBeat.Numerator.ToString());
             previewStartBeatField3String =
-                new BindableProperty<string>(Model.ChartPackData.Value.MusicPreviewStartBeat.Denominator.ToString());
+                new BindableProperty<string>(Model.ChartPackData.MusicPreviewStartBeat.Denominator.ToString());
             previewEndBeatField1String =
-                new BindableProperty<string>(Model.ChartPackData.Value.MusicPreviewEndBeat.IntegerPart.ToString());
+                new BindableProperty<string>(Model.ChartPackData.MusicPreviewEndBeat.IntegerPart.ToString());
             previewEndBeatField2String =
-                new BindableProperty<string>(Model.ChartPackData.Value.MusicPreviewEndBeat.Numerator.ToString());
+                new BindableProperty<string>(Model.ChartPackData.MusicPreviewEndBeat.Numerator.ToString());
             previewEndBeatField3String =
-                new BindableProperty<string>(Model.ChartPackData.Value.MusicPreviewEndBeat.Denominator.ToString());
+                new BindableProperty<string>(Model.ChartPackData.MusicPreviewEndBeat.Denominator.ToString());
 
             // M->VM 订阅
             Model.ChartPackDataCanvasVisibility.OnValueChanged += isOn =>
             {
                 canvasVisible.Value = isOn;
             };
-            Model.ChartPackData.OnValueChanged += data =>
+            Model.OnChartPackBasicDataChanged += data =>
             {
                 chartPackTitle.Value = data.Title;
                 previewStartBeatField1String.Value = data.MusicPreviewStartBeat.IntegerPart.ToString();
@@ -87,21 +87,18 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void SetChartPackTitle(string newTitle)
         {
-            string oldTitle = Model.ChartPackData.Value.Title;
+            string oldTitle = Model.ChartPackData.Title;
             if (newTitle == oldTitle)
             {
                 return;
             }
 
-            var oldChartPackData = Model.ChartPackData.Value;
-            var newChartPackData = new ChartPackData(oldChartPackData) { Title = newTitle }; // 小心浅拷贝，此处没有问题，其他地方修改 List<T> 时记得手动拷贝列表
-
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
-                    Model.ChartPackData.Value = newChartPackData;
+                    Model.SetChartPackTitle(newTitle);
                 }, () =>
                 {
-                    Model.ChartPackData.Value = oldChartPackData;
+                    Model.SetChartPackTitle(oldTitle);
                 })
             );
         }
@@ -118,7 +115,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat beat))
+            if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat newBeat))
             {
                 previewStartBeatField1String.ForceNotify();
                 previewStartBeatField2String.ForceNotify();
@@ -126,20 +123,19 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            var oldChartPackData = Model.ChartPackData.Value;
+            var oldBeat = Model.ChartPackData.MusicPreviewStartBeat;
 
-            if (beat == oldChartPackData.MusicPreviewStartBeat)
+            if (newBeat == oldBeat)
             {
                 return;
             }
 
-            var newChartPackData = new ChartPackData(oldChartPackData) { MusicPreviewStartBeat = beat }; // 小心浅拷贝，此处没有问题，其他地方修改 List<T> 时记得手动拷贝列表
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
-                    Model.ChartPackData.Value = newChartPackData;
+                    Model.SetChartPackPreviewStartBeat(newBeat);
                 }, () =>
                 {
-                    Model.ChartPackData.Value = oldChartPackData;
+                    Model.SetChartPackPreviewStartBeat(oldBeat);
                 })
             );
         }
@@ -156,7 +152,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat beat))
+            if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat newBeat))
             {
                 previewEndBeatField1String.ForceNotify();
                 previewEndBeatField2String.ForceNotify();
@@ -164,20 +160,19 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            var oldChartPackData = Model.ChartPackData.Value;
+            var oldBeat = Model.ChartPackData.MusicPreviewEndBeat;
 
-            if (beat == oldChartPackData.MusicPreviewEndBeat)
+            if (newBeat == oldBeat)
             {
                 return;
             }
 
-            var newChartPackData = new ChartPackData(oldChartPackData) { MusicPreviewEndBeat = beat }; // 小心浅拷贝
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
-                    Model.ChartPackData.Value = newChartPackData;
+                    Model.SetChartPackPreviewEndBeat(newBeat);
                 }, () =>
                 {
-                    Model.ChartPackData.Value = oldChartPackData;
+                    Model.SetChartPackPreviewEndBeat(oldBeat);
                 })
             );
         }

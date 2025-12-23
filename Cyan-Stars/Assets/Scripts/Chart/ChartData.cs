@@ -1,6 +1,5 @@
 #nullable enable
 
-using System;
 using System.Collections.Generic;
 
 namespace CyanStars.Chart
@@ -8,7 +7,6 @@ namespace CyanStars.Chart
     /// <summary>
     /// 谱包中单个难度的谱面数据
     /// </summary>
-    [Serializable]
     public class ChartData
     {
         /// <summary>在第一个 BPM 组开始前播放几次预备拍音效</summary>
@@ -29,14 +27,11 @@ namespace CyanStars.Chart
 
 
         public ChartData(int readyBeat = 4, List<SpeedTemplateData>? speedGroupDatas = null,
-            List<BaseChartNoteData>? notes = null, List<ChartTrackData>? trackDatas = null)
+                         List<BaseChartNoteData>? notes = null, List<ChartTrackData>? trackDatas = null)
         {
             ReadyBeat = readyBeat;
             SpeedGroupDatas = speedGroupDatas ??
-                              new List<SpeedTemplateData>()
-                              {
-                                  new SpeedTemplateData(SpeedGroupType.Relative, new BezierCurve())
-                              };
+                              new List<SpeedTemplateData>() { new SpeedTemplateData(SpeedGroupType.Relative, new BezierCurve()) };
             Notes = notes ?? new List<BaseChartNoteData>();
             TrackDatas = trackDatas ?? new List<ChartTrackData>();
         }
