@@ -167,7 +167,7 @@ namespace CyanStars.Chart
             for (int i = 0; i < paths.Count; i++)
             {
                 ChartPackData chartPackData = batchAssetHandler.Handlers[i].AssetAs<ChartPackData>();
-                if (batchAssetHandler.Handlers[i].AssetAs<ChartPackData>() == null)
+                if (chartPackData == null)
                 {
                     Debug.LogError($"无法将 {paths[i]} 转换为 {nameof(ChartPackData)}，相关谱包无法加载！");
                     continue;

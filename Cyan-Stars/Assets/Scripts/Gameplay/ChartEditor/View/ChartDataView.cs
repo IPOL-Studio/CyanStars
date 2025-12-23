@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using TMPro;
@@ -45,6 +46,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
             chartDataCanvas.enabled = ViewModel.ChartDataCanvasVisibility.Value;
 
             ViewModel.ChartDataCanvasVisibility.OnValueChanged += SetCanvasVisibility;
+            ViewModel.ChartDifficulty.OnValueChanged += SetDifficulty;
+            ViewModel.ChartLevelString.OnValueChanged += SetLevel;
+            ViewModel.ReadyBeatCountString.OnValueChanged += SetReadyBeatCount;
 
             closeCanvasButton.onClick.AddListener(ViewModel.CloseCanvas);
             kuiXingToggle.onValueChanged.AddListener(isOn =>
@@ -91,9 +95,32 @@ namespace CyanStars.Gameplay.ChartEditor.View
             chartDataCanvas.enabled = visible;
         }
 
+        private void SetDifficulty(ChartDifficulty? difficulty)
+        {
+            kuiXingToggle.isOn = difficulty == ChartDifficulty.KuiXing;
+            qiMingToggle.isOn = difficulty == ChartDifficulty.QiMing;
+            tianShuToggle.isOn = difficulty == ChartDifficulty.TianShu;
+            wuYinToggle.isOn = difficulty == ChartDifficulty.WuYin;
+            undefinedToggle.isOn = difficulty == null;
+            Debug.LogWarning("TODO: 切换图标样式"); // TODO: 切换图标样式
+        }
+
+        private void SetLevel(string levelString)
+        {
+            levelField.text = levelString;
+        }
+
+        private void SetReadyBeatCount(string readyBeatCountString)
+        {
+            readyBeatField.text = readyBeatCountString;
+        }
+
         protected override void OnDestroy()
         {
             ViewModel.ChartDataCanvasVisibility.OnValueChanged -= SetCanvasVisibility;
+            ViewModel.ChartDifficulty.OnValueChanged -= SetDifficulty;
+            ViewModel.ChartLevelString.OnValueChanged -= SetLevel;
+            ViewModel.ReadyBeatCountString.OnValueChanged -= SetReadyBeatCount;
 
             closeCanvasButton.onClick.RemoveAllListeners();
             kuiXingToggle.onValueChanged.RemoveAllListeners();

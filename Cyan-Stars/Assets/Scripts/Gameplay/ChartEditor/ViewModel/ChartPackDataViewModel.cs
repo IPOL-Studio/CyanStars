@@ -75,6 +75,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void CloseCanvas()
         {
+            if (!Model.ChartPackDataCanvasVisibility.Value)
+                return;
+
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
                     Model.ChartPackDataCanvasVisibility.Value = false;
@@ -89,9 +92,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             string oldTitle = Model.ChartPackData.Title;
             if (newTitle == oldTitle)
-            {
                 return;
-            }
 
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
@@ -126,9 +127,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var oldBeat = Model.ChartPackData.MusicPreviewStartBeat;
 
             if (newBeat == oldBeat)
-            {
                 return;
-            }
 
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
@@ -163,9 +162,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var oldBeat = Model.ChartPackData.MusicPreviewEndBeat;
 
             if (newBeat == oldBeat)
-            {
                 return;
-            }
 
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {

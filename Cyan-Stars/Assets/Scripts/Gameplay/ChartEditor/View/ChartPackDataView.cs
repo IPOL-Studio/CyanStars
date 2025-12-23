@@ -157,7 +157,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.PreviewEndBeatField3String.OnValueChanged -= SetPreviewEndBeatField3;
 
             closeCanvasButton.onClick.RemoveAllListeners();
-            closeCanvasButton.onClick.RemoveAllListeners();
+            chartPackTitleField.onEndEdit.RemoveAllListeners();
             previewStartBeatField1.onEndEdit.RemoveAllListeners();
             previewStartBeatField2.onEndEdit.RemoveAllListeners();
             previewStartBeatField3.onEndEdit.RemoveAllListeners();
