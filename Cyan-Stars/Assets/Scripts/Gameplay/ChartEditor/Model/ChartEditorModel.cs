@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using System.Collections.Generic;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.BindableProperty;
 
@@ -138,6 +139,20 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             ChartData.ReadyBeat = readyBeatCount;
             OnChartBasicDataChanged?.Invoke(ChartPackData, ChartData);
         }
+
+        #endregion
+
+        #region 音乐版本信息（MusicVersion VM）
+
+        /// <summary>
+        /// 音乐版本列表发生变化（列表 item 增删和移动）
+        /// </summary>
+        public Action<IReadOnlyCollection<MusicVersionData>>? OnMusicVersionListChanged;
+
+        /// <summary>
+        /// 某音乐版本的数据（版本标题、音频文件、offset、Staffs）发生变化
+        /// </summary>
+        public Action<MusicVersionData>? OnMusicVersionDataChanged;
 
         #endregion
     }
