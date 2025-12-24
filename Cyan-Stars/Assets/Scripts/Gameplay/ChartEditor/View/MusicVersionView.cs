@@ -11,7 +11,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 {
     public class MusicVersionView : BaseView<MusicVersionViewModel>
     {
-        [Header("子 View")]
+        [Header("列表子 View")]
         [SerializeField]
         private GameObject musicListItemPrefab = null!;
 
@@ -22,7 +22,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private GameObject musicListObject = null!;
 
         [SerializeField]
-        private GameObject detailObject = null!;
+        private Button addListItemButton = null!;
+
+
+        [Header("Staffs 子 View")]
+        [SerializeField]
+        private RectTransform staffsContentTransform = null!;
+
+        [SerializeField]
+        private Button addStaffButton = null!;
+
 
         [Header("主 View")]
         [SerializeField]
@@ -30,6 +39,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         [SerializeField]
         private Button closeButton = null!;
+
+        [SerializeField]
+        private GameObject detailObject = null!;
 
         [SerializeField]
         private TMP_InputField musicTitleField = null!;
@@ -72,6 +84,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
+            // 初始化各部分值，创建列表 VM 和 V 并绑定
+            canvas.enabled = ViewModel.CanvasVisibility.Value;
             musicListObject.SetActive(ViewModel.ListVisibility.Value);
             foreach (var listItemViewModel in ViewModel.ListItems)
             {
@@ -81,26 +95,36 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
 
             detailObject.SetActive(ViewModel.DetailVisibility.Value);
-            canvas.enabled = ViewModel.CanvasVisibility.Value;
+            musicTitleField.text = ViewModel.DetailTitle.Value;
+            musicFilePathText.text = ViewModel.DetailAudioFilePath.Value;
+            offsetField.text = ViewModel.DetailOffset.Value;
 
-
+            // VM -> V 绑定
+            ViewModel.CanvasVisibility.OnValueChanged += SetCanvasVisibility;
             ViewModel.ListVisibility.OnValueChanged += SetListObjectVisibility;
             ViewModel.ListItems.CollectionChanged += RefreshListItems;
             ViewModel.DetailVisibility.OnValueChanged += SetDetailObjectVisibility;
-            ViewModel.CanvasVisibility.OnValueChanged += SetCanvasVisibility;
+            ViewModel.DetailTitle.OnValueChanged += SetDetailTitleText;
+            ViewModel.DetailAudioFilePath.OnValueChanged += SetFilePathText;
+            ViewModel.DetailOffset.OnValueChanged += SetOffsetText;
 
-
+            // V -> MV 绑定
             closeButton.onClick.AddListener(ViewModel.CloseCanvas);
+            musicTitleField.onEndEdit.AddListener(ViewModel.SetTitle);
+            importMusicButton.onClick.AddListener(ViewModel.ImportAudioFile);
+            offsetField.onEndEdit.AddListener(ViewModel.SetOffset);
+            addStaffButton.onClick.AddListener(ViewModel.AddStaffItem);
+        }
+
+
+        private void SetCanvasVisibility(bool visible)
+        {
+            canvas.enabled = visible;
         }
 
         private void SetListObjectVisibility(bool visible)
         {
             musicListObject.SetActive(visible);
-        }
-
-        private void SetDetailObjectVisibility(bool visible)
-        {
-            detailObject.SetActive(visible);
         }
 
         /// <summary>
@@ -167,14 +191,42 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
         }
 
-        private void SetCanvasVisibility(bool visible)
+        private void SetDetailObjectVisibility(bool visible)
         {
-            canvas.enabled = visible;
+            detailObject.SetActive(visible);
         }
+
+        private void SetDetailTitleText(string title)
+        {
+            musicTitleField.text = title;
+        }
+
+        private void SetFilePathText(string text)
+        {
+            musicFilePathText.text = text;
+        }
+
+        private void SetOffsetText(string text)
+        {
+            offsetField.text = text;
+        }
+
 
         protected override void OnDestroy()
         {
+            ViewModel.CanvasVisibility.OnValueChanged -= SetCanvasVisibility;
+            ViewModel.ListVisibility.OnValueChanged -= SetListObjectVisibility;
             ViewModel.ListItems.CollectionChanged -= RefreshListItems;
+            ViewModel.DetailVisibility.OnValueChanged -= SetDetailObjectVisibility;
+            ViewModel.DetailTitle.OnValueChanged -= SetDetailTitleText;
+            ViewModel.DetailAudioFilePath.OnValueChanged -= SetFilePathText;
+            ViewModel.DetailOffset.OnValueChanged -= SetOffsetText;
+
+            closeButton.onClick.RemoveListener(ViewModel.CloseCanvas);
+            musicTitleField.onEndEdit.RemoveListener(ViewModel.SetTitle);
+            importMusicButton.onClick.RemoveListener(ViewModel.ImportAudioFile);
+            offsetField.onEndEdit.RemoveListener(ViewModel.SetOffset);
+            addStaffButton.onClick.RemoveListener(ViewModel.AddStaffItem);
         }
     }
 }

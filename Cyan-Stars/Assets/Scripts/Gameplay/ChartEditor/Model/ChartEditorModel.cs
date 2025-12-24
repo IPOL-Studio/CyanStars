@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.BindableProperty;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.Model
 {
@@ -153,6 +154,29 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         /// 某音乐版本的数据（版本标题、音频文件、offset、Staffs）发生变化
         /// </summary>
         public Action<MusicVersionData>? OnMusicVersionDataChanged;
+
+        public void UpdateMusicVersionItemBasicData(MusicVersionData musicVersionData,
+                                                    string? newVersionTitle = null,
+                                                    string? newAudioFilePath = null,
+                                                    int? newOffset = null)
+        {
+            if (musicVersionData is null)
+                throw new ArgumentNullException(nameof(musicVersionData));
+
+            if (!ChartPackData.MusicVersionDatas.Contains(musicVersionData))
+                throw new ArgumentException("谱包列表中不存在对应的 musicVersionData，无法修改");
+
+            if (newVersionTitle == null && newAudioFilePath == null && newOffset == null)
+            {
+                Debug.LogWarning("你不打算改点什么吗？");
+                return;
+            }
+
+            musicVersionData.VersionTitle = newVersionTitle ?? musicVersionData.VersionTitle;
+            musicVersionData.AudioFilePath = newAudioFilePath ?? musicVersionData.AudioFilePath;
+            musicVersionData.Offset = newOffset ?? musicVersionData.Offset;
+            OnMusicVersionDataChanged?.Invoke(musicVersionData);
+        }
 
         #endregion
     }

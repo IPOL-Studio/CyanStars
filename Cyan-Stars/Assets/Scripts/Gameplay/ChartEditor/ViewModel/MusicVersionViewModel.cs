@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -23,6 +24,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public IReadonlyBindableProperty<bool> CanvasVisibility => canvasVisibility;
         public IReadonlyBindableProperty<bool> ListVisibility => listVisibility;
         public IReadonlyBindableProperty<bool> DetailVisibility => detailVisibility;
+
+
+        private readonly BindableProperty<string> detailTitle;
+        private readonly BindableProperty<string> detailAudioFilePath;
+        private readonly BindableProperty<string> detailOffset;
+
+        public IReadonlyBindableProperty<string> DetailAudioFilePath => detailAudioFilePath;
+        public IReadonlyBindableProperty<string> DetailOffset => detailOffset;
+        public IReadonlyBindableProperty<string> DetailTitle => detailTitle;
+
 
         public readonly ObservableCollection<MusicVersionListItemViewModel> ListItems;
         public readonly ObservableCollection<MusicVersionStaffItemViewModel> StaffItems;
@@ -66,6 +77,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             // M->VM
             Model.OnMusicVersionListChanged += RefreshList;
+            Model.OnMusicVersionDataChanged += RefreshData;
         }
 
         private void RefreshList(IReadOnlyCollection<MusicVersionData> datas)
@@ -113,13 +125,56 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             }
         }
 
+        private void RefreshData(MusicVersionData data)
+        {
+            if (SelectedMusicVersionData.Value != data)
+                return;
+
+            detailTitle.Value = data.VersionTitle;
+            detailAudioFilePath.Value = data.AudioFilePath;
+            detailOffset.Value = data.Offset.ToString();
+        }
+
+
         public void CloseCanvas()
         {
             Model.MusicVersionCanvasVisibility.Value = false;
         }
 
+        public void SetTitle(string title)
+        {
+            if (selectedMusicVersionData.Value == null)
+                throw new NullReferenceException("禁止在未选中版本时修改标题，请检查！");
+
+            Model.UpdateMusicVersionItemBasicData(selectedMusicVersionData.Value, newVersionTitle: title);
+        }
+
+        public void ImportAudioFile()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetOffset(string offset)
+        {
+            if (selectedMusicVersionData.Value == null)
+                throw new NullReferenceException("禁止在未选中版本时修改 offset，请检查！");
+
+            if (!int.TryParse(offset, out int newOffset))
+            {
+                detailOffset.ForceNotify();
+                return;
+            }
+
+            Model.UpdateMusicVersionItemBasicData(selectedMusicVersionData.Value, newOffset: newOffset);
+        }
+
+        public void AddStaffItem()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
-        /// 由子 VM 调用，选择一个 item 并编辑
+        /// 由 ListItem 子 VM 调用，选择一个 item 并编辑
         /// </summary>
         public void SelectEditingMusicVersionData(MusicVersionData data)
         {
