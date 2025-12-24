@@ -62,7 +62,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private Button addOffsetButton = null!;
 
         [SerializeField]
-        private Button testOffsetButton = null!; // TODO
+        private Button testOffsetButton = null!;
 
         [SerializeField]
         private Button deleteItemButton = null!;
@@ -109,11 +109,20 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.DetailOffset.OnValueChanged += SetOffsetText;
 
             // V -> MV 绑定
+            addListItemButton.onClick.AddListener(ViewModel.AddMusicVersionItem);
             closeButton.onClick.AddListener(ViewModel.CloseCanvas);
             musicTitleField.onEndEdit.AddListener(ViewModel.SetTitle);
             importMusicButton.onClick.AddListener(ViewModel.ImportAudioFile);
+            minusOffsetButton.onClick.AddListener(ViewModel.MinusOffset);
             offsetField.onEndEdit.AddListener(ViewModel.SetOffset);
+            addListItemButton.onClick.AddListener(ViewModel.AddOffset);
+            testOffsetButton.onClick.AddListener(ViewModel.TestOffset);
             addStaffButton.onClick.AddListener(ViewModel.AddStaffItem);
+            deleteItemButton.onClick.AddListener(ViewModel.DeleteItem);
+            cloneItemButton.onClick.AddListener(ViewModel.CloneItem);
+            moveUpItemButton.onClick.AddListener(ViewModel.MoveUpItem);
+            moveDownItemButton.onClick.AddListener(ViewModel.MoveDownItem);
+            topItemButton.onClick.AddListener(ViewModel.TopItem);
         }
 
 
@@ -222,11 +231,20 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.DetailAudioFilePath.OnValueChanged -= SetFilePathText;
             ViewModel.DetailOffset.OnValueChanged -= SetOffsetText;
 
+            addListItemButton.onClick.RemoveListener(ViewModel.AddMusicVersionItem);
             closeButton.onClick.RemoveListener(ViewModel.CloseCanvas);
             musicTitleField.onEndEdit.RemoveListener(ViewModel.SetTitle);
             importMusicButton.onClick.RemoveListener(ViewModel.ImportAudioFile);
+            minusOffsetButton.onClick.RemoveListener(ViewModel.MinusOffset);
             offsetField.onEndEdit.RemoveListener(ViewModel.SetOffset);
+            addListItemButton.onClick.RemoveListener(ViewModel.AddOffset);
+            testOffsetButton.onClick.RemoveListener(ViewModel.TestOffset);
             addStaffButton.onClick.RemoveListener(ViewModel.AddStaffItem);
+            deleteItemButton.onClick.RemoveListener(ViewModel.DeleteItem);
+            cloneItemButton.onClick.RemoveListener(ViewModel.CloneItem);
+            moveUpItemButton.onClick.RemoveListener(ViewModel.MoveUpItem);
+            moveDownItemButton.onClick.RemoveListener(ViewModel.MoveDownItem);
+            topItemButton.onClick.RemoveListener(ViewModel.TopItem);
         }
     }
 }

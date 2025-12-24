@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CyanStars.Chart;
+using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.BindableProperty;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
@@ -13,6 +14,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class MusicVersionViewModel : BaseViewModel
     {
+        private const int AddOffsetStep = 10;
+
+
         private readonly BindableProperty<MusicVersionData?> selectedMusicVersionData;
         public IReadonlyBindableProperty<MusicVersionData?> SelectedMusicVersionData => selectedMusicVersionData;
 
@@ -136,6 +140,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         }
 
 
+        public void AddMusicVersionItem()
+        {
+            throw new NotImplementedException();
+        }
+
         public void CloseCanvas()
         {
             Model.MusicVersionCanvasVisibility.Value = false;
@@ -151,7 +160,21 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void ImportAudioFile()
         {
+            GameRoot.File.OpenLoadFilePathBrowser((path) =>
+            {
+                return;
+            });
             throw new NotImplementedException();
+        }
+
+        public void MinusOffset()
+        {
+            if (selectedMusicVersionData.Value == null)
+                throw new NullReferenceException("禁止在未选中版本时修改 offset，请检查！");
+
+            int newOffset = selectedMusicVersionData.Value.Offset - AddOffsetStep;
+
+            Model.UpdateMusicVersionItemBasicData(selectedMusicVersionData.Value, newOffset: newOffset);
         }
 
         public void SetOffset(string offset)
@@ -168,10 +191,51 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             Model.UpdateMusicVersionItemBasicData(selectedMusicVersionData.Value, newOffset: newOffset);
         }
 
+        public void AddOffset()
+        {
+            if (selectedMusicVersionData.Value == null)
+                throw new NullReferenceException("禁止在未选中版本时修改 offset，请检查！");
+
+            int newOffset = selectedMusicVersionData.Value.Offset + AddOffsetStep;
+
+            Model.UpdateMusicVersionItemBasicData(selectedMusicVersionData.Value, newOffset: newOffset);
+        }
+
+        public void TestOffset()
+        {
+            throw new NotImplementedException();
+        }
+
         public void AddStaffItem()
         {
             throw new NotImplementedException();
         }
+
+
+        public void DeleteItem()
+        {
+        }
+
+        public void CloneItem()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MoveUpItem()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MoveDownItem()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void TopItem()
+        {
+            throw new NotImplementedException();
+        }
+
 
         /// <summary>
         /// 由 ListItem 子 VM 调用，选择一个 item 并编辑
