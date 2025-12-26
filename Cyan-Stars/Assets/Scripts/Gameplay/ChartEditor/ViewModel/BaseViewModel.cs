@@ -3,6 +3,7 @@
 using System;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
+using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
@@ -11,17 +12,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         protected readonly CommandManager CommandManager;
         protected readonly ChartEditorModel Model;
 
+        protected readonly CompositeDisposable Disposables = new CompositeDisposable();
 
         protected BaseViewModel(ChartEditorModel model, CommandManager commandManager)
         {
-            this.Model = model;
-            this.CommandManager = commandManager;
+            Model = model;
+            CommandManager = commandManager;
         }
 
-        // 静态 ViewModel 生命周期目前与 ChartEditorModel 一致，故不需要取消订阅来防止内存泄漏
-        // 动态 ViewModel 需要在销毁时手动取消订阅以释放内存
         public virtual void Dispose()
         {
+            Disposables.Dispose();
         }
     }
 }

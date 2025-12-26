@@ -59,7 +59,7 @@ namespace CyanStars.Chart
         // 谱面元数据
 
         /// <summary>谱面元数据</summary>
-        public List<ChartMetadata> ChartMetaDatas;
+        public List<ChartMetaData> ChartMetaDatas;
 
         /// <summary>
         /// 执行浅拷贝
@@ -117,7 +117,7 @@ namespace CyanStars.Chart
             CoverFilePath = coverFilePath;
             CropStartPosition = cropPosition ?? Vector2.zero;
             CropHeight = cropHeight ?? 0;
-            ChartMetaDatas = chartMetaDatas ?? new List<ChartMetadata>();
+            ChartMetaDatas = chartMetaDatas ?? new List<ChartMetaData>();
         }
     }
 }

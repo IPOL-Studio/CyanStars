@@ -1,10 +1,8 @@
 ﻿#nullable enable
 
-using System;
-using System.Collections.Generic;
 using CyanStars.Chart;
-using CyanStars.Gameplay.ChartEditor.BindableProperty;
-using UnityEngine;
+using CyanStars.Gameplay.ChartEditor.Command;
+using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.Model
 {
@@ -14,170 +12,47 @@ namespace CyanStars.Gameplay.ChartEditor.Model
 
         // 元数据，在实例化 Model 时固定
         public readonly string WorkspacePath; // 当前的工作区绝对路径（谱包索引文件所在路径）
-        public readonly int ChartMetadataIndex; // 当前编辑的谱面对应的谱包中的元数据
+        public readonly int ChartMetaDataIndex; // 当前编辑的谱面对应的谱包中的元数据
 
         // 当前正在编辑的谱包和谱面内容
-        public readonly ChartPackData ChartPackData;
-        public readonly ChartData ChartData;
+        public readonly ReadOnlyReactiveProperty<ChartPackDataEditorModel> ChartPackData;
+        public readonly ReadOnlyReactiveProperty<ChartDataEditorModel> ChartData;
 
 
         // == == 编辑器运行时数据 == ==
-        public readonly BindableProperty<bool> IsSimplificationMode = new BindableProperty<bool>(true);
-        public readonly BindableProperty<EditToolType> SelectedEditTool = new BindableProperty<EditToolType>(EditToolType.Select);
+        public readonly ReactiveProperty<bool> IsSimplificationMode = new ReactiveProperty<bool>(true);
+        public readonly ReactiveProperty<EditToolType> SelectedEditTool = new ReactiveProperty<EditToolType>(EditToolType.Select);
 
-        public readonly BindableProperty<bool> ChartPackDataCanvasVisibility = new BindableProperty<bool>(false);
-        public readonly BindableProperty<bool> ChartDataCanvasVisibility = new BindableProperty<bool>(false);
-        public readonly BindableProperty<bool> MusicVersionCanvasVisibility = new BindableProperty<bool>(false);
-        public readonly BindableProperty<bool> BpmGroupCanvasVisibility = new BindableProperty<bool>(false);
-        public readonly BindableProperty<bool> SpeedTemplateCanvasVisibility = new BindableProperty<bool>(false); // TODO
+        public readonly ReactiveProperty<bool> ChartPackDataCanvasVisibility = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> ChartDataCanvasVisibility = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> MusicVersionCanvasVisibility = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> BpmGroupCanvasVisibility = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> SpeedTemplateCanvasVisibility = new ReactiveProperty<bool>(false); // TODO
 
-        public readonly BindableProperty<int> PosAccuracy = new BindableProperty<int>(4);
-        public readonly BindableProperty<bool> PosMagnet = new BindableProperty<bool>(true);
-        public readonly BindableProperty<int> BeatAccuracy = new BindableProperty<int>(2);
-        public readonly BindableProperty<float> BeatZoom = new BindableProperty<float>(1f);
+        public readonly ReactiveProperty<int> PosAccuracy = new ReactiveProperty<int>(4);
+        public readonly ReactiveProperty<bool> PosMagnet = new ReactiveProperty<bool>(true);
+        public readonly ReactiveProperty<int> BeatAccuracy = new ReactiveProperty<int>(2);
+        public readonly ReactiveProperty<float> BeatZoom = new ReactiveProperty<float>(1f);
 
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="workspacePath">工作区绝对路径（谱包索引文件所在路径）</param>
-        /// <param name="chartMetadataIndex">谱面在谱包元数据中的索引</param>
+        /// <param name="chartMetaDataIndex">谱面在谱包元数据中的索引</param>
         /// <param name="chartPackData">要修改的谱包数据，注意请先深拷贝一份</param>
         /// <param name="chartData">要修改的谱面数据，注意请先深拷贝一份</param>
+        /// <param name="commandManager">命令管理器实例</param>
         public ChartEditorModel(string workspacePath,
-                                int chartMetadataIndex,
+                                int chartMetaDataIndex,
                                 ChartPackData chartPackData,
                                 ChartData chartData)
         {
             WorkspacePath = workspacePath;
-            ChartMetadataIndex = chartMetadataIndex;
+            ChartMetaDataIndex = chartMetaDataIndex;
 
-            ChartPackData = chartPackData;
-            ChartData = chartData;
+            ChartPackData = new ReactiveProperty<ChartPackDataEditorModel>(new ChartPackDataEditorModel(chartPackData));
+            ChartData = new ReactiveProperty<ChartDataEditorModel>(new ChartDataEditorModel(chartData));
         }
-
-
-        #region 谱包基本信息（ChartPackData VM）
-
-        /// <summary>
-        /// 谱包基本数据（标题、预览拍、曲绘）发生变化
-        /// </summary>
-        public Action<ChartPackData>? OnChartPackBasicDataChanged;
-
-        /// <summary>
-        /// 设置谱包标题
-        /// </summary>
-        public void SetChartPackTitle(string title)
-        {
-            if (title == ChartPackData.Title)
-                return;
-            ChartPackData.Title = title;
-            OnChartPackBasicDataChanged?.Invoke(ChartPackData);
-        }
-
-        /// <summary>
-        /// 设置谱包预览开始拍
-        /// </summary>
-        public void SetChartPackPreviewStartBeat(Beat beat)
-        {
-            if (beat == ChartPackData.MusicPreviewStartBeat)
-                return;
-            ChartPackData.MusicPreviewStartBeat = beat;
-            OnChartPackBasicDataChanged?.Invoke(ChartPackData);
-        }
-
-        /// <summary>
-        /// 设置谱包预览结束拍
-        /// </summary>
-        public void SetChartPackPreviewEndBeat(Beat beat)
-        {
-            if (beat == ChartPackData.MusicPreviewEndBeat)
-                return;
-            ChartPackData.MusicPreviewEndBeat = beat;
-            OnChartPackBasicDataChanged?.Invoke(ChartPackData);
-        }
-
-        /// <summary>
-        /// 设置谱包曲绘文件相对路径
-        /// </summary>
-        public void SetChartPackCoverPath(string coverPath)
-        {
-            if (coverPath == ChartPackData.CoverFilePath)
-                return;
-            ChartPackData.CoverFilePath = coverPath;
-            OnChartPackBasicDataChanged?.Invoke(ChartPackData);
-        }
-
-        #endregion
-
-        #region 谱面基本信息（ChartPackData VM）
-
-        /// <summary>
-        /// 谱面基本数据（难度、定数、预备拍）发生变化
-        /// </summary>
-        public Action<ChartPackData, ChartData>? OnChartBasicDataChanged;
-
-        public void SetChartDifficulty(ChartDifficulty? difficulty)
-        {
-            if (difficulty == ChartPackData.ChartMetaDatas[ChartMetadataIndex].Difficulty)
-                return;
-            ChartPackData.ChartMetaDatas[ChartMetadataIndex].Difficulty = difficulty;
-            OnChartBasicDataChanged?.Invoke(ChartPackData, ChartData);
-        }
-
-        public void SetChartLevel(string level)
-        {
-            if (level == ChartPackData.ChartMetaDatas[ChartMetadataIndex].Level)
-                return;
-            ChartPackData.ChartMetaDatas[ChartMetadataIndex].Level = level;
-            OnChartBasicDataChanged?.Invoke(ChartPackData, ChartData);
-        }
-
-        public void SetChartReadyBeatCount(int readyBeatCount)
-        {
-            if (readyBeatCount == ChartData.ReadyBeat)
-                return;
-            ChartData.ReadyBeat = readyBeatCount;
-            OnChartBasicDataChanged?.Invoke(ChartPackData, ChartData);
-        }
-
-        #endregion
-
-        #region 音乐版本信息（MusicVersion VM）
-
-        /// <summary>
-        /// 音乐版本列表发生变化（列表 item 增删和移动）
-        /// </summary>
-        public Action<IReadOnlyCollection<MusicVersionData>>? OnMusicVersionListChanged;
-
-        /// <summary>
-        /// 某音乐版本的数据（版本标题、音频文件、offset、Staffs）发生变化
-        /// </summary>
-        public Action<MusicVersionData>? OnMusicVersionDataChanged;
-
-        public void UpdateMusicVersionItemBasicData(MusicVersionData musicVersionData,
-                                                    string? newVersionTitle = null,
-                                                    string? newAudioFilePath = null,
-                                                    int? newOffset = null)
-        {
-            if (musicVersionData is null)
-                throw new ArgumentNullException(nameof(musicVersionData));
-
-            if (!ChartPackData.MusicVersionDatas.Contains(musicVersionData))
-                throw new ArgumentException("谱包列表中不存在对应的 musicVersionData，无法修改");
-
-            if (newVersionTitle == null && newAudioFilePath == null && newOffset == null)
-            {
-                Debug.LogWarning("你不打算改点什么吗？");
-                return;
-            }
-
-            musicVersionData.VersionTitle = newVersionTitle ?? musicVersionData.VersionTitle;
-            musicVersionData.AudioFilePath = newAudioFilePath ?? musicVersionData.AudioFilePath;
-            musicVersionData.Offset = newOffset ?? musicVersionData.Offset;
-            OnMusicVersionDataChanged?.Invoke(musicVersionData);
-        }
-
-        #endregion
     }
 }

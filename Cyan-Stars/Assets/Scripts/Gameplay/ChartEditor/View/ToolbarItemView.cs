@@ -4,6 +4,7 @@ using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using UnityEngine;
 using UnityEngine.UI;
+using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
@@ -15,37 +16,29 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private EditToolType editToolType;
 
-
         public override void Bind(ToolbarViewModel viewModel)
         {
             base.Bind(viewModel);
 
-            toggle.isOn = ViewModel.SelectedEditTool.Value == editToolType;
-
-            ViewModel.SelectedEditTool.OnValueChanged += RefreshUI;
-            toggle.onValueChanged.AddListener((isOn) =>
-            {
-                if (!isOn)
+            ViewModel.SelectedEditTool
+                .Subscribe(type =>
                 {
-                    return;
-                }
+                    toggle.SetIsOnWithoutNotify(type == editToolType);
+                })
+                .AddTo(this);
 
-                ViewModel.SelectTool(this.editToolType);
-            });
+            toggle.onValueChanged.AddListener(OnToggleValueChanged);
         }
 
-        private void RefreshUI(EditToolType type)
+        private void OnToggleValueChanged(bool isOn)
         {
-            if (this.editToolType == type && !toggle.isOn)
-            {
-                toggle.isOn = true;
-            }
+            if (isOn)
+                ViewModel.SelectedEditTool.Value = editToolType;
         }
 
         protected override void OnDestroy()
         {
-            ViewModel.SelectedEditTool.OnValueChanged += RefreshUI;
-            toggle.onValueChanged.RemoveAllListeners();
+            toggle.onValueChanged.RemoveListener(OnToggleValueChanged);
         }
     }
 }

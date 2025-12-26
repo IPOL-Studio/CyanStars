@@ -93,13 +93,13 @@
 //         {
 //             canvas.enabled = Model.ChartDataCanvasVisibleness;
 //
-//             kuiXingToggle.isOn = Model.ChartMetadata.Difficulty == ChartDifficulty.KuiXing;
-//             qiMingToggle.isOn = Model.ChartMetadata.Difficulty == ChartDifficulty.QiMing;
-//             tianShuToggle.isOn = Model.ChartMetadata.Difficulty == ChartDifficulty.TianShu;
-//             wuYinToggle.isOn = Model.ChartMetadata.Difficulty == ChartDifficulty.WuYin;
-//             undefinedToggle.isOn = Model.ChartMetadata.Difficulty == null;
+//             kuiXingToggle.isOn = Model.ChartMetaData.Difficulty == ChartDifficulty.KuiXing;
+//             qiMingToggle.isOn = Model.ChartMetaData.Difficulty == ChartDifficulty.QiMing;
+//             tianShuToggle.isOn = Model.ChartMetaData.Difficulty == ChartDifficulty.TianShu;
+//             wuYinToggle.isOn = Model.ChartMetaData.Difficulty == ChartDifficulty.WuYin;
+//             undefinedToggle.isOn = Model.ChartMetaData.Difficulty == null;
 //
-//             chartLevelField.text = Model.ChartMetadata.Level;
+//             chartLevelField.text = Model.ChartMetaData.Level;
 //             readyBeatField.text = Model.ChartData.ReadyBeat.ToString();
 //         }
 //

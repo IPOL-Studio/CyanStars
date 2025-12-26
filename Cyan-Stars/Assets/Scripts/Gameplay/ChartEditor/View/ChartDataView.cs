@@ -3,6 +3,7 @@
 using System;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using R3;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,12 +44,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
-            chartDataCanvas.enabled = ViewModel.ChartDataCanvasVisibility.Value;
-
-            ViewModel.ChartDataCanvasVisibility.OnValueChanged += SetCanvasVisibility;
-            ViewModel.ChartDifficulty.OnValueChanged += SetDifficulty;
-            ViewModel.ChartLevelString.OnValueChanged += SetLevel;
-            ViewModel.ReadyBeatCountString.OnValueChanged += SetReadyBeatCount;
+            ViewModel.ChartDataCanvasVisibility
+                .Subscribe(isVisibility =>
+                {
+                    chartDataCanvas.enabled = isVisibility;
+                })
+                .AddTo(this);
+            ViewModel.ChartDifficulty.Subscribe(SetDifficulty).AddTo(this);
+            ViewModel.ChartLevelString.Subscribe(SetLevel).AddTo(this);
+            ViewModel.ReadyBeatCountString.Subscribe(SetReadyBeatCount).AddTo(this);
 
             closeCanvasButton.onClick.AddListener(ViewModel.CloseCanvas);
             kuiXingToggle.onValueChanged.AddListener(isOn =>
@@ -90,11 +94,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
             readyBeatField.onValueChanged.AddListener(ViewModel.SetReadyBeatCount);
         }
 
-        private void SetCanvasVisibility(bool visible)
-        {
-            chartDataCanvas.enabled = visible;
-        }
-
         private void SetDifficulty(ChartDifficulty? difficulty)
         {
             kuiXingToggle.isOn = difficulty == ChartDifficulty.KuiXing;
@@ -117,11 +116,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected override void OnDestroy()
         {
-            ViewModel.ChartDataCanvasVisibility.OnValueChanged -= SetCanvasVisibility;
-            ViewModel.ChartDifficulty.OnValueChanged -= SetDifficulty;
-            ViewModel.ChartLevelString.OnValueChanged -= SetLevel;
-            ViewModel.ReadyBeatCountString.OnValueChanged -= SetReadyBeatCount;
-
             closeCanvasButton.onClick.RemoveAllListeners();
             kuiXingToggle.onValueChanged.RemoveAllListeners();
             qiMingToggle.onValueChanged.RemoveAllListeners();

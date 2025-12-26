@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using R3;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,14 +51,57 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
-            ViewModel.CanvasVisible.OnValueChanged += SetCanvasVisible;
-            ViewModel.ChartPackTitle.OnValueChanged += SetTitleField;
-            ViewModel.PreviewStartBeatField1String.OnValueChanged += SetPreviewStartBeatField1;
-            ViewModel.PreviewStartBeatField2String.OnValueChanged += SetPreviewStartBeatField2;
-            ViewModel.PreviewStartBeatField3String.OnValueChanged += SetPreviewStartBeatField3;
-            ViewModel.PreviewEndBeatField1String.OnValueChanged += SetPreviewEndBeatField1;
-            ViewModel.PreviewEndBeatField2String.OnValueChanged += SetPreviewEndBeatField2;
-            ViewModel.PreviewEndBeatField3String.OnValueChanged += SetPreviewEndBeatField3;
+            ViewModel.CanvasVisible
+                .Subscribe(visible =>
+                {
+                    canvas.enabled = visible;
+                })
+                .AddTo(this);
+            ViewModel.ChartPackTitle
+                .Subscribe(title =>
+                {
+                    chartPackTitleField.text = title;
+                })
+                .AddTo(this);
+
+            ViewModel.PreviewStartBeatField1String
+                .Subscribe(text =>
+                {
+                    previewStartBeatField1.text = text;
+                })
+                .AddTo(this);
+            ViewModel.PreviewStartBeatField2String.Subscribe(text =>
+                {
+                    previewStartBeatField2.text = text;
+                })
+                .AddTo(this);
+            ViewModel.PreviewStartBeatField3String.Subscribe(text =>
+                {
+                    previewStartBeatField3.text = text;
+                })
+                .AddTo(this);
+            ViewModel.PreviewEndBeatField1String.Subscribe(text =>
+                {
+                    previewEndBeatField1.text = text;
+                })
+                .AddTo(this);
+            ViewModel.PreviewEndBeatField2String.Subscribe(text =>
+                {
+                    previewEndBeatField2.text = text;
+                })
+                .AddTo(this);
+            ViewModel.PreviewEndBeatField3String.Subscribe(text =>
+                {
+                    previewEndBeatField3.text = text;
+                })
+                .AddTo(this);
+
+            ViewModel.CoverFilePathString
+                .Subscribe(text =>
+                {
+                    coverPathText.text = text;
+                })
+                .AddTo(this);
 
             closeCanvasButton.onClick.AddListener(ViewModel.CloseCanvas);
             chartPackTitleField.onEndEdit.AddListener(ViewModel.SetChartPackTitle);
@@ -105,57 +149,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
             );
         }
 
-        private void SetCanvasVisible(bool visible)
-        {
-            canvas.enabled = visible;
-        }
-
-        private void SetTitleField(string title)
-        {
-            chartPackTitleField.text = title;
-        }
-
-        private void SetPreviewStartBeatField1(string text)
-        {
-            previewStartBeatField1.text = text;
-        }
-
-        private void SetPreviewStartBeatField2(string text)
-        {
-            previewStartBeatField2.text = text;
-        }
-
-        private void SetPreviewStartBeatField3(string text)
-        {
-            previewStartBeatField3.text = text;
-        }
-
-        private void SetPreviewEndBeatField1(string text)
-        {
-            previewEndBeatField1.text = text;
-        }
-
-        private void SetPreviewEndBeatField2(string text)
-        {
-            previewEndBeatField2.text = text;
-        }
-
-        private void SetPreviewEndBeatField3(string text)
-        {
-            previewEndBeatField3.text = text;
-        }
-
         protected override void OnDestroy()
         {
-            ViewModel.CanvasVisible.OnValueChanged -= SetCanvasVisible;
-            ViewModel.ChartPackTitle.OnValueChanged -= SetTitleField;
-            ViewModel.PreviewStartBeatField1String.OnValueChanged -= SetPreviewStartBeatField1;
-            ViewModel.PreviewStartBeatField2String.OnValueChanged -= SetPreviewStartBeatField2;
-            ViewModel.PreviewStartBeatField3String.OnValueChanged -= SetPreviewStartBeatField3;
-            ViewModel.PreviewEndBeatField1String.OnValueChanged -= SetPreviewEndBeatField1;
-            ViewModel.PreviewEndBeatField2String.OnValueChanged -= SetPreviewEndBeatField2;
-            ViewModel.PreviewEndBeatField3String.OnValueChanged -= SetPreviewEndBeatField3;
-
             closeCanvasButton.onClick.RemoveAllListeners();
             chartPackTitleField.onEndEdit.RemoveAllListeners();
             previewStartBeatField1.onEndEdit.RemoveAllListeners();

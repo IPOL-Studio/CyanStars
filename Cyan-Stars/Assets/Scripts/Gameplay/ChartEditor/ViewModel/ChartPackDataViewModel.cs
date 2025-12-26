@@ -1,9 +1,9 @@
 ﻿#nullable enable
 
 using CyanStars.Chart;
-using CyanStars.Gameplay.ChartEditor.BindableProperty;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
+using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
@@ -11,67 +11,74 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     {
         // TODO: 曲绘导入、裁剪，谱包导出还没做
 
-        // VM 私有属性
-        private readonly BindableProperty<bool> canvasVisible;
-        private readonly BindableProperty<string> chartPackTitle;
-        private readonly BindableProperty<string> previewStartBeatField1String;
-        private readonly BindableProperty<string> previewStartBeatField2String;
-        private readonly BindableProperty<string> previewStartBeatField3String;
-        private readonly BindableProperty<string> previewEndBeatField1String;
-        private readonly BindableProperty<string> previewEndBeatField2String;
-        private readonly BindableProperty<string> previewEndBeatField3String;
+        public readonly ReadOnlyReactiveProperty<bool> CanvasVisible;
+        public readonly ReadOnlyReactiveProperty<string> ChartPackTitle;
 
-        // 暴露给 V 的只读属性
-        public IReadonlyBindableProperty<bool> CanvasVisible => canvasVisible;
-        public IReadonlyBindableProperty<string> ChartPackTitle => chartPackTitle;
-        public IReadonlyBindableProperty<string> PreviewStartBeatField1String => previewStartBeatField1String;
-        public IReadonlyBindableProperty<string> PreviewStartBeatField2String => previewStartBeatField2String;
-        public IReadonlyBindableProperty<string> PreviewStartBeatField3String => previewStartBeatField3String;
-        public IReadonlyBindableProperty<string> PreviewEndBeatField1String => previewEndBeatField1String;
-        public IReadonlyBindableProperty<string> PreviewEndBeatField2String => previewEndBeatField2String;
-        public IReadonlyBindableProperty<string> PreviewEndBeatField3String => previewEndBeatField3String;
+        public readonly ReadOnlyReactiveProperty<string> PreviewStartBeatField1String;
+        public readonly ReadOnlyReactiveProperty<string> PreviewStartBeatField2String;
+        public readonly ReadOnlyReactiveProperty<string> PreviewStartBeatField3String;
+        public readonly ReadOnlyReactiveProperty<string> PreviewEndBeatField1String;
+        public readonly ReadOnlyReactiveProperty<string> PreviewEndBeatField2String;
+        public readonly ReadOnlyReactiveProperty<string> PreviewEndBeatField3String;
+
+        public readonly ReadOnlyReactiveProperty<string?> CoverFilePathString;
 
 
         public ChartPackDataViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
-            // 初始化本 VM 属性值
-            canvasVisible =
-                new BindableProperty<bool>(Model.ChartPackDataCanvasVisibility.Value);
-            chartPackTitle =
-                new BindableProperty<string>(Model.ChartPackData.Title);
-            previewStartBeatField1String =
-                new BindableProperty<string>(Model.ChartPackData.MusicPreviewStartBeat.IntegerPart.ToString());
-            previewStartBeatField2String =
-                new BindableProperty<string>(Model.ChartPackData.MusicPreviewStartBeat.Numerator.ToString());
-            previewStartBeatField3String =
-                new BindableProperty<string>(Model.ChartPackData.MusicPreviewStartBeat.Denominator.ToString());
-            previewEndBeatField1String =
-                new BindableProperty<string>(Model.ChartPackData.MusicPreviewEndBeat.IntegerPart.ToString());
-            previewEndBeatField2String =
-                new BindableProperty<string>(Model.ChartPackData.MusicPreviewEndBeat.Numerator.ToString());
-            previewEndBeatField3String =
-                new BindableProperty<string>(Model.ChartPackData.MusicPreviewEndBeat.Denominator.ToString());
+            CanvasVisible = Model.ChartPackDataCanvasVisibility
+                .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
+            ChartPackTitle = Model.ChartPackData
+                .Select(data => data.Title.AsObservable())
+                .Switch()
+                .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.Title.Value)
+                .AddTo(base.Disposables);
 
-            // M->VM 订阅
-            Model.ChartPackDataCanvasVisibility.OnValueChanged += isOn =>
-            {
-                canvasVisible.Value = isOn;
-            };
-            Model.OnChartPackBasicDataChanged += data =>
-            {
-                chartPackTitle.Value = data.Title;
-                previewStartBeatField1String.Value = data.MusicPreviewStartBeat.IntegerPart.ToString();
-                previewStartBeatField2String.Value = data.MusicPreviewStartBeat.Numerator.ToString();
-                previewStartBeatField3String.Value = data.MusicPreviewStartBeat.Denominator.ToString();
-                previewEndBeatField1String.Value = data.MusicPreviewEndBeat.IntegerPart.ToString();
-                previewEndBeatField2String.Value = data.MusicPreviewEndBeat.Numerator.ToString();
-                previewEndBeatField3String.Value = data.MusicPreviewEndBeat.Denominator.ToString();
-            };
+            PreviewStartBeatField1String = Model.ChartPackData
+                .Select(data => data.MusicPreviewStartBeat.AsObservable())
+                .Switch()
+                .Select(beat => beat.IntegerPart.ToString())
+                .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value.IntegerPart.ToString())
+                .AddTo(base.Disposables);
+            PreviewStartBeatField2String = Model.ChartPackData
+                .Select(data => data.MusicPreviewStartBeat.AsObservable())
+                .Switch()
+                .Select(beat => beat.Numerator.ToString())
+                .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value.Numerator.ToString())
+                .AddTo(base.Disposables);
+            PreviewStartBeatField3String = Model.ChartPackData
+                .Select(data => data.MusicPreviewStartBeat.AsObservable())
+                .Switch()
+                .Select(beat => beat.Denominator.ToString())
+                .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value.Denominator.ToString())
+                .AddTo(base.Disposables);
+            PreviewEndBeatField1String = Model.ChartPackData
+                .Select(data => data.MusicPreviewEndBeat.AsObservable())
+                .Switch()
+                .Select(beat => beat.IntegerPart.ToString())
+                .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value.IntegerPart.ToString())
+                .AddTo(base.Disposables);
+            PreviewEndBeatField2String = Model.ChartPackData
+                .Select(data => data.MusicPreviewEndBeat.AsObservable())
+                .Switch()
+                .Select(beat => beat.Numerator.ToString())
+                .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value.Numerator.ToString())
+                .AddTo(base.Disposables);
+            PreviewEndBeatField3String = Model.ChartPackData
+                .Select(data => data.MusicPreviewEndBeat.AsObservable())
+                .Switch()
+                .Select(beat => beat.Denominator.ToString())
+                .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value.Denominator.ToString())
+                .AddTo(base.Disposables);
+
+            CoverFilePathString = Model.ChartPackData
+                .Select(data => data.CoverFilePath.AsObservable())
+                .Switch()
+                .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.CoverFilePath.Value)
+                .AddTo(base.Disposables);
         }
-
-
-        // V->VM
 
         public void CloseCanvas()
         {
@@ -90,16 +97,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void SetChartPackTitle(string newTitle)
         {
-            string oldTitle = Model.ChartPackData.Title;
+            string oldTitle = Model.ChartPackData.CurrentValue.Title.Value;
             if (newTitle == oldTitle)
                 return;
 
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
-                    Model.SetChartPackTitle(newTitle);
+                    Model.ChartPackData.CurrentValue.Title.Value = newTitle;
                 }, () =>
                 {
-                    Model.SetChartPackTitle(oldTitle);
+                    Model.ChartPackData.CurrentValue.Title.Value = oldTitle;
                 })
             );
         }
@@ -110,31 +117,25 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 !int.TryParse(numeratorString, out var numerator) ||
                 !int.TryParse(denominatorString, out var denominator))
             {
-                previewStartBeatField1String.ForceNotify();
-                previewStartBeatField2String.ForceNotify();
-                previewStartBeatField3String.ForceNotify();
+                Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.ForceNotify();
                 return;
             }
 
             if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat newBeat))
             {
-                previewStartBeatField1String.ForceNotify();
-                previewStartBeatField2String.ForceNotify();
-                previewStartBeatField3String.ForceNotify();
+                Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.ForceNotify();
                 return;
             }
 
-            var oldBeat = Model.ChartPackData.MusicPreviewStartBeat;
-
+            var oldBeat = Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value;
             if (newBeat == oldBeat)
                 return;
-
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
-                    Model.SetChartPackPreviewStartBeat(newBeat);
+                    Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value = newBeat;
                 }, () =>
                 {
-                    Model.SetChartPackPreviewStartBeat(oldBeat);
+                    Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value = oldBeat;
                 })
             );
         }
@@ -145,31 +146,25 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 !int.TryParse(numeratorString, out var numerator) ||
                 !int.TryParse(denominatorString, out var denominator))
             {
-                previewEndBeatField1String.ForceNotify();
-                previewEndBeatField2String.ForceNotify();
-                previewEndBeatField3String.ForceNotify();
+                Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.ForceNotify();
                 return;
             }
 
             if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat newBeat))
             {
-                previewEndBeatField1String.ForceNotify();
-                previewEndBeatField2String.ForceNotify();
-                previewEndBeatField3String.ForceNotify();
+                Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.ForceNotify();
                 return;
             }
 
-            var oldBeat = Model.ChartPackData.MusicPreviewEndBeat;
-
+            var oldBeat = Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value;
             if (newBeat == oldBeat)
                 return;
-
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
-                    Model.SetChartPackPreviewEndBeat(newBeat);
+                    Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = newBeat;
                 }, () =>
                 {
-                    Model.SetChartPackPreviewEndBeat(oldBeat);
+                    Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = oldBeat;
                 })
             );
         }

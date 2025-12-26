@@ -1,77 +1,75 @@
 ﻿#nullable enable
 
 using System.Globalization;
-using CyanStars.Gameplay.ChartEditor.BindableProperty;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
+using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class EditorAttributeViewModel : BaseViewModel
     {
-        private readonly BindableProperty<string> posAccuracyString;
-        private readonly BindableProperty<bool> posMagnetState;
-        private readonly BindableProperty<string> beatAccuracyString;
-        private readonly BindableProperty<string> beatZoomString;
-
-        public IReadonlyBindableProperty<string> PosAccuracyString => posAccuracyString;
-        public IReadonlyBindableProperty<bool> PosMagnetState => posMagnetState;
-        public IReadonlyBindableProperty<string> BeatAccuracyString => beatAccuracyString;
-        public IReadonlyBindableProperty<string> BeatZoomString => beatZoomString;
+        public readonly ReadOnlyReactiveProperty<string> PosAccuracyString;
+        public readonly ReadOnlyReactiveProperty<bool> PosMagnetState;
+        public readonly ReadOnlyReactiveProperty<string> BeatAccuracyString;
+        public readonly ReadOnlyReactiveProperty<string> BeatZoomString;
 
 
-        public EditorAttributeViewModel(ChartEditorModel model, CommandManager commandManager) : base(model, commandManager)
+        public EditorAttributeViewModel(ChartEditorModel model, CommandManager commandManager)
+            : base(model, commandManager)
         {
-            posAccuracyString = new BindableProperty<string>(Model.PosAccuracy.Value.ToString());
-            posMagnetState = new BindableProperty<bool>(Model.PosMagnet.Value);
-            beatAccuracyString = new BindableProperty<string>(Model.BeatAccuracy.Value.ToString());
-            beatZoomString = new BindableProperty<string>(Model.BeatZoom.Value.ToString(CultureInfo.InvariantCulture));
-
-            Model.PosAccuracy.OnValueChanged += value => posAccuracyString.Value = value.ToString();
-            Model.PosMagnet.OnValueChanged += value => posMagnetState.Value = value;
-            Model.BeatAccuracy.OnValueChanged += value => beatAccuracyString.Value = value.ToString();
-            Model.BeatZoom.OnValueChanged += value => beatZoomString.Value = value.ToString(CultureInfo.InvariantCulture);
+            PosAccuracyString = Model.PosAccuracy
+                .Select(posAccuracy => posAccuracy.ToString())
+                .ToReadOnlyReactiveProperty(Model.PosAccuracy.Value.ToString())
+                .AddTo(base.Disposables);
+            PosMagnetState = Model.PosMagnet
+                .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
+            BeatAccuracyString = Model.BeatAccuracy
+                .Select(beatAccuracy => beatAccuracy.ToString())
+                .ToReadOnlyReactiveProperty(Model.BeatAccuracy.Value.ToString())
+                .AddTo(base.Disposables);
+            BeatZoomString = Model.BeatZoom
+                .Select(beatZoom => beatZoom.ToString(CultureInfo.InvariantCulture))
+                .ToReadOnlyReactiveProperty(Model.BeatZoom.Value.ToString(CultureInfo.InvariantCulture))
+                .AddTo(base.Disposables);
         }
 
         public void SetPosAccuracy(string accuracyString)
         {
-            if (!int.TryParse(accuracyString, out int accuracy))
+            if (!int.TryParse(accuracyString, out int accuracy) || accuracy < 0)
             {
-                posAccuracyString.ForceNotify();
+                Model.PosAccuracy.ForceNotify();
                 return;
             }
 
-            posAccuracyString.Value = accuracy.ToString();
             Model.PosAccuracy.Value = accuracy;
         }
 
         public void SetPosMagnet(bool isMagnetOn)
         {
-            posMagnetState.Value = isMagnetOn;
             Model.PosMagnet.Value = isMagnetOn;
         }
 
         public void SetBeatAccuracy(string accuracyString)
         {
-            if (!int.TryParse(accuracyString, out int accuracy))
+            if (!int.TryParse(accuracyString, out int accuracy) || accuracy < 1)
             {
-                beatAccuracyString.ForceNotify();
+                Model.BeatAccuracy.ForceNotify();
                 return;
             }
 
-            beatAccuracyString.Value = accuracy.ToString();
             Model.BeatAccuracy.Value = accuracy;
         }
 
         public void SetBeatZoom(string zoomString)
         {
-            if (!float.TryParse(zoomString, out float zoom))
+            if (!float.TryParse(zoomString, NumberStyles.Any, CultureInfo.InvariantCulture, out float zoom) || zoom <= 0f)
             {
-                beatZoomString.ForceNotify();
+                Model.BeatZoom.ForceNotify();
                 return;
             }
 
-            beatZoomString.Value = zoom.ToString(CultureInfo.InvariantCulture);
             Model.BeatZoom.Value = zoom;
         }
     }

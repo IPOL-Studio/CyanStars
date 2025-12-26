@@ -33,8 +33,8 @@ public class ChartEditorSceneRoot : MonoBehaviour
 
             workspacePath = PathUtil.Combine(chartModule.PlayerChartPacksFolderPath, randomName);
             chartData = new ChartData();
-            ChartMetadata chartMetadata = new ChartMetadata(randomName);
-            chartPackData = new ChartPackData(randomName, chartMetaDatas: new List<ChartMetadata> { chartMetadata });
+            ChartMetaData chartMetaData = new ChartMetaData(randomName);
+            chartPackData = new ChartPackData(randomName, chartMetaDatas: new List<ChartMetaData> { chartMetaData });
 
             chartMetadataIndex = 0;
         }

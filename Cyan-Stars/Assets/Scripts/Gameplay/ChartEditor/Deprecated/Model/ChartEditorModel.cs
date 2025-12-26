@@ -154,7 +154,7 @@
 //         public readonly string ChartFilePath;
 //         public readonly ChartPackData ChartPackData;
 //         public readonly ChartData ChartData;
-//         public readonly ChartMetadata ChartMetadata;
+//         public readonly ChartMetaData ChartMetaData;
 //         public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
 //         public IReadOnlyList<BpmGroupItem> BpmGroupDatas => ChartPackData.BpmGroup.Data;
 //         public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
@@ -313,12 +313,12 @@
 //             {
 //                 if (PathUtil.Combine(WorkspacePath, chartMetadata.FilePath) == chartFilePath)
 //                 {
-//                     ChartMetadata = chartMetadata;
+//                     ChartMetaData = chartMetadata;
 //                     break;
 //                 }
 //             }
 //
-//             if (ChartMetadata == null)
+//             if (ChartMetaData == null)
 //             {
 //                 throw new Exception("未在元数据中找到此谱面");
 //             }
@@ -1486,18 +1486,18 @@
 //
 //         public void UpdateDifficulty(ChartDifficulty? difficulty)
 //         {
-//             if (ChartMetadata.Difficulty != difficulty)
+//             if (ChartMetaData.Difficulty != difficulty)
 //             {
-//                 ChartMetadata.Difficulty = difficulty;
+//                 ChartMetaData.Difficulty = difficulty;
 //                 OnChartDataChanged?.Invoke();
 //             }
 //         }
 //
 //         public void UpdateLevel(string levelString)
 //         {
-//             if (ChartMetadata.Level != levelString)
+//             if (ChartMetaData.Level != levelString)
 //             {
-//                 ChartMetadata.Level = levelString;
+//                 ChartMetaData.Level = levelString;
 //                 OnChartDataChanged?.Invoke();
 //             }
 //         }

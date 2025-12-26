@@ -317,14 +317,14 @@ namespace CyanStars.Chart
                 return;
             }
 
-            // TODO：计算谱面哈希并校验/覆盖元数据内容，目前假定 metadata.ChartHash 提供了正确的 Hash
+            // TODO：计算谱面哈希并校验/覆盖元数据内容，目前假定 metaData.ChartHash 提供了正确的 Hash
 
-            ChartMetadata metadata = SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas[(int)SelectedChartIndex];
-            // if (lastChartDataHash != metadata.ChartHash)
+            ChartMetaData metaData = SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas[(int)SelectedChartIndex];
+            // if (lastChartDataHash != metaData.ChartHash)
             if (true) // TODO: 实现了 hash 计算后改用上面一行，暂时先每次都强制加载谱面
             {
                 lastChartDataHandler?.Unload();
-                string chartFilePath = PathUtil.Combine(SelectedRuntimeChartPack.WorkspacePath, metadata.FilePath);
+                string chartFilePath = PathUtil.Combine(SelectedRuntimeChartPack.WorkspacePath, metaData.FilePath);
                 var handler = await GameRoot.Asset.LoadAssetAsync<ChartData>(chartFilePath);
                 var chartData = handler.Asset;
 
@@ -336,7 +336,7 @@ namespace CyanStars.Chart
 
                 Debug.Log("已加载了新的的谱面");
                 ChartData = chartData;
-                lastChartDataHash = metadata.ChartHash;
+                lastChartDataHash = metaData.ChartHash;
                 lastChartDataHandler = handler;
             }
         }
@@ -476,7 +476,7 @@ namespace CyanStars.Chart
         //         string chartFileRelativePath = PathUtil.Combine("Charts", $"Chart{fileNameNumber}.json");
         //         string chartFileAbsolutePath = PathUtil.Combine(workspacePath, chartFileRelativePath);
         //
-        //         ChartMetadata chartMetadata = new ChartMetadata(chartFileRelativePath);
+        //         ChartMetaData chartMetadata = new ChartMetaData(chartFileRelativePath);
         //         runtimeChartPack.ChartPackData.ChartMetaDatas.Add(chartMetadata);
         //         SelectedChartIndex = runtimeChartPack.ChartPackData.ChartMetaDatas.IndexOf(chartMetadata);
         //

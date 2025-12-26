@@ -35,7 +35,8 @@ namespace CyanStars.Gameplay.ChartEditor
                               ChartData chartData,
                               CommandManager commandManager)
         {
-            ChartEditorModel model = new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData);
+            ChartEditorModel model =
+                new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData);
 
             var toolbarViewModel = new ToolbarViewModel(model, commandManager);
             foreach (var item in toolbarItemViews)

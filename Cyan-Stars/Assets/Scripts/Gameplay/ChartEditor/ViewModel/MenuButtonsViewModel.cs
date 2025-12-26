@@ -1,40 +1,31 @@
 ﻿#nullable enable
 
 using System;
-using CyanStars.Gameplay.ChartEditor.BindableProperty;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
+using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class MenuButtonsViewModel : BaseViewModel
     {
-        private readonly BindableProperty<bool> functionCanvasVisibility;
-        public IReadonlyBindableProperty<bool> FunctionCanvasVisibility => functionCanvasVisibility;
+        private readonly ReactiveProperty<bool> functionCanvasVisibility;
+        public readonly ReadOnlyReactiveProperty<bool> FunctionCanvasVisibility;
 
 
         public MenuButtonsViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
-            functionCanvasVisibility = new BindableProperty<bool>(false);
+            functionCanvasVisibility = new ReactiveProperty<bool>(false);
+            FunctionCanvasVisibility = functionCanvasVisibility.ToReadOnlyReactiveProperty();
         }
 
         public void SetFunctionCanvasVisibility(bool newValue)
         {
             if (functionCanvasVisibility.Value == newValue)
-            {
                 return;
-            }
 
-            bool oldValue = functionCanvasVisibility.Value;
-            CommandManager.ExecuteCommand(new DelegateCommand(() =>
-                {
-                    functionCanvasVisibility.Value = newValue;
-                }, () =>
-                {
-                    functionCanvasVisibility.Value = oldValue;
-                }
-            ));
+            functionCanvasVisibility.Value = newValue;
         }
 
         public void OpenCanvas(CanvasType canvasType)
@@ -42,10 +33,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var property = GetCanvasVisibilityProperty(canvasType);
 
             if (property.Value)
-            {
-                // 窗口已经打开了
                 return;
-            }
+
 
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
@@ -59,7 +48,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         }
 
 
-        private BindableProperty<bool> GetCanvasVisibilityProperty(CanvasType canvasType)
+        private ReactiveProperty<bool> GetCanvasVisibilityProperty(CanvasType canvasType)
         {
             switch (canvasType)
             {

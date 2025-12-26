@@ -1,52 +1,51 @@
 ﻿#nullable enable
 
 using CyanStars.Chart;
-using CyanStars.Gameplay.ChartEditor.BindableProperty;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
+using R3;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class ChartDataViewModel : BaseViewModel
     {
-        private readonly BindableProperty<bool> chartDataCanvasVisibility;
-        private readonly BindableProperty<ChartDifficulty?> chartDifficulty;
-        private readonly BindableProperty<string> chartLevelString;
-        private readonly BindableProperty<string> readyBeatCountString;
+        private readonly ChartMetaDataEditorModel MetaData;
+        private readonly ChartDataEditorModel ChartData;
 
-        public IReadonlyBindableProperty<bool> ChartDataCanvasVisibility => chartDataCanvasVisibility;
-        public IReadonlyBindableProperty<ChartDifficulty?> ChartDifficulty => chartDifficulty;
-        public IReadonlyBindableProperty<string> ChartLevelString => chartLevelString;
-        public IReadonlyBindableProperty<string> ReadyBeatCountString => readyBeatCountString;
+        public ReadOnlyReactiveProperty<bool> ChartDataCanvasVisibility { get; }
+        public ReadOnlyReactiveProperty<ChartDifficulty?> ChartDifficulty { get; }
+        public ReadOnlyReactiveProperty<string> ChartLevelString { get; }
+        public ReadOnlyReactiveProperty<string> ReadyBeatCountString { get; }
 
 
         public ChartDataViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
-            chartDataCanvasVisibility = new BindableProperty<bool>(Model.ChartDataCanvasVisibility.Value);
+            MetaData = Model.ChartPackData.CurrentValue.ChartMetaDatas[Model.ChartMetaDataIndex];
+            ChartData = Model.ChartData.CurrentValue;
 
-            ChartMetadata metaData = Model.ChartPackData.ChartMetaDatas[Model.ChartMetadataIndex];
+            ChartDataCanvasVisibility = Model.ChartDataCanvasVisibility
+                .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
 
-            chartDifficulty = new BindableProperty<ChartDifficulty?>(metaData.Difficulty);
-            chartLevelString = new BindableProperty<string>(metaData.Level);
-            readyBeatCountString = new BindableProperty<string>(Model.ChartData.ReadyBeat.ToString());
+            ChartDifficulty = MetaData.Difficulty
+                .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
 
-            Model.ChartDataCanvasVisibility.OnValueChanged += visibility =>
-            {
-                chartDataCanvasVisibility.Value = visibility;
-            };
-            Model.OnChartBasicDataChanged += (chartPackData, chartData) =>
-            {
-                chartDifficulty.Value = chartPackData.ChartMetaDatas[Model.ChartMetadataIndex].Difficulty;
-                chartLevelString.Value = chartPackData.ChartMetaDatas[Model.ChartMetadataIndex].Level;
-                readyBeatCountString.Value = chartData.ReadyBeat.ToString();
-            };
+            ChartLevelString = MetaData.Level
+                .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
+
+            ReadyBeatCountString = ChartData.ReadyBeat
+                .Select(beat => beat.ToString())
+                .ToReadOnlyReactiveProperty(ChartData.ReadyBeat.Value.ToString())
+                .AddTo(base.Disposables);
         }
 
         public void CloseCanvas()
         {
-            if (!chartDataCanvasVisibility.Value)
+            if (!ChartDataCanvasVisibility.CurrentValue)
                 return;
 
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
@@ -61,8 +60,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void SetChartDifficulty(ChartDifficulty? newDifficulty)
         {
-            var metaDatas = Model.ChartPackData.ChartMetaDatas;
-            var oldDifficulty = metaDatas[Model.ChartMetadataIndex].Difficulty;
+            var metaDatas = Model.ChartPackData.CurrentValue.ChartMetaDatas;
+            var oldDifficulty = metaDatas[Model.ChartMetaDataIndex].Difficulty.Value;
 
             if (newDifficulty == oldDifficulty)
                 return;
@@ -72,44 +71,44 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             {
                 for (int i = 0; i < metaDatas.Count; i++)
                 {
-                    if (Model.ChartMetadataIndex == i)
+                    if (Model.ChartMetaDataIndex == i)
                         continue;
 
-                    if (metaDatas[i].Difficulty != newDifficulty)
+                    if (metaDatas[i].Difficulty.Value != newDifficulty)
                         continue;
 
                     Debug.LogWarning($"谱包有其他谱面已经使用了难度 {newDifficulty}，无法修改到目标难度！");
-                    chartDifficulty.ForceNotify();
+                    MetaData.Difficulty.ForceNotify();
                     return;
                 }
             }
 
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
-                    Model.SetChartDifficulty(newDifficulty);
+                    MetaData.Difficulty.Value = newDifficulty;
                 },
                 () =>
                 {
-                    Model.SetChartDifficulty(oldDifficulty);
+                    MetaData.Difficulty.Value = oldDifficulty;
                 }
             ));
         }
 
         public void SetChartLevelString(string newLevel)
         {
-            var metaDatas = Model.ChartPackData.ChartMetaDatas;
-            var oldLevel = metaDatas[Model.ChartMetadataIndex].Level;
+            var metaData = Model.ChartPackData.CurrentValue.ChartMetaDatas[Model.ChartMetaDataIndex];
+            var oldLevel = metaData.Level.Value;
 
             if (newLevel == oldLevel)
                 return;
 
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
-                    Model.SetChartLevel(newLevel);
+                    metaData.Level.Value = newLevel;
                 },
                 () =>
                 {
-                    Model.SetChartLevel(oldLevel);
+                    metaData.Level.Value = oldLevel;
                 }
             ));
         }
@@ -118,21 +117,21 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             if (!int.TryParse(newBeatCount, out int newBeatCountInt) || newBeatCountInt < 0)
             {
-                readyBeatCountString.ForceNotify();
+                ChartData.ReadyBeat.ForceNotify();
                 return;
             }
 
-            var oldBeatIntCount = Model.ChartData.ReadyBeat;
+            var oldBeatIntCount = ChartData.ReadyBeat.Value;
             if (newBeatCountInt == oldBeatIntCount)
                 return;
 
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
                 {
-                    Model.SetChartReadyBeatCount(newBeatCountInt);
+                    ChartData.ReadyBeat.Value = newBeatCountInt;
                 },
                 () =>
                 {
-                    Model.SetChartReadyBeatCount(oldBeatIntCount);
+                    ChartData.ReadyBeat.Value = oldBeatIntCount;
                 }
             ));
         }
