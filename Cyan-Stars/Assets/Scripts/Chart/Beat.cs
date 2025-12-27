@@ -29,7 +29,7 @@ namespace CyanStars.Chart
                 return false;
             }
 
-            beat = new Beat(integerPart, 0, 0);
+            beat = new Beat(integerPart, 0, 1);
             return true;
         }
 
@@ -66,25 +66,25 @@ namespace CyanStars.Chart
         {
             if (beat.IntegerPart < 0)
             {
-                Debug.LogError("Beat 的整数部分必须大于等于 0");
+                Debug.LogWarning("Beat 的整数部分必须大于等于 0");
                 return false;
             }
 
             if (beat.Numerator < 0)
             {
-                Debug.LogError("Beat 的分子必须大于等于 0");
+                Debug.LogWarning("Beat 的分子必须大于等于 0");
                 return false;
             }
 
             if (beat.Denominator <= 0)
             {
-                Debug.LogError("Beat 的分母必须大于 0");
+                Debug.LogWarning("Beat 的分母必须大于 0");
                 return false;
             }
 
             if (beat.Numerator >= beat.Denominator)
             {
-                Debug.LogError("Beat 的分子必须小于分母");
+                Debug.LogWarning("Beat 的分子必须小于分母");
                 return false;
             }
 

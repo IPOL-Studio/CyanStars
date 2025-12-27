@@ -40,37 +40,55 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .Select(data => data.MusicPreviewStartBeat.AsObservable())
                 .Switch()
                 .Select(beat => beat.IntegerPart.ToString())
-                .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value.IntegerPart.ToString())
+                .ToReadOnlyReactiveProperty(
+                    ForceUpdateEqualityComparer<string>.Instance,
+                    Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value.IntegerPart.ToString()
+                )
                 .AddTo(base.Disposables);
             PreviewStartBeatField2String = Model.ChartPackData
                 .Select(data => data.MusicPreviewStartBeat.AsObservable())
                 .Switch()
                 .Select(beat => beat.Numerator.ToString())
-                .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value.Numerator.ToString())
+                .ToReadOnlyReactiveProperty(
+                    ForceUpdateEqualityComparer<string>.Instance,
+                    Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value.Numerator.ToString()
+                )
                 .AddTo(base.Disposables);
             PreviewStartBeatField3String = Model.ChartPackData
                 .Select(data => data.MusicPreviewStartBeat.AsObservable())
                 .Switch()
                 .Select(beat => beat.Denominator.ToString())
-                .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value.Denominator.ToString())
+                .ToReadOnlyReactiveProperty(
+                    ForceUpdateEqualityComparer<string>.Instance,
+                    Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value.Denominator.ToString()
+                )
                 .AddTo(base.Disposables);
             PreviewEndBeatField1String = Model.ChartPackData
                 .Select(data => data.MusicPreviewEndBeat.AsObservable())
                 .Switch()
                 .Select(beat => beat.IntegerPart.ToString())
-                .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value.IntegerPart.ToString())
+                .ToReadOnlyReactiveProperty(
+                    ForceUpdateEqualityComparer<string>.Instance,
+                    Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value.IntegerPart.ToString()
+                )
                 .AddTo(base.Disposables);
             PreviewEndBeatField2String = Model.ChartPackData
                 .Select(data => data.MusicPreviewEndBeat.AsObservable())
                 .Switch()
                 .Select(beat => beat.Numerator.ToString())
-                .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value.Numerator.ToString())
+                .ToReadOnlyReactiveProperty(
+                    ForceUpdateEqualityComparer<string>.Instance,
+                    Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value.Numerator.ToString()
+                )
                 .AddTo(base.Disposables);
             PreviewEndBeatField3String = Model.ChartPackData
                 .Select(data => data.MusicPreviewEndBeat.AsObservable())
                 .Switch()
                 .Select(beat => beat.Denominator.ToString())
-                .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value.Denominator.ToString())
+                .ToReadOnlyReactiveProperty(
+                    ForceUpdateEqualityComparer<string>.Instance,
+                    Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value.Denominator.ToString()
+                )
                 .AddTo(base.Disposables);
 
             CoverFilePathString = Model.ChartPackData
@@ -127,6 +145,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
+            if (newBeat > Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value)
+            {
+                Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.ForceNotify();
+                return;
+            }
+
             var oldBeat = Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value;
             if (newBeat == oldBeat)
                 return;
@@ -151,6 +175,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             }
 
             if (!Beat.TryCreateBeat(integerPart, numerator, denominator, out Beat newBeat))
+            {
+                Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.ForceNotify();
+                return;
+            }
+
+            if (newBeat < Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value)
             {
                 Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.ForceNotify();
                 return;
