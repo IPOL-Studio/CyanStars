@@ -12,12 +12,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private readonly ReactiveProperty<bool> functionCanvasVisibility;
         public readonly ReadOnlyReactiveProperty<bool> FunctionCanvasVisibility;
 
+        public readonly ReadOnlyReactiveProperty<bool> IsSimplificationMode;
+
 
         public MenuButtonsViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
             functionCanvasVisibility = new ReactiveProperty<bool>(false);
-            FunctionCanvasVisibility = functionCanvasVisibility.ToReadOnlyReactiveProperty();
+            FunctionCanvasVisibility = functionCanvasVisibility.ToReadOnlyReactiveProperty().AddTo(Disposables);
+            IsSimplificationMode = Model.IsSimplificationMode.ToReadOnlyReactiveProperty().AddTo(Disposables);
         }
 
         public void SetFunctionCanvasVisibility(bool newValue)
@@ -62,7 +65,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     return Model.BpmGroupCanvasVisibility;
                 case CanvasType.SpeedTemplateCanvas:
                     return Model.SpeedTemplateCanvasVisibility;
-                // 如果 EffectTracksCanvas 还没做，暂时先返回 null 或者抛出更友好的错误
                 case CanvasType.EffectTracksCanvas:
                     throw new NotImplementedException("EffectTracksCanvas is not implemented yet.");
                 default:

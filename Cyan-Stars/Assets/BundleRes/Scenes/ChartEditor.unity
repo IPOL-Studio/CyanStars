@@ -1376,8 +1376,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1595764879}
   m_HandleRect: {fileID: 1595764877}
   m_Direction: 2
-  m_Value: 1.0000008
-  m_Size: 0.60401064
+  m_Value: 1.0000011
+  m_Size: 0.61728644
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1437,7 +1437,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -4.666626, y: -4.69664}
+  m_AnchoredPosition: {x: -4.666626, y: -4.6966248}
   m_SizeDelta: {x: 3, y: -9.3932495}
   m_Pivot: {x: 1, y: 1}
 --- !u!1 &82778093
@@ -1878,7 +1878,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 646701638}
   m_HandleRect: {fileID: 646701636}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4566,7 +4566,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1070775234}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.40157595
+  m_Size: 0.40864152
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -7054,10 +7054,10 @@ RectTransform:
   - {fileID: 978114220}
   m_Father: {fileID: 1514540015}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 602.49994}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 100, y: -717.49994}
+  m_SizeDelta: {x: 1204.9999, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &442738496
 MonoBehaviour:
@@ -11589,7 +11589,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320301, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320303, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Pivot.x
@@ -11687,7 +11687,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 994941279456320296, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 651228597}
+      addedObject: {fileID: 651228600}
   m_SourcePrefab: {fileID: 100100000, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
 --- !u!224 &651228595 stripped
 RectTransform:
@@ -11699,40 +11699,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 994941279456320296, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
   m_PrefabInstance: {fileID: 651228594}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &651228597
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 651228596}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d428430f763718418f807f7f426a909, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  canvas: {fileID: 651228598}
-  closeCanvasButton: {fileID: 651228599}
-  listObject: {fileID: 82778093}
-  contentObject: {fileID: 1896763735}
-  addItemButton: {fileID: 43651022}
-  musicVersionItemPrefab: {fileID: 3465736307737091252, guid: d0c774b79e1a1ad4589d9a085e82e557, type: 3}
-  dataAreaFrameObject: {fileID: 1134447016}
-  titleField: {fileID: 1618376875376546139}
-  filePathText: {fileID: 1618376876756542344}
-  importFileButton: {fileID: 9066602333141502995}
-  minusOffsetButton: {fileID: 5546541407042278436}
-  offsetField: {fileID: 83248372815764794}
-  addOffsetButton: {fileID: 6503562932350941120}
-  testPlayButton: {fileID: 9066602332722398754}
-  staffInfoAreaObject: {fileID: 1618376876673323542}
-  addStaffItemButton: {fileID: 9066602331622812902}
-  deleteMusicVersionButton: {fileID: 9066602332411508625}
-  cloneMusicVersionButton: {fileID: 9066602332564846250}
-  moveUpMusicVersionButton: {fileID: 1829326590}
-  moveDownMusicVersionButton: {fileID: 648633846}
-  topMusicVersionButton: {fileID: 9066602332068440448}
-  staffItemPrefab: {fileID: 1570479164798640671, guid: a3981b7e3937b554bb09cc436c652156, type: 3}
 --- !u!223 &651228598 stripped
 Canvas:
   m_CorrespondingSourceObject: {fileID: 994941279456320301, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
@@ -11749,6 +11715,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &651228600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 651228596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 342dd9a5d12140618c61041ffab209c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.MusicVersionView
+  musicListItemPrefab: {fileID: 3465736307737091252, guid: d0c774b79e1a1ad4589d9a085e82e557, type: 3}
+  musicListContentTransform: {fileID: 1896763736}
+  musicListObject: {fileID: 82778093}
+  addListItemButton: {fileID: 43651022}
+  staffsContentTransform: {fileID: 1618376876673323537}
+  addStaffButton: {fileID: 9066602331622812902}
+  canvas: {fileID: 651228598}
+  closeButton: {fileID: 651228599}
+  detailObject: {fileID: 1134447016}
+  musicTitleField: {fileID: 1618376875376546139}
+  musicFilePathText: {fileID: 1618376876408272504}
+  importMusicButton: {fileID: 9066602333141502995}
+  offsetField: {fileID: 83248372815764794}
+  minusOffsetButton: {fileID: 5546541407042278436}
+  addOffsetButton: {fileID: 6503562932350941120}
+  testOffsetButton: {fileID: 9066602332722398754}
+  deleteItemButton: {fileID: 9066602332411508625}
+  cloneItemButton: {fileID: 9066602332564846250}
+  moveUpItemButton: {fileID: 1829326590}
+  moveDownItemButton: {fileID: 648633846}
+  topItemButton: {fileID: 9066602332068440448}
 --- !u!1 &652108510
 GameObject:
   m_ObjectHideFlags: 0
@@ -16005,7 +16004,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 173007117}
   m_HandleRect: {fileID: 173007115}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -16836,7 +16835,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1486000169}
   m_HandleRect: {fileID: 1486000168}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -22085,15 +22084,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78a4a17fc7654fe79045bdf1edcb1f2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chartDataCanvas: {fileID: 0}
-  closeCanvasButton: {fileID: 0}
-  kuiXingToggle: {fileID: 0}
-  qiMingToggle: {fileID: 0}
-  tianShuToggle: {fileID: 0}
-  wuYinToggle: {fileID: 0}
-  undefinedToggle: {fileID: 0}
-  levelField: {fileID: 0}
-  readyBeatField: {fileID: 0}
+  chartDataCanvas: {fileID: 1403133579}
+  closeCanvasButton: {fileID: 1403133578}
+  kuiXingToggle: {fileID: 1518154088}
+  qiMingToggle: {fileID: 647143056}
+  tianShuToggle: {fileID: 1523947241}
+  wuYinToggle: {fileID: 950255369}
+  undefinedToggle: {fileID: 756143979}
+  levelField: {fileID: 1246807945}
+  readyBeatField: {fileID: 1452472937}
+--- !u!114 &1403133578 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 994941278905508766, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
+  m_PrefabInstance: {fileID: 1403133574}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!223 &1403133579 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 994941279456320301, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
+  m_PrefabInstance: {fileID: 1403133574}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1419857833
 GameObject:
   m_ObjectHideFlags: 0
@@ -25613,7 +25628,7 @@ GameObject:
   - component: {fileID: 1643976273}
   - component: {fileID: 1643976277}
   m_Layer: 5
-  m_Name: MainCanva
+  m_Name: MainCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34465,8 +34480,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 468.66672, y: -443.24}
-  m_SizeDelta: {x: 857.33344, y: 0}
+  m_AnchoredPosition: {x: 468.6667, y: -443.24}
+  m_SizeDelta: {x: 857.3334, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1618376876673323538
 MonoBehaviour:

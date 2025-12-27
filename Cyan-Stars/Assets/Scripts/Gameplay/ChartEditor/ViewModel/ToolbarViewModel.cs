@@ -16,7 +16,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ToolbarViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
-            SelectedEditTool = Model.SelectedEditTool;
+            SelectedEditTool = Model.SelectedEditTool.AddTo(Disposables);
         }
     }
 }

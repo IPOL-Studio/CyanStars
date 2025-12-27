@@ -56,6 +56,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     functionCanvas.enabled = isVisible;
                 })
                 .AddTo(this);
+            ViewModel.IsSimplificationMode
+                .Subscribe(isSimplificationMode =>
+                {
+                    speedTemplateButton.gameObject.SetActive(!isSimplificationMode);
+                    enterSimplificationModeButton.gameObject.SetActive(!isSimplificationMode);
+                    exitSimplificationModeButton.gameObject.SetActive(isSimplificationMode);
+                })
+                .AddTo(this);
+
 
             functionToggle.onValueChanged.AddListener(ViewModel.SetFunctionCanvasVisibility);
 
