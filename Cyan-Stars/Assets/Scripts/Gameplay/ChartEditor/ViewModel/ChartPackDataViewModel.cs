@@ -313,81 +313,141 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         }
 
         /// <summary>
-        /// 将传入的百分比坐标转换为裁剪开始的像素坐标和裁剪高度
+        /// 将传入的百分比 x 坐标转换为裁剪开始的像素坐标和裁剪高度
         /// </summary>
         /// <param name="handlerType">handler 位置类型</param>
-        /// <param name="percentPos">handler 百分比坐标</param>
-        public void SetCoverCropHandlerPos(CoverCropHandlerType handlerType, Vector2 percentPos)
+        /// <param name="percentPosY">handler y 坐标/Image UI 高度的比值</param>
+        /// <remarks>由于裁剪框宽高比恒定为 4:1，因此自动推断 handler x 坐标位置；CropWidth 只读并自动更新为 4 倍高度，无需手动更新</remarks>
+        public void SetCoverCropHandlerPos(CoverCropHandlerType handlerType, float percentPosY)
         {
             if (LoadedCoverSprite.CurrentValue == null)
                 throw new InvalidOperationException("不允许在未加载曲绘时设置裁剪框位置");
 
-            Vector2 coverPixel = new Vector2(
+            percentPosY = Mathf.Min(Mathf.Max(0.0f, percentPosY), 1.0f);
+
+            Vector2 coverPixel = new Vector2( // 曲绘原图的像素尺寸
                 LoadedCoverSprite.CurrentValue.rect.width,
                 LoadedCoverSprite.CurrentValue.rect.height
             );
 
-            // 根据 handler 类型计算裁剪开始位置和裁剪高度，CropWidth 自动变为 CropHeight 的 4 倍
+            float currentStartX = Model.ChartPackData.CurrentValue.CropStartPosition.CurrentValue?.x ?? 0.0f;
+            float currentStartY = Model.ChartPackData.CurrentValue.CropStartPosition.CurrentValue?.y ?? 0.0f;
+            float currentWidth = Model.ChartPackData.CurrentValue.CropWidth.CurrentValue ?? 0.0f;
+            float currentHeight = Model.ChartPackData.CurrentValue.CropHeight.CurrentValue ?? 0.0f;
+
+            // 自动计算 percentPosX，校验并调整裁剪区域，确保不会超出曲绘范围；然后更新 Model 中的裁剪数据
             switch (handlerType)
             {
                 case CoverCropHandlerType.LeftTop:
-                    float height1 =
-                        percentPos.y * coverPixel.y -
-                        (Model.ChartPackData.CurrentValue.CropStartPosition.CurrentValue?.y ?? 0.0f);
-                    height1 = Mathf.Min(Mathf.Max(0.0f, height1), coverPixel.y);
-                    height1 = Mathf.Min(height1, coverPixel.x / 4.0f);
-                    Model.ChartPackData.CurrentValue.CropHeight.Value = height1;
+                {
+                    // 获取对角点（不动点）的像素坐标
+                    Vector2 rightBottomPixelPos = new Vector2(
+                        x: currentStartX + currentWidth,
+                        y: currentStartY
+                    );
 
-                    float startX1 = percentPos.x * coverPixel.x;
-                    float startY1 = Model.ChartPackData.CurrentValue.CropStartPosition.CurrentValue?.y ?? 0.0f;
+                    // 由对角点反向计算最大容许的裁剪像素高度
+                    float maxCropHeight = Mathf.Min(
+                        coverPixel.y - rightBottomPixelPos.y,
+                        rightBottomPixelPos.x / 4.0f
+                    );
 
-                    startX1 = Mathf.Min(Mathf.Max(0.0f, startX1), coverPixel.x);
-                    startY1 = Mathf.Min(Mathf.Max(0.0f, startY1), coverPixel.y);
+                    // 计算裁剪区域像素高度并修正
+                    float newCropHeight = percentPosY * coverPixel.y - rightBottomPixelPos.y;
+                    newCropHeight = Mathf.Min(Mathf.Max(0.0f, newCropHeight), maxCropHeight);
 
-                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = new Vector2(startX1, startY1);
+                    // 计算裁剪起始像素位置
+                    Vector2 newCropStartPos = new Vector2(
+                        x: rightBottomPixelPos.x - newCropHeight * 4.0f,
+                        y: rightBottomPixelPos.y
+                    );
+
+                    // 更新 Model 中的裁剪数据
+                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
+                    Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
                     break;
+                }
                 case CoverCropHandlerType.LeftBottom:
-                    float height2 =
-                        (Model.ChartPackData.CurrentValue.CropStartPosition.Value?.y ?? 0.0f) +
-                        (Model.ChartPackData.CurrentValue.CropHeight.Value ?? 0.0f) -
-                        percentPos.y * coverPixel.y;
-                    height2 = Mathf.Min(Mathf.Max(0.0f, height2), coverPixel.y);
-                    height2 = Mathf.Min(height2, coverPixel.x / 4.0f);
-                    Model.ChartPackData.CurrentValue.CropHeight.Value = height2;
+                {
+                    // 获取对角点（不动点）的像素坐标
+                    Vector2 rightTopPixelPos = new Vector2(
+                        x: currentStartX + currentWidth,
+                        y: currentStartY + currentHeight
+                    );
 
-                    float startX2 = percentPos.x * coverPixel.x;
-                    float startY2 = percentPos.y * coverPixel.y;
+                    // 由对角点反向计算最大容许的裁剪像素高度
+                    float maxCropHeight = Mathf.Min(
+                        rightTopPixelPos.y,
+                        rightTopPixelPos.x / 4.0f
+                    );
 
-                    startX2 = Mathf.Min(Mathf.Max(0.0f, startX2), coverPixel.x);
-                    startY2 = Mathf.Min(Mathf.Max(0.0f, startY2), coverPixel.y);
+                    // 计算裁剪区域像素高度并修正
+                    float newCropHeight = rightTopPixelPos.y - percentPosY * coverPixel.y;
+                    newCropHeight = Mathf.Min(Mathf.Max(0.0f, newCropHeight), maxCropHeight);
 
-                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = new Vector2(startX2, startY2);
+                    // 计算裁剪起始像素位置
+                    Vector2 newCropStartPos = new Vector2(
+                        x: rightTopPixelPos.x - newCropHeight * 4.0f,
+                        y: rightTopPixelPos.y - newCropHeight
+                    );
+
+                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
+                    Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
                     break;
-                case CoverCropHandlerType.RightBottom:
-                    float height3 =
-                        (Model.ChartPackData.CurrentValue.CropStartPosition.Value?.y ?? 0.0f) +
-                        (Model.ChartPackData.CurrentValue.CropHeight.Value ?? 0.0f) -
-                        percentPos.y * coverPixel.y;
-                    height3 = Mathf.Min(Mathf.Max(0.0f, height3), coverPixel.y);
-                    height3 = Mathf.Min(height3, coverPixel.x / 4.0f);
-                    Model.ChartPackData.CurrentValue.CropHeight.Value = height3;
-
-                    float startX3 = Model.ChartPackData.CurrentValue.CropStartPosition.CurrentValue?.x ?? 0.0f;
-                    float startY3 = percentPos.y * coverPixel.y;
-
-                    startX3 = Mathf.Min(Mathf.Max(0.0f, startX3), coverPixel.x);
-                    startY3 = Mathf.Min(Mathf.Max(0.0f, startY3), coverPixel.y);
-
-                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = new Vector2(startX3, startY3);
-                    break;
+                }
                 case CoverCropHandlerType.RightTop:
-                    float height4 =
-                        percentPos.y * coverPixel.y -
-                        (Model.ChartPackData.CurrentValue.CropStartPosition.CurrentValue?.y ?? 0.0f);
-                    height4 = Mathf.Min(Mathf.Max(0.0f, height4), coverPixel.y);
-                    height4 = Mathf.Min(height4, coverPixel.x / 4.0f);
-                    Model.ChartPackData.CurrentValue.CropHeight.Value = height4;
+                {
+                    // 获取对角点（不动点）的像素坐标
+                    Vector2 leftBottomPixelPos = new Vector2(
+                        x: currentStartX,
+                        y: currentStartY
+                    );
+
+                    // 由对角点反向计算最大容许的裁剪像素高度
+                    float maxCropHeight = Mathf.Min(
+                        coverPixel.y - leftBottomPixelPos.y,
+                        (coverPixel.x - leftBottomPixelPos.x) / 4.0f
+                    );
+
+                    // 计算裁剪区域像素高度并修正
+                    float newCropHeight = percentPosY * coverPixel.y - leftBottomPixelPos.y;
+                    newCropHeight = Mathf.Min(Mathf.Max(0.0f, newCropHeight), maxCropHeight);
+
+                    // 计算裁剪起始像素位置
+                    Vector2 newCropStartPos = leftBottomPixelPos;
+
+                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
+                    Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
                     break;
+                }
+                case CoverCropHandlerType.RightBottom:
+                {
+                    // 获取对角点（不动点）的像素坐标
+                    Vector2 leftTopPixelPos = new Vector2(
+                        x: currentStartX,
+                        y: currentStartY + currentHeight
+                    );
+
+                    // 由对角点反向计算最大容许的裁剪像素高度
+                    float maxCropHeight = Mathf.Min(
+                        leftTopPixelPos.y,
+                        (coverPixel.x - leftTopPixelPos.x) / 4.0f
+                    );
+
+                    // 计算裁剪区域像素高度并修正
+                    float newCropHeight = leftTopPixelPos.y - percentPosY * coverPixel.y;
+                    newCropHeight = Mathf.Min(Mathf.Max(0.0f, newCropHeight), maxCropHeight);
+
+                    // 计算裁剪起始像素位置
+                    Vector2 newCropStartPos = new Vector2(
+                        x: leftTopPixelPos.x,
+                        y: leftTopPixelPos.y - newCropHeight
+                    );
+
+                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
+                    Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
+                    break;
+                }
                 default:
                     throw new ArgumentOutOfRangeException(nameof(handlerType), handlerType, null);
             }
