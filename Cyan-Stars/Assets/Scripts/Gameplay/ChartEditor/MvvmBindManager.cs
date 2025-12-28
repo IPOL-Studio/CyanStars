@@ -6,6 +6,7 @@ using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using R3;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor
@@ -25,6 +26,9 @@ namespace CyanStars.Gameplay.ChartEditor
         private ChartPackDataView chartPackDataView = null!;
 
 
+        private readonly CompositeDisposable disposables = new CompositeDisposable();
+
+
         /// <summary>
         /// 创建 Model 、ViewModel 并启动绑定
         /// </summary>
@@ -38,20 +42,29 @@ namespace CyanStars.Gameplay.ChartEditor
             ChartEditorModel model =
                 new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData);
 
-            var toolbarViewModel = new ToolbarViewModel(model, commandManager);
+            var toolbarViewModel = new ToolbarViewModel(model, commandManager).AddTo(disposables);
             foreach (var item in toolbarItemViews)
             {
                 item.Bind(toolbarViewModel);
             }
 
-            var menuButtonsViewModel = new MenuButtonsViewModel(model, commandManager);
+            var menuButtonsViewModel = new MenuButtonsViewModel(model, commandManager).AddTo(disposables);
             menuButtonsView.Bind(menuButtonsViewModel);
 
-            var editorAttributeViewModel = new EditorAttributeViewModel(model, commandManager);
+            var editorAttributeViewModel = new EditorAttributeViewModel(model, commandManager).AddTo(disposables);
             editorAttributeView.Bind(editorAttributeViewModel);
 
-            var chartPackDataViewModel = new ChartPackDataViewModel(model, commandManager);
+            var chartPackDataViewModel = new ChartPackDataViewModel(model, commandManager).AddTo(disposables);
             chartPackDataView.Bind(chartPackDataViewModel);
+        }
+
+        /// <summary>
+        /// 退出制谱器时解除所有绑定，以释放内存
+        /// </summary>
+        /// <remarks>VM 通过 CatAsset 加载的资源也应该在此释放</remarks>
+        public void UnbindAll()
+        {
+            disposables.Dispose();
         }
     }
 }
