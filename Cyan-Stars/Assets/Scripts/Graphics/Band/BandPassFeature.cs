@@ -1,6 +1,8 @@
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.RenderGraphModule;
+using UnityEngine.Rendering.RenderGraphModule.Util;
 using UnityEngine.Rendering.Universal;
 
 namespace CyanStars.Graphics.Band
@@ -14,70 +16,46 @@ namespace CyanStars.Graphics.Band
             public Material Material;
         }
 
+        private class PassData
+        {
+            internal Material material;
+            internal TextureHandle inputTexture;
+        }
+
+        // 我不知道为什么和 FUllScreenPassRendererFeature 的核心写得差不多
+        // 但是在这里就是工作不正常
+        // 姑且留着这个玩意，但是相关实现先迁到 FSPRF 上了
         private class BandRenderPass : ScriptableRenderPass
         {
             private string profilerTag;
             private Settings settings;
-            // private RenderTargetIdentifier cameraColor;
-            private RTHandle tempRT;
 
             public BandRenderPass(string profilerTag, Settings settings)
             {
                 this.profilerTag = profilerTag;
                 this.settings = settings;
+                profilingSampler = new ProfilingSampler(profilerTag);
             }
-
-            // public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
-            // {
-            //     if (renderingData.cameraData.cameraType == CameraType.SceneView)
-            //         return;
-            //
-            //     cameraColor = renderingData.cameraData.renderer.cameraColorTarget;
-            //     cmd.GetTemporaryRT(tempRT.id, renderingData.cameraData.cameraTargetDescriptor);
-            // }
 
             public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
             {
-                // var resourceData = frameData.Get<UniversalResourceData>();
-                // var cameraData = frameData.Get<UniversalCameraData>();
-                //
-                // if (cameraData.cameraType == CameraType.SceneView)
-                //     return;
-                //
-                // var cameraColorHandle = resourceData.cameraColor;
-                // CommandBuffer cmd = CommandBufferPool.Get(profilerTag);
-                // using (new ProfilingScope(cmd, new ProfilingSampler(profilerTag)))
-                // {
-                //     RenderingUtils.ReAllocateHandleIfNeeded(ref tempRT, cameraColorHandle.GetDescriptor(renderGraph), "BandPass");
-                //     cmd.SetGlobalTexture("_ColorTexture", cameraColorHandle);
-                //     cmd.Blit(cameraColorHandle, tempRT.nameID, settings.Material);
-                //     cmd.Blit(tempRT.nameID, cameraColorHandle);
-                // }
+                UniversalResourceData resourceData = frameData.Get<UniversalResourceData>();
 
-                // var desc = cameraData.get;
-                // cmd.GetTemporaryRT(tempRT.id, renderingData.cameraData.cameraTargetDescriptor);
-            }
+                Debug.Assert(resourceData.cameraColor.IsValid());
 
-            // public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
-            // {
-            //     if (renderingData.cameraData.cameraType == CameraType.SceneView)
-            //         return;
-            //
-            //     CommandBuffer cmd = CommandBufferPool.Get(profilerTag);
-            //     using (new ProfilingScope(cmd, new ProfilingSampler(profilerTag)))
-            //     {
-            //         cmd.SetGlobalTexture("_ColorTexture", cameraColor);
-            //         cmd.Blit(cameraColor, tempRT.Identifier(), settings.Material);
-            //         cmd.Blit(tempRT.Identifier(), cameraColor);
-            //     }
-            //
-            //     context.ExecuteCommandBuffer(cmd);
-            //     CommandBufferPool.Release(cmd);
-            // }
+                var targetDesc = renderGraph.GetTextureDesc(resourceData.cameraColor);
+                targetDesc.name = "_CameraColorFullScreenPass";
+                targetDesc.clearBuffer = false;
 
-            public override void OnCameraCleanup(CommandBuffer cmd)
-            {
-                tempRT.Release();
+                var src = resourceData.activeColorTexture;
+                var dest = renderGraph.CreateTexture(targetDesc);
+
+                renderGraph.AddBlitPass(src, dest, Vector2.one, Vector2.zero, passName: "Copy Color Full Screen");
+
+                src = dest;
+                dest = resourceData.activeColorTexture;
+
+                renderGraph.AddBlitPass(new(src, dest, settings.Material, 0), passName: "Blit Band Effect");
             }
         }
 
@@ -93,7 +71,8 @@ namespace CyanStars.Graphics.Band
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            renderer.EnqueuePass(bandPass);
+            if (renderingData.cameraData.cameraType != CameraType.SceneView)
+                renderer.EnqueuePass(bandPass);
         }
     }
 }
