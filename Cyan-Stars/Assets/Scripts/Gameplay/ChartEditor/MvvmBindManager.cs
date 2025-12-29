@@ -25,6 +25,8 @@ namespace CyanStars.Gameplay.ChartEditor
         [SerializeField]
         private ChartPackDataView chartPackDataView = null!;
 
+        [SerializeField]
+        private List<ChartPackDataCoverCropHandlerView> cropHandlerViews = null!;
 
         private readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -44,9 +46,7 @@ namespace CyanStars.Gameplay.ChartEditor
 
             var toolbarViewModel = new ToolbarViewModel(model, commandManager).AddTo(disposables);
             foreach (var item in toolbarItemViews)
-            {
                 item.Bind(toolbarViewModel);
-            }
 
             var menuButtonsViewModel = new MenuButtonsViewModel(model, commandManager).AddTo(disposables);
             menuButtonsView.Bind(menuButtonsViewModel);
@@ -56,6 +56,8 @@ namespace CyanStars.Gameplay.ChartEditor
 
             var chartPackDataViewModel = new ChartPackDataViewModel(model, commandManager).AddTo(disposables);
             chartPackDataView.Bind(chartPackDataViewModel);
+            foreach (var item in cropHandlerViews)
+                item.Bind(chartPackDataViewModel);
         }
 
         /// <summary>

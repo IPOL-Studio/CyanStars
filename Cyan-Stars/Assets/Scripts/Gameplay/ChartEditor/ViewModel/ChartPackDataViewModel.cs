@@ -231,7 +231,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             GameRoot.File.OpenLoadFilePathBrowser((newFilePath) =>
                 {
-                    string? oldFilePath = Model.ChartPackData.CurrentValue.CoverFilePath.Value;
+                    var data = Model.ChartPackData.CurrentValue;
+
+                    string? oldFilePath = data.CoverFilePath.Value;
+                    Vector2? oldStartPos = data.CropStartPosition.Value;
+                    float? oldHeight = data.CropHeight.Value;
 
                     if (oldFilePath == newFilePath)
                         return;
@@ -240,11 +244,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                         new DelegateCommand(
                             () =>
                             {
-                                Model.ChartPackData.CurrentValue.CoverFilePath.Value = newFilePath;
+                                // 重置裁剪数据，以便 LoadCoverSprite 检测到后自动执行 AutoSetCoverCrop
+                                data.CropStartPosition.Value = null;
+                                data.CropHeight.Value = null;
+                                data.CoverFilePath.Value = newFilePath;
                             },
                             () =>
                             {
-                                Model.ChartPackData.CurrentValue.CoverFilePath.Value = oldFilePath;
+                                data.CoverFilePath.Value = oldFilePath;
+                                // 撤销时恢复旧的裁剪数据
+                                data.CropStartPosition.Value = oldStartPos;
+                                data.CropHeight.Value = oldHeight;
                             }
                         )
                     );
@@ -262,6 +272,43 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             coverAssetHandler = await GameRoot.Asset.LoadAssetAsync<Sprite?>(filePath);
             loadedCoverSprite.Value = coverAssetHandler.Asset;
+
+            // 图片加载完成后，如果裁剪高度未设置（例如刚导入新图片），则自动计算居中裁剪
+            if (loadedCoverSprite.Value != null)
+            {
+                var currentHeight = Model.ChartPackData.CurrentValue.CropHeight.Value;
+                if (currentHeight == null || currentHeight <= 0f)
+                {
+                    AutoSetCoverCrop(loadedCoverSprite.Value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 自动设置裁剪区域：保持 4:1 比例，在不超过原图范围的前提下最大化并居中
+        /// </summary>
+        private void AutoSetCoverCrop(Sprite sprite)
+        {
+            float imgW = sprite.rect.width;
+            float imgH = sprite.rect.height;
+
+            if (imgW <= 0 || imgH <= 0) return;
+
+            // 目标比例 4:1 => W = 4 * H
+            // 尝试以宽度为基准计算高度：H = W / 4
+            // 尝试以高度为基准计算高度：H = H_img
+
+            // 最终高度取两者中能被图片尺寸容纳的最大值
+            // 即 min(图片高度, 图片宽度 / 4)
+            float cropH = Mathf.Min(imgH, imgW / 4.0f);
+            float cropW = cropH * 4.0f;
+
+            // 居中计算起始坐标
+            float startX = (imgW - cropW) / 2.0f;
+            float startY = (imgH - cropH) / 2.0f;
+
+            Model.ChartPackData.CurrentValue.CropStartPosition.Value = new Vector2(startX, startY);
+            Model.ChartPackData.CurrentValue.CropHeight.Value = cropH;
         }
 
 

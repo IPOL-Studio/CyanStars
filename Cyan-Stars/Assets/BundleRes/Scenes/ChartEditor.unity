@@ -1382,8 +1382,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1595764879}
   m_HandleRect: {fileID: 1595764877}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 1
+  m_Value: 1.0000008
+  m_Size: 0.60401064
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4572,7 +4572,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1070775234}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.6547052
+  m_Size: 0.40157595
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -15154,6 +15154,11 @@ MonoBehaviour:
   menuButtonsView: {fileID: 1633411530}
   editorAttributeView: {fileID: 1037237909}
   chartPackDataView: {fileID: 42740034}
+  cropHandlerViews:
+  - {fileID: 1378086019}
+  - {fileID: 1972663224}
+  - {fileID: 1727489186}
+  - {fileID: 853020916}
 --- !u!1001 &931541485
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16841,7 +16846,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1486000169}
   m_HandleRect: {fileID: 1486000168}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
