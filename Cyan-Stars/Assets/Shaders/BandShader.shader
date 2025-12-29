@@ -21,8 +21,8 @@ Shader "Shaders/BandShader"
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-            TEXTURE2D(_ColorTexture);
-            SAMPLER(sampler_ColorTexture);
+            TEXTURE2D(_BlitTexture);
+            SAMPLER(sampler_BlitTexture);
 
             float4 _Aspect;
             int _Width;
@@ -65,7 +65,7 @@ Shader "Shaders/BandShader"
                 //如果不在条带的范围就提前退出
                 if (gridID.x < _Width || gridID.x >= aspect.x - _Width - 1 || !yMask)
                 {
-                    float4 bgCol = SAMPLE_TEXTURE2D(_ColorTexture, sampler_ColorTexture, i.uv.xy);
+                    float4 bgCol = SAMPLE_TEXTURE2D(_BlitTexture, sampler_BlitTexture, i.uv.xy);
                     return bgCol * gradient + _GeadientColor * (1 - gradient);
                 }
 
@@ -81,7 +81,7 @@ Shader "Shaders/BandShader"
                 float mask = x * y * yMask;
 
                 //采样颜色
-                float4 bgCol = SAMPLE_TEXTURE2D(_ColorTexture, sampler_ColorTexture, i.uv.xy);
+                float4 bgCol = SAMPLE_TEXTURE2D(_BlitTexture, sampler_BlitTexture, i.uv.xy);
                 float4 gradientCol = bgCol * gradient + _GeadientColor * (1 - gradient);
                 return gradientCol * (1 - mask) + float4(_Color.rgb * _Color.a + bgCol.rgb * (1 - _Color.a), 1) * mask;
             }

@@ -131,7 +131,7 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/NoteModelsV1.2.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 16914817
+    AssetsLength: 16915204
     CompressOption: 2
     EncryptOption: 1
     Assets:
@@ -146,7 +146,7 @@ MonoBehaviour:
     - Name: Assets/BundleRes/NoteModelsV1.2/Key.prefab
       Length: 3351
     - Name: Assets/BundleRes/NoteModelsV1.2/KeyDown.mat
-      Length: 3579
+      Length: 3781
     - Name: Assets/BundleRes/NoteModelsV1.2/M_Break.fbx
       Length: 14764
     - Name: Assets/BundleRes/NoteModelsV1.2/M_Click.fbx
@@ -170,7 +170,7 @@ MonoBehaviour:
     - Name: Assets/BundleRes/NoteModelsV1.2/MI_TapNote.mat
       Length: 857
     - Name: Assets/BundleRes/NoteModelsV1.2/MI_Track.mat
-      Length: 3662
+      Length: 3847
     - Name: Assets/BundleRes/NoteModelsV1.2/T_Note_Break_Color.tga
       Length: 4194348
     - Name: Assets/BundleRes/NoteModelsV1.2/T_Note_Click_Color.tga
@@ -194,12 +194,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/BeatInputField_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 50637
+    AssetsLength: 52376
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/BeatInputField.prefab
-      Length: 50637
+      Length: 52376
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: BpmItem_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/BpmItem_prefab.bundle
@@ -447,63 +447,63 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/Effect/BreakHitEffect_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 498828
+    AssetsLength: 499111
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/Effect/BreakHitEffect.prefab
       Length: 490286
     - Name: Assets/Materials/Particle/Particle 6.mat
-      Length: 4321
+      Length: 4458
     - Name: Assets/Materials/Particle/Particle Break.mat
-      Length: 4221
+      Length: 4367
   - DirectoryName: BundleRes/Prefabs/Effect
     BundleName: ClickHitEffect_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/Effect/ClickHitEffect_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 744060
+    AssetsLength: 744361
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/Effect/ClickHitEffect.prefab
       Length: 735506
     - Name: Assets/Materials/Particle/Particle 3.mat
-      Length: 4314
+      Length: 4451
     - Name: Assets/Materials/Particle/Particle Click.mat
-      Length: 4240
+      Length: 4404
   - DirectoryName: BundleRes/Prefabs/Effect
     BundleName: DragHitEffect_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/Effect/DragHitEffect_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 376110
+    AssetsLength: 376399
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/Effect/DragHitEffect.prefab
       Length: 367561
     - Name: Assets/Materials/Particle/Particle 5.mat
-      Length: 4322
+      Length: 4459
     - Name: Assets/Materials/Particle/Particle Drag.mat
-      Length: 4227
+      Length: 4379
   - DirectoryName: BundleRes/Prefabs/Effect
     BundleName: HoldHitEffect_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/Effect/HoldHitEffect_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 624735
+    AssetsLength: 625587
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/Effect/HoldHitEffect.prefab
       Length: 613715
     - Name: Assets/Materials/Particle/Particle 4.mat
-      Length: 4333
+      Length: 4470
     - Name: Assets/Materials/Particle/Particle Hold.mat
-      Length: 4583
+      Length: 4735
     - Name: Assets/Shaders/Shader Graphs_HoldSpectrum.mat
-      Length: 1177
+      Length: 1740
     - Name: Packages/com.unity.render-pipelines.core/Runtime/Debugging/Prefabs/Textures/White1px.png
       Length: 927
   - DirectoryName: BundleRes/Prefabs/Effect
@@ -511,16 +511,16 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/Effect/TapHitEffect_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 498833
+    AssetsLength: 499116
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/Effect/TapHitEffect.prefab
       Length: 490284
     - Name: Assets/Materials/Particle/Particle 1.mat
-      Length: 4322
+      Length: 4459
     - Name: Assets/Materials/Particle/Particle Tap.mat
-      Length: 4227
+      Length: 4373
   - DirectoryName: BundleRes/Prefabs/LoginUI
     BundleName: BaseLoginUI_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/LoginUI/BaseLoginUI_prefab.bundle
@@ -537,7 +537,7 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 2765007
+    AssetsLength: 2756899
     CompressOption: 2
     EncryptOption: 1
     Assets:
@@ -546,11 +546,11 @@ MonoBehaviour:
     - Name: Assets/TextMeshPro/Fonts/LiberationSans.ttf
       Length: 350200
     - Name: Assets/TextMeshPro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset
-      Length: 9812
+      Length: 9365
     - Name: Assets/TextMeshPro/Resources/Fonts & Materials/LiberationSans SDF.asset
-      Length: 2264683
+      Length: 2256862
     - Name: Assets/TextMeshPro/Shaders/TMP_SDF-Mobile.shader
-      Length: 7914
+      Length: 8074
   - DirectoryName: BundleRes/Prefabs/MapSelectionUI
     BundleName: StaffLabel_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/StaffLabel_prefab.bundle
@@ -1029,7 +1029,7 @@ MonoBehaviour:
     BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/Regular.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 49175877
+    AssetsLength: 49267740
     CompressOption: 2
     EncryptOption: 1
     Assets:
@@ -1038,7 +1038,7 @@ MonoBehaviour:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Regular/SourceHanSerifCN-Regular-Dynamic-SDF.asset
       Length: 2124157
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Regular/SourceHanSerifCN-Regular-Static-3500Chinese-SDF(FastPacking).asset
-      Length: 35425612
+      Length: 35517475
   - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
     BundleName: SemiBold.bundle
     BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/SemiBold.bundle
@@ -2307,28 +2307,25 @@ MonoBehaviour:
     BundleIdentifyName: Redundancy_0.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 427885
+    AssetsLength: 430397
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/TextMeshPro/Shaders/TMP_SDF.shader
-      Length: 10917
+      Length: 11027
     - Name: Packages/com.unity.render-pipelines.universal/Runtime/Materials/Lit.mat
-      Length: 3462
+      Length: 4123
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader
-      Length: 22786
+      Length: 22756
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Unlit.shader
-      Length: 9524
-    - Name: Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Dropdown
-        Icon.psd
+      Length: 11295
+    - Name: Packages/com.unity.ugui/Editor Resources/Gizmos/TMP - Dropdown Icon.psd
       Length: 85308
-    - Name: Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Font Asset
-        Icon.psd
+    - Name: Packages/com.unity.ugui/Editor Resources/Gizmos/TMP - Font Asset Icon.psd
       Length: 103962
-    - Name: Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Input Field
-        Icon.psd
+    - Name: Packages/com.unity.ugui/Editor Resources/Gizmos/TMP - Input Field Icon.psd
       Length: 102100
-    - Name: Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Text Component
+    - Name: Packages/com.unity.ugui/Editor Resources/Gizmos/TMP - Text Component
         Icon.psd
       Length: 89826
   - DirectoryName: 
@@ -2336,16 +2333,16 @@ MonoBehaviour:
     BundleIdentifyName: Redundancy_1.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 15648
+    AssetsLength: 21390
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/Materials/Particle/Particle 2.mat
-      Length: 4322
+      Length: 4459
     - Name: Assets/Materials/Particle/Triangular Hold.mat
-      Length: 4368
+      Length: 4501
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
-      Length: 6958
+      Length: 12430
   BundleCount: 187
   AssetCount: 276
   IsExactTextureSize: 0

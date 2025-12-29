@@ -25,7 +25,7 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
 
         public override async void OnEnter()
         {
-            GameRoot.MainCamera.gameObject.SetActive(false);
+            // GameRoot.MainCamera.gameObject.SetActive(false);
             scene = (await GameRoot.Asset.LoadSceneAsync(ScenePath)).Scene;
 
             int foundCount = 0;
@@ -85,7 +85,7 @@ namespace CyanStars.GamePlay.ChartEditor.Procedure
 
         public override void OnExit()
         {
-            GameRoot.MainCamera.gameObject.SetActive(true);
+            // GameRoot.MainCamera.gameObject.SetActive(true);
         }
     }
 }
