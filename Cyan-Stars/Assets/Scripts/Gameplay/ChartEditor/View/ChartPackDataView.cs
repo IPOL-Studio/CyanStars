@@ -38,10 +38,29 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private TMP_InputField previewEndBeatField3 = null!;
 
         [SerializeField]
-        private TMP_Text coverPathText = null!; // TODO
+        private TMP_Text coverPathText = null!;
+
 
         [SerializeField]
-        private Button importCoverButton = null!; // TODO
+        private Button importCoverButton = null!;
+
+        [SerializeField]
+        private RectTransform imageRectTransform = null!;
+
+        [SerializeField]
+        private RawImage baseRawImage = null!;
+
+        [SerializeField]
+        private RawImage highlightRawImage = null!;
+
+        [SerializeField]
+        private RectTransform coverFrameRectTransform = null!;
+
+        [SerializeField]
+        private AspectRatioFitter coverFrameAspectRatioFitter = null!;
+
+        [SerializeField]
+        private RectMask2D coverMask = null!;
 
         [SerializeField]
         private Button exportChartPackButton = null!; //TODO
@@ -102,6 +121,40 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     coverPathText.text = text;
                 })
                 .AddTo(this);
+            ViewModel.LoadedCoverSprite
+                .Subscribe(sprite =>
+                    {
+                        baseRawImage.texture = sprite?.texture;
+                        highlightRawImage.texture = sprite?.texture;
+
+                        if (sprite == null)
+                            return;
+
+                        coverFrameAspectRatioFitter.aspectRatio = sprite.textureRect.width / sprite.textureRect.height;
+                    }
+                )
+                .AddTo(this);
+            ViewModel.CoverCropLeftBottomHandlerPercentPos
+                .Subscribe(leftBottomPercentPos =>
+                    {
+                        var newPadding = coverMask.padding;
+                        newPadding.x = coverFrameRectTransform.rect.width * leftBottomPercentPos.x;
+                        newPadding.y = coverFrameRectTransform.rect.height * leftBottomPercentPos.y;
+                        coverMask.padding = newPadding;
+                    }
+                )
+                .AddTo(this);
+            ViewModel.CoverCropRightTopHandlerPercentPos
+                .Subscribe(rightTopPercentPos =>
+                    {
+                        var newPadding = coverMask.padding;
+                        newPadding.z = coverFrameRectTransform.rect.width * (1.0f - rightTopPercentPos.x);
+                        newPadding.w = coverFrameRectTransform.rect.height * (1.0f - rightTopPercentPos.y);
+                        coverMask.padding = newPadding;
+                    }
+                )
+                .AddTo(this);
+
 
             closeCanvasButton.onClick.AddListener(ViewModel.CloseCanvas);
             chartPackTitleField.onEndEdit.AddListener(ViewModel.SetChartPackTitle);
@@ -147,6 +200,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     previewEndBeatField3.text
                 )
             );
+
+            importCoverButton.onClick.AddListener(ViewModel.OpenCoverBrowser);
         }
 
         protected override void OnDestroy()

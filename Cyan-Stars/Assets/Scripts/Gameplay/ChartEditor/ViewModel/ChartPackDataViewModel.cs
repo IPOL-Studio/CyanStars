@@ -39,6 +39,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<Vector2> CoverCropRightTopHandlerPercentPos;
         public readonly ReadOnlyReactiveProperty<Vector2> CoverCropRightBottomHandlerPercentPos;
 
+        // 裁剪框整体的 Anchor Min/Max，用于控制 Frame 本身的位置和大小
+        public readonly ReadOnlyReactiveProperty<Vector2> CoverCropAnchorMin;
+        public readonly ReadOnlyReactiveProperty<Vector2> CoverCropAnchorMax;
+
 
         public ChartPackDataViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
@@ -136,6 +140,26 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .Select(w => w ?? 0f)
                 .ToReadOnlyReactiveProperty(Model.ChartPackData.CurrentValue.CropWidth.CurrentValue ?? 0f)
                 .AddTo(base.Disposables);
+
+            CoverCropAnchorMin = Observable.CombineLatest(
+                    LoadedCoverSprite, coverCropStartPercentPos,
+                    (sprite, startPos) =>
+                    {
+                        if (sprite is null || sprite.rect.width <= 0 || sprite.rect.height <= 0) return Vector2.zero;
+                        return new Vector2(startPos.x / sprite.rect.width, startPos.y / sprite.rect.height);
+                    })
+                .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
+            CoverCropAnchorMax = Observable.CombineLatest(
+                    LoadedCoverSprite, coverCropStartPercentPos, coverCropWidth, coverCropHeight,
+                    (sprite, startPos, width, height) =>
+                    {
+                        if (sprite is null || sprite.rect.width <= 0 || sprite.rect.height <= 0) return Vector2.zero;
+                        return new Vector2((startPos.x + width) / sprite.rect.width, (startPos.y + height) / sprite.rect.height);
+                    })
+                .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
+
             CoverCropLeftTopHandlerPercentPos = Observable.CombineLatest(
                     LoadedCoverSprite,
                     coverCropStartPercentPos,
@@ -202,10 +226,40 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
         }
 
+
+        public void OpenCoverBrowser()
+        {
+            GameRoot.File.OpenLoadFilePathBrowser((newFilePath) =>
+                {
+                    string? oldFilePath = Model.ChartPackData.CurrentValue.CoverFilePath.Value;
+
+                    if (oldFilePath == newFilePath)
+                        return;
+
+                    CommandManager.ExecuteCommand(
+                        new DelegateCommand(
+                            () =>
+                            {
+                                Model.ChartPackData.CurrentValue.CoverFilePath.Value = newFilePath;
+                            },
+                            () =>
+                            {
+                                Model.ChartPackData.CurrentValue.CoverFilePath.Value = oldFilePath;
+                            }
+                        )
+                    );
+                }
+            );
+        }
+
         private async Task LoadCoverSprite(string filePath)
         {
             coverAssetHandler?.Unload();
             loadedCoverSprite.Value = null;
+
+            if (string.IsNullOrEmpty(filePath))
+                return;
+
             coverAssetHandler = await GameRoot.Asset.LoadAssetAsync<Sprite?>(filePath);
             loadedCoverSprite.Value = coverAssetHandler.Asset;
         }
@@ -391,6 +445,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                         y: rightTopPixelPos.y - newCropHeight
                     );
 
+                    // 更新 Model 中的裁剪数据
                     Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
                     Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
                     break;
@@ -416,6 +471,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     // 计算裁剪起始像素位置
                     Vector2 newCropStartPos = leftBottomPixelPos;
 
+                    // 更新 Model 中的裁剪数据
                     Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
                     Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
                     break;
@@ -444,6 +500,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                         y: leftTopPixelPos.y - newCropHeight
                     );
 
+                    // 更新 Model 中的裁剪数据
                     Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
                     Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
                     break;
@@ -453,6 +510,41 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             }
         }
 
+        /// <summary>
+        /// 移动整个裁剪框
+        /// </summary>
+        /// <param name="deltaRatio">X/Y 轴的移动量（相对于图片尺寸的百分比）</param>
+        public void MoveCoverCrop(Vector2 deltaRatio)
+        {
+            if (LoadedCoverSprite.CurrentValue == null) return;
+
+            var sprite = LoadedCoverSprite.CurrentValue;
+            float imgW = sprite.rect.width;
+            float imgH = sprite.rect.height;
+
+            // 获取当前 Model 数据
+            Vector2 currentStartPos = Model.ChartPackData.CurrentValue.CropStartPosition.CurrentValue ?? Vector2.zero;
+            float currentWidth = Model.ChartPackData.CurrentValue.CropWidth.CurrentValue ?? 0f;
+            float currentHeight = Model.ChartPackData.CurrentValue.CropHeight.CurrentValue ?? 0f;
+
+            // 计算像素偏移
+            Vector2 deltaPixel = new Vector2(deltaRatio.x * imgW, deltaRatio.y * imgH);
+            Vector2 targetPos = currentStartPos + deltaPixel;
+
+            // 限制范围，确保裁剪框不超出图片边界
+            float minX = 0f;
+            float maxX = imgW - currentWidth;
+            float minY = 0f;
+            float maxY = imgH - currentHeight;
+
+            targetPos.x = Mathf.Clamp(targetPos.x, minX, maxX);
+            targetPos.y = Mathf.Clamp(targetPos.y, minY, maxY);
+
+            if (targetPos != currentStartPos)
+            {
+                Model.ChartPackData.CurrentValue.CropStartPosition.Value = targetPos;
+            }
+        }
 
         public override void Dispose()
         {

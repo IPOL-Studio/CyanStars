@@ -794,6 +794,12 @@ MonoBehaviour:
   previewEndBeatField3: {fileID: 521328391}
   coverPathText: {fileID: 1668466727}
   importCoverButton: {fileID: 1925911995}
+  imageRectTransform: {fileID: 442738495}
+  baseRawImage: {fileID: 1975465788}
+  highlightRawImage: {fileID: 549145905}
+  coverFrameRectTransform: {fileID: 442738495}
+  coverFrameAspectRatioFitter: {fileID: 442738496}
+  coverMask: {fileID: 141663278}
   exportChartPackButton: {fileID: 1354379450}
 --- !u!223 &42740036 stripped
 Canvas:
@@ -1376,8 +1382,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1595764879}
   m_HandleRect: {fileID: 1595764877}
   m_Direction: 2
-  m_Value: 1.0000011
-  m_Size: 0.61728644
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1878,7 +1884,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 646701638}
   m_HandleRect: {fileID: 646701636}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4566,7 +4572,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1070775234}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.40864152
+  m_Size: 0.6547052
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -8571,7 +8577,7 @@ GameObject:
   m_Component:
   - component: {fileID: 549145902}
   - component: {fileID: 549145904}
-  - component: {fileID: 549145903}
+  - component: {fileID: 549145905}
   m_Layer: 5
   m_Name: "\u9AD8\u4EAE\u56FEImage"
   m_TagString: Untagged
@@ -8598,7 +8604,15 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &549145903
+--- !u!222 &549145904
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549145901}
+  m_CullTransparentMesh: 1
+--- !u!114 &549145905
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8609,7 +8623,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RawImage
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -8625,14 +8639,6 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
---- !u!222 &549145904
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 549145901}
-  m_CullTransparentMesh: 1
 --- !u!1 &552344964
 GameObject:
   m_ObjectHideFlags: 0
@@ -14397,11 +14403,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 853020912}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2d3e24586e297f44a9b71703210ac68, type: 3}
+  m_Script: {fileID: 11500000, guid: 3cb8d76308e84f81906ae2bc03a5a941, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.ChartPackDataCoverCropHandlerView
   type: 3
-  imageFrameRect: {fileID: 442738495}
+  imageFrameRect: {fileID: 0}
 --- !u!114 &876355761 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4154182904660645921, guid: 8917c4859c9b483428748460132aaa65, type: 3}
@@ -15429,7 +15435,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320301, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320303, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Pivot.x
@@ -16004,7 +16010,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 173007117}
   m_HandleRect: {fileID: 173007115}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -16279,11 +16285,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 978114219}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b568662d86ab7274186f8cc2e9fbf192, type: 3}
+  m_Script: {fileID: 11500000, guid: 364d01e8cd9a4b95bc48be425c91c826, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  imageFrameRect: {fileID: 442738495}
-  mainCanva: {fileID: 1643976275}
+  m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.ChartPackDataCoverCropFrameView
+  imageFrameRect: {fileID: 1975465785}
+  mainCanvas: {fileID: 1643976275}
 --- !u!114 &978114224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16295,7 +16301,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
@@ -21609,11 +21615,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1378086015}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2d3e24586e297f44a9b71703210ac68, type: 3}
+  m_Script: {fileID: 11500000, guid: 3cb8d76308e84f81906ae2bc03a5a941, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.ChartPackDataCoverCropHandlerView
   type: 0
-  imageFrameRect: {fileID: 442738495}
+  imageFrameRect: {fileID: 0}
 --- !u!1 &1379486736
 GameObject:
   m_ObjectHideFlags: 0
@@ -26600,11 +26606,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1727489182}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2d3e24586e297f44a9b71703210ac68, type: 3}
+  m_Script: {fileID: 11500000, guid: 3cb8d76308e84f81906ae2bc03a5a941, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  type: 2
-  imageFrameRect: {fileID: 442738495}
+  m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.ChartPackDataCoverCropHandlerView
+  type: 1
+  imageFrameRect: {fileID: 0}
 --- !u!1 &1746494792
 GameObject:
   m_ObjectHideFlags: 0
@@ -28756,11 +28762,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1972663220}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2d3e24586e297f44a9b71703210ac68, type: 3}
+  m_Script: {fileID: 11500000, guid: 3cb8d76308e84f81906ae2bc03a5a941, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  type: 1
-  imageFrameRect: {fileID: 442738495}
+  m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.ChartPackDataCoverCropHandlerView
+  type: 2
+  imageFrameRect: {fileID: 0}
 --- !u!1 &1975465784
 GameObject:
   m_ObjectHideFlags: 0
@@ -28771,7 +28777,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1975465785}
   - component: {fileID: 1975465787}
-  - component: {fileID: 1975465786}
+  - component: {fileID: 1975465788}
   m_Layer: 5
   m_Name: "\u5E95\u56FEImage"
   m_TagString: Untagged
@@ -28798,7 +28804,15 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1975465786
+--- !u!222 &1975465787
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1975465784}
+  m_CullTransparentMesh: 1
+--- !u!114 &1975465788
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -28809,7 +28823,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RawImage
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -28825,14 +28839,6 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
---- !u!222 &1975465787
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1975465784}
-  m_CullTransparentMesh: 1
 --- !u!1 &1990859279
 GameObject:
   m_ObjectHideFlags: 0
