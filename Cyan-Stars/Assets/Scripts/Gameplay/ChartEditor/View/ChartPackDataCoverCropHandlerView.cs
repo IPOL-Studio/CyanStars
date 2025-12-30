@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
-    public class ChartPackDataCoverCropHandlerView : BaseView<ChartPackDataViewModel>, IDragHandler, IPointerDownHandler
+    public class ChartPackDataCoverCropHandlerView : BaseView<ChartPackDataViewModel>, IDragHandler, IPointerDownHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField]
         private CoverCropHandlerType type;
@@ -23,26 +23,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
             base.Bind(targetViewModel);
 
             selfRect = GetComponent<RectTransform>();
-
-            ReadOnlyReactiveProperty<Vector2> targetProperty = type switch
-            {
-                CoverCropHandlerType.LeftTop => targetViewModel.CoverCropLeftTopHandlerPercentPos,
-                CoverCropHandlerType.LeftBottom => targetViewModel.CoverCropLeftBottomHandlerPercentPos,
-                CoverCropHandlerType.RightTop => targetViewModel.CoverCropRightTopHandlerPercentPos,
-                CoverCropHandlerType.RightBottom => targetViewModel.CoverCropRightBottomHandlerPercentPos,
-                _ => throw new System.ArgumentOutOfRangeException()
-            };
-
-            targetProperty
-                .Subscribe(UpdateHandlePosition)
-                .AddTo(gameObject);
-        }
-
-        private void UpdateHandlePosition(Vector2 percentPos)
-        {
-            selfRect.anchorMin = percentPos;
-            selfRect.anchorMax = percentPos;
-            selfRect.anchoredPosition = Vector2.zero;
         }
 
         public void OnPointerDown(PointerEventData eventData)
@@ -58,7 +38,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 return;
             }
 
-            // 将屏幕坐标转换为相对于 imageFrameRect 的局部坐标
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     imageFrameRect,
                     eventData.position,
@@ -68,13 +47,24 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 return;
             }
 
+            float normalizedX = (localPoint.x - imageFrameRect.rect.x) / imageFrameRect.rect.width;
             float normalizedY = (localPoint.y - imageFrameRect.rect.y) / imageFrameRect.rect.height;
-            normalizedY = Mathf.Clamp01(normalizedY);
-            ViewModel.SetCoverCropHandlerPos(type, normalizedY);
+
+            ViewModel.SetCoverCropHandlerPos(type, new Vector2(normalizedX, normalizedY));
         }
 
         protected override void OnDestroy()
         {
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            ViewModel?.OnCoverCropDragBegin();
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            ViewModel?.OnCoverCropDragEnd();
         }
     }
 }

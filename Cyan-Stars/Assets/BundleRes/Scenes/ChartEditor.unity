@@ -1382,8 +1382,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1595764879}
   m_HandleRect: {fileID: 1595764877}
   m_Direction: 2
-  m_Value: 1.0000008
-  m_Size: 0.60401064
+  m_Value: 1.0000012
+  m_Size: 0.5934149
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4572,7 +4572,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1070775234}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.40157595
+  m_Size: 0.39593673
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -14407,7 +14407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.ChartPackDataCoverCropHandlerView
   type: 3
-  imageFrameRect: {fileID: 0}
+  imageFrameRect: {fileID: 442738495}
 --- !u!114 &876355761 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4154182904660645921, guid: 8917c4859c9b483428748460132aaa65, type: 3}
@@ -15159,6 +15159,7 @@ MonoBehaviour:
   - {fileID: 1972663224}
   - {fileID: 1727489186}
   - {fileID: 853020916}
+  cropFrameView: {fileID: 978114223}
 --- !u!1001 &931541485
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16846,7 +16847,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1486000169}
   m_HandleRect: {fileID: 1486000168}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -21624,7 +21625,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.ChartPackDataCoverCropHandlerView
   type: 0
-  imageFrameRect: {fileID: 0}
+  imageFrameRect: {fileID: 442738495}
 --- !u!1 &1379486736
 GameObject:
   m_ObjectHideFlags: 0
@@ -26615,7 +26616,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.ChartPackDataCoverCropHandlerView
   type: 1
-  imageFrameRect: {fileID: 0}
+  imageFrameRect: {fileID: 442738495}
 --- !u!1 &1746494792
 GameObject:
   m_ObjectHideFlags: 0
@@ -28771,7 +28772,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.ChartPackDataCoverCropHandlerView
   type: 2
-  imageFrameRect: {fileID: 0}
+  imageFrameRect: {fileID: 442738495}
 --- !u!1 &1975465784
 GameObject:
   m_ObjectHideFlags: 0

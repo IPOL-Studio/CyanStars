@@ -14,12 +14,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
     {
         [Header("References")]
         [SerializeField]
-        private RectTransform imageFrameRect = null!; // 底图的 RectTransform，用于计算比例
+        private RectTransform imageFrameRect = null!;
 
         [SerializeField]
-        private Canvas mainCanvas = null!; // 主 Canvas，用于计算缩放后的拖拽量
+        private Canvas mainCanvas = null!;
 
-        private RectTransform selfRect = null!;
+
+        private RectTransform? selfRect;
 
         public override void Bind(ChartPackDataViewModel targetViewModel)
         {
@@ -41,6 +42,25 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     selfRect.offsetMax = Vector2.zero;
                 })
                 .AddTo(gameObject);
+
+            ViewModel.CoverCropLeftBottomHandlerPercentPos
+                .Subscribe(vector2 =>
+                    {
+                        selfRect.anchorMin = vector2;
+                        selfRect.offsetMin = Vector2.zero;
+                        selfRect.offsetMax = Vector2.zero;
+                    }
+                )
+                .AddTo(this);
+            ViewModel.CoverCropRightTopHandlerPercentPos
+                .Subscribe(vector2 =>
+                    {
+                        selfRect.anchorMax = vector2;
+                        selfRect.offsetMin = Vector2.zero;
+                        selfRect.offsetMax = Vector2.zero;
+                    }
+                )
+                .AddTo(this);
         }
 
         public void OnDrag(PointerEventData eventData)

@@ -28,7 +28,10 @@ namespace CyanStars.Gameplay.ChartEditor
         [SerializeField]
         private List<ChartPackDataCoverCropHandlerView> cropHandlerViews = null!;
 
-        private readonly CompositeDisposable disposables = new CompositeDisposable();
+        [SerializeField]
+        private ChartPackDataCoverCropFrameView cropFrameView = null!;
+
+        private readonly CompositeDisposable Disposables = new CompositeDisposable();
 
 
         /// <summary>
@@ -44,20 +47,21 @@ namespace CyanStars.Gameplay.ChartEditor
             ChartEditorModel model =
                 new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData);
 
-            var toolbarViewModel = new ToolbarViewModel(model, commandManager).AddTo(disposables);
+            var toolbarViewModel = new ToolbarViewModel(model, commandManager).AddTo(Disposables);
             foreach (var item in toolbarItemViews)
                 item.Bind(toolbarViewModel);
 
-            var menuButtonsViewModel = new MenuButtonsViewModel(model, commandManager).AddTo(disposables);
+            var menuButtonsViewModel = new MenuButtonsViewModel(model, commandManager).AddTo(Disposables);
             menuButtonsView.Bind(menuButtonsViewModel);
 
-            var editorAttributeViewModel = new EditorAttributeViewModel(model, commandManager).AddTo(disposables);
+            var editorAttributeViewModel = new EditorAttributeViewModel(model, commandManager).AddTo(Disposables);
             editorAttributeView.Bind(editorAttributeViewModel);
 
-            var chartPackDataViewModel = new ChartPackDataViewModel(model, commandManager).AddTo(disposables);
+            var chartPackDataViewModel = new ChartPackDataViewModel(model, commandManager).AddTo(Disposables);
             chartPackDataView.Bind(chartPackDataViewModel);
             foreach (var item in cropHandlerViews)
                 item.Bind(chartPackDataViewModel);
+            cropFrameView.Bind(chartPackDataViewModel);
         }
 
         /// <summary>
@@ -66,7 +70,7 @@ namespace CyanStars.Gameplay.ChartEditor
         /// <remarks>VM 通过 CatAsset 加载的资源也应该在此释放</remarks>
         public void UnbindAll()
         {
-            disposables.Dispose();
+            Disposables.Dispose();
         }
     }
 }
