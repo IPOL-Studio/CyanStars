@@ -54,17 +54,17 @@ git submodule update --init --recursive
 
 ### Download Unity Editor
 
-若您已安装 Unity Hub，可将此链接复制到浏览器，调起 Unity Hub 内下载：`unityhub://6000.3.0f1/d1870ce95baf`。
+If you have Unity Hub installed, you can copy this link to your browser to launch Unity Hub for download: `unityhub://6000.3.0f1/d1870ce95baf`.
 
-或从 [Unity 官网](https://unity3d.com/get-unity/download/archive) 手动下载 `6000.3.0f1` 版本的编辑器。
+Alternatively, manually download version `6000.3.0f1` of the editor from the [Unity official website](https://unity3d.com/get-unity/download/archive).
 
-### 导入项目和依赖包
+### Import projects and dependencies
 
-在 Unity 中选择打开 `Cyan-Stars` 项目目录。
+Select the `Cyan-Stars` project directory in Unity.
 
-项目依赖于 Unity 包和 Nuget 包，首次启动时将通过 Unity 编辑器自动下载安装 Unity 包，选择 `Ignore` 忽略编译错误后 Nuget For Unity 将自动下载安装 Nuget 包。
+The project relies on Unity packages and NuGet packages. Upon first launch, the Unity editor will automatically download and install the Unity packages. After selecting `Ignore` to disregard the compilation errors, NuGet For Unity will automatically download and install the NuGet packages.
 
-重启编辑器并打开 `CyanStarsEntry` 场景。
+Restart the editor and open the `CyanStarsEntry` scene.
 
 ### Download Other Necessary Resources
 
