@@ -54,9 +54,17 @@ git submodule update --init --recursive
 
 ### Download Unity Editor
 
-If you have Unity Hub installed, you can copy this link to your browser to launch Unity Hub for download: `unityhub://2020.3.28f1/f5400f52e03f`.
+If you have Unity Hub installed, you can copy this link to your browser to launch Unity Hub for download: `unityhub://6000.3.0f1/d1870ce95baf`.
 
-Alternatively, manually download version `2020.3.28f1` of the editor from the [Unity official website](https://unity3d.com/get-unity/download/archive).
+Alternatively, manually download version `6000.3.0f1` of the editor from the [Unity official website](https://unity3d.com/get-unity/download/archive).
+
+### Import projects and dependencies
+
+Select the `Cyan-Stars` project directory in Unity.
+
+The project relies on Unity packages and NuGet packages. Upon first launch, the Unity editor will automatically download and install the Unity packages. After selecting `Ignore` to disregard the compilation errors, NuGet For Unity will automatically download and install the NuGet packages.
+
+Restart the editor and open the `CyanStarsEntry` scene.
 
 ### Download Other Necessary Resources
 
