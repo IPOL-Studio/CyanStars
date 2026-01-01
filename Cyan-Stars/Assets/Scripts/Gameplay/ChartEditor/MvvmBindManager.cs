@@ -13,6 +13,9 @@ namespace CyanStars.Gameplay.ChartEditor
 {
     public class MvvmBindManager : MonoBehaviour
     {
+        private readonly CompositeDisposable Disposables = new CompositeDisposable();
+
+
         [SerializeField]
         private List<ToolbarItemView> toolbarItemViews = null!;
 
@@ -26,12 +29,13 @@ namespace CyanStars.Gameplay.ChartEditor
         private ChartPackDataView chartPackDataView = null!;
 
         [SerializeField]
-        private List<ChartPackDataCoverCropHandlerView> cropHandlerViews = null!;
+        private ChartPackDataCoverView chartPackDataCoverView = null!;
 
         [SerializeField]
         private ChartPackDataCoverCropFrameView cropFrameView = null!;
 
-        private readonly CompositeDisposable Disposables = new CompositeDisposable();
+        [SerializeField]
+        private List<ChartPackDataCoverCropHandlerView> cropHandlerViews = null!;
 
 
         /// <summary>
@@ -59,9 +63,12 @@ namespace CyanStars.Gameplay.ChartEditor
 
             var chartPackDataViewModel = new ChartPackDataViewModel(model, commandManager).AddTo(Disposables);
             chartPackDataView.Bind(chartPackDataViewModel);
+
+            var chartPackDataCoverViewModel = new ChartPackDataCoverViewModel(model, commandManager).AddTo(Disposables);
+            chartPackDataCoverView.Bind(chartPackDataCoverViewModel);
+            cropFrameView.Bind(chartPackDataCoverViewModel);
             foreach (var item in cropHandlerViews)
-                item.Bind(chartPackDataViewModel);
-            cropFrameView.Bind(chartPackDataViewModel);
+                item.Bind(chartPackDataCoverViewModel);
         }
 
         /// <summary>

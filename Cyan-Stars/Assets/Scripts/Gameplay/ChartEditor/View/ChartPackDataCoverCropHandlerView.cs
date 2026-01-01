@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
-    public class ChartPackDataCoverCropHandlerView : BaseView<ChartPackDataViewModel>, IDragHandler, IPointerDownHandler, IBeginDragHandler, IEndDragHandler
+    public class ChartPackDataCoverCropHandlerView : BaseView<ChartPackDataCoverViewModel>, IDragHandler, IPointerDownHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField]
         private CoverCropHandlerType type;
@@ -18,11 +18,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private RectTransform selfRect = null!;
 
 
-        public override void Bind(ChartPackDataViewModel targetViewModel)
+        public override void Bind(ChartPackDataCoverViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
 
             selfRect = GetComponent<RectTransform>();
+
+            // handler 无需监听 ViewModel 变化，所有的变化由其父物体 frame 自动更新，handler 由 Unity 布局系统自动更新位置到 frame 四角
         }
 
         public void OnPointerDown(PointerEventData eventData)
@@ -33,10 +35,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (ViewModel == null || ViewModel.LoadedCoverSprite.CurrentValue == null)
-            {
+            if (ViewModel?.CoverSprite.CurrentValue is null)
                 return;
-            }
 
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     imageFrameRect,
@@ -50,21 +50,21 @@ namespace CyanStars.Gameplay.ChartEditor.View
             float normalizedX = (localPoint.x - imageFrameRect.rect.x) / imageFrameRect.rect.width;
             float normalizedY = (localPoint.y - imageFrameRect.rect.y) / imageFrameRect.rect.height;
 
-            ViewModel.SetCoverCropHandlerPos(type, new Vector2(normalizedX, normalizedY));
+            ViewModel.OnHandlerDragging(type, new Vector2(normalizedX, normalizedY));
         }
 
         protected override void OnDestroy()
         {
         }
 
-        public void OnBeginDrag(PointerEventData eventData)
+        public void OnBeginDrag(PointerEventData _)
         {
-            ViewModel?.OnCoverCropDragBegin();
+            ViewModel?.RecordCropData();
         }
 
-        public void OnEndDrag(PointerEventData eventData)
+        public void OnEndDrag(PointerEventData _)
         {
-            ViewModel?.OnCoverCropDragEnd();
+            ViewModel?.CommitCropData();
         }
     }
 }

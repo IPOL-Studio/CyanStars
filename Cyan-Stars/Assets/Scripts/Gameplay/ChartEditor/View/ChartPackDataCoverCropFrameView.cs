@@ -10,7 +10,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
     /// <summary>
     /// 负责显示裁剪框区域并处理整体拖拽（平移）
     /// </summary>
-    public class ChartPackDataCoverCropFrameView : BaseView<ChartPackDataViewModel>, IDragHandler
+    public class ChartPackDataCoverCropFrameView : BaseView<ChartPackDataCoverViewModel>, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         [Header("References")]
         [SerializeField]
@@ -19,53 +19,26 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private Canvas mainCanvas = null!;
 
-
         private RectTransform? selfRect;
 
-        public override void Bind(ChartPackDataViewModel targetViewModel)
+
+        public override void Bind(ChartPackDataCoverViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
-            selfRect = GetComponent<RectTransform>();
 
-            targetViewModel.CoverCropAnchorMin
-                .Subscribe(min =>
-                {
-                    selfRect.anchorMin = min;
-                    selfRect.offsetMin = Vector2.zero;
-                })
-                .AddTo(gameObject);
+            selfRect = this.transform as RectTransform;
 
-            targetViewModel.CoverCropAnchorMax
-                .Subscribe(max =>
-                {
-                    selfRect.anchorMax = max;
-                    selfRect.offsetMax = Vector2.zero;
-                })
-                .AddTo(gameObject);
-
-            ViewModel.CoverCropLeftBottomHandlerPercentPos
-                .Subscribe(vector2 =>
-                    {
-                        selfRect.anchorMin = vector2;
-                        selfRect.offsetMin = Vector2.zero;
-                        selfRect.offsetMax = Vector2.zero;
-                    }
-                )
+            ViewModel.CropLeftBottomPercentPos
+                .Subscribe(_ => RefreshPos())
                 .AddTo(this);
-            ViewModel.CoverCropRightTopHandlerPercentPos
-                .Subscribe(vector2 =>
-                    {
-                        selfRect.anchorMax = vector2;
-                        selfRect.offsetMin = Vector2.zero;
-                        selfRect.offsetMax = Vector2.zero;
-                    }
-                )
+            ViewModel.CropRightTopPercentPos
+                .Subscribe(_ => RefreshPos())
                 .AddTo(this);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (ViewModel == null || ViewModel.LoadedCoverSprite.CurrentValue == null)
+            if (ViewModel?.CoverSprite.CurrentValue is null)
             {
                 return;
             }
@@ -80,7 +53,25 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             Vector2 deltaPositionRatio = new Vector2(xRatioDelta, yRatioDelta);
 
-            ViewModel.MoveCoverCrop(deltaPositionRatio);
+            ViewModel.OnFrameDragging(deltaPositionRatio);
+        }
+
+        private void RefreshPos()
+        {
+            selfRect.anchorMin = ViewModel.CropLeftBottomPercentPos.CurrentValue;
+            selfRect.anchorMax = ViewModel.CropRightTopPercentPos.CurrentValue;
+            selfRect.offsetMin = Vector2.zero;
+            selfRect.offsetMax = Vector2.zero;
+        }
+
+        public void OnBeginDrag(PointerEventData _)
+        {
+            ViewModel?.RecordCropData();
+        }
+
+        public void OnEndDrag(PointerEventData _)
+        {
+            ViewModel?.CommitCropData();
         }
 
         protected override void OnDestroy()

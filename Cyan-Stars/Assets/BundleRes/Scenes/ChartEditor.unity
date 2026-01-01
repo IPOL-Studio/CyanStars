@@ -793,13 +793,7 @@ MonoBehaviour:
   previewEndBeatField2: {fileID: 1709331786}
   previewEndBeatField3: {fileID: 521328391}
   coverPathText: {fileID: 1668466727}
-  importCoverButton: {fileID: 1925911995}
-  imageRectTransform: {fileID: 442738495}
-  baseRawImage: {fileID: 1975465788}
-  highlightRawImage: {fileID: 549145905}
-  coverFrameRectTransform: {fileID: 442738495}
-  coverFrameAspectRatioFitter: {fileID: 442738496}
-  coverMask: {fileID: 141663278}
+  coverCropFrameObject: {fileID: 1514540014}
   exportChartPackButton: {fileID: 1354379450}
 --- !u!223 &42740036 stripped
 Canvas:
@@ -1382,8 +1376,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1595764879}
   m_HandleRect: {fileID: 1595764877}
   m_Direction: 2
-  m_Value: 1.0000012
-  m_Size: 0.5934149
+  m_Value: 1.0000011
+  m_Size: 0.61728644
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1443,7 +1437,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -4.666626, y: -4.6966248}
+  m_AnchoredPosition: {x: -4.666626, y: -4.6966553}
   m_SizeDelta: {x: 3, y: -9.3932495}
   m_Pivot: {x: 1, y: 1}
 --- !u!1 &82778093
@@ -1884,7 +1878,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 646701638}
   m_HandleRect: {fileID: 646701636}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1945,7 +1939,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -4.999878, y: -4.9999695}
+  m_AnchoredPosition: {x: -4.999878, y: -5}
   m_SizeDelta: {x: 3, y: -10}
   m_Pivot: {x: 1, y: 1}
 --- !u!1 &129409715
@@ -4572,7 +4566,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1070775234}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.39593673
+  m_Size: 0.40864152
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -7063,7 +7057,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 602.49994}
+  m_SizeDelta: {x: 0, y: 602.5}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &442738496
 MonoBehaviour:
@@ -15154,12 +15148,13 @@ MonoBehaviour:
   menuButtonsView: {fileID: 1633411530}
   editorAttributeView: {fileID: 1037237909}
   chartPackDataView: {fileID: 42740034}
+  chartPackDataCoverView: {fileID: 945222148}
+  cropFrameView: {fileID: 978114223}
   cropHandlerViews:
   - {fileID: 1378086019}
   - {fileID: 1972663224}
   - {fileID: 1727489186}
   - {fileID: 853020916}
-  cropFrameView: {fileID: 978114223}
 --- !u!1001 &931541485
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15540,6 +15535,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 994941279456320296, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 42740034}
+    - targetCorrespondingSourceObject: {fileID: 994941279456320296, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 945222148}
   m_SourcePrefab: {fileID: 100100000, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
 --- !u!224 &945222146 stripped
 RectTransform:
@@ -15557,6 +15555,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &945222148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 42740033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39831b6f88594a8b8ee8d2a69a1eb1d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.ChartPackDataCoverView
+  imageAreaFrameRect: {fileID: 1514540015}
+  aspectRatioFitter: {fileID: 442738496}
+  baseRawImage: {fileID: 1975465788}
+  highlightRawImage: {fileID: 549145905}
+  mask: {fileID: 141663278}
+  cropAreaRect: {fileID: 978114220}
+  importCoverButton: {fileID: 1925911995}
 --- !u!1 &946339928
 GameObject:
   m_ObjectHideFlags: 0
@@ -16016,7 +16033,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 173007117}
   m_HandleRect: {fileID: 173007115}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -16294,7 +16311,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 364d01e8cd9a4b95bc48be425c91c826, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.ChartPackDataCoverCropFrameView
-  imageFrameRect: {fileID: 1975465785}
+  imageFrameRect: {fileID: 442738495}
   mainCanvas: {fileID: 1643976275}
 --- !u!114 &978114224
 MonoBehaviour:
@@ -23757,8 +23774,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 702.49994, y: -734.25}
-  m_SizeDelta: {x: 1404.9999, y: 0}
+  m_AnchoredPosition: {x: 702.5, y: -734.25}
+  m_SizeDelta: {x: 1405, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1514540016
 MonoBehaviour:
@@ -34492,8 +34509,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 468.6667, y: -443.24}
-  m_SizeDelta: {x: 857.3334, y: 0}
+  m_AnchoredPosition: {x: 468.66672, y: -443.24}
+  m_SizeDelta: {x: 857.33344, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1618376876673323538
 MonoBehaviour:
