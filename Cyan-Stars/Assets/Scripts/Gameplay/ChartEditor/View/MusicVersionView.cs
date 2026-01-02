@@ -16,7 +16,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private GameObject musicListItemPrefab = null!;
 
         [SerializeField]
-        private RectTransform musicListContentTransform = null!;
+        private RectTransform itemContentTransform = null!;
 
         [SerializeField]
         private GameObject musicListObject = null!;
@@ -27,7 +27,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         [Header("Staffs 子 View")]
         [SerializeField]
-        private RectTransform staffsContentTransform = null!;
+        private GameObject staffItemPrefab = null!;
+
+        [SerializeField]
+        private GameObject staffsContentFrameGameObject = null!;
 
         [SerializeField]
         private Button addStaffButton = null!;
@@ -87,65 +90,135 @@ namespace CyanStars.Gameplay.ChartEditor.View
             // 创建列表 VM 和 V 并绑定
             foreach (var listItemViewModel in ViewModel.ListItems)
             {
-                var go = Instantiate(musicListItemPrefab, musicListContentTransform);
+                var go = Instantiate(musicListItemPrefab, itemContentTransform);
                 go.GetComponent<MusicVersionListItemView>().Bind(listItemViewModel);
-                go.transform.SetSiblingIndex(musicListContentTransform.childCount - 2); // 插入到倒数第二个位置，保持最后一个添加按钮在末尾
+                go.transform.SetSiblingIndex(itemContentTransform.childCount - 2);
             }
 
             ViewModel.ListItems.ObserveAdd()
                 .Subscribe(e =>
-                {
-                    var go = Instantiate(musicListItemPrefab, musicListContentTransform);
-                    go.GetComponent<MusicVersionListItemView>().Bind(e.Value);
-                    go.transform.SetSiblingIndex(e.Index);
-                })
-                .AddTo(this);
-
-            ViewModel.ListItems.ObserveRemove()
-                .Subscribe(e =>
-                {
-                    var itemToRemove = musicListContentTransform.GetChild(e.Index);
-                    Destroy(itemToRemove.gameObject);
-                })
-                .AddTo(this);
-
-            ViewModel.ListItems.ObserveMove()
-                .Subscribe(e =>
-                {
-                    var itemToMove = musicListContentTransform.GetChild(e.OldIndex);
-                    itemToMove.SetSiblingIndex(e.NewIndex);
-                })
-                .AddTo(this);
-
-            ViewModel.ListItems.ObserveReplace()
-                .Subscribe(e =>
-                {
-                    var itemToRemove = musicListContentTransform.GetChild(e.Index);
-                    Destroy(itemToRemove.gameObject);
-
                     {
-                        var go = Instantiate(musicListItemPrefab, musicListContentTransform);
-                        go.GetComponent<MusicVersionListItemView>().Bind(e.NewValue);
+                        var go = Instantiate(musicListItemPrefab, itemContentTransform);
+                        go.GetComponent<MusicVersionListItemView>().Bind(e.Value.View);
                         go.transform.SetSiblingIndex(e.Index);
                     }
-                })
+                )
                 .AddTo(this);
+            ViewModel.ListItems.ObserveRemove()
+                .Subscribe(e =>
+                    {
+                        var itemToRemove = itemContentTransform.GetChild(e.Index);
+                        Destroy(itemToRemove.gameObject);
+                    }
+                )
+                .AddTo(this);
+            ViewModel.ListItems.ObserveMove()
+                .Subscribe(e =>
+                    {
+                        var itemToMove = itemContentTransform.GetChild(e.OldIndex);
+                        itemToMove.SetSiblingIndex(e.NewIndex);
+                    }
+                )
+                .AddTo(this);
+            ViewModel.ListItems.ObserveReplace()
+                .Subscribe(e =>
+                    {
+                        var itemToRemove = itemContentTransform.GetChild(e.Index);
+                        Destroy(itemToRemove.gameObject);
 
+                        {
+                            var go = Instantiate(musicListItemPrefab, itemContentTransform);
+                            go.GetComponent<MusicVersionListItemView>().Bind(e.NewValue.View);
+                            go.transform.SetSiblingIndex(e.Index);
+                        }
+                    }
+                )
+                .AddTo(this);
             ViewModel.ListItems.ObserveReset()
                 .Subscribe(e =>
-                {
-                    for (int i = musicListContentTransform.childCount - 2; i >= 0; i--)
                     {
-                        Destroy(musicListContentTransform.GetChild(i).gameObject);
-                    }
+                        for (int i = itemContentTransform.childCount - 2; i >= 0; i--)
+                        {
+                            Destroy(itemContentTransform.GetChild(i).gameObject);
+                        }
 
-                    foreach (var viewModelItem in ViewModel.ListItems)
-                    {
-                        var go = Instantiate(musicListItemPrefab, musicListContentTransform);
-                        go.GetComponent<MusicVersionListItemView>().Bind(viewModelItem);
-                        go.transform.SetSiblingIndex(musicListContentTransform.childCount - 2);
+                        foreach (var viewModelItem in ViewModel.ListItems)
+                        {
+                            var go = Instantiate(musicListItemPrefab, itemContentTransform);
+                            go.GetComponent<MusicVersionListItemView>().Bind(viewModelItem);
+                            go.transform.SetSiblingIndex(itemContentTransform.childCount - 2);
+                        }
                     }
+                )
+                .AddTo(this);
+
+            // 创建 Staff VM 和 V 并绑定
+            foreach (var staffItemViewModel in ViewModel.StaffItems)
+            {
+                var go = Instantiate(staffItemPrefab, staffsContentFrameGameObject.transform);
+                go.GetComponent<MusicVersionStaffItemView>().Bind(staffItemViewModel);
+                go.transform.SetSiblingIndex(staffsContentFrameGameObject.transform.childCount - 1);
+            }
+
+            ViewModel.StaffItems.ObserveCountChanged()
+                .Subscribe(count =>
+                    staffsContentFrameGameObject.SetActive(count > 0)
+                )
+                .AddTo(this);
+            ViewModel.StaffItems.ObserveAdd()
+                .Subscribe(e =>
+                    {
+                        var go = Instantiate(staffItemPrefab, staffsContentFrameGameObject.transform);
+                        go.GetComponent<MusicVersionStaffItemView>().Bind(e.Value.View);
+                        go.transform.SetSiblingIndex(e.Index);
+                    }
+                )
+                .AddTo(this);
+            ViewModel.StaffItems.ObserveRemove()
+                .Subscribe(e =>
+                {
+                    var itemToRemove = staffsContentFrameGameObject.transform.GetChild(e.Index);
+                    Destroy(itemToRemove.gameObject);
                 })
+                .AddTo(this);
+            ViewModel.StaffItems.ObserveMove()
+                .Subscribe(e =>
+                    {
+                        var itemToMove = staffsContentFrameGameObject.transform.GetChild(e.OldIndex);
+                        itemToMove.SetSiblingIndex(e.NewIndex);
+                    }
+                )
+                .AddTo(this);
+            ViewModel.StaffItems.ObserveReplace()
+                .Subscribe(e =>
+                    {
+                        var itemToRemove = staffsContentFrameGameObject.transform.GetChild(e.Index);
+                        Destroy(itemToRemove.gameObject);
+
+                        {
+                            var go = Instantiate(staffItemPrefab, staffsContentFrameGameObject.transform);
+                            go.GetComponent<MusicVersionStaffItemView>().Bind(e.NewValue.View);
+                            go.transform.SetSiblingIndex(e.Index);
+                        }
+                    }
+                )
+                .AddTo(this);
+            ViewModel.StaffItems.ObserveReset()
+                .Subscribe(e =>
+                    {
+                        for (int i = staffsContentFrameGameObject.transform.childCount - 1; i >= 0; i--)
+                        {
+                            Destroy(staffsContentFrameGameObject.transform.GetChild(i).gameObject);
+                        }
+
+                        foreach (var viewModelItem in ViewModel.StaffItems)
+                        {
+                            var go = Instantiate(staffItemPrefab, staffsContentFrameGameObject.transform);
+                            go.GetComponent<MusicVersionStaffItemView>().Bind(viewModelItem);
+                            go.transform.SetSiblingIndex(staffsContentFrameGameObject.transform.childCount - 1);
+                        }
+                    }
+                )
                 .AddTo(this);
 
             // VM -> V 绑定

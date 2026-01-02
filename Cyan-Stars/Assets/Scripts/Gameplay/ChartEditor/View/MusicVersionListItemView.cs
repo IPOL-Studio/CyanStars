@@ -22,9 +22,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public override void Bind(MusicVersionListItemViewModel targetViewModel)
         {
-            // 从对象池创建时先取消既有绑定，然后重新绑定
-            Unbind();
-            ViewModel?.Dispose();
             base.Bind(targetViewModel);
 
             ViewModel.IsSelected
@@ -46,17 +43,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
             itemToggle.onValueChanged.AddListener(ViewModel.OnToggleValueChanged);
         }
 
-        private void Unbind()
+        protected override void OnDestroy()
         {
             if (ViewModel == null)
                 return;
-            itemToggle.onValueChanged.RemoveListener(ViewModel.OnToggleValueChanged);
-        }
 
-        protected override void OnDestroy()
-        {
-            Unbind();
-            ViewModel?.Dispose();
+            itemToggle.onValueChanged.RemoveListener(ViewModel.OnToggleValueChanged);
+            // ISynchronizedView 会自动在 View 卸载时释放对应的 ViewModel，无需手动 ViewModel.Dispose();
         }
     }
 }
