@@ -1378,7 +1378,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1595764877}
   m_Direction: 2
   m_Value: 1.0000001
-  m_Size: 0.58815163
+  m_Size: 0.56640816
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1879,7 +1879,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 646701638}
   m_HandleRect: {fileID: 646701636}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4707,7 +4707,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1070775234}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.40864152
+  m_Size: 0.3964961
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -12091,7 +12091,7 @@ MonoBehaviour:
   closeButton: {fileID: 651228599}
   detailObject: {fileID: 1134447016}
   musicTitleField: {fileID: 1618376875376546139}
-  musicFilePathText: {fileID: 1618376876408272504}
+  musicFilePathText: {fileID: 1618376876756542344}
   importMusicButton: {fileID: 9066602333141502995}
   offsetField: {fileID: 83248372815764794}
   minusOffsetButton: {fileID: 5546541407042278436}
@@ -16463,7 +16463,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 173007117}
   m_HandleRect: {fileID: 173007115}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

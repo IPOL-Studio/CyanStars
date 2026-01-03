@@ -95,8 +95,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     model.ChartPackData
                         .Select(data => data.MusicVersions.ObserveCountChanged(notifyCurrentCount: true))
                         .Switch(),
-                    (isSimplificationMode, count) =>
-                        !(isSimplificationMode && count == 1)
+                    SelectedMusicVersionData,
+                    (isSimplificationMode, count, selectedData) =>
+                        !(isSimplificationMode && count == 1 && selectedData != null)
                 )
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
@@ -113,10 +114,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     }
                 )
                 .AddTo(base.Disposables);
-            DetailVisibility = selectedMusicVersionData
-                .Select(data => data != null)
-                .ToReadOnlyReactiveProperty()
-                .AddTo(base.Disposables);
+            DetailVisibility =
+                selectedMusicVersionData
+                    .Select(data => data != null)
+                    .ToReadOnlyReactiveProperty()
+                    .AddTo(base.Disposables);
 
             DetailTitle = SelectedMusicVersionData
                 .Select(data => data?.VersionTitle ?? Observable.Return("").AsObservable())
@@ -343,29 +345,140 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             throw new NotImplementedException();
         }
 
+
         public void DeleteItem()
         {
-            throw new NotImplementedException();
+            if (SelectedMusicVersionData.CurrentValue == null)
+                throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下删除版本。");
+
+            var oldData = SelectedMusicVersionData.CurrentValue;
+            int selectedIndex = Model.ChartPackData.CurrentValue.MusicVersions.IndexOf(oldData);
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () =>
+                    {
+                        Model.ChartPackData.CurrentValue.MusicVersions.RemoveAt(selectedIndex);
+                        selectedMusicVersionData.Value = null;
+                    },
+                    () =>
+                    {
+                        Model.ChartPackData.CurrentValue.MusicVersions.Insert(selectedIndex, oldData);
+                        selectedMusicVersionData.Value = Model.ChartPackData.CurrentValue.MusicVersions[selectedIndex];
+                    }
+                )
+            );
         }
 
         public void CloneItem()
         {
-            throw new NotImplementedException();
+            if (SelectedMusicVersionData.CurrentValue == null)
+                throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下克隆版本。");
+
+            int clonedItemIndex = Model.ChartPackData.CurrentValue.MusicVersions.Count;
+
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () =>
+                    {
+                        // 深拷贝一个音乐版本数据
+                        var staffs = new Dictionary<string, List<string>>();
+                        foreach (var kvp in SelectedMusicVersionData.CurrentValue.Staffs)
+                        {
+                            var jobs = new List<string>();
+                            foreach (var job in kvp.Value)
+                            {
+                                jobs.Add(job);
+                            }
+
+                            staffs.Add(kvp.Key, jobs);
+                        }
+
+                        var deepClonedData = new MusicVersionDataEditorModel(
+                            new MusicVersionData(
+                                SelectedMusicVersionData.CurrentValue.VersionTitle.Value,
+                                SelectedMusicVersionData.CurrentValue.AudioFilePath.Value,
+                                SelectedMusicVersionData.CurrentValue.Offset.Value,
+                                staffs
+                            )
+                        );
+
+                        Model.ChartPackData.CurrentValue.MusicVersions.Add(deepClonedData);
+                    },
+                    () =>
+                    {
+                        Model.ChartPackData.CurrentValue.MusicVersions.RemoveAt(clonedItemIndex);
+                    }
+                )
+            );
         }
 
         public void MoveUpItem()
         {
-            throw new NotImplementedException();
+            if (SelectedMusicVersionData.CurrentValue == null)
+                throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下移动版本。");
+
+            int oldIndex = Model.ChartPackData.CurrentValue.MusicVersions.IndexOf(SelectedMusicVersionData.CurrentValue);
+            if (oldIndex == 0)
+                return; // 首个元素不能上移
+
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () =>
+                    {
+                        Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, oldIndex - 1);
+                    },
+                    () =>
+                    {
+                        Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex - 1, oldIndex);
+                    }
+                )
+            );
         }
 
         public void MoveDownItem()
         {
-            throw new NotImplementedException();
+            if (SelectedMusicVersionData.CurrentValue == null)
+                throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下移动版本。");
+
+            int oldIndex = Model.ChartPackData.CurrentValue.MusicVersions.IndexOf(SelectedMusicVersionData.CurrentValue);
+            if (oldIndex == Model.ChartPackData.CurrentValue.MusicVersions.Count - 1)
+                return; // 末个元素不能下移
+
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () =>
+                    {
+                        Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, oldIndex + 1);
+                    },
+                    () =>
+                    {
+                        Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex + 1, oldIndex);
+                    }
+                )
+            );
         }
 
         public void TopItem()
         {
-            throw new NotImplementedException();
+            if (SelectedMusicVersionData.CurrentValue == null)
+                throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下移动版本。");
+
+            int oldIndex = Model.ChartPackData.CurrentValue.MusicVersions.IndexOf(SelectedMusicVersionData.CurrentValue);
+            if (oldIndex == 0)
+                return; // 首个元素不能置顶
+
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () =>
+                    {
+                        Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, 0);
+                    },
+                    () =>
+                    {
+                        Model.ChartPackData.CurrentValue.MusicVersions.Move(0, oldIndex);
+                    }
+                )
+            );
         }
     }
 }
