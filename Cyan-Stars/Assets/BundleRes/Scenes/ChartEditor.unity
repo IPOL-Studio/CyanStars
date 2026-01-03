@@ -7195,10 +7195,10 @@ RectTransform:
   - {fileID: 978114220}
   m_Father: {fileID: 1514540015}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -717.5}
-  m_SizeDelta: {x: 1205, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 602.5}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &442738496
 MonoBehaviour:
@@ -11942,7 +11942,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320301, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320303, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Pivot.x
@@ -12084,9 +12084,9 @@ MonoBehaviour:
   itemContentTransform: {fileID: 1347972552}
   musicListObject: {fileID: 82778093}
   addListItemButton: {fileID: 43651022}
-  staffItemPrefab: {fileID: 0}
-  staffsContentFrameGameObject: {fileID: 0}
-  addStaffButton: {fileID: 0}
+  staffItemPrefab: {fileID: 1570479164798640671, guid: a3981b7e3937b554bb09cc436c652156, type: 3}
+  staffsContentFrameGameObject: {fileID: 217994227}
+  addStaffButton: {fileID: 1341776450}
   canvas: {fileID: 651228598}
   closeButton: {fileID: 651228599}
   detailObject: {fileID: 1134447016}
@@ -15584,6 +15584,7 @@ MonoBehaviour:
   - {fileID: 1972663224}
   - {fileID: 1727489186}
   - {fileID: 853020916}
+  musicVersionView: {fileID: 651228600}
 --- !u!1001 &931541485
 PrefabInstance:
   m_ObjectHideFlags: 0

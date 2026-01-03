@@ -37,6 +37,9 @@ namespace CyanStars.Gameplay.ChartEditor
         [SerializeField]
         private List<ChartPackDataCoverCropHandlerView> cropHandlerViews = null!;
 
+        [SerializeField]
+        private MusicVersionView musicVersionView = null!;
+
 
         /// <summary>
         /// 创建 Model 、ViewModel 并启动绑定
@@ -69,6 +72,9 @@ namespace CyanStars.Gameplay.ChartEditor
             cropFrameView.Bind(chartPackDataCoverViewModel);
             foreach (var item in cropHandlerViews)
                 item.Bind(chartPackDataCoverViewModel);
+
+            var musicVersionViewModel = new MusicVersionViewModel(model, commandManager).AddTo(Disposables);
+            musicVersionView.Bind(musicVersionViewModel);
         }
 
         /// <summary>

@@ -57,42 +57,61 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             // 设置 StaffItems 数据同步逻辑，并使用 SerialDisposable 来管理当前选中 Staffs 集合的事件订阅，切换选中项时自动取消上一次的订阅
             var staffSyncDisposable = new SerialDisposable().AddTo(base.Disposables);
-            selectedMusicVersionData.Subscribe(data =>
-            {
-                staffItemsProxy.Clear();
+            selectedMusicVersionData
+                .Subscribe(data =>
+                    {
+                        // 当选择的音乐版本变化时，刷新整个 Staff 列表
+                        staffItemsProxy.Clear();
 
-                if (data == null)
-                {
-                    staffSyncDisposable.Disposable = null;
-                    return;
-                }
+                        if (data == null)
+                        {
+                            staffSyncDisposable.Disposable = null;
+                            return;
+                        }
 
-                foreach (var item in data.Staffs)
-                {
-                    staffItemsProxy.Add(item);
-                }
+                        foreach (var item in data.Staffs)
+                        {
+                            staffItemsProxy.Add(item);
+                        }
 
-                var d = new CompositeDisposable();
+                        var d = new CompositeDisposable();
 
-                data.Staffs.ObserveAdd().Subscribe(e => staffItemsProxy.Insert(e.Index, e.Value)).AddTo(d);
-                data.Staffs.ObserveRemove().Subscribe(e => staffItemsProxy.RemoveAt(e.Index)).AddTo(d);
-                data.Staffs.ObserveReplace().Subscribe(e => staffItemsProxy[e.Index] = e.NewValue).AddTo(d);
-                data.Staffs.ObserveMove().Subscribe(e => staffItemsProxy.Move(e.OldIndex, e.NewIndex)).AddTo(d);
-                data.Staffs.ObserveReset().Subscribe(_ => staffItemsProxy.Clear()).AddTo(d);
+                        data.Staffs.ObserveAdd().Subscribe(e => staffItemsProxy.Add(e.Value)).AddTo(d);
+                        data.Staffs.ObserveRemove().Subscribe(e => staffItemsProxy.Remove(e.Value)).AddTo(d);
+                        data.Staffs.ObserveReplace().Subscribe(e => staffItemsProxy[e.Index] = e.NewValue).AddTo(d);
+                        data.Staffs.ObserveMove().Subscribe(e => staffItemsProxy.Move(e.OldIndex, e.NewIndex)).AddTo(d);
+                        data.Staffs.ObserveReset().Subscribe(_ => staffItemsProxy.Clear()).AddTo(d);
 
-                staffSyncDisposable.Disposable = d;
-            }).AddTo(base.Disposables);
+                        staffSyncDisposable.Disposable = d;
+                    }
+                )
+                .AddTo(base.Disposables);
 
 
             CanvasVisibility = Model.MusicVersionCanvasVisibility;
             ListVisibility = Observable
                 .CombineLatest(
                     model.IsSimplificationMode,
-                    model.ChartPackData,
-                    (isSimplificationMode, chartPackData) =>
-                        isSimplificationMode && chartPackData.MusicVersions.Count > 1
+                    model.ChartPackData
+                        .Select(data => data.MusicVersions.ObserveCountChanged(notifyCurrentCount: true))
+                        .Switch(),
+                    (isSimplificationMode, count) =>
+                        !(isSimplificationMode && count == 1)
                 )
                 .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
+            Model.ChartPackData // 元素数量变化后自动选择一个版本
+                .Select(data =>
+                    data.MusicVersions.ObserveCountChanged(notifyCurrentCount: true)
+                        .Select(_ => data.MusicVersions)
+                )
+                .Switch()
+                .Subscribe(list =>
+                    {
+                        if (list.Count >= 1 && selectedMusicVersionData.Value == null)
+                            selectedMusicVersionData.Value = list[0];
+                    }
+                )
                 .AddTo(base.Disposables);
             DetailVisibility = selectedMusicVersionData
                 .Select(data => data != null)
@@ -160,6 +179,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             );
         }
 
+        /// <summary>
+        /// 由子 VM 调用，在选定的版本中删除一行 Staff 信息
+        /// </summary>
         public void DeleteStaffItemData(KeyValuePair<string, List<string>> data)
         {
             if (selectedMusicVersionData.CurrentValue == null)
@@ -179,6 +201,23 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             );
         }
 
+        /// <summary>
+        /// 由子 VM 调用，检查新的 StaffName 可用性（不能与已有的重复）
+        /// </summary>
+        public bool CheckNewStaffNameAvailable(string newStaffName)
+        {
+            if (selectedMusicVersionData.CurrentValue == null)
+                return false;
+
+            foreach (var staffKvp in selectedMusicVersionData.CurrentValue.Staffs)
+            {
+                if (staffKvp.Key == newStaffName)
+                    return false;
+            }
+
+            return true;
+        }
+
 
         public void AddMusicVersionItem()
         {
@@ -196,6 +235,36 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 )
             );
         }
+
+        public void AddStaffItem()
+        {
+            if (selectedMusicVersionData.CurrentValue == null)
+                throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下添加 Staff 数据。");
+
+            int i = 1;
+            while (true)
+            {
+                bool isRepeated = false;
+                foreach (var staffData in selectedMusicVersionData.CurrentValue.Staffs)
+                {
+                    if (staffData.Key == $"Staff{i}")
+                    {
+                        isRepeated = true;
+                        break;
+                    }
+                }
+
+                if (isRepeated)
+                    i++;
+                else
+                    break;
+            }
+
+            selectedMusicVersionData.CurrentValue.Staffs.Add(
+                new KeyValuePair<string, List<string>>($"Staff{i}", new List<string>())
+            );
+        }
+
 
         public void CloseCanvas()
         {
@@ -270,11 +339,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         }
 
         public void TestOffset()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddStaffItem()
         {
             throw new NotImplementedException();
         }

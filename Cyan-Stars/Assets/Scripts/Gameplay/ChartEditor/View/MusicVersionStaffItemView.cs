@@ -2,6 +2,7 @@
 
 using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using R3;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,7 +26,9 @@ public class MusicVersionStaffItemView : BaseView<MusicVersionStaffItemViewModel
     {
         base.Bind(targetViewModel);
 
-        nameInputField.text = ViewModel.Name;
+        ViewModel.Name
+            .Subscribe(nameString => nameInputField.text = nameString)
+            .AddTo(this);
         jobsInputField.text = string.Join("/", ViewModel.Jobs);
 
         nameInputField.onEndEdit.AddListener(ViewModel.UpdateName);

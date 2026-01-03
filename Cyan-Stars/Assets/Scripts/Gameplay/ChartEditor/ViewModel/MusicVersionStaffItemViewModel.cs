@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
+using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
@@ -11,7 +12,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private readonly MusicVersionViewModel MusicVersionViewModel;
         private readonly KeyValuePair<string, List<string>> StaffData;
 
-        public string Name => StaffData.Key;
+        private readonly ReactiveProperty<string> name;
+        public ReadOnlyReactiveProperty<string> Name => name;
         public IReadOnlyCollection<string> Jobs => StaffData.Value.AsReadOnly();
 
 
@@ -22,12 +24,20 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             MusicVersionViewModel = musicVersionViewModel;
             StaffData = staffData;
+
+            name = new ReactiveProperty<string>(StaffData.Key); // 此处的观察用于强制刷新，直接赋初始值并在需要强制刷新时手动刷新。更新 StaffItem 时直接消耗重建
         }
 
         public void UpdateName(string newName)
         {
-            if (newName == Name)
+            if (newName == Name.CurrentValue)
                 return;
+
+            if (!MusicVersionViewModel.CheckNewStaffNameAvailable(newName))
+            {
+                name.ForceNotify();
+                return;
+            }
 
             MusicVersionViewModel.RebuildStaffItemData(StaffData, new KeyValuePair<string, List<string>>(newName, StaffData.Value));
         }

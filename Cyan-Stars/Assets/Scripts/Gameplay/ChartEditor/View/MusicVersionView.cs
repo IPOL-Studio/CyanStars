@@ -160,50 +160,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 go.transform.SetSiblingIndex(staffsContentFrameGameObject.transform.childCount - 1);
             }
 
-            ViewModel.StaffItems.ObserveCountChanged()
-                .Subscribe(count =>
-                    staffsContentFrameGameObject.SetActive(count > 0)
-                )
-                .AddTo(this);
-            ViewModel.StaffItems.ObserveAdd()
-                .Subscribe(e =>
-                    {
-                        var go = Instantiate(staffItemPrefab, staffsContentFrameGameObject.transform);
-                        go.GetComponent<MusicVersionStaffItemView>().Bind(e.Value.View);
-                        go.transform.SetSiblingIndex(e.Index);
-                    }
-                )
-                .AddTo(this);
-            ViewModel.StaffItems.ObserveRemove()
-                .Subscribe(e =>
-                {
-                    var itemToRemove = staffsContentFrameGameObject.transform.GetChild(e.Index);
-                    Destroy(itemToRemove.gameObject);
-                })
-                .AddTo(this);
-            ViewModel.StaffItems.ObserveMove()
-                .Subscribe(e =>
-                    {
-                        var itemToMove = staffsContentFrameGameObject.transform.GetChild(e.OldIndex);
-                        itemToMove.SetSiblingIndex(e.NewIndex);
-                    }
-                )
-                .AddTo(this);
-            ViewModel.StaffItems.ObserveReplace()
-                .Subscribe(e =>
-                    {
-                        var itemToRemove = staffsContentFrameGameObject.transform.GetChild(e.Index);
-                        Destroy(itemToRemove.gameObject);
-
-                        {
-                            var go = Instantiate(staffItemPrefab, staffsContentFrameGameObject.transform);
-                            go.GetComponent<MusicVersionStaffItemView>().Bind(e.NewValue.View);
-                            go.transform.SetSiblingIndex(e.Index);
-                        }
-                    }
-                )
-                .AddTo(this);
-            ViewModel.StaffItems.ObserveReset()
+            // TODO: 有任何变化时直接全量刷新，之后再优化
+            ViewModel.StaffItems.ObserveChanged()
                 .Subscribe(e =>
                     {
                         for (int i = staffsContentFrameGameObject.transform.childCount - 1; i >= 0; i--)
