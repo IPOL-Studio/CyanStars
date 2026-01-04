@@ -4,18 +4,22 @@ using System.Globalization;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
+using ObservableCollections;
 using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class BpmGroupViewModel : BaseViewModel
     {
+        private readonly ObservableList<BpmGroupItem> bpmItemsProxy;
+        public readonly ISynchronizedView<BpmGroupItem, BpmGroupListItemViewModel> BpmItems;
+
+
         private readonly ReactiveProperty<BpmGroupItem?> selectedBpmItem;
         public ReadOnlyReactiveProperty<BpmGroupItem?> SelectedBpmItem => selectedBpmItem;
 
+
         public readonly ReadOnlyReactiveProperty<bool> ListVisible;
-
-
         public readonly ReadOnlyReactiveProperty<bool> CanvasVisible;
 
         public readonly ReadOnlyReactiveProperty<string> BPMText;
@@ -27,6 +31,23 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public BpmGroupViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
+            bpmItemsProxy = new ObservableList<BpmGroupItem>();
+            BpmItems = bpmItemsProxy
+                .CreateView(bpmItem => new BpmGroupListItemViewModel(Model, CommandManager, this, bpmItem))
+                .AddTo(base.Disposables);
+            Model.ChartPackData.CurrentValue.BpmGroup
+                .Subscribe(bpmGroup =>
+                    {
+                        // BpmGroup 整体引用变化时，全量更新列表
+                        bpmItemsProxy.Clear();
+
+                        foreach (var bpmItem in bpmGroup.Data)
+                            bpmItemsProxy.Add(bpmItem);
+                    }
+                )
+                .AddTo(base.Disposables);
+
+
             selectedBpmItem = new ReactiveProperty<BpmGroupItem?>(null);
             ListVisible = Observable.CombineLatest(
                     Model.IsSimplificationMode,

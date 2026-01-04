@@ -10,6 +10,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
 {
     public class BpmGroupView : BaseView<BpmGroupViewModel>
     {
+        [Header("列表子 View")]
+        [SerializeField]
+        private GameObject listItemPrefab = null!;
+
+        [SerializeField]
+        private GameObject bpmListGameObject = null!;
+
+
+        [Header("主 View")]
         [SerializeField]
         private Canvas canvas = null!;
 
@@ -18,12 +27,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         [SerializeField]
         private GameObject timelineGameObject = null!;
-
-        [SerializeField]
-        private GameObject bpmListGameObject = null!;
-
-        [SerializeField]
-        private RectTransform listContentRectTransform = null!;
 
         [SerializeField]
         private GameObject detailFrameGameObject = null!;
