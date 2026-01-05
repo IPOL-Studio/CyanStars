@@ -4,24 +4,24 @@ using CyanStars.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public interface ITrackLoader
-    {
-        public bool IsEnabled { get; }
-        public void LoadTrack(Timeline timeline, List<BpmGroupItem> bpmGroup, ChartData chartData, int trackIndex);
-    }
-
-    public abstract class BaseTrackLoader<TChartTrackData> : ITrackLoader
-        where TChartTrackData : IChartTrackData
-    {
-        public virtual bool IsEnabled => true;
-
-        public void LoadTrack(Timeline timeline, List<BpmGroupItem> bpmGroup, ChartData chartData, int trackIndex)
+        public interface ITrackLoader
         {
-            var accessor = new ChartTrackAccessor<TChartTrackData>(trackIndex);
-            LoadTrack(timeline, bpmGroup, chartData, accessor);
+                public bool IsEnabled { get; }
+                public void LoadTrack(Timeline timeline, List<BpmGroupItem> bpmGroup, ChartData chartData, int trackIndex);
         }
 
-        public abstract void LoadTrack(Timeline timeline, List<BpmGroupItem> bpmGroup, ChartData chartData,
-            ChartTrackAccessor<TChartTrackData> trackAccessor);
-    }
+        public abstract class BaseTrackLoader<TChartTrackData> : ITrackLoader
+            where TChartTrackData : IChartTrackData
+        {
+                public virtual bool IsEnabled => true;
+
+                public void LoadTrack(Timeline timeline, List<BpmGroupItem> bpmGroup, ChartData chartData, int trackIndex)
+                {
+                        var accessor = new ChartTrackAccessor<TChartTrackData>(trackIndex);
+                        LoadTrack(timeline, bpmGroup, chartData, accessor);
+                }
+
+                public abstract void LoadTrack(Timeline timeline, List<BpmGroupItem> bpmGroup, ChartData chartData,
+                    ChartTrackAccessor<TChartTrackData> trackAccessor);
+        }
 }
