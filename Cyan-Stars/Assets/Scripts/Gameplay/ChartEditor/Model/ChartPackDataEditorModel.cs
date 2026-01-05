@@ -17,7 +17,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public readonly ReactiveProperty<int> DataVersion;
         public readonly ReactiveProperty<string> Title;
         public readonly ObservableList<MusicVersionDataEditorModel> MusicVersions;
-        public readonly ReactiveProperty<BpmGroup> BpmGroup; // BpmGroup、PreviewBeat 不监听内部属性变化
+        public readonly ObservableList<BpmItem> BpmGroup;
         public readonly ReactiveProperty<Beat> MusicPreviewStartBeat;
         public readonly ReactiveProperty<Beat> MusicPreviewEndBeat;
         public readonly ReactiveProperty<string?> CoverFilePath;
@@ -35,7 +35,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             MusicVersions = new ObservableList<MusicVersionDataEditorModel>();
             foreach (var version in chartPackData.MusicVersionDatas)
                 MusicVersions.Add(new MusicVersionDataEditorModel(version));
-            BpmGroup = new ReactiveProperty<BpmGroup>(chartPackData.BpmGroup);
+            BpmGroup = new ObservableList<BpmItem>(chartPackData.BpmGroup);
             MusicPreviewStartBeat = new ReactiveProperty<Beat>(chartPackData.MusicPreviewStartBeat);
             MusicPreviewEndBeat = new ReactiveProperty<Beat>(chartPackData.MusicPreviewEndBeat);
             CoverFilePath = new ReactiveProperty<string?>(chartPackData.CoverFilePath);

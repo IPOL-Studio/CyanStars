@@ -156,7 +156,7 @@
 //         public readonly ChartData ChartData;
 //         public readonly ChartMetaData ChartMetaData;
 //         public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
-//         public IReadOnlyList<BpmGroupItem> BpmGroupDatas => ChartPackData.BpmGroup.Data;
+//         public IReadOnlyList<BpmItem> BpmGroupDatas => ChartPackData.BpmGroup.Data;
 //         public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
 //
 //
@@ -1334,7 +1334,7 @@
 //                 }
 //             }
 //
-//             BpmGroupItem item = new BpmGroupItem(bpm, newBeat);
+//             BpmItem item = new BpmItem(bpm, newBeat);
 //             ChartPackData.BpmGroup.Add(item);
 //             SelectedBpmItemIndex = BpmGroupDatas.Count - 1;
 //             OnBpmGroupChanged?.Invoke();
@@ -1355,7 +1355,7 @@
 //                 return;
 //             }
 //
-//             BpmGroupItem bpmItem = BpmGroupDatas[(int)SelectedBpmItemIndex];
+//             BpmItem bpmItem = BpmGroupDatas[(int)SelectedBpmItemIndex];
 //             if (!Mathf.Approximately(bpmItem.Bpm, bpm))
 //             {
 //                 bpmItem.Bpm = bpm;
@@ -1404,7 +1404,7 @@
 //                     continue;
 //                 }
 //
-//                 BpmGroupItem item = BpmGroupDatas[i];
+//                 BpmItem item = BpmGroupDatas[i];
 //                 if (item.StartBeat == (Beat)beat)
 //                 {
 //                     OnBpmGroupChanged?.Invoke();
@@ -1412,7 +1412,7 @@
 //                 }
 //             }
 //
-//             BpmGroupItem itemToUpdate = BpmGroupDatas[(int)SelectedBpmItemIndex];
+//             BpmItem itemToUpdate = BpmGroupDatas[(int)SelectedBpmItemIndex];
 //             itemToUpdate.StartBeat = beat;
 //             SelectedBpmItemIndex = ChartPackData.BpmGroup.IndexOf(itemToUpdate);
 //

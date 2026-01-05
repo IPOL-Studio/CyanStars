@@ -15,7 +15,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private GameObject listItemPrefab = null!;
 
         [SerializeField]
-        private GameObject bpmListGameObject = null!;
+        private GameObject bpmGroupListGameObject = null!;
 
 
         [Header("主 View")]
@@ -67,7 +67,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(visible => canvas.enabled = visible)
                 .AddTo(this);
             ViewModel.ListVisible
-                .Subscribe(visible => bpmListGameObject.SetActive(visible))
+                .Subscribe(visible => bpmGroupListGameObject.SetActive(visible))
                 .AddTo(this);
             ViewModel.SelectedBpmItem
                 .Subscribe(selectedItem => detailFrameGameObject.SetActive(selectedItem != null))

@@ -146,7 +146,7 @@
 //
 //             if (Model.SelectedBpmItemIndex != null)
 //             {
-//                 BpmGroupItem bpmGroupItem = Model.BpmGroupDatas[(int)Model.SelectedBpmItemIndex];
+//                 BpmItem bpmGroupItem = Model.BpmGroupDatas[(int)Model.SelectedBpmItemIndex];
 //                 bpmValueField.text = bpmGroupItem.Bpm.ToString(CultureInfo.InvariantCulture);
 //                 startBeatField1.text = bpmGroupItem.StartBeat.IntegerPart.ToString();
 //                 startBeatField2.text = bpmGroupItem.StartBeat.Numerator.ToString();
