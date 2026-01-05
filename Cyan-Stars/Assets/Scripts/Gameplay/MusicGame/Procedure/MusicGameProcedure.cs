@@ -369,8 +369,8 @@ namespace CyanStars.Gameplay.MusicGame
             timeline.OnStop += StopTimeline;
 
             // 添加音符轨道
-            BpmGroup bpmGroup = new BpmGroup();
-            bpmGroup.AddRange(runtimeChartPack.ChartPackData.BpmGroup.Data);
+            List<BpmItem> bpmGroup = new List<BpmItem>();
+            bpmGroup.AddRange(runtimeChartPack.ChartPackData.BpmGroup);
 
 
             NoteTrackData noteTrackData = new NoteTrackData() { BpmGroup = bpmGroup, ClipDataList = new List<ChartData>() { chartData } };

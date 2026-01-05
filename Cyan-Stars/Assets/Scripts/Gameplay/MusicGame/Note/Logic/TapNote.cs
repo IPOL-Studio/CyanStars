@@ -1,4 +1,5 @@
-﻿using CyanStars.Chart;
+﻿using System.Collections.Generic;
+using CyanStars.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -7,7 +8,7 @@ namespace CyanStars.Gameplay.MusicGame
         private const float NoteWidth = 0.2f;
         public float Pos { get; set; }
 
-        public override void Init(BaseChartNoteData data, BpmGroup bpmGroup, ChartData chartData, NoteClip clip)
+        public override void Init(BaseChartNoteData data, List<BpmItem> bpmGroup, ChartData chartData, NoteClip clip)
         {
             base.Init(data, bpmGroup, chartData, clip);
             Pos = (data as TapChartNoteData).Pos;

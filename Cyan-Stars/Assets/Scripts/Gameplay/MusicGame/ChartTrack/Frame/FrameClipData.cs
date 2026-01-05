@@ -1,17 +1,17 @@
-﻿using CyanStars.Chart;
+﻿using System.Collections.Generic;
+using CyanStars.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
     public class FrameClipData
     {
         public FrameChartTrackData FrameChartTrackData;
+        public List<BpmItem> BpmGroup;
 
-        public BpmGroup.BeatToTimeDelegate BeatToTimeDelegate;
-
-        public FrameClipData(FrameChartTrackData frameChartTrackData, BpmGroup.BeatToTimeDelegate beatToTimeDelegate)
+        public FrameClipData(FrameChartTrackData frameChartTrackData, List<BpmItem> bpmGroup)
         {
             this.FrameChartTrackData = frameChartTrackData;
-            this.BeatToTimeDelegate = beatToTimeDelegate;
+            this.BpmGroup = bpmGroup;
         }
     }
 }
