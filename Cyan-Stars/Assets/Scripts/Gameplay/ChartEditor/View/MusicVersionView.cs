@@ -88,14 +88,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
             base.Bind(targetViewModel);
 
             // 创建列表 VM 和 V 并绑定
-            foreach (var listItemViewModel in ViewModel.ListItems)
+            foreach (var listItemViewModel in ViewModel.MusicListItems)
             {
                 var go = Instantiate(musicListItemPrefab, itemContentTransform);
                 go.GetComponent<MusicVersionListItemView>().Bind(listItemViewModel);
                 go.transform.SetSiblingIndex(itemContentTransform.childCount - 2);
             }
 
-            ViewModel.ListItems.ObserveAdd()
+            ViewModel.MusicListItems.ObserveAdd()
                 .Subscribe(e =>
                     {
                         var go = Instantiate(musicListItemPrefab, itemContentTransform);
@@ -104,7 +104,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     }
                 )
                 .AddTo(this);
-            ViewModel.ListItems.ObserveRemove()
+            ViewModel.MusicListItems.ObserveRemove()
                 .Subscribe(e =>
                     {
                         var itemToRemove = itemContentTransform.GetChild(e.Index);
@@ -112,7 +112,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     }
                 )
                 .AddTo(this);
-            ViewModel.ListItems.ObserveMove()
+            ViewModel.MusicListItems.ObserveMove()
                 .Subscribe(e =>
                     {
                         var itemToMove = itemContentTransform.GetChild(e.OldIndex);
@@ -120,7 +120,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     }
                 )
                 .AddTo(this);
-            ViewModel.ListItems.ObserveReplace()
+            ViewModel.MusicListItems.ObserveReplace()
                 .Subscribe(e =>
                     {
                         var itemToRemove = itemContentTransform.GetChild(e.Index);
@@ -134,7 +134,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     }
                 )
                 .AddTo(this);
-            ViewModel.ListItems.ObserveReset()
+            ViewModel.MusicListItems.ObserveReset()
                 .Subscribe(e =>
                     {
                         for (int i = itemContentTransform.childCount - 2; i >= 0; i--)
@@ -142,7 +142,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                             Destroy(itemContentTransform.GetChild(i).gameObject);
                         }
 
-                        foreach (var viewModelItem in ViewModel.ListItems)
+                        foreach (var viewModelItem in ViewModel.MusicListItems)
                         {
                             var go = Instantiate(musicListItemPrefab, itemContentTransform);
                             go.GetComponent<MusicVersionListItemView>().Bind(viewModelItem);
@@ -151,6 +151,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     }
                 )
                 .AddTo(this);
+
 
             // 创建 Staff VM 和 V 并绑定
             foreach (var staffItemViewModel in ViewModel.StaffItems)
@@ -178,6 +179,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     }
                 )
                 .AddTo(this);
+
 
             // VM -> V 绑定
             ViewModel.CanvasVisibility

@@ -15,7 +15,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private const int AddOffsetStep = 10;
 
 
-        public readonly ISynchronizedView<MusicVersionDataEditorModel, MusicVersionListItemViewModel> ListItems;
+        public readonly ISynchronizedView<MusicVersionDataEditorModel, MusicVersionListItemViewModel> MusicListItems;
 
         private readonly ReactiveProperty<MusicVersionDataEditorModel?> selectedMusicVersionData;
         public ReadOnlyReactiveProperty<MusicVersionDataEditorModel?> SelectedMusicVersionData => selectedMusicVersionData;
@@ -36,8 +36,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public MusicVersionViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
-            // 初始化 ListItems
-            ListItems = Model.ChartPackData.CurrentValue.MusicVersions
+            // 初始化 MusicListItems
+            MusicListItems = Model.ChartPackData.CurrentValue.MusicVersions
                 .CreateView(data => new MusicVersionListItemViewModel(model, commandManager, this, data))
                 .AddTo(base.Disposables);
 

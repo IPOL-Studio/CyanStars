@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using ObservableCollections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +13,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
     {
         [Header("列表子 View")]
         [SerializeField]
-        private GameObject listItemPrefab = null!;
+        private GameObject bpmListItemPrefab = null!;
+
+        [SerializeField]
+        private RectTransform itemContentTransform = null!;
 
         [SerializeField]
         private GameObject bpmGroupListGameObject = null!;
@@ -63,6 +67,72 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
+            // 创建列表 VM 和 V 并绑定
+            foreach (var bpmGroupListItemViewModel in ViewModel.BpmListItems)
+            {
+                var go = Instantiate(bpmListItemPrefab, itemContentTransform);
+                go.GetComponent<BpmGroupListItemView>().Bind(bpmGroupListItemViewModel);
+                go.transform.SetSiblingIndex(itemContentTransform.childCount - 2);
+            }
+
+            ViewModel.BpmListItems.ObserveAdd()
+                .Subscribe(e =>
+                    {
+                        var go = Instantiate(bpmListItemPrefab, itemContentTransform);
+                        go.GetComponent<BpmGroupListItemView>().Bind(e.Value.View);
+                        go.transform.SetSiblingIndex(e.Index);
+                    }
+                )
+                .AddTo(this);
+            ViewModel.BpmListItems.ObserveRemove()
+                .Subscribe(e =>
+                    {
+                        var itemToRemove = itemContentTransform.GetChild(e.Index);
+                        Destroy(itemToRemove.gameObject);
+                    }
+                )
+                .AddTo(this);
+            ViewModel.BpmListItems.ObserveMove()
+                .Subscribe(e =>
+                    {
+                        var itemToMove = itemContentTransform.GetChild(e.OldIndex);
+                        itemToMove.SetSiblingIndex(e.NewIndex);
+                    }
+                )
+                .AddTo(this);
+            ViewModel.BpmListItems.ObserveReplace()
+                .Subscribe(e =>
+                    {
+                        var itemToRemove = itemContentTransform.GetChild(e.Index);
+                        Destroy(itemToRemove.gameObject);
+
+                        {
+                            var go = Instantiate(bpmListItemPrefab, itemContentTransform);
+                            go.GetComponent<BpmGroupListItemView>().Bind(e.NewValue.View);
+                            go.transform.SetSiblingIndex(e.Index);
+                        }
+                    }
+                )
+                .AddTo(this);
+            ViewModel.BpmListItems.ObserveReset()
+                .Subscribe(e =>
+                    {
+                        for (int i = itemContentTransform.childCount - 2; i >= 0; i--)
+                        {
+                            Destroy(itemContentTransform.GetChild(i).gameObject);
+                        }
+
+                        foreach (var viewModelItem in ViewModel.BpmListItems)
+                        {
+                            var go = Instantiate(bpmListItemPrefab, itemContentTransform);
+                            go.GetComponent<BpmGroupListItemView>().Bind(viewModelItem);
+                            go.transform.SetSiblingIndex(itemContentTransform.childCount - 2);
+                        }
+                    }
+                )
+                .AddTo(this);
+
+            // VM -> V 绑定
             ViewModel.CanvasVisible
                 .Subscribe(visible => canvas.enabled = visible)
                 .AddTo(this);

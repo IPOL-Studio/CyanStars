@@ -79,7 +79,7 @@
 //         private GameObject staffItemPrefab;
 //
 //
-//         private readonly List<MusicVersionItem> ListItems = new List<MusicVersionItem>();
+//         private readonly List<MusicVersionItem> MusicListItems = new List<MusicVersionItem>();
 //         private readonly List<StaffItem> StaffItems = new List<StaffItem>();
 //
 //
@@ -150,25 +150,25 @@
 //             if (showList)
 //             {
 //                 // 删除列表栏多余 item
-//                 for (int i = ListItems.Count - 1; i >= Model.MusicVersionDatas.Count; i--)
+//                 for (int i = MusicListItems.Count - 1; i >= Model.MusicVersionDatas.Count; i--)
 //                 {
-//                     Destroy(ListItems[i].gameObject);
-//                     ListItems.RemoveAt(i);
+//                     Destroy(MusicListItems[i].gameObject);
+//                     MusicListItems.RemoveAt(i);
 //                 }
 //
 //                 // 补齐列表栏 item
-//                 for (int i = ListItems.Count; i < Model.MusicVersionDatas.Count; i++)
+//                 for (int i = MusicListItems.Count; i < Model.MusicVersionDatas.Count; i++)
 //                 {
 //                     GameObject go = Instantiate(musicVersionItemPrefab, contentObject.transform);
 //                     go.transform.SetSiblingIndex(contentObject.transform.childCount - 2); // 置于倒数第二个
 //                     MusicVersionItem item = go.GetComponent<MusicVersionItem>();
-//                     ListItems.Add(item);
+//                     MusicListItems.Add(item);
 //                 }
 //
 //                 // 重新初始化、绑定、刷新所有列表 item TODO：优化性能
-//                 for (int i = 0; i < ListItems.Count; i++)
+//                 for (int i = 0; i < MusicListItems.Count; i++)
 //                 {
-//                     ListItems[i].InitAndBind(Model, i);
+//                     MusicListItems[i].InitAndBind(Model, i);
 //                 }
 //
 //                 // 刷新 UI 自动布局

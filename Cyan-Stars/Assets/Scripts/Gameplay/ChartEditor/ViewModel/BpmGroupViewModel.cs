@@ -11,7 +11,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class BpmGroupViewModel : BaseViewModel
     {
-        public readonly ISynchronizedView<BpmItem, BpmGroupListItemViewModel> BpmItems;
+        public readonly ISynchronizedView<BpmItem, BpmGroupListItemViewModel> BpmListItems;
 
         private readonly ReactiveProperty<BpmItem?> selectedBpmItem;
         public ReadOnlyReactiveProperty<BpmItem?> SelectedBpmItem => selectedBpmItem;
@@ -29,7 +29,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public BpmGroupViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
-            BpmItems = Model.ChartPackData.CurrentValue.BpmGroup
+            BpmListItems = Model.ChartPackData.CurrentValue.BpmGroup
                 .CreateView(bpmItem => new BpmGroupListItemViewModel(Model, CommandManager, this, bpmItem))
                 .AddTo(base.Disposables);
 
