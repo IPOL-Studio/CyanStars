@@ -127,7 +127,7 @@ namespace CyanStars.Chart
             else if (datas is BpmItem[] standardArray)
             {
                 int Comparison(BpmItem a, BpmItem b) => a.StartBeat.CompareTo(b.StartBeat);
-                Array.Sort(standardArray, (Comparison<BpmItem>)Comparison);
+                Array.Sort(standardArray, comparison);
             }
             else
             {
