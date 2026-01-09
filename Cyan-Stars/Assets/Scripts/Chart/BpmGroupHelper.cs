@@ -112,10 +112,15 @@ namespace CyanStars.Chart
                 throw new Exception("Bpm List 数据不正确，无法排序");
             }
 
-            // 针对 List<T> 进行优化，直接使用原生的 Sort
+            // 针对 List<T> 和 Array [] 进行优化，直接使用原生的 Sort
             if (datas is List<BpmItem> standardList)
             {
                 standardList.Sort((a, b) => a.StartBeat.CompareTo(b.StartBeat));
+            }
+            else if (datas is BpmItem[] standardArray)
+            {
+                int Comparison(BpmItem a, BpmItem b) => a.StartBeat.CompareTo(b.StartBeat);
+                Array.Sort(standardArray, (Comparison<BpmItem>)Comparison);
             }
             else
             {
@@ -163,7 +168,7 @@ namespace CyanStars.Chart
         /// <returns>int 形式的毫秒时间（相对于时间轴开始）</returns>
         public static int CalculateTime(IList<BpmItem> datas, float floatBeat)
         {
-            if (Validate(datas) != 0)
+            if (Validate(datas) != BpmValidationStatus.Valid)
                 throw new Exception("列表不合法，无法计算！");
 
             if (datas.Count == 1)
