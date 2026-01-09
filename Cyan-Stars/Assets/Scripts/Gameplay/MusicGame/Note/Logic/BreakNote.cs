@@ -12,7 +12,7 @@ namespace CyanStars.Gameplay.MusicGame
     {
         public BreakNotePos Pos;
 
-        public override void Init(BaseChartNoteData data, List<BpmItem> bpmGroup, ChartData chartData, NoteClip clip)
+        public override void Init(BaseChartNoteData data, List<BpmGroupItem> bpmGroup, ChartData chartData, NoteClip clip)
         {
             base.Init(data, bpmGroup, chartData, clip);
             Pos = (data as BreakChartNoteData).BreakNotePos;

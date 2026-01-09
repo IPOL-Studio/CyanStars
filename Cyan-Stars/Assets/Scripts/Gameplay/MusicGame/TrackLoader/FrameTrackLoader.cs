@@ -10,7 +10,7 @@ namespace CyanStars.Gameplay.MusicGame
     {
         public override bool IsEnabled => GameRoot.GetDataModule<MusicGameSettingsModule>().EnableFrameTrack;
 
-        public override void LoadTrack(Timeline timeline, List<BpmItem> bpmGroup, ChartData chartData,
+        public override void LoadTrack(Timeline timeline, List<BpmGroupItem> bpmGroup, ChartData chartData,
             ChartTrackAccessor<FrameChartTrackData> trackAccessor)
         {
             var frameClipData = new FrameClipData(

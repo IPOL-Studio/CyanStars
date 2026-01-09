@@ -56,7 +56,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 初始化数据
         /// </summary>
-        public virtual void Init(BaseChartNoteData data, List<BpmItem> bpmGroup, ChartData chartData, NoteClip clip)
+        public virtual void Init(BaseChartNoteData data, List<BpmGroupItem> bpmGroup, ChartData chartData, NoteClip clip)
         {
             NoteClip = clip;
             NoteData = data;

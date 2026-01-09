@@ -126,7 +126,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             {
                 totalBeat = (Model.TotalMusicTime == null || Model.BpmGroupDatas.Count == 0)
                     ? 0
-                    : Model.ChartPackData.BpmGroup.CalculateBeat((int)Model.TotalMusicTime);
+                    : BpmGroupHelper.CalculateBeat(Model.ChartPackData.BpmGroup, (int)Model.TotalMusicTime);
 
                 RefreshBeatLinesAndNotes();
             }

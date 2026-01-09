@@ -29,7 +29,7 @@ namespace CyanStars.Chart
 
         /// <summary>bpm 组</summary>
         /// <remarks>控制不同时候的拍子所占时长（拍子可转换为时间）</remarks>
-        public List<BpmItem> BpmGroup;
+        public List<BpmGroupItem> BpmGroup;
 
         /// <summary>游戏内选中音乐后的预览开始时间</summary>
         public Beat MusicPreviewStartBeat;
@@ -66,14 +66,14 @@ namespace CyanStars.Chart
         /// <summary>
         /// 构造函数
         /// </summary>
-        public ChartPackData(string title, List<MusicVersionData>? musicVersionDatas = null, List<BpmItem>? bpmGroup = null,
+        public ChartPackData(string title, List<MusicVersionData>? musicVersionDatas = null, List<BpmGroupItem>? bpmGroup = null,
                              Beat? musicPreviewStartBeat = null, Beat? musicPreviewEndBeat = null, string? coverFilePath = null,
-                             Vector2? cropPosition = null, float? cropHeight = null, List<ChartMetaData>? chartMetaDatas = null)
+                             Vector2? cropPosition = null, float? cropHeight = null, List<ChartMetadata>? chartMetaDatas = null)
         {
             DataVersion = 1;
             Title = title;
             MusicVersionDatas = musicVersionDatas ?? new List<MusicVersionData>();
-            BpmGroup = bpmGroup ?? new List<BpmItem>();
+            BpmGroup = bpmGroup ?? new List<BpmGroupItem>();
 
             if (musicPreviewStartBeat != null)
             {

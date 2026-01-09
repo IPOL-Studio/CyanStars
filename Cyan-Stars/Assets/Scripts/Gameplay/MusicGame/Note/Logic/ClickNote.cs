@@ -23,7 +23,7 @@ namespace CyanStars.Gameplay.MusicGame
         public float Pos { get; set; }
 
 
-        public override void Init(BaseChartNoteData data, List<BpmItem> bpmGroup, ChartData chartData, NoteClip clip)
+        public override void Init(BaseChartNoteData data, List<BpmGroupItem> bpmGroup, ChartData chartData, NoteClip clip)
         {
             base.Init(data, bpmGroup, chartData, clip);
             Pos = (data as ClickChartNoteData).Pos;

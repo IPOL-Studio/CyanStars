@@ -6,9 +6,9 @@ namespace CyanStars.Gameplay.MusicGame
     public class FrameClipData
     {
         public FrameChartTrackData FrameChartTrackData;
-        public List<BpmItem> BpmGroup;
+        public List<BpmGroupItem> BpmGroup;
 
-        public FrameClipData(FrameChartTrackData frameChartTrackData, List<BpmItem> bpmGroup)
+        public FrameClipData(FrameChartTrackData frameChartTrackData, List<BpmGroupItem> bpmGroup)
         {
             this.FrameChartTrackData = frameChartTrackData;
             this.BpmGroup = bpmGroup;

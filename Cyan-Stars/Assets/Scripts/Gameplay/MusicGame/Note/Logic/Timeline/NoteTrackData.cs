@@ -12,7 +12,7 @@ namespace CyanStars.Gameplay.MusicGame
     public class NoteTrackData : ITrackData<ChartData>
     {
         public int ClipCount => 1;
-        public List<BpmItem> BpmGroup { get; set; }
+        public List<BpmGroupItem> BpmGroup { get; set; }
         public List<ChartData> ClipDataList { get; set; }
     }
 }

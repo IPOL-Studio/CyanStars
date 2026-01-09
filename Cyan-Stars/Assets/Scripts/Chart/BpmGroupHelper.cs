@@ -19,7 +19,7 @@ namespace CyanStars.Chart
         /// <summary>
         /// 由 Beat 计算时间（ms）的委托
         /// </summary>
-        public delegate int BeatToTimeDelegate(IList<BpmItem> datas, Beat beat);
+        public delegate int BeatToTimeDelegate(IList<BpmGroupItem> datas, Beat beat);
 
         public enum BpmValidationStatus
         {
@@ -34,7 +34,7 @@ namespace CyanStars.Chart
         /// <seealso cref="BpmValidationStatus"/>
         /// <param name="datas">需要检查的 BPM 列表</param>
         /// <returns>校验结果（有效有序/有效无序/无效）</returns>
-        public static BpmValidationStatus Validate(IList<BpmItem> datas)
+        public static BpmValidationStatus Validate(IList<BpmGroupItem> datas)
         {
             if (datas == null || datas.Count == 0)
                 return BpmValidationStatus.Invalid;
@@ -49,7 +49,7 @@ namespace CyanStars.Chart
 
             for (int i = 0; i < datas.Count; i++)
             {
-                BpmItem item = datas[i];
+                BpmGroupItem item = datas[i];
 
                 // 检查元素是否为空
                 if (item == null)
@@ -98,7 +98,7 @@ namespace CyanStars.Chart
         /// 排序过程保留 Beat 的原始分数形式，不会进行约分。
         /// </remarks>
         /// <param name="datas">需要排序的 BPM 列表</param>
-        public static void Sort(IList<BpmItem> datas)
+        public static void Sort(IList<BpmGroupItem> datas)
         {
             var status = Validate(datas);
 
@@ -113,14 +113,14 @@ namespace CyanStars.Chart
             }
 
             // 针对 List<T> 和 Array [] 进行优化，直接使用原生的 Sort
-            Comparison<BpmItem> comparison = (a, b) => a.StartBeat.CompareTo(b.StartBeat);
-            if (datas is List<BpmItem> standardList)
+            Comparison<BpmGroupItem> comparison = (a, b) => a.StartBeat.CompareTo(b.StartBeat);
+            if (datas is List<BpmGroupItem> standardList)
             {
                 standardList.Sort(comparison);
             }
-            else if (datas is BpmItem[] standardArray)
+            else if (datas is BpmGroupItem[] standardArray)
             {
-                int Comparison(BpmItem a, BpmItem b) => a.StartBeat.CompareTo(b.StartBeat);
+                int Comparison(BpmGroupItem a, BpmGroupItem b) => a.StartBeat.CompareTo(b.StartBeat);
                 Array.Sort(standardArray, comparison);
             }
             else
@@ -128,7 +128,7 @@ namespace CyanStars.Chart
                 // 对于 ObservableList 或其他 IList 实现
                 // 由于 IList 接口没有 Sort 方法，采用“复制-排序-回写”的策略
                 // 这样既能利用 List 的优化排序，又能兼容 ObservableList
-                List<BpmItem> temp = new List<BpmItem>(datas);
+                List<BpmGroupItem> temp = new List<BpmGroupItem>(datas);
                 temp.Sort(comparison);
 
                 // 回写数据
@@ -156,7 +156,7 @@ namespace CyanStars.Chart
         /// <param name="datas">基于此 Bpm List 进行计算</param>
         /// <param name="beat">Beat 形式的拍子</param>
         /// <returns>int 形式的毫秒时间（相对于时间轴开始）</returns>
-        public static int CalculateTime(IList<BpmItem> datas, Beat beat)
+        public static int CalculateTime(IList<BpmGroupItem> datas, Beat beat)
         {
             return CalculateTime(datas, beat.ToFloat());
         }
@@ -167,7 +167,7 @@ namespace CyanStars.Chart
         /// <param name="datas">基于此 Bpm List 进行计算</param>
         /// <param name="floatBeat">float 形式的拍子</param>
         /// <returns>int 形式的毫秒时间（相对于时间轴开始）</returns>
-        public static int CalculateTime(IList<BpmItem> datas, float floatBeat)
+        public static int CalculateTime(IList<BpmGroupItem> datas, float floatBeat)
         {
             if (Validate(datas) != BpmValidationStatus.Valid)
                 throw new Exception("列表不合法，无法计算！");
@@ -202,7 +202,7 @@ namespace CyanStars.Chart
         /// <param name="datas">基于此 Bpm List 进行计算</param>
         /// <param name="msTime">已经计算 offset 后的毫秒时间（由 offset = 0 后开始计算）</param>
         /// <returns>float 形式的拍子</returns>
-        public static float CalculateBeat(IList<BpmItem> datas, int msTime)
+        public static float CalculateBeat(IList<BpmGroupItem> datas, int msTime)
         {
             if (datas.Count == 0)
             {
@@ -253,7 +253,7 @@ namespace CyanStars.Chart
         /// <param name="newItem">要插入的 Item</param>
         /// <returns>是否成功执行了插入操作</returns>
         /// <exception cref="Exception">传入的列表不合法，你应该在调用此方法前验证或确保列表有效</exception>
-        public static bool TryInsertItem(IList<BpmItem> datas, BpmItem newItem)
+        public static bool TryInsertItem(IList<BpmGroupItem> datas, BpmGroupItem newItem)
         {
             if (Validate(datas) != BpmValidationStatus.Valid)
                 throw new Exception("给定的 Bpm List 不合法！");

@@ -1,6 +1,6 @@
 ﻿namespace CyanStars.Chart
 {
-    public class BpmItem
+    public class BpmGroupItem
     {
         /// <summary>在生效时，每分钟会经过几拍</summary>
         /// <remarks>
@@ -16,7 +16,7 @@
         /// </remarks>
         public Beat StartBeat;
 
-        public BpmItem(float bpm, Beat startBeat)
+        public BpmGroupItem(float bpm, Beat startBeat)
         {
             Bpm = bpm;
             StartBeat = startBeat;
