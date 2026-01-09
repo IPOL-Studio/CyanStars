@@ -124,6 +124,11 @@ namespace CyanStars.Chart
             {
                 Array.Sort(standardArray, Comparison);
             }
+            else if (datas is BpmItem[] standardArray)
+            {
+                int Comparison(BpmItem a, BpmItem b) => a.StartBeat.CompareTo(b.StartBeat);
+                Array.Sort(standardArray, (Comparison<BpmItem>)Comparison);
+            }
             else
             {
                 // 对于 ObservableList 或其他 IList 实现
