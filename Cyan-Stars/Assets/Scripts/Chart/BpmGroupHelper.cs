@@ -113,14 +113,15 @@ namespace CyanStars.Chart
             }
 
             // 针对 List<T> 和 Array [] 进行优化，直接使用原生的 Sort
+            Comparison<BpmItem> comparison = (a, b) => a.StartBeat.CompareTo(b.StartBeat);
             if (datas is List<BpmItem> standardList)
             {
-                standardList.Sort((a, b) => a.StartBeat.CompareTo(b.StartBeat));
+                standardList.Sort(comparison);
             }
             else if (datas is BpmItem[] standardArray)
             {
                 int Comparison(BpmItem a, BpmItem b) => a.StartBeat.CompareTo(b.StartBeat);
-                Array.Sort(standardArray, (Comparison<BpmItem>)Comparison);
+                Array.Sort(standardArray, comparison);
             }
             else
             {
@@ -128,7 +129,7 @@ namespace CyanStars.Chart
                 // 由于 IList 接口没有 Sort 方法，采用“复制-排序-回写”的策略
                 // 这样既能利用 List 的优化排序，又能兼容 ObservableList
                 List<BpmItem> temp = new List<BpmItem>(datas);
-                temp.Sort((a, b) => a.StartBeat.CompareTo(b.StartBeat));
+                temp.Sort(comparison);
 
                 // 回写数据
                 for (int i = 0; i < datas.Count; i++)
