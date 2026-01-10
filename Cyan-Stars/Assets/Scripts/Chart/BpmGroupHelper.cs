@@ -16,6 +16,8 @@ namespace CyanStars.Chart
     /// </summary>
     public static class BpmGroupHelper
     {
+        private static readonly Comparison<BpmGroupItem> Comparison = (a, b) => a.StartBeat.CompareTo(b.StartBeat);
+
         /// <summary>
         /// 由 Beat 计算时间（ms）的委托
         /// </summary>
@@ -113,15 +115,14 @@ namespace CyanStars.Chart
             }
 
             // 针对 List<T> 和 Array [] 进行优化，直接使用原生的 Sort
-            Comparison<BpmGroupItem> comparison = (a, b) => a.StartBeat.CompareTo(b.StartBeat);
+
             if (datas is List<BpmGroupItem> standardList)
             {
-                standardList.Sort(comparison);
+                standardList.Sort(Comparison);
             }
             else if (datas is BpmGroupItem[] standardArray)
             {
-                int Comparison(BpmGroupItem a, BpmGroupItem b) => a.StartBeat.CompareTo(b.StartBeat);
-                Array.Sort(standardArray, comparison);
+                Array.Sort(standardArray, Comparison);
             }
             else
             {
@@ -129,7 +130,7 @@ namespace CyanStars.Chart
                 // 由于 IList 接口没有 Sort 方法，采用“复制-排序-回写”的策略
                 // 这样既能利用 List 的优化排序，又能兼容 ObservableList
                 List<BpmGroupItem> temp = new List<BpmGroupItem>(datas);
-                temp.Sort(comparison);
+                temp.Sort(Comparison);
 
                 // 回写数据
                 for (int i = 0; i < datas.Count; i++)
