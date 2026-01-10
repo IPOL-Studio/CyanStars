@@ -9,13 +9,13 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     public class BpmGroupListItemViewModel : BaseViewModel
     {
         private readonly BpmGroupViewModel BpmGroupViewModel;
-        private readonly BpmItem BpmItem;
+        private readonly BpmGroupItem BpmItem;
 
         public BpmGroupListItemViewModel(
             ChartEditorModel model,
             CommandManager commandManager,
             BpmGroupViewModel bpmGroupViewModel,
-            BpmItem bpmItem
+            BpmGroupItem bpmItem
         )
             : base(model, commandManager)
         {
