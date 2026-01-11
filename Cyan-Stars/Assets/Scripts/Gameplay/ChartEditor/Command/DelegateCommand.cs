@@ -9,8 +9,8 @@ namespace CyanStars.Gameplay.ChartEditor.Command
     /// </summary>
     public class DelegateCommand : ICommand
     {
-        private readonly Action ExecuteAction;
-        private readonly Action UndoAction;
+        private readonly Action? ExecuteAction;
+        private readonly Action? UndoAction;
 
 
         public DelegateCommand(Action execute, Action undo)

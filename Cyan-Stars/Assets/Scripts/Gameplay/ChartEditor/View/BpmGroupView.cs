@@ -36,7 +36,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private GameObject detailFrameGameObject = null!;
 
         [SerializeField]
-        private TMP_Text detailCountText = null!;
+        private TMP_Text numberText = null!;
 
         [SerializeField]
         private TMP_InputField bpmInputField = null!;
@@ -143,7 +143,20 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(selectedItem => detailFrameGameObject.SetActive(selectedItem != null))
                 .AddTo(this);
 
-            ViewModel.BPMText
+            ViewModel.SelectedBpmItemIndex
+                .Subscribe(index =>
+                    {
+                        // 修改标题 number
+                        numberText.text = index != null ? $"#{(index + 1).ToString()}" : "";
+
+                        // 如果是首个元素，则不允许修改 startBeat（锁定为 [0,0,1] ）
+                        startBeatField1.interactable = index != 0;
+                        startBeatField2.interactable = index != 0;
+                        startBeatField3.interactable = index != 0;
+                    }
+                )
+                .AddTo(this);
+            ViewModel.BpmText
                 .Subscribe(text => bpmInputField.text = text)
                 .AddTo(this);
             ViewModel.StartBeatText1
@@ -155,10 +168,27 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.StartBeatText3
                 .Subscribe(text => startBeatField3.text = text)
                 .AddTo(this);
+
+            // V -> VM 绑定
+            closeCanvasButton.onClick.AddListener(ViewModel.CloseCanvas);
+            bpmInputField.onEndEdit.AddListener(ViewModel.SetBpm);
+            startBeatField1.onEndEdit.AddListener(SetBeat);
+            startBeatField2.onEndEdit.AddListener(SetBeat);
+            startBeatField3.onEndEdit.AddListener(SetBeat);
+        }
+
+        private void SetBeat(string _)
+        {
+            ViewModel.SetBeat(startBeatField1.text, startBeatField2.text, startBeatField3.text);
         }
 
         protected override void OnDestroy()
         {
+            closeCanvasButton.onClick.RemoveListener(ViewModel.CloseCanvas);
+            bpmInputField.onEndEdit.RemoveListener(ViewModel.SetBpm);
+            startBeatField1.onEndEdit.RemoveListener(SetBeat);
+            startBeatField2.onEndEdit.RemoveListener(SetBeat);
+            startBeatField3.onEndEdit.RemoveListener(SetBeat);
         }
     }
 }

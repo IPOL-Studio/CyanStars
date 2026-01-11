@@ -1,8 +1,10 @@
 ﻿#nullable enable
 
+using System.Collections.Generic;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
+using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
@@ -10,17 +12,65 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     {
         private readonly BpmGroupViewModel BpmGroupViewModel;
         private readonly BpmGroupItem BpmItem;
+        private IList<BpmGroupItem> BpmListItems;
+
+        public readonly int ItemNumber;
+        public readonly bool IsFirstItem;
+
+        public readonly ReadOnlyReactiveProperty<bool> IsSelected;
+
+        private readonly ReactiveProperty<string> beatAndTimeString;
+        public ReadOnlyReactiveProperty<string> BeatAndTimeString => beatAndTimeString;
+
 
         public BpmGroupListItemViewModel(
             ChartEditorModel model,
             CommandManager commandManager,
             BpmGroupViewModel bpmGroupViewModel,
-            BpmGroupItem bpmItem
+            BpmGroupItem bpmItem,
+            IList<BpmGroupItem> bpmListItems
         )
             : base(model, commandManager)
         {
             BpmGroupViewModel = bpmGroupViewModel;
             BpmItem = bpmItem;
+            BpmListItems = bpmListItems;
+
+            int index = BpmListItems.IndexOf(BpmItem);
+            IsFirstItem = index == 0;
+            ItemNumber = index + 1;
+
+            IsSelected = BpmGroupViewModel.SelectedBpmItem
+                .Select(data => data == BpmItem)
+                .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
+            beatAndTimeString = new ReactiveProperty<string>("");
+
+            BpmGroupViewModel.BpmStartBeatChangedSubject
+                .Subscribe(_ =>
+                    {
+                        // [0, 1, 2]
+                        string beatPart =
+                            $"[{BpmItem.StartBeat.IntegerPart}, {BpmItem.StartBeat.Numerator}, {BpmItem.StartBeat.Denominator}]";
+
+                        // 0:59.900 或 199:59.999
+                        int ms = BpmGroupHelper.CalculateTime(BpmListItems, bpmItem.StartBeat);
+                        int minutes = ms / 60000;
+                        int seconds = (ms / 1000) % 60;
+                        int milliseconds = ms % 1000;
+                        string timePart = $"{minutes}:{seconds:D2}.{milliseconds:D3}";
+
+                        beatAndTimeString.Value = $"{timePart}\n{beatPart}";
+                    }
+                )
+                .AddTo(base.Disposables);
+        }
+
+
+        public void OnToggleChanged(bool isOn)
+        {
+            if (!isOn)
+                return; // 由 Unity 的 ToggleGroup 自动取消，无需处理
         }
     }
 }
