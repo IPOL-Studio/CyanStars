@@ -81,6 +81,7 @@ namespace CyanStars.Chart
         /// <summary>
         /// 构造函数
         /// </summary>
+        [JsonConstructor]
         public ChartPackData(string title, List<MusicVersionData>? musicVersionDatas = null, List<BpmGroupItem>? bpmGroup = null,
                              Beat? musicPreviewStartBeat = null, Beat? musicPreviewEndBeat = null, string? coverFilePath = null,
                              Vector2? cropPosition = null, float? cropHeight = null, List<ChartMetaData>? chartMetaDatas = null)

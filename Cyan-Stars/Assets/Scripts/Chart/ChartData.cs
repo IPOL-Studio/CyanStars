@@ -1,6 +1,7 @@
 #nullable enable
 
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace CyanStars.Chart
 {
@@ -25,7 +26,7 @@ namespace CyanStars.Chart
         /// </summary>
         public List<ChartTrackData> TrackDatas;
 
-
+        [JsonConstructor]
         public ChartData(int readyBeat = 4, List<SpeedTemplateData>? speedGroupDatas = null,
                          List<BaseChartNoteData>? notes = null, List<ChartTrackData>? trackDatas = null)
         {
