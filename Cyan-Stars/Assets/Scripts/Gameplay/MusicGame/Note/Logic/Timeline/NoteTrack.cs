@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CyanStars.Framework;
 using CyanStars.Framework.Timeline;
 using CyanStars.Chart;
@@ -32,7 +33,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 根据音符数据创建音符
         /// </summary>
-        private static BaseNote CreateNote(BaseChartNoteData noteData, BpmGroup bpmGroup, ChartData chartData,
+        private static BaseNote CreateNote(BaseChartNoteData noteData, List<BpmGroupItem> bpmGroup, ChartData chartData,
             NoteClip clip)
         {
             BaseNote note = noteData.Type switch

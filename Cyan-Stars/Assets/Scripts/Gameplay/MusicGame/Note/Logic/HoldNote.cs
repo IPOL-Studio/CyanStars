@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CyanStars.Framework;
 using CyanStars.Chart;
 using UnityEngine;
@@ -60,11 +61,11 @@ namespace CyanStars.Gameplay.MusicGame
         public float Pos { get; set; }
 
 
-        public override void Init(BaseChartNoteData data, BpmGroup bpmGroup, ChartData chartData, NoteClip clip)
+        public override void Init(BaseChartNoteData data, List<BpmGroupItem> bpmGroup, ChartData chartData, NoteClip clip)
         {
             base.Init(data, bpmGroup, chartData, clip);
             Pos = (data as HoldChartNoteData).Pos;
-            endTime = bpmGroup.CalculateTime((data as HoldChartNoteData).EndJudgeBeat) / 1000f;
+            endTime = BpmGroupHelper.CalculateTime(bpmGroup, (data as HoldChartNoteData).EndJudgeBeat) / 1000f;
 
             endSpeedGroup =
                 new SpeedGroup(chartData.SpeedGroupDatas[(data as HoldChartNoteData).HoldEndSpeedGroupIndex],

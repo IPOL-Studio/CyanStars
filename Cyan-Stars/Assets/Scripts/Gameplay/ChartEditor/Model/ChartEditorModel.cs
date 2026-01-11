@@ -156,7 +156,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
         public readonly ChartData ChartData;
         public readonly ChartMetadata ChartMetadata;
         public List<MusicVersionData> MusicVersionDatas => ChartPackData.MusicVersionDatas;
-        public IReadOnlyList<BpmGroupItem> BpmGroupDatas => ChartPackData.BpmGroup.Data;
+        public IReadOnlyList<BpmGroupItem> BpmGroupDatas => ChartPackData.BpmGroup;
         public List<SpeedGroupData> SpeedGroupDatas => ChartData.SpeedGroupDatas;
 
 
@@ -1414,7 +1414,7 @@ namespace CyanStars.GamePlay.ChartEditor.Model
 
             BpmGroupItem itemToUpdate = BpmGroupDatas[(int)SelectedBpmItemIndex];
             itemToUpdate.StartBeat = beat;
-            SelectedBpmItemIndex = ChartPackData.BpmGroup.IndexOf(itemToUpdate.StartBeat);
+            SelectedBpmItemIndex = ChartPackData.BpmGroup.IndexOf(itemToUpdate);
 
             OnBpmGroupChanged?.Invoke();
         }

@@ -1,4 +1,5 @@
-﻿using CyanStars.Chart;
+﻿using System.Collections.Generic;
+using CyanStars.Chart;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -55,7 +56,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 初始化数据
         /// </summary>
-        public virtual void Init(BaseChartNoteData data, BpmGroup bpmGroup, ChartData chartData, NoteClip clip)
+        public virtual void Init(BaseChartNoteData data, List<BpmGroupItem> bpmGroup, ChartData chartData, NoteClip clip)
         {
             NoteClip = clip;
             NoteData = data;
@@ -63,7 +64,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 根据 beat 计算 JudgeTime
             // 注意 Offset 是作为空白时间直接加（或减）在 MisicTrack/MusicClip 中，与 Note 判定时间无关
-            JudgeTime = bpmGroup.CalculateTime(data.JudgeBeat) / 1000f;
+            JudgeTime = BpmGroupHelper.CalculateTime(bpmGroup, data.JudgeBeat) / 1000f;
         }
 
         public virtual void OnUpdate(float curLogicTime)

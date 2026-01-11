@@ -1,4 +1,5 @@
-﻿using CyanStars.Framework.Timeline;
+﻿using CyanStars.Chart;
+using CyanStars.Framework.Timeline;
 using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.MusicGame
@@ -11,10 +12,12 @@ namespace CyanStars.Gameplay.MusicGame
         public static readonly CreateClipFunc<FrameTrack, FrameTrackData, FrameClipData> CreateClipFunc = CreateClip;
 
         private static BaseClip<FrameTrack> CreateClip(FrameTrack track, FrameTrackData trackData, int curIndex,
-            FrameClipData frameClipData)
+                                                       FrameClipData frameClipData)
         {
-            float startTime = frameClipData.BeatToTimeDelegate(frameClipData.FrameChartTrackData.StartBeat) / 1000f;
-            float endTime = frameClipData.BeatToTimeDelegate(frameClipData.FrameChartTrackData.EndBeat) / 1000f;
+            float startTime =
+                BpmGroupHelper.CalculateTime(frameClipData.BpmGroup, frameClipData.FrameChartTrackData.StartBeat) / 1000f;
+            float endTime =
+                BpmGroupHelper.CalculateTime(frameClipData.BpmGroup, frameClipData.FrameChartTrackData.EndBeat) / 1000f;
             return new FrameClip(startTime, endTime, track,
                 frameClipData.FrameChartTrackData.Type, frameClipData.FrameChartTrackData.Color,
                 frameClipData.FrameChartTrackData.Intensity, frameClipData.FrameChartTrackData.Bpm,

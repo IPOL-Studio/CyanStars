@@ -43,7 +43,10 @@ namespace CyanStars.GamePlay.ChartEditor.View
             base.Bind(chartEditorModel);
 
             button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() => { Model.SelectBpmItem(index); });
+            button.onClick.AddListener(() =>
+            {
+                Model.SelectBpmItem(index);
+            });
 
             RefreshUI();
         }
@@ -54,7 +57,7 @@ namespace CyanStars.GamePlay.ChartEditor.View
             indexText.text = index.ToString();
 
             Beat beat = Model.BpmGroupDatas[index].StartBeat;
-            int msTime = Model.ChartPackData.BpmGroup.CalculateTime(Model.BpmGroupDatas[index].StartBeat);
+            int msTime = BpmGroupHelper.CalculateTime(Model.ChartPackData.BpmGroup, Model.BpmGroupDatas[index].StartBeat);
             TimeSpan timeSpan = TimeSpan.FromMilliseconds(msTime); // 应该没人会写总时长超过 24 小时的变速谱面
             detailText.text = $"[{beat.IntegerPart}, {beat.Numerator}, {beat.Denominator}]" +
                               $"\n{timeSpan:hh\\:mm\\:ss\\.fff}";
