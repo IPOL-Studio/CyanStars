@@ -46,72 +46,63 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             ViewModel.ChartDataCanvasVisibility
                 .Subscribe(isVisibility =>
-                {
-                    chartDataCanvas.enabled = isVisibility;
-                })
+                    {
+                        chartDataCanvas.enabled = isVisibility;
+                    }
+                )
                 .AddTo(this);
-            ViewModel.ChartDifficulty.Subscribe(SetDifficulty).AddTo(this);
-            ViewModel.ChartLevelString.Subscribe(SetLevel).AddTo(this);
-            ViewModel.ReadyBeatCountString.Subscribe(SetReadyBeatCount).AddTo(this);
+            ViewModel.ChartDifficulty
+                .Subscribe(difficulty =>
+                    {
+                        kuiXingToggle.isOn = difficulty == ChartDifficulty.KuiXing;
+                        qiMingToggle.isOn = difficulty == ChartDifficulty.QiMing;
+                        tianShuToggle.isOn = difficulty == ChartDifficulty.TianShu;
+                        wuYinToggle.isOn = difficulty == ChartDifficulty.WuYin;
+                        undefinedToggle.isOn = difficulty == null;
+                        Debug.LogWarning("TODO: 切换图标样式"); // TODO: 切换图标样式
+                    }
+                )
+                .AddTo(this);
+            ViewModel.ChartLevelString
+                .Subscribe(text => levelField.text = text)
+                .AddTo(this);
+            ViewModel.ReadyBeatCountString
+                .Subscribe(text => readyBeatField.text = text)
+                .AddTo(this);
 
             closeCanvasButton.onClick.AddListener(ViewModel.CloseCanvas);
             kuiXingToggle.onValueChanged.AddListener(isOn =>
-            {
-                if (isOn)
                 {
-                    ViewModel.SetChartDifficulty(ChartDifficulty.KuiXing);
+                    if (isOn)
+                        ViewModel.SetChartDifficulty(ChartDifficulty.KuiXing);
                 }
-            });
+            );
             qiMingToggle.onValueChanged.AddListener(isOn =>
-            {
-                if (isOn)
                 {
-                    ViewModel.SetChartDifficulty(ChartDifficulty.QiMing);
+                    if (isOn)
+                        ViewModel.SetChartDifficulty(ChartDifficulty.QiMing);
                 }
-            });
+            );
             tianShuToggle.onValueChanged.AddListener(isOn =>
-            {
-                if (isOn)
                 {
-                    ViewModel.SetChartDifficulty(ChartDifficulty.TianShu);
+                    if (isOn)
+                        ViewModel.SetChartDifficulty(ChartDifficulty.TianShu);
                 }
-            });
+            );
             wuYinToggle.onValueChanged.AddListener(isOn =>
-            {
-                if (isOn)
                 {
-                    ViewModel.SetChartDifficulty(ChartDifficulty.WuYin);
+                    if (isOn)
+                        ViewModel.SetChartDifficulty(ChartDifficulty.WuYin);
                 }
-            });
+            );
             undefinedToggle.onValueChanged.AddListener(isOn =>
-            {
-                if (isOn)
                 {
-                    ViewModel.SetChartDifficulty(null);
+                    if (isOn)
+                        ViewModel.SetChartDifficulty(null);
                 }
-            });
-            levelField.onValueChanged.AddListener(ViewModel.SetChartLevelString);
-            readyBeatField.onValueChanged.AddListener(ViewModel.SetReadyBeatCount);
-        }
-
-        private void SetDifficulty(ChartDifficulty? difficulty)
-        {
-            kuiXingToggle.isOn = difficulty == ChartDifficulty.KuiXing;
-            qiMingToggle.isOn = difficulty == ChartDifficulty.QiMing;
-            tianShuToggle.isOn = difficulty == ChartDifficulty.TianShu;
-            wuYinToggle.isOn = difficulty == ChartDifficulty.WuYin;
-            undefinedToggle.isOn = difficulty == null;
-            Debug.LogWarning("TODO: 切换图标样式"); // TODO: 切换图标样式
-        }
-
-        private void SetLevel(string levelString)
-        {
-            levelField.text = levelString;
-        }
-
-        private void SetReadyBeatCount(string readyBeatCountString)
-        {
-            readyBeatField.text = readyBeatCountString;
+            );
+            levelField.onEndEdit.AddListener(ViewModel.SetChartLevelString);
+            readyBeatField.onEndEdit.AddListener(ViewModel.SetReadyBeatCount);
         }
 
         protected override void OnDestroy()

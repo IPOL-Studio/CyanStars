@@ -72,19 +72,19 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
             BpmText = SelectedBpmItem
                 .Select(item => item?.Bpm.ToString(CultureInfo.InvariantCulture) ?? "")
-                .ToReadOnlyReactiveProperty("")
+                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, "")
                 .AddTo(Disposables);
             StartBeatText1 = SelectedBpmItem
                 .Select(item => item != null ? item.StartBeat.IntegerPart.ToString() : "")
-                .ToReadOnlyReactiveProperty("")
+                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, "")
                 .AddTo(Disposables);
             StartBeatText2 = SelectedBpmItem
                 .Select(item => item != null ? item.StartBeat.Numerator.ToString() : "")
-                .ToReadOnlyReactiveProperty("")
+                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, "")
                 .AddTo(Disposables);
             StartBeatText3 = SelectedBpmItem
                 .Select(item => item != null ? item.StartBeat.Denominator.ToString() : "")
-                .ToReadOnlyReactiveProperty("")
+                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, "")
                 .AddTo(Disposables);
         }
 

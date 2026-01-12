@@ -39,10 +39,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private Button speedTemplateButton = null!; // TODO
 
         [SerializeField]
-        private Button exitSimplificationModeButton = null!; // TODO
+        private Button exitSimplificationModeButton = null!;
 
         [SerializeField]
-        private Button enterSimplificationModeButton = null!; // TODO
+        private Button enterSimplificationModeButton = null!;
 
 
         public override void Bind(MenuButtonsViewModel targetViewModel)
@@ -73,6 +73,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
             musicVersionButton.onClick.AddListener(() => ViewModel.OpenCanvas(CanvasType.MusicVersionCanvas));
             bpmGroupButton.onClick.AddListener(() => ViewModel.OpenCanvas(CanvasType.BpmGroupCanvas));
             speedTemplateButton.onClick.AddListener(() => ViewModel.OpenCanvas(CanvasType.SpeedTemplateCanvas));
+
+            exitSimplificationModeButton.onClick.AddListener(() => ViewModel.SetSimplificationMode(false));
+            enterSimplificationModeButton.onClick.AddListener(() => ViewModel.SetSimplificationMode(true));
         }
 
         protected override void OnDestroy()
@@ -83,6 +86,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
             musicVersionButton.onClick.RemoveAllListeners();
             bpmGroupButton.onClick.RemoveAllListeners();
             speedTemplateButton.onClick.RemoveAllListeners();
+            exitSimplificationModeButton.onClick.RemoveAllListeners();
+            enterSimplificationModeButton.onClick.RemoveAllListeners();
         }
     }
 }

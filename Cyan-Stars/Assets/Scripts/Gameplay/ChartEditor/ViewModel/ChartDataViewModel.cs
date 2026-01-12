@@ -39,7 +39,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             ReadyBeatCountString = ChartData.ReadyBeat
                 .Select(beat => beat.ToString())
-                .ToReadOnlyReactiveProperty(ChartData.ReadyBeat.Value.ToString())
+                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, ChartData.ReadyBeat.Value.ToString())
                 .AddTo(base.Disposables);
         }
 

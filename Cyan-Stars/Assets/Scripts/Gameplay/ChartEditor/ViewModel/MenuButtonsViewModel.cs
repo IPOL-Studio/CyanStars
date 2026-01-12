@@ -40,14 +40,34 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
 
             CommandManager.ExecuteCommand(new DelegateCommand(() =>
-                {
-                    property.Value = true;
-                },
-                () =>
-                {
-                    property.Value = false;
-                }
-            ));
+                    {
+                        property.Value = true;
+                    },
+                    () =>
+                    {
+                        property.Value = false;
+                    }
+                )
+            );
+        }
+
+        public void SetSimplificationMode(bool newValue)
+        {
+            if (newValue == Model.IsSimplificationMode.Value)
+                return;
+
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () =>
+                    {
+                        Model.IsSimplificationMode.Value = newValue;
+                    },
+                    () =>
+                    {
+                        Model.IsSimplificationMode.Value = !newValue;
+                    }
+                )
+            );
         }
 
 
