@@ -34,7 +34,10 @@ public class ChartEditorSceneRoot : MonoBehaviour
             workspacePath = PathUtil.Combine(chartModule.PlayerChartPacksFolderPath, randomName);
             chartData = new ChartData();
             ChartMetaData chartMetaData = new ChartMetaData(randomName);
-            chartPackData = new ChartPackData(randomName, chartMetaDatas: new List<ChartMetaData> { chartMetaData });
+            List<BpmGroupItem> bpmGroup = new List<BpmGroupItem>();
+            _ = Beat.TryCreateBeat(0, 0, 1, out Beat beat);
+            bpmGroup.Add(new BpmGroupItem(128, beat));
+            chartPackData = new ChartPackData(randomName, bpmGroup: bpmGroup, chartMetaDatas: new List<ChartMetaData> { chartMetaData });
 
             chartMetadataIndex = 0;
         }

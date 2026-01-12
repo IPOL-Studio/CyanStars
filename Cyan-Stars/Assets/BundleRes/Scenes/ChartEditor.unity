@@ -7392,6 +7392,7 @@ GameObject:
   - component: {fileID: 475630458}
   - component: {fileID: 475630457}
   - component: {fileID: 475630456}
+  - component: {fileID: 475630460}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -7497,6 +7498,19 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &475630460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 475630454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ToggleGroup
+  m_AllowSwitchOff: 0
 --- !u!1 &477995406
 GameObject:
   m_ObjectHideFlags: 0
@@ -9622,7 +9636,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320301, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320302, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Enabled
@@ -9761,25 +9775,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 584011671}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a3673211014e924a85fb9d3d5ede55b, type: 3}
+  m_Script: {fileID: 11500000, guid: 1752a20b40114b28acaf5641d36f93f5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  closeCanvasButton: {fileID: 584011670}
+  m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.BpmGroupView
+  bpmListItemPrefab: {fileID: 3465736307737091252, guid: 78080fde604ba704695c1a24e0700812, type: 3}
+  itemContentTransform: {fileID: 475630455}
+  bpmGroupListGameObject: {fileID: 2075881149}
+  addBpmItemButton: {fileID: 1372622811}
   canvas: {fileID: 584011672}
-  progressBarObject: {fileID: 88480456}
-  listObject: {fileID: 2075881149}
-  contentObject: {fileID: 475630454}
-  addItemButton: {fileID: 1372622811}
-  bpmItemPrefab: {fileID: 3465736307737091252, guid: 78080fde604ba704695c1a24e0700812, type: 3}
-  titleText: {fileID: 1207770757}
-  bpmValueField: {fileID: 1440447479}
-  measureBpmButton: {fileID: 7757076495251834732}
+  closeCanvasButton: {fileID: 584011670}
+  timelineGameObject: {fileID: 88480456}
+  detailFrameGameObject: {fileID: 1222410299}
+  numberText: {fileID: 1207770757}
+  bpmInputField: {fileID: 1440447479}
+  testBpmButton: {fileID: 7757076495251834732}
   startBeatField1: {fileID: 623424409}
   startBeatField2: {fileID: 623424408}
   startBeatField3: {fileID: 623424407}
   deleteItemButton: {fileID: 393454297}
-  alarmToggle: {fileID: 7757076494683467348}
-  testPlayButton: {fileID: 1572949486}
+  audioToggle: {fileID: 7757076494683467348}
+  testButton: {fileID: 1572949486}
 --- !u!1 &593629789
 GameObject:
   m_ObjectHideFlags: 0
@@ -10619,6 +10634,10 @@ PrefabInstance:
     - target: {fileID: 2041318149739640723, guid: 8917c4859c9b483428748460132aaa65, type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
       value: 1801810542
+      objectReference: {fileID: 0}
+    - target: {fileID: 4154182904660645921, guid: 8917c4859c9b483428748460132aaa65, type: 3}
+      propertyPath: m_Interactable
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4154182904660645922, guid: 8917c4859c9b483428748460132aaa65, type: 3}
       propertyPath: m_AnchorMax.x
@@ -15578,6 +15597,7 @@ MonoBehaviour:
   editorAttributeView: {fileID: 1037237909}
   chartPackDataView: {fileID: 42740034}
   chartPackDataCoverView: {fileID: 945222148}
+  chartDataView: {fileID: 1403133577}
   cropFrameView: {fileID: 978114223}
   cropHandlerViews:
   - {fileID: 1378086019}
@@ -15585,6 +15605,7 @@ MonoBehaviour:
   - {fileID: 1727489186}
   - {fileID: 853020916}
   musicVersionView: {fileID: 651228600}
+  bpmGroupView: {fileID: 584011673}
 --- !u!1001 &931541485
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -37746,7 +37767,7 @@ GameObject:
   - component: {fileID: 2015152777}
   - component: {fileID: 7757076494683467348}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: Toggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

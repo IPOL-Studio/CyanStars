@@ -40,6 +40,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             BpmStartBeatChangedSubject = new Subject<Unit>();
 
+            selectedBpmItem = new ReactiveProperty<BpmGroupItem?>(Model.ChartPackData.CurrentValue.BpmGroup[0]); // TODO: 这里之后最好改一下，不要硬编码读取 0 号元素
             BpmListItems = Model.ChartPackData.CurrentValue.BpmGroup
                 .CreateView(bpmItem =>
                     new BpmGroupListItemViewModel(
@@ -52,11 +53,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 )
                 .AddTo(base.Disposables);
 
-            selectedBpmItem = new ReactiveProperty<BpmGroupItem?>(null);
             ListVisible = Observable.CombineLatest(
                     Model.IsSimplificationMode,
                     Model.ChartPackData,
-                    (isSimple, chartPackData) => !isSimple || (chartPackData?.BpmGroup.Count ?? 0) > 1
+                    (isSimple, chartPackData) => !isSimple || (chartPackData?.BpmGroup.Count ?? 0) == 0
                 )
                 .ToReadOnlyReactiveProperty()
                 .AddTo(Disposables);
@@ -263,6 +263,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             if (selectedBpmItem.CurrentValue == null)
                 throw new Exception("未选中 BpmItem");
+
+            if (Model.ChartPackData.CurrentValue.BpmGroup.IndexOf(SelectedBpmItem.CurrentValue) == 0)
+                throw new Exception("不允许删除首个 BpmItem");
 
             var oldBpmItem = selectedBpmItem.CurrentValue;
             var oldIndex = Model.ChartPackData.CurrentValue.BpmGroup.IndexOf(oldBpmItem);

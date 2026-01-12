@@ -32,6 +32,9 @@ namespace CyanStars.Gameplay.ChartEditor
         private ChartPackDataCoverView chartPackDataCoverView = null!;
 
         [SerializeField]
+        private ChartDataView chartDataView = null!;
+
+        [SerializeField]
         private ChartPackDataCoverCropFrameView cropFrameView = null!;
 
         [SerializeField]
@@ -39,6 +42,9 @@ namespace CyanStars.Gameplay.ChartEditor
 
         [SerializeField]
         private MusicVersionView musicVersionView = null!;
+
+        [SerializeField]
+        private BpmGroupView bpmGroupView = null!;
 
 
         /// <summary>
@@ -73,14 +79,20 @@ namespace CyanStars.Gameplay.ChartEditor
             foreach (var item in cropHandlerViews)
                 item.Bind(chartPackDataCoverViewModel);
 
+            var chartDataViewModel = new ChartDataViewModel(model, commandManager).AddTo(Disposables);
+            chartDataView.Bind(chartDataViewModel);
+
             var musicVersionViewModel = new MusicVersionViewModel(model, commandManager).AddTo(Disposables);
             musicVersionView.Bind(musicVersionViewModel);
+
+            var bpmGroupViewModel = new BpmGroupViewModel(model, commandManager).AddTo(Disposables);
+            bpmGroupView.Bind(bpmGroupViewModel);
         }
 
         /// <summary>
         /// 退出制谱器时解除所有绑定，以释放内存
         /// </summary>
-        /// <remarks>VM 通过 CatAsset 加载的资源也应该在此释放</remarks>
+        /// <remarks>VM 通过 CatAsset 加载的资源也应该在此时由 VM 管理释放</remarks>
         public void UnbindAll()
         {
             Disposables.Dispose();

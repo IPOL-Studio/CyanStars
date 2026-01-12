@@ -27,7 +27,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
-            itemNumberText.text = ViewModel.ItemNumber.ToString();
+            itemNumberText.text = $"#{ViewModel.ItemNumber.ToString()}";
             ViewModel.IsSelected
                 .Subscribe(isSelected => ledRawImage.enabled = isSelected)
                 .AddTo(this);

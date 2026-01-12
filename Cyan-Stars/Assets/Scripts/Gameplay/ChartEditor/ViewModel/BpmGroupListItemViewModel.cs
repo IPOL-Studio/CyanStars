@@ -12,10 +12,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     {
         private readonly BpmGroupViewModel BpmGroupViewModel;
         private readonly BpmGroupItem BpmItem;
-        private IList<BpmGroupItem> BpmListItems;
 
         public readonly int ItemNumber;
-        public readonly bool IsFirstItem;
 
         public readonly ReadOnlyReactiveProperty<bool> IsSelected;
 
@@ -34,10 +32,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             BpmGroupViewModel = bpmGroupViewModel;
             BpmItem = bpmItem;
-            BpmListItems = bpmListItems;
 
-            int index = BpmListItems.IndexOf(BpmItem);
-            IsFirstItem = index == 0;
+            int index = bpmListItems.IndexOf(BpmItem);
             ItemNumber = index + 1;
 
             IsSelected = BpmGroupViewModel.SelectedBpmItem
@@ -54,7 +50,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                             $"[{BpmItem.StartBeat.IntegerPart}, {BpmItem.StartBeat.Numerator}, {BpmItem.StartBeat.Denominator}]";
 
                         // 0:59.900 或 199:59.999
-                        int ms = BpmGroupHelper.CalculateTime(BpmListItems, bpmItem.StartBeat);
+                        int ms = BpmGroupHelper.CalculateTime(bpmListItems, bpmItem.StartBeat);
                         int minutes = ms / 60000;
                         int seconds = (ms / 1000) % 60;
                         int milliseconds = ms % 1000;
@@ -71,6 +67,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             if (!isOn)
                 return; // 由 Unity 的 ToggleGroup 自动取消，无需处理
+
+            BpmGroupViewModel.SelectBpmItem(BpmItem);
         }
     }
 }

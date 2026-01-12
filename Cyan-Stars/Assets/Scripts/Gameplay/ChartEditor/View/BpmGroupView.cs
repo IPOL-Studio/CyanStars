@@ -21,6 +21,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private GameObject bpmGroupListGameObject = null!;
 
+        [SerializeField]
+        private Button addBpmItemButton = null!;
+
 
         [Header("主 View")]
         [SerializeField]
@@ -153,6 +156,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
                         startBeatField1.interactable = index != 0;
                         startBeatField2.interactable = index != 0;
                         startBeatField3.interactable = index != 0;
+
+                        // 如果是首个元素，则不允许删除
+                        deleteItemButton.interactable = index != 0;
                     }
                 )
                 .AddTo(this);
@@ -171,10 +177,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             // V -> VM 绑定
             closeCanvasButton.onClick.AddListener(ViewModel.CloseCanvas);
+            addBpmItemButton.onClick.AddListener(ViewModel.AddBpmItem);
             bpmInputField.onEndEdit.AddListener(ViewModel.SetBpm);
             startBeatField1.onEndEdit.AddListener(SetBeat);
             startBeatField2.onEndEdit.AddListener(SetBeat);
             startBeatField3.onEndEdit.AddListener(SetBeat);
+            deleteItemButton.onClick.AddListener(ViewModel.DeleteSelectedBpmItem);
         }
 
         private void SetBeat(string _)
@@ -185,10 +193,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
         protected override void OnDestroy()
         {
             closeCanvasButton.onClick.RemoveListener(ViewModel.CloseCanvas);
+            addBpmItemButton.onClick.RemoveListener(ViewModel.AddBpmItem);
             bpmInputField.onEndEdit.RemoveListener(ViewModel.SetBpm);
             startBeatField1.onEndEdit.RemoveListener(SetBeat);
             startBeatField2.onEndEdit.RemoveListener(SetBeat);
             startBeatField3.onEndEdit.RemoveListener(SetBeat);
+            deleteItemButton.onClick.RemoveListener(ViewModel.DeleteSelectedBpmItem);
         }
     }
 }
