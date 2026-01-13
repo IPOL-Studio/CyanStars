@@ -57,6 +57,7 @@ namespace CyanStars.Gameplay.ChartEditor
                               ChartData chartData,
                               CommandManager commandManager)
         {
+            // TODO: 为 Model 实现 IDispose，以进一步管理生命周期
             ChartEditorModel model =
                 new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData);
 
@@ -96,6 +97,11 @@ namespace CyanStars.Gameplay.ChartEditor
         public void UnbindAll()
         {
             Disposables.Dispose();
+        }
+
+        private void OnDestroy()
+        {
+            UnbindAll();
         }
     }
 }

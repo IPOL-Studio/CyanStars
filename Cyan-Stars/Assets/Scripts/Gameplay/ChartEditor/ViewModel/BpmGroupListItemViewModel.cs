@@ -13,7 +13,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private readonly BpmGroupViewModel BpmGroupViewModel;
         private readonly BpmGroupItem BpmItem;
 
-        public readonly int ItemNumber;
+        public readonly int ItemIndex;
 
         public readonly ReadOnlyReactiveProperty<bool> IsSelected;
 
@@ -34,7 +34,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             BpmItem = bpmItem;
 
             int index = bpmListItems.IndexOf(BpmItem);
-            ItemNumber = index + 1;
+            ItemIndex = index;
 
             IsSelected = BpmGroupViewModel.SelectedBpmItem
                 .Select(data => data == BpmItem)
@@ -42,9 +42,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
             beatAndTimeString = new ReactiveProperty<string>("");
 
-            BpmGroupViewModel.BpmStartBeatChangedSubject
-                .Subscribe(_ =>
+            BpmGroupViewModel.BpmGroupDataChangedSubject
+                .Subscribe(changedItemIndex =>
                     {
+                        if (changedItemIndex > ItemIndex)
+                            return;
+
                         // [0, 1, 2]
                         string beatPart =
                             $"[{BpmItem.StartBeat.IntegerPart}, {BpmItem.StartBeat.Numerator}, {BpmItem.StartBeat.Denominator}]";

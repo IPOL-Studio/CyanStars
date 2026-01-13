@@ -14,9 +14,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class BpmGroupViewModel : BaseViewModel
     {
-        // 当选中的 BpmItem 的 Beat 完成变更后，手动触发此事件，以刷新后续 Item 的时间
-        // TODO: 优化逻辑使其仅刷新 SelectedBpmItem 及以后的 Item，而非全量刷新
-        public readonly Subject<Unit> BpmStartBeatChangedSubject;
+        public readonly Observable<int> BpmGroupDataChangedSubject;
 
 
         public readonly ISynchronizedView<BpmGroupItem, BpmGroupListItemViewModel> BpmListItems;
@@ -38,9 +36,13 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public BpmGroupViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
-            BpmStartBeatChangedSubject = new Subject<Unit>();
+            BpmGroupDataChangedSubject = Model.BpmGroupDataChangedSubject.AsObservable();
 
-            selectedBpmItem = new ReactiveProperty<BpmGroupItem?>(Model.ChartPackData.CurrentValue.BpmGroup[0]); // TODO: 这里之后最好改一下，不要硬编码读取 0 号元素
+            // TODO: 这里之后最好改一下，不要直接读取 0 号元素，在加载谱面时做个验证
+            if (Model.ChartPackData.CurrentValue.BpmGroup.Count == 0)
+                throw new NotImplementedException();
+
+            selectedBpmItem = new ReactiveProperty<BpmGroupItem?>(Model.ChartPackData.CurrentValue.BpmGroup[0]);
             BpmListItems = Model.ChartPackData.CurrentValue.BpmGroup
                 .CreateView(bpmItem =>
                     new BpmGroupListItemViewModel(
@@ -168,6 +170,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (selectedBpmItem.CurrentValue == null)
                 throw new Exception("未选中 BpmItem");
 
+            int itemIndex = Model.ChartPackData.CurrentValue.BpmGroup.IndexOf(SelectedBpmItem.CurrentValue);
+
             if (!float.TryParse(newBpmString, out float newBpm))
             {
                 selectedBpmItem.ForceNotify();
@@ -184,13 +188,13 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     {
                         selectedBpmItem.CurrentValue.Bpm = newBpm;
                         BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
-                        BpmStartBeatChangedSubject.OnNext(Unit.Default);
+                        Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
                     },
                     () =>
                     {
                         selectedBpmItem.CurrentValue.Bpm = oldBpm;
                         BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
-                        BpmStartBeatChangedSubject.OnNext(Unit.Default);
+                        Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
                     }
                 )
             );
@@ -204,7 +208,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (selectedBpmItem.CurrentValue == null)
                 throw new Exception("未选中 BpmItem");
 
-            if (Model.ChartPackData.CurrentValue.BpmGroup.IndexOf(SelectedBpmItem.CurrentValue) == 0)
+            int itemIndex = Model.ChartPackData.CurrentValue.BpmGroup.IndexOf(SelectedBpmItem.CurrentValue);
+            if (itemIndex == 0)
                 throw new Exception("不允许修改首个 BpmItem 的 StartBeat");
 
             if (!int.TryParse(newBeatString1, out int newBeatInt1) ||
@@ -242,14 +247,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     {
                         selectedBpmItem.CurrentValue.StartBeat = newBeat;
                         BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
-                        BpmStartBeatChangedSubject.OnNext(Unit.Default);
+                        Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
                         selectedBpmItem.ForceNotify(); // 刷新当前选中的 item 的详情面板属性，如 Number
                     },
                     () =>
                     {
                         selectedBpmItem.CurrentValue.StartBeat = oldBeat;
                         BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
-                        BpmStartBeatChangedSubject.OnNext(Unit.Default);
+                        Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
                         selectedBpmItem.ForceNotify(); // 刷新当前选中的 item 的详情面板属性，如 Number
                     }
                 )

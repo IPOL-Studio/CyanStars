@@ -1,13 +1,23 @@
 ﻿#nullable enable
 
 using CyanStars.Chart;
-using CyanStars.Gameplay.ChartEditor.Command;
 using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.Model
 {
     public class ChartEditorModel
     {
+        // == == 事件触发器 == ==
+        /// <summary>
+        /// BpmGroup 中既有元素的 StartBeat 或 Bpm 发生了变化时手动触发
+        /// </summary>
+        /// <remarks>
+        ///     <para>参数为发生了变化的 bpmGroupItem 的 Index，代表需要刷新这个及后续 items</para>
+        ///     <para>对列表元素的增删改不会触发此事件，而是由 ObservableList 处理</para>
+        /// </remarks>
+        public readonly Subject<int> BpmGroupDataChangedSubject = new();
+
+
         // == == 谱包和谱面数据 == ==
 
         // 元数据，在实例化 Model 时固定
