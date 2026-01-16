@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using CyanStars.Framework;
 using CyanStars.Framework.GameObjectPool;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
@@ -42,8 +43,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private const string BeatLinePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/BeatLine.prefab";
 
         // 管理当前激活的节拍线：Key=节拍索引（含细分拍），Value=节拍线物体实例
-        private readonly Dictionary<int, GameObject> ActiveBeatLines = new Dictionary<int, GameObject>();
-        private readonly HashSet<int> LoadingBeatLines = new HashSet<int>();
+        // 开始加载时会将 item 对应的 Value 设为 null 占位，加载完成后覆写为 gameObject
+        private readonly Dictionary<int, GameObject?> ActiveBeatLines = new Dictionary<int, GameObject?>();
 
 
         public override void Bind(EditAreaViewModel targetViewModel)
@@ -75,11 +76,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             int oldPosLineCount = posLinesFrameObject.transform.childCount - 1; // UI 最左侧（在层级中为第 1 个）有一个不可见的自动布局元素
 
+            var tasks = new List<Task<GameObject>>();
             for (int i = oldPosLineCount; i < count; i++)
             {
                 // 补足位置线数量
-                var go = await PoolManager.GetGameObjectAsync(PosLinePath, posLinesFrameObject.transform);
+                tasks.Add(PoolManager.GetGameObjectAsync(PosLinePath, posLinesFrameObject.transform));
             }
+
+            await Task.WhenAll(tasks);
 
             for (int i = oldPosLineCount; i > count; i--)
             {
@@ -95,14 +99,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
             foreach (var kvp in ActiveBeatLines)
                 PoolManager.ReleaseGameObject(BeatLinePath, kvp.Value);
             ActiveBeatLines.Clear();
-            LoadingBeatLines.Clear();
 
             // 立即更新一次
             UpdateBeatLinesVisibility();
         }
 
         // 根据目前的滚动位置更新 BeatLines 可见性
-        private void UpdateBeatLinesVisibility()
+        private async void UpdateBeatLinesVisibility()
         {
             int beatAccuracy = ViewModel.BeatAccuracy.CurrentValue;
             float totalBeats = ViewModel.TotalBeats.CurrentValue;
@@ -143,37 +146,37 @@ namespace CyanStars.Gameplay.ChartEditor.View
             {
                 if (ActiveBeatLines.TryGetValue(key, out var go))
                 {
-                    PoolManager.ReleaseGameObject(BeatLinePath, go);
-                    ActiveBeatLines.Remove(key);
+                    if (go is not null) // 代表已经完成加载的物体，将会进行销毁
+                        PoolManager.ReleaseGameObject(BeatLinePath, go);
+                    ActiveBeatLines.Remove(key); // 正在加载的物体在加载完成后会自己检查 index 是否还在激活列表中
                 }
             }
 
             // 生成视口内缺失的线
+            var tasks = new List<Task<GameObject?>>();
             for (int i = minIndex; i <= maxIndex; i++)
             {
-                if (!ActiveBeatLines.ContainsKey(i) && !LoadingBeatLines.Contains(i))
+                if (ActiveBeatLines.TryAdd(i, null))
                 {
-                    CreateBeatLine(i, beatLineDist, beatAccuracy);
+                    tasks.Add(CreateBeatLine(i, beatLineDist, beatAccuracy));
                 }
             }
+
+            await Task.WhenAll(tasks);
         }
 
-        private async void CreateBeatLine(int index, float distance, int accuracy)
+        private async Task<GameObject?> CreateBeatLine(int index, float distance, int accuracy) // 这里的 index 是细分后的索引
         {
-            // 这里的 index 是细分后的索引
-
-            LoadingBeatLines.Add(index);
-
             GameObject go = await PoolManager.GetGameObjectAsync(BeatLinePath, contentRect, Cts.Token);
 
-            if (Cts.Token.IsCancellationRequested || ViewModel == null)
+            // 如果加载完后 Ctx 被取消了（场景卸载）或元素没有在激活字典里（离开视口），直接抛弃并释放
+            if (Cts.Token.IsCancellationRequested || !ActiveBeatLines.TryGetValue(index, out _))
             {
                 PoolManager.ReleaseGameObject(BeatLinePath, go);
-                return;
+                return null;
             }
 
-            LoadingBeatLines.Remove(index);
-            ActiveBeatLines.Add(index, go);
+            ActiveBeatLines[index] = go;
 
             // 设置位置
             if (go.transform is RectTransform rect)
@@ -187,6 +190,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             // 设置样式 (颜色、文字)
             go.GetComponent<BeatLineItem>().SetVisuals(index, accuracy);
+            return go;
         }
 
 
@@ -200,7 +204,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 PoolManager.ReleaseGameObject(BeatLinePath, kvp.Value);
 
             ActiveBeatLines.Clear();
-            LoadingBeatLines.Clear();
         }
     }
 }
