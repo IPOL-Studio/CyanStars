@@ -1,7 +1,9 @@
 ﻿#nullable enable
 
+using CatAsset.Runtime;
 using CyanStars.Chart;
 using R3;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.Model
 {
@@ -30,19 +32,44 @@ namespace CyanStars.Gameplay.ChartEditor.Model
 
 
         // == == 编辑器运行时数据 == ==
+
+        // 编辑模式
         public readonly ReactiveProperty<bool> IsSimplificationMode = new ReactiveProperty<bool>(true);
         public readonly ReactiveProperty<EditToolType> SelectedEditTool = new ReactiveProperty<EditToolType>(EditToolType.Select);
 
+        // 弹窗可见性
         public readonly ReactiveProperty<bool> ChartPackDataCanvasVisibility = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> ChartDataCanvasVisibility = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> MusicVersionCanvasVisibility = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> BpmGroupCanvasVisibility = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> SpeedTemplateCanvasVisibility = new ReactiveProperty<bool>(false); // TODO
 
+        // 编辑器属性
         public readonly ReactiveProperty<int> PosAccuracy = new ReactiveProperty<int>(4);
         public readonly ReactiveProperty<bool> PosMagnet = new ReactiveProperty<bool>(true);
         public readonly ReactiveProperty<int> BeatAccuracy = new ReactiveProperty<int>(2);
         public readonly ReactiveProperty<float> BeatZoom = new ReactiveProperty<float>(1f);
+
+        #region offset 说明
+
+        // Offset 为正数代表在音乐前添加空白时间
+        //                  |<-------------- 音乐时间 -------------->|
+        // |<--- offset --->|
+        // |<-------------------- timeline 时间 -------------------->|
+
+        // Offset 为负数代表跳过一段音乐时间
+        // |<-------------- 音乐时间 -------------->|
+        // |<--- offset --->|
+        //                  |<--- timeline 时间 --->|
+
+        // 制谱器中始终以 timeline 时间为准
+
+        #endregion
+
+        // 音乐播放
+        public readonly ReactiveProperty<bool> IsTimelinePlaying = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<AssetHandler<AudioClip?>?> AudioClipHandler = new ReactiveProperty<AssetHandler<AudioClip?>?>(null); // TODO: 在卸载 Model 时卸载 Handler
+        public int CurrentTimelineTime { get; set; } = 0; // 在音乐播放时由 ChartEditorMusicManager 负责每帧更新，暂停时由 EditAreaViewModel 负责在滚动 UI 时更新，考虑到性能问题由 view 在播放时轮询查询
 
 
         /// <summary>
@@ -52,7 +79,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         /// <param name="chartMetaDataIndex">谱面在谱包元数据中的索引</param>
         /// <param name="chartPackData">要修改的谱包数据，注意请先深拷贝一份</param>
         /// <param name="chartData">要修改的谱面数据，注意请先深拷贝一份</param>
-        /// <param name="commandManager">命令管理器实例</param>
+        /// <param name="musicManager">制谱器音乐管理器实例</param>
         public ChartEditorModel(string workspacePath,
                                 int chartMetaDataIndex,
                                 ChartPackData chartPackData,

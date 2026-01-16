@@ -17,6 +17,22 @@ public class ChartEditorSceneRoot : MonoBehaviour
     [SerializeField]
     private CommandManager commandManager = null!;
 
+    [SerializeField]
+    private ChartEditorMusicManager musicManager = null!;
+
+    public static MvvmBindManager MvvmBindManager = null!;
+    public static CommandManager CommandManager = null!;
+    public static ChartEditorMusicManager MusicManager = null!;
+
+
+    private void Awake()
+    {
+        MvvmBindManager = mvvmBindManager;
+        CommandManager = commandManager;
+        MusicManager = musicManager;
+    }
+
+
     private void Start()
     {
         var chartModule = GameRoot.GetDataModule<ChartModule>();
@@ -54,7 +70,7 @@ public class ChartEditorSceneRoot : MonoBehaviour
             throw new NotImplementedException(); //TODO
         }
 
-        mvvmBindManager.StartBind(workspacePath, chartMetadataIndex, chartPackData, chartData, commandManager);
+        mvvmBindManager.StartBind(workspacePath, chartMetadataIndex, chartPackData, chartData, commandManager, musicManager);
     }
 
     /// <summary>

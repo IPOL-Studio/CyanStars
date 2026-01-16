@@ -2,11 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using CatAsset.Runtime;
 using CyanStars.Chart;
+using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using ObservableCollections;
 using R3;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
@@ -101,16 +104,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 )
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
-            Model.ChartPackData // 元素数量变化后自动选择一个版本
+            Model.ChartPackData // 元素数量变化后自动取消选择
                 .Select(data =>
-                    data.MusicVersions.ObserveCountChanged(notifyCurrentCount: true)
-                        .Select(_ => data.MusicVersions)
+                    data.MusicVersions.ObserveCountChanged(notifyCurrentCount: true).Select(_ => data.MusicVersions)
                 )
                 .Switch()
-                .Subscribe(list =>
+                .Subscribe(_ =>
                     {
-                        if (list.Count >= 1 && selectedMusicVersionData.Value == null)
-                            selectedMusicVersionData.Value = list[0];
+                        selectedMusicVersionData.Value = null;
                     }
                 )
                 .AddTo(base.Disposables);
@@ -273,10 +274,41 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (!CanvasVisibility.CurrentValue)
                 return;
 
+            // 关闭弹窗时，卸载原有的音乐并尝试加载首个元素作为制谱器内播放的音乐。这个操作无需撤销。
+            LoadAudio(
+                Model.ChartPackData.CurrentValue.MusicVersions.Count > 1
+                    ? Model.ChartPackData.CurrentValue.MusicVersions[0].AudioFilePath.CurrentValue
+                    : null
+            );
+
             CommandManager.ExecuteCommand(new DelegateCommand(
                 () => Model.MusicVersionCanvasVisibility.Value = false,
                 () => Model.MusicVersionCanvasVisibility.Value = true
             ));
+        }
+
+        /// <summary>
+        /// 停止播放音乐，卸载旧音乐并尝试加载新音乐
+        /// </summary>
+        /// <param name="audioFilePath">新音乐文件的绝对路径，路径为 null 将仅卸载原有的音乐并卸载 handler，路径无效将产生一个包含 null 的 handler 实例</param>
+        private async void LoadAudio(string? audioFilePath)
+        {
+            // TODO: 只在真的实际发生了变化时重新加载
+            Model.IsTimelinePlaying.Value = false;
+
+            if (Model.AudioClipHandler.CurrentValue != null)
+            {
+                Model.AudioClipHandler.CurrentValue.Unload();
+                Model.AudioClipHandler.Value = null;
+            }
+
+            if (audioFilePath != null)
+            {
+                AssetHandler<AudioClip?>? handler = await GameRoot.Asset.LoadAssetAsync<AudioClip?>(audioFilePath);
+                Model.AudioClipHandler.Value = handler;
+                if (handler.Asset is null)
+                    Debug.LogWarning("加载音乐失败！");
+            }
         }
 
         public void SetTitle(string newTitle)
@@ -288,9 +320,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (oldTitle == newTitle)
                 return;
             CommandManager.ExecuteCommand(new DelegateCommand(
-                () => SelectedMusicVersionData.CurrentValue!.VersionTitle.Value = newTitle,
-                () => SelectedMusicVersionData.CurrentValue!.VersionTitle.Value = oldTitle
-            ));
+                    () => SelectedMusicVersionData.CurrentValue!.VersionTitle.Value = newTitle,
+                    () => SelectedMusicVersionData.CurrentValue!.VersionTitle.Value = oldTitle
+                )
+            );
         }
 
         public void ImportAudioFile()
@@ -304,9 +337,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下设置偏移量。");
 
             CommandManager.ExecuteCommand(new DelegateCommand(
-                () => SelectedMusicVersionData.CurrentValue!.Offset.Value -= AddOffsetStep,
-                () => SelectedMusicVersionData.CurrentValue!.Offset.Value += AddOffsetStep
-            ));
+                    () => SelectedMusicVersionData.CurrentValue!.Offset.Value -= AddOffsetStep,
+                    () => SelectedMusicVersionData.CurrentValue!.Offset.Value += AddOffsetStep
+                )
+            );
         }
 
         public void SetOffset(string text)
