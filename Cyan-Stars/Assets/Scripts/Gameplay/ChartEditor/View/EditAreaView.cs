@@ -36,7 +36,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private static readonly Color BeatOtherColor = new Color(0.6f, 1f, 0.6f, 0.6f);
 
         // 适用于对象池的字段
-        private CancellationTokenSource cts = new CancellationTokenSource();
+        private readonly CancellationTokenSource Cts = new CancellationTokenSource();
         private static GameObjectPoolManager PoolManager => GameRoot.GameObjectPool;
         private const string PosLinePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/PosLine.prefab";
         private const string BeatLinePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/BeatLine.prefab";
@@ -164,9 +164,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             LoadingBeatLines.Add(index);
 
-            GameObject go = await PoolManager.GetGameObjectAsync(BeatLinePath, contentRect, cts.Token);
+            GameObject go = await PoolManager.GetGameObjectAsync(BeatLinePath, contentRect, Cts.Token);
 
-            if (cts.Token.IsCancellationRequested || ViewModel == null)
+            if (Cts.Token.IsCancellationRequested || ViewModel == null)
             {
                 PoolManager.ReleaseGameObject(BeatLinePath, go);
                 return;
@@ -192,9 +192,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected override void OnDestroy()
         {
-            cts.Cancel();
-            cts.Dispose();
-            cts = new CancellationTokenSource();
+            Cts.Cancel();
+            Cts.Dispose();
 
             // 销毁时归还所有节拍线对象
             foreach (var kvp in ActiveBeatLines)
