@@ -74,6 +74,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async void UpdatePosLines(int count)
         {
+            // 场景销毁时直接取消
+            if (Cts.IsCancellationRequested)
+                return;
+
             int oldPosLineCount = posLinesFrameObject.transform.childCount - 1; // UI 最左侧（在层级中为第 1 个）有一个不可见的自动布局元素
 
             var tasks = new List<Task<GameObject>>();
@@ -107,6 +111,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
         // 根据目前的滚动位置更新 BeatLines 可见性
         private async void UpdateBeatLinesVisibility()
         {
+            // 场景销毁时直接取消
+            if (Cts.IsCancellationRequested)
+                return;
+
             int beatAccuracy = ViewModel.BeatAccuracy.CurrentValue;
             float totalBeats = ViewModel.TotalBeats.CurrentValue;
             float beatLineDist = ViewModel.GetBeatLineDistance();
@@ -175,6 +183,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 PoolManager.ReleaseGameObject(BeatLinePath, go);
                 return null;
             }
+
+            // 如果加载完后发现已经有物体了（快速在边界滚动导致启动了多个加载任务），则释放原来的物体并用新物体替代
+            // TODO: 为每个加载任务单独分配 token
+            if (ActiveBeatLines[index] is not null)
+                PoolManager.ReleaseGameObject(BeatLinePath, ActiveBeatLines[index]);
 
             ActiveBeatLines[index] = go;
 

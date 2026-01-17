@@ -90,18 +90,16 @@ namespace CyanStars.Gameplay.ChartEditor
         private void Update()
         {
             if (!isInitialized)
-                throw new Exception("未完成初始化，请手动调用 Init() 并传入依赖！");
+                throw new Exception("未完成初始化，请在 Update 前手动调用 Init() 并传入依赖！");
 
-            if (audioSource.time >= audioSource.clip.length)
-            {
-                // 音乐播完了 // TODO:待测试
-                TryPauseMusic();
-            }
-
-            // 如果时间轴正在播放，则每帧将倒计时或音频播放进度同步给属性，避免累加误差
             if (!model.IsTimelinePlaying.Value)
                 return;
 
+            // 音乐播完了 // TODO:待测试
+            if (audioSource.time >= audioSource.clip.length)
+                TryPauseMusic();
+
+            // 如果时间轴正在播放，则每帧将倒计时或音频播放进度同步给属性，避免累加误差
             if (delayTimeMs > 0)
             {
                 // 延迟阶段
