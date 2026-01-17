@@ -3,6 +3,7 @@
 using UnityEngine;
 using SimpleFileBrowser;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading;
@@ -25,29 +26,36 @@ namespace CyanStars.Framework.File
     public class FileManager : BaseManager
     {
         [SerializeField]
-        private UISkin skin;
-
-        public readonly FileBrowser.Filter ChartFilter = new FileBrowser.Filter("谱面文件", ".json");
-        public readonly FileBrowser.Filter SpriteFilter = new FileBrowser.Filter("图片", ".jpg", ".png");
-        public readonly FileBrowser.Filter AudioFilter = new FileBrowser.Filter("音频", ".ogg");
-
-        private string TempFolderPath => PathUtil.Combine(Application.temporaryCachePath, "FileManager");
-
-        /// <summary>
-        /// 目标路径:缓存文件路径 双向字典
-        /// </summary>
-        /// <remarks>键、值都不应该重复</remarks>
-        private BiDirectionalDictionary<string, string> targetPathToTempPathMap =
-            new BiDirectionalDictionary<string, string>();
+        private UISkin fileBrowserSkin = null!;
 
 
         public override int Priority { get; }
 
 
+        public readonly FileBrowser.Filter ChartFilter = new FileBrowser.Filter("谱面文件", ".json");
+        public readonly FileBrowser.Filter SpriteFilter = new FileBrowser.Filter("图片", ".jpg", ".png");
+        public readonly FileBrowser.Filter AudioFilter = new FileBrowser.Filter("音频", ".ogg");
+
+        private static string TempFolderPath => PathUtil.Combine(Application.persistentDataPath, "TempSession", "FileManager");
+        private readonly List<TempFileHandler> TempFileHandlers = new();
+        private readonly Dictionary<string, TempFileHandler> TempPathToHandlerMap = new(); // 缓存路径->句柄 映射表，一定是齐全的
+        private readonly Dictionary<string, TempFileHandler> TargetPathToHandlerMap = new(); // 目标路径->句柄 映射表，不一定齐全（文件缓存了但没有指定映射路径，用于制谱器可撤销操作时缓存文件）
+
+
         public override void OnInit()
         {
+            // 清理旧的缓存路径
+            try
+            {
+                Directory.Delete(TempFolderPath, true);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"在删除缓存文件时捕获了异常：{e.Message}");
+            }
+
             // 设置颜色主题
-            FileBrowser.Skin = skin;
+            FileBrowser.Skin = fileBrowserSkin;
 
             // 显示所有后缀的文件，包括默认排除的 .lnk 和 .tmp
             FileBrowser.SetExcludedExtensions();
@@ -64,7 +72,7 @@ namespace CyanStars.Framework.File
         }
 
 
-        #region --- FileBrowser API ---
+        #region --- FileBrowser API 用于在运行时向玩家打开文件管理器 UI  ---
 
         /// <summary>
         /// 获取单个文件的路径
@@ -183,9 +191,23 @@ namespace CyanStars.Framework.File
                 FileBrowser.PickMode.Folders, false, null, null, title, "选择");
         }
 
+        /// <summary>
+        /// 检查文件浏览器是否已经打开，并打印警告
+        /// </summary>
+        private bool IsBrowserOpen()
+        {
+            if (FileBrowser.IsOpen)
+            {
+                Debug.LogWarning("无法打开新的文件对话框，因为已有对话框处于打开状态。");
+                return true;
+            }
+
+            return false;
+        }
+
         #endregion
 
-        #region --- Serialization API ---
+        #region --- Serialization API 用于在运行时读写 .json 文件 ---
 
         /// <summary>
         /// 从指定的绝对路径加载资源（如图片、文本、音频等）
@@ -265,196 +287,363 @@ namespace CyanStars.Framework.File
 
         #endregion
 
-        #region --- TempFiles API ---
+        #region --- TempFiles API 用于文件缓存 ---
 
-        /// <summary>
-        /// 将文件复制到缓存区
-        /// <para>如果 targetFilePath 已经存在，将会用新的 originalFilePath 覆盖，旧的临时文件将失效</para>
-        /// </summary>
-        /// <remarks>将会覆盖目标文件！</remarks>
-        /// <param name="originalFilePath">原始文件绝对路径（含文件名和后缀）</param>
-        /// <param name="targetFilePath">目标绝对路径（含文件名和后缀）</param>
-        /// <returns>缓存文件绝对路径（含文件名和后缀）</returns>
-        /// <exception cref="ArgumentException">参数为空或 null / 重复的目标路径或文件缓存路径</exception>
-        /// <exception cref="FileNotFoundException">原始文件不存在</exception>
-        public string TempFile(string originalFilePath, string targetFilePath)
+        public enum TempFileHandlerState
         {
-            if (string.IsNullOrEmpty(originalFilePath))
-            {
-                throw new ArgumentException("原始文件路径不能为空。", nameof(originalFilePath));
-            }
-
-            if (string.IsNullOrEmpty(targetFilePath))
-            {
-                throw new ArgumentException("目标文件路径不能为空。", nameof(targetFilePath));
-            }
-
-            if (!System.IO.File.Exists(originalFilePath))
-            {
-                throw new FileNotFoundException($"原始文件未找到: {originalFilePath}", originalFilePath);
-            }
-
-            // 复制文件到缓存区，缓存区文件格式为 [文件名].[7位GUID].[拓展名]
-            string shortGuid = Guid.NewGuid().ToString("N").Substring(0, 7);
-            string fileNameWithoutExt = Path.GetFileNameWithoutExtension(originalFilePath);
-            string extension = Path.GetExtension(originalFilePath);
-            string tempFileName = $"{fileNameWithoutExt}.{shortGuid}{extension}";
-            string tempFilePath = PathUtil.Combine(TempFolderPath, tempFileName);
-
-            Directory.CreateDirectory(TempFolderPath);
-            System.IO.File.Copy(originalFilePath, tempFilePath, true);
-
-            if (!targetPathToTempPathMap.TryGetValue(targetFilePath, out string oldTempPath))
-            {
-                // 不存在旧的临时文件，直接写入
-                targetPathToTempPathMap.Add(targetFilePath, tempFilePath);
-            }
-            else
-            {
-                // 存在旧的临时文件，删除旧的映射和文件，然后写入新的映射
-                System.IO.File.Delete(tempFilePath);
-                targetPathToTempPathMap.RemoveByKey(targetFilePath);
-                targetPathToTempPathMap.Add(targetFilePath, tempFilePath);
-            }
-
-            return tempFilePath;
+            Saved = 0, // 文件副本已保存到目标路径
+            Temped = 1, // 文件副本已保存到缓存路径，但未保存/未能成功保存到目标路径
+            Unavailable = 2 // 句柄已释放/实例化出错，缓存文件可能不存在，相关属性可能不再有效
         }
 
         /// <summary>
-        /// 将缓存区的全部文件移动到目标路径，然后清空缓存区文件
+        /// 可缓存的文件的句柄（只读接口）
         /// </summary>
-        /// <remarks>将会覆盖目标文件！</remarks>
-        public void SaveAllFiles()
+        public interface IReadonlyTempFileHandler
         {
-            if (targetPathToTempPathMap.Count == 0)
+            public TempFileHandlerState State { get; }
+            public string OriginFilePath { get; }
+            public string? TempFilePath { get; }
+            public string? TargetFilePath { get; }
+        }
+
+        /// <summary>
+        /// 可缓存的文件的句柄
+        /// </summary>
+        public class TempFileHandler : IReadonlyTempFileHandler, IDisposable
+        {
+            public TempFileHandlerState State { get; private set; }
+            public string OriginFilePath { get; }
+            public string? TempFilePath { get; }
+
+            private string? targetFilePath;
+
+            public string? TargetFilePath
             {
-                Debug.Log("没有任何暂存内容要保存");
+                get => targetFilePath;
+                set
+                {
+                    if (string.IsNullOrEmpty(value)) // 将空字符串视为 null
+                        value = null;
+                    if (targetFilePath == value)
+                        return;
+                    State = TempFileHandlerState.Temped;
+                    targetFilePath = value;
+                }
+            }
+
+            /// <summary>
+            /// 缓存文件并实例化句柄
+            /// </summary>
+            /// <param name="originFilePath">要保存的原始文件绝对路径</param>
+            /// <param name="tempFolder">缓存文件夹绝对路径</param>
+            /// <param name="targetFilePath">目标文件绝对路径，后续可以修改</param>
+            public TempFileHandler(string originFilePath, string tempFolder, string? targetFilePath)
+            {
+                OriginFilePath = originFilePath;
+                TargetFilePath = targetFilePath;
+
+                if (string.IsNullOrEmpty(originFilePath) || !System.IO.File.Exists(originFilePath))
+                {
+                    Debug.LogWarning("给定的原始文件不存在");
+                    State = TempFileHandlerState.Unavailable;
+                    TempFilePath = null;
+                    return;
+                }
+
+                try
+                {
+                    // 创建路径
+                    if (!Directory.Exists(tempFolder))
+                        Directory.CreateDirectory(tempFolder);
+
+                    // 生成一个不重复的 7 位 GUID，然后复制文件到缓存区，缓存区文件格式为 [文件名].[7位GUID].[拓展名]
+                    string tempFilePath;
+                    while (true)
+                    {
+                        string shortGuid = Guid.NewGuid().ToString("N")[..7];
+                        string fileNameWithoutExt = Path.GetFileNameWithoutExtension(originFilePath);
+                        string extension = Path.GetExtension(originFilePath);
+                        string tempFileName = $"{fileNameWithoutExt}.{shortGuid}{extension}";
+                        tempFilePath = PathUtil.Combine(tempFolder, tempFileName);
+
+                        if (!System.IO.File.Exists(tempFilePath))
+                            break;
+                    }
+
+                    System.IO.File.Copy(originFilePath, tempFilePath);
+
+                    State = TempFileHandlerState.Temped;
+                    TempFilePath = tempFilePath;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"未能成功复制文件到临时目录：{e.Message}");
+                    throw;
+                }
+            }
+
+            public bool Save(bool releaseAfterSucceedSave = false)
+            {
+                if (string.IsNullOrEmpty(TempFilePath) || string.IsNullOrEmpty(TargetFilePath))
+                {
+                    Debug.LogError("临时文件或目标文件路径为空，无法保存！");
+                    return false;
+                }
+
+                if (State == TempFileHandlerState.Unavailable)
+                {
+                    Debug.LogError("句柄已卸载，无法保存！");
+                    return false;
+                }
+
+                // 覆盖目标文件路径
+                try
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(TargetFilePath)); // 如果目标文件夹路径不存在，创建路径
+                    System.IO.File.Copy(TempFilePath, TargetFilePath!, true);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"覆盖目标文件时出错：{e.Message}");
+                    return false;
+                }
+
+                State = TempFileHandlerState.Saved;
+
+                if (releaseAfterSucceedSave)
+                    Dispose();
+
+                return true;
+            }
+
+            public void Dispose()
+            {
+                if (State == TempFileHandlerState.Unavailable)
+                {
+                    // 已经释放，无需再次释放
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(TempFilePath))
+                {
+                    Debug.LogError("临时文件或目标文件路径为空，无法释放！");
+                    return;
+                }
+
+                try
+                {
+                    // 删除临时文件
+                    System.IO.File.Delete(TempFilePath);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"删除临时文件时出错：{e.Message}");
+                    return;
+                }
+
+                State = TempFileHandlerState.Unavailable;
+            }
+        }
+
+        /// <summary>
+        /// 将原始文件复制到缓存区
+        /// </summary>
+        /// <param name="originFilePath">原始文件的绝对路径（含后缀名）</param>
+        /// <param name="targetFilePath">目标文件的绝对路径（含后缀名）</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">originFilePath 为空</exception>
+        /// <exception cref="Exception">在缓存文件时出错</exception>
+        public IReadonlyTempFileHandler TempFile(string originFilePath, string? targetFilePath = null)
+        {
+            if (string.IsNullOrEmpty(originFilePath))
+                throw new ArgumentNullException(nameof(originFilePath));
+            if (string.IsNullOrEmpty(targetFilePath))
+                targetFilePath = null;
+
+            var handler = new TempFileHandler(originFilePath, TempFolderPath, targetFilePath);
+            if (handler.State == TempFileHandlerState.Unavailable || handler.TempFilePath == null)
+                throw new Exception("缓存文件时出错");
+
+            TempPathToHandlerMap[handler.TempFilePath] = handler;
+
+            if (handler.TargetFilePath != null)
+                TargetPathToHandlerMap[handler.TargetFilePath] = handler;
+
+            return handler;
+        }
+
+        /// <summary>
+        /// 更新句柄的目标文件路径和映射表记录
+        /// </summary>
+        /// <param name="handler">句柄</param>
+        /// <param name="targetFilePath">绝对目标路径</param>
+        /// <remarks>如果传入的路径不为 null，且原先有其他指向此目标路径的句柄，原有句柄的目标路径将被设为 null</remarks>
+        public void UpdateTargetFilePath(TempFileHandler handler, string? targetFilePath)
+        {
+            if (handler.State == TempFileHandlerState.Unavailable)
+            {
+                Debug.LogWarning("句柄已卸载，无法更新其目标文件路径！");
                 return;
             }
 
-            BiDirectionalDictionary<string, string> newMap =
-                new BiDirectionalDictionary<string, string>(targetPathToTempPathMap);
-            foreach (var pair in newMap)
-            {
-                _ = SaveFile(pair.Value, out _);
-            }
+            if (handler.TargetFilePath == targetFilePath)
+                return;
+
+            if (targetFilePath != null && string.IsNullOrEmpty(targetFilePath))
+                targetFilePath = null;
+
+            // 如果有其他句柄指向此新路径，应该先更新其他句柄
+            if (targetFilePath != null && TargetPathToHandlerMap.TryGetValue(targetFilePath, out TempFileHandler? otherHandler))
+                otherHandler.TargetFilePath = null;
+
+            // 清除旧路径映射
+            if (!string.IsNullOrEmpty(handler.TargetFilePath))
+                TargetPathToHandlerMap.Remove(handler.TargetFilePath);
+
+            // 更新句柄路径和映射表
+            handler.TargetFilePath = targetFilePath;
+            if (targetFilePath != null)
+                TargetPathToHandlerMap[targetFilePath] = handler;
         }
 
-        /// <summary>
-        /// 将指定的临时文件保存
-        /// </summary>
-        /// <param name="tempFilePath">临时文件绝地路径</param>
-        /// <param name="toggleFilePath">目标文件路径</param>
-        /// <returns>是否成功保存</returns>
-        public bool SaveFile(string tempFilePath, out string? toggleFilePath)
-        {
-            toggleFilePath = null;
-            try
-            {
-                if (string.IsNullOrEmpty(tempFilePath))
-                {
-                    Debug.LogError("获取临时文件路径出错！");
-                    return false;
-                }
-
-                if (!targetPathToTempPathMap.TryGetKey(tempFilePath, out toggleFilePath))
-                {
-                    Debug.LogWarning("无法获取目标文件路径，传入的不是临时文件路径或文件已保存？");
-                    return false;
-                }
-
-                string? toggleFolderPath = Path.GetDirectoryName(toggleFilePath);
-                if (string.IsNullOrEmpty(toggleFolderPath))
-                {
-                    Debug.LogError("获取目标文件路径出错！");
-                    return false;
-                }
-
-                // 如果目标文件夹路径不存在，创建路径
-                Directory.CreateDirectory(toggleFolderPath);
-
-                // 如果目标文件存在，删除并移动临时文件
-                if (System.IO.File.Exists(toggleFilePath))
-                {
-                    System.IO.File.Delete(toggleFilePath);
-                }
-
-                //TODO: 如果删除文件后异常导致无法移动，将导致数据丢失，考虑先移动后重命名或升级 .net 版本后的 Move() 方法重载
-                System.IO.File.Move(tempFilePath, toggleFilePath);
-
-                // 从映射表中移除键值对
-                targetPathToTempPathMap.RemoveByValue(tempFilePath);
-
-                return true;
-            }
-            finally
-            {
-                if (targetPathToTempPathMap.Count == 0 && Directory.Exists(TempFolderPath))
-                {
-                    Directory.Delete(TempFolderPath, true);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 取消保存并清空缓存文件
-        /// </summary>
-        public void ClearAllTempFiles()
-        {
-            targetPathToTempPathMap.Clear();
-            if (Directory.Exists(TempFolderPath))
-            {
-                Directory.Delete(TempFolderPath, true);
-            }
-        }
-
-        /// <summary>
-        /// 尝试取消临时文件的映射并删除文件
-        /// </summary>
-        /// <param name="tempFilePath">临时文件绝对路径</param>
-        /// <returns>是否找到并移除了文件</returns>
-        public bool TryClearTempFile(string tempFilePath)
-        {
-            if (!targetPathToTempPathMap.TryGetKey(tempFilePath, out string _))
-            {
-                return false;
-            }
-
-            System.IO.File.Delete(tempFilePath);
-            targetPathToTempPathMap.RemoveByValue(tempFilePath);
-
-            if (targetPathToTempPathMap.Count == 0 && Directory.Exists(TempFolderPath))
-            {
-                Directory.Delete(TempFolderPath, true);
-            }
-
-            return true;
-        }
-
-        public bool TrySearchByTogglePath(string toggleFilePath, out string? tempFilePath)
-        {
-            return targetPathToTempPathMap.TryGetValue(toggleFilePath, out tempFilePath);
-        }
-
-        public bool TrySearchByTempPath(string tempFilePath, out string? toggleFilePath)
-        {
-            return targetPathToTempPathMap.TryGetKey(tempFilePath, out toggleFilePath);
-        }
+        // /// <summary>
+        // /// 将缓存区的全部文件移动到目标路径，然后清空缓存区文件
+        // /// </summary>
+        // /// <param name="deleteTempFileAfterSucceedSave">保存成功后是否删除临时文件并从映射表中移除？目标文件为 null 时视为失败，失败时永不删除</param>
+        // /// <remarks>将会覆盖目标文件！</remarks>
+        // public void SaveAllFiles(bool deleteTempFileAfterSucceedSave = false)
+        // {
+        //     if (TempTargetFileMap.Count == 0)
+        //     {
+        //         Debug.Log("没有任何暂存内容要保存");
+        //         return;
+        //     }
+        //
+        //     Dictionary<string, string?> tempMap = new Dictionary<string, string?>(TempTargetFileMap); // 确保内部元素删除不影响 foreach
+        //     int successCount = 0;
+        //     int failCount = 0;
+        //     int skipCount = 0;
+        //     foreach (var kvp in tempMap)
+        //     {
+        //         if (kvp.Value == null)
+        //         {
+        //             skipCount++;
+        //             continue;
+        //         }
+        //
+        //
+        //         if (SaveFile(kvp.Key, deleteTempFileAfterSucceedSave, out _))
+        //             successCount++;
+        //         else
+        //             failCount++;
+        //     }
+        //
+        //     Debug.Log($"批量保存完成，成功{successCount}个，失败{failCount}个，未指定保存路径而跳过{skipCount}个。是否删除成功保存的缓存文件：{deleteTempFileAfterSucceedSave}。");
+        // }
+        //
+        // /// <summary>
+        // /// 将指定的临时文件保存
+        // /// </summary>
+        // /// <param name="tempFilePath">临时文件绝地路径</param>
+        // /// <param name="deleteTempFileAfterSucceedSave">保存成功后是否删除临时文件并从映射表中移除？目标文件为 null 时视为失败，失败时永不删除</param>
+        // /// <param name="toggleFilePath">目标文件路径</param>
+        // /// <returns>是否成功保存</returns>
+        // public bool SaveFile(string tempFilePath, bool deleteTempFileAfterSucceedSave, out string? toggleFilePath)
+        // {
+        //     toggleFilePath = null;
+        //
+        //     if (string.IsNullOrEmpty(tempFilePath))
+        //     {
+        //         Debug.LogError("临时文件路径为空！");
+        //         return false;
+        //     }
+        //
+        //     if (!TempTargetFileMap.ContainsKey(tempFilePath))
+        //     {
+        //         Debug.LogError("无法获取目标文件路径，传入的不是在映射表中的临时文件路径或临时文件已删除？");
+        //         return false;
+        //     }
+        //
+        //     string? toggleFolderPath = Path.GetDirectoryName(toggleFilePath);
+        //     if (string.IsNullOrEmpty(toggleFolderPath))
+        //     {
+        //         Debug.LogWarning($"{tempFilePath}对应的目标文件路径为空，将跳过保存...");
+        //         return false;
+        //     }
+        //
+        //     // 覆盖目标文件路径
+        //     try
+        //     {
+        //         Directory.CreateDirectory(toggleFolderPath); // 如果目标文件夹路径不存在，创建路径
+        //         System.IO.File.Copy(tempFilePath, toggleFilePath!, true);
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         Debug.LogError($"覆盖目标文件时出错：{e.Message}");
+        //         return false;
+        //     }
+        //
+        //     // 删除临时文件并从映射表中移除
+        //     if (deleteTempFileAfterSucceedSave)
+        //     {
+        //         try
+        //         {
+        //             // 删除文件并从映射表中移除键值对
+        //             System.IO.File.Delete(tempFilePath);
+        //             TempTargetFileMap.Remove(tempFilePath);
+        //         }
+        //         catch (Exception e)
+        //         {
+        //             Debug.LogError($"删除临时文件时出错：{e.Message}");
+        //             return false;
+        //         }
+        //
+        //         // 完成删除后，如果映射表为空，则清理临时文件路径并舍弃不在映射表中的其他文件
+        //         if (TempTargetFileMap.Count == 0 && Directory.Exists(TempFolderPath))
+        //         {
+        //             Directory.Delete(TempFolderPath, true);
+        //         }
+        //     }
+        //
+        //     return true;
+        // }
+        //
+        // /// <summary>
+        // /// 取消保存并清空缓存文件
+        // /// </summary>
+        // public void ClearAllTempFiles()
+        // {
+        //     TempTargetFileMap.Clear();
+        //     if (Directory.Exists(TempFolderPath))
+        //     {
+        //         Directory.Delete(TempFolderPath, true);
+        //     }
+        // }
+        //
+        // /// <summary>
+        // /// 尝试取消临时文件的映射并删除文件
+        // /// </summary>
+        // /// <param name="tempFilePath">临时文件绝对路径</param>
+        // /// <returns>是否找到并移除了文件</returns>
+        // public bool TryClearTempFile(string tempFilePath)
+        // {
+        //     if (!TempTargetFileMap.ContainsKey(tempFilePath))
+        //     {
+        //         return false;
+        //     }
+        //
+        //     System.IO.File.Delete(tempFilePath);
+        //     TempTargetFileMap.Remove(tempFilePath);
+        //
+        //     if (TempTargetFileMap.Count == 0 && Directory.Exists(TempFolderPath))
+        //     {
+        //         Directory.Delete(TempFolderPath, true);
+        //     }
+        //
+        //     return true;
+        // }
 
         #endregion
-
-        /// <summary>
-        /// 检查文件浏览器是否已经打开，并打印警告
-        /// </summary>
-        private bool IsBrowserOpen()
-        {
-            if (FileBrowser.IsOpen)
-            {
-                Debug.LogWarning("无法打开新的文件对话框，因为已有对话框处于打开状态。");
-                return true;
-            }
-
-            return false;
-        }
     }
 }
