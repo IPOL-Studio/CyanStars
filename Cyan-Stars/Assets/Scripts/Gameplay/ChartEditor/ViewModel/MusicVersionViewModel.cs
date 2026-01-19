@@ -278,8 +278,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             // 关闭弹窗时，卸载原有的音乐并尝试加载首个元素作为制谱器内播放的音乐。这个操作无需撤销。
             LoadAudio(
-                Model.ChartPackData.CurrentValue.MusicVersions.Count > 1
-                    ? Model.ChartPackData.CurrentValue.MusicVersions[0].AudioFilePath.CurrentValue
+                Model.ChartPackData.CurrentValue.MusicVersions.Count > 0
+                    ? PathUtil.Combine(Model.WorkspacePath, Model.ChartPackData.CurrentValue.MusicVersions[0].AudioFilePath.CurrentValue)
                     : null
             );
 
