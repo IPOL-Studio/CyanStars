@@ -2,11 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using CatAsset.Runtime;
 using CyanStars.Chart;
 using CyanStars.Framework;
+using CyanStars.Framework.File;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
+using CyanStars.Utils;
 using ObservableCollections;
 using R3;
 using UnityEngine;
@@ -16,7 +19,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     public class MusicVersionViewModel : BaseViewModel
     {
         private const int AddOffsetStep = 10;
-
 
         public readonly ISynchronizedView<MusicVersionDataEditorModel, MusicVersionListItemViewModel> MusicListItems;
 
@@ -328,7 +330,78 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void ImportAudioFile()
         {
-            throw new NotImplementedException();
+            GameRoot.File.OpenLoadFilePathBrowser(
+                ImportMusicFile,
+                title: "选择音乐文件",
+                filters: new[] { GameRoot.File.AudioFilter });
+        }
+
+        private void ImportMusicFile(string newOriginFilePath)
+        {
+            // throw new NotImplementedException();
+
+            if (selectedMusicVersionData.CurrentValue == null)
+                throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下设置音频文件路径。");
+
+            // 1. 校验要导入的音频文件名是否与其他版本文件名重复
+            // 2. 如有旧缓存文件，记录其指向的目标地址以便撤销，然后将其置空
+            // 3. 导入并暂存新音乐，将其指向新地址
+            // 4. 记录并修改音乐版本数据内引用的地址
+
+            var newTargetRelativePath = PathUtil.Combine(ChartEditorFileManager.ChartPackAssetsFolderName, Path.GetFileName(newOriginFilePath));
+
+            foreach (var musicVersionData in Model.ChartPackData.CurrentValue.MusicVersions)
+            {
+                if (musicVersionData == selectedMusicVersionData.CurrentValue)
+                    continue;
+
+                if (musicVersionData.AudioFilePath.CurrentValue == newTargetRelativePath)
+                {
+                    Model.ShowPopup("无法导入音乐",
+                        "选中的音乐文件文件名与其他音乐版本文件名重复，请重命名后再次导入",
+                        new Dictionary<string, Action?> { ["确定"] = null },
+                        true);
+                    return;
+                }
+            }
+
+            var oldTargetRelativePath = selectedMusicVersionData.CurrentValue.AudioFilePath.CurrentValue;
+            if (string.IsNullOrEmpty(oldTargetRelativePath))
+                oldTargetRelativePath = "";
+
+            var oldTargetAbsolutePath = oldTargetRelativePath != "" ? PathUtil.Combine(Model.WorkspacePath, oldTargetRelativePath) : "";
+            var newTargetAbsolutePath = PathUtil.Combine(Model.WorkspacePath, newTargetRelativePath);
+
+            IReadonlyTempFileHandler? oldHandler = ChartEditorFileManager.GetHandlerByTargetPath(oldTargetAbsolutePath);
+
+            // 仅复制文件到缓存区，暂不声明目标路径以防止自动顶替旧句柄目标路径。
+            IReadonlyTempFileHandler newHandler = ChartEditorFileManager.TempFile(newOriginFilePath, null);
+
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(() =>
+                    {
+                        selectedMusicVersionData.CurrentValue.AudioFilePath.Value = newTargetRelativePath;
+
+                        if (oldHandler != null)
+                        {
+                            ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, null);
+                        }
+
+                        ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, newTargetAbsolutePath);
+                    },
+                    () =>
+                    {
+                        selectedMusicVersionData.CurrentValue.AudioFilePath.Value = oldTargetRelativePath;
+
+                        ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, null);
+
+                        if (oldHandler != null)
+                        {
+                            ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, oldTargetAbsolutePath);
+                        }
+                    }
+                )
+            );
         }
 
         public void MinusOffset()

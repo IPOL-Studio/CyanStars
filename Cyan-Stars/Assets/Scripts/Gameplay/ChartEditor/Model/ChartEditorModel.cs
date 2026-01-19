@@ -1,7 +1,10 @@
 ﻿#nullable enable
 
+using System;
+using System.Collections.Generic;
 using CatAsset.Runtime;
 using CyanStars.Chart;
+using ObservableCollections;
 using R3;
 using UnityEngine;
 
@@ -71,6 +74,15 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public readonly ReactiveProperty<AssetHandler<AudioClip?>?> AudioClipHandler = new ReactiveProperty<AssetHandler<AudioClip?>?>(null); // TODO: 在卸载 Model 时卸载 Handler
         public int CurrentTimelineTime { get; set; } = 0; // 在音乐播放时由 ChartEditorMusicManager 负责每帧更新，暂停时由 EditAreaViewModel 负责在滚动 UI 时更新，考虑到性能问题由 view 在播放时轮询查询
 
+        // 提示弹窗
+        private readonly ReactiveProperty<bool> popupCanvasVisibility = new ReactiveProperty<bool>(false);
+        public ReadOnlyReactiveProperty<bool> PopupCanvasVisibility => popupCanvasVisibility;
+        public string PopupTitleString { get; private set; } = "";
+        public string PopupDescribeString { get; private set; } = "";
+        private readonly Dictionary<string, Action?> popupButtonCallBackMap = new Dictionary<string, Action?>();
+        public IReadOnlyDictionary<string, Action?> PopupButtonCallBackMap => popupButtonCallBackMap;
+        public bool PopupShowCloseButton { get; private set; } = true;
+
 
         /// <summary>
         /// 构造函数
@@ -79,7 +91,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         /// <param name="chartMetaDataIndex">谱面在谱包元数据中的索引</param>
         /// <param name="chartPackData">要修改的谱包数据，注意请先深拷贝一份</param>
         /// <param name="chartData">要修改的谱面数据，注意请先深拷贝一份</param>
-        /// <param name="musicManager">制谱器音乐管理器实例</param>
         public ChartEditorModel(string workspacePath,
                                 int chartMetaDataIndex,
                                 ChartPackData chartPackData,
@@ -90,6 +101,39 @@ namespace CyanStars.Gameplay.ChartEditor.Model
 
             ChartPackData = new ReactiveProperty<ChartPackDataEditorModel>(new ChartPackDataEditorModel(chartPackData));
             ChartData = new ReactiveProperty<ChartDataEditorModel>(new ChartDataEditorModel(chartData));
+        }
+
+
+        public void ShowPopup(string title,
+                              string describe,
+                              Dictionary<string, Action?>? map = null,
+                              bool showCloseButton = true)
+        {
+            if (popupCanvasVisibility.CurrentValue)
+                throw new Exception("已经有一个弹窗打开了，不允许再开一个");
+
+            PopupTitleString = title;
+            PopupDescribeString = describe;
+            popupButtonCallBackMap.Clear();
+            if (map != null) // 如果 map 为 null，则等同空列表，不显示任何按钮
+            {
+                foreach (var kvp in map)
+                {
+                    popupButtonCallBackMap.Add(kvp.Key, kvp.Value);
+                }
+            }
+
+            PopupShowCloseButton = showCloseButton;
+            popupCanvasVisibility.Value = true; // 自动触发 UI 更新
+        }
+
+        public void ClosePopup()
+        {
+            if (!popupCanvasVisibility.CurrentValue)
+                throw new Exception("弹窗已经关闭了，不能再次关闭");
+
+            popupButtonCallBackMap.Clear(); // 准备立刻释放订阅
+            popupCanvasVisibility.Value = false; // 自动触发 UI 更新
         }
     }
 }
