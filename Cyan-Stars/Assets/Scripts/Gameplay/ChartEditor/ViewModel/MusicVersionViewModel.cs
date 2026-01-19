@@ -277,11 +277,21 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
 
             // 关闭弹窗时，卸载原有的音乐并尝试加载首个元素作为制谱器内播放的音乐。这个操作无需撤销。
-            LoadAudio(
-                Model.ChartPackData.CurrentValue.MusicVersions.Count > 0
-                    ? PathUtil.Combine(Model.WorkspacePath, Model.ChartPackData.CurrentValue.MusicVersions[0].AudioFilePath.CurrentValue)
-                    : null
-            );
+            if (Model.ChartPackData.CurrentValue.MusicVersions.Count > 0)
+            {
+                string musicFilePath = PathUtil.Combine(Model.WorkspacePath, Model.ChartPackData.CurrentValue.MusicVersions[0].AudioFilePath.CurrentValue);
+                var handler = ChartEditorFileManager.GetHandlerByTargetPath(musicFilePath);
+                if (handler != null)
+                {
+                    musicFilePath = handler.TempFilePath;
+                }
+
+                LoadAudio(musicFilePath);
+            }
+            else
+            {
+                LoadAudio(null);
+            }
 
             CommandManager.ExecuteCommand(new DelegateCommand(
                 () => Model.MusicVersionCanvasVisibility.Value = false,

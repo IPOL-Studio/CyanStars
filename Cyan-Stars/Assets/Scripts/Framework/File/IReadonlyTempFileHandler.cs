@@ -9,7 +9,7 @@ namespace CyanStars.Framework.File
     {
         public TempFileHandlerState State { get; }
         public string OriginFilePath { get; }
-        public string? TempFilePath { get; }
+        public string TempFilePath { get; }
         public string? TargetFilePath { get; }
     }
 }
