@@ -115,13 +115,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (!Model.ChartPackDataCanvasVisibility.Value)
                 return;
 
-            CommandManager.ExecuteCommand(new DelegateCommand(() =>
-                {
-                    Model.ChartPackDataCanvasVisibility.Value = false;
-                }, () =>
-                {
-                    Model.ChartPackDataCanvasVisibility.Value = true;
-                })
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => Model.ChartPackDataCanvasVisibility.Value = false,
+                    () => Model.ChartPackDataCanvasVisibility.Value = true
+                )
             );
         }
 
@@ -131,13 +129,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (newTitle == oldTitle)
                 return;
 
-            CommandManager.ExecuteCommand(new DelegateCommand(() =>
-                {
-                    Model.ChartPackData.CurrentValue.Title.Value = newTitle;
-                }, () =>
-                {
-                    Model.ChartPackData.CurrentValue.Title.Value = oldTitle;
-                })
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => Model.ChartPackData.CurrentValue.Title.Value = newTitle,
+                    () => Model.ChartPackData.CurrentValue.Title.Value = oldTitle
+                )
             );
         }
 
@@ -166,13 +162,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var oldBeat = Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value;
             if (newBeat == oldBeat)
                 return;
-            CommandManager.ExecuteCommand(new DelegateCommand(() =>
-                {
-                    Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value = newBeat;
-                }, () =>
-                {
-                    Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value = oldBeat;
-                })
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value = newBeat,
+                    () => Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value = oldBeat
+                )
             );
         }
 
@@ -201,13 +195,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var oldBeat = Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value;
             if (newBeat == oldBeat)
                 return;
-            CommandManager.ExecuteCommand(new DelegateCommand(() =>
-                {
-                    Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = newBeat;
-                }, () =>
-                {
-                    Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = oldBeat;
-                })
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = newBeat,
+                    () => Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = oldBeat
+                )
             );
         }
 
@@ -238,18 +230,20 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            CommandManager.ExecuteCommand(new DelegateCommand(
-                () =>
-                {
-                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = finalPos;
-                    Model.ChartPackData.CurrentValue.CropHeight.Value = finalHeight;
-                },
-                () =>
-                {
-                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = oldPos;
-                    Model.ChartPackData.CurrentValue.CropHeight.Value = oldHeight;
-                }
-            ));
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () =>
+                    {
+                        Model.ChartPackData.CurrentValue.CropStartPosition.Value = finalPos;
+                        Model.ChartPackData.CurrentValue.CropHeight.Value = finalHeight;
+                    },
+                    () =>
+                    {
+                        Model.ChartPackData.CurrentValue.CropStartPosition.Value = oldPos;
+                        Model.ChartPackData.CurrentValue.CropHeight.Value = oldHeight;
+                    }
+                )
+            );
         }
     }
 }

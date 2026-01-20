@@ -125,15 +125,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (newBeatCountInt == oldBeatIntCount)
                 return;
 
-            CommandManager.ExecuteCommand(new DelegateCommand(() =>
-                {
-                    ChartData.ReadyBeat.Value = newBeatCountInt;
-                },
-                () =>
-                {
-                    ChartData.ReadyBeat.Value = oldBeatIntCount;
-                }
-            ));
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => ChartData.ReadyBeat.Value = newBeatCountInt,
+                    () => ChartData.ReadyBeat.Value = oldBeatIntCount
+                )
+            );
         }
     }
 }

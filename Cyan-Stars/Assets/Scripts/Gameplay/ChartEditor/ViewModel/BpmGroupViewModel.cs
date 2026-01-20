@@ -100,16 +100,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
 
             var oldItem = selectedBpmItem.Value;
-            CommandManager.ExecuteCommand(
-                new DelegateCommand(
-                    () =>
-                    {
-                        selectedBpmItem.Value = newItem;
-                    },
-                    () =>
-                    {
-                        selectedBpmItem.Value = oldItem;
-                    }
+            CommandManager.ExecuteCommand(new DelegateCommand(
+                    () => selectedBpmItem.Value = newItem,
+                    () => selectedBpmItem.Value = oldItem
                 )
             );
         }
@@ -150,14 +143,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             CommandManager.ExecuteCommand(
                 new DelegateCommand(
-                    () =>
-                    {
-                        Model.BpmGroupCanvasVisibility.Value = false;
-                    },
-                    () =>
-                    {
-                        Model.BpmGroupCanvasVisibility.Value = true;
-                    }
+                    () => Model.BpmGroupCanvasVisibility.Value = false,
+                    () => Model.BpmGroupCanvasVisibility.Value = true
                 )
             );
         }

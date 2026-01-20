@@ -159,7 +159,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
 
             var oldValue = selectedMusicVersionData.CurrentValue;
-            CommandManager.ExecuteCommand(new DelegateCommand(
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
                 () => selectedMusicVersionData.Value = musicVersionData,
                 () => selectedMusicVersionData.Value = oldValue
             ));
@@ -202,14 +203,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             CommandManager.ExecuteCommand(
                 new DelegateCommand(
-                    () =>
-                    {
-                        selectedMusicVersionData.CurrentValue.Staffs.Remove(data);
-                    },
-                    () =>
-                    {
-                        selectedMusicVersionData.CurrentValue.Staffs.Add(data);
-                    }
+                    () => selectedMusicVersionData.CurrentValue.Staffs.Remove(data),
+                    () => selectedMusicVersionData.CurrentValue.Staffs.Add(data)
                 )
             );
         }
@@ -237,14 +232,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var newMusicVersionData = new MusicVersionDataEditorModel(new MusicVersionData("新音乐版本"));
             CommandManager.ExecuteCommand(
                 new DelegateCommand(
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.MusicVersions.Add(newMusicVersionData);
-                    },
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.MusicVersions.Remove(newMusicVersionData);
-                    }
+                    () => Model.ChartPackData.CurrentValue.MusicVersions.Add(newMusicVersionData),
+                    () => Model.ChartPackData.CurrentValue.MusicVersions.Remove(newMusicVersionData)
                 )
             );
         }
@@ -306,10 +295,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 Debug.Log("已卸载音乐");
             }
 
-            CommandManager.ExecuteCommand(new DelegateCommand(
-                () => Model.MusicVersionCanvasVisibility.Value = false,
-                () => Model.MusicVersionCanvasVisibility.Value = true
-            ));
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => Model.MusicVersionCanvasVisibility.Value = false,
+                    () => Model.MusicVersionCanvasVisibility.Value = true
+                ));
         }
 
         /// <summary>
@@ -344,7 +334,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var oldTitle = SelectedMusicVersionData.CurrentValue!.VersionTitle.Value;
             if (oldTitle == newTitle)
                 return;
-            CommandManager.ExecuteCommand(new DelegateCommand(
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
                     () => SelectedMusicVersionData.CurrentValue!.VersionTitle.Value = newTitle,
                     () => SelectedMusicVersionData.CurrentValue!.VersionTitle.Value = oldTitle
                 )
@@ -432,7 +423,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (SelectedMusicVersionData.CurrentValue == null)
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下设置偏移量。");
 
-            CommandManager.ExecuteCommand(new DelegateCommand(
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
                     () => SelectedMusicVersionData.CurrentValue!.Offset.Value -= AddOffsetStep,
                     () => SelectedMusicVersionData.CurrentValue!.Offset.Value += AddOffsetStep
                 )
@@ -453,10 +445,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             int oldValue = SelectedMusicVersionData.CurrentValue!.Offset.Value;
             if (oldValue == newValue)
                 return;
-            CommandManager.ExecuteCommand(new DelegateCommand(
-                () => SelectedMusicVersionData.CurrentValue!.Offset.Value = newValue,
-                () => SelectedMusicVersionData.CurrentValue!.Offset.Value = oldValue
-            ));
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => SelectedMusicVersionData.CurrentValue!.Offset.Value = newValue,
+                    () => SelectedMusicVersionData.CurrentValue!.Offset.Value = oldValue
+                ));
         }
 
         public void AddOffset()
@@ -464,10 +457,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (SelectedMusicVersionData.CurrentValue == null)
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下设置偏移量。");
 
-            CommandManager.ExecuteCommand(new DelegateCommand(
-                () => SelectedMusicVersionData.CurrentValue!.Offset.Value += AddOffsetStep,
-                () => SelectedMusicVersionData.CurrentValue!.Offset.Value -= AddOffsetStep
-            ));
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => SelectedMusicVersionData.CurrentValue!.Offset.Value += AddOffsetStep,
+                    () => SelectedMusicVersionData.CurrentValue!.Offset.Value -= AddOffsetStep
+                ));
         }
 
         public void TestOffset()
@@ -553,14 +547,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             CommandManager.ExecuteCommand(
                 new DelegateCommand(
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, oldIndex - 1);
-                    },
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex - 1, oldIndex);
-                    }
+                    () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, oldIndex - 1),
+                    () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex - 1, oldIndex)
                 )
             );
         }
@@ -576,14 +564,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             CommandManager.ExecuteCommand(
                 new DelegateCommand(
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, oldIndex + 1);
-                    },
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex + 1, oldIndex);
-                    }
+                    () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, oldIndex + 1),
+                    () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex + 1, oldIndex)
                 )
             );
         }
@@ -599,14 +581,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             CommandManager.ExecuteCommand(
                 new DelegateCommand(
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, 0);
-                    },
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.MusicVersions.Move(0, oldIndex);
-                    }
+                    () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, 0),
+                    () => Model.ChartPackData.CurrentValue.MusicVersions.Move(0, oldIndex)
                 )
             );
         }
