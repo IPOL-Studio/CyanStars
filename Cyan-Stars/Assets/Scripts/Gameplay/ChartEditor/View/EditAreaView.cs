@@ -3,11 +3,14 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Framework.GameObjectPool;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using ObservableCollections;
 using R3;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
@@ -41,10 +44,18 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private static GameObjectPoolManager PoolManager => GameRoot.GameObjectPool;
         private const string PosLinePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/PosLine.prefab";
         private const string BeatLinePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/BeatLine.prefab";
+        private const string TapNotePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/TapNote.prefab";
+        private const string DragNotePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/DragNote.prefab";
+        private const string HoldNotePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/HoldNote.prefab";
+        private const string ClickNotePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/ClickNote.prefab";
+        private const string BreakNotePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/BreakNote.prefab";
 
         // 管理当前激活的节拍线：Key=节拍索引（含细分拍），Value=节拍线物体实例
         // 开始加载时会将 item 对应的 Value 设为 null 占位，加载完成后覆写为 gameObject
         private readonly Dictionary<int, GameObject?> ActiveBeatLines = new Dictionary<int, GameObject?>();
+
+        // 管理当前激活的音符: Key=音符数据对象, Value=GameObject
+        private readonly Dictionary<BaseChartNoteData, GameObject?> ActiveNotes = new Dictionary<BaseChartNoteData, GameObject?>();
 
 
         public override void Bind(EditAreaViewModel targetViewModel)
@@ -70,7 +81,19 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AsObservable()
                 .Subscribe(_ => UpdateBeatLinesVisibility())
                 .AddTo(this);
+
+            // 监听音符数据变化（增删改）或缩放变化 -> 刷新可见性
+            Observable.Merge(
+                    targetViewModel.Notes.ObserveChanged().Select(_ => Unit.Default),
+                    targetViewModel.BeatZoom.Select(_ => Unit.Default), // 缩放改变位置
+                    targetViewModel.BeatAccuracy.Select(_ => Unit.Default),
+                    scrollRect.onValueChanged.AsObservable().Select(_ => Unit.Default) // 滚动
+                )
+                .ThrottleLastFrame(1) // 避免同一帧多次刷新
+                .Subscribe(_ => UpdateNotesVisibility())
+                .AddTo(this);
         }
+
 
         private async void UpdatePosLines(int count)
         {
@@ -97,6 +120,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
         }
 
+
         private void ForceRebuildBeatLines()
         {
             // 回收所有
@@ -108,7 +132,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
             UpdateBeatLinesVisibility();
         }
 
-        // 根据目前的滚动位置更新 BeatLines 可见性
+        /// <summary>
+        /// 根据目前的滚动位置更新 BeatLines 可见性
+        /// </summary>
         private async void UpdateBeatLinesVisibility()
         {
             // 场景销毁时直接取消
@@ -207,6 +233,177 @@ namespace CyanStars.Gameplay.ChartEditor.View
         }
 
 
+        private async void UpdateNotesVisibility()
+        {
+            if (Cts.IsCancellationRequested) return;
+
+            float judgeLineY = judgeLineRect.anchoredPosition.y;
+            float viewportHeight = viewportRect.rect.height;
+            float contentHeight = contentRect.rect.height;
+
+            // 计算当前视口在 Content 中的范围
+            float scrollY = (contentHeight - viewportHeight) * scrollRect.verticalNormalizedPosition;
+            float viewMinY = scrollY - 100f; // Buffer
+            float viewMaxY = scrollY + viewportHeight + 100f;
+
+            // 1. 找出需要显示的音符 & 需要移除的音符
+            var notesToShow = new List<BaseChartNoteData>();
+            var notesToRemove = new List<BaseChartNoteData>();
+
+            // 遍历所有音符 (如果是巨量音符，建议 ViewModel 维护一个按时间排序的列表，这里用二分查找)
+            foreach (var note in ViewModel.Notes)
+            {
+                float yPos = CalculateNoteY(note.JudgeBeat);
+                float yEndPos = yPos;
+
+                if (note is HoldChartNoteData hold)
+                {
+                    yEndPos = CalculateNoteY(hold.EndJudgeBeat);
+                }
+
+                // 判断是否在可视范围内 (只要有一部分在范围内即可)
+                bool isVisible = (yEndPos >= viewMinY) && (yPos <= viewMaxY);
+
+                if (isVisible)
+                {
+                    if (!ActiveNotes.ContainsKey(note))
+                    {
+                        notesToShow.Add(note);
+                    }
+                }
+                else
+                {
+                    if (ActiveNotes.ContainsKey(note))
+                    {
+                        notesToRemove.Add(note);
+                    }
+                }
+            }
+
+            // 2. 回收离开视口的音符
+            foreach (var note in notesToRemove)
+            {
+                if (ActiveNotes.TryGetValue(note, out var go))
+                {
+                    if (go != null)
+                    {
+                        string path = GetPrefabPath(note.Type);
+                        PoolManager.ReleaseGameObject(path, go);
+                    }
+
+                    ActiveNotes.Remove(note);
+                }
+            }
+
+            // 3. 生成进入视口的音符
+            var tasks = new List<Task>();
+            foreach (var note in notesToShow)
+            {
+                ActiveNotes.Add(note, null); // 占位，防止重复加载
+                tasks.Add(CreateNoteObject(note));
+            }
+
+            await Task.WhenAll(tasks);
+        }
+
+        private async Task CreateNoteObject(BaseChartNoteData note)
+        {
+            string path = GetPrefabPath(note.Type);
+            GameObject go = await PoolManager.GetGameObjectAsync(path, contentRect, Cts.Token);
+
+            if (Cts.Token.IsCancellationRequested || !ActiveNotes.ContainsKey(note))
+            {
+                PoolManager.ReleaseGameObject(path, go);
+                return;
+            }
+
+            if (ActiveNotes[note] != null) PoolManager.ReleaseGameObject(path, ActiveNotes[note]);
+
+            ActiveNotes[note] = go;
+
+            // 设置数据和位置
+            if (go.TryGetComponent<EditNoteItem>(out var item))
+            {
+                float startY = CalculateNoteY(note.JudgeBeat);
+                float endY = startY;
+                if (note is HoldChartNoteData hold)
+                {
+                    endY = CalculateNoteY(hold.EndJudgeBeat);
+                }
+
+                item.SetData(note, startY, endY);
+            }
+        }
+
+        private float CalculateNoteY(Beat beat)
+        {
+            // Y = 判定线位置 + (Beat值 * 每拍距离)
+            float beatVal = beat.ToFloat();
+            float distPerBeat = ViewModel.GetBeatLineDistance() * ViewModel.BeatAccuracy.CurrentValue; // GetBeatLineDistance 返回的是细分拍距离，需还原
+            // 或者直接用:
+            float interval = 250f * ViewModel.BeatZoom.CurrentValue; // DefaultBeatLineInterval = 250f
+
+            return judgeLineRect.anchoredPosition.y + (beatVal * interval);
+        }
+
+        private string GetPrefabPath(NoteType type) => type switch
+        {
+            NoteType.Tap => TapNotePath,
+            NoteType.Drag => DragNotePath,
+            NoteType.Hold => HoldNotePath,
+            NoteType.Click => ClickNotePath,
+            NoteType.Break => BreakNotePath,
+            _ => TapNotePath
+        };
+
+        // --- IPointerClickHandler 实现 ---
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            // 将屏幕坐标转为 ScrollRect Content 的局部坐标
+            // 这样无论 Content 怎么滚动，得到的都是相对于 Content 原点的坐标
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                contentRect, // 注意这里用 contentRect 而不是 scrollRect
+                eventData.position,
+                eventData.pressEventCamera,
+                out Vector2 localPoint
+            );
+
+            // 这里 localPoint.y 已经是包含滚动距离的坐标了
+            // 但是 ViewModel 的计算逻辑可能需要相对于视口的坐标或者纯粹的逻辑坐标
+            // 让我们复用旧代码逻辑：
+            // 旧代码用 RectTransformUtility.ScreenPointToLocalPointInRectangle(scrollRect...)
+            // 这里的 EditAreaView 挂载在 EditArea Panel 上，通常就是 ScrollRect 所在物体。
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                GetComponent<RectTransform>(), // 应该是 Viewport 或 ScrollRect 本身
+                eventData.position,
+                eventData.pressEventCamera,
+                out Vector2 localPointInScrollRect
+            );
+
+            // 计算 Content 里的实际 Y 偏移
+            float contentY = (contentRect.rect.height - viewportRect.rect.height) * scrollRect.verticalNormalizedPosition;
+            float clickYOnContent = contentY + localPointInScrollRect.y; // 这里假设 Anchor 设定导致坐标系方向一致，具体需根据 UI 布局微调
+
+            // 为简化，直接传 localPointInScrollRect 给 VM，并在 VM 里结合 contentY (或者 VM 不关心 contentY，只关心相对于判定线的距离)
+            // 更好的方式：在 View 层算好相对于 JudgeLine 的 Y 距离
+
+            float relativeYToJudgeLine = clickYOnContent - judgeLineRect.anchoredPosition.y;
+
+            // 重新构造传入 VM 的坐标
+            // VM 需要 X 来判断轨道，需要 Y 来判断时间
+            Vector2 clickPosForVm = new Vector2(localPointInScrollRect.x, clickYOnContent);
+
+            var result = ViewModel.CalculateNotePlacement(clickPosForVm, judgeLineRect.anchoredPosition.y);
+
+            if (result.HasValue)
+            {
+                ViewModel.CreateNote(result.Value.pos, result.Value.beat);
+            }
+        }
+
+
         protected override void OnDestroy()
         {
             Cts.Cancel();
@@ -214,7 +411,18 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             // 销毁时归还所有节拍线对象
             foreach (var kvp in ActiveBeatLines)
+            {
                 PoolManager.ReleaseGameObject(BeatLinePath, kvp.Value);
+            }
+
+            // 归还所有 Note
+            foreach (var kvp in ActiveNotes)
+            {
+                if (kvp.Value != null)
+                {
+                    PoolManager.ReleaseGameObject(GetPrefabPath(kvp.Key.Type), kvp.Value);
+                }
+            }
 
             ActiveBeatLines.Clear();
         }

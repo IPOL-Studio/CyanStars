@@ -9,9 +9,11 @@ namespace CyanStars.Gameplay.ChartEditor
     /// </summary>
     public class BeatLineItem : MonoBehaviour
     {
-        [SerializeField] private Image lineImage;
-        [SerializeField] private GameObject textGroup;
-        [SerializeField] private TextMeshProUGUI indexText;
+        [SerializeField]
+        private Image lineImage;
+
+        [SerializeField]
+        private TextMeshProUGUI indexText;
 
         private static readonly Color ColorInteger = new Color(1f, 1f, 1f, 1f);
         private static readonly Color ColorHalf = new Color(1f, 0.7f, 0.4f, 0.8f);
@@ -29,12 +31,12 @@ namespace CyanStars.Gameplay.ChartEditor
             {
                 // 整数拍
                 lineImage.color = ColorInteger;
-                textGroup.SetActive(true);
+                indexText.gameObject.SetActive(true);
                 indexText.text = (beatIndex / accuracy).ToString();
             }
             else
             {
-                textGroup.SetActive(false);
+                indexText.gameObject.SetActive(false);
 
                 // 1/2 拍
                 if (accuracy % 2 == 0 && mod == accuracy / 2)

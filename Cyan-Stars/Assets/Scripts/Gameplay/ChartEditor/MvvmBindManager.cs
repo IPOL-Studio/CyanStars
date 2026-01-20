@@ -46,6 +46,9 @@ namespace CyanStars.Gameplay.ChartEditor
         [SerializeField]
         private BpmGroupView bpmGroupView = null!;
 
+        [SerializeField]
+        private EditAreaView editAreaView = null!;
+
 
         /// <summary>
         /// 创建 Model 、ViewModel 并启动绑定
@@ -91,6 +94,9 @@ namespace CyanStars.Gameplay.ChartEditor
 
             var bpmGroupViewModel = new BpmGroupViewModel(model, commandManager).AddTo(Disposables);
             bpmGroupView.Bind(bpmGroupViewModel);
+
+            var editAreaViewModel = new EditAreaViewModel(model, commandManager).AddTo(Disposables);
+            editAreaView.Bind(editAreaViewModel);
         }
 
         /// <summary>
