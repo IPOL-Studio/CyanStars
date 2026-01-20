@@ -106,14 +106,22 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 )
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
-            Model.ChartPackData // 元素数量变化后自动取消选择
+            Model.ChartPackData // 元素数量更新选中的元素
                 .Select(data =>
                     data.MusicVersions.ObserveCountChanged(notifyCurrentCount: true).Select(_ => data.MusicVersions)
                 )
                 .Switch()
                 .Subscribe(_ =>
                     {
-                        selectedMusicVersionData.Value = null;
+                        // 如果选中的元素被删除了，将选中元素设为 null
+                        if (selectedMusicVersionData.CurrentValue != null &&
+                            !Model.ChartPackData.CurrentValue.MusicVersions.Contains(selectedMusicVersionData.CurrentValue))
+                            selectedMusicVersionData.Value = null;
+
+                        // 如果处于简易模式，自动选中首个元素
+                        if (Model.ChartPackData.CurrentValue.MusicVersions.Count > 0 &&
+                            Model.IsSimplificationMode.CurrentValue)
+                            selectedMusicVersionData.Value = Model.ChartPackData.CurrentValue.MusicVersions[0];
                     }
                 )
                 .AddTo(base.Disposables);
@@ -277,8 +285,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
 
             // 关闭弹窗时，卸载原有的音乐并尝试加载首个元素作为制谱器内播放的音乐。这个操作无需撤销。
-            if (Model.ChartPackData.CurrentValue.MusicVersions.Count > 0)
+            // TODO: 优化加载逻辑，只在音频文件真的不同时加载
+            if (Model.ChartPackData.CurrentValue.MusicVersions.Count > 0 &&
+                !string.IsNullOrEmpty(Model.ChartPackData.CurrentValue.MusicVersions[0].AudioFilePath.CurrentValue))
             {
+                // 如果能根据 targetPath 找到暂存文件句柄，则优先加载句柄指向的缓存文件，否则加载谱包资源文件夹内的文件。
                 string musicFilePath = PathUtil.Combine(Model.WorkspacePath, Model.ChartPackData.CurrentValue.MusicVersions[0].AudioFilePath.CurrentValue);
                 var handler = ChartEditorFileManager.GetHandlerByTargetPath(musicFilePath);
                 if (handler != null)
@@ -287,10 +298,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 }
 
                 LoadAudio(musicFilePath);
+                Debug.Log($"已加载音乐：{musicFilePath}");
             }
             else
             {
                 LoadAudio(null);
+                Debug.Log("已卸载音乐");
             }
 
             CommandManager.ExecuteCommand(new DelegateCommand(

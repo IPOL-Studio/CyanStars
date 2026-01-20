@@ -23,13 +23,17 @@ namespace CyanStars.Gameplay.ChartEditor
         public void Start()
         {
             // 清理旧的缓存路径
-            try
+            if (Directory.Exists(TempFolderPath))
             {
-                Directory.Delete(TempFolderPath, true);
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"在删除缓存文件时捕获了异常：{e.Message}");
+                try
+                {
+                    Directory.Delete(TempFolderPath, true);
+                    Debug.Log($"已清除缓存文件夹：{TempFolderPath}");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"在删除缓存文件夹时捕获了异常：{e.Message}");
+                }
             }
         }
 
