@@ -1,4 +1,4 @@
-﻿// #nullable enable
+﻿#nullable enable
 
 using System.Collections.Generic;
 using System.Threading;
@@ -44,8 +44,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private readonly CancellationTokenSource Cts = new CancellationTokenSource();
         private static GameObjectPoolManager PoolManager => GameRoot.GameObjectPool;
 
-        // 管理当前激活的节拍线与音符
+        // 管理当前激活的节拍线：Key=节拍索引（含细分拍），Value=节拍线物体实例
+        // 开始加载时会将 item 对应的 Value 设为 null 占位，加载完成后覆写为 gameObject
         private readonly Dictionary<int, GameObject?> ActiveBeatLines = new Dictionary<int, GameObject?>();
+
+// 管理当前激活的音符: Key=音符数据对象, Value=GameObject
         private readonly Dictionary<BaseChartNoteData, GameObject?> ActiveNotes = new Dictionary<BaseChartNoteData, GameObject?>();
 
         public override void Bind(EditAreaViewModel targetViewModel)
@@ -219,7 +222,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             var notesToRemove = new List<BaseChartNoteData>();
 
             // 遍历所有音符判断可见性
-            // 优化建议：ViewModel.Notes 应该有序，可以用二分查找确定范围
+            // TODO: ViewModel.Notes 应该有序，可以用二分查找确定范围
             foreach (var note in ViewModel.Notes)
             {
                 float startY = CalculateNoteY(note.JudgeBeat);
@@ -229,16 +232,17 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     endY = CalculateNoteY(hold.EndJudgeBeat);
                 }
 
-                // 简单的 AABB 碰撞检测 (一维)
+                // 检查音符是否在可视范围附近
                 bool isVisible = (endY >= viewMinY) && (startY <= viewMaxY);
-
                 if (isVisible)
                 {
-                    if (!ActiveNotes.ContainsKey(note)) notesToShow.Add(note);
+                    if (!ActiveNotes.ContainsKey(note))
+                        notesToShow.Add(note);
                 }
                 else
                 {
-                    if (ActiveNotes.ContainsKey(note)) notesToRemove.Add(note);
+                    if (ActiveNotes.ContainsKey(note))
+                        notesToRemove.Add(note);
                 }
             }
 
@@ -247,7 +251,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             {
                 if (ActiveNotes.TryGetValue(note, out var go))
                 {
-                    if (go != null) PoolManager.ReleaseGameObject(GetPrefabPath(note.Type), go);
+                    if (go is not null) PoolManager.ReleaseGameObject(GetPrefabPath(note.Type), go);
                     ActiveNotes.Remove(note);
                 }
             }
@@ -274,7 +278,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 return;
             }
 
-            if (ActiveNotes[note] != null) PoolManager.ReleaseGameObject(path, ActiveNotes[note]);
+            if (ActiveNotes[note] is not null) PoolManager.ReleaseGameObject(path, ActiveNotes[note]);
 
             ActiveNotes[note] = go;
 
@@ -293,7 +297,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         /// </summary>
         private float CalculateNoteY(Beat beat)
         {
-            // interval = DefaultBeatLineInterval(250) * Zoom
             float majorInterval = ViewModel.GetBeatLineDistance() * ViewModel.BeatAccuracy.CurrentValue;
             float yPos = judgeLineRect.anchoredPosition.y + (beat.ToFloat() * majorInterval);
             return yPos;
@@ -315,8 +318,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OnPointerClick(PointerEventData eventData)
         {
+            if (!ViewModel.CanPutNote.CurrentValue)
+                return;
+
             // 将屏幕点击坐标转换为 Content 内的局部坐标
-            // 由于 Content Pivot 是 (0.5, 0)，localPoint.y 即为距离底部的像素距离
+            // 由于 Content 的轴心是 (0.5, 0)
+            // localPoint.y 即为距离底部的像素距离
             // localPoint.x 为距离中心线的水平距离
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 contentRect,
@@ -325,10 +332,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 out Vector2 localPoint
             );
 
-            // 将转换后的坐标传给 ViewModel 计算
             var result = ViewModel.CalculateNotePlacement(localPoint, judgeLineRect.anchoredPosition.y);
 
-            if (result.HasValue)
+            // 如果点到间隙（result == null）就不处理
+            if (result != null)
             {
                 ViewModel.CreateNote(result.Value.pos, result.Value.beat);
             }
