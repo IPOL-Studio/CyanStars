@@ -950,7 +950,6 @@ GameObject:
   - component: {fileID: 63768775}
   - component: {fileID: 63768778}
   - component: {fileID: 63768776}
-  - component: {fileID: 63768777}
   m_Layer: 5
   m_Name: NoteAttributeCanvas
   m_TagString: Untagged
@@ -997,18 +996,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &63768777
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 63768774}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4e3e871a4dec2442a426da85c3a9d78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!223 &63768778
 Canvas:
   m_ObjectHideFlags: 0
@@ -11024,7 +11011,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 629978654}
-  editToolType: 0
+  editToolType: 6
 --- !u!1001 &632414240
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16949,7 +16936,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 978119767}
-  editToolType: 0
+  editToolType: 4
 --- !u!1 &995905886
 GameObject:
   m_ObjectHideFlags: 0
@@ -18564,7 +18551,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 1072960160}
-  editToolType: 0
+  editToolType: 5
 --- !u!1 &1078332145
 GameObject:
   m_ObjectHideFlags: 0
@@ -27208,7 +27195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 1718087323}
-  editToolType: 0
+  editToolType: 1
 --- !u!1 &1725687547
 GameObject:
   m_ObjectHideFlags: 0
@@ -28858,7 +28845,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 1936457939}
-  editToolType: 0
+  editToolType: 2
 --- !u!1 &1939229441
 GameObject:
   m_ObjectHideFlags: 0
@@ -30197,7 +30184,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggle: {fileID: 2061097426}
-  editToolType: 0
+  editToolType: 3
 --- !u!1 &2075881149
 GameObject:
   m_ObjectHideFlags: 0

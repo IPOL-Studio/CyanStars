@@ -14,31 +14,31 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     {
         private const float DefaultMajorBeatLineInterval = 250f;
 
-        public ReadOnlyReactiveProperty<bool> PosMagnetState => Model.PosMagnet;
-        public ReadOnlyReactiveProperty<int> PosAccuracy => Model.PosAccuracy;
-
-        // 位置线
         public readonly ReadOnlyReactiveProperty<int> BeatAccuracy;
         public readonly ReadOnlyReactiveProperty<float> BeatZoom;
 
-        // 节拍线和音符
         public readonly ReadOnlyReactiveProperty<float> ContentHeight;
         public readonly ReadOnlyReactiveProperty<float> TotalBeats;
         public readonly ReadOnlyReactiveProperty<int> PosLineCount;
-        public IReadOnlyObservableList<BaseChartNoteData> Notes => Model.ChartData.CurrentValue.Notes;
 
+        // 音符集合
+        public readonly IObservableCollection<BaseChartNoteData> Notes;
+
+        // 吸附设置
+        public readonly ReadOnlyReactiveProperty<bool> PosMagnetState;
+        public readonly ReadOnlyReactiveProperty<int> PosAccuracy;
 
         public EditAreaViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
             BeatAccuracy = Model.BeatAccuracy.ToReadOnlyReactiveProperty();
             BeatZoom = Model.BeatZoom.ToReadOnlyReactiveProperty();
+            Notes = Model.ChartData.CurrentValue.Notes;
 
-            // 更新 ContentHeight，当：
-            // - BpmGroup 列表更新（元素增加、删除、移动）
-            // - 手动触发了 BpmGroupDataChangedSubject（BpmGroup 中某一元素的 bpm 或 startBeat 更新）
-            // - BeatZoom 更新
-            // - AudioClipHandler 更新（音乐变化后音频时长可能改变）
+            PosMagnetState = Model.PosMagnet.ToReadOnlyReactiveProperty().AddTo(base.Disposables);
+            PosAccuracy = Model.PosAccuracy.ToReadOnlyReactiveProperty().AddTo(base.Disposables);
+
+            // --- ContentHeight & TotalBeats 计算逻辑 (保持不变) ---
             ContentHeight = Observable
                 .Merge(
                     Model.ChartPackData.CurrentValue.BpmGroup.ObserveChanged().Select(_ => Unit.Default),
@@ -50,44 +50,32 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     Model.AudioClipHandler,
                     (_, zoom, handler) =>
                     {
-                        if (handler?.Asset is null)
-                            return 0f;
-
+                        if (handler?.Asset is null) return 0f;
                         var bpmGroup = Model.ChartPackData.CurrentValue.BpmGroup;
                         if (BpmGroupHelper.Validate(bpmGroup) != BpmGroupHelper.BpmValidationStatus.Valid)
                             throw new Exception("Bpm 组数据异常");
-
-                        float beatCount =
-                            BpmGroupHelper.CalculateBeat(bpmGroup, (int)(handler.Asset.length * 1000f));
+                        float beatCount = BpmGroupHelper.CalculateBeat(bpmGroup, (int)(handler.Asset.length * 1000f));
                         return beatCount * DefaultMajorBeatLineInterval * zoom;
                     }
                 )
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
 
-            // 更新 TotalBeats，当：
-            // - firstMusicVersionItemOffset 发生了更新（MusicVersion 首个元素的索引发生更新，或首个元素内的 offset 属性更新）
-            // - BpmGroup 列表更新（元素增加、删除、移动）
-            // - 手动触发了 BpmGroupDataChangedSubject（BpmGroup 中某一元素的 bpm 或 startBeat 更新）
-            // - AudioClipHandler 更新（音乐变化后音频时长可能改变）
-            // （bro，这下面的代码可太炸裂了...）
-            ReadOnlyReactiveProperty<int?> firstMusicVersionItemOffset = // 始终监听到第一个 MusicVersionItem 的 offset 变化
+            ReadOnlyReactiveProperty<int?> firstMusicVersionItemOffset =
                 Model.ChartPackData.CurrentValue.MusicVersions
                     .ObserveChanged()
                     .Prepend((CollectionChangedEvent<MusicVersionDataEditorModel>)default)
-                    .Select(_ =>
-                        Model.ChartPackData.CurrentValue.MusicVersions.Count > 0
-                            ? Model.ChartPackData.CurrentValue.MusicVersions[0]
-                            : null
-                    )
+                    .Select(_ => Model.ChartPackData.CurrentValue.MusicVersions.Count > 0
+                        ? Model.ChartPackData.CurrentValue.MusicVersions[0]
+                        : null)
                     .DistinctUntilChanged()
                     .Select(data => data != null
                         ? data.Offset.AsObservable().Select(x => (int?)x)
-                        : Observable.Return((int?)null)
-                    )
+                        : Observable.Return((int?)null))
                     .Switch()
                     .ToReadOnlyReactiveProperty(null)
                     .AddTo(base.Disposables);
+
             TotalBeats = Observable
                 .Merge(
                     Model.ChartPackData.CurrentValue.BpmGroup.ObserveChanged().Select(_ => Unit.Default),
@@ -99,9 +87,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     Model.AudioClipHandler,
                     (_, offset, handler) =>
                     {
-                        if (offset == null || handler?.Asset is null)
-                            return 0;
-
+                        if (offset == null || handler?.Asset is null) return 0;
                         var bpmGroup = Model.ChartPackData.CurrentValue.BpmGroup;
                         int totalTimelineTimeMs = (int)(handler.Asset.length * 1000) + (int)offset;
                         return BpmGroupHelper.CalculateBeat(bpmGroup, totalTimelineTimeMs);
@@ -109,7 +95,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 )
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
-
 
             PosLineCount = Model.PosAccuracy
                 .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<int>.Instance, 4)
@@ -122,20 +107,24 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         }
 
         /// <summary>
-        /// 计算点击位置对应的音符 Beat 和 Pos
+        /// 计算点击位置对应的音符数据 (Pos, Beat)
         /// </summary>
+        /// <param name="localPosition">相对于 Content 底部中心的坐标</param>
+        /// <param name="judgeLineY">判定线在 Content 中的 Y 轴偏移</param>
         public (float pos, Beat beat)? CalculateNotePlacement(Vector2 localPosition, float judgeLineY)
         {
-            // 计算横坐标
+            // 1. 计算横坐标 (Pos) - 逻辑沿用旧代码
             float notePos;
+            const float LeftBreakThreshold = -421f;
+            const float RightBreakThreshold = 421f;
+            const float CentralMin = -400f;
+            const float CentralMax = 400f;
 
-            if (localPosition.x <= -421f)
-                notePos = -1f; // Left Break
-            else if (421f <= localPosition.x)
-                notePos = 2f; // Right Break
-            else if (-400f <= localPosition.x && localPosition.x <= 400f)
+            if (localPosition.x <= LeftBreakThreshold) notePos = -1f; // Left Break
+            else if (RightBreakThreshold <= localPosition.x) notePos = 2f; // Right Break
+            else if (CentralMin <= localPosition.x && localPosition.x <= CentralMax)
             {
-                // 中央轨道
+                // 中央轨道吸附逻辑
                 if (PosMagnetState.CurrentValue)
                 {
                     int posAcc = PosAccuracy.CurrentValue;
@@ -149,31 +138,30 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                         float relativePosX = localPosition.x + 400f;
                         float snappingIndex = Mathf.Round(relativePosX / subSectionWidth);
                         float maxIndex = 2 * posAcc + 1;
-                        snappingIndex = Mathf.Clamp(snappingIndex, 1f, maxIndex);
+                        snappingIndex = Mathf.Max(1f, Mathf.Min(maxIndex, snappingIndex));
                         float snappedRelativePos = snappingIndex * subSectionWidth;
                         float posX = snappedRelativePos - 400f;
                         notePos = (posX + 320f) / 800f;
-                        notePos = Mathf.Clamp(notePos, 0f, 0.8f);
+                        notePos = Mathf.Min(notePos, 0.8f);
+                        notePos = Mathf.Max(notePos, 0f);
                     }
                 }
                 else
                 {
                     notePos = (localPosition.x + 320f) / 800f;
-                    notePos = Mathf.Clamp(notePos, 0f, 0.8f);
+                    notePos = Mathf.Min(notePos, 0.8f);
+                    notePos = Mathf.Max(notePos, 0f);
                 }
             }
-            else
-                return null; // 点击了缝隙
+            else return null; // 点击了缝隙
 
-            // 计算纵坐标
-            float beatDistance = GetBeatLineDistance();
-            float clickOnContentPos = localPosition.y;
+            // 2. 计算纵坐标 (Beat)
+            // localPosition.y 已经是相对于 Content 底部的距离
+            float relativeY = localPosition.y - judgeLineY;
+            float beatDistance = GetBeatLineDistance(); // 单个细分拍的距离
 
-            // 计算点击处相对于 Content 0 点（偏移值为判定线距离）的距离 -> 转换为多少个细分拍
-            float relativeY = clickOnContentPos - judgeLineY;
-            int subBeatIndex = Mathf.RoundToInt(relativeY / beatDistance * BeatAccuracy.CurrentValue);
-
-            // 限制范围
+            // 转换为细分拍索引
+            int subBeatIndex = Mathf.RoundToInt(relativeY / beatDistance);
             subBeatIndex = Mathf.Max(0, subBeatIndex);
 
             // 转换为 Beat 对象
