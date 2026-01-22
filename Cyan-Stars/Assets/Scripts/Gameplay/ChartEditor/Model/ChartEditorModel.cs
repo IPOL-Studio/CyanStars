@@ -40,19 +40,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public readonly ReactiveProperty<bool> IsSimplificationMode = new ReactiveProperty<bool>(true);
         public readonly ReactiveProperty<EditToolType> SelectedEditTool = new ReactiveProperty<EditToolType>(EditToolType.Select);
 
-        // 弹窗可见性
-        public readonly ReactiveProperty<bool> ChartPackDataCanvasVisibility = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> ChartDataCanvasVisibility = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> MusicVersionCanvasVisibility = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> BpmGroupCanvasVisibility = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> SpeedTemplateCanvasVisibility = new ReactiveProperty<bool>(false); // TODO
-
-        // 编辑器属性
-        public readonly ReactiveProperty<int> PosAccuracy = new ReactiveProperty<int>(4);
-        public readonly ReactiveProperty<bool> PosMagnet = new ReactiveProperty<bool>(true);
-        public readonly ReactiveProperty<int> BeatAccuracy = new ReactiveProperty<int>(2);
-        public readonly ReactiveProperty<float> BeatZoom = new ReactiveProperty<float>(1f);
-
         #region offset 说明
 
         // Offset 为正数代表在音乐前添加空白时间
@@ -73,6 +60,23 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public readonly ReactiveProperty<bool> IsTimelinePlaying = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<AssetHandler<AudioClip?>?> AudioClipHandler = new ReactiveProperty<AssetHandler<AudioClip?>?>(null); // TODO: 在卸载 Model 时卸载 Handler
         public int CurrentTimelineTime { get; set; } = 0; // 在音乐播放时由 ChartEditorMusicManager 负责每帧更新，暂停时由 EditAreaViewModel 负责在滚动 UI 时更新，考虑到性能问题由 view 在播放时轮询查询
+
+        // 音符编辑
+        // TODO: 后续用 list 拓展为选中多个音符一次编辑
+        public readonly ReactiveProperty<BaseChartNoteData?> SelectedNoteData = new ReactiveProperty<BaseChartNoteData?>(null);
+
+        // 弹窗可见性
+        public readonly ReactiveProperty<bool> ChartPackDataCanvasVisibility = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> ChartDataCanvasVisibility = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> MusicVersionCanvasVisibility = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> BpmGroupCanvasVisibility = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> SpeedTemplateCanvasVisibility = new ReactiveProperty<bool>(false); // TODO
+
+        // 编辑器属性
+        public readonly ReactiveProperty<int> PosAccuracy = new ReactiveProperty<int>(4);
+        public readonly ReactiveProperty<bool> PosMagnet = new ReactiveProperty<bool>(true);
+        public readonly ReactiveProperty<int> BeatAccuracy = new ReactiveProperty<int>(2);
+        public readonly ReactiveProperty<float> BeatZoom = new ReactiveProperty<float>(1f);
 
         // 提示弹窗
         private readonly ReactiveProperty<bool> popupCanvasVisibility = new ReactiveProperty<bool>(false);
