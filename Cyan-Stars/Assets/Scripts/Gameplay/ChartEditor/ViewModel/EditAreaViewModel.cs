@@ -1,6 +1,8 @@
 ﻿#nullable enable
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
@@ -25,8 +27,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<float> TotalBeats;
         public readonly ReadOnlyReactiveProperty<int> PosLineCount;
         public IReadOnlyObservableList<BaseChartNoteData> Notes => Model.ChartData.CurrentValue.Notes;
+        private readonly List<HoldChartNoteData> holdNotes = new List<HoldChartNoteData>();
+        public IReadOnlyList<HoldChartNoteData> HoldNotes => holdNotes; // 无序排列的 HoldNotes，用于全量遍历校验 holdNote 是否有位于可视范围内的部分
         private ReadOnlyReactiveProperty<bool> PosMagnetState => Model.PosMagnet;
         private ReadOnlyReactiveProperty<int> PosAccuracy => Model.PosAccuracy;
+
 
         public readonly ReadOnlyReactiveProperty<bool> CanPutNote;
 
@@ -34,6 +39,48 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public EditAreaViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
+            Notes.ObserveAdd()
+                .Subscribe(e =>
+                    {
+                        if (e.Value.Type == NoteType.Hold)
+                        {
+                            holdNotes.Add(e.Value as HoldChartNoteData);
+                        }
+                    }
+                )
+                .AddTo(base.Disposables);
+            Notes.ObserveRemove()
+                .Subscribe(e =>
+                    {
+                        if (e.Value.Type == NoteType.Hold)
+                        {
+                            holdNotes.Remove(e.Value as HoldChartNoteData);
+                        }
+                    }
+                )
+                .AddTo(base.Disposables);
+            Notes.ObserveClear()
+                .Subscribe(_ =>
+                    {
+                        holdNotes.Clear();
+                    }
+                )
+                .AddTo(base.Disposables);
+            Notes.ObserveReset()
+                .Subscribe(_ =>
+                    {
+                        holdNotes.Clear();
+                        foreach (var note in Notes)
+                        {
+                            if (note.Type == NoteType.Hold)
+                            {
+                                holdNotes.Add(note as HoldChartNoteData);
+                            }
+                        }
+                    }
+                )
+                .AddTo(base.Disposables);
+
             // 更新 ContentHeight，当：
             // - BpmGroup 列表更新（元素增加、删除、移动）
             // - 手动触发了 BpmGroupDataChangedSubject（BpmGroup 中某一元素的 bpm 或 startBeat 更新）
@@ -246,7 +293,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             CommandManager.ExecuteCommand(
                 new DelegateCommand(
-                    () => notesCollection.Add(noteData),
+                    () => NoteListHelper.TryInsertItem(notesCollection, noteData),
                     () => notesCollection.Remove(noteData)
                 )
             );

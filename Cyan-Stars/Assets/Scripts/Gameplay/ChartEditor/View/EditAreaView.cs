@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -211,45 +212,66 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async void UpdateNotesVisibility()
         {
-            if (Cts.IsCancellationRequested) return;
+            if (Cts.IsCancellationRequested)
+                return;
 
             float viewportHeight = viewportRect.rect.height;
             float contentHeight = contentRect.rect.height;
+
             float scrollY = (contentHeight - viewportHeight) * scrollRect.verticalNormalizedPosition;
             scrollY = Mathf.Max(0, scrollY);
 
             float viewMinY = scrollY - 100f;
             float viewMaxY = scrollY + viewportHeight + 100f;
 
-            var notesToShow = new List<BaseChartNoteData>();
-            var notesToRemove = new List<BaseChartNoteData>();
+            float beatDist = ViewModel.GetBeatLineDistance();
+            float judgeLineY = judgeLineRect.anchoredPosition.y;
 
-            // 遍历所有音符判断可见性
-            foreach (var note in ViewModel.Notes)
+            float minVisibleFBeatVal = (viewMinY - judgeLineY) / beatDist;
+            float maxVisibleFBeatVal = (viewMaxY - judgeLineY) / beatDist;
+
+            var visibleNotes = new HashSet<BaseChartNoteData>();
+
+            var allNotes = ViewModel.Notes;
+            var holdNotes = ViewModel.HoldNotes;
+
+            // 二分法更新所有“判定拍位于可视范围内的音符”的可见性
+            int startIndex = FindLowerBound(allNotes, minVisibleFBeatVal);
+
+            for (int i = startIndex; i < allNotes.Count; i++)
             {
-                float startY = CalculateNoteY(note.JudgeBeat);
-                float endY = startY;
-                if (note is HoldChartNoteData hold)
-                {
-                    endY = CalculateNoteY(hold.EndJudgeBeat);
-                }
+                var note = allNotes[i];
 
-                // 检查音符是否在可视范围附近
-                bool isVisible = (endY >= viewMinY) && (startY <= viewMaxY);
-                if (isVisible)
+                if (note.JudgeBeat.ToFloat() > maxVisibleFBeatVal)
+                    break;
+
+                visibleNotes.Add(note);
+            }
+
+            // 检查可视范围前所有的 HoldNote，如果这些音符尾判延伸进了可视范围，也一并渲染
+            int holdLimitIndex = FindLowerBound(holdNotes, minVisibleFBeatVal);
+            for (int i = 0; i < holdLimitIndex; i++)
+            {
+                var hold = holdNotes[i];
+                // Hold 的开始时间一定 < Min (因为 i < holdLimitIndex)
+                // 只要结束时间 >= Min，就是可见的
+                if (hold.EndJudgeBeat.ToFloat() >= minVisibleFBeatVal)
                 {
-                    if (!ActiveNotes.ContainsKey(note))
-                        notesToShow.Add(note);
-                }
-                else
-                {
-                    if (ActiveNotes.ContainsKey(note))
-                        notesToRemove.Add(note);
+                    visibleNotes.Add(hold);
                 }
             }
 
-            // 回收
-            foreach (var note in notesToRemove)
+            // 对比 diff，回收在本帧移出可视范围的 notes
+            var toRemove = new List<BaseChartNoteData>();
+            foreach (var kvp in ActiveNotes)
+            {
+                if (!visibleNotes.Contains(kvp.Key))
+                {
+                    toRemove.Add(kvp.Key);
+                }
+            }
+
+            foreach (var note in toRemove)
             {
                 if (ActiveNotes.TryGetValue(note, out var pair))
                 {
@@ -257,8 +279,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     {
                         var (vm, view) = pair.Value;
                         vm.Dispose(); // 销毁 VM
-
-                        // 归还 View 的 GameObject 到对象池
                         PoolManager.ReleaseGameObject(GetPrefabPath(note.Type), view.gameObject);
                     }
 
@@ -266,66 +286,82 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 }
             }
 
-            // 生成
+            // 对比 diff，生成本帧新出现的音符
             var tasks = new List<Task>();
-            foreach (var note in notesToShow)
+            foreach (var note in visibleNotes)
             {
-                ActiveNotes.Add(note, null); // 占位
-                tasks.Add(CreateNoteObject(note));
+                if (!ActiveNotes.ContainsKey(note))
+                {
+                    ActiveNotes.Add(note, null); // 占位，防止重复创建
+                    tasks.Add(CreateNoteObject(note));
+                }
             }
 
-            await Task.WhenAll(tasks);
+            if (tasks.Count > 0)
+            {
+                await Task.WhenAll(tasks);
+            }
+        }
+
+        /// <summary>
+        /// 二分查找：找到第一个 JudgeBeat.ToFloat() >= targetBeat 的索引
+        /// </summary>
+        private int FindLowerBound<T>(IReadOnlyList<T> list, float targetBeat) where T : BaseChartNoteData
+        {
+            int low = 0;
+            int high = list.Count - 1;
+            int result = list.Count; // 默认为 Count，表示所有元素都比 target 小
+
+            while (low <= high)
+            {
+                int mid = low + (high - low) / 2;
+                if (list[mid].JudgeBeat.ToFloat() >= targetBeat)
+                {
+                    result = mid;
+                    high = mid - 1;
+                }
+                else
+                {
+                    low = mid + 1;
+                }
+            }
+
+            return result;
         }
 
         private async Task CreateNoteObject(BaseChartNoteData note)
         {
             string path = GetPrefabPath(note.Type);
+
             GameObject go = await PoolManager.GetGameObjectAsync(path, contentRect, Cts.Token);
 
+            // 双重检查：异步加载过程中可能已经不再需要显示该 Note，或者 View 被销毁
             if (Cts.Token.IsCancellationRequested || !ActiveNotes.ContainsKey(note))
             {
                 PoolManager.ReleaseGameObject(path, go);
                 return;
             }
 
-            // 如果之前有旧的对象（理应是 null，但防守式编程），先清理
+            // 清理旧对象（理论上 ActiveNotes[note] 此时应为 null，作为防御性编程）
             if (ActiveNotes[note] is { } oldPair)
             {
                 oldPair.vm.Dispose();
                 PoolManager.ReleaseGameObject(path, oldPair.view.gameObject);
             }
 
-            // 获取组件并初始化 VM/View
             if (go.TryGetComponent<EditAreaNoteView>(out var view))
             {
-                // 使用工厂方法创建子 ViewModel，解决 protected 成员访问问题
                 var vm = ViewModel.CreateNoteViewModel(note, judgeLineRect.anchoredPosition.y);
 
-                // 绑定
                 view.Bind(vm);
-
-                // 存储引用
                 ActiveNotes[note] = (vm, view);
             }
             else
             {
-                Debug.LogError($"Prefab at {path} does not have an EditAreaNoteView component!");
+                Debug.LogError($"Prefab at {path} missing EditAreaNoteView component!");
                 PoolManager.ReleaseGameObject(path, go);
                 ActiveNotes.Remove(note);
             }
-        }
-
-        /// <summary>
-        /// 根据 Beat 计算在 Content 中的 Y 轴位置 (相对于 Content 底部)
-        /// 用于可见性剔除的估算
-        /// </summary>
-        private float CalculateNoteY(Beat beat)
-        {
-            // Note VM 内部计算位置使用的是 DefaultMajorBeatLineInterval * Zoom
-            // 这里为了可见性剔除，逻辑需要保持一致
-            float beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * ViewModel.BeatZoom.CurrentValue;
-            float yPos = judgeLineRect.anchoredPosition.y + (beat.ToFloat() * beatInterval);
-            return yPos;
         }
 
         private string GetPrefabPath(NoteType type) => type switch
@@ -335,7 +371,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             NoteType.Hold => HoldNotePath,
             NoteType.Click => ClickNotePath,
             NoteType.Break => BreakNotePath,
-            _ => TapNotePath
+            _ => throw new NotSupportedException()
         };
 
         #endregion
