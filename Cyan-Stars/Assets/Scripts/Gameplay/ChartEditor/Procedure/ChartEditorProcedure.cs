@@ -31,7 +31,7 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
                 }
 
                 sceneRoot = rootGameObject.GetComponent<ChartEditorSceneRoot>();
-                if (sceneRoot is null)
+                if (sceneRoot == null)
                 {
                     throw new ArgumentNullException(nameof(sceneRoot), "在制谱器中找到了 SceneRoot，但未挂载 ChartEditorSceneRoot 类，请检查！");
                 }

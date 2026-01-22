@@ -23,7 +23,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             : base(model, commandManager)
         {
             ShowEditorAttributeFrame = Model.SelectedNoteData
-                .Select(data => data is null)
+                .Select(data => data == null)
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
             PosAccuracyString = Model.PosAccuracy

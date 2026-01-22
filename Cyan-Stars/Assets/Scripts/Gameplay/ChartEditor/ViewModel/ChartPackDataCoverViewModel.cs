@@ -54,7 +54,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
             ImageFrameAspectRatio = CoverSprite
                 .Select(sprite =>
-                    sprite is not null && sprite.texture.height != 0
+                    sprite != null && sprite.texture.height != 0
                         ? (float)sprite.texture.width / sprite.texture.height
                         : 1.0f)
                 .ToReadOnlyReactiveProperty()
@@ -67,7 +67,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     Model.ChartPackData.CurrentValue.CropStartPosition,
                     (sprite, startPixel) =>
                     {
-                        if (sprite is null || startPixel is null)
+                        if (sprite == null || startPixel == null)
                             return Vector2.zero;
 
                         return new Vector2(
@@ -85,7 +85,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     Model.ChartPackData.CurrentValue.CropHeight,
                     (sprite, startPixel, height) =>
                     {
-                        if (sprite is null || startPixel is null || height is null)
+                        if (sprite == null || startPixel == null || height == null)
                             return Vector2.zero;
 
                         return new Vector2(
@@ -155,7 +155,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     {
                         await UpdateCoverSpriteAsync(newFilePath);
                         Model.ChartPackData.CurrentValue.CoverFilePath.Value = newFilePath;
-                        if (CoverSpriteHandler.Value?.Asset is null)
+                        if (CoverSpriteHandler.Value?.Asset == null)
                         {
                             Model.ChartPackData.CurrentValue.CropStartPosition.Value = null;
                             Model.ChartPackData.CurrentValue.CropHeight.Value = null;
@@ -318,7 +318,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         /// <param name="deltaRatio">X/Y 轴的移动量（相对于图片尺寸的百分比）</param>
         public void OnFrameDragging(Vector2 deltaRatio)
         {
-            if (CoverSprite.CurrentValue is null)
+            if (CoverSprite.CurrentValue == null)
                 return;
 
             var sprite = CoverSprite.CurrentValue;

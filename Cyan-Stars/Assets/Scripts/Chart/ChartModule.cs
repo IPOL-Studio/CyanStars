@@ -230,7 +230,7 @@ namespace CyanStars.Chart
         /// <param name="difficulty">难度</param>
         public async Task SelectChartDataAsync(ChartDifficulty difficulty)
         {
-            if (SelectedRuntimeChartPack is null)
+            if (SelectedRuntimeChartPack == null)
             {
                 Debug.LogError("尚未选择谱包，无法根据难度选择谱面。");
                 return;
@@ -262,7 +262,7 @@ namespace CyanStars.Chart
         /// <param name="index">谱面下标</param>
         public async Task SelectChartDataAsync(int index)
         {
-            if (SelectedRuntimeChartPack is null)
+            if (SelectedRuntimeChartPack == null)
             {
                 Debug.LogError("尚未选择谱包，无法根据难度选择谱面。");
                 return;
@@ -305,13 +305,13 @@ namespace CyanStars.Chart
         /// <returns>加载后的谱面数据</returns>
         private async Task LoadChartDataAsync()
         {
-            if (SelectedRuntimeChartPack is null)
+            if (SelectedRuntimeChartPack == null)
             {
                 Debug.LogError("尚未选择谱包，无法加载谱面数据。");
                 return;
             }
 
-            if (SelectedChartIndex is null)
+            if (SelectedChartIndex == null)
             {
                 Debug.LogError("尚未选择谱面，无法加载谱面数据。");
                 return;

@@ -50,7 +50,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     Model.AudioClipHandler,
                     (_, zoom, handler) =>
                     {
-                        if (handler?.Asset is null) return 0f;
+                        if (handler?.Asset == null) return 0f;
                         var bpmGroup = Model.ChartPackData.CurrentValue.BpmGroup;
                         if (BpmGroupHelper.Validate(bpmGroup) != BpmGroupHelper.BpmValidationStatus.Valid)
                             throw new Exception("Bpm 组数据异常");
@@ -92,7 +92,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     Model.AudioClipHandler,
                     (_, offset, handler) =>
                     {
-                        if (offset == null || handler?.Asset is null) return 0;
+                        if (offset == null || handler?.Asset == null) return 0;
                         var bpmGroup = Model.ChartPackData.CurrentValue.BpmGroup;
                         int totalTimelineTimeMs = (int)(handler.Asset.length * 1000) + (int)offset;
                         return BpmGroupHelper.CalculateBeat(bpmGroup, totalTimelineTimeMs);

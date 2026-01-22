@@ -35,7 +35,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (ViewModel?.CoverSprite.CurrentValue is null)
+            if (ViewModel?.CoverSprite.CurrentValue == null)
                 return;
 
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(

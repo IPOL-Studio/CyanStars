@@ -321,7 +321,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             {
                 AssetHandler<AudioClip?>? handler = await GameRoot.Asset.LoadAssetAsync<AudioClip?>(audioFilePath);
                 Model.AudioClipHandler.Value = handler;
-                if (handler.Asset is null)
+                if (handler.Asset == null)
                     Debug.LogWarning("加载音乐失败！");
             }
         }
