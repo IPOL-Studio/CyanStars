@@ -3,30 +3,36 @@
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
     public class EditAreaNoteView : BaseView<EditAreaNoteViewModel>
     {
-        public RectTransform Rect { get; private set; } = null!;
+        private RectTransform rect = null!;
+        private Button noteButton = null!;
 
         [SerializeField]
         private RectTransform? holdTailRect; // 仅 Hold 音符需要赋值
 
+
         private void Awake()
         {
-            Rect = GetComponent<RectTransform>();
-            Rect.anchorMin = new Vector2(0.5f, 0f);
-            Rect.anchorMax = new Vector2(0.5f, 0f);
-            Rect.pivot = new Vector2(0.5f, 0.5f);
+            rect = GetComponent<RectTransform>();
+            noteButton = GetComponent<Button>();
+            rect.anchorMin = new Vector2(0.5f, 0f);
+            rect.anchorMax = new Vector2(0.5f, 0f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
         }
 
         public override void Bind(EditAreaNoteViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
 
+            noteButton.onClick.AddListener(ViewModel.SelectedNote);
+
             targetViewModel.AnchoredPosition
-                .Subscribe(pos => Rect.anchoredPosition = pos)
+                .Subscribe(pos => rect.anchoredPosition = pos)
                 .AddTo(this);
 
             if (holdTailRect != null)
@@ -39,7 +45,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected override void OnDestroy()
         {
-            // View 销毁时 ViewModel 由外部管理（EditAreaView）进行 Dispose
+            noteButton.onClick.RemoveListener(ViewModel.SelectedNote);
         }
     }
 }

@@ -98,5 +98,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // 长度 = 结束位置 - 开始位置 - 头部微调
             return Mathf.Max(0, endY - startY - 12.5f);
         }
+
+        public void SelectedNote()
+        {
+            if (Model.SelectedNoteData.Value != data)
+                Model.SelectedNoteData.Value = data;
+        }
     }
 }
