@@ -48,8 +48,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
         // 开始加载时会将 item 对应的 Value 设为 null 占位，加载完成后覆写为 gameObject
         private readonly Dictionary<int, GameObject?> ActiveBeatLines = new Dictionary<int, GameObject?>();
 
-// 管理当前激活的音符: Key=音符数据对象, Value=GameObject
-        private readonly Dictionary<BaseChartNoteData, GameObject?> ActiveNotes = new Dictionary<BaseChartNoteData, GameObject?>();
+        // 管理当前激活的音符: Key=音符数据对象, Value=(ViewModel, View)
+        // 字典 Key 用于快速判断可见性，Value 用于资源管理
+        private readonly Dictionary<BaseChartNoteData, (EditAreaNoteViewModel vm, EditAreaNoteView view)?> ActiveNotes =
+            new Dictionary<BaseChartNoteData, (EditAreaNoteViewModel, EditAreaNoteView)?>();
+
 
         public override void Bind(EditAreaViewModel targetViewModel)
         {
@@ -184,10 +187,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 return;
             }
 
-            if (ActiveBeatLines[index] != null) PoolManager.ReleaseGameObject(BeatLinePath, ActiveBeatLines[index]);
+            if (ActiveBeatLines[index] is not null) PoolManager.ReleaseGameObject(BeatLinePath, ActiveBeatLines[index]);
 
             ActiveBeatLines[index] = go;
-            if (go.TryGetComponent<BeatLineItem>(out var item)) // 假设 BeatLine 也有个 Item 脚本设置位置
+            if (go.TryGetComponent<BeatLineItem>(out var item))
             {
                 // 手动设置位置，或者封装在 BeatLineItem 中
                 if (go.transform is RectTransform rect)
@@ -222,7 +225,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
             var notesToRemove = new List<BaseChartNoteData>();
 
             // 遍历所有音符判断可见性
-            // TODO: ViewModel.Notes 应该有序，可以用二分查找确定范围
             foreach (var note in ViewModel.Notes)
             {
                 float startY = CalculateNoteY(note.JudgeBeat);
@@ -249,9 +251,17 @@ namespace CyanStars.Gameplay.ChartEditor.View
             // 回收
             foreach (var note in notesToRemove)
             {
-                if (ActiveNotes.TryGetValue(note, out var go))
+                if (ActiveNotes.TryGetValue(note, out var pair))
                 {
-                    if (go is not null) PoolManager.ReleaseGameObject(GetPrefabPath(note.Type), go);
+                    if (pair != null)
+                    {
+                        var (vm, view) = pair.Value;
+                        vm.Dispose(); // 销毁 VM
+
+                        // 归还 View 的 GameObject 到对象池
+                        PoolManager.ReleaseGameObject(GetPrefabPath(note.Type), view.gameObject);
+                    }
+
                     ActiveNotes.Remove(note);
                 }
             }
@@ -260,7 +270,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             var tasks = new List<Task>();
             foreach (var note in notesToShow)
             {
-                ActiveNotes.Add(note, null);
+                ActiveNotes.Add(note, null); // 占位
                 tasks.Add(CreateNoteObject(note));
             }
 
@@ -278,27 +288,43 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 return;
             }
 
-            if (ActiveNotes[note] is not null) PoolManager.ReleaseGameObject(path, ActiveNotes[note]);
-
-            ActiveNotes[note] = go;
-
-            if (go.TryGetComponent<EditNoteItem>(out var item))
+            // 如果之前有旧的对象（理应是 null，但防守式编程），先清理
+            if (ActiveNotes[note] is { } oldPair)
             {
-                float startY = CalculateNoteY(note.JudgeBeat);
-                float endY = startY;
-                if (note is HoldChartNoteData hold) endY = CalculateNoteY(hold.EndJudgeBeat);
+                oldPair.vm.Dispose();
+                PoolManager.ReleaseGameObject(path, oldPair.view.gameObject);
+            }
 
-                item.SetData(note, startY, endY);
+            // 获取组件并初始化 VM/View
+            if (go.TryGetComponent<EditAreaNoteView>(out var view))
+            {
+                // 使用工厂方法创建子 ViewModel，解决 protected 成员访问问题
+                var vm = ViewModel.CreateNoteViewModel(note, judgeLineRect.anchoredPosition.y);
+
+                // 绑定
+                view.Bind(vm);
+
+                // 存储引用
+                ActiveNotes[note] = (vm, view);
+            }
+            else
+            {
+                Debug.LogError($"Prefab at {path} does not have an EditAreaNoteView component!");
+                PoolManager.ReleaseGameObject(path, go);
+                ActiveNotes.Remove(note);
             }
         }
 
         /// <summary>
         /// 根据 Beat 计算在 Content 中的 Y 轴位置 (相对于 Content 底部)
+        /// 用于可见性剔除的估算
         /// </summary>
         private float CalculateNoteY(Beat beat)
         {
-            float majorInterval = ViewModel.GetBeatLineDistance() * ViewModel.BeatAccuracy.CurrentValue;
-            float yPos = judgeLineRect.anchoredPosition.y + (beat.ToFloat() * majorInterval);
+            // Note VM 内部计算位置使用的是 DefaultMajorBeatLineInterval * Zoom
+            // 这里为了可见性剔除，逻辑需要保持一致
+            float beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * ViewModel.BeatZoom.CurrentValue;
+            float yPos = judgeLineRect.anchoredPosition.y + (beat.ToFloat() * beatInterval);
             return yPos;
         }
 
@@ -348,14 +374,23 @@ namespace CyanStars.Gameplay.ChartEditor.View
             Cts.Cancel();
             Cts.Dispose();
 
+            // 清理节拍线
             foreach (var kvp in ActiveBeatLines)
-                if (kvp.Value != null)
+                if (kvp.Value is not null)
                     PoolManager.ReleaseGameObject(BeatLinePath, kvp.Value);
             ActiveBeatLines.Clear();
 
+            // 清理音符
             foreach (var kvp in ActiveNotes)
+            {
                 if (kvp.Value != null)
-                    PoolManager.ReleaseGameObject(GetPrefabPath(kvp.Key.Type), kvp.Value);
+                {
+                    var (vm, view) = kvp.Value.Value;
+                    vm.Dispose();
+                    PoolManager.ReleaseGameObject(GetPrefabPath(kvp.Key.Type), view.gameObject);
+                }
+            }
+
             ActiveNotes.Clear();
         }
     }

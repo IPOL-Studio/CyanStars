@@ -12,7 +12,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class EditAreaViewModel : BaseViewModel
     {
-        private const float DefaultMajorBeatLineInterval = 250f;
+        public const float DefaultMajorBeatLineInterval = 250f;
+
 
         // 位置线
         public ReadOnlyReactiveProperty<int> BeatAccuracy => Model.BeatAccuracy;
@@ -80,7 +81,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // - BpmGroup 列表更新（元素增加、删除、移动）
             // - 手动触发了 BpmGroupDataChangedSubject（BpmGroup 中某一元素的 bpm 或 startBeat 更新）
             // - AudioClipHandler 更新（音乐变化后音频时长可能改变）
-            // （bro，这下面的代码可太炸裂了...）
             TotalBeats = Observable
                 .Merge(
                     Model.ChartPackData.CurrentValue.BpmGroup.ObserveChanged().Select(_ => Unit.Default),
@@ -113,6 +113,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .Select(_ => Model.ChartPackData.CurrentValue.MusicVersions.Count > 0 && Model.ChartPackData.CurrentValue.BpmGroup.Count > 0)
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
+        }
+
+        /// <summary>
+        /// 工厂方法：创建音符的子 ViewModel
+        /// 将 protected 的 Model 和 CommandManager 传递给子 VM
+        /// </summary>
+        public EditAreaNoteViewModel CreateNoteViewModel(BaseChartNoteData noteData, float judgeLineYOffset)
+        {
+            return new EditAreaNoteViewModel(Model, CommandManager, noteData, this, judgeLineYOffset);
         }
 
         public float GetBeatLineDistance()

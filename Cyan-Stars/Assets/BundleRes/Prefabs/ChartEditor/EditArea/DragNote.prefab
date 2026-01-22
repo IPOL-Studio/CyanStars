@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3025864413163419226}
   - component: {fileID: 3025864413163419224}
   - component: {fileID: -701791069546382924}
-  - component: {fileID: 1906728538239546048}
+  - component: {fileID: 3935967228391079580}
   m_Layer: 5
   m_Name: DragNote
   m_TagString: Untagged
@@ -91,7 +91,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1906728538239546048
+--- !u!114 &3935967228391079580
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -100,10 +100,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 3025864413163419229}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b8d299d1b8183a4c82fa6bea6ef2902, type: 3}
+  m_Script: {fileID: 11500000, guid: 6b36931d9dde4481b35e6d862cbe289b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.EditNoteItem
-  HoldTailRect: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.EditAreaNoteView
+  holdTailRect: {fileID: 0}
 --- !u!1 &4838747512654566457
 GameObject:
   m_ObjectHideFlags: 0

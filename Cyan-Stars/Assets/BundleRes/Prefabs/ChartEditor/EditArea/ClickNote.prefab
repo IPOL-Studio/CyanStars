@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5071605713215035352}
   - component: {fileID: 2266626610211678585}
   - component: {fileID: -2666554619014364523}
-  - component: {fileID: 4244004154294554032}
+  - component: {fileID: 1853160750224034900}
   m_Layer: 5
   m_Name: ClickNote
   m_TagString: Untagged
@@ -91,7 +91,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &4244004154294554032
+--- !u!114 &1853160750224034900
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -100,10 +100,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1914766278988696775}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b8d299d1b8183a4c82fa6bea6ef2902, type: 3}
+  m_Script: {fileID: 11500000, guid: 6b36931d9dde4481b35e6d862cbe289b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.EditNoteItem
-  HoldTailRect: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.EditAreaNoteView
+  holdTailRect: {fileID: 0}
 --- !u!1 &7903639710928146020
 GameObject:
   m_ObjectHideFlags: 0
