@@ -1,4 +1,6 @@
-﻿#nullable enable
+﻿// TODO: 待重构
+
+#nullable enable
 
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
@@ -27,9 +29,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public override void Bind(EditAreaNoteViewModel targetViewModel)
         {
+            // 从对象池取回时移除旧的监听
+            if (ViewModel != null)
+            {
+                noteButton.onClick.RemoveListener(ViewModel.OnClick);
+            }
+
             base.Bind(targetViewModel);
 
-            noteButton.onClick.AddListener(ViewModel.SelectedNote);
+            noteButton.onClick.AddListener(ViewModel.OnClick);
 
             targetViewModel.AnchoredPosition
                 .Subscribe(pos => rect.anchoredPosition = pos)
@@ -45,7 +53,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected override void OnDestroy()
         {
-            noteButton.onClick.RemoveListener(ViewModel.SelectedNote);
+            noteButton.onClick.RemoveListener(ViewModel.OnClick);
         }
     }
 }

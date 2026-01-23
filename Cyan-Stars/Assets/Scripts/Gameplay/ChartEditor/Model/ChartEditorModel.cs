@@ -22,6 +22,11 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         /// </remarks>
         public readonly Subject<int> BpmGroupDataChangedSubject = new();
 
+        /// <summary>
+        /// 选中的音符的 Pos/BreakPos/JudgeBeat/EndJudgeBeat 发生了变化时手动触发
+        /// </summary>
+        /// <remarks>用于刷新 EditArea 界面更新</remarks>
+        public readonly Subject<BaseChartNoteData> SelectedNoteDataChangedSubject = new();
 
         // == == 谱包和谱面数据 == ==
 

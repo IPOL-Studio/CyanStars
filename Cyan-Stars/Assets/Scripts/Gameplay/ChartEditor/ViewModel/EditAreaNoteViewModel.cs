@@ -1,4 +1,6 @@
-﻿#nullable enable
+﻿// TODO: 待重构
+
+#nullable enable
 
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
@@ -99,10 +101,24 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             return Mathf.Max(0, endY - startY - 12.5f);
         }
 
-        public void SelectedNote()
+        public void OnClick()
         {
-            if (Model.SelectedNoteData.Value != data)
-                Model.SelectedNoteData.Value = data;
+            if (Model.SelectedEditTool.CurrentValue == EditToolType.Eraser)
+            {
+                CommandManager.ExecuteCommand(
+                    new DelegateCommand(
+                        () => Model.ChartData.CurrentValue.Notes.Remove(data),
+                        () => NoteListHelper.TryInsertItem(Model.ChartData.CurrentValue.Notes, data)
+                    )
+                );
+            }
+            else
+            {
+                if (Model.SelectedNoteData.Value != data)
+                {
+                    Model.SelectedNoteData.Value = data;
+                }
+            }
         }
     }
 }

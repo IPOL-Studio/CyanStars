@@ -1,8 +1,9 @@
-﻿#nullable enable
+﻿// TODO: 待重构
+
+#nullable enable
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
@@ -16,6 +17,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     {
         public const float DefaultMajorBeatLineInterval = 250f;
 
+        public Subject<BaseChartNoteData> SelectedNoteDataChangedSubject => Model.SelectedNoteDataChangedSubject;
 
         // 位置线
         public ReadOnlyReactiveProperty<int> BeatAccuracy => Model.BeatAccuracy;
@@ -171,6 +173,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             return new EditAreaNoteViewModel(Model, CommandManager, noteData, this, judgeLineYOffset);
         }
 
+        /// <summary>
+        /// 获取两条细分节拍线之间的像素距离
+        /// </summary>
         public float GetBeatLineDistance()
         {
             return DefaultMajorBeatLineInterval * BeatZoom.CurrentValue / BeatAccuracy.CurrentValue;
@@ -254,10 +259,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void CreateNote(float pos, Beat beat)
         {
-            // 如果是“选择”或“橡皮擦”工具，则不创建音符
+            // 如果是“选择”或“橡皮擦”工具，则不创建音符，并取消选中音符
             EditToolType currentTool = Model.SelectedEditTool.Value;
             if (currentTool == EditToolType.Select || currentTool == EditToolType.Eraser)
+            {
+                if (Model.SelectedNoteData.CurrentValue != null)
+                {
+                    Model.SelectedNoteData.Value = null;
+                }
+
                 return;
+            }
 
             // 根据工具类型实例化对应的音符数据对象
             BaseChartNoteData? noteData = null;

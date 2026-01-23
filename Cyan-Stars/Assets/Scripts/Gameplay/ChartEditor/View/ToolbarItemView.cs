@@ -16,9 +16,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private EditToolType editToolType;
 
-        public override void Bind(ToolbarViewModel viewModel)
+        public override void Bind(ToolbarViewModel targetViewModel)
         {
-            base.Bind(viewModel);
+            base.Bind(targetViewModel);
 
             ViewModel.SelectedEditTool
                 .Subscribe(type =>

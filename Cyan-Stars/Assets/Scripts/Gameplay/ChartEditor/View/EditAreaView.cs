@@ -1,4 +1,6 @@
-﻿#nullable enable
+﻿// TODO: 待重构
+
+#nullable enable
 
 using System;
 using System.Collections.Generic;
@@ -50,7 +52,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private readonly Dictionary<int, GameObject?> ActiveBeatLines = new Dictionary<int, GameObject?>();
 
         // 管理当前激活的音符: Key=音符数据对象, Value=(ViewModel, View)
-        // 字典 Key 用于快速判断可见性，Value 用于资源管理
         private readonly Dictionary<BaseChartNoteData, (EditAreaNoteViewModel vm, EditAreaNoteView view)?> ActiveNotes =
             new Dictionary<BaseChartNoteData, (EditAreaNoteViewModel, EditAreaNoteView)?>();
 
@@ -67,22 +68,29 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.PosLineCount.Subscribe(UpdatePosLines).AddTo(this);
 
             // 2. 节拍线重绘逻辑 (布局变化)
-            Observable.CombineLatest(ViewModel.BeatAccuracy, ViewModel.BeatZoom, ViewModel.TotalBeats, (_, _, _) => true)
+            Observable.CombineLatest(
+                    ViewModel.BeatAccuracy,
+                    ViewModel.BeatZoom,
+                    ViewModel.TotalBeats,
+                    (_, _, _) => true
+                )
                 .Subscribe(_ => ForceRebuildBeatLines()).AddTo(this);
 
             // 3. 滚动时刷新节拍线和音符
             scrollRect.onValueChanged.AsObservable()
                 .Subscribe(_ =>
-                {
-                    UpdateBeatLinesVisibility();
-                    UpdateNotesVisibility();
-                }).AddTo(this);
+                    {
+                        UpdateBeatLinesVisibility();
+                        UpdateNotesVisibility();
+                    }
+                )
+                .AddTo(this);
 
-            // 4. 音符数据或缩放变化时刷新音符
+            // 4. 音符列表、缩放、选中音符的位置或节拍变化时刷新音符
             Observable.Merge(
-                    targetViewModel.Notes.ObserveChanged().Select(_ => Unit.Default),
-                    targetViewModel.BeatZoom.Select(_ => Unit.Default),
-                    targetViewModel.BeatAccuracy.Select(_ => Unit.Default)
+                    ViewModel.Notes.ObserveChanged().Select(_ => Unit.Default),
+                    ViewModel.BeatZoom.Select(_ => Unit.Default),
+                    ViewModel.SelectedNoteDataChangedSubject.Select(_ => Unit.Default)
                 )
                 .ThrottleLastFrame(1) // 避免同一帧多次刷新
                 .Subscribe(_ => UpdateNotesVisibility())
