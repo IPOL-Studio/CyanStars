@@ -60,8 +60,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
-            ViewModel.ContentHeight
-                .Subscribe(height => contentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height))
+            ViewModel.ContentAddHeight
+                .Subscribe(addHeight => contentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, viewportRect.rect.height + addHeight))
                 .AddTo(this);
 
             // 1. 位置线逻辑
@@ -76,12 +76,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 )
                 .Subscribe(_ => ForceRebuildBeatLines()).AddTo(this);
 
-            // 3. 滚动时刷新节拍线和音符
+            // 3. 滚动时刷新节拍线和音符，如果没在播放音乐则一并更新时间轴时间
             scrollRect.onValueChanged.AsObservable()
                 .Subscribe(_ =>
                     {
                         UpdateBeatLinesVisibility();
                         UpdateNotesVisibility();
+                        if (!ViewModel.IsTimelinePlaying.CurrentValue)
+                        {
+                            ViewModel.TryUpdateTimelineTime(contentRect.anchoredPosition.y);
+                        }
                     }
                 )
                 .AddTo(this);
@@ -412,6 +416,20 @@ namespace CyanStars.Gameplay.ChartEditor.View
         }
 
         #endregion
+
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                ViewModel.OnSpaceDown();
+            }
+
+            if (ViewModel.IsTimelinePlaying.CurrentValue)
+            {
+                contentRect.anchoredPosition = new Vector2(contentRect.anchoredPosition.x, ViewModel.GetContentYByTimelineTime());
+            }
+        }
 
         protected override void OnDestroy()
         {

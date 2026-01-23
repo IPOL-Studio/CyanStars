@@ -18,14 +18,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public const float DefaultMajorBeatLineInterval = 250f;
 
         public Subject<BaseChartNoteData> SelectedNoteDataChangedSubject => Model.SelectedNoteDataChangedSubject;
+        public ReadOnlyReactiveProperty<bool> IsTimelinePlaying => Model.IsTimelinePlaying;
+
 
         // 位置线
         public ReadOnlyReactiveProperty<int> BeatAccuracy => Model.BeatAccuracy;
-
         public ReadOnlyReactiveProperty<float> BeatZoom => Model.BeatZoom;
 
         // 节拍线和音符
-        public readonly ReadOnlyReactiveProperty<float> ContentHeight;
+        public readonly ReadOnlyReactiveProperty<float> ContentAddHeight; // 在原有的屏幕高度上再增加此高度
         public readonly ReadOnlyReactiveProperty<float> TotalBeats;
         public readonly ReadOnlyReactiveProperty<int> PosLineCount;
         public IReadOnlyObservableList<BaseChartNoteData> Notes => Model.ChartData.CurrentValue.Notes;
@@ -83,12 +84,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 )
                 .AddTo(base.Disposables);
 
-            // 更新 ContentHeight，当：
+            // 更新 ContentAddHeight，当：
             // - BpmGroup 列表更新（元素增加、删除、移动）
             // - 手动触发了 BpmGroupDataChangedSubject（BpmGroup 中某一元素的 bpm 或 startBeat 更新）
             // - BeatZoom 更新
             // - AudioClipHandler 更新（音乐变化后音频时长可能改变）
-            ContentHeight = Observable
+            ContentAddHeight = Observable
                 .Merge(
                     Model.ChartPackData.CurrentValue.BpmGroup.ObserveChanged().Select(_ => Unit.Default),
                     Model.BpmGroupDataChangedSubject.Select(_ => Unit.Default)
@@ -99,11 +100,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     Model.AudioClipHandler,
                     (_, zoom, handler) =>
                     {
-                        if (handler?.Asset == null) return 0f;
+                        if (handler?.Asset == null)
+                            return 0f;
                         var bpmGroup = Model.ChartPackData.CurrentValue.BpmGroup;
                         if (BpmGroupHelper.Validate(bpmGroup) != BpmGroupHelper.BpmValidationStatus.Valid)
                             throw new Exception("Bpm 组数据异常");
-                        float beatCount = BpmGroupHelper.CalculateBeat(bpmGroup, (int)(handler.Asset.length * 1000f));
+                        float beatCount = BpmGroupHelper.CalculateBeat(bpmGroup, (int)(handler.Asset.length * 1000f) + Model.ChartPackData.CurrentValue.MusicVersions[0].Offset.CurrentValue);
                         return beatCount * DefaultMajorBeatLineInterval * zoom;
                     }
                 )
@@ -309,6 +311,48 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     () => notesCollection.Remove(noteData)
                 )
             );
+        }
+
+        public void TryUpdateTimelineTime(float contentY)
+        {
+            if (Model.AudioClipHandler.CurrentValue?.Asset == null)
+                return;
+
+            if (IsTimelinePlaying.CurrentValue)
+            {
+                // 正在播放时无需再次更新
+                return;
+            }
+
+            // 判定线位置在计算中正好约掉，无需得知判定线位置
+            float beatPrecent = -contentY / ContentAddHeight.CurrentValue;
+            beatPrecent = Mathf.Clamp01(beatPrecent);
+            int timelineTimeMs = BpmGroupHelper.CalculateTime(Model.ChartPackData.CurrentValue.BpmGroup, TotalBeats.CurrentValue * beatPrecent);
+            Model.CurrentTimelineTimeMs = timelineTimeMs;
+        }
+
+        public float GetContentYByTimelineTime()
+        {
+            float currentFBeat = BpmGroupHelper.CalculateBeat(Model.ChartPackData.CurrentValue.BpmGroup, Model.CurrentTimelineTimeMs);
+            float beatPrecent = currentFBeat / TotalBeats.CurrentValue;
+            beatPrecent = Mathf.Clamp01(beatPrecent);
+            return -beatPrecent * ContentAddHeight.CurrentValue;
+        }
+
+
+        public void OnSpaceDown()
+        {
+            if (Model.ChartPackData.CurrentValue.BpmGroup.Count == 0 || Model.AudioClipHandler.Value?.Asset == null)
+            {
+                if (Model.IsTimelinePlaying.CurrentValue)
+                {
+                    Model.IsTimelinePlaying.Value = false;
+                }
+
+                return;
+            }
+
+            Model.IsTimelinePlaying.Value = !Model.IsTimelinePlaying.Value;
         }
     }
 }

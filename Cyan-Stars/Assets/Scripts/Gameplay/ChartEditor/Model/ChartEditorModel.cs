@@ -64,7 +64,9 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         // 音乐播放
         public readonly ReactiveProperty<bool> IsTimelinePlaying = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<AssetHandler<AudioClip?>?> AudioClipHandler = new ReactiveProperty<AssetHandler<AudioClip?>?>(null); // TODO: 在卸载 Model 时卸载 Handler
-        public int CurrentTimelineTime { get; set; } = 0; // 在音乐播放时由 ChartEditorMusicManager 负责每帧更新，暂停时由 EditAreaViewModel 负责在滚动 UI 时更新，考虑到性能问题由 view 在播放时轮询查询
+
+        public int CurrentTimelineTimeMs { get; set; } = 0; // 在音乐播放时由 ChartEditorMusicManager 负责每帧更新，暂停时由 EditAreaViewModel 负责在滚动 UI 时更新，考虑到性能问题由 view 在播放时轮询查询
+
 
         // 音符编辑
         // TODO: 后续用 list 拓展为选中多个音符一次编辑

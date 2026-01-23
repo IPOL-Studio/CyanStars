@@ -273,6 +273,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (!CanvasVisibility.CurrentValue)
                 return;
 
+            // 停止正在播放的音乐
+            if(Model.IsTimelinePlaying.CurrentValue)
+                Model.IsTimelinePlaying.Value = false;
+
             // 关闭弹窗时，卸载原有的音乐并尝试加载首个元素作为制谱器内播放的音乐。这个操作无需撤销。
             // TODO: 优化加载逻辑，只在音频文件真的不同时加载
             if (Model.ChartPackData.CurrentValue.MusicVersions.Count > 0 &&

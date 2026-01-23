@@ -101,10 +101,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             return Mathf.Max(0, endY - startY - 12.5f);
         }
 
-        public void OnClick()
+        public void OnLeftClick()
         {
             if (Model.SelectedEditTool.CurrentValue == EditToolType.Eraser)
             {
+                if (Model.SelectedNoteData.Value == data)
+                {
+                    Model.SelectedNoteData.Value = null;
+                }
+
                 CommandManager.ExecuteCommand(
                     new DelegateCommand(
                         () => Model.ChartData.CurrentValue.Notes.Remove(data),
@@ -119,6 +124,21 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     Model.SelectedNoteData.Value = data;
                 }
             }
+        }
+
+        public void OnRightClick()
+        {
+            if (Model.SelectedNoteData.Value == data)
+            {
+                Model.SelectedNoteData.Value = null;
+            }
+
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => Model.ChartData.CurrentValue.Notes.Remove(data),
+                    () => NoteListHelper.TryInsertItem(Model.ChartData.CurrentValue.Notes, data)
+                )
+            );
         }
     }
 }

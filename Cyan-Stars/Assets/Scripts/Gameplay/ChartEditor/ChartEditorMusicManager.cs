@@ -25,10 +25,10 @@ namespace CyanStars.Gameplay.ChartEditor
         {
             model = chartEditorModel;
             model.IsTimelinePlaying
-                .Subscribe(isPlaying =>
+                .Subscribe(toPlay =>
                     {
-                        if (isPlaying)
-                            TryPlayMusic(model.CurrentTimelineTime +
+                        if (toPlay)
+                            TryPlayMusic(model.CurrentTimelineTimeMs -
                                          model.ChartPackData.CurrentValue.MusicVersions[0].Offset.CurrentValue);
                         else
                             TryPauseMusic();
@@ -112,13 +112,13 @@ namespace CyanStars.Gameplay.ChartEditor
                     audioSource.Play();
                 }
 
-                model.CurrentTimelineTime =
+                model.CurrentTimelineTimeMs =
                     model.ChartPackData.CurrentValue.MusicVersions[0].Offset.CurrentValue - (int)delayTimeMs;
             }
             else
             {
                 // 正式播放阶段
-                model.CurrentTimelineTime =
+                model.CurrentTimelineTimeMs =
                     model.ChartPackData.CurrentValue.MusicVersions[0].Offset.CurrentValue + (int)(audioSource.time * 1000);
             }
         }

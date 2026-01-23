@@ -5,14 +5,14 @@
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
-    public class EditAreaNoteView : BaseView<EditAreaNoteViewModel>
+    public class EditAreaNoteView : BaseView<EditAreaNoteViewModel>, IPointerClickHandler
     {
         private RectTransform rect = null!;
-        private Button noteButton = null!;
 
         [SerializeField]
         private RectTransform? holdTailRect; // 仅 Hold 音符需要赋值
@@ -21,7 +21,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private void Awake()
         {
             rect = GetComponent<RectTransform>();
-            noteButton = GetComponent<Button>();
             rect.anchorMin = new Vector2(0.5f, 0f);
             rect.anchorMax = new Vector2(0.5f, 0f);
             rect.pivot = new Vector2(0.5f, 0.5f);
@@ -29,15 +28,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public override void Bind(EditAreaNoteViewModel targetViewModel)
         {
-            // 从对象池取回时移除旧的监听
-            if (ViewModel != null)
-            {
-                noteButton.onClick.RemoveListener(ViewModel.OnClick);
-            }
-
             base.Bind(targetViewModel);
-
-            noteButton.onClick.AddListener(ViewModel.OnClick);
 
             targetViewModel.AnchoredPosition
                 .Subscribe(pos => rect.anchoredPosition = pos)
@@ -51,9 +42,20 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
         }
 
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                ViewModel.OnRightClick();
+            }
+            else if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                ViewModel.OnLeftClick();
+            }
+        }
+
         protected override void OnDestroy()
         {
-            noteButton.onClick.RemoveListener(ViewModel.OnClick);
         }
     }
 }
