@@ -8,6 +8,9 @@ using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
+    /// <summary>
+    /// 动态生成。关闭精简模式后 BpmGroup 弹窗左侧的 ListItem。每个 Item 持有一个 View。
+    /// </summary>
     public class BpmGroupListItemView : BaseView<BpmGroupListItemViewModel>
     {
         [SerializeField]

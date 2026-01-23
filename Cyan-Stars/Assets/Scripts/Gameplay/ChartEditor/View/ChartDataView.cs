@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using System;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;

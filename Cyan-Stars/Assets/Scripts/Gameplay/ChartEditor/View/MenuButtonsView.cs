@@ -8,6 +8,9 @@ using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
+    /// <summary>
+    /// Menu 下拉菜单中每个按钮持有的 V。
+    /// </summary>
     public class MenuButtonsView : BaseView<MenuButtonsViewModel>
     {
         [SerializeField]

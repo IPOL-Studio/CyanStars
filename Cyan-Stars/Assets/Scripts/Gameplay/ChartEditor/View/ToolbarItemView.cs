@@ -8,6 +8,9 @@ using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
+    /// <summary>
+    /// 每个工具按 Toggle 持有一个 V。
+    /// </summary>
     public class ToolbarItemView : BaseView<ToolbarViewModel>
     {
         [SerializeField]

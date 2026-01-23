@@ -1,10 +1,15 @@
-﻿using CyanStars.Gameplay.ChartEditor.ViewModel;
+﻿#nullable enable
+
+using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
+    /// <summary>
+    /// 谱包弹窗内关于曲绘裁剪部分的 View
+    /// </summary>
     public class ChartPackDataCoverView : BaseView<ChartPackDataCoverViewModel>
     {
         [SerializeField]

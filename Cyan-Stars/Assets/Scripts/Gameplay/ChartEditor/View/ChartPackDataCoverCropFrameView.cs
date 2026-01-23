@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 namespace CyanStars.Gameplay.ChartEditor.View
 {
     /// <summary>
-    /// 负责显示裁剪框区域并处理整体拖拽（平移）
+    /// 谱包弹窗内曲绘 Frame 的 View，负责显示裁剪框区域并处理整体拖拽（平移）
     /// </summary>
     public class ChartPackDataCoverCropFrameView : BaseView<ChartPackDataCoverViewModel>, IDragHandler, IBeginDragHandler, IEndDragHandler
     {

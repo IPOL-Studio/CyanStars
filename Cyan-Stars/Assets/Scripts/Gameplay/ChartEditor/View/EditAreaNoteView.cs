@@ -6,10 +6,12 @@ using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
+    /// <summary>
+    /// 动态创建。每个编辑区的 Note 持有一个 V。
+    /// </summary>
     public class EditAreaNoteView : BaseView<EditAreaNoteViewModel>, IPointerClickHandler
     {
         private RectTransform rect = null!;

@@ -7,6 +7,9 @@ using UnityEngine.EventSystems;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
+    /// <summary>
+    /// 谱包弹窗内曲绘裁剪的四个顶点的 View，每个顶点持有一个 View。
+    /// </summary>
     public class ChartPackDataCoverCropHandlerView : BaseView<ChartPackDataCoverViewModel>, IDragHandler, IPointerDownHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField]

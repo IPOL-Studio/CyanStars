@@ -8,6 +8,9 @@ using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
+    /// <summary>
+    /// 动态创建。关闭简易模式后音乐版本左侧 ListItem 中每个 Item 持有一个 V 实例。
+    /// </summary>
     public class MusicVersionListItemView : BaseView<MusicVersionListItemViewModel>
     {
         [SerializeField]
