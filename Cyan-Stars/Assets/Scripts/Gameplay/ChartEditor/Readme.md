@@ -35,7 +35,7 @@ CyanStars 的制谱器采用 MVVM 架构，主要依赖于 R3 和 ObservableColl
     - 对于有动态生成 VM 和 V 的场合，父 VM 持有一个列表用于管理何时增删，并负责在实例化时实时绑定。
     - 在绑定时需要通过 .AddTo(base.Disposables) 绑定生命周期以防止内存泄漏，由 MvvmBindManager 自动调用。
     - 对于动态生成的 ViewModel：
-        - 在动态实例化时由父 VM 绑定。
+        - 在动态实例化时由父 VM 或对应的 V 绑定。
         - ObservableCollections 会自动在销毁子 VM 时调用其 Dispose()，只要完成绑定即可，无需手动调用。
 - View（V）
     - 继承自 MonoBehaviour。
@@ -43,5 +43,5 @@ CyanStars 的制谱器采用 MVVM 架构，主要依赖于 R3 和 ObservableColl
     - 接受 Unity 组件触发的事件回调，并传递给 VM 方法。
     - 在绑定时需要通过 .AddTo(this)，在物体被 Unity 销毁时自动释放内存。
     - 对于动态生成的 View：
-      - 在动态实例化时由父 VM 绑定。
+      - 在动态实例化时由父 VM 或对应的 V 绑定。
       - 依旧是 .AddTo(this)，在物体被 Unity 销毁时自动释放内存。

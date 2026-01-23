@@ -1,8 +1,14 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.Command
 {
+    /// <summary>
+    /// 命令管理器
+    /// </summary>
+    /// <remarks>用栈来管理命令实例，以提供撤销重做功能</remarks>
     public class CommandManager : MonoBehaviour
     {
         private readonly Stack<ICommand> UndoStack = new Stack<ICommand>();

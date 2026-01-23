@@ -8,7 +8,7 @@ using UnityEngine;
 namespace CyanStars.Gameplay.ChartEditor.Model
 {
     /// <summary>
-    /// 用于制谱器的 ChartPackData 可观察对象
+    /// 在制谱器内使用的谱包数据类
     /// </summary>
     public class ChartPackDataEditorModel
     {

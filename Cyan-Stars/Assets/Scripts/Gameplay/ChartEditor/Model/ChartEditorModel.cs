@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using CatAsset.Runtime;
 using CyanStars.Chart;
-using ObservableCollections;
 using R3;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.Model
 {
+    /// <summary>
+    /// 制谱器主 Model 层
+    /// </summary>
     public class ChartEditorModel
     {
         // == == 事件触发器 == ==

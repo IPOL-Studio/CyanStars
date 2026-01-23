@@ -7,6 +7,9 @@ using ObservableCollections;
 
 namespace CyanStars.Gameplay.ChartEditor.Model
 {
+    /// <summary>
+    /// 在制谱器内使用的音乐版本数据类
+    /// </summary>
     public class MusicVersionDataEditorModel
     {
         private readonly MusicVersionData MusicVersionData;

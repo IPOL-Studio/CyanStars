@@ -5,7 +5,7 @@ using System;
 namespace CyanStars.Gameplay.ChartEditor.Command
 {
     /// <summary>
-    /// 通用命令类，用 Lambda 表达式简化撤销重做命令
+    /// 通用命令类，无需再为每个可撤销操作实例化 ICommand 类，而是直接用 Lambda 表达式传入撤销重做时的函数
     /// </summary>
     public class DelegateCommand : ICommand
     {

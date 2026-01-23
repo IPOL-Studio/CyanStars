@@ -5,6 +5,9 @@ using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.Model
 {
+    /// <summary>
+    /// 在制谱器内使用的谱包元数据类
+    /// </summary>
     public class ChartMetaDataEditorModel
     {
         private readonly ChartMetaData ChartMetaData;
