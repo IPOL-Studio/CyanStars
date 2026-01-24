@@ -17,7 +17,7 @@ namespace CyanStars.Gameplay.ChartEditor
 
 
         [SerializeField]
-        private List<ToolbarItemView> toolbarItemViews = null!;
+        private ToolbarView toolbarView = null!;
 
         [SerializeField]
         private MenuButtonsView menuButtonsView = null!;
@@ -68,8 +68,7 @@ namespace CyanStars.Gameplay.ChartEditor
             musicManager.Init(model);
 
             var toolbarViewModel = new ToolbarViewModel(model, commandManager).AddTo(Disposables);
-            foreach (var item in toolbarItemViews)
-                item.Bind(toolbarViewModel);
+            toolbarView.Bind(toolbarViewModel);
 
             var menuButtonsViewModel = new MenuButtonsViewModel(model, commandManager).AddTo(Disposables);
             menuButtonsView.Bind(menuButtonsViewModel);

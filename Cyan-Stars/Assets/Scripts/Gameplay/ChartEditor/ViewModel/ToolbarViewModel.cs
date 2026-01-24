@@ -8,7 +8,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class ToolbarViewModel : BaseViewModel
     {
-        public readonly ReactiveProperty<EditToolType> SelectedEditTool;
+        public readonly ReadOnlyReactiveProperty<EditToolType> SelectedEditTool;
 
         /// <summary>
         /// 构造与绑定
@@ -17,6 +17,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             : base(model, commandManager)
         {
             SelectedEditTool = Model.SelectedEditTool.AddTo(Disposables);
+        }
+
+        public void SetSelectedTool(EditToolType tool)
+        {
+            if (Model.SelectedEditTool.CurrentValue != tool)
+                Model.SelectedEditTool.Value = tool;
         }
     }
 }

@@ -1,3 +1,5 @@
+#nullable enable
+
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -10,10 +12,11 @@ namespace CyanStars.Gameplay.ChartEditor
     public class BeatLineItem : MonoBehaviour
     {
         [SerializeField]
-        private Image lineImage;
+        private Image lineImage = null!;
 
         [SerializeField]
-        private TextMeshProUGUI indexText;
+        private TextMeshProUGUI indexText = null!;
+
 
         private static readonly Color ColorInteger = new Color(1f, 1f, 1f, 1f);
         private static readonly Color ColorHalf = new Color(1f, 0.7f, 0.4f, 0.8f);
