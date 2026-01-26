@@ -12,8 +12,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
     /// </summary>
     public class ChartPackDataEditorModel
     {
-        private readonly ChartPackData ChartPackData;
-
         public readonly ReactiveProperty<int> DataVersion;
         public readonly ReactiveProperty<string> Title;
         public readonly ObservableList<MusicVersionDataEditorModel> MusicVersions;
@@ -28,8 +26,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
 
         public ChartPackDataEditorModel(ChartPackData chartPackData)
         {
-            ChartPackData = chartPackData;
-
             DataVersion = new ReactiveProperty<int>(chartPackData.DataVersion);
             Title = new ReactiveProperty<string>(chartPackData.Title);
             MusicVersions = new ObservableList<MusicVersionDataEditorModel>();

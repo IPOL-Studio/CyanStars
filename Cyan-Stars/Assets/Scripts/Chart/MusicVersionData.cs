@@ -1,7 +1,9 @@
 #nullable enable
 
 using System.Collections.Generic;
+using CyanStars.Gameplay.ChartEditor.Model;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 
 namespace CyanStars.Chart
 {
@@ -33,15 +35,33 @@ namespace CyanStars.Chart
         /// <example>{"xxxx": ["作", "编", "调", "谱", "绘"]}</example>
         public Dictionary<string, List<string>> Staffs;
 
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        [JsonConstructor]
         public MusicVersionData(string versionTitle = "",
-            string audioFilePath = "",
-            int offset = 0,
-            Dictionary<string, List<string>>? staffs = null)
+                                string audioFilePath = "",
+                                int offset = 0,
+                                Dictionary<string, List<string>>? staffs = null)
         {
             VersionTitle = versionTitle;
             AudioFilePath = audioFilePath;
             Offset = offset;
             Staffs = staffs ?? new Dictionary<string, List<string>>();
+        }
+
+        /// <summary>
+        /// 将制谱器的可观察数据转为常规数据，以用于序列化
+        /// </summary>
+        public MusicVersionData(MusicVersionDataEditorModel editorData)
+        {
+            VersionTitle = editorData.VersionTitle.CurrentValue;
+            AudioFilePath = editorData.AudioFilePath.CurrentValue;
+            Offset = editorData.Offset.CurrentValue;
+            Staffs = new Dictionary<string, List<string>>();
+            foreach (var staffKvp in editorData.Staffs)
+                Staffs.Add(staffKvp.Key, staffKvp.Value);
         }
     }
 }

@@ -3,7 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using CyanStars.Chart;
+using CyanStars.Framework;
 using CyanStars.Framework.File;
+using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Utils;
 using UnityEngine;
 
@@ -19,6 +22,7 @@ namespace CyanStars.Gameplay.ChartEditor
         private static string TempFolderPath => PathUtil.Combine(Application.persistentDataPath, "TempSession", "ChartEditorFileManager");
         private static readonly Dictionary<string, TempFileHandler> TempPathToHandlerMap = new(); // 缓存路径->句柄 映射表，一定是齐全的
         private static readonly Dictionary<string, TempFileHandler> TargetPathToHandlerMap = new(); // 目标路径->句柄 映射表，不一定齐全（文件缓存了但没有指定映射路径，用于制谱器可撤销操作时缓存文件）
+
 
         public void Start()
         {
@@ -36,6 +40,7 @@ namespace CyanStars.Gameplay.ChartEditor
                 }
             }
         }
+
 
         /// <summary>
         /// 将原始文件复制到缓存区
@@ -106,6 +111,30 @@ namespace CyanStars.Gameplay.ChartEditor
         public static IReadonlyTempFileHandler? GetHandlerByTargetPath(string targetPath)
         {
             return TargetPathToHandlerMap.GetValueOrDefault(targetPath);
+        }
+
+        public static bool SaveChartToDesk(string workspacePath,
+                                           int chartMetaDataIndex,
+                                           ChartPackDataEditorModel chartPackDataEditorModel,
+                                           ChartDataEditorModel chartDataEditorModel)
+        {
+            ChartPackData chartPackData = new ChartPackData(chartPackDataEditorModel);
+            ChartData chartData = new ChartData(chartDataEditorModel);
+
+            try
+            {
+                string chartPackFilePath = PathUtil.Combine(workspacePath, ChartModule.ChartPackFileName);
+                GameRoot.File.SerializationToJson(chartPackData, chartPackFilePath);
+
+                string chartFilePath = PathUtil.Combine(workspacePath, chartPackData.ChartMetaDatas[chartMetaDataIndex].FilePath);
+                GameRoot.File.SerializationToJson(chartData, chartFilePath);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"序列化谱包谱面时出现异常：{e.Message}");
+                return false;
+            }
         }
     }
 }

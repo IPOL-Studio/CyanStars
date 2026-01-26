@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using CyanStars.Gameplay.ChartEditor.Model;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -61,12 +62,12 @@ namespace CyanStars.Chart
         /// <summary>谱面元数据</summary>
         public List<ChartMetaData> ChartMetaDatas;
 
+
         /// <summary>
         /// 执行浅拷贝
         /// </summary>
         public ChartPackData(ChartPackData oldChartPackData)
         {
-            DataVersion = oldChartPackData.DataVersion;
             Title = oldChartPackData.Title;
             MusicVersionDatas = oldChartPackData.MusicVersionDatas;
             BpmGroup = oldChartPackData.BpmGroup;
@@ -119,6 +120,29 @@ namespace CyanStars.Chart
             CropStartPosition = cropPosition ?? Vector2.zero;
             CropHeight = cropHeight ?? 0;
             ChartMetaDatas = chartMetaDatas ?? new List<ChartMetaData>();
+        }
+
+        /// <summary>
+        /// 将制谱器的可观察数据转为常规数据，以用于序列化
+        /// </summary>
+        public ChartPackData(ChartPackDataEditorModel editorData)
+        {
+            DataVersion = 1;
+            Title = editorData.Title.CurrentValue;
+            MusicVersionDatas = new List<MusicVersionData>();
+            foreach (var musicVersionEditorData in editorData.MusicVersions)
+                MusicVersionDatas.Add(new MusicVersionData(musicVersionEditorData));
+            BpmGroup = new List<BpmGroupItem>();
+            foreach (var bpmGroupItem in editorData.BpmGroup)
+                BpmGroup.Add(bpmGroupItem);
+            MusicPreviewStartBeat = editorData.MusicPreviewStartBeat.CurrentValue;
+            MusicPreviewEndBeat = editorData.MusicPreviewEndBeat.CurrentValue;
+            CoverFilePath = editorData.CoverFilePath.CurrentValue;
+            CropStartPosition = editorData.CropStartPosition.CurrentValue;
+            CropHeight = editorData.CropHeight.CurrentValue;
+            ChartMetaDatas = new List<ChartMetaData>();
+            foreach (var chartMetaEditorData in editorData.ChartMetaDatas)
+                ChartMetaDatas.Add(new ChartMetaData(chartMetaEditorData));
         }
     }
 }

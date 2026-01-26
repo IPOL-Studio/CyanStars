@@ -70,6 +70,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
 
             functionToggle.onValueChanged.AddListener(ViewModel.SetFunctionCanvasVisibility);
+            saveButton.onClick.AddListener(ViewModel.SaveFileToDesk);
 
             chartPackDataButton.onClick.AddListener(() => ViewModel.OpenCanvas(CanvasType.ChartPackDataCanvas));
             chartDataButton.onClick.AddListener(() => ViewModel.OpenCanvas(CanvasType.ChartDataCanvas));
@@ -84,6 +85,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         protected override void OnDestroy()
         {
             functionToggle.onValueChanged.RemoveAllListeners();
+            saveButton.onClick.RemoveAllListeners();
             chartPackDataButton.onClick.RemoveAllListeners();
             chartDataButton.onClick.RemoveAllListeners();
             musicVersionButton.onClick.RemoveAllListeners();

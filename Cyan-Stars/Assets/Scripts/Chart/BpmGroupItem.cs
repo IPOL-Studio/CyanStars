@@ -1,4 +1,6 @@
-﻿namespace CyanStars.Chart
+﻿using Newtonsoft.Json;
+
+namespace CyanStars.Chart
 {
     public class BpmGroupItem
     {
@@ -16,6 +18,11 @@
         /// </remarks>
         public Beat StartBeat;
 
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        [JsonConstructor]
         public BpmGroupItem(float bpm, Beat startBeat)
         {
             Bpm = bpm;

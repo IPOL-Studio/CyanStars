@@ -9,7 +9,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class MenuButtonsViewModel : BaseViewModel
     {
-        private readonly ReactiveProperty<bool> functionCanvasVisibility;
+        private readonly ReactiveProperty<bool> functionCanvasVisibility = new ReactiveProperty<bool>(false);
         public readonly ReadOnlyReactiveProperty<bool> FunctionCanvasVisibility;
 
         public readonly ReadOnlyReactiveProperty<bool> IsSimplificationMode;
@@ -18,7 +18,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public MenuButtonsViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
-            functionCanvasVisibility = new ReactiveProperty<bool>(false);
             FunctionCanvasVisibility = functionCanvasVisibility.ToReadOnlyReactiveProperty().AddTo(Disposables);
             IsSimplificationMode = Model.IsSimplificationMode.ToReadOnlyReactiveProperty().AddTo(Disposables);
         }
@@ -67,6 +66,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                         Model.IsSimplificationMode.Value = !newValue;
                     }
                 )
+            );
+        }
+
+        public void SaveFileToDesk()
+        {
+            ChartEditorFileManager.SaveChartToDesk(
+                Model.WorkspacePath,
+                Model.ChartMetaDataIndex,
+                Model.ChartPackData.CurrentValue,
+                Model.ChartData.CurrentValue
             );
         }
 

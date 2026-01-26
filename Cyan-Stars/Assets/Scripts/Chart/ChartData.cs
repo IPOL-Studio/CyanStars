@@ -1,6 +1,7 @@
 #nullable enable
 
 using System.Collections.Generic;
+using CyanStars.Gameplay.ChartEditor.Model;
 using Newtonsoft.Json;
 
 namespace CyanStars.Chart
@@ -26,6 +27,10 @@ namespace CyanStars.Chart
         /// </summary>
         public List<ChartTrackData> TrackDatas;
 
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
         [JsonConstructor]
         public ChartData(int readyBeat = 4, List<SpeedTemplateData>? speedGroupDatas = null,
                          List<BaseChartNoteData>? notes = null, List<ChartTrackData>? trackDatas = null)
@@ -35,6 +40,23 @@ namespace CyanStars.Chart
                               new List<SpeedTemplateData>() { new SpeedTemplateData(SpeedGroupType.Relative, new BezierCurve()) };
             Notes = notes ?? new List<BaseChartNoteData>();
             TrackDatas = trackDatas ?? new List<ChartTrackData>();
+        }
+
+        /// <summary>
+        /// 将制谱器的可观察数据转为常规数据，以用于序列化
+        /// </summary>
+        public ChartData(ChartDataEditorModel editorData)
+        {
+            ReadyBeat = editorData.ReadyBeat.CurrentValue;
+            SpeedGroupDatas = new List<SpeedTemplateData>();
+            foreach (var speedTemplate in editorData.SpeedGroupDatas)
+                SpeedGroupDatas.Add(speedTemplate);
+            Notes = new List<BaseChartNoteData>();
+            foreach (var note in editorData.Notes)
+                Notes.Add(note);
+            TrackDatas = new List<ChartTrackData>();
+            foreach (var trackData in editorData.TrackDatas)
+                TrackDatas.Add(trackData);
         }
     }
 }
