@@ -15,7 +15,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private Vector2? dragStartCropPos;
         private float? dragStartCropHeight;
 
-        public readonly ReadOnlyReactiveProperty<bool> CanvasVisible;
+
+        private readonly ReactiveProperty<bool> canvasVisible = new ReactiveProperty<bool>(false);
+        public ReadOnlyReactiveProperty<bool> CanvasVisible => canvasVisible;
+
         public readonly ReadOnlyReactiveProperty<string> ChartPackTitle;
 
         public readonly ReadOnlyReactiveProperty<string> PreviewStartBeatField1String;
@@ -32,9 +35,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ChartPackDataViewModel(ChartEditorModel model, CommandManager commandManager)
             : base(model, commandManager)
         {
-            CanvasVisible = Model.ChartPackDataCanvasVisibility
-                .ToReadOnlyReactiveProperty()
-                .AddTo(base.Disposables);
             ChartPackTitle = Model.ChartPackData
                 .Select(data => data.Title.AsObservable())
                 .Switch()
@@ -110,15 +110,28 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
         }
 
-        public void CloseCanvas()
+        public void OpenCanvas()
         {
-            if (!Model.ChartPackDataCanvasVisibility.Value)
+            if (canvasVisible.Value)
                 return;
 
             CommandManager.ExecuteCommand(
                 new DelegateCommand(
-                    () => Model.ChartPackDataCanvasVisibility.Value = false,
-                    () => Model.ChartPackDataCanvasVisibility.Value = true
+                    () => canvasVisible.Value = true,
+                    () => canvasVisible.Value = false
+                )
+            );
+        }
+
+        public void CloseCanvas()
+        {
+            if (!canvasVisible.Value)
+                return;
+
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => canvasVisible.Value = false,
+                    () => canvasVisible.Value = true
                 )
             );
         }

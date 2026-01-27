@@ -23,7 +23,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<BpmGroupItem?> SelectedBpmItem => selectedBpmItem;
 
 
-        public readonly ReadOnlyReactiveProperty<bool> CanvasVisible;
+        public readonly ReactiveProperty<bool> canvasVisible = new ReactiveProperty<bool>(false);
+        public ReadOnlyReactiveProperty<bool> CanvasVisible => canvasVisible;
         public readonly ReadOnlyReactiveProperty<bool> ListVisible;
 
         public readonly ReadOnlyReactiveProperty<int?> SelectedBpmItemIndex;
@@ -64,7 +65,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(Disposables);
 
             Model.IsSimplificationMode.ToReadOnlyReactiveProperty().AddTo(Disposables);
-            CanvasVisible = Model.BpmGroupCanvasVisibility.ToReadOnlyReactiveProperty().AddTo(Disposables);
 
             SelectedBpmItemIndex = SelectedBpmItem
                 .Select(item => item != null
@@ -136,15 +136,28 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         }
 
 
-        public void CloseCanvas()
+        public void OpenCanvas()
         {
-            if (!Model.BpmGroupCanvasVisibility.CurrentValue)
+            if (canvasVisible.CurrentValue)
                 return;
 
             CommandManager.ExecuteCommand(
                 new DelegateCommand(
-                    () => Model.BpmGroupCanvasVisibility.Value = false,
-                    () => Model.BpmGroupCanvasVisibility.Value = true
+                    () => canvasVisible.Value = true,
+                    () => canvasVisible.Value = false
+                )
+            );
+        }
+
+        public void CloseCanvas()
+        {
+            if (!canvasVisible.CurrentValue)
+                return;
+
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => canvasVisible.Value = false,
+                    () => canvasVisible.Value = true
                 )
             );
         }

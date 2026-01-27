@@ -1274,8 +1274,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1595764879}
   m_HandleRect: {fileID: 1595764877}
   m_Direction: 2
-  m_Value: 1.0000017
-  m_Size: 0.58815163
+  m_Value: 1.0000014
+  m_Size: 0.56640816
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4604,7 +4604,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1070775234}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.40864152
+  m_Size: 0.3964961
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -16528,7 +16528,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 173007117}
   m_HandleRect: {fileID: 173007115}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -26586,6 +26586,10 @@ MonoBehaviour:
   speedTemplateButton: {fileID: 371389904}
   exitSimplificationModeButton: {fileID: 967489638}
   enterSimplificationModeButton: {fileID: 1019238896}
+  chartPackDataView: {fileID: 42740034}
+  chartDataView: {fileID: 1403133577}
+  musicVersionView: {fileID: 651228600}
+  bpmGroupView: {fileID: 584011673}
 --- !u!1 &1643976272
 GameObject:
   m_ObjectHideFlags: 0

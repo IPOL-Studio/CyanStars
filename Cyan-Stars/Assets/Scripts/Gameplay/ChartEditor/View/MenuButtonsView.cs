@@ -47,6 +47,19 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private Button enterSimplificationModeButton = null!;
 
+        [Header("CanvasView 绑定")]
+        [SerializeField]
+        private ChartPackDataView chartPackDataView = null!;
+
+        [SerializeField]
+        private ChartDataView chartDataView = null!;
+
+        [SerializeField]
+        private MusicVersionView musicVersionView = null!;
+
+        [SerializeField]
+        private BpmGroupView bpmGroupView = null!;
+
 
         public override void Bind(MenuButtonsViewModel targetViewModel)
         {
@@ -72,11 +85,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
             functionToggle.onValueChanged.AddListener(ViewModel.SetFunctionCanvasVisibility);
             saveButton.onClick.AddListener(ViewModel.SaveFileToDesk);
 
-            chartPackDataButton.onClick.AddListener(() => ViewModel.OpenCanvas(CanvasType.ChartPackDataCanvas));
-            chartDataButton.onClick.AddListener(() => ViewModel.OpenCanvas(CanvasType.ChartDataCanvas));
-            musicVersionButton.onClick.AddListener(() => ViewModel.OpenCanvas(CanvasType.MusicVersionCanvas));
-            bpmGroupButton.onClick.AddListener(() => ViewModel.OpenCanvas(CanvasType.BpmGroupCanvas));
-            speedTemplateButton.onClick.AddListener(() => ViewModel.OpenCanvas(CanvasType.SpeedTemplateCanvas));
+            chartPackDataButton.onClick.AddListener(chartPackDataView.OpenCanvas);
+            chartDataButton.onClick.AddListener(chartDataView.OpenCanvas);
+            musicVersionButton.onClick.AddListener(musicVersionView.OpenCanvas);
+            bpmGroupButton.onClick.AddListener(bpmGroupView.OpenCanvas);
+            // speedTemplateButton.onClick.AddListener();
 
             exitSimplificationModeButton.onClick.AddListener(() => ViewModel.SetSimplificationMode(false));
             enterSimplificationModeButton.onClick.AddListener(() => ViewModel.SetSimplificationMode(true));

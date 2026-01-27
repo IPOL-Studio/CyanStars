@@ -153,6 +153,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
             );
         }
 
+        public void OpenCanvas()
+        {
+            ViewModel.OpenCanvas();
+        }
+
         protected override void OnDestroy()
         {
             closeCanvasButton.onClick.RemoveAllListeners();

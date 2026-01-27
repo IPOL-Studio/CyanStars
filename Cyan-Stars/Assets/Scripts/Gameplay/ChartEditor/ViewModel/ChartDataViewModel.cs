@@ -13,10 +13,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private readonly ChartMetaDataEditorModel MetaData;
         private readonly ChartDataEditorModel ChartData;
 
-        public ReadOnlyReactiveProperty<bool> ChartDataCanvasVisibility { get; }
-        public ReadOnlyReactiveProperty<ChartDifficulty?> ChartDifficulty { get; }
-        public ReadOnlyReactiveProperty<string> ChartLevelString { get; }
-        public ReadOnlyReactiveProperty<string> ReadyBeatCountString { get; }
+        private readonly ReactiveProperty<bool> canvasVisibility = new ReactiveProperty<bool>(false);
+        public ReadOnlyReactiveProperty<bool> CanvasVisibility => canvasVisibility;
+
+        public readonly ReadOnlyReactiveProperty<ChartDifficulty?> ChartDifficulty;
+        public readonly ReadOnlyReactiveProperty<string> ChartLevelString;
+        public readonly ReadOnlyReactiveProperty<string> ReadyBeatCountString;
 
 
         public ChartDataViewModel(ChartEditorModel model, CommandManager commandManager)
@@ -24,10 +26,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             MetaData = Model.ChartPackData.CurrentValue.ChartMetaDatas[Model.ChartMetaDataIndex];
             ChartData = Model.ChartData.CurrentValue;
-
-            ChartDataCanvasVisibility = Model.ChartDataCanvasVisibility
-                .ToReadOnlyReactiveProperty()
-                .AddTo(base.Disposables);
 
             ChartDifficulty = MetaData.Difficulty
                 .ToReadOnlyReactiveProperty()
@@ -43,19 +41,31 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
         }
 
-        public void CloseCanvas()
+
+        public void OpenCanvas()
         {
-            if (!ChartDataCanvasVisibility.CurrentValue)
+            if (canvasVisibility.CurrentValue)
                 return;
 
-            CommandManager.ExecuteCommand(new DelegateCommand(() =>
-                {
-                    Model.ChartDataCanvasVisibility.Value = false;
-                }, () =>
-                {
-                    Model.ChartDataCanvasVisibility.Value = true;
-                }
-            ));
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => canvasVisibility.Value = true,
+                    () => canvasVisibility.Value = false
+                )
+            );
+        }
+
+        public void CloseCanvas()
+        {
+            if (!canvasVisibility.CurrentValue)
+                return;
+
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => canvasVisibility.Value = false,
+                    () => canvasVisibility.Value = true
+                )
+            );
         }
 
         public void SetChartDifficulty(ChartDifficulty? newDifficulty)

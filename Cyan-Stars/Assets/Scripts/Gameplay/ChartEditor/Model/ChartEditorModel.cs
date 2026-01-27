@@ -74,13 +74,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         // TODO: 后续用 list 拓展为选中多个音符一次编辑
         public readonly ReactiveProperty<BaseChartNoteData?> SelectedNoteData = new ReactiveProperty<BaseChartNoteData?>(null);
 
-        // 弹窗可见性
-        public readonly ReactiveProperty<bool> ChartPackDataCanvasVisibility = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> ChartDataCanvasVisibility = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> MusicVersionCanvasVisibility = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> BpmGroupCanvasVisibility = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> SpeedTemplateCanvasVisibility = new ReactiveProperty<bool>(false); // TODO
-
         // 编辑器属性
         public readonly ReactiveProperty<int> PosAccuracy = new ReactiveProperty<int>(4);
         public readonly ReactiveProperty<bool> PosMagnet = new ReactiveProperty<bool>(true);

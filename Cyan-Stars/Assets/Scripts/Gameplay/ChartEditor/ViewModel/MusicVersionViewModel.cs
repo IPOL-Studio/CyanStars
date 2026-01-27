@@ -29,7 +29,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ISynchronizedView<KeyValuePair<string, List<string>>, MusicVersionStaffItemViewModel> StaffItems;
 
 
-        public readonly ReadOnlyReactiveProperty<bool> CanvasVisibility;
+        private readonly ReactiveProperty<bool> canvasVisibility = new ReactiveProperty<bool>(false);
+        public ReadOnlyReactiveProperty<bool> CanvasVisibility => canvasVisibility;
         public readonly ReadOnlyReactiveProperty<bool> ListVisibility;
         public readonly ReadOnlyReactiveProperty<bool> DetailVisibility;
 
@@ -93,7 +94,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
 
 
-            CanvasVisibility = Model.MusicVersionCanvasVisibility;
             ListVisibility = Observable
                 .CombineLatest(
                     model.IsSimplificationMode,
@@ -161,9 +161,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var oldValue = selectedMusicVersionData.CurrentValue;
             CommandManager.ExecuteCommand(
                 new DelegateCommand(
-                () => selectedMusicVersionData.Value = musicVersionData,
-                () => selectedMusicVersionData.Value = oldValue
-            ));
+                    () => selectedMusicVersionData.Value = musicVersionData,
+                    () => selectedMusicVersionData.Value = oldValue
+                ));
         }
 
         /// <summary>
@@ -267,14 +267,26 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             );
         }
 
+        public void OpenCanvas()
+        {
+            if (canvasVisibility.CurrentValue)
+                return;
+
+            CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => canvasVisibility.Value = true,
+                    () => canvasVisibility.Value = false
+                )
+            );
+        }
 
         public void CloseCanvas()
         {
-            if (!CanvasVisibility.CurrentValue)
+            if (!canvasVisibility.CurrentValue)
                 return;
 
             // 停止正在播放的音乐
-            if(Model.IsTimelinePlaying.CurrentValue)
+            if (Model.IsTimelinePlaying.CurrentValue)
                 Model.IsTimelinePlaying.Value = false;
 
             // 关闭弹窗时，卸载原有的音乐并尝试加载首个元素作为制谱器内播放的音乐。这个操作无需撤销。
@@ -301,9 +313,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             CommandManager.ExecuteCommand(
                 new DelegateCommand(
-                    () => Model.MusicVersionCanvasVisibility.Value = false,
-                    () => Model.MusicVersionCanvasVisibility.Value = true
-                ));
+                    () => canvasVisibility.Value = false,
+                    () => canvasVisibility.Value = true
+                )
+            );
         }
 
         /// <summary>

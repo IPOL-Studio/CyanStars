@@ -190,6 +190,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.SetBeat(startBeatField1.text, startBeatField2.text, startBeatField3.text);
         }
 
+        public void OpenCanvas()
+        {
+            ViewModel.OpenCanvas();
+        }
+
         protected override void OnDestroy()
         {
             closeCanvasButton.onClick.RemoveListener(ViewModel.CloseCanvas);

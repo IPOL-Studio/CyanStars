@@ -30,26 +30,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             functionCanvasVisibility.Value = newValue;
         }
 
-        public void OpenCanvas(CanvasType canvasType)
-        {
-            var property = GetCanvasVisibilityProperty(canvasType);
-
-            if (property.Value)
-                return;
-
-
-            CommandManager.ExecuteCommand(new DelegateCommand(() =>
-                    {
-                        property.Value = true;
-                    },
-                    () =>
-                    {
-                        property.Value = false;
-                    }
-                )
-            );
-        }
-
         public void SetSimplificationMode(bool newValue)
         {
             if (newValue == Model.IsSimplificationMode.Value)
@@ -77,28 +57,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 Model.ChartPackData.CurrentValue,
                 Model.ChartData.CurrentValue
             );
-        }
-
-
-        private ReactiveProperty<bool> GetCanvasVisibilityProperty(CanvasType canvasType)
-        {
-            switch (canvasType)
-            {
-                case CanvasType.ChartDataCanvas:
-                    return Model.ChartDataCanvasVisibility;
-                case CanvasType.ChartPackDataCanvas:
-                    return Model.ChartPackDataCanvasVisibility;
-                case CanvasType.MusicVersionCanvas:
-                    return Model.MusicVersionCanvasVisibility;
-                case CanvasType.BpmGroupCanvas:
-                    return Model.BpmGroupCanvasVisibility;
-                case CanvasType.SpeedTemplateCanvas:
-                    return Model.SpeedTemplateCanvasVisibility;
-                case CanvasType.EffectTracksCanvas:
-                    throw new NotImplementedException("EffectTracksCanvas is not implemented yet.");
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(canvasType), canvasType, null);
-            }
         }
     }
 }

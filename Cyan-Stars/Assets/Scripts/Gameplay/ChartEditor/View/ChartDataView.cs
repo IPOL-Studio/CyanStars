@@ -43,7 +43,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
-            ViewModel.ChartDataCanvasVisibility
+            ViewModel.CanvasVisibility
                 .Subscribe(isVisibility =>
                     {
                         chartDataCanvas.enabled = isVisibility;
@@ -102,6 +102,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
             );
             levelField.onEndEdit.AddListener(ViewModel.SetChartLevelString);
             readyBeatField.onEndEdit.AddListener(ViewModel.SetReadyBeatCount);
+        }
+
+        public void OpenCanvas()
+        {
+            ViewModel.OpenCanvas();
         }
 
         protected override void OnDestroy()

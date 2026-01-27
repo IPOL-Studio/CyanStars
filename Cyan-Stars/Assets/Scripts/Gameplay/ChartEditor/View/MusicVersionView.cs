@@ -218,6 +218,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
             topItemButton.onClick.AddListener(ViewModel.TopItem);
         }
 
+        public void OpenCanvas()
+        {
+            ViewModel.OpenCanvas();
+        }
+
         protected override void OnDestroy()
         {
             addListItemButton.onClick.RemoveListener(ViewModel.AddMusicVersionItem);
