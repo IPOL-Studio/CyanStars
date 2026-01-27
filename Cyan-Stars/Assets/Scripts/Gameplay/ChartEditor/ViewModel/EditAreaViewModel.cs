@@ -176,9 +176,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         }
 
         /// <summary>
+        /// 获取两条主要（整拍）节拍线之间的像素距离
+        /// </summary>
+        public float GetMajorBeatLineDistance()
+        {
+            return DefaultMajorBeatLineInterval * BeatZoom.CurrentValue;
+        }
+
+        /// <summary>
         /// 获取两条细分节拍线之间的像素距离
         /// </summary>
-        public float GetBeatLineDistance()
+        public float GetMinorBeatLineDistance()
         {
             return DefaultMajorBeatLineInterval * BeatZoom.CurrentValue / BeatAccuracy.CurrentValue;
         }
@@ -245,7 +253,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             // 计算纵坐标
             float relativeY = localPosition.y - judgeLineY;
-            float beatDistance = GetBeatLineDistance(); // 单个细分拍的距离
+            float beatDistance = GetMinorBeatLineDistance(); // 单个细分拍的距离
 
             int subBeatIndex = Mathf.RoundToInt(relativeY / beatDistance);
             subBeatIndex = Mathf.Max(0, subBeatIndex);

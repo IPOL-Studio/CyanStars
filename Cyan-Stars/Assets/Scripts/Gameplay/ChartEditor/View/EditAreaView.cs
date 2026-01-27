@@ -152,7 +152,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             float minVisibleY = scrollY - 100f;
             float maxVisibleY = scrollY + viewportHeight + 100f;
 
-            float beatLineDist = ViewModel.GetBeatLineDistance();
+            float beatLineDist = ViewModel.GetMinorBeatLineDistance();
             float judgeLineY = judgeLineRect.anchoredPosition.y;
 
             int minIndex = Mathf.FloorToInt((minVisibleY - judgeLineY) / beatLineDist);
@@ -236,7 +236,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             float viewMinY = scrollY - 100f;
             float viewMaxY = scrollY + viewportHeight + 100f;
 
-            float beatDist = ViewModel.GetBeatLineDistance();
+            float beatDist = ViewModel.GetMajorBeatLineDistance();
             float judgeLineY = judgeLineRect.anchoredPosition.y;
 
             float minVisibleFBeatVal = (viewMinY - judgeLineY) / beatDist;
