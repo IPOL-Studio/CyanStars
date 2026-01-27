@@ -113,6 +113,14 @@ namespace CyanStars.Gameplay.ChartEditor
             return TargetPathToHandlerMap.GetValueOrDefault(targetPath);
         }
 
+        /// <summary>
+        /// 将谱包和谱面保存并覆盖到磁盘
+        /// </summary>
+        /// <param name="workspacePath">工作区绝对路径（谱包索引文件所在的目录）</param>
+        /// <param name="chartMetaDataIndex">谱面文件在谱包元数据中的下标</param>
+        /// <param name="chartPackDataEditorModel">谱包实例</param>
+        /// <param name="chartDataEditorModel">谱面实例</param>
+        /// <returns></returns>
         public static bool SaveChartToDesk(string workspacePath,
                                            int chartMetaDataIndex,
                                            ChartPackDataEditorModel chartPackDataEditorModel,

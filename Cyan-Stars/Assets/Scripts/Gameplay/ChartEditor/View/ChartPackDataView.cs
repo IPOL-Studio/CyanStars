@@ -151,6 +151,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     previewEndBeatField3.text
                 )
             );
+
+            exportChartPackButton.onClick.AddListener(ViewModel.ExportChartPack);
         }
 
         public void OpenCanvas()
@@ -168,6 +170,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             previewEndBeatField1.onEndEdit.RemoveAllListeners();
             previewEndBeatField2.onEndEdit.RemoveAllListeners();
             previewEndBeatField3.onEndEdit.RemoveAllListeners();
+            exportChartPackButton.onClick.RemoveAllListeners();
         }
     }
 }

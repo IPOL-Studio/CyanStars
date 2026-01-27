@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using UnityEngine;
@@ -17,7 +16,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private Toggle functionToggle = null!;
 
         [SerializeField]
-        private Button saveButton = null!; // TODO
+        private Button saveButton = null!;
 
         [SerializeField]
         private Button testButton = null!; // TODO

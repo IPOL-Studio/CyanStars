@@ -11,7 +11,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class ChartPackDataViewModel : BaseViewModel
     {
-        // TODO: 谱包导出还没做
         private Vector2? dragStartCropPos;
         private float? dragStartCropHeight;
 
@@ -216,46 +215,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             );
         }
 
-        /// <summary>
-        /// 开始拖拽，记录初始状态
-        /// </summary>
-        public void OnCoverCropDragBegin()
+        public void ExportChartPack()
         {
-            dragStartCropPos = Model.ChartPackData.CurrentValue.CropStartPosition.Value;
-            dragStartCropHeight = Model.ChartPackData.CurrentValue.CropHeight.Value;
-        }
-
-        /// <summary>
-        /// 拖拽结束，提交命令
-        /// </summary>
-        public void OnCoverCropDragEnd()
-        {
-            var finalPos = Model.ChartPackData.CurrentValue.CropStartPosition.Value;
-            var finalHeight = Model.ChartPackData.CurrentValue.CropHeight.Value;
-
-            var oldPos = dragStartCropPos;
-            var oldHeight = dragStartCropHeight;
-
-            if (oldPos != null && oldHeight != null &&
-                (Vector2)oldPos == finalPos &&
-                Mathf.Approximately((float)oldHeight, finalHeight ?? 0))
-            {
-                return;
-            }
-
-            CommandManager.ExecuteCommand(
-                new DelegateCommand(
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.CropStartPosition.Value = finalPos;
-                        Model.ChartPackData.CurrentValue.CropHeight.Value = finalHeight;
-                    },
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.CropStartPosition.Value = oldPos;
-                        Model.ChartPackData.CurrentValue.CropHeight.Value = oldHeight;
-                    }
-                )
+            // TODO: 导出谱包内所有的谱面文件，并打包为一个文件
+            GameRoot.File.OpenSaveFolderPathBrowser(path =>
+                {
+                    ChartEditorFileManager.SaveChartToDesk(path, Model.ChartMetaDataIndex, Model.ChartPackData.CurrentValue, Model.ChartData.CurrentValue);
+                },
+                null,
+                "导出到"
             );
         }
     }
