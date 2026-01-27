@@ -26,6 +26,9 @@ namespace CyanStars.Gameplay.ChartEditor
         private EditorAttributeView editorAttributeView = null!;
 
         [SerializeField]
+        private NoteAttributeView noteAttributeView = null!;
+
+        [SerializeField]
         private ChartPackDataView chartPackDataView = null!;
 
         [SerializeField]
@@ -48,6 +51,9 @@ namespace CyanStars.Gameplay.ChartEditor
 
         [SerializeField]
         private EditAreaView editAreaView = null!;
+
+        [SerializeField]
+        private PopupView popupView = null!;
 
 
         /// <summary>
@@ -76,6 +82,9 @@ namespace CyanStars.Gameplay.ChartEditor
             var editorAttributeViewModel = new EditorAttributeViewModel(model, commandManager).AddTo(Disposables);
             editorAttributeView.Bind(editorAttributeViewModel);
 
+            var noteAttributeViewModel = new NoteAttributeViewModel(model, commandManager).AddTo(Disposables);
+            noteAttributeView.Bind(noteAttributeViewModel);
+
             var chartPackDataViewModel = new ChartPackDataViewModel(model, commandManager).AddTo(Disposables);
             chartPackDataView.Bind(chartPackDataViewModel);
 
@@ -96,6 +105,9 @@ namespace CyanStars.Gameplay.ChartEditor
 
             var editAreaViewModel = new EditAreaViewModel(model, commandManager).AddTo(Disposables);
             editAreaView.Bind(editAreaViewModel);
+
+            var popupViewModel = new PopupViewModel(model, commandManager).AddTo(Disposables);
+            popupView.Bind(popupViewModel);
         }
 
         /// <summary>

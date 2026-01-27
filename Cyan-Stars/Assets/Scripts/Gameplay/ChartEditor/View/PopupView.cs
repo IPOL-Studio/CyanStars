@@ -57,7 +57,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                             // 新增按钮并添加回调
                             foreach ((string key, Action? callback) in ViewModel.ButtonCallBackMap)
                             {
-                                var go = Instantiate(buttonPrefab, canvas.transform);
+                                var go = Instantiate(buttonPrefab, buttonsFrame.transform);
                                 var popupButton = go.GetComponent<PopupButton>();
                                 popupButton.Text.text = key;
                                 popupButton.Button.onClick.AddListener(() =>

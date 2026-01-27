@@ -491,5 +491,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b69362fc5c41c243b659a136492fd79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PopupButton
-  button: {fileID: 7757076495624774826}
-  text: {fileID: 2267842852582037851}
+  Button: {fileID: 7757076495624774826}
+  Text: {fileID: 2267842852582037851}
