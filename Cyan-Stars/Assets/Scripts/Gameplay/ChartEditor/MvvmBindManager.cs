@@ -64,7 +64,6 @@ namespace CyanStars.Gameplay.ChartEditor
                               int chartMetadataIndex,
                               ChartPackData chartPackData,
                               ChartData chartData,
-                              CommandManager commandManager,
                               ChartEditorMusicManager musicManager)
         {
             // TODO: 为 Model 实现 IDispose，以进一步管理生命周期
@@ -73,40 +72,40 @@ namespace CyanStars.Gameplay.ChartEditor
 
             musicManager.Init(model);
 
-            var toolbarViewModel = new ToolbarViewModel(model, commandManager).AddTo(Disposables);
+            var toolbarViewModel = new ToolbarViewModel(model).AddTo(Disposables);
             toolbarView.Bind(toolbarViewModel);
 
-            var menuButtonsViewModel = new MenuButtonsViewModel(model, commandManager).AddTo(Disposables);
+            var menuButtonsViewModel = new MenuButtonsViewModel(model).AddTo(Disposables);
             menuButtonsView.Bind(menuButtonsViewModel);
 
-            var editorAttributeViewModel = new EditorAttributeViewModel(model, commandManager).AddTo(Disposables);
+            var editorAttributeViewModel = new EditorAttributeViewModel(model).AddTo(Disposables);
             editorAttributeView.Bind(editorAttributeViewModel);
 
-            var noteAttributeViewModel = new NoteAttributeViewModel(model, commandManager).AddTo(Disposables);
+            var noteAttributeViewModel = new NoteAttributeViewModel(model).AddTo(Disposables);
             noteAttributeView.Bind(noteAttributeViewModel);
 
-            var chartPackDataViewModel = new ChartPackDataViewModel(model, commandManager).AddTo(Disposables);
+            var chartPackDataViewModel = new ChartPackDataViewModel(model).AddTo(Disposables);
             chartPackDataView.Bind(chartPackDataViewModel);
 
-            var chartPackDataCoverViewModel = new ChartPackDataCoverViewModel(model, commandManager).AddTo(Disposables);
+            var chartPackDataCoverViewModel = new ChartPackDataCoverViewModel(model).AddTo(Disposables);
             chartPackDataCoverView.Bind(chartPackDataCoverViewModel);
             cropFrameView.Bind(chartPackDataCoverViewModel);
             foreach (var item in cropHandlerViews)
                 item.Bind(chartPackDataCoverViewModel);
 
-            var chartDataViewModel = new ChartDataViewModel(model, commandManager).AddTo(Disposables);
+            var chartDataViewModel = new ChartDataViewModel(model).AddTo(Disposables);
             chartDataView.Bind(chartDataViewModel);
 
-            var musicVersionViewModel = new MusicVersionViewModel(model, commandManager).AddTo(Disposables);
+            var musicVersionViewModel = new MusicVersionViewModel(model).AddTo(Disposables);
             musicVersionView.Bind(musicVersionViewModel);
 
-            var bpmGroupViewModel = new BpmGroupViewModel(model, commandManager).AddTo(Disposables);
+            var bpmGroupViewModel = new BpmGroupViewModel(model).AddTo(Disposables);
             bpmGroupView.Bind(bpmGroupViewModel);
 
-            var editAreaViewModel = new EditAreaViewModel(model, commandManager).AddTo(Disposables);
+            var editAreaViewModel = new EditAreaViewModel(model).AddTo(Disposables);
             editAreaView.Bind(editAreaViewModel);
 
-            var popupViewModel = new PopupViewModel(model, commandManager).AddTo(Disposables);
+            var popupViewModel = new PopupViewModel(model).AddTo(Disposables);
             popupView.Bind(popupViewModel);
         }
 

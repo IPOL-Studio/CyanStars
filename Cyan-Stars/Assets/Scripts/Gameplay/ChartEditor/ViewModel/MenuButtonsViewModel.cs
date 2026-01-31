@@ -15,8 +15,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<bool> IsSimplificationMode;
 
 
-        public MenuButtonsViewModel(ChartEditorModel model, CommandManager commandManager)
-            : base(model, commandManager)
+        public MenuButtonsViewModel(ChartEditorModel model)
+            : base(model)
         {
             FunctionCanvasVisibility = functionCanvasVisibility.ToReadOnlyReactiveProperty().AddTo(Disposables);
             IsSimplificationMode = Model.IsSimplificationMode.ToReadOnlyReactiveProperty().AddTo(Disposables);

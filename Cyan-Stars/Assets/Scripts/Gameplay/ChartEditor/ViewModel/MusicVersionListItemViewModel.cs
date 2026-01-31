@@ -15,9 +15,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<string> MusicItemTitle;
 
 
-        public MusicVersionListItemViewModel(ChartEditorModel model, CommandManager commandManager,
-                                             MusicVersionViewModel musicVersionViewModel, MusicVersionDataEditorModel musicVersionData)
-            : base(model, commandManager)
+        public MusicVersionListItemViewModel(ChartEditorModel model,
+                                             MusicVersionViewModel musicVersionViewModel,
+                                             MusicVersionDataEditorModel musicVersionData)
+            : base(model)
         {
             MusicVersionViewModel = musicVersionViewModel;
             MusicVersionData = musicVersionData;

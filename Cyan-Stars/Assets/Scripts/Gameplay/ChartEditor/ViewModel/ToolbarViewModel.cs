@@ -13,8 +13,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         /// <summary>
         /// 构造与绑定
         /// </summary>
-        public ToolbarViewModel(ChartEditorModel model, CommandManager commandManager)
-            : base(model, commandManager)
+        public ToolbarViewModel(ChartEditorModel model)
+            : base(model)
         {
             SelectedEditTool = Model.SelectedEditTool.AddTo(Disposables);
         }

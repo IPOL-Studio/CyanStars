@@ -29,8 +29,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<Vector2> CropRightTopPercentPos;
 
 
-        public ChartPackDataCoverViewModel(ChartEditorModel model, CommandManager commandManager)
-            : base(model, commandManager)
+        public ChartPackDataCoverViewModel(ChartEditorModel model)
+            : base(model)
         {
             // API 触发 --> FilePath 更新 & CoverSprite 卸载和异步加载 --> CoverFrame 可见性更新 --> ImageFrame 宽高比更新 --> 计算裁剪区域位置和大小 --> CoverRectTransform 位置更新 --> RectMask 边距更新
 

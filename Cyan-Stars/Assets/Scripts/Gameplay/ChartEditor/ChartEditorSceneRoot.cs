@@ -76,7 +76,7 @@ public class ChartEditorSceneRoot : MonoBehaviour
             throw new NotImplementedException(); //TODO
         }
 
-        mvvmBindManager.StartBind(workspacePath, chartMetadataIndex, chartPackData, chartData, commandManager, musicManager);
+        mvvmBindManager.StartBind(workspacePath, chartMetadataIndex, chartPackData, chartData, musicManager);
     }
 
     /// <summary>

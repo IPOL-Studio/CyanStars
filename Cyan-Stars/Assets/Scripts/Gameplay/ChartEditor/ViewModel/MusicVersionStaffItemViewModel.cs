@@ -17,10 +17,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public IReadOnlyCollection<string> Jobs => StaffData.Value.AsReadOnly();
 
 
-        public MusicVersionStaffItemViewModel(
-            ChartEditorModel model, CommandManager commandManager,
-            MusicVersionViewModel musicVersionViewModel, KeyValuePair<string, List<string>> staffData)
-            : base(model, commandManager)
+        public MusicVersionStaffItemViewModel(ChartEditorModel model,
+                                              MusicVersionViewModel musicVersionViewModel,
+                                              KeyValuePair<string, List<string>> staffData)
+            : base(model)
         {
             MusicVersionViewModel = musicVersionViewModel;
             StaffData = staffData;

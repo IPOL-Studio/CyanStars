@@ -27,11 +27,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         // 通过构造函数显式传递父级的 Model 和 CommandManager
         public EditAreaNoteViewModel(
             ChartEditorModel model,
-            CommandManager commandManager,
             BaseChartNoteData data,
             EditAreaViewModel parentViewModel,
             float judgeLineYOffset)
-            : base(model, commandManager)
+            : base(model)
         {
             this.data = data;
             this.parentViewModel = parentViewModel;

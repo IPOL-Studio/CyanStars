@@ -16,8 +16,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public IReadOnlyDictionary<string, Action?> ButtonCallBackMap => Model.PopupButtonCallBackMap;
         public bool ShowCloseButton => Model.PopupShowCloseButton;
 
-        public PopupViewModel(ChartEditorModel model, CommandManager commandManager)
-            : base(model, commandManager)
+        public PopupViewModel(ChartEditorModel model)
+            : base(model)
         {
         }
 

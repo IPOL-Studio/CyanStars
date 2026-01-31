@@ -34,8 +34,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<string> StartBeatText3;
 
 
-        public BpmGroupViewModel(ChartEditorModel model, CommandManager commandManager)
-            : base(model, commandManager)
+        public BpmGroupViewModel(ChartEditorModel model)
+            : base(model)
         {
             BpmGroupDataChangedSubject = Model.BpmGroupDataChangedSubject.AsObservable();
 
@@ -48,7 +48,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .CreateView(bpmItem =>
                     new BpmGroupListItemViewModel(
                         Model,
-                        CommandManager,
                         this,
                         bpmItem,
                         Model.ChartPackData.CurrentValue.BpmGroup

@@ -19,8 +19,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<string> BeatZoomString;
 
 
-        public EditorAttributeViewModel(ChartEditorModel model, CommandManager commandManager)
-            : base(model, commandManager)
+        public EditorAttributeViewModel(ChartEditorModel model)
+            : base(model)
         {
             ShowEditorAttributeFrame = Model.SelectedNoteData
                 .Select(data => data == null)

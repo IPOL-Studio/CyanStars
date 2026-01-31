@@ -671,7 +671,7 @@ MonoBehaviour:
   mvvmBindManager: {fileID: 927531576}
   commandManager: {fileID: 239559645}
   musicManager: {fileID: 941236136}
-  fileManager: {fileID: 0}
+  fileManager: {fileID: 1322313312}
 --- !u!1 &42740033 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 994941279456320296, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}

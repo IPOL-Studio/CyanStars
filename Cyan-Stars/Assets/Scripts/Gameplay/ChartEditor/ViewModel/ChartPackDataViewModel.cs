@@ -31,8 +31,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<bool> CoverCropAreaVisible;
 
 
-        public ChartPackDataViewModel(ChartEditorModel model, CommandManager commandManager)
-            : base(model, commandManager)
+        public ChartPackDataViewModel(ChartEditorModel model)
+            : base(model)
         {
             ChartPackTitle = Model.ChartPackData
                 .Select(data => data.Title.AsObservable())

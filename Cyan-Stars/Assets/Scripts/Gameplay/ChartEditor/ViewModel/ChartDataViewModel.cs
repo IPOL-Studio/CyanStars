@@ -21,8 +21,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<string> ReadyBeatCountString;
 
 
-        public ChartDataViewModel(ChartEditorModel model, CommandManager commandManager)
-            : base(model, commandManager)
+        public ChartDataViewModel(ChartEditorModel model)
+            : base(model)
         {
             MetaData = Model.ChartPackData.CurrentValue.ChartMetaDatas[Model.ChartMetaDataIndex];
             ChartData = Model.ChartData.CurrentValue;

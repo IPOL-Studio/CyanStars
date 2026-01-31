@@ -85,8 +85,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
 
 
-        public NoteAttributeViewModel(ChartEditorModel model, CommandManager commandManager)
-            : base(model, commandManager)
+        public NoteAttributeViewModel(ChartEditorModel model)
+            : base(model)
         {
         }
     }

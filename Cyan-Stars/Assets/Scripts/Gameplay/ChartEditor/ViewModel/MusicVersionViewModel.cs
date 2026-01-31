@@ -39,12 +39,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<string> DetailOffset;
 
 
-        public MusicVersionViewModel(ChartEditorModel model, CommandManager commandManager)
-            : base(model, commandManager)
+        public MusicVersionViewModel(ChartEditorModel model)
+            : base(model)
         {
             // 初始化 MusicListItems
             MusicListItems = Model.ChartPackData.CurrentValue.MusicVersions
-                .CreateView(data => new MusicVersionListItemViewModel(model, commandManager, this, data))
+                .CreateView(data => new MusicVersionListItemViewModel(model, this, data))
                 .AddTo(base.Disposables);
 
             // 如果音乐版本不为空，就选择首个音乐版本数据作为初始选中项
@@ -58,7 +58,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // 初始化代理集合和视图
             staffItemsProxy = new ObservableList<KeyValuePair<string, List<string>>>();
             StaffItems = staffItemsProxy
-                .CreateView(kvp => new MusicVersionStaffItemViewModel(model, commandManager, this, kvp))
+                .CreateView(kvp => new MusicVersionStaffItemViewModel(model, this, kvp))
                 .AddTo(base.Disposables);
 
             // 设置 StaffItems 数据同步逻辑，并使用 SerialDisposable 来管理当前选中 Staffs 集合的事件订阅，切换选中项时自动取消上一次的订阅

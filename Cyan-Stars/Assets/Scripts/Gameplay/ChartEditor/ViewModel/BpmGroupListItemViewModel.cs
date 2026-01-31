@@ -23,12 +23,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public BpmGroupListItemViewModel(
             ChartEditorModel model,
-            CommandManager commandManager,
             BpmGroupViewModel bpmGroupViewModel,
             BpmGroupItem bpmItem,
             IList<BpmGroupItem> bpmListItems
         )
-            : base(model, commandManager)
+            : base(model)
         {
             BpmGroupViewModel = bpmGroupViewModel;
             BpmItem = bpmItem;

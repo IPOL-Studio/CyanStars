@@ -39,8 +39,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<bool> CanPutNote;
 
 
-        public EditAreaViewModel(ChartEditorModel model, CommandManager commandManager)
-            : base(model, commandManager)
+        public EditAreaViewModel(ChartEditorModel model)
+            : base(model)
         {
             Notes.ObserveAdd()
                 .Subscribe(e =>
@@ -172,7 +172,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         /// </summary>
         public EditAreaNoteViewModel CreateNoteViewModel(BaseChartNoteData noteData, float judgeLineYOffset)
         {
-            return new EditAreaNoteViewModel(Model, CommandManager, noteData, this, judgeLineYOffset);
+            return new EditAreaNoteViewModel(Model, noteData, this, judgeLineYOffset);
         }
 
         /// <summary>
