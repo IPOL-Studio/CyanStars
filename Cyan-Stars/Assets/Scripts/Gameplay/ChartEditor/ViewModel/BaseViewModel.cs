@@ -2,7 +2,7 @@
 
 using System;
 using CyanStars.Framework;
-using CyanStars.GamePlay.ChartEditor;
+using CyanStars.Gameplay.ChartEditor;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
@@ -20,7 +20,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             Model = model;
 
-            var commandManager = GameRoot.GetDataModule<ChartModuleDataModule>().CommandManager;
+            var commandManager = GameRoot.GetDataModule<ChartEditorDataModule>().CommandManager;
             if (commandManager == null)
                 throw new NullReferenceException("commandManager");
             CommandManager = commandManager;

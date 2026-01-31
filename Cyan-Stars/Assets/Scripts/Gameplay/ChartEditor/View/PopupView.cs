@@ -1,7 +1,7 @@
 ﻿#nullable enable
 
 using System;
-using CyanStars.GamePlay.ChartEditor;
+using CyanStars.Gameplay.ChartEditor;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using TMPro;

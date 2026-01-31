@@ -4,9 +4,9 @@ using System;
 using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Command;
 
-namespace CyanStars.GamePlay.ChartEditor
+namespace CyanStars.Gameplay.ChartEditor
 {
-    public class ChartModuleDataModule : BaseDataModule
+    public class ChartEditorDataModule : BaseDataModule
     {
         public CommandManager? CommandManager { get; private set; }
 

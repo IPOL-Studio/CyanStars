@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CyanStars.GamePlay.ChartEditor
+namespace CyanStars.Gameplay.ChartEditor
 {
     public class PopupButton : MonoBehaviour
     {

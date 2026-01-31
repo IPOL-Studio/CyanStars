@@ -3,7 +3,7 @@
 using System;
 using CyanStars.Framework;
 using CyanStars.Framework.FSM;
-using CyanStars.GamePlay.ChartEditor;
+using CyanStars.Gameplay.ChartEditor;
 using UnityEngine.SceneManagement;
 
 namespace CyanStars.Gameplay.ChartEditor.Procedure
@@ -44,8 +44,8 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
 
 
             // 更新制谱器 DataModule 相关数据
-            ChartModuleDataModule chartModuleDataModule = GameRoot.GetDataModule<ChartModuleDataModule>();
-            chartModuleDataModule.OnEnterChartEditorProcedure(ChartEditorSceneRoot.CommandManager);
+            ChartEditorDataModule chartEditorDataModule = GameRoot.GetDataModule<ChartEditorDataModule>();
+            chartEditorDataModule.OnEnterChartEditorProcedure(ChartEditorSceneRoot.CommandManager);
         }
 
         public override void OnUpdate(float deltaTime)
@@ -54,8 +54,8 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
 
         public override void OnExit()
         {
-            ChartModuleDataModule chartModuleDataModule = GameRoot.GetDataModule<ChartModuleDataModule>();
-            chartModuleDataModule.OnExitChartEditorProcedure();
+            ChartEditorDataModule chartEditorDataModule = GameRoot.GetDataModule<ChartEditorDataModule>();
+            chartEditorDataModule.OnExitChartEditorProcedure();
         }
     }
 }
