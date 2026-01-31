@@ -24,7 +24,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private const float BreakLeftX = -468.8f;
         private const float BreakRightX = 468.8f;
 
-        // 通过构造函数显式传递父级的 Model 和 CommandManager
+        // 通过构造函数显式传递父级的 Model 和 CommandStack
         public EditAreaNoteViewModel(
             ChartEditorModel model,
             BaseChartNoteData data,
@@ -118,7 +118,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     Model.SelectedNoteData.Value = null;
                 }
 
-                CommandManager.ExecuteCommand(
+                CommandStack.ExecuteCommand(
                     new DelegateCommand(
                         () => Model.ChartData.CurrentValue.Notes.Remove(data),
                         () => NoteListHelper.TryInsertItem(Model.ChartData.CurrentValue.Notes, data)
@@ -141,7 +141,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 Model.SelectedNoteData.Value = null;
             }
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () => Model.ChartData.CurrentValue.Notes.Remove(data),
                     () => NoteListHelper.TryInsertItem(Model.ChartData.CurrentValue.Notes, data)

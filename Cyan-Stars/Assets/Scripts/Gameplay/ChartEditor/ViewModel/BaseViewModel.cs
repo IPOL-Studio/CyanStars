@@ -11,7 +11,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public abstract class BaseViewModel : IDisposable
     {
-        protected readonly CommandManager CommandManager;
+        protected readonly CommandStack CommandStack;
         protected readonly ChartEditorModel Model;
 
         protected readonly CompositeDisposable Disposables = new CompositeDisposable();
@@ -20,10 +20,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             Model = model;
 
-            var commandManager = GameRoot.GetDataModule<ChartEditorDataModule>().CommandManager;
-            if (commandManager == null)
-                throw new NullReferenceException("commandManager");
-            CommandManager = commandManager;
+            var commandStack = GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack;
+            if (commandStack == null)
+                throw new NullReferenceException("commandStack");
+            CommandStack = commandStack;
         }
 
         public virtual void Dispose()

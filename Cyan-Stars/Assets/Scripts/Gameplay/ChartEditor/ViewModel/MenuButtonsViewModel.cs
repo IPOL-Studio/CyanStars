@@ -35,7 +35,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (newValue == Model.IsSimplificationMode.Value)
                 return;
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () =>
                     {

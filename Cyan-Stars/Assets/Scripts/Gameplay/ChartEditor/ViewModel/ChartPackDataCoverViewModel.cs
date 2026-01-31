@@ -150,7 +150,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             Vector2? oldCropStartPos = Model.ChartPackData.CurrentValue.CropStartPosition.Value;
             float? oldCropHeight = Model.ChartPackData.CurrentValue.CropHeight.Value;
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(async () =>
                     {
                         await UpdateCoverSpriteAsync(newFilePath);
@@ -192,7 +192,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (newCropStartPos == recordedCropStartPos && newCropHeight == recordedCropHeight)
                 return;
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () =>
                     {

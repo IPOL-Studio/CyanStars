@@ -15,7 +15,7 @@ public class ChartEditorSceneRoot : MonoBehaviour
     private MvvmBindManager mvvmBindManager = null!;
 
     [SerializeField]
-    private CommandManager commandManager = null!;
+    private CommandStack commandStack = null!;
 
     [SerializeField]
     private ChartEditorMusicManager musicManager = null!;
@@ -25,7 +25,7 @@ public class ChartEditorSceneRoot : MonoBehaviour
 
 
     public static MvvmBindManager MvvmBindManager = null!;
-    public static CommandManager CommandManager = null!;
+    public static CommandStack CommandStack = null!;
     public static ChartEditorMusicManager MusicManager = null!;
     public static ChartEditorFileManager FileManager = null!;
 
@@ -33,7 +33,7 @@ public class ChartEditorSceneRoot : MonoBehaviour
     private void Awake()
     {
         MvvmBindManager = mvvmBindManager;
-        CommandManager = commandManager;
+        CommandStack = commandStack;
         MusicManager = musicManager;
         FileManager = fileManager;
     }

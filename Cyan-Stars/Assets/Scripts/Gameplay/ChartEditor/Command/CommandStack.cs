@@ -9,7 +9,7 @@ namespace CyanStars.Gameplay.ChartEditor.Command
     /// 命令管理器
     /// </summary>
     /// <remarks>使用 List 管理命令实例，以提供撤销重做功能</remarks>
-    public class CommandManager : MonoBehaviour
+    public class CommandStack : MonoBehaviour
     {
         private readonly List<ICommand> CommandHistory = new List<ICommand>();
 

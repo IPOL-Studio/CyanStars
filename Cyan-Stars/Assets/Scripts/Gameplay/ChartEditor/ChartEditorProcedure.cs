@@ -45,7 +45,7 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
 
             // 更新制谱器 DataModule 相关数据
             ChartEditorDataModule chartEditorDataModule = GameRoot.GetDataModule<ChartEditorDataModule>();
-            chartEditorDataModule.OnEnterChartEditorProcedure(ChartEditorSceneRoot.CommandManager);
+            chartEditorDataModule.OnEnterChartEditorProcedure(ChartEditorSceneRoot.CommandStack);
         }
 
         public override void OnUpdate(float deltaTime)

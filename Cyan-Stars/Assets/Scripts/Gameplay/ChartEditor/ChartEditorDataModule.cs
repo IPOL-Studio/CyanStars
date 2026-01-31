@@ -8,24 +8,24 @@ namespace CyanStars.Gameplay.ChartEditor
 {
     public class ChartEditorDataModule : BaseDataModule
     {
-        public CommandManager? CommandManager { get; private set; }
+        public CommandStack? CommandStack { get; private set; }
 
 
         public override void OnInit()
         {
         }
 
-        public void OnEnterChartEditorProcedure(CommandManager targetCommandManager)
+        public void OnEnterChartEditorProcedure(CommandStack targetCommandStack)
         {
-            CommandManager = targetCommandManager;
+            CommandStack = targetCommandStack;
         }
 
         public void OnExitChartEditorProcedure()
         {
-            if (CommandManager == null)
-                throw new Exception("未找到 CommandManager，未加载过或已经卸载？请检查业务逻辑。");
+            if (CommandStack == null)
+                throw new Exception("未找到 CommandStack，未加载过或已经卸载？请检查业务逻辑。");
 
-            CommandManager = null;
+            CommandStack = null;
         }
     }
 }

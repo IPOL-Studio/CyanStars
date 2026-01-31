@@ -97,7 +97,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
 
             var oldItem = selectedBpmItem.Value;
-            CommandManager.ExecuteCommand(new DelegateCommand(
+            CommandStack.ExecuteCommand(new DelegateCommand(
                     () => selectedBpmItem.Value = newItem,
                     () => selectedBpmItem.Value = oldItem
                 )
@@ -117,7 +117,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     oldStartBeat.Denominator, out Beat newStartBeat))
                 throw new Exception("无法正确构建 Beat");
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () =>
                     {
@@ -153,7 +153,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
 
             var oldBpm = selectedBpmItem.CurrentValue.Bpm;
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () =>
                     {
@@ -212,7 +212,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             }
 
             var oldBeat = selectedBpmItem.CurrentValue.StartBeat;
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () =>
                     {
@@ -246,7 +246,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var oldBpmItem = selectedBpmItem.CurrentValue;
             var oldIndex = Model.ChartPackData.CurrentValue.BpmGroup.IndexOf(oldBpmItem);
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () =>
                     {

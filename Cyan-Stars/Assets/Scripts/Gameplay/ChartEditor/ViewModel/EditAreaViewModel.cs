@@ -168,7 +168,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         /// <summary>
         /// 工厂方法：创建音符的子 ViewModel
-        /// 将 protected 的 Model 和 CommandManager 传递给子 VM
+        /// 将 protected 的 Model 和 CommandStack 传递给子 VM
         /// </summary>
         public EditAreaNoteViewModel CreateNoteViewModel(BaseChartNoteData noteData, float judgeLineYOffset)
         {
@@ -313,7 +313,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             var notesCollection = Model.ChartData.CurrentValue.Notes;
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () => NoteListHelper.TryInsertItem(notesCollection, noteData),
                     () => notesCollection.Remove(noteData)

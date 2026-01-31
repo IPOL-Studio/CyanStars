@@ -200,7 +200,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             if (!CanvasVisible.CurrentValue)
                 return;
 
-            GameRoot.GetDataModule<ChartEditorDataModule>().CommandManager.ExecuteCommand(
+            GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () => CanvasVisible.Value = false,
                     () => CanvasVisible.Value = true
@@ -213,7 +213,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             if (CanvasVisible.CurrentValue)
                 return;
 
-            GameRoot.GetDataModule<ChartEditorDataModule>().CommandManager.ExecuteCommand(
+            GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () => CanvasVisible.Value = true,
                     () => CanvasVisible.Value = false

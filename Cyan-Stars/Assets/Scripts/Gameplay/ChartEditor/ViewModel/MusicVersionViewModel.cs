@@ -156,7 +156,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
 
             var oldValue = selectedMusicVersionData.CurrentValue;
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () => selectedMusicVersionData.Value = musicVersionData,
                     () => selectedMusicVersionData.Value = oldValue
@@ -174,7 +174,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (selectedMusicVersionData.CurrentValue == null)
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下替换 Staff 数据。");
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () =>
                     {
@@ -198,7 +198,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (selectedMusicVersionData.CurrentValue == null)
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下修改 Staff 数据。");
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () => selectedMusicVersionData.CurrentValue.Staffs.Remove(data),
                     () => selectedMusicVersionData.CurrentValue.Staffs.Add(data)
@@ -227,7 +227,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public void AddMusicVersionItem()
         {
             var newMusicVersionData = new MusicVersionDataEditorModel(new MusicVersionData("新音乐版本"));
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () => Model.ChartPackData.CurrentValue.MusicVersions.Add(newMusicVersionData),
                     () => Model.ChartPackData.CurrentValue.MusicVersions.Remove(newMusicVersionData)
@@ -328,7 +328,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var oldTitle = SelectedMusicVersionData.CurrentValue!.VersionTitle.Value;
             if (oldTitle == newTitle)
                 return;
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () => SelectedMusicVersionData.CurrentValue!.VersionTitle.Value = newTitle,
                     () => SelectedMusicVersionData.CurrentValue!.VersionTitle.Value = oldTitle
@@ -385,7 +385,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // 仅复制文件到缓存区，暂不声明目标路径以防止自动顶替旧句柄目标路径。
             IReadonlyTempFileHandler newHandler = ChartEditorFileManager.TempFile(newOriginFilePath, null);
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(() =>
                     {
                         selectedMusicVersionData.CurrentValue.AudioFilePath.Value = newTargetRelativePath;
@@ -417,7 +417,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (SelectedMusicVersionData.CurrentValue == null)
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下设置偏移量。");
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () => SelectedMusicVersionData.CurrentValue!.Offset.Value -= AddOffsetStep,
                     () => SelectedMusicVersionData.CurrentValue!.Offset.Value += AddOffsetStep
@@ -439,7 +439,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             int oldValue = SelectedMusicVersionData.CurrentValue!.Offset.Value;
             if (oldValue == newValue)
                 return;
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () => SelectedMusicVersionData.CurrentValue!.Offset.Value = newValue,
                     () => SelectedMusicVersionData.CurrentValue!.Offset.Value = oldValue
@@ -451,7 +451,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (SelectedMusicVersionData.CurrentValue == null)
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下设置偏移量。");
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () => SelectedMusicVersionData.CurrentValue!.Offset.Value += AddOffsetStep,
                     () => SelectedMusicVersionData.CurrentValue!.Offset.Value -= AddOffsetStep
@@ -471,7 +471,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             var oldData = SelectedMusicVersionData.CurrentValue;
             int selectedIndex = Model.ChartPackData.CurrentValue.MusicVersions.IndexOf(oldData);
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () =>
                     {
@@ -494,7 +494,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             int clonedItemIndex = Model.ChartPackData.CurrentValue.MusicVersions.Count;
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () =>
                     {
@@ -539,7 +539,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (oldIndex == 0)
                 return; // 首个元素不能上移
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, oldIndex - 1),
                     () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex - 1, oldIndex)
@@ -556,7 +556,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (oldIndex == Model.ChartPackData.CurrentValue.MusicVersions.Count - 1)
                 return; // 末个元素不能下移
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, oldIndex + 1),
                     () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex + 1, oldIndex)
@@ -573,7 +573,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (oldIndex == 0)
                 return; // 首个元素不能置顶
 
-            CommandManager.ExecuteCommand(
+            CommandStack.ExecuteCommand(
                 new DelegateCommand(
                     () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, 0),
                     () => Model.ChartPackData.CurrentValue.MusicVersions.Move(0, oldIndex)
