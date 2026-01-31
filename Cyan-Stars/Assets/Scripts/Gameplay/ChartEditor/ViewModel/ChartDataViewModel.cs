@@ -13,9 +13,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private readonly ChartMetaDataEditorModel MetaData;
         private readonly ChartDataEditorModel ChartData;
 
-        private readonly ReactiveProperty<bool> canvasVisibility = new ReactiveProperty<bool>(false);
-        public ReadOnlyReactiveProperty<bool> CanvasVisibility => canvasVisibility;
-
         public readonly ReadOnlyReactiveProperty<ChartDifficulty?> ChartDifficulty;
         public readonly ReadOnlyReactiveProperty<string> ChartLevelString;
         public readonly ReadOnlyReactiveProperty<string> ReadyBeatCountString;
@@ -41,32 +38,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
         }
 
-
-        public void OpenCanvas()
-        {
-            if (canvasVisibility.CurrentValue)
-                return;
-
-            CommandManager.ExecuteCommand(
-                new DelegateCommand(
-                    () => canvasVisibility.Value = true,
-                    () => canvasVisibility.Value = false
-                )
-            );
-        }
-
-        public void CloseCanvas()
-        {
-            if (!canvasVisibility.CurrentValue)
-                return;
-
-            CommandManager.ExecuteCommand(
-                new DelegateCommand(
-                    () => canvasVisibility.Value = false,
-                    () => canvasVisibility.Value = true
-                )
-            );
-        }
 
         public void SetChartDifficulty(ChartDifficulty? newDifficulty)
         {

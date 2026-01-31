@@ -15,9 +15,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private float? dragStartCropHeight;
 
 
-        private readonly ReactiveProperty<bool> canvasVisible = new ReactiveProperty<bool>(false);
-        public ReadOnlyReactiveProperty<bool> CanvasVisible => canvasVisible;
-
         public readonly ReadOnlyReactiveProperty<string> ChartPackTitle;
 
         public readonly ReadOnlyReactiveProperty<string> PreviewStartBeatField1String;
@@ -109,31 +106,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
         }
 
-        public void OpenCanvas()
-        {
-            if (canvasVisible.Value)
-                return;
-
-            CommandManager.ExecuteCommand(
-                new DelegateCommand(
-                    () => canvasVisible.Value = true,
-                    () => canvasVisible.Value = false
-                )
-            );
-        }
-
-        public void CloseCanvas()
-        {
-            if (!canvasVisible.Value)
-                return;
-
-            CommandManager.ExecuteCommand(
-                new DelegateCommand(
-                    () => canvasVisible.Value = false,
-                    () => canvasVisible.Value = true
-                )
-            );
-        }
 
         public void SetChartPackTitle(string newTitle)
         {

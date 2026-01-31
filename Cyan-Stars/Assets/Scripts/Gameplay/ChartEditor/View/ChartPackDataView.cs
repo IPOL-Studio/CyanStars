@@ -1,5 +1,7 @@
 ﻿#nullable enable
 
+using CyanStars.Framework;
+using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using TMPro;
@@ -47,11 +49,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private Button exportChartPackButton = null!; //TODO
 
 
+        private ReactiveProperty<bool> canvasVisible = new ReactiveProperty<bool>(false);
+
+
         public override void Bind(ChartPackDataViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
 
-            ViewModel.CanvasVisible
+            canvasVisible
                 .Subscribe(visible =>
                 {
                     canvas.enabled = visible;
@@ -107,7 +112,19 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
 
-            closeCanvasButton.onClick.AddListener(ViewModel.CloseCanvas);
+            closeCanvasButton.onClick.AddListener(() =>
+                {
+                    if (!canvasVisible.CurrentValue)
+                        return;
+
+                    GameRoot.GetDataModule<ChartEditorDataModule>().CommandManager.ExecuteCommand(
+                        new DelegateCommand(
+                            () => canvasVisible.Value = false,
+                            () => canvasVisible.Value = true
+                        )
+                    );
+                }
+            );
             chartPackTitleField.onEndEdit.AddListener(ViewModel.SetChartPackTitle);
             previewStartBeatField1.onEndEdit.AddListener(_ =>
                 ViewModel.SetPreviewStartBeat(
@@ -157,8 +174,17 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OpenCanvas()
         {
-            ViewModel.OpenCanvas();
+            if (canvasVisible.CurrentValue)
+                return;
+
+            GameRoot.GetDataModule<ChartEditorDataModule>().CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => canvasVisible.Value = true,
+                    () => canvasVisible.Value = false
+                )
+            );
         }
+
 
         protected override void OnDestroy()
         {

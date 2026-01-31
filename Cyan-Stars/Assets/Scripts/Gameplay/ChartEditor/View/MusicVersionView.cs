@@ -1,5 +1,7 @@
 ﻿#nullable enable
 
+using CyanStars.Framework;
+using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using ObservableCollections;
 using R3;
@@ -81,6 +83,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         [SerializeField]
         private Button topItemButton = null!;
+
+
+        private readonly ReactiveProperty<bool> CanvasVisibility = new ReactiveProperty<bool>(false);
 
 
         public override void Bind(MusicVersionViewModel targetViewModel)
@@ -182,7 +187,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
 
             // VM -> V 绑定
-            ViewModel.CanvasVisibility
+            CanvasVisibility
                 .Subscribe(visible => canvas.enabled = visible)
                 .AddTo(this);
             ViewModel.ListVisibility
@@ -203,7 +208,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             // V -> MV 绑定
             addListItemButton.onClick.AddListener(ViewModel.AddMusicVersionItem);
-            closeButton.onClick.AddListener(ViewModel.CloseCanvas);
+            closeButton.onClick.AddListener(CloseCanvasAndLoadAudio);
             musicTitleField.onEndEdit.AddListener(ViewModel.SetTitle);
             importMusicButton.onClick.AddListener(ViewModel.ImportAudioFile);
             minusOffsetButton.onClick.AddListener(ViewModel.MinusOffset);
@@ -218,15 +223,38 @@ namespace CyanStars.Gameplay.ChartEditor.View
             topItemButton.onClick.AddListener(ViewModel.TopItem);
         }
 
+        private void CloseCanvasAndLoadAudio()
+        {
+            if (!CanvasVisibility.CurrentValue)
+                return;
+
+            GameRoot.GetDataModule<ChartEditorDataModule>().CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => CanvasVisibility.Value = false,
+                    () => CanvasVisibility.Value = true
+                )
+            );
+
+            ViewModel.LoadAudio();
+        }
+
         public void OpenCanvas()
         {
-            ViewModel.OpenCanvas();
+            if (CanvasVisibility.CurrentValue)
+                return;
+
+            GameRoot.GetDataModule<ChartEditorDataModule>().CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => CanvasVisibility.Value = true,
+                    () => CanvasVisibility.Value = false
+                )
+            );
         }
 
         protected override void OnDestroy()
         {
             addListItemButton.onClick.RemoveListener(ViewModel.AddMusicVersionItem);
-            closeButton.onClick.RemoveListener(ViewModel.CloseCanvas);
+            closeButton.onClick.RemoveListener(CloseCanvasAndLoadAudio);
             musicTitleField.onEndEdit.RemoveListener(ViewModel.SetTitle);
             importMusicButton.onClick.RemoveListener(ViewModel.ImportAudioFile);
             minusOffsetButton.onClick.RemoveListener(ViewModel.MinusOffset);

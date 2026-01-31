@@ -28,9 +28,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private readonly ObservableList<KeyValuePair<string, List<string>>> staffItemsProxy;
         public readonly ISynchronizedView<KeyValuePair<string, List<string>>, MusicVersionStaffItemViewModel> StaffItems;
 
-
-        private readonly ReactiveProperty<bool> canvasVisibility = new ReactiveProperty<bool>(false);
-        public ReadOnlyReactiveProperty<bool> CanvasVisibility => canvasVisibility;
         public readonly ReadOnlyReactiveProperty<bool> ListVisibility;
         public readonly ReadOnlyReactiveProperty<bool> DetailVisibility;
 
@@ -267,24 +264,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             );
         }
 
-        public void OpenCanvas()
+        /// <summary>
+        /// 在关闭 Canvas 时调用，加载首个音乐版本的 Audio
+        /// </summary>
+        public void LoadAudio()
         {
-            if (canvasVisibility.CurrentValue)
-                return;
-
-            CommandManager.ExecuteCommand(
-                new DelegateCommand(
-                    () => canvasVisibility.Value = true,
-                    () => canvasVisibility.Value = false
-                )
-            );
-        }
-
-        public void CloseCanvas()
-        {
-            if (!canvasVisibility.CurrentValue)
-                return;
-
             // 停止正在播放的音乐
             if (Model.IsTimelinePlaying.CurrentValue)
                 Model.IsTimelinePlaying.Value = false;
@@ -310,13 +294,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 LoadAudio(null);
                 Debug.Log("已卸载音乐");
             }
-
-            CommandManager.ExecuteCommand(
-                new DelegateCommand(
-                    () => canvasVisibility.Value = false,
-                    () => canvasVisibility.Value = true
-                )
-            );
         }
 
         /// <summary>

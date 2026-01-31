@@ -1,5 +1,7 @@
 ﻿#nullable enable
 
+using CyanStars.Framework;
+using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using ObservableCollections;
 using TMPro;
@@ -64,6 +66,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         [SerializeField]
         private Button testButton = null!;
+
+
+        private readonly ReactiveProperty<bool> CanvasVisible = new ReactiveProperty<bool>(false);
 
 
         public override void Bind(BpmGroupViewModel targetViewModel)
@@ -136,7 +141,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
             // VM -> V 绑定
-            ViewModel.CanvasVisible
+            CanvasVisible
                 .Subscribe(visible => canvas.enabled = visible)
                 .AddTo(this);
             ViewModel.ListVisible
@@ -176,7 +181,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
             // V -> VM 绑定
-            closeCanvasButton.onClick.AddListener(ViewModel.CloseCanvas);
+            closeCanvasButton.onClick.AddListener(CloseCanvas);
             addBpmItemButton.onClick.AddListener(ViewModel.AddBpmItem);
             bpmInputField.onEndEdit.AddListener(ViewModel.SetBpm);
             startBeatField1.onEndEdit.AddListener(SetBeat);
@@ -190,14 +195,35 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.SetBeat(startBeatField1.text, startBeatField2.text, startBeatField3.text);
         }
 
+        private void CloseCanvas()
+        {
+            if (!CanvasVisible.CurrentValue)
+                return;
+
+            GameRoot.GetDataModule<ChartEditorDataModule>().CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => CanvasVisible.Value = false,
+                    () => CanvasVisible.Value = true
+                )
+            );
+        }
+
         public void OpenCanvas()
         {
-            ViewModel.OpenCanvas();
+            if (CanvasVisible.CurrentValue)
+                return;
+
+            GameRoot.GetDataModule<ChartEditorDataModule>().CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => CanvasVisible.Value = true,
+                    () => CanvasVisible.Value = false
+                )
+            );
         }
 
         protected override void OnDestroy()
         {
-            closeCanvasButton.onClick.RemoveListener(ViewModel.CloseCanvas);
+            closeCanvasButton.onClick.RemoveListener(CloseCanvas);
             addBpmItemButton.onClick.RemoveListener(ViewModel.AddBpmItem);
             bpmInputField.onEndEdit.RemoveListener(ViewModel.SetBpm);
             startBeatField1.onEndEdit.RemoveListener(SetBeat);

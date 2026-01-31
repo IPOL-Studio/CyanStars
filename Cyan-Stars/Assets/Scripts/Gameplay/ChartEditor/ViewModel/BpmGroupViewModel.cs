@@ -23,8 +23,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<BpmGroupItem?> SelectedBpmItem => selectedBpmItem;
 
 
-        public readonly ReactiveProperty<bool> canvasVisible = new ReactiveProperty<bool>(false);
-        public ReadOnlyReactiveProperty<bool> CanvasVisible => canvasVisible;
         public readonly ReadOnlyReactiveProperty<bool> ListVisible;
 
         public readonly ReadOnlyReactiveProperty<int?> SelectedBpmItemIndex;
@@ -134,32 +132,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             );
         }
 
-
-        public void OpenCanvas()
-        {
-            if (canvasVisible.CurrentValue)
-                return;
-
-            CommandManager.ExecuteCommand(
-                new DelegateCommand(
-                    () => canvasVisible.Value = true,
-                    () => canvasVisible.Value = false
-                )
-            );
-        }
-
-        public void CloseCanvas()
-        {
-            if (!canvasVisible.CurrentValue)
-                return;
-
-            CommandManager.ExecuteCommand(
-                new DelegateCommand(
-                    () => canvasVisible.Value = false,
-                    () => canvasVisible.Value = true
-                )
-            );
-        }
 
         /// <summary>
         /// 为选中的 bpmItem 设置 bpm

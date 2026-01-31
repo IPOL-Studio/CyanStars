@@ -1,6 +1,8 @@
 ﻿#nullable enable
 
 using CyanStars.Chart;
+using CyanStars.Framework;
+using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using TMPro;
@@ -39,11 +41,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private TMP_InputField readyBeatField = null!;
 
 
+        private readonly ReactiveProperty<bool> CanvasVisibility = new ReactiveProperty<bool>(false);
+
+
         public override void Bind(ChartDataViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
 
-            ViewModel.CanvasVisibility
+            CanvasVisibility
                 .Subscribe(isVisibility =>
                     {
                         chartDataCanvas.enabled = isVisibility;
@@ -69,7 +74,19 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(text => readyBeatField.text = text)
                 .AddTo(this);
 
-            closeCanvasButton.onClick.AddListener(ViewModel.CloseCanvas);
+            closeCanvasButton.onClick.AddListener(() =>
+                {
+                    if (!CanvasVisibility.CurrentValue)
+                        return;
+
+                    GameRoot.GetDataModule<ChartEditorDataModule>().CommandManager.ExecuteCommand(
+                        new DelegateCommand(
+                            () => CanvasVisibility.Value = false,
+                            () => CanvasVisibility.Value = true
+                        )
+                    );
+                }
+            );
             kuiXingToggle.onValueChanged.AddListener(isOn =>
                 {
                     if (isOn)
@@ -106,7 +123,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OpenCanvas()
         {
-            ViewModel.OpenCanvas();
+            if (CanvasVisibility.CurrentValue)
+                return;
+
+            GameRoot.GetDataModule<ChartEditorDataModule>().CommandManager.ExecuteCommand(
+                new DelegateCommand(
+                    () => CanvasVisibility.Value = true,
+                    () => CanvasVisibility.Value = false
+                )
+            );
         }
 
         protected override void OnDestroy()
