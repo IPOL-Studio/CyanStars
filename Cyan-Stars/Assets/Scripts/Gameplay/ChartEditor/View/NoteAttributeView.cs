@@ -1,14 +1,23 @@
 ﻿#nullable enable
 
+using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
     public class NoteAttributeView : BaseView<NoteAttributeViewModel>
     {
+        [Header("图片资源")]
+        [SerializeField]
+        private Sprite selectedToggleSprite = null!;
+
+        [SerializeField]
+        private Sprite unselectedToggleSprite = null!;
+
         [Header("Frames")]
         [SerializeField]
         private GameObject noteAttributeFrame = null!;
@@ -58,6 +67,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         [SerializeField]
         private TMP_InputField posField = null!;
+
+        [SerializeField]
+        private Toggle breakLeftPosToggle = null!;
+
+        [SerializeField]
+        private Toggle breakRightPoaToggle = null!;
 
 
         public override void Bind(NoteAttributeViewModel targetViewModel)
@@ -117,10 +132,89 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.PosFieldText
                 .Subscribe(text => posField.text = text)
                 .AddTo(this);
+            ViewModel.BreakLeftPosState
+                .Subscribe(isOn =>
+                    {
+                        breakLeftPosToggle.isOn = isOn;
+                        breakLeftPosToggle.image.sprite = isOn
+                            ? selectedToggleSprite
+                            : unselectedToggleSprite;
+                    }
+                )
+                .AddTo(this);
+            ViewModel.BreakRightPosState
+                .Subscribe(isOn =>
+                    {
+                        breakRightPoaToggle.isOn = isOn;
+                        breakRightPoaToggle.image.sprite = isOn
+                            ? selectedToggleSprite
+                            : unselectedToggleSprite;
+                    }
+                )
+                .AddTo(this);
+
+
+            // V -> VM 绑定
+            judgeBeatField1.onEndEdit.AddListener(UpdateNoteJudgeBeat);
+            judgeBeatField2.onEndEdit.AddListener(UpdateNoteJudgeBeat);
+            judgeBeatField3.onEndEdit.AddListener(UpdateNoteJudgeBeat);
+            endJudgeBeatField1.onEndEdit.AddListener(UpdateNoteEndJudgeBeat);
+            endJudgeBeatField2.onEndEdit.AddListener(UpdateNoteEndJudgeBeat);
+            endJudgeBeatField3.onEndEdit.AddListener(UpdateNoteEndJudgeBeat);
+            posField.onEndEdit.AddListener(ViewModel.UpdateNotePos);
+            breakLeftPosToggle.onValueChanged.AddListener(OnBreakLeftPosToggleChanged);
+            breakRightPoaToggle.onValueChanged.AddListener(OnBreakRightPosToggleChanged);
+        }
+
+        private void UpdateNoteJudgeBeat(string _) // 确保签名一致以供取消订阅
+        {
+            ViewModel.UpdateNoteJudgeBeat(
+                judgeBeatField1.text,
+                judgeBeatField2.text,
+                judgeBeatField3.text
+            );
+        }
+
+        private void UpdateNoteEndJudgeBeat(string _) // 确保签名一致以供取消订阅
+        {
+            ViewModel.UpdateNoteEndJudgeBeat(
+                endJudgeBeatField1.text,
+                endJudgeBeatField2.text,
+                endJudgeBeatField3.text
+            );
+        }
+
+        private void OnBreakLeftPosToggleChanged(bool isOn)
+        {
+            if (!isOn) // Unity Toggle Group 自动取消时
+                return;
+
+            ViewModel.UpdateBreakNotePos(BreakNotePos.Left);
+            breakLeftPosToggle.image.sprite = selectedToggleSprite;
+            breakRightPoaToggle.image.sprite = unselectedToggleSprite;
+        }
+
+        private void OnBreakRightPosToggleChanged(bool isOn)
+        {
+            if (!isOn) // Unity Toggle Group 自动取消时
+                return;
+
+            ViewModel.UpdateBreakNotePos(BreakNotePos.Right);
+            breakLeftPosToggle.image.sprite = unselectedToggleSprite;
+            breakRightPoaToggle.image.sprite = selectedToggleSprite;
         }
 
         protected override void OnDestroy()
         {
+            judgeBeatField1.onEndEdit.RemoveListener(UpdateNoteJudgeBeat);
+            judgeBeatField2.onEndEdit.RemoveListener(UpdateNoteJudgeBeat);
+            judgeBeatField3.onEndEdit.RemoveListener(UpdateNoteJudgeBeat);
+            endJudgeBeatField1.onEndEdit.RemoveListener(UpdateNoteEndJudgeBeat);
+            endJudgeBeatField2.onEndEdit.RemoveListener(UpdateNoteEndJudgeBeat);
+            endJudgeBeatField3.onEndEdit.RemoveListener(UpdateNoteEndJudgeBeat);
+            posField.onEndEdit.RemoveListener(ViewModel.UpdateNotePos);
+            breakLeftPosToggle.onValueChanged.RemoveListener(OnBreakLeftPosToggleChanged);
+            breakRightPoaToggle.onValueChanged.RemoveListener(OnBreakRightPosToggleChanged);
         }
     }
 }

@@ -323,7 +323,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 267364417}
   toggleTransition: 1
   graphic: {fileID: 0}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 2044032262}
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1030,6 +1030,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfd4523fe67b42cab218e950aa2e0d47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.NoteAttributeView
+  selectedToggleSprite: {fileID: 21300000, guid: 41e29448b6c076042a17ab01d753e78e, type: 3}
+  unselectedToggleSprite: {fileID: 21300000, guid: 1d0792bed21ff9341b4795cd90d39451, type: 3}
   noteAttributeFrame: {fileID: 722721685}
   judgeBeatFrame: {fileID: 565406491}
   endJudgeBeatFrame: {fileID: 535170078}
@@ -1046,6 +1048,8 @@ MonoBehaviour:
   endJudgeBeatField2: {fileID: 4154182905195523354}
   endJudgeBeatField3: {fileID: 4154182905195523353}
   posField: {fileID: 1617886833}
+  breakLeftPosToggle: {fileID: 5759156}
+  breakRightPoaToggle: {fileID: 1303653260}
 --- !u!1 &74583992
 GameObject:
   m_ObjectHideFlags: 0
@@ -1275,7 +1279,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1595764877}
   m_Direction: 2
   m_Value: 1.0000014
-  m_Size: 0.59542984
+  m_Size: 0.56640816
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4604,7 +4608,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1070775234}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.41270703
+  m_Size: 0.3964961
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -21532,7 +21536,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 453111790}
   toggleTransition: 1
   graphic: {fileID: 0}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 2044032262}
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []

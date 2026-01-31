@@ -16,8 +16,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private readonly EditAreaViewModel parentViewModel;
         private readonly float judgeLineYOffset;
 
-        public ReadOnlyReactiveProperty<Vector2> AnchoredPosition { get; }
-        public ReadOnlyReactiveProperty<float> HoldLength { get; } // 仅 Hold 有效
+        public readonly ReadOnlyReactiveProperty<Vector2> AnchoredPosition;
+        public readonly ReadOnlyReactiveProperty<float> HoldLength; // 仅 Hold 有效
 
         private const float NotePosScale = 802.5f;
         private const float NotePosOffset = -321f;
@@ -36,9 +36,18 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             this.parentViewModel = parentViewModel;
             this.judgeLineYOffset = judgeLineYOffset;
 
-            // 当缩放变化时，重新计算位置
-            // 这里我们只需要访问 parentViewModel 的公开属性 BeatZoom
-            AnchoredPosition = parentViewModel.BeatZoom
+            // 无论是缩放改变，还是当前 Note 数据改变，都重新获取当前的 Zoom 值并计算位置
+            var dataChangedSignal = Model.SelectedNoteDataChangedSubject
+                .Where(changedNote => changedNote == data)
+                .Select(_ => Unit.Default);
+            var updateSignal = Observable.Merge(
+                    parentViewModel.BeatZoom.Select(_ => Unit.Default),
+                    dataChangedSignal
+                )
+                .Select(_ => parentViewModel.BeatZoom.CurrentValue);
+
+            // 当变化时，重新计算位置
+            AnchoredPosition = updateSignal
                 .Select(zoom => CalculatePosition(zoom))
                 .ToReadOnlyReactiveProperty()
                 .AddTo(Disposables);
@@ -46,7 +55,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // 如果是 Hold，需要根据缩放计算长度
             if (data is HoldChartNoteData holdData)
             {
-                HoldLength = parentViewModel.BeatZoom
+                HoldLength = updateSignal
                     .Select(zoom => CalculateHoldLength(zoom, holdData))
                     .ToReadOnlyReactiveProperty()
                     .AddTo(Disposables);
