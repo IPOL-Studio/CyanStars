@@ -25,7 +25,6 @@ namespace CyanStars.Gameplay.ChartEditor
             if (CommandManager == null)
                 throw new Exception("未找到 CommandManager，未加载过或已经卸载？请检查业务逻辑。");
 
-            CommandManager.Clear();
             CommandManager = null;
         }
     }
