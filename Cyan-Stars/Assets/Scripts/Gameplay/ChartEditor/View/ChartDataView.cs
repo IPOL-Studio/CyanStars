@@ -14,6 +14,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
     public class ChartDataView : BaseView<ChartDataViewModel>
     {
         [SerializeField]
+        private Sprite selectedToggleSprite = null!;
+
+        [SerializeField]
+        private Sprite unselectedToggleSprite = null!;
+
+
+        [SerializeField]
         private Canvas chartDataCanvas = null!;
 
         [SerializeField]
@@ -63,7 +70,27 @@ namespace CyanStars.Gameplay.ChartEditor.View
                         tianShuToggle.isOn = difficulty == ChartDifficulty.TianShu;
                         wuYinToggle.isOn = difficulty == ChartDifficulty.WuYin;
                         undefinedToggle.isOn = difficulty == null;
-                        Debug.LogWarning("TODO: 切换图标样式"); // TODO: 切换图标样式
+
+                        kuiXingToggle.image.sprite =
+                            difficulty == ChartDifficulty.KuiXing
+                                ? selectedToggleSprite
+                                : unselectedToggleSprite;
+                        qiMingToggle.image.sprite =
+                            difficulty == ChartDifficulty.QiMing
+                                ? selectedToggleSprite
+                                : unselectedToggleSprite;
+                        tianShuToggle.image.sprite =
+                            difficulty == ChartDifficulty.TianShu
+                                ? selectedToggleSprite
+                                : unselectedToggleSprite;
+                        wuYinToggle.image.sprite =
+                            difficulty == ChartDifficulty.WuYin
+                                ? selectedToggleSprite
+                                : unselectedToggleSprite;
+                        undefinedToggle.image.sprite =
+                            difficulty == null
+                                ? selectedToggleSprite
+                                : unselectedToggleSprite;
                     }
                 )
                 .AddTo(this);
