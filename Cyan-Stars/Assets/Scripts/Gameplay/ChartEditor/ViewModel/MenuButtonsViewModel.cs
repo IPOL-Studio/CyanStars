@@ -51,7 +51,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void SaveFileToDesk()
         {
-            ChartEditorFileManager.SaveChartToDesk(
+            ChartEditorFileManager.SaveChartAndAssetsToDesk(
                 Model.WorkspacePath,
                 Model.ChartMetaDataIndex,
                 Model.ChartPackData.CurrentValue,

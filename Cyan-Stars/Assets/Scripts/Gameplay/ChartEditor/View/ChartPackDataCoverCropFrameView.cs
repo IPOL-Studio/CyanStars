@@ -66,12 +66,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OnBeginDrag(PointerEventData _)
         {
-            ViewModel?.RecordCropData();
+            ViewModel.RecordCropData();
         }
 
         public void OnEndDrag(PointerEventData _)
         {
-            ViewModel?.CommitCropData();
+            ViewModel.CommitCropData();
         }
 
         protected override void OnDestroy()

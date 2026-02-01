@@ -103,7 +103,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 )
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
-            Model.ChartPackData // 元素数量更新选中的元素
+            Model.ChartPackData // 元素数量变化时更新选中的元素
                 .Select(data =>
                     data.MusicVersions.ObserveCountChanged(notifyCurrentCount: true).Select(_ => data.MusicVersions)
                 )
@@ -114,11 +114,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                         if (selectedMusicVersionData.CurrentValue != null &&
                             !Model.ChartPackData.CurrentValue.MusicVersions.Contains(selectedMusicVersionData.CurrentValue))
                             selectedMusicVersionData.Value = null;
-
-                        // 如果处于简易模式，自动选中首个元素
-                        if (Model.ChartPackData.CurrentValue.MusicVersions.Count > 0 &&
-                            Model.IsSimplificationMode.CurrentValue)
-                            selectedMusicVersionData.Value = Model.ChartPackData.CurrentValue.MusicVersions[0];
                     }
                 )
                 .AddTo(base.Disposables);
@@ -346,8 +341,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         private void ImportMusicFile(string newOriginFilePath)
         {
-            // throw new NotImplementedException();
-
             if (selectedMusicVersionData.CurrentValue == null)
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下设置音频文件路径。");
 
@@ -377,7 +370,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (string.IsNullOrEmpty(oldTargetRelativePath))
                 oldTargetRelativePath = "";
 
-            var oldTargetAbsolutePath = oldTargetRelativePath != "" ? PathUtil.Combine(Model.WorkspacePath, oldTargetRelativePath) : "";
+            var oldTargetAbsolutePath = oldTargetRelativePath != ""
+                ? PathUtil.Combine(Model.WorkspacePath, oldTargetRelativePath)
+                : "";
             var newTargetAbsolutePath = PathUtil.Combine(Model.WorkspacePath, newTargetRelativePath);
 
             IReadonlyTempFileHandler? oldHandler = ChartEditorFileManager.GetHandlerByTargetPath(oldTargetAbsolutePath);

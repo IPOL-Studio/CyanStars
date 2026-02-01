@@ -31,7 +31,7 @@ namespace CyanStars.Framework.File
 
 
         public readonly FileBrowser.Filter ChartFilter = new FileBrowser.Filter("谱面文件", ".json");
-        public readonly FileBrowser.Filter SpriteFilter = new FileBrowser.Filter("图片", ".jpg", ".png");
+        public readonly FileBrowser.Filter SpriteFilter = new FileBrowser.Filter("图片", ".png");
         public readonly FileBrowser.Filter AudioFilter = new FileBrowser.Filter("音频", ".ogg");
 
 

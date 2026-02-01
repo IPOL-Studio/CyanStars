@@ -4,8 +4,10 @@ using System;
 using System.Threading.Tasks;
 using CatAsset.Runtime;
 using CyanStars.Framework;
+using CyanStars.Framework.File;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
+using CyanStars.Utils;
 using R3;
 using UnityEngine;
 
@@ -13,14 +15,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class ChartPackDataCoverViewModel : BaseViewModel
     {
+        private const string CoverFileName = "Cover.png";
+
+
         private Vector2? recordedCropStartPos;
         private float? recordedCropHeight;
 
 
         private readonly ReactiveProperty<AssetHandler<Sprite?>?> CoverSpriteHandler;
         public readonly ReadOnlyReactiveProperty<Sprite?> CoverSprite;
-
-        public readonly ReadOnlyReactiveProperty<string?> FilePath;
 
 
         public readonly ReadOnlyReactiveProperty<float> ImageFrameAspectRatio; // 小方框内底图宽高比
@@ -37,15 +40,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             CoverSpriteHandler = new ReactiveProperty<AssetHandler<Sprite?>?>();
 
             // 绑定曲绘路径、裁剪等 Model 属性
-            FilePath = Model.ChartPackData
+            // 由于可以撤销重做，故不足以根据路径变化事件来判断是否需要重置裁剪位置和高度。考虑到异步加载的问题，在导入新图时由 API 一并刷新图像、裁剪位置和高度。
+            // 此处在初始化时仅一次性加载图像，不做绑定。
+            ReadOnlyReactiveProperty<string?> filePath = Model.ChartPackData
                 .Select(data => data.CoverFilePath.AsObservable())
                 .Switch()
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
-
-            // 不足以根据路径变化事件来判断是否需要重新加载裁剪位置和高度，故导入新图时由 API 一并刷新裁剪位置和高度，此处加载时仅加载图像，不做绑定
-            if (FilePath.CurrentValue != null)
-                _ = UpdateCoverSpriteAsync(FilePath.CurrentValue);
+            if (filePath.CurrentValue != null)
+                _ = LoadCoverSpriteAsync();
 
             // 绑定图像、显示比例等 UI 显示相关属性
             CoverSprite = CoverSpriteHandler
@@ -98,7 +101,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(Disposables);
         }
 
-        private async Task UpdateCoverSpriteAsync(string? filePath)
+        private async Task LoadCoverSpriteAsync()
         {
             // 卸载旧的封面图
             if (CoverSpriteHandler.CurrentValue != null)
@@ -107,11 +110,18 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 CoverSpriteHandler.Value = null;
             }
 
-            // 加载新的封面图
-            if (!string.IsNullOrEmpty(filePath))
+            // 如果能根据 targetPath 找到暂存文件句柄，则优先加载句柄指向的缓存文件，否则加载谱包资源文件夹内的文件。
+            if (!string.IsNullOrEmpty(Model.ChartPackData.CurrentValue.CoverFilePath.CurrentValue))
             {
+                string coverFilePath = PathUtil.Combine(Model.WorkspacePath, Model.ChartPackData.CurrentValue.CoverFilePath.CurrentValue);
+                var handler = ChartEditorFileManager.GetHandlerByTargetPath(coverFilePath);
+                if (handler != null)
+                {
+                    coverFilePath = handler.TempFilePath;
+                }
+
                 CoverSpriteHandler.Value =
-                    await GameRoot.Asset.LoadAssetAsync<Sprite>(filePath); // 不确定将 <Sprite> 改为 <Sprite?> 是否可行，下次试试
+                    await GameRoot.Asset.LoadAssetAsync<Sprite?>(coverFilePath);
             }
         }
 
@@ -137,40 +147,76 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void OpenCoverBrowser()
         {
-            GameRoot.File.OpenLoadFilePathBrowser(SetCoverFilePath);
+            GameRoot.File.OpenLoadFilePathBrowser(SetCoverFilePath, title: "打开曲绘", filters: new[] { GameRoot.File.SpriteFilter });
         }
 
-        private void SetCoverFilePath(string newFilePath)
+        private void SetCoverFilePath(string newOriginFilePath)
         {
-            string? oldFilePath = Model.ChartPackData.CurrentValue.CoverFilePath.Value;
+            // 1. 如有旧缓存文件，记录其裁剪信息，然后将旧缓存文件的目标路径清空
+            // 2. 导入并暂存新曲绘，指向目标地址，曲绘文件名固定为 "Covet.png"，如有旧文件，在保存时覆盖之
 
-            if (oldFilePath == newFilePath)
-                return;
+            var newTargetRelativePath = PathUtil.Combine(ChartEditorFileManager.ChartPackAssetsFolderName, CoverFileName); // Assets/Cover.png
 
+            var oldTargetRelativePath = Model.ChartPackData.CurrentValue.CoverFilePath.CurrentValue;
+            if (string.IsNullOrEmpty(oldTargetRelativePath))
+                oldTargetRelativePath = "";
+
+            var oldTargetAbsolutePath = oldTargetRelativePath != ""
+                ? PathUtil.Combine(Model.WorkspacePath, oldTargetRelativePath)
+                : "";
+
+            var newTargetAbsolutePath = PathUtil.Combine(Model.WorkspacePath, newTargetRelativePath);
+
+
+            // 记录旧曲绘信息
+            IReadonlyTempFileHandler? oldHandler = ChartEditorFileManager.GetHandlerByTargetPath(oldTargetAbsolutePath);
             Vector2? oldCropStartPos = Model.ChartPackData.CurrentValue.CropStartPosition.Value;
             float? oldCropHeight = Model.ChartPackData.CurrentValue.CropHeight.Value;
+
+
+            // 仅复制文件到缓存区，暂不声明目标路径以防止自动顶替旧句柄目标路径。
+            IReadonlyTempFileHandler newHandler = ChartEditorFileManager.TempFile(newOriginFilePath, null);
 
             CommandStack.ExecuteCommand(
                 new DelegateCommand(async () =>
                     {
-                        await UpdateCoverSpriteAsync(newFilePath);
-                        Model.ChartPackData.CurrentValue.CoverFilePath.Value = newFilePath;
+                        // 更新句柄以在保存时正确复制文件
+                        if (oldHandler != null)
+                        {
+                            ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, null);
+                        }
+
+                        ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, newTargetAbsolutePath);
+
+                        // 加载图片、更新谱包引用地址、更新裁剪信息
+                        Model.ChartPackData.CurrentValue.CoverFilePath.Value = newTargetRelativePath;
+                        await LoadCoverSpriteAsync();
                         if (CoverSpriteHandler.Value?.Asset == null)
                         {
+                            // 加载图片失败？
                             Model.ChartPackData.CurrentValue.CropStartPosition.Value = null;
                             Model.ChartPackData.CurrentValue.CropHeight.Value = null;
                         }
                         else
                         {
-                            GetDefaultCoverCropData(CoverSpriteHandler.Value.Asset, out Vector2 newStartPos, out float newHeight);
-                            Model.ChartPackData.CurrentValue.CropStartPosition.Value = newStartPos;
-                            Model.ChartPackData.CurrentValue.CropHeight.Value = newHeight;
+                            GetDefaultCoverCropData(CoverSpriteHandler.Value.Asset, out Vector2 newCropStartPos, out float newCropHeight);
+                            Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
+                            Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
                         }
                     },
                     async () =>
                     {
-                        await UpdateCoverSpriteAsync(oldFilePath);
-                        Model.ChartPackData.CurrentValue.CoverFilePath.Value = oldFilePath;
+                        // 更新句柄以在保存时正确复制文件
+                        ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, null);
+
+                        if (oldHandler != null)
+                        {
+                            ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, oldTargetAbsolutePath);
+                        }
+
+                        // 加载图片、更新谱包引用地址、更新裁剪信息
+                        Model.ChartPackData.CurrentValue.CoverFilePath.Value = oldTargetRelativePath;
+                        await LoadCoverSpriteAsync();
                         Model.ChartPackData.CurrentValue.CropStartPosition.Value = oldCropStartPos;
                         Model.ChartPackData.CurrentValue.CropHeight.Value = oldCropHeight;
                     }

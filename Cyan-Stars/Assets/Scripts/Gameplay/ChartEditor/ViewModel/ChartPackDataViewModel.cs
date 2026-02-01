@@ -192,7 +192,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // TODO: 导出谱包内所有的谱面文件，并打包为一个文件
             GameRoot.File.OpenSaveFolderPathBrowser(path =>
                 {
-                    ChartEditorFileManager.SaveChartToDesk(path, Model.ChartMetaDataIndex, Model.ChartPackData.CurrentValue, Model.ChartData.CurrentValue);
+                    ChartEditorFileManager.SaveChartAndAssetsToDesk(path, Model.ChartMetaDataIndex, Model.ChartPackData.CurrentValue, Model.ChartData.CurrentValue);
                 },
                 null,
                 "导出到"
