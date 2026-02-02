@@ -85,16 +85,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, "")
                 .AddTo(base.Disposables);
 
-        public ReadOnlyReactiveProperty<bool> BreakLeftPosState =>
+        public ReadOnlyReactiveProperty<BreakNotePos?> BreakNotePos =>
             Model.SelectedNoteData
-                .Select(note => (note == null || note.Type != NoteType.Break) ? false : ((note as BreakChartNoteData).BreakNotePos == BreakNotePos.Left))
-                .ToReadOnlyReactiveProperty(false)
-                .AddTo(base.Disposables);
-
-        public ReadOnlyReactiveProperty<bool> BreakRightPosState =>
-            Model.SelectedNoteData
-                .Select(note => (note == null || note.Type != NoteType.Break) ? false : ((note as BreakChartNoteData).BreakNotePos == BreakNotePos.Right))
-                .ToReadOnlyReactiveProperty(false)
+                .Select(note => (note == null || note.Type != NoteType.Break) ? (BreakNotePos?)null : (note as BreakChartNoteData).BreakNotePos)
+                .ToReadOnlyReactiveProperty(null)
                 .AddTo(base.Disposables);
 
 

@@ -69,10 +69,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private TMP_InputField posField = null!;
 
         [SerializeField]
+        private ToggleGroup breakPosToggleGroup = null!;
+
+        [SerializeField]
         private Toggle breakLeftPosToggle = null!;
 
         [SerializeField]
-        private Toggle breakRightPoaToggle = null!;
+        private Toggle breakRightPosToggle = null!;
 
 
         public override void Bind(NoteAttributeViewModel targetViewModel)
@@ -132,27 +135,20 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.PosFieldText
                 .Subscribe(text => posField.text = text)
                 .AddTo(this);
-            ViewModel.BreakLeftPosState
-                .Subscribe(isOn =>
+            ViewModel.BreakNotePos
+                .Subscribe(breakPos =>
                     {
-                        breakLeftPosToggle.isOn = isOn;
-                        breakLeftPosToggle.image.sprite = isOn
-                            ? selectedToggleSprite
-                            : unselectedToggleSprite;
-                    }
-                )
-                .AddTo(this);
-            ViewModel.BreakRightPosState
-                .Subscribe(isOn =>
-                    {
-                        breakRightPoaToggle.isOn = isOn;
-                        breakRightPoaToggle.image.sprite = isOn
-                            ? selectedToggleSprite
-                            : unselectedToggleSprite;
-                    }
-                )
-                .AddTo(this);
+                        if (breakPos == null)
+                        {
+                            breakPosToggleGroup.SetAllTogglesOff();
+                            return;
+                        }
 
+                        breakLeftPosToggle.isOn = breakPos == BreakNotePos.Left;
+                        breakRightPosToggle.isOn = breakPos == BreakNotePos.Right;
+                    }
+                )
+                .AddTo(this);
 
             // V -> VM 绑定
             judgeBeatField1.onEndEdit.AddListener(UpdateNoteJudgeBeat);
@@ -163,7 +159,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             endJudgeBeatField3.onEndEdit.AddListener(UpdateNoteEndJudgeBeat);
             posField.onEndEdit.AddListener(ViewModel.UpdateNotePos);
             breakLeftPosToggle.onValueChanged.AddListener(OnBreakLeftPosToggleChanged);
-            breakRightPoaToggle.onValueChanged.AddListener(OnBreakRightPosToggleChanged);
+            breakRightPosToggle.onValueChanged.AddListener(OnBreakRightPosToggleChanged);
         }
 
         private void UpdateNoteJudgeBeat(string _) // 确保签名一致以供取消订阅
@@ -190,8 +186,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 return;
 
             ViewModel.UpdateBreakNotePos(BreakNotePos.Left);
+            breakPosToggleGroup.allowSwitchOff = false; // 在首次初始化时禁止 ToggleGroup 自动选一个 Toggle
             breakLeftPosToggle.image.sprite = selectedToggleSprite;
-            breakRightPoaToggle.image.sprite = unselectedToggleSprite;
+            breakRightPosToggle.image.sprite = unselectedToggleSprite;
         }
 
         private void OnBreakRightPosToggleChanged(bool isOn)
@@ -200,8 +197,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 return;
 
             ViewModel.UpdateBreakNotePos(BreakNotePos.Right);
+            breakPosToggleGroup.allowSwitchOff = false; // 在首次初始化时禁止 ToggleGroup 自动选一个 Toggle
             breakLeftPosToggle.image.sprite = unselectedToggleSprite;
-            breakRightPoaToggle.image.sprite = selectedToggleSprite;
+            breakRightPosToggle.image.sprite = selectedToggleSprite;
         }
 
         protected override void OnDestroy()
@@ -214,7 +212,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             endJudgeBeatField3.onEndEdit.RemoveListener(UpdateNoteEndJudgeBeat);
             posField.onEndEdit.RemoveListener(ViewModel.UpdateNotePos);
             breakLeftPosToggle.onValueChanged.RemoveListener(OnBreakLeftPosToggleChanged);
-            breakRightPoaToggle.onValueChanged.RemoveListener(OnBreakRightPosToggleChanged);
+            breakRightPosToggle.onValueChanged.RemoveListener(OnBreakRightPosToggleChanged);
         }
     }
 }

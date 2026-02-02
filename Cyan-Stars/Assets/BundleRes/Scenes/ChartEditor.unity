@@ -1048,8 +1048,9 @@ MonoBehaviour:
   endJudgeBeatField2: {fileID: 4154182905195523354}
   endJudgeBeatField3: {fileID: 4154182905195523353}
   posField: {fileID: 1617886833}
+  breakPosToggleGroup: {fileID: 2044032262}
   breakLeftPosToggle: {fileID: 5759156}
-  breakRightPoaToggle: {fileID: 1303653260}
+  breakRightPosToggle: {fileID: 1303653260}
 --- !u!1 &74583992
 GameObject:
   m_ObjectHideFlags: 0
@@ -30276,7 +30277,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AllowSwitchOff: 0
+  m_AllowSwitchOff: 1
 --- !u!1001 &2049077258
 PrefabInstance:
   m_ObjectHideFlags: 0
