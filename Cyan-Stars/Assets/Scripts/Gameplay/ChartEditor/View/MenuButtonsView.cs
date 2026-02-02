@@ -21,6 +21,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private Button testButton = null!; // TODO
 
+        [SerializeField]
+        private Button undoButton = null!;
+
+        [SerializeField]
+        private Button redoButton = null!;
+
+
         [Header("功能按钮相关")]
         [SerializeField]
         private Canvas functionCanvas = null!;
@@ -83,6 +90,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             functionToggle.onValueChanged.AddListener(ViewModel.SetFunctionCanvasVisibility);
             saveButton.onClick.AddListener(ViewModel.SaveFileToDesk);
+            // testButton.onClick.AddListener();
+            undoButton.onClick.AddListener(ViewModel.Undo);
+            redoButton.onClick.AddListener(ViewModel.Redo);
 
             chartPackDataButton.onClick.AddListener(chartPackDataView.OpenCanvas);
             chartDataButton.onClick.AddListener(chartDataView.OpenCanvas);
@@ -98,6 +108,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             functionToggle.onValueChanged.RemoveAllListeners();
             saveButton.onClick.RemoveAllListeners();
+            undoButton.onClick.RemoveListener(ViewModel.Undo);
+            redoButton.onClick.RemoveListener(ViewModel.Redo);
             chartPackDataButton.onClick.RemoveAllListeners();
             chartDataButton.onClick.RemoveAllListeners();
             musicVersionButton.onClick.RemoveAllListeners();

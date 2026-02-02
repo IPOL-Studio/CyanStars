@@ -624,12 +624,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Scenes.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 1368847
+    AssetsLength: 1380826
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Scenes/ChartEditor.unity
-      Length: 1252294
+      Length: 1264273
     - Name: Assets/BundleRes/Scenes/Dark.unity
       Length: 57120
     - Name: Assets/BundleRes/Scenes/Warm.unity
@@ -1518,6 +1518,28 @@ MonoBehaviour:
     - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Play.png
       Length: 3855
   - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/Icons
+    BundleName: Redo_png.bundle
+    BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/Icons/Redo_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 12942
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Redo.png
+      Length: 12942
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/Icons
+    BundleName: Undo_png.bundle
+    BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/Icons/Undo_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 13016
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Undo.png
+      Length: 13016
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/Icons
     BundleName: "\u4FDD\u5B58_png.bundle"
     BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/Icons/\u4FDD\u5B58_png.bundle"
     Group: Base
@@ -2354,7 +2376,7 @@ MonoBehaviour:
       Length: 4659
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
       Length: 12430
-  BundleCount: 188
-  AssetCount: 277
+  BundleCount: 190
+  AssetCount: 279
   IsExactTextureSize: 0
   IsDrawDesc: 0

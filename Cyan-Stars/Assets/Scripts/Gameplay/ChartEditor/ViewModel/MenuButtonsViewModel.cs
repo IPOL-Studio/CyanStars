@@ -49,6 +49,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             );
         }
 
+        public void Undo()
+        {
+            base.CommandStack.Undo();
+        }
+
+        public void Redo()
+        {
+            base.CommandStack.Redo();
+        }
+
         public void SaveFileToDesk()
         {
             ChartEditorFileManager.SaveChartAndAssetsToDesk(
