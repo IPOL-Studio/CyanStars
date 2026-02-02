@@ -17,9 +17,10 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
 
         public override async void OnEnter()
         {
-            // 检查制谱器 SceneRoot 状态
+            // 打开场景并检查制谱器 SceneRoot 状态
             Scene scene = (await GameRoot.Asset.LoadSceneAsync(ScenePath)).Scene;
 
+            ChartEditorSceneRoot? sceneRoot = null;
             int foundCount = 0;
             foreach (var rootGameObject in scene.GetRootGameObjects())
             {
@@ -28,7 +29,7 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
                     continue;
                 }
 
-                ChartEditorSceneRoot sceneRoot = rootGameObject.GetComponent<ChartEditorSceneRoot>();
+                sceneRoot = rootGameObject.GetComponent<ChartEditorSceneRoot>();
                 if (sceneRoot == null)
                 {
                     throw new ArgumentNullException(nameof(sceneRoot), "在制谱器中找到了 SceneRoot，但未挂载 ChartEditorSceneRoot 类，请检查！");
@@ -42,10 +43,12 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
                 throw new Exception("未找到制谱器 SceneRoot 或找到了多个！");
             }
 
-
             // 更新制谱器 DataModule 相关数据
             ChartEditorDataModule chartEditorDataModule = GameRoot.GetDataModule<ChartEditorDataModule>();
             chartEditorDataModule.OnEnterChartEditorProcedure(ChartEditorSceneRoot.CommandStack);
+
+            // 初始化场景
+            sceneRoot?.InitSceneRoot();
         }
 
         public override void OnUpdate(float deltaTime)

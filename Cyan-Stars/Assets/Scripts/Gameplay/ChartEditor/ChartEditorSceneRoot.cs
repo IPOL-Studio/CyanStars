@@ -39,7 +39,7 @@ public class ChartEditorSceneRoot : MonoBehaviour
     }
 
 
-    private void Start()
+    public void InitSceneRoot()
     {
         var chartModule = GameRoot.GetDataModule<ChartModule>();
 
