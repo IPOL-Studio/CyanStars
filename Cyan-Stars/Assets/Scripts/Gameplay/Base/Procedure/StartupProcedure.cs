@@ -1,8 +1,6 @@
 using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Framework.FSM;
-using CyanStars.Framework.Asset;
-using CyanStars.Gameplay.MusicGame;
 
 namespace CyanStars.Gameplay.Base
 {
@@ -22,7 +20,7 @@ namespace CyanStars.Gameplay.Base
                 // //加载内置谱面清单
                 // await GameRoot.GetDataModule<MusicGamePlayingDataModule>().LoadChartPacks();
 
-                await GameRoot.GetDataModule<ChartModule>().LoadRuntimeChartPacksFromDisk();
+                await GameRoot.GetDataModule<ChartModule>().LoadRuntimeChartPacksFromDiskAsync();
                 GameRoot.ChangeProcedure<MainHomeProcedure>();
                 return;
             }
@@ -35,7 +33,7 @@ namespace CyanStars.Gameplay.Base
                     // //加载内置谱面清单
                     // await GameRoot.GetDataModule<MusicGamePlayingDataModule>().LoadChartPacks();
 
-                    await GameRoot.GetDataModule<ChartModule>().LoadRuntimeChartPacksFromDisk();
+                    await GameRoot.GetDataModule<ChartModule>().LoadRuntimeChartPacksFromDiskAsync();
                     GameRoot.ChangeProcedure<MainHomeProcedure>();
                 }
             });

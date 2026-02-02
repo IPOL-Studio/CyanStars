@@ -43,8 +43,8 @@ namespace CyanStars.Utils.JsonSerialization
         {
             type = null;
             ChartModule module = GameRoot.GetDataModule<ChartModule>();
-
             return module is { } && module.TryGetChartTrackType(key, out type);
+
         }
     }
 }

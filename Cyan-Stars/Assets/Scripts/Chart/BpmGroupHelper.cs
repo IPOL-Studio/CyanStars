@@ -115,7 +115,6 @@ namespace CyanStars.Chart
             }
 
             // 针对 List<T> 和 Array [] 进行优化，直接使用原生的 Sort
-
             if (datas is List<BpmGroupItem> standardList)
             {
                 standardList.Sort(Comparison);

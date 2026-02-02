@@ -241,11 +241,12 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 谱面
             runtimeChartPack = chartModule.SelectedRuntimeChartPack;
-            if (chartModule.SelectedChartDifficulty != null)
+            await chartModule.SelectChartDataAsync(0); // TODO: 根据选择的难度来加载谱面
+            if (chartModule.ChartData == null)
             {
-                await chartModule.GetChartDataFromDisk(runtimeChartPack, (ChartDifficulty)chartModule.SelectedChartDifficulty);
-                chartData = chartModule.ChartData;
+                Debug.LogError("谱面加载失败");
             }
+
 
             // 音乐
             if (chartModule.SelectedMusicVersionIndex != null)
@@ -265,7 +266,7 @@ namespace CyanStars.Gameplay.MusicGame
 
                 // 时间轴
                 playingDataModule.CurTimelineLength = music.length + musicVersionData.Offset / 1000f;
-                playingDataModule.CalFullScore(chartData.Notes);
+                playingDataModule.CalFullScore(chartModule.ChartData.Notes);
             }
 
 
@@ -273,7 +274,7 @@ namespace CyanStars.Gameplay.MusicGame
             // if (!string.IsNullOrEmpty(mapManifest.LrcFileName))
             // {
             //     TextAsset lrcAsset = await GameRoot.Asset.LoadAssetAsync<TextAsset>(mapManifest.LrcFileName, sceneRoot);
-            //     lrcText = lrcAsset.text;
+            //     lrcText = lrcAsset.Text;
             // }
         }
 

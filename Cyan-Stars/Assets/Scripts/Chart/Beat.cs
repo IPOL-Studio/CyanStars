@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace CyanStars.Chart
@@ -15,24 +16,6 @@ namespace CyanStars.Chart
 
         /// <summary>带分数拍子的分母，也作为节拍的细分精度</summary>
         public readonly int Denominator;
-
-        /// <summary>
-        /// 构造并验证 Beat
-        /// </summary>
-        /// <param name="integerPart">拍子的整数部分</param>
-        /// <param name="beat">返回的 Beat，验证失败返回 default</param>
-        public static bool TryCreateBeat(int integerPart, out Beat beat)
-        {
-            if (integerPart < 0)
-            {
-                Debug.LogError("integerPart必须大于等于 0");
-                beat = default;
-                return false;
-            }
-
-            beat = new Beat(integerPart, 0, 0);
-            return true;
-        }
 
         /// <summary>构造并验证 Beat</summary>
         /// <param name="integerPart">拍子的整数部分</param>
@@ -54,6 +37,7 @@ namespace CyanStars.Chart
         }
 
         /// <summary>Beat 结构体的构造参数重载</summary>
+        [JsonConstructor]
         private Beat(int integerPart, int numerator, int denominator)
         {
             IntegerPart = integerPart;
@@ -67,25 +51,25 @@ namespace CyanStars.Chart
         {
             if (beat.IntegerPart < 0)
             {
-                Debug.LogError("Beat 的整数部分必须大于等于 0");
+                Debug.LogWarning("Beat 的整数部分必须大于等于 0");
                 return false;
             }
 
             if (beat.Numerator < 0)
             {
-                Debug.LogError("Beat 的分子必须大于等于 0");
+                Debug.LogWarning("Beat 的分子必须大于等于 0");
                 return false;
             }
 
             if (beat.Denominator <= 0)
             {
-                Debug.LogError("Beat 的分母必须大于 0");
+                Debug.LogWarning("Beat 的分母必须大于 0");
                 return false;
             }
 
             if (beat.Numerator >= beat.Denominator)
             {
-                Debug.LogError("Beat 的分子必须小于分母");
+                Debug.LogWarning("Beat 的分子必须小于分母");
                 return false;
             }
 
@@ -186,6 +170,7 @@ namespace CyanStars.Chart
             {
                 (a, b) = (b, a % b);
             }
+
             int gcd = a;
 
             return new Beat(IntegerPart, Numerator / gcd, Denominator / gcd);

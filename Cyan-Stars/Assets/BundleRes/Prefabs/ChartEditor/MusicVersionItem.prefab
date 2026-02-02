@@ -315,10 +315,10 @@ GameObject:
   m_Component:
   - component: {fileID: 3465736307737091253}
   - component: {fileID: 3465736307737091273}
-  - component: {fileID: 3465736307737091275}
+  - component: {fileID: 2853821095760525788}
   - component: {fileID: 5971456605045387815}
   - component: {fileID: 5903264636438093127}
-  - component: {fileID: 7815470358755672224}
+  - component: {fileID: 4097355852093923259}
   m_Layer: 5
   m_Name: MusicVersionItem
   m_TagString: Untagged
@@ -357,7 +357,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3465736307737091252}
   m_CullTransparentMesh: 1
---- !u!114 &3465736307737091275
+--- !u!114 &2853821095760525788
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -366,7 +366,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3465736307737091252}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -398,9 +398,13 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 0}
-  m_OnClick:
+  toggleTransition: 1
+  graphic: {fileID: 0}
+  m_Group: {fileID: 0}
+  onValueChanged:
     m_PersistentCalls:
       m_Calls: []
+  m_IsOn: 0
 --- !u!95 &5971456605045387815
 Animator:
   serializedVersion: 5
@@ -442,7 +446,7 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!114 &7815470358755672224
+--- !u!114 &4097355852093923259
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -451,12 +455,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 3465736307737091252}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85cfc196e7f81294980efb89934f958e, type: 3}
+  m_Script: {fileID: 11500000, guid: 77fc8659780e4242be9880d349167ca8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemButton: {fileID: 3465736307737091275}
-  itemLedObject: {fileID: 86773086188098763}
-  itemTitleText: {fileID: 4955807014596337978}
+  itemToggle: {fileID: 2853821095760525788}
+  ledImage: {fileID: 8965243270846001460}
+  titleText: {fileID: 4955807014596337978}
 --- !u!1 &4573928948423617005
 GameObject:
   m_ObjectHideFlags: 0
