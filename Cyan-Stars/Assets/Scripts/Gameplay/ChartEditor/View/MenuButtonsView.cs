@@ -81,7 +81,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.IsSimplificationMode
                 .Subscribe(isSimplificationMode =>
                 {
-                    speedTemplateButton.gameObject.SetActive(!isSimplificationMode);
+                    // speedTemplateButton.gameObject.SetActive(!isSimplificationMode);
                     enterSimplificationModeButton.gameObject.SetActive(!isSimplificationMode);
                     exitSimplificationModeButton.gameObject.SetActive(isSimplificationMode);
                 })
