@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace CyanStars.Chart
@@ -36,6 +37,7 @@ namespace CyanStars.Chart
         }
 
         /// <summary>Beat 结构体的构造参数重载</summary>
+        [JsonConstructor]
         private Beat(int integerPart, int numerator, int denominator)
         {
             IntegerPart = integerPart;

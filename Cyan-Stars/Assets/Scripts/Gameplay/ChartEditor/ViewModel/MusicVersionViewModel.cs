@@ -39,17 +39,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public MusicVersionViewModel(ChartEditorModel model)
             : base(model)
         {
-            // 初始化 MusicListItems
-            MusicListItems = Model.ChartPackData.CurrentValue.MusicVersions
-                .CreateView(data => new MusicVersionListItemViewModel(model, this, data))
-                .AddTo(base.Disposables);
-
             // 如果音乐版本不为空，就选择首个音乐版本数据作为初始选中项
             selectedMusicVersionData = new ReactiveProperty<MusicVersionDataEditorModel?>(
                     Model.ChartPackData.CurrentValue.MusicVersions.Count >= 1
                         ? Model.ChartPackData.CurrentValue.MusicVersions[0]
                         : null
                 )
+                .AddTo(base.Disposables);
+
+            // 初始化 MusicListItems
+            MusicListItems = Model.ChartPackData.CurrentValue.MusicVersions
+                .CreateView(data => new MusicVersionListItemViewModel(model, this, data))
                 .AddTo(base.Disposables);
 
             // 初始化代理集合和视图

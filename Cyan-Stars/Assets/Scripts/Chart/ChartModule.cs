@@ -44,7 +44,7 @@ namespace CyanStars.Chart
         private Dictionary<string, Type> trackKeyToTypeMap;
 
 
-        private List<RuntimeChartPack> runtimeChartPacks = new List<RuntimeChartPack>();
+        private readonly List<RuntimeChartPack> runtimeChartPacks = new List<RuntimeChartPack>();
 
         /// <summary>
         /// 目前所有已加载的运行时谱包（只读）
@@ -64,10 +64,10 @@ namespace CyanStars.Chart
         public int? SelectedMusicVersionIndex { get; private set; }
 
         /// <summary>
-        /// 选中的谱面下标
+        /// 选中的谱面元数据下标
         /// </summary>
         /// <remarks>为 null 时将在制谱器中创建新谱面</remarks>
-        public int? SelectedChartIndex { get; private set; }
+        public int? SelectedChartMetadataIndex { get; private set; }
 
         /// <summary>
         /// 当前选中的谱包
@@ -209,19 +209,18 @@ namespace CyanStars.Chart
         public void SelectChartPackData(int index)
         {
             SelectedChartPackIndex = index;
-            SelectedChartIndex = (RuntimeChartPacks[index].ChartPackData.ChartMetaDatas.Count >= 1) ? (int?)0 : null;
-            SelectedMusicVersionIndex =
-                (RuntimeChartPacks[index].ChartPackData.MusicVersionDatas.Count >= 1) ? (int?)0 : null;
+            SelectedChartMetadataIndex = (RuntimeChartPacks[index].ChartPackData.ChartMetaDatas.Count >= 1) ? 0 : null;
+            SelectedMusicVersionIndex = (RuntimeChartPacks[index].ChartPackData.MusicVersionDatas.Count >= 1) ? 0 : null;
 
             HashSet<ChartDifficulty> difficultiesAbleToPlay = RuntimeChartPacks[index].DifficultiesAbleToPlay;
 
-            // 将难度设为上个谱包选中难度中最接近的那一个
-            var currentDifficulty =
-                RuntimeChartPacks[index].ChartPackData.ChartMetaDatas[(int)SelectedChartIndex].Difficulty;
-            var difficulty = difficultiesAbleToPlay
-                .OrderBy(e => Math.Abs(Convert.ToInt32(e) - (int)currentDifficulty))
-                .ThenBy(e => Convert.ToInt32(e))
-                .First();
+            // // TODO:将难度设为上个谱包选中难度中最接近的那一个
+            // var currentDifficulty =
+            //     RuntimeChartPacks[index].ChartPackData.ChartMetaDatas[(int)SelectedChartMetadataIndex].Difficulty;
+            // var difficulty = difficultiesAbleToPlay
+            //     .OrderBy(e => Math.Abs(Convert.ToInt32(e) - (int)currentDifficulty))
+            //     .ThenBy(e => Convert.ToInt32(e))
+            //     .First();
         }
 
         /// <summary>
@@ -252,7 +251,7 @@ namespace CyanStars.Chart
                 }
             }
 
-            SelectedChartIndex = index;
+            SelectedChartMetadataIndex = index;
             await LoadChartDataAsync();
         }
 
@@ -273,7 +272,7 @@ namespace CyanStars.Chart
                 throw new IndexOutOfRangeException();
             }
 
-            SelectedChartIndex = index;
+            SelectedChartMetadataIndex = index;
             await LoadChartDataAsync();
         }
 
@@ -284,7 +283,7 @@ namespace CyanStars.Chart
         {
             SelectedChartPackIndex = null;
             SelectedMusicVersionIndex = null;
-            SelectedChartIndex = null;
+            SelectedChartMetadataIndex = null;
             CancelSelectChartData();
         }
 
@@ -311,7 +310,7 @@ namespace CyanStars.Chart
                 return;
             }
 
-            if (SelectedChartIndex == null)
+            if (SelectedChartMetadataIndex == null)
             {
                 Debug.LogError("尚未选择谱面，无法加载谱面数据。");
                 return;
@@ -319,7 +318,7 @@ namespace CyanStars.Chart
 
             // TODO：计算谱面哈希并校验/覆盖元数据内容，目前假定 metaData.ChartHash 提供了正确的 Hash
 
-            ChartMetaData metaData = SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas[(int)SelectedChartIndex];
+            ChartMetaData metaData = SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas[(int)SelectedChartMetadataIndex];
             // if (lastChartDataHash != metaData.ChartHash)
             if (true) // TODO: 实现了 hash 计算后改用上面一行，暂时先每次都强制加载谱面
             {
@@ -347,6 +346,19 @@ namespace CyanStars.Chart
         // 谱面无需增量更新，直接在更新谱包后 LoadChartDataFromDisk() 刷新即可
 
         /// <summary>
+        /// !!! 测试方法 !!! 卸载全部谱包并直接加载一张谱包
+        /// </summary>
+        /// <remarks>仅用于 Beta2 制谱器测试，在搭建完选曲 UI 和加载逻辑后弃用此方法！</remarks>
+        /// <param name="chartPackFilePath">谱包索引文件的绝对路径</param>
+        public async Task SetChartPackDataFromDesk(string chartPackFilePath)
+        {
+            CancelSelectChartPackData();
+            runtimeChartPacks.Clear();
+
+            await AddChartPackDataFromDisk(chartPackFilePath);
+        }
+
+        /// <summary>
         /// 加载一个新的谱包到列表
         /// </summary>
         /// <param name="chartPackFilePath">谱包索引文件的绝对路径</param>
@@ -368,7 +380,7 @@ namespace CyanStars.Chart
         }
 
         /// <summary>
-        /// 重载某个谱包的数据，见于制谱器更新时
+        /// 重载某个谱包的数据，见于在制谱器更新了内容时
         /// </summary>
         /// <param name="index">需要重载的谱包的下标</param>
         public async Task ReloadChartPackDataFromDisk(int index)
@@ -426,7 +438,7 @@ namespace CyanStars.Chart
         //         runtimeChartPacks.Add(runtimeChartPack);
         //         SelectedChartPackIndex = runtimeChartPacks.IndexOf(runtimeChartPack);
         //         SelectedChartDifficulty = null;
-        //         SelectedChartIndex = null;
+        //         SelectedChartMetadataIndex = null;
         //         SelectedMusicVersionIndex = null;
         //
         //         // 创建、保存并选中新的谱面
@@ -478,7 +490,7 @@ namespace CyanStars.Chart
         //
         //         ChartMetaData chartMetadata = new ChartMetaData(chartFileRelativePath);
         //         runtimeChartPack.ChartPackData.ChartMetaDatas.Add(chartMetadata);
-        //         SelectedChartIndex = runtimeChartPack.ChartPackData.ChartMetaDatas.IndexOf(chartMetadata);
+        //         SelectedChartMetadataIndex = runtimeChartPack.ChartPackData.ChartMetaDatas.IndexOf(chartMetadata);
         //
         //         // 序列化并保存谱面文件
         //         Directory.CreateDirectory(chartsFolderAbsolutePath);

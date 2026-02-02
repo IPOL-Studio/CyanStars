@@ -54,7 +54,9 @@ public class ChartEditorSceneRoot : MonoBehaviour
             string randomName = CreateRandomName();
 
             workspacePath = PathUtil.Combine(chartModule.PlayerChartPacksFolderPath, randomName);
+
             chartData = new ChartData();
+
             ChartMetaData chartMetaData = new ChartMetaData($"Charts/{randomName}.json");
             List<BpmGroupItem> bpmGroup = new List<BpmGroupItem>();
             _ = Beat.TryCreateBeat(0, 0, 1, out Beat beat);
@@ -66,14 +68,28 @@ public class ChartEditorSceneRoot : MonoBehaviour
         else if (chartModule.ChartData is null)
         {
             // 打开谱包，但创建新谱面
+            string randomName = CreateRandomName();
+
             workspacePath = chartModule.SelectedRuntimeChartPack.WorkspacePath;
-            throw new NotImplementedException(); //TODO
+
+            chartData = new ChartData();
+
+            ChartMetaData chartMetaData = new ChartMetaData($"Charts/{randomName}.json");
+            chartPackData = chartModule.SelectedRuntimeChartPack.ChartPackData;
+            chartPackData.ChartMetaDatas.Add(chartMetaData);
+
+            chartMetadataIndex = chartPackData.ChartMetaDatas.Count - 1;
         }
         else
         {
             // 打开谱包和谱面
+            if (chartModule.SelectedChartMetadataIndex == null)
+                throw new Exception("加载了谱面，但没有正确指定元数据下标");
+
             workspacePath = chartModule.SelectedRuntimeChartPack.WorkspacePath;
-            throw new NotImplementedException(); //TODO
+            chartData = chartModule.ChartData;
+            chartPackData = chartModule.SelectedRuntimeChartPack.ChartPackData;
+            chartMetadataIndex = (int)chartModule.SelectedChartMetadataIndex;
         }
 
         mvvmBindManager.StartBind(workspacePath, chartMetadataIndex, chartPackData, chartData, musicManager);

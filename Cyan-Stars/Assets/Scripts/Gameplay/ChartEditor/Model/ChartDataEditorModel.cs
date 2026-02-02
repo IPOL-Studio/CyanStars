@@ -23,9 +23,18 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             ChartData = chartData;
 
             ReadyBeat = new ReactiveProperty<int>(chartData.ReadyBeat);
+
             SpeedGroupDatas = new ObservableList<SpeedTemplateData>();
+            foreach (var speedGroupData in chartData.SpeedGroupDatas)
+                SpeedGroupDatas.Add(speedGroupData);
+
             Notes = new ObservableList<BaseChartNoteData>();
+            foreach (var note in chartData.Notes)
+                Notes.Add(note);
+
             TrackDatas = new ObservableList<ChartTrackData>();
+            foreach (var trackData in chartData.TrackDatas)
+                TrackDatas.Add(trackData);
         }
     }
 }
