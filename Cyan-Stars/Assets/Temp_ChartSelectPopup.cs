@@ -73,6 +73,8 @@ namespace CyanStars
                 {
                     GameRoot.File.OpenLoadFilePathBrowser(async (path) =>
                         {
+                            path = path.Replace('\\', '/');
+
                             // 加载谱包并选中
                             chartPackFilePathText.text = path;
                             await chartModule.SetChartPackDataFromDesk(path);
