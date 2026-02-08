@@ -86,11 +86,32 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
 
         private readonly ReactiveProperty<bool> CanvasVisibility = new ReactiveProperty<bool>(false);
+        private ReadOnlyReactiveProperty<bool> listVisibility = null!;
+        private ReadOnlyReactiveProperty<bool> detailVisibility = null!;
 
 
         public override void Bind(MusicVersionViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
+
+            listVisibility = Observable
+                .CombineLatest(
+                    ViewModel.IsSimplificationMode,
+                    ViewModel.ChartPackData
+                        .Select(data => data.MusicVersions.ObserveCountChanged(notifyCurrentCount: true))
+                        .Switch(),
+                    ViewModel.SelectedMusicVersionData,
+                    (isSimplificationMode, count, selectedData) =>
+                        !(isSimplificationMode && count == 1 && selectedData != null)
+                )
+                .ToReadOnlyReactiveProperty()
+                .AddTo(this);
+            detailVisibility =
+                ViewModel.SelectedMusicVersionData
+                    .Select(data => data != null)
+                    .ToReadOnlyReactiveProperty()
+                    .AddTo(this);
+
 
             // 创建列表 VM 和 V 并绑定
             foreach (var listItemViewModel in ViewModel.MusicListItems)
@@ -190,10 +211,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
             CanvasVisibility
                 .Subscribe(visible => canvas.enabled = visible)
                 .AddTo(this);
-            ViewModel.ListVisibility
+            listVisibility
                 .Subscribe(visible => musicListObject.SetActive(visible))
                 .AddTo(this);
-            ViewModel.DetailVisibility
+            detailVisibility
                 .Subscribe(visible => detailObject.SetActive(visible))
                 .AddTo(this);
             ViewModel.DetailTitle

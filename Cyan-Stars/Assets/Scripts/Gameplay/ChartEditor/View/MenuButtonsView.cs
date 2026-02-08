@@ -67,16 +67,20 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private BpmGroupView bpmGroupView = null!;
 
 
+        private readonly ReactiveProperty<bool> FunctionCanvasVisibility = new ReactiveProperty<bool>(false);
+
+
         public override void Bind(MenuButtonsViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
 
-            ViewModel.FunctionCanvasVisibility
+            FunctionCanvasVisibility
                 .Subscribe(isVisible =>
-                {
-                    functionToggle.SetIsOnWithoutNotify(isVisible);
-                    functionCanvas.enabled = isVisible;
-                })
+                    {
+                        functionToggle.SetIsOnWithoutNotify(isVisible);
+                        functionCanvas.enabled = isVisible;
+                    }
+                )
                 .AddTo(this);
             ViewModel.IsSimplificationMode
                 .Subscribe(isSimplificationMode =>
@@ -88,7 +92,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
 
-            functionToggle.onValueChanged.AddListener(ViewModel.SetFunctionCanvasVisibility);
+            functionToggle.onValueChanged.AddListener(SetFunctionCanvasVisibility);
             saveButton.onClick.AddListener(ViewModel.SaveFileToDesk);
             // testButton.onClick.AddListener();
             undoButton.onClick.AddListener(ViewModel.Undo);
@@ -104,17 +108,23 @@ namespace CyanStars.Gameplay.ChartEditor.View
             enterSimplificationModeButton.onClick.AddListener(() => ViewModel.SetSimplificationMode(true));
         }
 
+        private void SetFunctionCanvasVisibility(bool visibility)
+        {
+            FunctionCanvasVisibility.Value = visibility;
+        }
+
         protected override void OnDestroy()
         {
-            functionToggle.onValueChanged.RemoveAllListeners();
-            saveButton.onClick.RemoveAllListeners();
+            functionToggle.onValueChanged.RemoveListener(SetFunctionCanvasVisibility);
+            saveButton.onClick.RemoveListener(ViewModel.SaveFileToDesk);
+            // testButton.onClick.RemoveAllListeners();
             undoButton.onClick.RemoveListener(ViewModel.Undo);
             redoButton.onClick.RemoveListener(ViewModel.Redo);
-            chartPackDataButton.onClick.RemoveAllListeners();
-            chartDataButton.onClick.RemoveAllListeners();
-            musicVersionButton.onClick.RemoveAllListeners();
-            bpmGroupButton.onClick.RemoveAllListeners();
-            speedTemplateButton.onClick.RemoveAllListeners();
+            chartPackDataButton.onClick.RemoveListener(chartPackDataView.OpenCanvas);
+            chartDataButton.onClick.RemoveListener(chartDataView.OpenCanvas);
+            musicVersionButton.onClick.RemoveListener(musicVersionView.OpenCanvas);
+            bpmGroupButton.onClick.RemoveListener(bpmGroupView.OpenCanvas);
+            // speedTemplateButton.onClick.RemoveAllListeners();
             exitSimplificationModeButton.onClick.RemoveAllListeners();
             enterSimplificationModeButton.onClick.RemoveAllListeners();
         }

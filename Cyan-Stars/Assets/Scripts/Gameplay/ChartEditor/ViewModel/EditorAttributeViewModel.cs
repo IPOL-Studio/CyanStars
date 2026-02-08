@@ -1,7 +1,7 @@
 ﻿#nullable enable
 
 using System.Globalization;
-using CyanStars.Gameplay.ChartEditor.Command;
+using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
 
@@ -12,7 +12,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private const int BeatAccuracyStep = 1;
         private const float ZoomStep = 0.1f;
 
-        public readonly ReadOnlyReactiveProperty<bool> ShowEditorAttributeFrame;
+        public ReadOnlyReactiveProperty<BaseChartNoteData?> SelectedNoteData => Model.SelectedNoteData;
         public readonly ReadOnlyReactiveProperty<string> PosAccuracyString;
         public readonly ReadOnlyReactiveProperty<bool> PosMagnetState;
         public readonly ReadOnlyReactiveProperty<string> BeatAccuracyString;
@@ -22,10 +22,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public EditorAttributeViewModel(ChartEditorModel model)
             : base(model)
         {
-            ShowEditorAttributeFrame = Model.SelectedNoteData
-                .Select(data => data == null)
-                .ToReadOnlyReactiveProperty()
-                .AddTo(base.Disposables);
+            // TODO: 优化此处属性赋值，直接透传数据并由 View 自行组合和处理逻辑
             PosAccuracyString = Model.PosAccuracy
                 .Select(posAccuracy => posAccuracy.ToString())
                 .ToReadOnlyReactiveProperty(Model.PosAccuracy.Value.ToString())

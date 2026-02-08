@@ -14,6 +14,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private Vector2? dragStartCropPos;
         private float? dragStartCropHeight;
 
+        public ReadOnlyReactiveProperty<ChartPackDataEditorModel> ChartPackData => Model.ChartPackData;
 
         public readonly ReadOnlyReactiveProperty<string> ChartPackTitle;
 
@@ -25,7 +26,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<string> PreviewEndBeatField3String;
 
         public readonly ReadOnlyReactiveProperty<string> CoverFilePathString;
-        public readonly ReadOnlyReactiveProperty<bool> CoverCropAreaVisible;
 
 
         public ChartPackDataViewModel(ChartEditorModel model)
@@ -97,12 +97,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .Switch()
                 .Select(path => path ?? "")
                 .ToReadOnlyReactiveProperty("")
-                .AddTo(base.Disposables);
-            CoverCropAreaVisible = Model.ChartPackData
-                .Select(data => data.CoverFilePath.AsObservable())
-                .Switch()
-                .Select(path => path != null)
-                .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
         }
 

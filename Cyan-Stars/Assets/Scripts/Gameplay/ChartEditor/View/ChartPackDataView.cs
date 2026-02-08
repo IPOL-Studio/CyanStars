@@ -49,83 +49,85 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private Button exportChartPackButton = null!; //TODO
 
 
-        private ReactiveProperty<bool> canvasVisible = new ReactiveProperty<bool>(false);
+        private readonly ReactiveProperty<bool> canvasVisibility = new ReactiveProperty<bool>(false);
+        private ReadOnlyReactiveProperty<bool> coverCropFrameVisibility = null!;
 
 
         public override void Bind(ChartPackDataViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
 
-            canvasVisible
-                .Subscribe(visible =>
-                {
-                    canvas.enabled = visible;
-                })
+
+            coverCropFrameVisibility = ViewModel.ChartPackData
+                .Select(data => data.CoverFilePath.AsObservable())
+                .Switch()
+                .Select(path => path != null)
+                .ToReadOnlyReactiveProperty()
+                .AddTo(this);
+
+
+            canvasVisibility
+                .Subscribe(visible => canvas.enabled = visible)
                 .AddTo(this);
             ViewModel.ChartPackTitle
-                .Subscribe(title =>
-                {
-                    chartPackTitleField.text = title;
-                })
+                .Subscribe(title => chartPackTitleField.text = title)
                 .AddTo(this);
 
             ViewModel.PreviewStartBeatField1String
-                .Subscribe(text =>
-                {
-                    previewStartBeatField1.text = text;
-                })
+                .Subscribe(text => previewStartBeatField1.text = text)
                 .AddTo(this);
-            ViewModel.PreviewStartBeatField2String.Subscribe(text =>
-                {
-                    previewStartBeatField2.text = text;
-                })
+            ViewModel.PreviewStartBeatField2String
+                .Subscribe(text => previewStartBeatField2.text = text)
                 .AddTo(this);
-            ViewModel.PreviewStartBeatField3String.Subscribe(text =>
-                {
-                    previewStartBeatField3.text = text;
-                })
+            ViewModel.PreviewStartBeatField3String
+                .Subscribe(text => previewStartBeatField3.text = text)
                 .AddTo(this);
-            ViewModel.PreviewEndBeatField1String.Subscribe(text =>
-                {
-                    previewEndBeatField1.text = text;
-                })
+            ViewModel.PreviewEndBeatField1String
+                .Subscribe(text => previewEndBeatField1.text = text)
                 .AddTo(this);
-            ViewModel.PreviewEndBeatField2String.Subscribe(text =>
-                {
-                    previewEndBeatField2.text = text;
-                })
+            ViewModel.PreviewEndBeatField2String
+                .Subscribe(text => previewEndBeatField2.text = text)
                 .AddTo(this);
-            ViewModel.PreviewEndBeatField3String.Subscribe(text =>
-                {
-                    previewEndBeatField3.text = text;
-                })
+            ViewModel.PreviewEndBeatField3String
+                .Subscribe(text => previewEndBeatField3.text = text)
                 .AddTo(this);
 
             ViewModel.CoverFilePathString
-                .Subscribe(text =>
-                {
-                    coverPathText.text = text;
-                })
+                .Subscribe(text => coverPathText.text = text)
                 .AddTo(this);
-            ViewModel.CoverCropAreaVisible
+            coverCropFrameVisibility
                 .Subscribe(isVisible => coverCropFrameObject.SetActive(isVisible))
                 .AddTo(this);
 
 
             closeCanvasButton.onClick.AddListener(() =>
                 {
-                    if (!canvasVisible.CurrentValue)
+                    if (!canvasVisibility.CurrentValue)
                         return;
 
                     GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
                         new DelegateCommand(
-                            () => canvasVisible.Value = false,
-                            () => canvasVisible.Value = true
+                            () => canvasVisibility.Value = false,
+                            () => canvasVisibility.Value = true
                         )
                     );
                 }
             );
             chartPackTitleField.onEndEdit.AddListener(ViewModel.SetChartPackTitle);
+
+            Observable.Merge(
+                    previewStartBeatField1.onEndEdit.AsObservable(),
+                    previewStartBeatField2.onEndEdit.AsObservable(),
+                    previewStartBeatField3.onEndEdit.AsObservable()
+                )
+                .Subscribe(_ =>
+                    {
+                        UpdateBeat(previewStartBeatField1.text, previewStartBeatField2.text, previewStartBeatField3.text);
+                    }
+                )
+                .AddTo(this);
+
+
             previewStartBeatField1.onEndEdit.AddListener(_ =>
                 ViewModel.SetPreviewStartBeat(
                     previewStartBeatField1.text,
@@ -172,15 +174,19 @@ namespace CyanStars.Gameplay.ChartEditor.View
             exportChartPackButton.onClick.AddListener(ViewModel.ExportChartPack);
         }
 
+        private void UpdateBeat(string s1, string s2, string s3)
+        {
+        }
+
         public void OpenCanvas()
         {
-            if (canvasVisible.CurrentValue)
+            if (canvasVisibility.CurrentValue)
                 return;
 
             GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
                 new DelegateCommand(
-                    () => canvasVisible.Value = true,
-                    () => canvasVisible.Value = false
+                    () => canvasVisibility.Value = true,
+                    () => canvasVisibility.Value = false
                 )
             );
         }

@@ -78,36 +78,67 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private Toggle breakRightPosToggle = null!;
 
 
+        private ReadOnlyReactiveProperty<bool> frameVisibility = null!;
+        private ReadOnlyReactiveProperty<bool> judgeBeatFrameVisibility = null!;
+        private ReadOnlyReactiveProperty<bool> endJudgeBeatFrameVisibility = null!;
+        private ReadOnlyReactiveProperty<bool> posFrameVisibility = null!;
+        private ReadOnlyReactiveProperty<bool> breakPosFrameVisibility = null!;
+        private ReadOnlyReactiveProperty<bool> correctAudioFrameVisibility = null!;
+        private ReadOnlyReactiveProperty<bool> hitAudioFrameVisibility = null!;
+        private ReadOnlyReactiveProperty<bool> speedTemplateFrameVisibility = null!;
+        private ReadOnlyReactiveProperty<bool> speedOffsetFrameVisibility = null!;
+
+
         public override void Bind(NoteAttributeViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
 
+            frameVisibility = ViewModel.SelectedNoteData
+                .Select(note => note != null)
+                .ToReadOnlyReactiveProperty()
+                .AddTo(this);
+            judgeBeatFrameVisibility = new ReactiveProperty<bool>(true);
+            endJudgeBeatFrameVisibility = ViewModel.SelectedNoteData
+                .Select(note => note?.Type == NoteType.Hold)
+                .ToReadOnlyReactiveProperty()
+                .AddTo(this);
+            posFrameVisibility = ViewModel.SelectedNoteData
+                .Select(note => note?.Type != NoteType.Break)
+                .ToReadOnlyReactiveProperty();
+            breakPosFrameVisibility = ViewModel.SelectedNoteData
+                .Select(note => note?.Type == NoteType.Break)
+                .ToReadOnlyReactiveProperty();
+            correctAudioFrameVisibility = new ReactiveProperty<bool>(false); // TODO
+            hitAudioFrameVisibility = new ReactiveProperty<bool>(false); // TODO
+            speedTemplateFrameVisibility = new ReactiveProperty<bool>(false); // TODO
+            speedOffsetFrameVisibility = new ReactiveProperty<bool>(false); // TODO
+
             // Frame 绑定
-            ViewModel.FrameVisibility
+            frameVisibility
                 .Subscribe(visibility => noteAttributeFrame.SetActive(visibility))
                 .AddTo(this);
-            ViewModel.JudgeBeatFrameVisibility
+            judgeBeatFrameVisibility
                 .Subscribe(visibility => judgeBeatFrame.SetActive(visibility))
                 .AddTo(this);
-            ViewModel.EndJudgeBeatFrameVisibility
+            endJudgeBeatFrameVisibility
                 .Subscribe(visibility => endJudgeBeatFrame.SetActive(visibility))
                 .AddTo(this);
-            ViewModel.PosFrameVisibility
+            posFrameVisibility
                 .Subscribe(visibility => posFrame.SetActive(visibility))
                 .AddTo(this);
-            ViewModel.BreakPosFrameVisibility
+            breakPosFrameVisibility
                 .Subscribe(visibility => breakPosFrame.SetActive(visibility))
                 .AddTo(this);
-            ViewModel.CorrectAudioFrameVisibility
+            correctAudioFrameVisibility
                 .Subscribe(visibility => correctAudioFrame.SetActive(visibility))
                 .AddTo(this);
-            ViewModel.HitAudioFrameVisibility
+            hitAudioFrameVisibility
                 .Subscribe(visibility => hitAudioFrame.SetActive(visibility))
                 .AddTo(this);
-            ViewModel.SpeedTemplateFrameVisibility
+            speedTemplateFrameVisibility
                 .Subscribe(visibility => speedTemplateFrame.SetActive(visibility))
                 .AddTo(this);
-            ViewModel.SpeedOffsetFrameVisibility
+            speedOffsetFrameVisibility
                 .Subscribe(visibility => speedOffsetFrame.SetActive(visibility))
                 .AddTo(this);
 

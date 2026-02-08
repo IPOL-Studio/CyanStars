@@ -38,11 +38,20 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private Button zoomInButton = null!;
 
 
+        private ReadOnlyReactiveProperty<bool> frameVisibility = null!;
+
+
         public override void Bind(EditorAttributeViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
 
-            ViewModel.ShowEditorAttributeFrame
+            frameVisibility =
+                ViewModel.SelectedNoteData
+                    .Select(note => note == null)
+                    .ToReadOnlyReactiveProperty()
+                    .AddTo(this);
+
+            frameVisibility
                 .Subscribe(value => editorAttributeFrame.SetActive(value))
                 .AddTo(this);
             ViewModel.PosAccuracyString

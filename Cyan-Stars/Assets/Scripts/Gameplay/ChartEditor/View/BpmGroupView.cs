@@ -68,12 +68,21 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private Button testButton = null!;
 
 
-        private readonly ReactiveProperty<bool> CanvasVisible = new ReactiveProperty<bool>(false);
+        private readonly ReactiveProperty<bool> CanvasVisibility = new ReactiveProperty<bool>(false);
+        private ReadOnlyReactiveProperty<bool> listVisibility = null!;
 
 
         public override void Bind(BpmGroupViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
+
+            listVisibility = Observable.CombineLatest(
+                    ViewModel.IsSimplificationMode,
+                    ViewModel.ChartPackData,
+                    (isSimple, chartPackData) => !isSimple || (chartPackData?.BpmGroup.Count ?? 0) == 0
+                )
+                .ToReadOnlyReactiveProperty()
+                .AddTo(this);
 
             // 创建列表 VM 和 V 并绑定
             foreach (var bpmGroupListItemViewModel in ViewModel.BpmListItems)
@@ -141,10 +150,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
             // VM -> V 绑定
-            CanvasVisible
+            CanvasVisibility
                 .Subscribe(visible => canvas.enabled = visible)
                 .AddTo(this);
-            ViewModel.ListVisible
+            listVisibility
                 .Subscribe(visible => bpmGroupListGameObject.SetActive(visible))
                 .AddTo(this);
             ViewModel.SelectedBpmItem
@@ -197,26 +206,26 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private void CloseCanvas()
         {
-            if (!CanvasVisible.CurrentValue)
+            if (!CanvasVisibility.CurrentValue)
                 return;
 
             GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
                 new DelegateCommand(
-                    () => CanvasVisible.Value = false,
-                    () => CanvasVisible.Value = true
+                    () => CanvasVisibility.Value = false,
+                    () => CanvasVisibility.Value = true
                 )
             );
         }
 
         public void OpenCanvas()
         {
-            if (CanvasVisible.CurrentValue)
+            if (CanvasVisibility.CurrentValue)
                 return;
 
             GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
                 new DelegateCommand(
-                    () => CanvasVisible.Value = true,
-                    () => CanvasVisible.Value = false
+                    () => CanvasVisibility.Value = true,
+                    () => CanvasVisibility.Value = false
                 )
             );
         }

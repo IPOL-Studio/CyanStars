@@ -21,6 +21,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     {
         private const int AddOffsetStep = 10;
 
+
+        public ReadOnlyReactiveProperty<bool> IsSimplificationMode => Model.IsSimplificationMode;
+        public ReadOnlyReactiveProperty<ChartPackDataEditorModel> ChartPackData => Model.ChartPackData;
+
         public readonly ISynchronizedView<MusicVersionDataEditorModel, MusicVersionListItemViewModel> MusicListItems;
 
         private readonly ReactiveProperty<MusicVersionDataEditorModel?> selectedMusicVersionData;
@@ -28,9 +32,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         private readonly ObservableList<KeyValuePair<string, List<string>>> staffItemsProxy;
         public readonly ISynchronizedView<KeyValuePair<string, List<string>>, MusicVersionStaffItemViewModel> StaffItems;
-
-        public readonly ReadOnlyReactiveProperty<bool> ListVisibility;
-        public readonly ReadOnlyReactiveProperty<bool> DetailVisibility;
+        
 
         public readonly ReadOnlyReactiveProperty<string> DetailTitle;
         public readonly ReadOnlyReactiveProperty<string> DetailAudioFilePath;
@@ -92,18 +94,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
 
 
-            ListVisibility = Observable
-                .CombineLatest(
-                    model.IsSimplificationMode,
-                    model.ChartPackData
-                        .Select(data => data.MusicVersions.ObserveCountChanged(notifyCurrentCount: true))
-                        .Switch(),
-                    SelectedMusicVersionData,
-                    (isSimplificationMode, count, selectedData) =>
-                        !(isSimplificationMode && count == 1 && selectedData != null)
-                )
-                .ToReadOnlyReactiveProperty()
-                .AddTo(base.Disposables);
             Model.ChartPackData // 元素数量变化时更新选中的元素
                 .Select(data =>
                     data.MusicVersions.ObserveCountChanged(notifyCurrentCount: true).Select(_ => data.MusicVersions)
@@ -118,11 +108,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     }
                 )
                 .AddTo(base.Disposables);
-            DetailVisibility =
-                selectedMusicVersionData
-                    .Select(data => data != null)
-                    .ToReadOnlyReactiveProperty()
-                    .AddTo(base.Disposables);
+
 
             DetailTitle = SelectedMusicVersionData
                 .Select(data => data?.VersionTitle ?? Observable.Return("").AsObservable())
