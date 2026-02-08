@@ -80,15 +80,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public readonly ReactiveProperty<int> BeatAccuracy = new ReactiveProperty<int>(2);
         public readonly ReactiveProperty<float> BeatZoom = new ReactiveProperty<float>(1f);
 
-        // 提示弹窗
-        private readonly ReactiveProperty<bool> popupCanvasVisibility = new ReactiveProperty<bool>(false);
-        public ReadOnlyReactiveProperty<bool> PopupCanvasVisibility => popupCanvasVisibility;
-        public string PopupTitleString { get; private set; } = "";
-        public string PopupDescribeString { get; private set; } = "";
-        private readonly Dictionary<string, Action?> popupButtonCallBackMap = new Dictionary<string, Action?>();
-        public IReadOnlyDictionary<string, Action?> PopupButtonCallBackMap => popupButtonCallBackMap;
-        public bool PopupShowCloseButton { get; private set; } = true;
-
 
         /// <summary>
         /// 构造函数
@@ -107,39 +98,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
 
             ChartPackData = new ReactiveProperty<ChartPackDataEditorModel>(new ChartPackDataEditorModel(chartPackData));
             ChartData = new ReactiveProperty<ChartDataEditorModel>(new ChartDataEditorModel(chartData));
-        }
-
-
-        public void ShowPopup(string title,
-                              string describe,
-                              Dictionary<string, Action?>? map = null,
-                              bool showCloseButton = true)
-        {
-            if (popupCanvasVisibility.CurrentValue)
-                throw new Exception("已经有一个弹窗打开了，不允许再开一个");
-
-            PopupTitleString = title;
-            PopupDescribeString = describe;
-            popupButtonCallBackMap.Clear();
-            if (map != null) // 如果 map 为 null，则等同空列表，不显示任何按钮
-            {
-                foreach (var kvp in map)
-                {
-                    popupButtonCallBackMap.Add(kvp.Key, kvp.Value);
-                }
-            }
-
-            PopupShowCloseButton = showCloseButton;
-            popupCanvasVisibility.Value = true; // 自动触发 UI 更新
-        }
-
-        public void ClosePopup()
-        {
-            if (!popupCanvasVisibility.CurrentValue)
-                throw new Exception("弹窗已经关闭了，不能再次关闭");
-
-            popupButtonCallBackMap.Clear(); // 准备立刻释放订阅
-            popupCanvasVisibility.Value = false; // 自动触发 UI 更新
         }
     }
 }

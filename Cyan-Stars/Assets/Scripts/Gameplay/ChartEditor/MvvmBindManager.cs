@@ -104,9 +104,6 @@ namespace CyanStars.Gameplay.ChartEditor
 
             var editAreaViewModel = new EditAreaViewModel(model).AddTo(Disposables);
             editAreaView.Bind(editAreaViewModel);
-
-            var popupViewModel = new PopupViewModel(model).AddTo(Disposables);
-            popupView.Bind(popupViewModel);
         }
 
         /// <summary>

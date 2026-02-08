@@ -9,6 +9,7 @@ using CyanStars.Framework;
 using CyanStars.Framework.File;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
+using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Utils;
 using ObservableCollections;
 using R3;
@@ -358,10 +359,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
                 if (musicVersionData.AudioFilePath.CurrentValue == newTargetRelativePath)
                 {
-                    Model.ShowPopup("无法导入音乐",
+                    PopupView.Show("无法导入音乐",
                         "选中的音乐文件文件名与其他音乐版本文件名重复，请重命名后再次导入",
-                        new Dictionary<string, Action?> { ["确定"] = null },
-                        true);
+                        true,
+                        new Dictionary<string, Action?> { ["确定"] = null }
+                    );
                     return;
                 }
             }
