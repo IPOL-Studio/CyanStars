@@ -108,10 +108,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                             return;
 
                         GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
-                            new DelegateCommand(
-                                () => canvasVisibility.Value = false,
-                                () => canvasVisibility.Value = true
-                            )
+                            () => canvasVisibility.Value = false,
+                            () => canvasVisibility.Value = true
                         );
                     }
                 )
@@ -214,10 +212,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 return;
 
             GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => canvasVisibility.Value = true,
-                    () => canvasVisibility.Value = false
-                )
+                () => canvasVisibility.Value = true,
+                () => canvasVisibility.Value = false
             );
         }
 

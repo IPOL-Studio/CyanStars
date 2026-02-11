@@ -64,15 +64,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 }
             }
 
-            CommandStack.ExecuteCommand(new DelegateCommand(() =>
-                {
-                    MetaData.Difficulty.Value = newDifficulty;
-                },
-                () =>
-                {
-                    MetaData.Difficulty.Value = oldDifficulty;
-                }
-            ));
+            CommandStack.ExecuteCommand(
+                () => MetaData.Difficulty.Value = newDifficulty,
+                () => MetaData.Difficulty.Value = oldDifficulty
+            );
         }
 
         public void SetChartLevelString(string newLevel)
@@ -83,15 +78,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (newLevel == oldLevel)
                 return;
 
-            CommandStack.ExecuteCommand(new DelegateCommand(() =>
-                {
-                    metaData.Level.Value = newLevel;
-                },
-                () =>
-                {
-                    metaData.Level.Value = oldLevel;
-                }
-            ));
+            CommandStack.ExecuteCommand(
+                () => metaData.Level.Value = newLevel,
+                () => metaData.Level.Value = oldLevel
+            );
         }
 
         public void SetReadyBeatCount(string newBeatCount)
@@ -107,10 +97,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => ChartData.ReadyBeat.Value = newBeatCountInt,
-                    () => ChartData.ReadyBeat.Value = oldBeatIntCount
-                )
+                () => ChartData.ReadyBeat.Value = newBeatCountInt,
+                () => ChartData.ReadyBeat.Value = oldBeatIntCount
             );
         }
     }

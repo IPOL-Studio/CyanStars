@@ -2,7 +2,6 @@
 
 using System;
 using CyanStars.Framework;
-using CyanStars.Gameplay.ChartEditor;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using R3;

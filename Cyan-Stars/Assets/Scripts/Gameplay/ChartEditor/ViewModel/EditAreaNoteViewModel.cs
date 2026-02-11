@@ -119,10 +119,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 }
 
                 CommandStack.ExecuteCommand(
-                    new DelegateCommand(
-                        () => Model.ChartData.CurrentValue.Notes.Remove(data),
-                        () => NoteListHelper.TryInsertItem(Model.ChartData.CurrentValue.Notes, data)
-                    )
+                    () => Model.ChartData.CurrentValue.Notes.Remove(data),
+                    () => NoteListHelper.TryInsertItem(Model.ChartData.CurrentValue.Notes, data)
                 );
             }
             else
@@ -142,10 +140,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             }
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => Model.ChartData.CurrentValue.Notes.Remove(data),
-                    () => NoteListHelper.TryInsertItem(Model.ChartData.CurrentValue.Notes, data)
-                )
+                () => Model.ChartData.CurrentValue.Notes.Remove(data),
+                () => NoteListHelper.TryInsertItem(Model.ChartData.CurrentValue.Notes, data)
             );
         }
     }

@@ -23,16 +23,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () =>
-                    {
-                        Model.IsSimplificationMode.Value = newValue;
-                    },
-                    () =>
-                    {
-                        Model.IsSimplificationMode.Value = !newValue;
-                    }
-                )
+                () =>
+                {
+                    Model.IsSimplificationMode.Value = newValue;
+                },
+                () =>
+                {
+                    Model.IsSimplificationMode.Value = !newValue;
+                }
             );
         }
 

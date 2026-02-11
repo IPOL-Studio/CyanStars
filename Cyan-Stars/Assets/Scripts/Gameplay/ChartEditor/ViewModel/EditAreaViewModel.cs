@@ -314,10 +314,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var notesCollection = Model.ChartData.CurrentValue.Notes;
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => NoteListHelper.TryInsertItem(notesCollection, noteData),
-                    () => notesCollection.Remove(noteData)
-                )
+                () => NoteListHelper.TryInsertItem(notesCollection, noteData),
+                () => notesCollection.Remove(noteData)
             );
         }
 

@@ -139,10 +139,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             var oldValue = selectedMusicVersionData.CurrentValue;
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => selectedMusicVersionData.Value = musicVersionData,
-                    () => selectedMusicVersionData.Value = oldValue
-                ));
+                () => selectedMusicVersionData.Value = musicVersionData,
+                () => selectedMusicVersionData.Value = oldValue
+            );
         }
 
         /// <summary>
@@ -157,18 +156,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下替换 Staff 数据。");
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () =>
-                    {
-                        selectedMusicVersionData.CurrentValue.Staffs.Remove(oldData);
-                        selectedMusicVersionData.CurrentValue.Staffs.Add(newData);
-                    },
-                    () =>
-                    {
-                        selectedMusicVersionData.CurrentValue.Staffs.Remove(newData);
-                        selectedMusicVersionData.CurrentValue.Staffs.Add(oldData);
-                    }
-                )
+                () =>
+                {
+                    selectedMusicVersionData.CurrentValue.Staffs.Remove(oldData);
+                    selectedMusicVersionData.CurrentValue.Staffs.Add(newData);
+                },
+                () =>
+                {
+                    selectedMusicVersionData.CurrentValue.Staffs.Remove(newData);
+                    selectedMusicVersionData.CurrentValue.Staffs.Add(oldData);
+                }
             );
         }
 
@@ -181,10 +178,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下修改 Staff 数据。");
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => selectedMusicVersionData.CurrentValue.Staffs.Remove(data),
-                    () => selectedMusicVersionData.CurrentValue.Staffs.Add(data)
-                )
+                () => selectedMusicVersionData.CurrentValue.Staffs.Remove(data),
+                () => selectedMusicVersionData.CurrentValue.Staffs.Add(data)
             );
         }
 
@@ -210,10 +205,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             var newMusicVersionData = new MusicVersionDataEditorModel(new MusicVersionData("新音乐版本"));
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => Model.ChartPackData.CurrentValue.MusicVersions.Add(newMusicVersionData),
-                    () => Model.ChartPackData.CurrentValue.MusicVersions.Remove(newMusicVersionData)
-                )
+                () => Model.ChartPackData.CurrentValue.MusicVersions.Add(newMusicVersionData),
+                () => Model.ChartPackData.CurrentValue.MusicVersions.Remove(newMusicVersionData)
             );
         }
 
@@ -311,10 +304,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (oldTitle == newTitle)
                 return;
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => SelectedMusicVersionData.CurrentValue!.VersionTitle.Value = newTitle,
-                    () => SelectedMusicVersionData.CurrentValue!.VersionTitle.Value = oldTitle
-                )
+                () => SelectedMusicVersionData.CurrentValue!.VersionTitle.Value = newTitle,
+                () => SelectedMusicVersionData.CurrentValue!.VersionTitle.Value = oldTitle
             );
         }
 
@@ -368,30 +359,28 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // 仅复制文件到缓存区，暂不声明目标路径以防止自动顶替旧句柄目标路径。
             IReadonlyTempFileHandler newHandler = ChartEditorFileManager.TempFile(newOriginFilePath, null);
 
-            CommandStack.ExecuteCommand(
-                new DelegateCommand(() =>
+            CommandStack.ExecuteCommand(() =>
+                {
+                    selectedMusicVersionData.CurrentValue.AudioFilePath.Value = newTargetRelativePath;
+
+                    if (oldHandler != null)
                     {
-                        selectedMusicVersionData.CurrentValue.AudioFilePath.Value = newTargetRelativePath;
-
-                        if (oldHandler != null)
-                        {
-                            ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, null);
-                        }
-
-                        ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, newTargetAbsolutePath);
-                    },
-                    () =>
-                    {
-                        selectedMusicVersionData.CurrentValue.AudioFilePath.Value = oldTargetRelativePath;
-
-                        ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, null);
-
-                        if (oldHandler != null)
-                        {
-                            ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, oldTargetAbsolutePath);
-                        }
+                        ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, null);
                     }
-                )
+
+                    ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, newTargetAbsolutePath);
+                },
+                () =>
+                {
+                    selectedMusicVersionData.CurrentValue.AudioFilePath.Value = oldTargetRelativePath;
+
+                    ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, null);
+
+                    if (oldHandler != null)
+                    {
+                        ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, oldTargetAbsolutePath);
+                    }
+                }
             );
         }
 
@@ -401,10 +390,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下设置偏移量。");
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => SelectedMusicVersionData.CurrentValue!.Offset.Value -= AddOffsetStep,
-                    () => SelectedMusicVersionData.CurrentValue!.Offset.Value += AddOffsetStep
-                )
+                () => SelectedMusicVersionData.CurrentValue!.Offset.Value -= AddOffsetStep,
+                () => SelectedMusicVersionData.CurrentValue!.Offset.Value += AddOffsetStep
             );
         }
 
@@ -423,10 +410,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (oldValue == newValue)
                 return;
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => SelectedMusicVersionData.CurrentValue!.Offset.Value = newValue,
-                    () => SelectedMusicVersionData.CurrentValue!.Offset.Value = oldValue
-                ));
+                () => SelectedMusicVersionData.CurrentValue!.Offset.Value = newValue,
+                () => SelectedMusicVersionData.CurrentValue!.Offset.Value = oldValue
+            );
         }
 
         public void AddOffset()
@@ -435,10 +421,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下设置偏移量。");
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => SelectedMusicVersionData.CurrentValue!.Offset.Value += AddOffsetStep,
-                    () => SelectedMusicVersionData.CurrentValue!.Offset.Value -= AddOffsetStep
-                ));
+                () => SelectedMusicVersionData.CurrentValue!.Offset.Value += AddOffsetStep,
+                () => SelectedMusicVersionData.CurrentValue!.Offset.Value -= AddOffsetStep
+            );
         }
 
         public void TestOffset()
@@ -455,18 +440,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var oldData = SelectedMusicVersionData.CurrentValue;
             int selectedIndex = Model.ChartPackData.CurrentValue.MusicVersions.IndexOf(oldData);
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.MusicVersions.RemoveAt(selectedIndex);
-                        selectedMusicVersionData.Value = null;
-                    },
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.MusicVersions.Insert(selectedIndex, oldData);
-                        selectedMusicVersionData.Value = Model.ChartPackData.CurrentValue.MusicVersions[selectedIndex];
-                    }
-                )
+                () =>
+                {
+                    Model.ChartPackData.CurrentValue.MusicVersions.RemoveAt(selectedIndex);
+                    selectedMusicVersionData.Value = null;
+                },
+                () =>
+                {
+                    Model.ChartPackData.CurrentValue.MusicVersions.Insert(selectedIndex, oldData);
+                    selectedMusicVersionData.Value = Model.ChartPackData.CurrentValue.MusicVersions[selectedIndex];
+                }
             );
         }
 
@@ -478,38 +461,36 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             int clonedItemIndex = Model.ChartPackData.CurrentValue.MusicVersions.Count;
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () =>
+                () =>
+                {
+                    // 深拷贝一个音乐版本数据
+                    var staffs = new Dictionary<string, List<string>>();
+                    foreach (var kvp in SelectedMusicVersionData.CurrentValue.Staffs)
                     {
-                        // 深拷贝一个音乐版本数据
-                        var staffs = new Dictionary<string, List<string>>();
-                        foreach (var kvp in SelectedMusicVersionData.CurrentValue.Staffs)
+                        var jobs = new List<string>();
+                        foreach (var job in kvp.Value)
                         {
-                            var jobs = new List<string>();
-                            foreach (var job in kvp.Value)
-                            {
-                                jobs.Add(job);
-                            }
-
-                            staffs.Add(kvp.Key, jobs);
+                            jobs.Add(job);
                         }
 
-                        var deepClonedData = new MusicVersionDataEditorModel(
-                            new MusicVersionData(
-                                SelectedMusicVersionData.CurrentValue.VersionTitle.Value,
-                                SelectedMusicVersionData.CurrentValue.AudioFilePath.Value,
-                                SelectedMusicVersionData.CurrentValue.Offset.Value,
-                                staffs
-                            )
-                        );
-
-                        Model.ChartPackData.CurrentValue.MusicVersions.Add(deepClonedData);
-                    },
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.MusicVersions.RemoveAt(clonedItemIndex);
+                        staffs.Add(kvp.Key, jobs);
                     }
-                )
+
+                    var deepClonedData = new MusicVersionDataEditorModel(
+                        new MusicVersionData(
+                            SelectedMusicVersionData.CurrentValue.VersionTitle.Value,
+                            SelectedMusicVersionData.CurrentValue.AudioFilePath.Value,
+                            SelectedMusicVersionData.CurrentValue.Offset.Value,
+                            staffs
+                        )
+                    );
+
+                    Model.ChartPackData.CurrentValue.MusicVersions.Add(deepClonedData);
+                },
+                () =>
+                {
+                    Model.ChartPackData.CurrentValue.MusicVersions.RemoveAt(clonedItemIndex);
+                }
             );
         }
 
@@ -523,10 +504,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return; // 首个元素不能上移
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, oldIndex - 1),
-                    () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex - 1, oldIndex)
-                )
+                () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, oldIndex - 1),
+                () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex - 1, oldIndex)
             );
         }
 
@@ -540,10 +519,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return; // 末个元素不能下移
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, oldIndex + 1),
-                    () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex + 1, oldIndex)
-                )
+                () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, oldIndex + 1),
+                () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex + 1, oldIndex)
             );
         }
 
@@ -557,10 +534,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return; // 首个元素不能置顶
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, 0),
-                    () => Model.ChartPackData.CurrentValue.MusicVersions.Move(0, oldIndex)
-                )
+                () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, 0),
+                () => Model.ChartPackData.CurrentValue.MusicVersions.Move(0, oldIndex)
             );
         }
     }

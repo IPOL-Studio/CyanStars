@@ -91,10 +91,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
 
             var oldItem = selectedBpmItem.Value;
-            CommandStack.ExecuteCommand(new DelegateCommand(
-                    () => selectedBpmItem.Value = newItem,
-                    () => selectedBpmItem.Value = oldItem
-                )
+            CommandStack.ExecuteCommand(
+                () => selectedBpmItem.Value = newItem,
+                () => selectedBpmItem.Value = oldItem
             );
         }
 
@@ -112,17 +111,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 throw new Exception("无法正确构建 Beat");
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.BpmGroup.Add(new BpmGroupItem(oldBpm, newStartBeat));
-                    },
-                    () =>
-                    {
-                        int lastItemIndex = Model.ChartPackData.CurrentValue.BpmGroup.Count - 1;
-                        Model.ChartPackData.CurrentValue.BpmGroup.RemoveAt(lastItemIndex);
-                    }
-                )
+                () =>
+                {
+                    Model.ChartPackData.CurrentValue.BpmGroup.Add(new BpmGroupItem(oldBpm, newStartBeat));
+                },
+                () =>
+                {
+                    int lastItemIndex = Model.ChartPackData.CurrentValue.BpmGroup.Count - 1;
+                    Model.ChartPackData.CurrentValue.BpmGroup.RemoveAt(lastItemIndex);
+                }
             );
         }
 
@@ -148,20 +145,18 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             var oldBpm = selectedBpmItem.CurrentValue.Bpm;
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () =>
-                    {
-                        selectedBpmItem.CurrentValue.Bpm = newBpm;
-                        BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
-                        Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
-                    },
-                    () =>
-                    {
-                        selectedBpmItem.CurrentValue.Bpm = oldBpm;
-                        BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
-                        Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
-                    }
-                )
+                () =>
+                {
+                    selectedBpmItem.CurrentValue.Bpm = newBpm;
+                    BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
+                    Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
+                },
+                () =>
+                {
+                    selectedBpmItem.CurrentValue.Bpm = oldBpm;
+                    BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
+                    Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
+                }
             );
         }
 
@@ -207,22 +202,20 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             var oldBeat = selectedBpmItem.CurrentValue.StartBeat;
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () =>
-                    {
-                        selectedBpmItem.CurrentValue.StartBeat = newBeat;
-                        BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
-                        Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
-                        selectedBpmItem.ForceNotify(); // 刷新当前选中的 item 的详情面板属性，如 Number
-                    },
-                    () =>
-                    {
-                        selectedBpmItem.CurrentValue.StartBeat = oldBeat;
-                        BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
-                        Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
-                        selectedBpmItem.ForceNotify(); // 刷新当前选中的 item 的详情面板属性，如 Number
-                    }
-                )
+                () =>
+                {
+                    selectedBpmItem.CurrentValue.StartBeat = newBeat;
+                    BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
+                    Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
+                    selectedBpmItem.ForceNotify(); // 刷新当前选中的 item 的详情面板属性，如 Number
+                },
+                () =>
+                {
+                    selectedBpmItem.CurrentValue.StartBeat = oldBeat;
+                    BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
+                    Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
+                    selectedBpmItem.ForceNotify(); // 刷新当前选中的 item 的详情面板属性，如 Number
+                }
             );
         }
 
@@ -241,18 +234,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var oldIndex = Model.ChartPackData.CurrentValue.BpmGroup.IndexOf(oldBpmItem);
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.BpmGroup.RemoveAt(oldIndex);
-                        selectedBpmItem.Value = null;
-                    },
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.BpmGroup.Insert(oldIndex, oldBpmItem);
-                        selectedBpmItem.Value = oldBpmItem;
-                    }
-                )
+                () =>
+                {
+                    Model.ChartPackData.CurrentValue.BpmGroup.RemoveAt(oldIndex);
+                    selectedBpmItem.Value = null;
+                },
+                () =>
+                {
+                    Model.ChartPackData.CurrentValue.BpmGroup.Insert(oldIndex, oldBpmItem);
+                    selectedBpmItem.Value = oldBpmItem;
+                }
             );
         }
     }

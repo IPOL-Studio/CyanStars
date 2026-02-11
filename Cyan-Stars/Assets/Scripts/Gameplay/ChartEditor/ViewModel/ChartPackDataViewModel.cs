@@ -108,10 +108,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => Model.ChartPackData.CurrentValue.Title.Value = newTitle,
-                    () => Model.ChartPackData.CurrentValue.Title.Value = oldTitle
-                )
+                () => Model.ChartPackData.CurrentValue.Title.Value = newTitle,
+                () => Model.ChartPackData.CurrentValue.Title.Value = oldTitle
             );
         }
 
@@ -141,10 +139,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (newBeat == oldBeat)
                 return;
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value = newBeat,
-                    () => Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value = oldBeat
-                )
+                () => Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value = newBeat,
+                () => Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value = oldBeat
             );
         }
 
@@ -174,10 +170,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (newBeat == oldBeat)
                 return;
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () => Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = newBeat,
-                    () => Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = oldBeat
-                )
+                () => Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = newBeat,
+                () => Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = oldBeat
             );
         }
 

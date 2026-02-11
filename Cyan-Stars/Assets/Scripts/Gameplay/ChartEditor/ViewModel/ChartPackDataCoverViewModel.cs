@@ -178,49 +178,48 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             IReadonlyTempFileHandler newHandler = ChartEditorFileManager.TempFile(newOriginFilePath, null);
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(async () =>
+                async () =>
+                {
+                    // 更新句柄以在保存时正确复制文件
+                    if (oldHandler != null)
                     {
-                        // 更新句柄以在保存时正确复制文件
-                        if (oldHandler != null)
-                        {
-                            ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, null);
-                        }
-
-                        ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, newTargetAbsolutePath);
-
-                        // 加载图片、更新谱包引用地址、更新裁剪信息
-                        Model.ChartPackData.CurrentValue.CoverFilePath.Value = newTargetRelativePath;
-                        await LoadCoverSpriteAsync();
-                        if (CoverSpriteHandler.Value?.Asset == null)
-                        {
-                            // 加载图片失败？
-                            Model.ChartPackData.CurrentValue.CropStartPosition.Value = null;
-                            Model.ChartPackData.CurrentValue.CropHeight.Value = null;
-                        }
-                        else
-                        {
-                            GetDefaultCoverCropData(CoverSpriteHandler.Value.Asset, out Vector2 newCropStartPos, out float newCropHeight);
-                            Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
-                            Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
-                        }
-                    },
-                    async () =>
-                    {
-                        // 更新句柄以在保存时正确复制文件
-                        ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, null);
-
-                        if (oldHandler != null)
-                        {
-                            ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, oldTargetAbsolutePath);
-                        }
-
-                        // 加载图片、更新谱包引用地址、更新裁剪信息
-                        Model.ChartPackData.CurrentValue.CoverFilePath.Value = oldTargetRelativePath;
-                        await LoadCoverSpriteAsync();
-                        Model.ChartPackData.CurrentValue.CropStartPosition.Value = oldCropStartPos;
-                        Model.ChartPackData.CurrentValue.CropHeight.Value = oldCropHeight;
+                        ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, null);
                     }
-                )
+
+                    ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, newTargetAbsolutePath);
+
+                    // 加载图片、更新谱包引用地址、更新裁剪信息
+                    Model.ChartPackData.CurrentValue.CoverFilePath.Value = newTargetRelativePath;
+                    await LoadCoverSpriteAsync();
+                    if (CoverSpriteHandler.Value?.Asset == null)
+                    {
+                        // 加载图片失败？
+                        Model.ChartPackData.CurrentValue.CropStartPosition.Value = null;
+                        Model.ChartPackData.CurrentValue.CropHeight.Value = null;
+                    }
+                    else
+                    {
+                        GetDefaultCoverCropData(CoverSpriteHandler.Value.Asset, out Vector2 newCropStartPos, out float newCropHeight);
+                        Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
+                        Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
+                    }
+                },
+                async () =>
+                {
+                    // 更新句柄以在保存时正确复制文件
+                    ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, null);
+
+                    if (oldHandler != null)
+                    {
+                        ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, oldTargetAbsolutePath);
+                    }
+
+                    // 加载图片、更新谱包引用地址、更新裁剪信息
+                    Model.ChartPackData.CurrentValue.CoverFilePath.Value = oldTargetRelativePath;
+                    await LoadCoverSpriteAsync();
+                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = oldCropStartPos;
+                    Model.ChartPackData.CurrentValue.CropHeight.Value = oldCropHeight;
+                }
             );
         }
 
@@ -239,18 +238,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
 
             CommandStack.ExecuteCommand(
-                new DelegateCommand(
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
-                        Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
-                    },
-                    () =>
-                    {
-                        Model.ChartPackData.CurrentValue.CropStartPosition.Value = recordedCropStartPos;
-                        Model.ChartPackData.CurrentValue.CropHeight.Value = recordedCropHeight;
-                    }
-                )
+                () =>
+                {
+                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
+                    Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
+                },
+                () =>
+                {
+                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = recordedCropStartPos;
+                    Model.ChartPackData.CurrentValue.CropHeight.Value = recordedCropHeight;
+                }
             );
         }
 
