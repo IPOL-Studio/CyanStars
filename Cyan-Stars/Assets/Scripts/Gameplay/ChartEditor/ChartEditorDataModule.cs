@@ -8,7 +8,7 @@ namespace CyanStars.Gameplay.ChartEditor
 {
     public class ChartEditorDataModule : BaseDataModule
     {
-        public CommandStack? CommandStack { get; private set; }
+        public CommandStack CommandStack { get; private set; } = null!;
 
 
         public override void OnInit()
