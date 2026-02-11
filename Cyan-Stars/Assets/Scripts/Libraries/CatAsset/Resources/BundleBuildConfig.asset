@@ -131,7 +131,7 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/NoteModelsV1.2.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 16915204
+    AssetsLength: 16915483
     CompressOption: 2
     EncryptOption: 1
     Assets:
@@ -146,7 +146,7 @@ MonoBehaviour:
     - Name: Assets/BundleRes/NoteModelsV1.2/Key.prefab
       Length: 3351
     - Name: Assets/BundleRes/NoteModelsV1.2/KeyDown.mat
-      Length: 3781
+      Length: 3920
     - Name: Assets/BundleRes/NoteModelsV1.2/M_Break.fbx
       Length: 14764
     - Name: Assets/BundleRes/NoteModelsV1.2/M_Click.fbx
@@ -170,7 +170,7 @@ MonoBehaviour:
     - Name: Assets/BundleRes/NoteModelsV1.2/MI_TapNote.mat
       Length: 857
     - Name: Assets/BundleRes/NoteModelsV1.2/MI_Track.mat
-      Length: 3847
+      Length: 3987
     - Name: Assets/BundleRes/NoteModelsV1.2/T_Note_Break_Color.tga
       Length: 4194348
     - Name: Assets/BundleRes/NoteModelsV1.2/T_Note_Click_Color.tga
@@ -205,23 +205,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/BpmItem_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 22771
+    AssetsLength: 23299
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/BpmItem.prefab
-      Length: 22771
-  - DirectoryName: BundleRes/Prefabs/ChartEditor
-    BundleName: Button(BPM Element)_prefab.bundle
-    BundleIdentifyName: BundleRes/Prefabs/ChartEditor/Button(BPM Element)_prefab.bundle
-    Group: Base
-    IsRaw: 0
-    AssetsLength: 22187
-    CompressOption: 2
-    EncryptOption: 1
-    Assets:
-    - Name: Assets/BundleRes/Prefabs/ChartEditor/Button(BPM Element).prefab
-      Length: 22187
+      Length: 23299
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: Button(Speed Element)_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/Button(Speed Element)_prefab.bundle
@@ -249,12 +238,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/Button_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 15159
+    AssetsLength: 14712
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/Button.prefab
-      Length: 15159
+      Length: 14712
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: Dropdown_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/Dropdown_prefab.bundle
@@ -271,45 +260,45 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/EditArea/BeatLine_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 7614
+    AssetsLength: 7751
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/BeatLine.prefab
-      Length: 7614
+      Length: 7751
   - DirectoryName: BundleRes/Prefabs/ChartEditor/EditArea
     BundleName: BreakNote_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/EditArea/BreakNote_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 5753
+    AssetsLength: 5579
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/BreakNote.prefab
-      Length: 5753
+      Length: 5579
   - DirectoryName: BundleRes/Prefabs/ChartEditor/EditArea
     BundleName: ClickNote_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/EditArea/ClickNote_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 5768
+    AssetsLength: 5592
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/ClickNote.prefab
-      Length: 5768
+      Length: 5592
   - DirectoryName: BundleRes/Prefabs/ChartEditor/EditArea
     BundleName: DragNote_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/EditArea/DragNote_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 5786
+    AssetsLength: 5611
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/DragNote.prefab
-      Length: 5786
+      Length: 5611
   - DirectoryName: BundleRes/Prefabs/ChartEditor/EditArea
     BundleName: EndLine_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/EditArea/EndLine_prefab.bundle
@@ -326,12 +315,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/EditArea/HoldNote_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 8075
+    AssetsLength: 7839
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/HoldNote.prefab
-      Length: 8075
+      Length: 7839
   - DirectoryName: BundleRes/Prefabs/ChartEditor/EditArea
     BundleName: PosLine_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/EditArea/PosLine_prefab.bundle
@@ -348,12 +337,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/EditArea/TapNote_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 5754
+    AssetsLength: 5578
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/EditArea/TapNote.prefab
-      Length: 5754
+      Length: 5578
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: InputFieldWithButton_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/InputFieldWithButton_prefab.bundle
@@ -370,12 +359,23 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/MusicVersionItem_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 16316
+    AssetsLength: 16398
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/MusicVersionItem.prefab
-      Length: 16316
+      Length: 16398
+  - DirectoryName: BundleRes/Prefabs/ChartEditor
+    BundleName: PopupButton_prefab.bundle
+    BundleIdentifyName: BundleRes/Prefabs/ChartEditor/PopupButton_prefab.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 14765
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/BundleRes/Prefabs/ChartEditor/PopupButton.prefab
+      Length: 14765
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: PopupCanvasButton_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/PopupCanvasButton_prefab.bundle
@@ -392,23 +392,23 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/StaffItem_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 57683
+    AssetsLength: 57146
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/StaffItem.prefab
-      Length: 57683
+      Length: 57146
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: "\u5F39\u7A97Canvas_prefab.bundle"
     BundleIdentifyName: "BundleRes/Prefabs/ChartEditor/\u5F39\u7A97Canvas_prefab.bundle"
     Group: Base
     IsRaw: 0
-    AssetsLength: 12412
+    AssetsLength: 12233
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: "Assets/BundleRes/Prefabs/ChartEditor/\u5F39\u7A97Canvas.prefab"
-      Length: 12412
+      Length: 12233
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: "\u65B0\u5EFA\u6309\u94AE\u6D6E\u6761Canvas_prefab.bundle"
     BundleIdentifyName: "BundleRes/Prefabs/ChartEditor/\u65B0\u5EFA\u6309\u94AE\u6D6E\u6761Canvas_prefab.bundle"
@@ -447,63 +447,63 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/Effect/BreakHitEffect_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 499111
+    AssetsLength: 499426
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/Effect/BreakHitEffect.prefab
       Length: 490286
     - Name: Assets/Materials/Particle/Particle 6.mat
-      Length: 4458
+      Length: 4618
     - Name: Assets/Materials/Particle/Particle Break.mat
-      Length: 4367
+      Length: 4522
   - DirectoryName: BundleRes/Prefabs/Effect
     BundleName: ClickHitEffect_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/Effect/ClickHitEffect_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 744361
+    AssetsLength: 744676
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/Effect/ClickHitEffect.prefab
       Length: 735506
     - Name: Assets/Materials/Particle/Particle 3.mat
-      Length: 4451
+      Length: 4611
     - Name: Assets/Materials/Particle/Particle Click.mat
-      Length: 4404
+      Length: 4559
   - DirectoryName: BundleRes/Prefabs/Effect
     BundleName: DragHitEffect_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/Effect/DragHitEffect_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 376399
+    AssetsLength: 376714
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/Effect/DragHitEffect.prefab
       Length: 367561
     - Name: Assets/Materials/Particle/Particle 5.mat
-      Length: 4459
+      Length: 4619
     - Name: Assets/Materials/Particle/Particle Drag.mat
-      Length: 4379
+      Length: 4534
   - DirectoryName: BundleRes/Prefabs/Effect
     BundleName: HoldHitEffect_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/Effect/HoldHitEffect_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 625587
+    AssetsLength: 625970
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/Effect/HoldHitEffect.prefab
       Length: 613715
     - Name: Assets/Materials/Particle/Particle 4.mat
-      Length: 4470
+      Length: 4630
     - Name: Assets/Materials/Particle/Particle Hold.mat
-      Length: 4735
+      Length: 4900
     - Name: Assets/Shaders/Shader Graphs_HoldSpectrum.mat
-      Length: 1740
+      Length: 1798
     - Name: Packages/com.unity.render-pipelines.core/Runtime/Debugging/Prefabs/Textures/White1px.png
       Length: 927
   - DirectoryName: BundleRes/Prefabs/Effect
@@ -511,16 +511,16 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/Effect/TapHitEffect_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 499116
+    AssetsLength: 499431
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/Effect/TapHitEffect.prefab
       Length: 490284
     - Name: Assets/Materials/Particle/Particle 1.mat
-      Length: 4459
+      Length: 4619
     - Name: Assets/Materials/Particle/Particle Tap.mat
-      Length: 4373
+      Length: 4528
   - DirectoryName: BundleRes/Prefabs/LoginUI
     BundleName: BaseLoginUI_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/LoginUI/BaseLoginUI_prefab.bundle
@@ -537,20 +537,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 2756899
+    AssetsLength: 183393
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel.prefab
-      Length: 132398
-    - Name: Assets/TextMeshPro/Fonts/LiberationSans.ttf
-      Length: 350200
-    - Name: Assets/TextMeshPro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset
-      Length: 9365
-    - Name: Assets/TextMeshPro/Resources/Fonts & Materials/LiberationSans SDF.asset
-      Length: 2256862
-    - Name: Assets/TextMeshPro/Shaders/TMP_SDF-Mobile.shader
-      Length: 8074
+      Length: 183393
   - DirectoryName: BundleRes/Prefabs/MapSelectionUI
     BundleName: StaffLabel_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/StaffLabel_prefab.bundle
@@ -573,6 +565,17 @@ MonoBehaviour:
     Assets:
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/Star.prefab
       Length: 9842
+  - DirectoryName: BundleRes/Prefabs/MapSelectionUI
+    BundleName: Temp_ChartButton_prefab.bundle
+    BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/Temp_ChartButton_prefab.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 14823
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/BundleRes/Prefabs/MapSelectionUI/Temp_ChartButton.prefab
+      Length: 14823
   - DirectoryName: BundleRes/Prefabs/MusicGameUI
     BundleName: MusicGame3DUIPanel_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/MusicGameUI/MusicGame3DUIPanel_prefab.bundle
@@ -624,12 +627,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Scenes.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 1353038
+    AssetsLength: 1421914
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Scenes/ChartEditor.unity
-      Length: 1236485
+      Length: 1305361
     - Name: Assets/BundleRes/Scenes/Dark.unity
       Length: 57120
     - Name: Assets/BundleRes/Scenes/Warm.unity
@@ -1518,6 +1521,28 @@ MonoBehaviour:
     - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Play.png
       Length: 3855
   - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/Icons
+    BundleName: Redo_png.bundle
+    BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/Icons/Redo_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 12942
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Redo.png
+      Length: 12942
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/Icons
+    BundleName: Undo_png.bundle
+    BundleIdentifyName: CysMultimediaAssets/Sprites/ChartEditor/Icons/Undo_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 13016
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/Undo.png
+      Length: 13016
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/Icons
     BundleName: "\u4FDD\u5B58_png.bundle"
     BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/Icons/\u4FDD\u5B58_png.bundle"
     Group: Base
@@ -1528,6 +1553,17 @@ MonoBehaviour:
     Assets:
     - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u4FDD\u5B58.png"
       Length: 4415
+  - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/Icons
+    BundleName: "\u5173\u95ED\u5F39\u7A97_png.bundle"
+    BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/Icons/\u5173\u95ED\u5F39\u7A97_png.bundle"
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 12318
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Sprites/ChartEditor/Icons/\u5173\u95ED\u5F39\u7A97.png"
+      Length: 12318
   - DirectoryName: CysMultimediaAssets/Sprites/ChartEditor/Icons
     BundleName: "\u529F\u80FD\u83DC\u5355_png.bundle"
     BundleIdentifyName: "CysMultimediaAssets/Sprites/ChartEditor/Icons/\u529F\u80FD\u83DC\u5355_png.bundle"
@@ -2307,12 +2343,12 @@ MonoBehaviour:
     BundleIdentifyName: Redundancy_0.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 430397
+    AssetsLength: 430723
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/TextMeshPro/Shaders/TMP_SDF.shader
-      Length: 11027
+      Length: 11353
     - Name: Packages/com.unity.render-pipelines.universal/Runtime/Materials/Lit.mat
       Length: 4123
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader
@@ -2333,17 +2369,17 @@ MonoBehaviour:
     BundleIdentifyName: Redundancy_1.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 21390
+    AssetsLength: 21708
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/Materials/Particle/Particle 2.mat
-      Length: 4459
+      Length: 4619
     - Name: Assets/Materials/Particle/Triangular Hold.mat
-      Length: 4501
+      Length: 4659
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
       Length: 12430
-  BundleCount: 187
+  BundleCount: 191
   AssetCount: 276
   IsExactTextureSize: 0
   IsDrawDesc: 0

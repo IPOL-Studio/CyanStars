@@ -1,20 +1,22 @@
-using CyanStars.GamePlay.ChartEditor.Model;
+﻿#nullable enable
+
+using System.Diagnostics.CodeAnalysis;
+using CyanStars.Gameplay.ChartEditor.ViewModel;
 using UnityEngine;
 
-namespace CyanStars.GamePlay.ChartEditor.View
+namespace CyanStars.Gameplay.ChartEditor.View
 {
-    public abstract class BaseView : MonoBehaviour
+    public abstract class BaseView<TViewModel> : MonoBehaviour where TViewModel : BaseViewModel
     {
-        protected ChartEditorModel Model;
+        protected TViewModel ViewModel = null!;
 
-        /// <summary>
-        /// 为 View 绑定一个已经初始化的 Model 实例
-        /// </summary>
-        /// <remarks>重写时添加：从 Model 获取初始值并刷新 UI、监听 UI 变化事件并调用 Model 方法、监听 Model 事件并刷新 UI。别忘了在 OnDestroy() 中取消订阅事件，以免内存泄漏</remarks>
-        /// <param name="chartEditorModel">Model 实例</param>
-        public virtual void Bind(ChartEditorModel chartEditorModel) // TODO: 重构代码，让组件在 Awake() 时向上查找 editorModel，而非手动绑定
+        [MemberNotNull(nameof(ViewModel))] // 确保子类在 Bind 前被视为可 null 类型，尤其是动态生成的 View。Bind 方法调用后被视为不可 null 类型。
+        public virtual void Bind(TViewModel targetViewModel)
         {
-            Model = chartEditorModel;
+            ViewModel = targetViewModel;
         }
+
+        // 提醒子类强制实现 Destroy，主要用于取消订阅关系
+        protected abstract void OnDestroy();
     }
 }

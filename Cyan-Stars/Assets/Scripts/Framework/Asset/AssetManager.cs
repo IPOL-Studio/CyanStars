@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using CatAsset.Runtime;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 using System.Threading;
 using CyanStars.EditorExtension;
 

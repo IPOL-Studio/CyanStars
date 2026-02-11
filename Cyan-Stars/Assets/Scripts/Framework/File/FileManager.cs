@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using CatAsset.Runtime;
-using CyanStars.Utils;
 using CyanStars.Utils.JsonSerialization;
 using Newtonsoft.Json;
 
@@ -25,29 +24,21 @@ namespace CyanStars.Framework.File
     public class FileManager : BaseManager
     {
         [SerializeField]
-        private UISkin skin;
-
-        public readonly FileBrowser.Filter ChartFilter = new FileBrowser.Filter("谱面文件", ".json");
-        public readonly FileBrowser.Filter SpriteFilter = new FileBrowser.Filter("图片", ".jpg", ".png");
-        public readonly FileBrowser.Filter AudioFilter = new FileBrowser.Filter("音频", ".ogg");
-
-        private string TempFolderPath => PathUtil.Combine(Application.temporaryCachePath, "FileManager");
-
-        /// <summary>
-        /// 目标路径:缓存文件路径 双向字典
-        /// </summary>
-        /// <remarks>键、值都不应该重复</remarks>
-        private BiDirectionalDictionary<string, string> targetPathToTempPathMap =
-            new BiDirectionalDictionary<string, string>();
+        private UISkin fileBrowserSkin = null!;
 
 
         public override int Priority { get; }
 
 
+        public readonly FileBrowser.Filter ChartFilter = new FileBrowser.Filter("谱面文件", ".json");
+        public readonly FileBrowser.Filter SpriteFilter = new FileBrowser.Filter("图片", ".png");
+        public readonly FileBrowser.Filter AudioFilter = new FileBrowser.Filter("音频", ".ogg");
+
+
         public override void OnInit()
         {
             // 设置颜色主题
-            FileBrowser.Skin = skin;
+            FileBrowser.Skin = fileBrowserSkin;
 
             // 显示所有后缀的文件，包括默认排除的 .lnk 和 .tmp
             FileBrowser.SetExcludedExtensions();
@@ -64,7 +55,7 @@ namespace CyanStars.Framework.File
         }
 
 
-        #region --- FileBrowser API ---
+        #region --- FileBrowser API 用于在运行时向玩家打开文件管理器 UI  ---
 
         /// <summary>
         /// 获取单个文件的路径
@@ -183,9 +174,23 @@ namespace CyanStars.Framework.File
                 FileBrowser.PickMode.Folders, false, null, null, title, "选择");
         }
 
+        /// <summary>
+        /// 检查文件浏览器是否已经打开，并打印警告
+        /// </summary>
+        private bool IsBrowserOpen()
+        {
+            if (FileBrowser.IsOpen)
+            {
+                Debug.LogWarning("无法打开新的文件对话框，因为已有对话框处于打开状态。");
+                return true;
+            }
+
+            return false;
+        }
+
         #endregion
 
-        #region --- Serialization API ---
+        #region --- Serialization API 用于在运行时读写 .json 文件 ---
 
         /// <summary>
         /// 从指定的绝对路径加载资源（如图片、文本、音频等）
@@ -264,197 +269,5 @@ namespace CyanStars.Framework.File
         }
 
         #endregion
-
-        #region --- TempFiles API ---
-
-        /// <summary>
-        /// 将文件复制到缓存区
-        /// <para>如果 targetFilePath 已经存在，将会用新的 originalFilePath 覆盖，旧的临时文件将失效</para>
-        /// </summary>
-        /// <remarks>将会覆盖目标文件！</remarks>
-        /// <param name="originalFilePath">原始文件绝对路径（含文件名和后缀）</param>
-        /// <param name="targetFilePath">目标绝对路径（含文件名和后缀）</param>
-        /// <returns>缓存文件绝对路径（含文件名和后缀）</returns>
-        /// <exception cref="ArgumentException">参数为空或 null / 重复的目标路径或文件缓存路径</exception>
-        /// <exception cref="FileNotFoundException">原始文件不存在</exception>
-        public string TempFile(string originalFilePath, string targetFilePath)
-        {
-            if (string.IsNullOrEmpty(originalFilePath))
-            {
-                throw new ArgumentException("原始文件路径不能为空。", nameof(originalFilePath));
-            }
-
-            if (string.IsNullOrEmpty(targetFilePath))
-            {
-                throw new ArgumentException("目标文件路径不能为空。", nameof(targetFilePath));
-            }
-
-            if (!System.IO.File.Exists(originalFilePath))
-            {
-                throw new FileNotFoundException($"原始文件未找到: {originalFilePath}", originalFilePath);
-            }
-
-            // 复制文件到缓存区，缓存区文件格式为 [文件名].[7位GUID].[拓展名]
-            string shortGuid = Guid.NewGuid().ToString("N").Substring(0, 7);
-            string fileNameWithoutExt = Path.GetFileNameWithoutExtension(originalFilePath);
-            string extension = Path.GetExtension(originalFilePath);
-            string tempFileName = $"{fileNameWithoutExt}.{shortGuid}{extension}";
-            string tempFilePath = PathUtil.Combine(TempFolderPath, tempFileName);
-
-            Directory.CreateDirectory(TempFolderPath);
-            System.IO.File.Copy(originalFilePath, tempFilePath, true);
-
-            if (!targetPathToTempPathMap.TryGetValue(targetFilePath, out string oldTempPath))
-            {
-                // 不存在旧的临时文件，直接写入
-                targetPathToTempPathMap.Add(targetFilePath, tempFilePath);
-            }
-            else
-            {
-                // 存在旧的临时文件，删除旧的映射和文件，然后写入新的映射
-                System.IO.File.Delete(tempFilePath);
-                targetPathToTempPathMap.RemoveByKey(targetFilePath);
-                targetPathToTempPathMap.Add(targetFilePath, tempFilePath);
-            }
-
-            return tempFilePath;
-        }
-
-        /// <summary>
-        /// 将缓存区的全部文件移动到目标路径，然后清空缓存区文件
-        /// </summary>
-        /// <remarks>将会覆盖目标文件！</remarks>
-        public void SaveAllFiles()
-        {
-            if (targetPathToTempPathMap.Count == 0)
-            {
-                Debug.Log("没有任何暂存内容要保存");
-                return;
-            }
-
-            BiDirectionalDictionary<string, string> newMap =
-                new BiDirectionalDictionary<string, string>(targetPathToTempPathMap);
-            foreach (var pair in newMap)
-            {
-                _ = SaveFile(pair.Value, out _);
-            }
-        }
-
-        /// <summary>
-        /// 将指定的临时文件保存
-        /// </summary>
-        /// <param name="tempFilePath">临时文件绝地路径</param>
-        /// <param name="toggleFilePath">目标文件路径</param>
-        /// <returns>是否成功保存</returns>
-        public bool SaveFile(string tempFilePath, out string? toggleFilePath)
-        {
-            toggleFilePath = null;
-            try
-            {
-                if (string.IsNullOrEmpty(tempFilePath))
-                {
-                    Debug.LogError("获取临时文件路径出错！");
-                    return false;
-                }
-
-                if (!targetPathToTempPathMap.TryGetKey(tempFilePath, out toggleFilePath))
-                {
-                    Debug.LogWarning("无法获取目标文件路径，传入的不是临时文件路径或文件已保存？");
-                    return false;
-                }
-
-                string? toggleFolderPath = Path.GetDirectoryName(toggleFilePath);
-                if (string.IsNullOrEmpty(toggleFolderPath))
-                {
-                    Debug.LogError("获取目标文件路径出错！");
-                    return false;
-                }
-
-                // 如果目标文件夹路径不存在，创建路径
-                Directory.CreateDirectory(toggleFolderPath);
-
-                // 如果目标文件存在，删除并移动临时文件
-                if (System.IO.File.Exists(toggleFilePath))
-                {
-                    System.IO.File.Delete(toggleFilePath);
-                }
-
-                //TODO: 如果删除文件后异常导致无法移动，将导致数据丢失，考虑先移动后重命名或升级 .net 版本后的 Move() 方法重载
-                System.IO.File.Move(tempFilePath, toggleFilePath);
-
-                // 从映射表中移除键值对
-                targetPathToTempPathMap.RemoveByValue(tempFilePath);
-
-                return true;
-            }
-            finally
-            {
-                if (targetPathToTempPathMap.Count == 0 && Directory.Exists(TempFolderPath))
-                {
-                    Directory.Delete(TempFolderPath, true);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 取消保存并清空缓存文件
-        /// </summary>
-        public void ClearAllTempFiles()
-        {
-            targetPathToTempPathMap.Clear();
-            if (Directory.Exists(TempFolderPath))
-            {
-                Directory.Delete(TempFolderPath, true);
-            }
-        }
-
-        /// <summary>
-        /// 尝试取消临时文件的映射并删除文件
-        /// </summary>
-        /// <param name="tempFilePath">临时文件绝对路径</param>
-        /// <returns>是否找到并移除了文件</returns>
-        public bool TryClearTempFile(string tempFilePath)
-        {
-            if (!targetPathToTempPathMap.TryGetKey(tempFilePath, out string _))
-            {
-                return false;
-            }
-
-            System.IO.File.Delete(tempFilePath);
-            targetPathToTempPathMap.RemoveByValue(tempFilePath);
-
-            if (targetPathToTempPathMap.Count == 0 && Directory.Exists(TempFolderPath))
-            {
-                Directory.Delete(TempFolderPath, true);
-            }
-
-            return true;
-        }
-
-        public bool TrySearchByTogglePath(string toggleFilePath, out string? tempFilePath)
-        {
-            return targetPathToTempPathMap.TryGetValue(toggleFilePath, out tempFilePath);
-        }
-
-        public bool TrySearchByTempPath(string tempFilePath, out string? toggleFilePath)
-        {
-            return targetPathToTempPathMap.TryGetKey(tempFilePath, out toggleFilePath);
-        }
-
-        #endregion
-
-        /// <summary>
-        /// 检查文件浏览器是否已经打开，并打印警告
-        /// </summary>
-        private bool IsBrowserOpen()
-        {
-            if (FileBrowser.IsOpen)
-            {
-                Debug.LogWarning("无法打开新的文件对话框，因为已有对话框处于打开状态。");
-                return true;
-            }
-
-            return false;
-        }
     }
 }

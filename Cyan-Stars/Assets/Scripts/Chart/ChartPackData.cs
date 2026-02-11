@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using CyanStars.Gameplay.ChartEditor.Model;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -10,7 +11,6 @@ namespace CyanStars.Chart
     /// <summary>
     /// 谱包文件数据结构（包含多个谱面，其中4个难度谱面各0或1个，未定义难度的谱面数量不限）
     /// </summary>
-    [Serializable]
     public class ChartPackData
     {
         // 基本信息
@@ -60,15 +60,32 @@ namespace CyanStars.Chart
         // 谱面元数据
 
         /// <summary>谱面元数据</summary>
-        public List<ChartMetadata> ChartMetaDatas;
+        public List<ChartMetaData> ChartMetaDatas;
 
+
+        /// <summary>
+        /// 执行浅拷贝
+        /// </summary>
+        public ChartPackData(ChartPackData oldChartPackData)
+        {
+            Title = oldChartPackData.Title;
+            MusicVersionDatas = oldChartPackData.MusicVersionDatas;
+            BpmGroup = oldChartPackData.BpmGroup;
+            MusicPreviewStartBeat = oldChartPackData.MusicPreviewStartBeat;
+            MusicPreviewEndBeat = oldChartPackData.MusicPreviewEndBeat;
+            CoverFilePath = oldChartPackData.CoverFilePath;
+            CropStartPosition = oldChartPackData.CropStartPosition;
+            CropHeight = oldChartPackData.CropHeight;
+            ChartMetaDatas = oldChartPackData.ChartMetaDatas;
+        }
 
         /// <summary>
         /// 构造函数
         /// </summary>
+        [JsonConstructor]
         public ChartPackData(string title, List<MusicVersionData>? musicVersionDatas = null, List<BpmGroupItem>? bpmGroup = null,
                              Beat? musicPreviewStartBeat = null, Beat? musicPreviewEndBeat = null, string? coverFilePath = null,
-                             Vector2? cropPosition = null, float? cropHeight = null, List<ChartMetadata>? chartMetaDatas = null)
+                             Vector2? cropPosition = null, float? cropHeight = null, List<ChartMetaData>? chartMetaDatas = null)
         {
             DataVersion = 1;
             Title = title;
@@ -87,9 +104,9 @@ namespace CyanStars.Chart
                 }
             }
 
-            if (musicPreviewStartBeat != null)
+            if (musicPreviewEndBeat != null)
             {
-                MusicPreviewEndBeat = (Beat)musicPreviewStartBeat;
+                MusicPreviewEndBeat = (Beat)musicPreviewEndBeat;
             }
             else
             {
@@ -102,7 +119,30 @@ namespace CyanStars.Chart
             CoverFilePath = coverFilePath;
             CropStartPosition = cropPosition ?? Vector2.zero;
             CropHeight = cropHeight ?? 0;
-            ChartMetaDatas = chartMetaDatas ?? new List<ChartMetadata>();
+            ChartMetaDatas = chartMetaDatas ?? new List<ChartMetaData>();
+        }
+
+        /// <summary>
+        /// 将制谱器的可观察数据转为常规数据，以用于序列化
+        /// </summary>
+        public ChartPackData(ChartPackDataEditorModel editorData)
+        {
+            DataVersion = 1;
+            Title = editorData.Title.CurrentValue;
+            MusicVersionDatas = new List<MusicVersionData>();
+            foreach (var musicVersionEditorData in editorData.MusicVersions)
+                MusicVersionDatas.Add(new MusicVersionData(musicVersionEditorData));
+            BpmGroup = new List<BpmGroupItem>();
+            foreach (var bpmGroupItem in editorData.BpmGroup)
+                BpmGroup.Add(bpmGroupItem);
+            MusicPreviewStartBeat = editorData.MusicPreviewStartBeat.CurrentValue;
+            MusicPreviewEndBeat = editorData.MusicPreviewEndBeat.CurrentValue;
+            CoverFilePath = editorData.CoverFilePath.CurrentValue;
+            CropStartPosition = editorData.CropStartPosition.CurrentValue;
+            CropHeight = editorData.CropHeight.CurrentValue;
+            ChartMetaDatas = new List<ChartMetaData>();
+            foreach (var chartMetaEditorData in editorData.ChartMetaDatas)
+                ChartMetaDatas.Add(new ChartMetaData(chartMetaEditorData));
         }
     }
 }
