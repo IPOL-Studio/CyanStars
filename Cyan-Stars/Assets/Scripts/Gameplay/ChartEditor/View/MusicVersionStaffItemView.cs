@@ -35,19 +35,22 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
             jobsInputField.text = string.Join("/", ViewModel.Jobs);
 
-            nameInputField.onEndEdit.AddListener(ViewModel.UpdateName);
-            jobsInputField.onEndEdit.AddListener(ViewModel.UpdateJob);
-            deleteStaffItemButton.onClick.AddListener(ViewModel.DeleteItem);
+            nameInputField
+                .OnEndEditAsObservable()
+                .Subscribe(ViewModel.UpdateName)
+                .AddTo(this);
+            jobsInputField
+                .OnEndEditAsObservable()
+                .Subscribe(ViewModel.UpdateJob)
+                .AddTo(this);
+            deleteStaffItemButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.DeleteItem())
+                .AddTo(this);
         }
 
         protected override void OnDestroy()
         {
-            if (ViewModel == null)
-                return;
-
-            nameInputField.onEndEdit.RemoveListener(ViewModel.UpdateName);
-            jobsInputField.onEndEdit.RemoveListener(ViewModel.UpdateJob);
-            deleteStaffItemButton.onClick.RemoveListener(ViewModel.DeleteItem);
             // ISynchronizedView 会自动在 View 卸载时释放对应的 ViewModel，无需手动 ViewModel.Dispose();
         }
     }

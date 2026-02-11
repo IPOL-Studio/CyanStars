@@ -182,18 +182,45 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
             // V -> VM 绑定
-            judgeBeatField1.onEndEdit.AddListener(UpdateNoteJudgeBeat);
-            judgeBeatField2.onEndEdit.AddListener(UpdateNoteJudgeBeat);
-            judgeBeatField3.onEndEdit.AddListener(UpdateNoteJudgeBeat);
-            endJudgeBeatField1.onEndEdit.AddListener(UpdateNoteEndJudgeBeat);
-            endJudgeBeatField2.onEndEdit.AddListener(UpdateNoteEndJudgeBeat);
-            endJudgeBeatField3.onEndEdit.AddListener(UpdateNoteEndJudgeBeat);
-            posField.onEndEdit.AddListener(ViewModel.UpdateNotePos);
-            breakLeftPosToggle.onValueChanged.AddListener(OnBreakLeftPosToggleChanged);
-            breakRightPosToggle.onValueChanged.AddListener(OnBreakRightPosToggleChanged);
+            judgeBeatField1
+                .OnEndEditAsObservable()
+                .Subscribe(_ => UpdateNoteJudgeBeat())
+                .AddTo(this);
+            judgeBeatField2
+                .OnEndEditAsObservable()
+                .Subscribe(_ => UpdateNoteJudgeBeat())
+                .AddTo(this);
+            judgeBeatField3
+                .OnEndEditAsObservable()
+                .Subscribe(_ => UpdateNoteJudgeBeat())
+                .AddTo(this);
+            endJudgeBeatField1
+                .OnEndEditAsObservable()
+                .Subscribe(_ => UpdateNoteEndJudgeBeat())
+                .AddTo(this);
+            endJudgeBeatField2
+                .OnEndEditAsObservable()
+                .Subscribe(_ => UpdateNoteEndJudgeBeat())
+                .AddTo(this);
+            endJudgeBeatField3
+                .OnEndEditAsObservable()
+                .Subscribe(_ => UpdateNoteEndJudgeBeat())
+                .AddTo(this);
+            posField
+                .OnEndEditAsObservable()
+                .Subscribe(ViewModel.UpdateNotePos)
+                .AddTo(this);
+            breakLeftPosToggle
+                .OnValueChangedAsObservable()
+                .Subscribe(OnBreakLeftPosToggleChanged)
+                .AddTo(this);
+            breakRightPosToggle
+                .OnValueChangedAsObservable()
+                .Subscribe(OnBreakRightPosToggleChanged)
+                .AddTo(this);
         }
 
-        private void UpdateNoteJudgeBeat(string _) // 确保签名一致以供取消订阅
+        private void UpdateNoteJudgeBeat()
         {
             ViewModel.UpdateNoteJudgeBeat(
                 judgeBeatField1.text,
@@ -202,7 +229,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             );
         }
 
-        private void UpdateNoteEndJudgeBeat(string _) // 确保签名一致以供取消订阅
+        private void UpdateNoteEndJudgeBeat()
         {
             ViewModel.UpdateNoteEndJudgeBeat(
                 endJudgeBeatField1.text,
@@ -235,15 +262,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected override void OnDestroy()
         {
-            judgeBeatField1.onEndEdit.RemoveListener(UpdateNoteJudgeBeat);
-            judgeBeatField2.onEndEdit.RemoveListener(UpdateNoteJudgeBeat);
-            judgeBeatField3.onEndEdit.RemoveListener(UpdateNoteJudgeBeat);
-            endJudgeBeatField1.onEndEdit.RemoveListener(UpdateNoteEndJudgeBeat);
-            endJudgeBeatField2.onEndEdit.RemoveListener(UpdateNoteEndJudgeBeat);
-            endJudgeBeatField3.onEndEdit.RemoveListener(UpdateNoteEndJudgeBeat);
-            posField.onEndEdit.RemoveListener(ViewModel.UpdateNotePos);
-            breakLeftPosToggle.onValueChanged.RemoveListener(OnBreakLeftPosToggleChanged);
-            breakRightPosToggle.onValueChanged.RemoveListener(OnBreakRightPosToggleChanged);
         }
     }
 }

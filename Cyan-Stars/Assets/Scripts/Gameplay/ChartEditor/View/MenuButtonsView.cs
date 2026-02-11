@@ -92,20 +92,54 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
 
-            functionToggle.onValueChanged.AddListener(SetFunctionCanvasVisibility);
-            saveButton.onClick.AddListener(ViewModel.SaveFileToDesk);
-            // testButton.onClick.AddListener();
-            undoButton.onClick.AddListener(ViewModel.Undo);
-            redoButton.onClick.AddListener(ViewModel.Redo);
+            functionToggle
+                .OnValueChangedAsObservable()
+                .Subscribe(SetFunctionCanvasVisibility)
+                .AddTo(this);
+            functionToggle
+                .OnValueChangedAsObservable()
+                .Subscribe(SetFunctionCanvasVisibility)
+                .AddTo(this);
+            saveButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.SaveFileToDesk())
+                .AddTo(this);
+            // testButton ...
+            undoButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.Undo())
+                .AddTo(this);
+            redoButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.Redo())
+                .AddTo(this);
 
-            chartPackDataButton.onClick.AddListener(chartPackDataView.OpenCanvas);
-            chartDataButton.onClick.AddListener(chartDataView.OpenCanvas);
-            musicVersionButton.onClick.AddListener(musicVersionView.OpenCanvas);
-            bpmGroupButton.onClick.AddListener(bpmGroupView.OpenCanvas);
-            // speedTemplateButton.onClick.AddListener();
+            chartPackDataButton
+                .OnClickAsObservable()
+                .Subscribe(_ => chartPackDataView.OpenCanvas())
+                .AddTo(this);
+            chartDataButton
+                .OnClickAsObservable()
+                .Subscribe(_ => chartDataView.OpenCanvas())
+                .AddTo(this);
+            musicVersionButton
+                .OnClickAsObservable()
+                .Subscribe(_ => musicVersionView.OpenCanvas())
+                .AddTo(this);
+            bpmGroupButton
+                .OnClickAsObservable()
+                .Subscribe(_ => bpmGroupView.OpenCanvas())
+                .AddTo(this);
+            // speedTemplateButton ...
 
-            exitSimplificationModeButton.onClick.AddListener(() => ViewModel.SetSimplificationMode(false));
-            enterSimplificationModeButton.onClick.AddListener(() => ViewModel.SetSimplificationMode(true));
+            exitSimplificationModeButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.SetSimplificationMode(false))
+                .AddTo(this);
+            enterSimplificationModeButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.SetSimplificationMode(true))
+                .AddTo(this);
         }
 
         private void SetFunctionCanvasVisibility(bool visibility)
@@ -115,18 +149,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected override void OnDestroy()
         {
-            functionToggle.onValueChanged.RemoveListener(SetFunctionCanvasVisibility);
-            saveButton.onClick.RemoveListener(ViewModel.SaveFileToDesk);
-            // testButton.onClick.RemoveAllListeners();
-            undoButton.onClick.RemoveListener(ViewModel.Undo);
-            redoButton.onClick.RemoveListener(ViewModel.Redo);
-            chartPackDataButton.onClick.RemoveListener(chartPackDataView.OpenCanvas);
-            chartDataButton.onClick.RemoveListener(chartDataView.OpenCanvas);
-            musicVersionButton.onClick.RemoveListener(musicVersionView.OpenCanvas);
-            bpmGroupButton.onClick.RemoveListener(bpmGroupView.OpenCanvas);
-            // speedTemplateButton.onClick.RemoveAllListeners();
-            exitSimplificationModeButton.onClick.RemoveAllListeners();
-            enterSimplificationModeButton.onClick.RemoveAllListeners();
         }
     }
 }

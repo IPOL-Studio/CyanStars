@@ -190,16 +190,37 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
             // V -> VM 绑定
-            closeCanvasButton.onClick.AddListener(CloseCanvas);
-            addBpmItemButton.onClick.AddListener(ViewModel.AddBpmItem);
-            bpmInputField.onEndEdit.AddListener(ViewModel.SetBpm);
-            startBeatField1.onEndEdit.AddListener(SetBeat);
-            startBeatField2.onEndEdit.AddListener(SetBeat);
-            startBeatField3.onEndEdit.AddListener(SetBeat);
-            deleteItemButton.onClick.AddListener(ViewModel.DeleteSelectedBpmItem);
+            closeCanvasButton
+                .OnClickAsObservable()
+                .Subscribe(_ => CloseCanvas())
+                .AddTo(this);
+            addBpmItemButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.AddBpmItem())
+                .AddTo(this);
+            bpmInputField
+                .OnEndEditAsObservable()
+                .Subscribe(ViewModel.SetBpm)
+                .AddTo(this);
+            startBeatField1
+                .OnEndEditAsObservable()
+                .Subscribe(_ => SetBeat())
+                .AddTo(this);
+            startBeatField2
+                .OnEndEditAsObservable()
+                .Subscribe(_ => SetBeat())
+                .AddTo(this);
+            startBeatField3
+                .OnEndEditAsObservable()
+                .Subscribe(_ => SetBeat())
+                .AddTo(this);
+            deleteItemButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.DeleteSelectedBpmItem())
+                .AddTo(this);
         }
 
-        private void SetBeat(string _)
+        private void SetBeat()
         {
             ViewModel.SetBeat(startBeatField1.text, startBeatField2.text, startBeatField3.text);
         }
@@ -232,13 +253,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected override void OnDestroy()
         {
-            closeCanvasButton.onClick.RemoveListener(CloseCanvas);
-            addBpmItemButton.onClick.RemoveListener(ViewModel.AddBpmItem);
-            bpmInputField.onEndEdit.RemoveListener(ViewModel.SetBpm);
-            startBeatField1.onEndEdit.RemoveListener(SetBeat);
-            startBeatField2.onEndEdit.RemoveListener(SetBeat);
-            startBeatField3.onEndEdit.RemoveListener(SetBeat);
-            deleteItemButton.onClick.RemoveListener(ViewModel.DeleteSelectedBpmItem);
         }
     }
 }

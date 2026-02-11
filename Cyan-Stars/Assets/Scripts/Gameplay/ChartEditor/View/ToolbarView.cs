@@ -30,15 +30,17 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             foreach (var tool in tools)
             {
-                tool.ToolToggle.onValueChanged
-                    .AddListener(isOn =>
+                tool.ToolToggle
+                    .OnValueChangedAsObservable()
+                    .Subscribe(isOn =>
                         {
                             if (!isOn)
                                 return; // Unity ToggleGroup 自动取消选中，无需修改属性
 
                             ViewModel.SetSelectedTool(tool.ToolType);
                         }
-                    );
+                    )
+                    .AddTo(tool.ToolToggle.gameObject);
             }
         }
 
@@ -52,10 +54,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected override void OnDestroy()
         {
-            foreach (var tool in tools)
-            {
-                tool.ToolToggle.onValueChanged.RemoveAllListeners();
-            }
         }
     }
 }

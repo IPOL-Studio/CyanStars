@@ -66,7 +66,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 )
                 .AddTo(this);
 
-            importCoverButton.onClick.AddListener(ViewModel.OpenCoverBrowser);
+            importCoverButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.OpenCoverBrowser())
+                .AddTo(this);
         }
 
         private void OnCropDataChanged()
@@ -95,7 +98,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected override void OnDestroy()
         {
-            importCoverButton.onClick.RemoveListener(ViewModel.OpenCoverBrowser);
         }
     }
 }

@@ -101,51 +101,71 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(text => readyBeatField.text = text)
                 .AddTo(this);
 
-            closeCanvasButton.onClick.AddListener(() =>
-                {
-                    if (!CanvasVisibility.CurrentValue)
-                        return;
+            closeCanvasButton
+                .OnClickAsObservable()
+                .Subscribe(_ =>
+                    {
+                        if (!CanvasVisibility.CurrentValue)
+                            return;
 
-                    GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
-                        new DelegateCommand(
+                        GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
                             () => CanvasVisibility.Value = false,
                             () => CanvasVisibility.Value = true
-                        )
-                    );
-                }
-            );
-            kuiXingToggle.onValueChanged.AddListener(isOn =>
-                {
-                    if (isOn)
-                        ViewModel.SetChartDifficulty(ChartDifficulty.KuiXing);
-                }
-            );
-            qiMingToggle.onValueChanged.AddListener(isOn =>
-                {
-                    if (isOn)
-                        ViewModel.SetChartDifficulty(ChartDifficulty.QiMing);
-                }
-            );
-            tianShuToggle.onValueChanged.AddListener(isOn =>
-                {
-                    if (isOn)
-                        ViewModel.SetChartDifficulty(ChartDifficulty.TianShu);
-                }
-            );
-            wuYinToggle.onValueChanged.AddListener(isOn =>
-                {
-                    if (isOn)
-                        ViewModel.SetChartDifficulty(ChartDifficulty.WuYin);
-                }
-            );
-            undefinedToggle.onValueChanged.AddListener(isOn =>
-                {
-                    if (isOn)
-                        ViewModel.SetChartDifficulty(null);
-                }
-            );
-            levelField.onEndEdit.AddListener(ViewModel.SetChartLevelString);
-            readyBeatField.onEndEdit.AddListener(ViewModel.SetReadyBeatCount);
+                        );
+                    }
+                )
+                .AddTo(this);
+            kuiXingToggle
+                .OnValueChangedAsObservable()
+                .Subscribe(isOn =>
+                    {
+                        if (isOn)
+                            ViewModel.SetChartDifficulty(ChartDifficulty.KuiXing);
+                    }
+                )
+                .AddTo(this);
+            qiMingToggle
+                .OnValueChangedAsObservable()
+                .Subscribe(isOn =>
+                    {
+                        if (isOn)
+                            ViewModel.SetChartDifficulty(ChartDifficulty.QiMing);
+                    }
+                )
+                .AddTo(this);
+            tianShuToggle.OnValueChangedAsObservable()
+                .Subscribe(isOn =>
+                    {
+                        if (isOn)
+                            ViewModel.SetChartDifficulty(ChartDifficulty.TianShu);
+                    }
+                )
+                .AddTo(this);
+            wuYinToggle
+                .OnValueChangedAsObservable()
+                .Subscribe(isOn =>
+                    {
+                        if (isOn)
+                            ViewModel.SetChartDifficulty(ChartDifficulty.WuYin);
+                    }
+                )
+                .AddTo(this);
+            undefinedToggle.OnValueChangedAsObservable()
+                .Subscribe(isOn =>
+                    {
+                        if (isOn)
+                            ViewModel.SetChartDifficulty(null);
+                    }
+                )
+                .AddTo(this);
+            levelField
+                .OnEndEditAsObservable()
+                .Subscribe(ViewModel.SetChartLevelString)
+                .AddTo(this);
+            readyBeatField
+                .OnEndEditAsObservable()
+                .Subscribe(ViewModel.SetReadyBeatCount)
+                .AddTo(this);
         }
 
         public void OpenCanvas()
@@ -163,14 +183,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected override void OnDestroy()
         {
-            closeCanvasButton.onClick.RemoveAllListeners();
-            kuiXingToggle.onValueChanged.RemoveAllListeners();
-            qiMingToggle.onValueChanged.RemoveAllListeners();
-            tianShuToggle.onValueChanged.RemoveAllListeners();
-            wuYinToggle.onValueChanged.RemoveAllListeners();
-            undefinedToggle.onValueChanged.RemoveAllListeners();
-            levelField.onValueChanged.RemoveAllListeners();
-            readyBeatField.onValueChanged.RemoveAllListeners();
         }
     }
 }

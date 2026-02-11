@@ -32,7 +32,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         private readonly ObservableList<KeyValuePair<string, List<string>>> staffItemsProxy;
         public readonly ISynchronizedView<KeyValuePair<string, List<string>>, MusicVersionStaffItemViewModel> StaffItems;
-        
+
 
         public readonly ReadOnlyReactiveProperty<string> DetailTitle;
         public readonly ReadOnlyReactiveProperty<string> DetailAudioFilePath;

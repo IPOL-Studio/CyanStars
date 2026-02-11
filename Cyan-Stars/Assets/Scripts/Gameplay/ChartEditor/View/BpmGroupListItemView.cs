@@ -38,12 +38,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(text => beatAndTimeText.text = text)
                 .AddTo(this);
 
-            itemToggle.onValueChanged.AddListener(ViewModel.OnToggleChanged);
+            itemToggle
+                .OnValueChangedAsObservable()
+                .Subscribe(ViewModel.OnToggleChanged)
+                .AddTo(this);
         }
 
         protected override void OnDestroy()
         {
-            itemToggle.onValueChanged.RemoveListener(ViewModel.OnToggleChanged);
         }
     }
 }

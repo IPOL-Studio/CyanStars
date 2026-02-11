@@ -67,27 +67,43 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(value => beatZoomField.text = value)
                 .AddTo(this);
 
-            posAccuracyField.onEndEdit.AddListener(ViewModel.SetPosAccuracy);
-            posMagnetToggle.onValueChanged.AddListener(ViewModel.SetPosMagnet);
-            beatAccuracyField.onEndEdit.AddListener(ViewModel.SetBeatAccuracy);
-            minusBeatAccuracyButton.onClick.AddListener(ViewModel.MinusBeatAccuracy);
-            addBeatAccuracyButton.onClick.AddListener(ViewModel.AddBeatAccuracy);
-            beatZoomField.onEndEdit.AddListener(ViewModel.SetBeatZoom);
-            zoomOutButton.onClick.AddListener(ViewModel.ZoomOut);
-            zoomInButton.onClick.AddListener(ViewModel.ZoomIn);
+            posAccuracyField
+                .OnEndEditAsObservable()
+                .Subscribe(ViewModel.SetPosAccuracy)
+                .AddTo(this);
+            posMagnetToggle
+                .OnValueChangedAsObservable()
+                .Subscribe(ViewModel.SetPosMagnet)
+                .AddTo(this);
+            beatAccuracyField
+                .OnEndEditAsObservable()
+                .Subscribe(ViewModel.SetBeatAccuracy)
+                .AddTo(this);
+            minusBeatAccuracyButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.MinusBeatAccuracy())
+                .AddTo(this);
+            addBeatAccuracyButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.AddBeatAccuracy())
+                .AddTo(this);
+            beatZoomField
+                .OnEndEditAsObservable()
+                .Subscribe(ViewModel.SetBeatZoom)
+                .AddTo(this);
+            zoomOutButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.ZoomOut())
+                .AddTo(this);
+            zoomInButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.ZoomIn())
+                .AddTo(this);
         }
 
 
         protected override void OnDestroy()
         {
-            posAccuracyField.onEndEdit.RemoveListener(ViewModel.SetPosAccuracy);
-            posMagnetToggle.onValueChanged.RemoveListener(ViewModel.SetPosMagnet);
-            beatAccuracyField.onEndEdit.RemoveListener(ViewModel.SetBeatAccuracy);
-            minusBeatAccuracyButton.onClick.RemoveListener(ViewModel.MinusBeatAccuracy);
-            addBeatAccuracyButton.onClick.RemoveListener(ViewModel.AddBeatAccuracy);
-            beatZoomField.onEndEdit.RemoveListener(ViewModel.SetBeatZoom);
-            zoomOutButton.onClick.RemoveListener(ViewModel.ZoomOut);
-            zoomInButton.onClick.RemoveListener(ViewModel.ZoomIn);
         }
     }
 }

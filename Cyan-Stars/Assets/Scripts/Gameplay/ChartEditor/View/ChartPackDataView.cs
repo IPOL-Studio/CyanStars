@@ -100,83 +100,113 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
 
-            closeCanvasButton.onClick.AddListener(() =>
-                {
-                    if (!canvasVisibility.CurrentValue)
-                        return;
-
-                    GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
-                        new DelegateCommand(
-                            () => canvasVisibility.Value = false,
-                            () => canvasVisibility.Value = true
-                        )
-                    );
-                }
-            );
-            chartPackTitleField.onEndEdit.AddListener(ViewModel.SetChartPackTitle);
-
-            Observable.Merge(
-                    previewStartBeatField1.onEndEdit.AsObservable(),
-                    previewStartBeatField2.onEndEdit.AsObservable(),
-                    previewStartBeatField3.onEndEdit.AsObservable()
-                )
+            closeCanvasButton
+                .OnClickAsObservable()
                 .Subscribe(_ =>
                     {
-                        UpdateBeat(previewStartBeatField1.text, previewStartBeatField2.text, previewStartBeatField3.text);
+                        if (!canvasVisibility.CurrentValue)
+                            return;
+
+                        GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
+                            new DelegateCommand(
+                                () => canvasVisibility.Value = false,
+                                () => canvasVisibility.Value = true
+                            )
+                        );
                     }
                 )
                 .AddTo(this);
+            chartPackTitleField
+                .OnEndEditAsObservable()
+                .Subscribe(ViewModel.SetChartPackTitle)
+                .AddTo(this);
 
+            // TODO: 用此方法统一更新预览拍
+            //
+            // private void UpdateBeat(string s1, string s2, string s3)
+            // {
+            //     Debug.LogWarning("TODO: 更新预览拍");// TODO: 更新预览拍
+            // }
+            //
+            // Observable.Merge(
+            //         previewStartBeatField1.onEndEdit.AsObservable(),
+            //         previewStartBeatField2.onEndEdit.AsObservable(),
+            //         previewStartBeatField3.onEndEdit.AsObservable()
+            //     )
+            //     .Subscribe(_ =>
+            //         {
+            //             UpdateBeat(previewStartBeatField1.text, previewStartBeatField2.text, previewStartBeatField3.text);
+            //         }
+            //     )
+            //     .AddTo(this);
 
-            previewStartBeatField1.onEndEdit.AddListener(_ =>
-                ViewModel.SetPreviewStartBeat(
-                    previewStartBeatField1.text,
-                    previewStartBeatField2.text,
-                    previewStartBeatField3.text
+            previewStartBeatField1
+                .OnEndEditAsObservable()
+                .Subscribe(_ =>
+                    ViewModel.SetPreviewStartBeat(
+                        previewStartBeatField1.text,
+                        previewStartBeatField2.text,
+                        previewStartBeatField3.text
+                    )
                 )
-            );
-            previewStartBeatField2.onEndEdit.AddListener(_ =>
-                ViewModel.SetPreviewStartBeat(
-                    previewStartBeatField1.text,
-                    previewStartBeatField2.text,
-                    previewStartBeatField3.text
+                .AddTo(this);
+            previewStartBeatField2
+                .OnEndEditAsObservable()
+                .Subscribe(_ =>
+                    ViewModel.SetPreviewStartBeat(
+                        previewStartBeatField1.text,
+                        previewStartBeatField2.text,
+                        previewStartBeatField3.text
+                    )
                 )
-            );
-            previewStartBeatField3.onEndEdit.AddListener(_ =>
-                ViewModel.SetPreviewStartBeat(
-                    previewStartBeatField1.text,
-                    previewStartBeatField2.text,
-                    previewStartBeatField3.text
+                .AddTo(this);
+            previewStartBeatField3
+                .OnEndEditAsObservable()
+                .Subscribe(_ =>
+                    ViewModel.SetPreviewStartBeat(
+                        previewStartBeatField1.text,
+                        previewStartBeatField2.text,
+                        previewStartBeatField3.text
+                    )
                 )
-            );
-            previewEndBeatField1.onEndEdit.AddListener(_ =>
-                ViewModel.SetPreviewEndBeat(
-                    previewEndBeatField1.text,
-                    previewEndBeatField2.text,
-                    previewEndBeatField3.text
+                .AddTo(this);
+            previewEndBeatField1
+                .OnEndEditAsObservable()
+                .Subscribe(_ =>
+                    ViewModel.SetPreviewEndBeat(
+                        previewEndBeatField1.text,
+                        previewEndBeatField2.text,
+                        previewEndBeatField3.text
+                    )
                 )
-            );
-            previewEndBeatField2.onEndEdit.AddListener(_ =>
-                ViewModel.SetPreviewEndBeat(
-                    previewEndBeatField1.text,
-                    previewEndBeatField2.text,
-                    previewEndBeatField3.text
+                .AddTo(this);
+            previewEndBeatField2
+                .OnEndEditAsObservable()
+                .Subscribe(_ =>
+                    ViewModel.SetPreviewEndBeat(
+                        previewEndBeatField1.text,
+                        previewEndBeatField2.text,
+                        previewEndBeatField3.text
+                    )
                 )
-            );
-            previewEndBeatField3.onEndEdit.AddListener(_ =>
-                ViewModel.SetPreviewEndBeat(
-                    previewEndBeatField1.text,
-                    previewEndBeatField2.text,
-                    previewEndBeatField3.text
+                .AddTo(this);
+            previewEndBeatField3
+                .OnEndEditAsObservable()
+                .Subscribe(_ =>
+                    ViewModel.SetPreviewEndBeat(
+                        previewEndBeatField1.text,
+                        previewEndBeatField2.text,
+                        previewEndBeatField3.text
+                    )
                 )
-            );
+                .AddTo(this);
 
-            exportChartPackButton.onClick.AddListener(ViewModel.ExportChartPack);
+            exportChartPackButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.ExportChartPack())
+                .AddTo(this);
         }
 
-        private void UpdateBeat(string s1, string s2, string s3)
-        {
-        }
 
         public void OpenCanvas()
         {
@@ -194,15 +224,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected override void OnDestroy()
         {
-            closeCanvasButton.onClick.RemoveAllListeners();
-            chartPackTitleField.onEndEdit.RemoveAllListeners();
-            previewStartBeatField1.onEndEdit.RemoveAllListeners();
-            previewStartBeatField2.onEndEdit.RemoveAllListeners();
-            previewStartBeatField3.onEndEdit.RemoveAllListeners();
-            previewEndBeatField1.onEndEdit.RemoveAllListeners();
-            previewEndBeatField2.onEndEdit.RemoveAllListeners();
-            previewEndBeatField3.onEndEdit.RemoveAllListeners();
-            exportChartPackButton.onClick.RemoveAllListeners();
         }
     }
 }

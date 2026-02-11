@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using R3;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,7 +37,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             instance = this;
             canvas.enabled = false;
-            closeCanvasButton.onClick.AddListener(Close);
+            closeCanvasButton
+                .OnClickAsObservable()
+                .Subscribe(_ => Close())
+                .AddTo(this);
         }
 
         public static void Show(string title, string describe, bool showCloseButton = false, Dictionary<string, Action?>? buttonCallBackMap = null)
@@ -64,12 +68,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 var go = Instantiate(instance.buttonPrefab, instance.buttonsFrame.transform);
                 var popupButton = go.GetComponent<PopupButton>();
                 popupButton.Text.text = key;
-                popupButton.Button.onClick.AddListener(() =>
-                    {
-                        callback?.Invoke();
-                        Close();
-                    }
-                );
+                popupButton.Button
+                    .OnClickAsObservable()
+                    .Subscribe(_ =>
+                        {
+                            callback?.Invoke();
+                            Close();
+                        }
+                    )
+                    .AddTo(go);
             }
 
             instance.canvas.enabled = true;
@@ -90,11 +97,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
             {
                 Destroy(instance.buttonsFrame.transform.GetChild(i).gameObject);
             }
-        }
-
-        protected void OnDestroy()
-        {
-            closeCanvasButton.onClick.RemoveAllListeners();
         }
     }
 }

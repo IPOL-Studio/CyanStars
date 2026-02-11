@@ -43,15 +43,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 )
                 .AddTo(this);
 
-            itemToggle.onValueChanged.AddListener(ViewModel.OnToggleValueChanged);
+            itemToggle
+                .OnValueChangedAsObservable()
+                .Subscribe(ViewModel.OnToggleValueChanged)
+                .AddTo(this);
         }
 
         protected override void OnDestroy()
         {
-            if (ViewModel == null)
-                return;
-
-            itemToggle.onValueChanged.RemoveListener(ViewModel.OnToggleValueChanged);
             // ISynchronizedView 会自动在 View 卸载时释放对应的 ViewModel，无需手动 ViewModel.Dispose();
         }
     }
