@@ -22,6 +22,7 @@ namespace CyanStars.Gameplay.ChartEditor.Command
         /// </summary>
         public void ExecuteCommand(ICommand command)
         {
+            // TODO: 用事件驱动以替换当前的命令调用，以避免 View/MonoBehaviour 的内存泄漏
             command.Execute();
 
             // 如果当前索引不是在列表末尾，需要丢弃当前位置之后的所有旧历史
