@@ -19,7 +19,16 @@ namespace CyanStars.Gameplay.ChartEditor.Command
             UndoAction = undo;
         }
 
+
         public void Execute() => ExecuteAction?.Invoke();
         public void Undo() => UndoAction?.Invoke();
+    }
+
+    public static class DelegateCommandExtend
+    {
+        public static void ExecuteCommand(this CommandStack commandStack, Action? executeAction, Action? undoAction)
+        {
+            commandStack.ExecuteCommand(new DelegateCommand(executeAction, undoAction));
+        }
     }
 }
