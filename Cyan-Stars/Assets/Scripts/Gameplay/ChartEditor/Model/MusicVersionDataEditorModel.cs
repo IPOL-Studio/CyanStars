@@ -2,8 +2,8 @@
 
 using System.Collections.Generic;
 using CyanStars.Chart;
-using R3;
 using ObservableCollections;
+using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.Model
 {

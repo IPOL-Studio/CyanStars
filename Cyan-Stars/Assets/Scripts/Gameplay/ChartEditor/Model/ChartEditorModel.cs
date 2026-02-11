@@ -1,7 +1,5 @@
 ﻿#nullable enable
 
-using System;
-using System.Collections.Generic;
 using CatAsset.Runtime;
 using CyanStars.Chart;
 using R3;

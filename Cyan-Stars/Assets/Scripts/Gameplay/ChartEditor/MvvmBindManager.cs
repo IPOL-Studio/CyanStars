@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using CyanStars.Chart;
-using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Gameplay.ChartEditor.ViewModel;

@@ -143,7 +143,7 @@ namespace CyanStars.Gameplay.ChartEditor
                     string dir = Path.GetDirectoryName(kvp.Key);
                     if (!Directory.Exists(dir))
                         Directory.CreateDirectory(dir);
-                    System.IO.File.Copy(tempFilePath, kvp.Key, true);
+                    File.Copy(tempFilePath, kvp.Key, true);
                 }
 
                 return true;

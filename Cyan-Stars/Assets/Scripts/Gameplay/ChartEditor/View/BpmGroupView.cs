@@ -4,10 +4,10 @@ using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using ObservableCollections;
+using R3;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {

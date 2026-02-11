@@ -1,7 +1,7 @@
 ﻿#nullable enable
 
-using CyanStars.Gameplay.ChartEditor.ViewModel;
 using System.Diagnostics.CodeAnalysis;
+using CyanStars.Gameplay.ChartEditor.ViewModel;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.View

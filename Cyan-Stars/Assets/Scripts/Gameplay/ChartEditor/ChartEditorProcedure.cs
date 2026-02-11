@@ -3,7 +3,6 @@
 using System;
 using CyanStars.Framework;
 using CyanStars.Framework.FSM;
-using CyanStars.Gameplay.ChartEditor;
 using UnityEngine.SceneManagement;
 
 namespace CyanStars.Gameplay.ChartEditor.Procedure
