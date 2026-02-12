@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System;
 using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Command;
@@ -65,11 +66,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.ChartDifficulty
                 .Subscribe(difficulty =>
                     {
-                        kuiXingToggle.isOn = difficulty == ChartDifficulty.KuiXing;
-                        qiMingToggle.isOn = difficulty == ChartDifficulty.QiMing;
-                        tianShuToggle.isOn = difficulty == ChartDifficulty.TianShu;
-                        wuYinToggle.isOn = difficulty == ChartDifficulty.WuYin;
-                        undefinedToggle.isOn = difficulty == null;
+                        GetDifficultyToggle(difficulty).isOn = true;
 
                         kuiXingToggle.image.sprite =
                             difficulty == ChartDifficulty.KuiXing
@@ -178,6 +175,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 () => CanvasVisibility.Value = false
             );
         }
+
+        private Toggle GetDifficultyToggle(ChartDifficulty? difficulty) => difficulty switch
+        {
+            ChartDifficulty.KuiXing => kuiXingToggle,
+            ChartDifficulty.QiMing  => qiMingToggle,
+            ChartDifficulty.TianShu => tianShuToggle,
+            ChartDifficulty.WuYin   => wuYinToggle,
+            null                    => undefinedToggle,
+            _ => throw new NotSupportedException()
+        };
 
         protected override void OnDestroy()
         {
