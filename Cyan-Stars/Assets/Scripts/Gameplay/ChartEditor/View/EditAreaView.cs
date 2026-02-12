@@ -392,8 +392,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (!ViewModel.CanPutNote.CurrentValue)
+            if (eventData.button == PointerEventData.InputButton.Right || !ViewModel.CanPutNote.CurrentValue)
+            {
+                // 如果是右键点击到了非音符的空白区域，或当前没有设置音乐/BPM，则取消选中音符
+                ViewModel.CancelSelectNote();
                 return;
+            }
+
 
             // 将屏幕点击坐标转换为 Content 内的局部坐标
             // 由于 Content 的轴心是 (0.5, 0)

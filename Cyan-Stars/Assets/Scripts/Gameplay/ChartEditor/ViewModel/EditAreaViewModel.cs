@@ -267,6 +267,18 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             return (notePos, noteBeat);
         }
 
+        /// <summary>
+        /// 取消选中的音符（见于右键点击空白处）
+        /// </summary>
+        public void CancelSelectNote()
+        {
+            if (Model.SelectedNoteData.CurrentValue != null)
+                Model.SelectedNoteData.Value = null;
+        }
+
+        /// <summary>
+        /// 在指定位置创建音符
+        /// </summary>
         public void CreateNote(float pos, Beat beat)
         {
             // 如果是“选择”或“橡皮擦”工具，则不创建音符，并取消选中音符
