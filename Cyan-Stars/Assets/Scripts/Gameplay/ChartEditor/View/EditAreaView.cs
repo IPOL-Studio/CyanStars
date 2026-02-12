@@ -30,6 +30,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private RectTransform contentRect = null!;
 
         [SerializeField]
+        private RectTransform beatLinesFrameRect = null!;
+
+        [SerializeField]
+        private RectTransform notesFrameRect = null!;
+
+        [SerializeField]
         private ScrollRect scrollRect = null!;
 
         [SerializeField]
@@ -193,7 +199,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async Task CreateBeatLine(int index, float distance, int accuracy)
         {
-            GameObject go = await PoolManager.GetGameObjectAsync(BeatLinePath, contentRect, Cts.Token);
+            GameObject go = await PoolManager.GetGameObjectAsync(BeatLinePath, beatLinesFrameRect, Cts.Token);
             if (Cts.Token.IsCancellationRequested || !ActiveBeatLines.ContainsKey(index))
             {
                 PoolManager.ReleaseGameObject(BeatLinePath, go);
@@ -345,7 +351,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             string path = GetPrefabPath(note.Type);
 
-            GameObject go = await PoolManager.GetGameObjectAsync(path, contentRect, Cts.Token);
+            GameObject go = await PoolManager.GetGameObjectAsync(path, notesFrameRect, Cts.Token);
 
             // 双重检查：异步加载过程中可能已经不再需要显示该 Note，或者 View 被销毁
             if (Cts.Token.IsCancellationRequested || !ActiveNotes.ContainsKey(note))
@@ -392,8 +398,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (!ViewModel.CanPutNote.CurrentValue)
+            if (eventData.button == PointerEventData.InputButton.Right || !ViewModel.CanPutNote.CurrentValue)
+            {
+                // 如果是右键点击到了非音符的空白区域，或当前没有设置音乐/BPM，则取消选中音符
+                ViewModel.CancelSelectNote();
                 return;
+            }
+
 
             // 将屏幕点击坐标转换为 Content 内的局部坐标
             // 由于 Content 的轴心是 (0.5, 0)

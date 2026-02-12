@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System;
 using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
@@ -89,6 +90,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private ReadOnlyReactiveProperty<bool> listVisibility = null!;
         private ReadOnlyReactiveProperty<bool> detailVisibility = null!;
 
+        // 用于在添加或删除 StaffItem 后强制刷新 UI 自动布局
+        private bool needForceRebuildLayoutFlag = false;
+        private RectTransform staffsContentFrameRectTransform = null!;
+
+
+        private void Start()
+        {
+            staffsContentFrameRectTransform = (RectTransform)staffsContentFrameGameObject.transform;
+        }
 
         public override void Bind(MusicVersionViewModel targetViewModel)
         {
@@ -202,6 +212,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                             go.GetComponent<MusicVersionStaffItemView>().Bind(viewModelItem);
                             go.transform.SetSiblingIndex(staffsContentFrameGameObject.transform.childCount - 1);
                         }
+
+                        needForceRebuildLayoutFlag = true;
                     }
                 )
                 .AddTo(this);
@@ -308,6 +320,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 () => CanvasVisibility.Value = true,
                 () => CanvasVisibility.Value = false
             );
+        }
+
+        private void LateUpdate()
+        {
+            if (needForceRebuildLayoutFlag)
+            {
+                needForceRebuildLayoutFlag = false;
+                LayoutRebuilder.ForceRebuildLayoutImmediate(staffsContentFrameRectTransform);
+            }
         }
 
         protected override void OnDestroy()

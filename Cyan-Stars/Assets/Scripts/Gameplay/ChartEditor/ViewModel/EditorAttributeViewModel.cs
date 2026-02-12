@@ -25,18 +25,18 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // TODO: 优化此处属性赋值，直接透传数据并由 View 自行组合和处理逻辑
             PosAccuracyString = Model.PosAccuracy
                 .Select(posAccuracy => posAccuracy.ToString())
-                .ToReadOnlyReactiveProperty(Model.PosAccuracy.Value.ToString())
+                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, Model.PosAccuracy.Value.ToString())
                 .AddTo(base.Disposables);
             PosMagnetState = Model.PosMagnet
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
             BeatAccuracyString = Model.BeatAccuracy
                 .Select(beatAccuracy => beatAccuracy.ToString())
-                .ToReadOnlyReactiveProperty(Model.BeatAccuracy.Value.ToString())
+                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, Model.BeatAccuracy.Value.ToString())
                 .AddTo(base.Disposables);
             BeatZoomString = Model.BeatZoom
-                .Select(beatZoom => beatZoom.ToString(CultureInfo.InvariantCulture))
-                .ToReadOnlyReactiveProperty(Model.BeatZoom.Value.ToString(CultureInfo.InvariantCulture))
+                .Select(beatZoom => beatZoom.ToString("0.##", CultureInfo.InvariantCulture))
+                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, Model.BeatZoom.Value.ToString("0.##", CultureInfo.InvariantCulture))
                 .AddTo(base.Disposables);
         }
 

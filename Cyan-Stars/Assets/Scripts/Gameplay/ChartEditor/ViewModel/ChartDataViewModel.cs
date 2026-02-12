@@ -42,7 +42,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public void SetChartDifficulty(ChartDifficulty? newDifficulty)
         {
             var metaDatas = Model.ChartPackData.CurrentValue.ChartMetaDatas;
-            var oldDifficulty = metaDatas[Model.ChartMetaDataIndex].Difficulty.Value;
+            var oldDifficulty = ChartDifficulty.CurrentValue;
 
             if (newDifficulty == oldDifficulty)
                 return;
