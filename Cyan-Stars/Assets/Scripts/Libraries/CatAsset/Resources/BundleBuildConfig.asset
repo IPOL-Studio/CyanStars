@@ -537,12 +537,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 183393
+    AssetsLength: 190891
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel.prefab
-      Length: 183393
+      Length: 190891
   - DirectoryName: BundleRes/Prefabs/MapSelectionUI
     BundleName: StaffLabel_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/StaffLabel_prefab.bundle
@@ -570,12 +570,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/Temp_ChartButton_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 15319
+    AssetsLength: 15321
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/Temp_ChartButton.prefab
-      Length: 15319
+      Length: 15321
   - DirectoryName: BundleRes/Prefabs/MusicGameUI
     BundleName: MusicGame3DUIPanel_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/MusicGameUI/MusicGame3DUIPanel_prefab.bundle
