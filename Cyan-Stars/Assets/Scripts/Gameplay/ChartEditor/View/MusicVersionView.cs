@@ -202,6 +202,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                             go.GetComponent<MusicVersionStaffItemView>().Bind(viewModelItem);
                             go.transform.SetSiblingIndex(staffsContentFrameGameObject.transform.childCount - 1);
                         }
+
+                        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)staffsContentFrameGameObject.transform);
                     }
                 )
                 .AddTo(this);
