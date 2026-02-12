@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Linq;
 using CyanStars.Chart;
 using ObservableCollections;
 using R3;
@@ -28,19 +29,15 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         {
             DataVersion = new ReactiveProperty<int>(chartPackData.DataVersion);
             Title = new ReactiveProperty<string>(chartPackData.Title);
-            MusicVersions = new ObservableList<MusicVersionDataEditorModel>();
-            foreach (var version in chartPackData.MusicVersionDatas)
-                MusicVersions.Add(new MusicVersionDataEditorModel(version));
+            MusicVersions = new ObservableList<MusicVersionDataEditorModel>(chartPackData.MusicVersionDatas.Select(static v => new MusicVersionDataEditorModel(v)));
             BpmGroup = new ObservableList<BpmGroupItem>(chartPackData.BpmGroup);
             MusicPreviewStartBeat = new ReactiveProperty<Beat>(chartPackData.MusicPreviewStartBeat);
             MusicPreviewEndBeat = new ReactiveProperty<Beat>(chartPackData.MusicPreviewEndBeat);
             CoverFilePath = new ReactiveProperty<string?>(chartPackData.CoverFilePath);
             CropStartPosition = new ReactiveProperty<Vector2?>(chartPackData.CropStartPosition);
             CropHeight = new ReactiveProperty<float?>(chartPackData.CropHeight);
-            CropWidth = CropHeight.Select(h => h * 4.0f).ToReadOnlyReactiveProperty();
-            ChartMetaDatas = new ObservableList<ChartMetaDataEditorModel>();
-            foreach (var chartMetaData in chartPackData.ChartMetaDatas)
-                ChartMetaDatas.Add(new ChartMetaDataEditorModel(chartMetaData));
+            CropWidth = CropHeight.Select(static h => h * 4.0f).ToReadOnlyReactiveProperty();
+            ChartMetaDatas = new ObservableList<ChartMetaDataEditorModel>(chartPackData.ChartMetaDatas.Select(static d => new ChartMetaDataEditorModel(d)));
         }
     }
 }
