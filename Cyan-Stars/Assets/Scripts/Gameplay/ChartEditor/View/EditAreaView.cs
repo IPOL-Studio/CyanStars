@@ -114,10 +114,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
             if (Cts.IsCancellationRequested) return;
             int oldPosLineCount = posLinesFrameObject.transform.childCount - 1;
 
-            var tasks = new List<Task<GameObject>>();
+            var tasks = new List<Task>();
             for (int i = oldPosLineCount; i < count; i++)
             {
-                tasks.Add(PoolManager.GetGameObjectAsync(PosLinePath, posLinesFrameObject.transform));
+                tasks.Add(CreatePosLine());
             }
 
             await Task.WhenAll(tasks);
@@ -127,6 +127,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 var go = posLinesFrameObject.transform.GetChild(i).gameObject;
                 PoolManager.ReleaseGameObject(PosLinePath, go);
             }
+        }
+
+        private async Task CreatePosLine()
+        {
+            GameObject go = await PoolManager.GetGameObjectAsync(PosLinePath, posLinesFrameObject.transform);
+            go.transform.localPosition = Vector3.one;
         }
 
         #endregion
@@ -200,6 +206,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private async Task CreateBeatLine(int index, float distance, int accuracy)
         {
             GameObject go = await PoolManager.GetGameObjectAsync(BeatLinePath, beatLinesFrameRect, Cts.Token);
+            go.transform.localScale = Vector3.one;
+
             if (Cts.Token.IsCancellationRequested || !ActiveBeatLines.ContainsKey(index))
             {
                 PoolManager.ReleaseGameObject(BeatLinePath, go);
@@ -266,16 +274,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 visibleNotes.Add(note);
             }
 
-            // 检查可视范围前所有的 HoldNote，如果这些音符尾判延伸进了可视范围，也一并渲染
-            int holdLimitIndex = FindLowerBound(holdNotes, minVisibleFBeatVal);
-            for (int i = 0; i < holdLimitIndex; i++)
+            // 检查所有的 HoldNote，如果这些音符任何部分位于可视范围内，也一并渲染
+            // TODO: 维护一个按 JudgeBeat 有序排列的列表以使用二分查找提高性能
+            foreach (var holdNote in holdNotes)
             {
-                var hold = holdNotes[i];
-                // Hold 的开始时间一定 < Min (因为 i < holdLimitIndex)
-                // 只要结束时间 >= Min，就是可见的
-                if (hold.EndJudgeBeat.ToFloat() >= minVisibleFBeatVal)
+                if (holdNote.JudgeBeat.ToFloat() <= maxVisibleFBeatVal ||
+                    holdNote.EndJudgeBeat.ToFloat() >= minVisibleFBeatVal)
                 {
-                    visibleNotes.Add(hold);
+                    visibleNotes.Add(holdNote);
                 }
             }
 
@@ -352,6 +358,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             string path = GetPrefabPath(note.Type);
 
             GameObject go = await PoolManager.GetGameObjectAsync(path, notesFrameRect, Cts.Token);
+            go.transform.localScale = Vector3.one;
 
             // 双重检查：异步加载过程中可能已经不再需要显示该 Note，或者 View 被销毁
             if (Cts.Token.IsCancellationRequested || !ActiveNotes.ContainsKey(note))

@@ -42,6 +42,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public EditAreaViewModel(ChartEditorModel model)
             : base(model)
         {
+            foreach (var note in Notes)
+            {
+                if (note.Type == NoteType.Hold)
+                {
+                    holdNotes.Add(note as HoldChartNoteData);
+                }
+            }
+
             Notes.ObserveAdd()
                 .Subscribe(e =>
                     {
