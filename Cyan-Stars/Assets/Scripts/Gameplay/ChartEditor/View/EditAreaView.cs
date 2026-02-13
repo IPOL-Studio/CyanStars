@@ -274,16 +274,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 visibleNotes.Add(note);
             }
 
-            // 检查可视范围前所有的 HoldNote，如果这些音符尾判延伸进了可视范围，也一并渲染
-            int holdLimitIndex = FindLowerBound(holdNotes, minVisibleFBeatVal);
-            for (int i = 0; i < holdLimitIndex; i++)
+            // 检查所有的 HoldNote，如果这些音符任何部分位于可视范围内，也一并渲染
+            // TODO: 维护一个按 JudgeBeat 有序排列的列表以使用二分查找提高性能
+            foreach (var holdNote in holdNotes)
             {
-                var hold = holdNotes[i];
-                // Hold 的开始时间一定 < Min (因为 i < holdLimitIndex)
-                // 只要结束时间 >= Min，就是可见的
-                if (hold.EndJudgeBeat.ToFloat() >= minVisibleFBeatVal)
+                if (holdNote.JudgeBeat.ToFloat() <= maxVisibleFBeatVal ||
+                    holdNote.EndJudgeBeat.ToFloat() >= minVisibleFBeatVal)
                 {
-                    visibleNotes.Add(hold);
+                    visibleNotes.Add(holdNote);
                 }
             }
 
