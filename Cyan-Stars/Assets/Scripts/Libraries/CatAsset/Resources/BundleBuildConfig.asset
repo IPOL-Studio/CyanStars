@@ -205,23 +205,23 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/BpmItem_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 23299
+    AssetsLength: 22535
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/BpmItem.prefab
-      Length: 23299
+      Length: 22535
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: Button(Speed Element)_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/Button(Speed Element)_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 22196
+    AssetsLength: 21823
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/Button(Speed Element).prefab
-      Length: 22196
+      Length: 21823
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: Button_controller.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/Button_controller.bundle
@@ -238,23 +238,23 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/Button_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 14712
+    AssetsLength: 14232
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/Button.prefab
-      Length: 14712
+      Length: 14232
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: Dropdown_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/Dropdown_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 39590
+    AssetsLength: 38842
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/Dropdown.prefab
-      Length: 39590
+      Length: 38842
   - DirectoryName: BundleRes/Prefabs/ChartEditor/EditArea
     BundleName: BeatLine_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/EditArea/BeatLine_prefab.bundle
@@ -359,34 +359,34 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/MusicVersionItem_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 16398
+    AssetsLength: 16053
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/MusicVersionItem.prefab
-      Length: 16398
+      Length: 16053
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: PopupButton_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/PopupButton_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 15260
+    AssetsLength: 14765
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/PopupButton.prefab
-      Length: 15260
+      Length: 14765
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: PopupCanvasButton_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/PopupCanvasButton_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 12853
+    AssetsLength: 12609
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/PopupCanvasButton.prefab
-      Length: 12853
+      Length: 12609
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: StaffItem_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/StaffItem_prefab.bundle
