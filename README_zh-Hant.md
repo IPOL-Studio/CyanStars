@@ -12,13 +12,9 @@
 
 ## 参与开发
 
-在您第一次开发之前，请务必花一点点时间阅读一下 [贡献指南](CONTRIBUTING.md)，非常感谢！
+欢迎参与代码/游戏内容/翻译的贡献，请阅读 [贡献指南](CONTRIBUTING.md)！
 
-源代码与多媒体文件请在 [LICENSE](LICENSE) 和 [NOTICE](NOTICE) 中约定的规范内使用。
-
-若要发布修改后的游戏文件，请明确指出“此游戏以经过修改，非 IPOL 原版内容”等类似表达，以将您的作品与此仓库发布的作品进行区分。修改后的游戏文件不得在任何国家/地区注册版权。
-
-有能力参与项目与文档的翻译吗？请在 [Crowdin](https://zh.crowdin.com/project/cyanstars) 上协助我们，或通过 PR 提出。
+源代码与多媒体文件请在 [LICENSE](LICENSE) 中约定的范围内使用。
 
 ## 相关链接
 
@@ -29,8 +25,6 @@
 多媒体文件作为子模块引用，路径为 `Cyan-Stars/Assets/CysMultimediaAssets`，对于多媒体文件的贡献指南请查阅子模块仓库说明。
 
 - 附：[多媒体文件仓库](https://github.com/IPOL-Studio/CyanStarsMultimediaAssets)
-
-在美术/音乐/谱面/程序/翻译等方面有特长，且有兴趣参与我们的内部讨论？欢迎点 [这里](http://chenluan.mikecrm.com/JeKq3DU) 来申请加入我们。
 
 玩家交流 QQ 群：`827556233`
 
