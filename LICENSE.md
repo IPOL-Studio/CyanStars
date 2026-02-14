@@ -1,3 +1,19 @@
+Copyright (c) 2022-2026 IPOL-Studio
+
+===================================== 说明 ====================================
+
+CyanStars（本项目）采用双重许可证。
+
+对于“CyanStars”主仓库内的文件，采用《Apache License 2.0》许可证。
+
+对于“CyanStars/Cyan-Stars/Assets/CysMultimediaAssets”路径（子仓库）内的
+文件，采用下文所述的《多媒体文件使用与贡献协议》。
+
+如果您希望在《多媒体文件使用与贡献协议》规定的范围外使用作品，可联系作品对应
+的版权方获取额外许可。
+
+==================================== 许可证 ====================================
+
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -175,27 +191,41 @@
 
    END OF TERMS AND CONDITIONS
 
-   APPENDIX: How to apply the Apache License to your work.
+                             多媒体文件使用与贡献协议
 
-      To apply the Apache License to your work, attach the following
-      boilerplate notice, with the fields enclosed by brackets "[]"
-      replaced with your own identifying information. (Don't include
-      the brackets!)  The text should be enclosed in the appropriate
-      comment syntax for the file format. We also recommend that a
-      file or class name and description of purpose be included on the
-      same "printed page" as the copyright notice for easier
-      identification within third-party archives.
+   此仓库的多媒体文件（音乐作品、美术图像、Live2D 文件）不遵循《Apache License》，
+   而遵循下列多媒体文件使用与贡献协议：
 
-   Copyright 2022-2024 IPOL-Studio
+   1. 授权主体：
+      多媒体文件授权仅适用于个人和非营利性团体，不适用于商业主体。
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   2. 授权内容：
+      版权方已免费、永久和不可撤销地授权被授权人以下内容：
+      2.1 授权的文件为：在“CyanStars”仓库的“CyanStars/Cyan-Stars/Assets/CysMultimediaAssets”
+          路径内（子仓库中）的文件。这些文件包括音乐作品、美术图像、Live2D 文件，但不包含源代码（源代码
+          遵循《Apache License》中的协议）。
+      2.2 您可以自由地下载和分发这些作品，并在下文提到的限制范围内使用和二次创作。
+      2.3 您可以在直播或视频中随游戏画面展示作品，并以此盈利。
 
-       http://www.apache.org/licenses/LICENSE-2.0
+   3. 使用限制
+      为了保护作者的权益，您在使用作品时需要遵守以下限制：
+      3.1 您不得将作品直接用于任何商业目的。
+      3.2 任何使用作品的项目都不得用于盈利，但以抵消实际支出成本为目的的小规模非盈利性商业行为除外。
+      3.3 您只能在《CyanStars》游戏内、游戏衍生作品以及游戏和衍生作品的宣传中使用作品，不得用于其他无关项目。
+      3.4 制作《CyanStars》游戏相关衍生作品时还须符合法律法规与社区准则，
+          并禁止对作品本身进行大幅度改动（如对美术画面进行大规模改动，或对音乐进行改词、更改旋律）。
+      3.5 制作的衍生作品必须采用与本文所述的相同许可证。
+      3.6 您必须在明显位置完整署名作品作者信息。
+      3.7 您必须在明显位置添加作品链接。
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+   4. 免责声明
+      作者和项目维护团队不对被授权人可能产生的任何因超出许可范围而造成的损失或损害承担责任，亦不保证
+      作品能按照被授权人预期发挥功效。
+
+   5. 多媒体文件贡献规范
+      非常感谢您有兴趣参与贡献，如果您对此仓库的贡献中包含多媒体文件，为保障维护者和社区成员能够更好
+      地规范使用您的贡献，您还需遵循此规范：
+      5.1 您已确认此作品不存在与第三方冲突的约定（如独家授权或排他性授权等）。
+      5.2 您作为版权方，或在已获得版权方合法授权的情况下进行贡献。
+      5.3 您确认您的贡献不会侵犯任何第三方的知识产权或其他合法权益，并承担由此产生的全部法律责任及损失。
+      5.4 您的贡献的授权范围和针对被授权人的限制，与上文授权内容及使用限制所述相同。
