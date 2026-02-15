@@ -73,9 +73,5 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             ViewModel.CommitCropData();
         }
-
-        protected override void OnDestroy()
-        {
-        }
     }
 }

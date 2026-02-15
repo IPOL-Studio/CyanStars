@@ -246,9 +246,5 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 () => CanvasVisibility.Value = false
             );
         }
-
-        protected override void OnDestroy()
-        {
-        }
     }
 }

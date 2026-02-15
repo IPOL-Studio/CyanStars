@@ -449,7 +449,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
         }
 
-        protected override void OnDestroy()
+        protected void OnDestroy()
         {
             Cts.Cancel();
             Cts.Dispose();

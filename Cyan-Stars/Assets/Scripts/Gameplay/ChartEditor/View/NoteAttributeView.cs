@@ -259,9 +259,5 @@ namespace CyanStars.Gameplay.ChartEditor.View
             breakLeftPosToggle.image.sprite = unselectedToggleSprite;
             breakRightPosToggle.image.sprite = selectedToggleSprite;
         }
-
-        protected override void OnDestroy()
-        {
-        }
     }
 }

@@ -95,9 +95,5 @@ namespace CyanStars.Gameplay.ChartEditor.View
             cropAreaRect.offsetMin = Vector2.zero;
             cropAreaRect.offsetMax = Vector2.zero;
         }
-
-        protected override void OnDestroy()
-        {
-        }
     }
 }
