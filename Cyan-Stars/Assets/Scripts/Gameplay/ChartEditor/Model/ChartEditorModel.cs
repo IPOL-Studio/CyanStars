@@ -76,7 +76,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public readonly ReactiveProperty<int> PosAccuracy = new ReactiveProperty<int>(4);
         public readonly ReactiveProperty<bool> PosMagnet = new ReactiveProperty<bool>(true);
         public readonly ReactiveProperty<int> BeatAccuracy = new ReactiveProperty<int>(2);
-        public readonly ReactiveProperty<float> BeatZoom = new ReactiveProperty<float>(1f);
+        public readonly ReactiveProperty<double> BeatZoom = new ReactiveProperty<double>(1.0d);
 
 
         /// <summary>

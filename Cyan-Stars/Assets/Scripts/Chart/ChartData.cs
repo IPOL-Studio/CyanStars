@@ -12,8 +12,8 @@ namespace CyanStars.Chart
     public class ChartData
     {
         /// <summary>在第一个 BPM 组开始前播放几次预备拍音效</summary>
-        /// <remarks>必须大于等于0，一般为4，预备拍的时间间隔取决于第一个 BPM 组的 bpm</remarks>
-        public int ReadyBeat;
+        /// <remarks>一般为4，预备拍的时间间隔取决于第一个 BPM 组的 bpm</remarks>
+        public uint ReadyBeat;
 
         /// <summary>变速组</summary>
         /// <remarks>必定存在一个相对 1 速的变速组，不可编辑或删除</remarks>
@@ -32,7 +32,7 @@ namespace CyanStars.Chart
         /// 构造函数
         /// </summary>
         [JsonConstructor]
-        public ChartData(int readyBeat = 4, List<SpeedTemplateData>? speedGroupDatas = null,
+        public ChartData(uint readyBeat = 4, List<SpeedTemplateData>? speedGroupDatas = null,
                          List<BaseChartNoteData>? notes = null, List<ChartTrackData>? trackDatas = null)
         {
             ReadyBeat = readyBeat;

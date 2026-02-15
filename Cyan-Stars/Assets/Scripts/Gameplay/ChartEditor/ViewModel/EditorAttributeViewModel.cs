@@ -10,7 +10,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     public class EditorAttributeViewModel : BaseViewModel
     {
         private const int BeatAccuracyStep = 1;
-        private const float ZoomStep = 0.1f;
+        private const double ZoomStep = 0.1;
 
         public ReadOnlyReactiveProperty<BaseChartNoteData?> SelectedNoteData => Model.SelectedNoteData;
         public readonly ReadOnlyReactiveProperty<string> PosAccuracyString;

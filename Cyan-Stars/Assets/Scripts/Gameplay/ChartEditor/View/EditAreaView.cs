@@ -67,7 +67,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             base.Bind(targetViewModel);
 
             ViewModel.ContentAddHeight
-                .Subscribe(addHeight => contentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, viewportRect.rect.height + addHeight))
+                .Subscribe(addHeight => contentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, (float)(viewportRect.rect.height + addHeight)))
                 .AddTo(this);
 
             // 1. 位置线逻辑
@@ -164,14 +164,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
             float minVisibleY = scrollY - 100f;
             float maxVisibleY = scrollY + viewportHeight + 100f;
 
-            float beatLineDist = ViewModel.GetMinorBeatLineDistance();
+            double beatLineDist = ViewModel.GetMinorBeatLineDistance();
             float judgeLineY = judgeLineRect.anchoredPosition.y;
 
-            int minIndex = Mathf.FloorToInt((minVisibleY - judgeLineY) / beatLineDist);
-            int maxIndex = Mathf.CeilToInt((maxVisibleY - judgeLineY) / beatLineDist);
+            int minIndex = (int)Math.Floor((minVisibleY - judgeLineY) / beatLineDist);
+            int maxIndex = (int)Math.Ceiling((maxVisibleY - judgeLineY) / beatLineDist);
 
             minIndex = Mathf.Max(0, minIndex);
-            int maxTotalIndex = Mathf.FloorToInt(ViewModel.TotalBeats.CurrentValue * ViewModel.BeatAccuracy.CurrentValue);
+            int maxTotalIndex = (int)Math.Floor(ViewModel.TotalBeats.CurrentValue * ViewModel.BeatAccuracy.CurrentValue);
             maxIndex = Mathf.Min(maxIndex, maxTotalIndex);
 
             // 回收
@@ -203,7 +203,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             await Task.WhenAll(tasks);
         }
 
-        private async Task CreateBeatLine(int index, float distance, int accuracy)
+        private async Task CreateBeatLine(int index, double distance, int accuracy)
         {
             GameObject go = await PoolManager.GetGameObjectAsync(BeatLinePath, beatLinesFrameRect, Cts.Token);
             go.transform.localScale = Vector3.one;
@@ -225,7 +225,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     rect.anchorMin = new Vector2(0.5f, 0f);
                     rect.anchorMax = new Vector2(0.5f, 0f);
                     rect.localScale = Vector3.one;
-                    rect.anchoredPosition = new Vector2(0, judgeLineRect.anchoredPosition.y + (index * distance));
+                    rect.anchoredPosition = new Vector2(0, (float)(judgeLineRect.anchoredPosition.y + (index * distance)));
                 }
 
                 item.SetVisuals(index, accuracy);
@@ -250,11 +250,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
             float viewMinY = scrollY - 100f;
             float viewMaxY = scrollY + viewportHeight + 100f;
 
-            float beatDist = ViewModel.GetMajorBeatLineDistance();
+            double beatDist = ViewModel.GetMajorBeatLineDistance();
             float judgeLineY = judgeLineRect.anchoredPosition.y;
 
-            float minVisibleFBeatVal = (viewMinY - judgeLineY) / beatDist;
-            float maxVisibleFBeatVal = (viewMaxY - judgeLineY) / beatDist;
+            double minVisibleFBeatVal = (viewMinY - judgeLineY) / beatDist;
+            double maxVisibleFBeatVal = (viewMaxY - judgeLineY) / beatDist;
 
             var visibleNotes = new HashSet<BaseChartNoteData>();
 
@@ -268,7 +268,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             {
                 var note = allNotes[i];
 
-                if (note.JudgeBeat.ToFloat() > maxVisibleFBeatVal)
+                if (note.JudgeBeat.ToDouble() > maxVisibleFBeatVal)
                     break;
 
                 visibleNotes.Add(note);
@@ -278,8 +278,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
             // TODO: 维护一个按 JudgeBeat 有序排列的列表以使用二分查找提高性能
             foreach (var holdNote in holdNotes)
             {
-                if (holdNote.JudgeBeat.ToFloat() <= maxVisibleFBeatVal ||
-                    holdNote.EndJudgeBeat.ToFloat() >= minVisibleFBeatVal)
+                if (holdNote.JudgeBeat.ToDouble() <= maxVisibleFBeatVal ||
+                    holdNote.EndJudgeBeat.ToDouble() >= minVisibleFBeatVal)
                 {
                     visibleNotes.Add(holdNote);
                 }
@@ -330,7 +330,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         /// <summary>
         /// 二分查找：找到第一个 JudgeBeat.ToFloat() >= targetBeat 的索引
         /// </summary>
-        private int FindLowerBound<T>(IReadOnlyList<T> list, float targetBeat) where T : BaseChartNoteData
+        private int FindLowerBound<T>(IReadOnlyList<T> list, double targetBeat) where T : BaseChartNoteData
         {
             int low = 0;
             int high = list.Count - 1;
@@ -339,7 +339,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             while (low <= high)
             {
                 int mid = low + (high - low) / 2;
-                if (list[mid].JudgeBeat.ToFloat() >= targetBeat)
+                if (list[mid].JudgeBeat.ToDouble() >= targetBeat)
                 {
                     result = mid;
                     high = mid - 1;

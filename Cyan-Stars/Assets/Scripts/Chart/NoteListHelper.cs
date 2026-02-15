@@ -129,40 +129,30 @@ namespace CyanStars.Chart
             if (Validate(notes) != NoteValidationStatus.Valid)
                 throw new Exception("给定的 Note List 不合法！");
 
-            if (newItem.JudgeBeat.ToFloat() < 0)
+            if (newItem.JudgeBeat.ToDouble() < 0)
                 throw new Exception("插入项的时间不能小于 0");
 
-            // 如果列表为空，直接添加
-            if (notes.Count == 0)
+            Beat targetBeat = newItem.JudgeBeat;
+
+            // 如果列表为空或者列表里所有的都比它小/相等，直接添加
+            if (notes.Count == 0 || notes[^1].JudgeBeat.CompareTo(targetBeat) <= 0)
             {
                 notes.Add(newItem);
                 return true;
             }
 
-            float targetBeat = newItem.JudgeBeat.ToFloat();
-            bool inserted = false;
-
             // 遍历查找第一个时间大于 newItem 的位置
             for (int i = 0; i < notes.Count; i++)
             {
-                float currentBeat = notes[i].JudgeBeat.ToFloat();
-
                 // 只要当前项的时间 > 插入项的时间，就插在当前项前面
-                if (currentBeat > targetBeat)
+                if (notes[i].JudgeBeat > targetBeat)
                 {
                     notes.Insert(i, newItem);
-                    inserted = true;
                     break;
                 }
 
                 // 如果时间相等，选择插在该时间点所有 Note 的后面
                 // 所以这里不处理 == 的情况，继续向后找，直到 > 或者列表结束
-            }
-
-            // 如果遍历完都没找到比它大的（或者列表里所有的都比它小/相等），则加到末尾
-            if (!inserted)
-            {
-                notes.Add(newItem);
             }
 
             return true;

@@ -2,6 +2,7 @@
 
 #nullable enable
 
+using System;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
@@ -66,7 +67,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             }
         }
 
-        private Vector2 CalculatePosition(float zoom)
+        private Vector2 CalculatePosition(double zoom)
         {
             // 计算 X 轴
             float xPos = 0;
@@ -93,20 +94,20 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             // 计算 Y 轴 (JudgeLineOffset + Beat * Interval * Zoom)
             // DefaultMajorBeatLineInterval * Zoom 即为每拍的像素距离
-            float beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * zoom;
-            float yPos = judgeLineYOffset + (data.JudgeBeat.ToFloat() * beatInterval);
+            double beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * zoom;
+            double yPos = judgeLineYOffset + (data.JudgeBeat.ToDouble() * beatInterval);
 
-            return new Vector2(xPos, yPos);
+            return new Vector2(xPos, (float)yPos);
         }
 
-        private float CalculateHoldLength(float zoom, HoldChartNoteData holdData)
+        private float CalculateHoldLength(double zoom, HoldChartNoteData holdData)
         {
-            float beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * zoom;
-            float startY = judgeLineYOffset + (holdData.JudgeBeat.ToFloat() * beatInterval);
-            float endY = judgeLineYOffset + (holdData.EndJudgeBeat.ToFloat() * beatInterval);
+            double beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * zoom;
+            double startY = judgeLineYOffset + (holdData.JudgeBeat.ToDouble() * beatInterval);
+            double endY = judgeLineYOffset + (holdData.EndJudgeBeat.ToDouble() * beatInterval);
 
             // 长度 = 结束位置 - 开始位置 - 头部微调
-            return Mathf.Max(0, endY - startY - 12.5f);
+            return (float)Math.Max(0, endY - startY - 12.5f);
         }
 
         public void OnLeftClick()

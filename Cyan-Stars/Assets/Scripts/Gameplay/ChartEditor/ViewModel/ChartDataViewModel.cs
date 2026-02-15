@@ -86,7 +86,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void SetReadyBeatCount(string newBeatCount)
         {
-            if (!int.TryParse(newBeatCount, out int newBeatCountInt) || newBeatCountInt < 0)
+            if (!uint.TryParse(newBeatCount, out uint newBeatCountInt))
             {
                 ChartData.ReadyBeat.ForceNotify();
                 return;

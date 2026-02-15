@@ -23,11 +23,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         // 位置线
         public ReadOnlyReactiveProperty<int> BeatAccuracy => Model.BeatAccuracy;
-        public ReadOnlyReactiveProperty<float> BeatZoom => Model.BeatZoom;
+        public ReadOnlyReactiveProperty<double> BeatZoom => Model.BeatZoom;
 
         // 节拍线和音符
-        public readonly ReadOnlyReactiveProperty<float> ContentAddHeight; // 在原有的屏幕高度上再增加此高度
-        public readonly ReadOnlyReactiveProperty<float> TotalBeats;
+        public readonly ReadOnlyReactiveProperty<double> ContentAddHeight; // 在原有的屏幕高度上再增加此高度
+        public readonly ReadOnlyReactiveProperty<double> TotalBeats;
         public readonly ReadOnlyReactiveProperty<int> PosLineCount;
         public IReadOnlyObservableList<BaseChartNoteData> Notes => Model.ChartData.CurrentValue.Notes;
         private readonly List<HoldChartNoteData> holdNotes = new List<HoldChartNoteData>();
@@ -113,7 +113,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                         var bpmGroup = Model.ChartPackData.CurrentValue.BpmGroup;
                         if (BpmGroupHelper.Validate(bpmGroup) != BpmGroupHelper.BpmValidationStatus.Valid)
                             throw new Exception("Bpm 组数据异常");
-                        float beatCount = BpmGroupHelper.CalculateBeat(bpmGroup, (int)(handler.Asset.length * 1000f) + Model.ChartPackData.CurrentValue.MusicVersions[0].Offset.CurrentValue);
+                        double beatCount = BpmGroupHelper.CalculateBeat(bpmGroup, (int)(handler.Asset.length * 1000) + Model.ChartPackData.CurrentValue.MusicVersions[0].Offset.CurrentValue);
                         return beatCount * DefaultMajorBeatLineInterval * zoom;
                     }
                 )
@@ -186,7 +186,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         /// <summary>
         /// 获取两条主要（整拍）节拍线之间的像素距离
         /// </summary>
-        public float GetMajorBeatLineDistance()
+        public double GetMajorBeatLineDistance()
         {
             return DefaultMajorBeatLineInterval * BeatZoom.CurrentValue;
         }
@@ -194,7 +194,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         /// <summary>
         /// 获取两条细分节拍线之间的像素距离
         /// </summary>
-        public float GetMinorBeatLineDistance()
+        public double GetMinorBeatLineDistance()
         {
             return DefaultMajorBeatLineInterval * BeatZoom.CurrentValue / BeatAccuracy.CurrentValue;
         }
@@ -261,9 +261,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             // 计算纵坐标
             float relativeY = localPosition.y - judgeLineY;
-            float beatDistance = GetMinorBeatLineDistance(); // 单个细分拍的距离
+            double beatDistance = GetMinorBeatLineDistance(); // 单个细分拍的距离
 
-            int subBeatIndex = Mathf.RoundToInt(relativeY / beatDistance);
+            int subBeatIndex = (int)Math.Round(relativeY / beatDistance);
             subBeatIndex = Mathf.Max(0, subBeatIndex);
 
             int acc = BeatAccuracy.CurrentValue;
@@ -351,18 +351,18 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             }
 
             // 判定线位置在计算中正好约掉，无需得知判定线位置
-            float beatPrecent = -contentY / ContentAddHeight.CurrentValue;
-            beatPrecent = Mathf.Clamp01(beatPrecent);
+            double beatPrecent = -contentY / ContentAddHeight.CurrentValue;
+            beatPrecent = Math.Clamp(beatPrecent, 0, 1);
             int timelineTimeMs = BpmGroupHelper.CalculateTime(Model.ChartPackData.CurrentValue.BpmGroup, TotalBeats.CurrentValue * beatPrecent);
             Model.CurrentTimelineTimeMs = timelineTimeMs;
         }
 
         public float GetContentYByTimelineTime()
         {
-            float currentFBeat = BpmGroupHelper.CalculateBeat(Model.ChartPackData.CurrentValue.BpmGroup, Model.CurrentTimelineTimeMs);
-            float beatPrecent = currentFBeat / TotalBeats.CurrentValue;
-            beatPrecent = Mathf.Clamp01(beatPrecent);
-            return -beatPrecent * ContentAddHeight.CurrentValue;
+            double currentFBeat = BpmGroupHelper.CalculateBeat(Model.ChartPackData.CurrentValue.BpmGroup, Model.CurrentTimelineTimeMs);
+            double beatPrecent = currentFBeat / TotalBeats.CurrentValue;
+            beatPrecent = Math.Clamp(beatPrecent, 0, 1);
+            return (float)(-beatPrecent * ContentAddHeight.CurrentValue);
         }
 
 

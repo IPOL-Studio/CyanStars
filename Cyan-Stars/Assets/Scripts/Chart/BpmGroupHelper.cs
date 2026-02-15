@@ -145,7 +145,7 @@ namespace CyanStars.Chart
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static float CalculateMsDurationInSegment(float fStartBeat, float fEndBeat, float bpm)
+        private static double CalculateMsDurationInSegment(double fStartBeat, double fEndBeat, double bpm)
         {
             return (fEndBeat - fStartBeat) * (60 / bpm) * 1000f;
         }
@@ -158,41 +158,41 @@ namespace CyanStars.Chart
         /// <returns>int 形式的毫秒时间（相对于时间轴开始）</returns>
         public static int CalculateTime(IList<BpmGroupItem> datas, Beat beat)
         {
-            return CalculateTime(datas, beat.ToFloat());
+            return CalculateTime(datas, beat.ToDouble());
         }
 
         /// <summary>
         /// 将 beat 转换为毫秒时间（不含 offset）
         /// </summary>
         /// <param name="datas">基于此 Bpm List 进行计算</param>
-        /// <param name="floatBeat">float 形式的拍子</param>
+        /// <param name="fBeat">浮点数形式的拍子</param>
         /// <returns>int 形式的毫秒时间（相对于时间轴开始）</returns>
-        public static int CalculateTime(IList<BpmGroupItem> datas, float floatBeat)
+        public static int CalculateTime(IList<BpmGroupItem> datas, double fBeat)
         {
             if (Validate(datas) != BpmValidationStatus.Valid)
                 throw new Exception("列表不合法，无法计算！");
 
             if (datas.Count == 1)
-                return (int)(60 / datas[0].Bpm * floatBeat * 1000);
+                return (int)(60 / datas[0].Bpm * fBeat * 1000);
 
             double sumTime = 0;
             for (int i = 0; i < datas.Count - 1; i++)
             {
                 var cur = datas[i];
                 var next = datas[i + 1];
-                if (floatBeat < next.StartBeat.ToFloat())
+                if (fBeat < next.StartBeat.ToDouble())
                 {
                     // fBeat 落在当前 bpm 组中
-                    sumTime += CalculateMsDurationInSegment(cur.StartBeat.ToFloat(), floatBeat, cur.Bpm);
+                    sumTime += CalculateMsDurationInSegment(cur.StartBeat.ToDouble(), fBeat, cur.Bpm);
                     return (int)sumTime;
                 }
 
-                sumTime += CalculateMsDurationInSegment(cur.StartBeat.ToFloat(), next.StartBeat.ToFloat(), cur.Bpm);
+                sumTime += CalculateMsDurationInSegment(cur.StartBeat.ToDouble(), next.StartBeat.ToDouble(), cur.Bpm);
             }
 
             // fBeat 落在最后的 bpm 组中
             var last = datas[datas.Count - 1];
-            sumTime += CalculateMsDurationInSegment(last.StartBeat.ToFloat(), floatBeat, last.Bpm);
+            sumTime += CalculateMsDurationInSegment(last.StartBeat.ToDouble(), fBeat, last.Bpm);
             return (int)sumTime;
         }
 
@@ -202,7 +202,7 @@ namespace CyanStars.Chart
         /// <param name="datas">基于此 Bpm List 进行计算</param>
         /// <param name="msTime">已经计算 offset 后的毫秒时间（由 offset = 0 后开始计算）</param>
         /// <returns>float 形式的拍子</returns>
-        public static float CalculateBeat(IList<BpmGroupItem> datas, int msTime)
+        public static double CalculateBeat(IList<BpmGroupItem> datas, int msTime)
         {
             if (datas.Count == 0)
             {
@@ -215,7 +215,7 @@ namespace CyanStars.Chart
                 return (msTime / 1000f) * (datas[0].Bpm / 60f);
             }
 
-            float remainingMs = msTime;
+            double remainingMs = msTime;
 
             // 遍历除了最后一个之外的所有 BPM 组
             for (int i = 0; i < datas.Count - 1; i++)
@@ -224,14 +224,14 @@ namespace CyanStars.Chart
                 var nextItem = datas[i + 1];
 
                 // 计算当前 BPM 段的持续时间
-                float timeDuration = CalculateMsDurationInSegment(currentItem.StartBeat.ToFloat(), nextItem.StartBeat.ToFloat(), currentItem.Bpm);
+                double timeDuration = CalculateMsDurationInSegment(currentItem.StartBeat.ToDouble(), nextItem.StartBeat.ToDouble(), currentItem.Bpm);
 
                 // 如果给定的时间在这个段内
                 if (remainingMs < timeDuration)
                 {
                     // 计算这段时间对应的拍数：时间(s) * (BPM / 60)
-                    float beatInSegment = (remainingMs / 1000f) * (currentItem.Bpm / 60f);
-                    return currentItem.StartBeat.ToFloat() + beatInSegment;
+                    double beatInSegment = (remainingMs / 1000f) * (currentItem.Bpm / 60f);
+                    return currentItem.StartBeat.ToDouble() + beatInSegment;
                 }
 
                 // 如果时间超过了这个段，减去这段的时间，继续检查下一段
@@ -240,9 +240,9 @@ namespace CyanStars.Chart
 
             // 如果遍历完还没有返回，说明时间落在了最后一个 BPM 组（无限延伸）
             var lastItem = datas[datas.Count - 1];
-            float finalBeatInSegment = (remainingMs / 1000f) * (lastItem.Bpm / 60f);
+            double finalBeatInSegment = (remainingMs / 1000f) * (lastItem.Bpm / 60f);
 
-            return lastItem.StartBeat.ToFloat() + finalBeatInSegment;
+            return lastItem.StartBeat.ToDouble() + finalBeatInSegment;
         }
 
 
@@ -258,7 +258,7 @@ namespace CyanStars.Chart
             if (Validate(datas) != BpmValidationStatus.Valid)
                 throw new Exception("给定的 Bpm List 不合法！");
 
-            if (newItem.StartBeat.ToFloat() <= 0f)
+            if (newItem.StartBeat.ToDouble() <= 0f)
                 return false;
 
             if (datas.Count == 1)
@@ -269,12 +269,12 @@ namespace CyanStars.Chart
 
             for (int i = 0; i < datas.Count - 2; i++)
             {
-                if (Mathf.Approximately(datas[i].StartBeat.ToFloat(), newItem.StartBeat.ToFloat()) ||
-                    Mathf.Approximately(newItem.StartBeat.ToFloat(), datas[i + 1].StartBeat.ToFloat()))
+                if ((datas[i].StartBeat.CompareTo(newItem.StartBeat) == 0) ||
+                    (newItem.StartBeat.CompareTo(datas[i + 1].StartBeat) == 0))
                     return false;
 
-                if (datas[i].StartBeat.ToFloat() < newItem.StartBeat.ToFloat()
-                    && newItem.StartBeat.ToFloat() < datas[i + 1].StartBeat.ToFloat())
+                if (datas[i].StartBeat < newItem.StartBeat
+                    && newItem.StartBeat < datas[i + 1].StartBeat)
                 {
                     datas.Insert(i + 1, newItem);
                     return true;
