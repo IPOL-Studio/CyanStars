@@ -100,10 +100,5 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(_ => ViewModel.ZoomIn())
                 .AddTo(this);
         }
-
-
-        protected override void OnDestroy()
-        {
-        }
     }
 }

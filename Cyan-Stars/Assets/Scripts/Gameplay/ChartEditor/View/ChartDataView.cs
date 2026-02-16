@@ -185,9 +185,5 @@ namespace CyanStars.Gameplay.ChartEditor.View
             null                    => undefinedToggle,
             _ => throw new NotSupportedException()
         };
-
-        protected override void OnDestroy()
-        {
-        }
     }
 }

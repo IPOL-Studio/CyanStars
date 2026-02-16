@@ -67,7 +67,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
             base.Bind(targetViewModel);
 
             ViewModel.ContentAddHeight
-                .Subscribe(addHeight => contentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, (float)(viewportRect.rect.height + addHeight)))
+                .Subscribe(addHeight =>
+                    {
+                        var verticalNormalizedPosition = scrollRect.verticalNormalizedPosition;
+                        contentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, (float)(viewportRect.rect.height + addHeight));
+                        scrollRect.verticalNormalizedPosition = verticalNormalizedPosition;
+                    }
+                )
                 .AddTo(this);
 
             // 1. 位置线逻辑
@@ -449,7 +455,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
         }
 
-        protected override void OnDestroy()
+        protected void OnDestroy()
         {
             Cts.Cancel();
             Cts.Dispose();

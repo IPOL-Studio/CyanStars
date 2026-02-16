@@ -55,9 +55,5 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 ViewModel.OnLeftClick();
             }
         }
-
-        protected override void OnDestroy()
-        {
-        }
     }
 }

@@ -330,9 +330,5 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 LayoutRebuilder.ForceRebuildLayoutImmediate(staffsContentFrameRectTransform);
             }
         }
-
-        protected override void OnDestroy()
-        {
-        }
     }
 }

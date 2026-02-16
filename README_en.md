@@ -12,13 +12,9 @@ CyanStars is a fan-made, non-commercial rhythm game about Chinese Virtual Singer
 
 ## Contribute to the Development
 
-If you'd like to contribute to our project, please spend a moment to read through the [Contribution Guidelines](CONTRIBUTING.md), It will be really appreciated!
+Thank you for participating in the contribution of code/game content/translation. Please read the [Contribution Guide](CONTRIBUTING.md)!
 
-Please use the specifications outlined in [LICENSE](LICENSE) and [NOTICE](NOTICE) for source code and multimedia files.
-
-If you wish to publish modified game files, please clearly state that "This game has been modified and is not the original IPOL version" to differentiate your work from what is released in this repository.The modified game files must not be registered for copyright in any country/region.
-
-Are you able to participate in the translation of the project and documents?Please assist us on [Crowdin](https://crowdin.com/project/cyanstars) or submit via PR.
+Please use the specifications outlined in [LICENSE](LICENSE) for source code and multimedia files.
 
 ## Related Links
 
@@ -29,8 +25,6 @@ Community contributors/included tracks/privacy policy, etc., can be found in the
 Multimedia files are referenced as submodules at the path `Cyan-Stars/Assets/CysMultimediaAssets`. Please refer to the submodule repository documentation for contribution guidelines regarding multimedia files.
 
 - Attachment: [Multimedia Assets Repository](https://github.com/IPOL-Studio/CyanStarsMultimediaAssets)
-
-Do you have expertise in art/music/charting/programming/translation, etc., and are interested in participating in our internal discussions?Click [here](http://chenluan.mikecrm.com/JeKq3DU) to apply and join us.
 
 Player's communication QQ group: `827556233`
 

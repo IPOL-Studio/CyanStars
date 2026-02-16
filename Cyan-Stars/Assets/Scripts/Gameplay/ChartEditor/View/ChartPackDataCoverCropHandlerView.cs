@@ -55,10 +55,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.OnHandlerDragging(type, new Vector2(normalizedX, normalizedY));
         }
 
-        protected override void OnDestroy()
-        {
-        }
-
         public void OnBeginDrag(PointerEventData _)
         {
             ViewModel?.RecordCropData();

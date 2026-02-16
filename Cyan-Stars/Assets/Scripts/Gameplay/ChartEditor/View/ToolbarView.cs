@@ -50,10 +50,5 @@ namespace CyanStars.Gameplay.ChartEditor.View
             public EditToolType ToolType;
             public Toggle ToolToggle = null!;
         }
-
-
-        protected override void OnDestroy()
-        {
-        }
     }
 }

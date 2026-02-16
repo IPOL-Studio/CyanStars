@@ -49,9 +49,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
         }
 
-        protected override void OnDestroy()
-        {
-            // ISynchronizedView 会自动在 View 卸载时释放对应的 ViewModel，无需手动 ViewModel.Dispose();
-        }
+        // ISynchronizedView 会自动在 View 卸载时释放对应的 ViewModel，无需手动 ViewModel.Dispose();
     }
 }

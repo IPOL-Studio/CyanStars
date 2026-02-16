@@ -15,8 +15,5 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             ViewModel = targetViewModel;
         }
-
-        // 提醒子类强制实现 Destroy，主要用于取消订阅关系
-        protected abstract void OnDestroy();
     }
 }

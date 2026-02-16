@@ -43,9 +43,5 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(ViewModel.OnToggleChanged)
                 .AddTo(this);
         }
-
-        protected override void OnDestroy()
-        {
-        }
     }
 }
