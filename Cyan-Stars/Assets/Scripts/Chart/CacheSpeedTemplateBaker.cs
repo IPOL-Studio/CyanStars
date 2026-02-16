@@ -65,7 +65,7 @@ namespace CyanStars.Chart
                 return false;
             }
 
-            if (speedTemplateData.Type == SpeedGroupType.Absolute)
+            if (speedTemplateData.Type == SpeedTemplateType.Absolute)
             {
                 playerSpeed = 1;
             }
@@ -183,7 +183,7 @@ namespace CyanStars.Chart
                 return 0.0;
             }
 
-            if (speedTemplateData.Type == SpeedGroupType.Absolute)
+            if (speedTemplateData.Type == SpeedTemplateType.Absolute)
             {
                 playerSpeed = 1f;
             }
