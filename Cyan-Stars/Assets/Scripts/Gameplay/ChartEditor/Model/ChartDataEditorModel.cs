@@ -13,7 +13,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
     {
         private readonly ChartData ChartData;
 
-        public readonly ReactiveProperty<int> ReadyBeat;
+        public readonly ReactiveProperty<uint> ReadyBeat;
         public readonly ObservableList<SpeedTemplateData> SpeedGroupDatas;
         public readonly ObservableList<BaseChartNoteData> Notes;
         public readonly ObservableList<ChartTrackData> TrackDatas;
@@ -22,7 +22,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         {
             ChartData = chartData;
 
-            ReadyBeat = new ReactiveProperty<int>(chartData.ReadyBeat);
+            ReadyBeat = new ReactiveProperty<uint>(chartData.ReadyBeat);
             SpeedGroupDatas = new ObservableList<SpeedTemplateData>(chartData.SpeedGroupDatas);
             Notes = new ObservableList<BaseChartNoteData>(chartData.Notes);
             TrackDatas = new ObservableList<ChartTrackData>(chartData.TrackDatas);

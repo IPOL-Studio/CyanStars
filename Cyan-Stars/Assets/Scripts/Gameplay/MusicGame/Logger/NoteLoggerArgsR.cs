@@ -20,7 +20,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public string GetJudgeMessage()
         {
-            return $"{noteData.Type}音符{evaluate}, 位置{noteData.Pos}, 判定拍{noteData.JudgeBeat.ToFloat()}";
+            return $"{noteData.Type}音符{evaluate}, 位置{noteData.Pos}, 判定拍{noteData.JudgeBeat.ToDouble()}";
         }
     }
 
@@ -38,7 +38,7 @@ namespace CyanStars.Gameplay.MusicGame
         public string GetJudgeMessage()
         {
             return
-                $"Hold头判{evaluate}, 位置{noteData.Pos}, 判定拍{noteData.JudgeBeat.ToFloat()}, 结束拍{noteData.EndJudgeBeat.ToFloat()}";
+                $"Hold头判{evaluate}, 位置{noteData.Pos}, 判定拍{noteData.JudgeBeat.ToDouble()}, 结束拍{noteData.EndJudgeBeat.ToDouble()}";
         }
     }
 
@@ -60,7 +60,7 @@ namespace CyanStars.Gameplay.MusicGame
         public string GetJudgeMessage()
         {
             return
-                $"Hold尾判{evaluate}, 位置{noteData.Pos}, 判定拍{noteData.JudgeBeat.ToFloat()}, 结束拍{noteData.EndJudgeBeat.ToFloat()}, 按住时间{holdTime}, 按住比例{holdRatio}";
+                $"Hold尾判{evaluate}, 位置{noteData.Pos}, 判定拍{noteData.JudgeBeat.ToDouble()}, 结束拍{noteData.EndJudgeBeat.ToDouble()}, 按住时间{holdTime}, 按住比例{holdRatio}";
         }
     }
 
@@ -77,7 +77,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public string GetJudgeMessage()
         {
-            return $"{noteData.Type}音符{evaluate}, 位置{noteData.Pos}, 判定拍{noteData.JudgeBeat.ToFloat()}";
+            return $"{noteData.Type}音符{evaluate}, 位置{noteData.Pos}, 判定拍{noteData.JudgeBeat.ToDouble()}";
         }
     }
 
@@ -94,7 +94,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public string GetJudgeMessage()
         {
-            return $"Click头判{evaluate}, 位置{noteData.Pos}, 判定拍{noteData.JudgeBeat.ToFloat()}";
+            return $"Click头判{evaluate}, 位置{noteData.Pos}, 判定拍{noteData.JudgeBeat.ToDouble()}";
         }
     }
 
@@ -113,7 +113,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public string GetJudgeMessage()
         {
-            return $"Click尾判{evaluate}, 位置{noteData.Pos}, 判定拍{noteData.JudgeBeat.ToFloat()}, 按住时间{holdTime}";
+            return $"Click尾判{evaluate}, 位置{noteData.Pos}, 判定拍{noteData.JudgeBeat.ToDouble()}, 按住时间{holdTime}";
         }
     }
 
@@ -130,7 +130,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public string GetJudgeMessage()
         {
-            return $"{noteData.Type}音符{evaluate}, 位置{noteData.BreakNotePos}, 判定拍{noteData.JudgeBeat.ToFloat()}";
+            return $"{noteData.Type}音符{evaluate}, 位置{noteData.BreakNotePos}, 判定拍{noteData.JudgeBeat.ToDouble()}";
         }
     }
 }

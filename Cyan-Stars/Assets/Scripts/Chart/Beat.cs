@@ -78,14 +78,14 @@ namespace CyanStars.Chart
 
 
         /// <summary>将 Beat 转换为小数表示的拍子</summary>
-        public float ToFloat()
+        public double ToDouble()
         {
             if (Denominator == 0)
             {
                 return IntegerPart;
             }
 
-            return IntegerPart + (float)Numerator / Denominator;
+            return IntegerPart + Numerator / Denominator;
         }
 
 

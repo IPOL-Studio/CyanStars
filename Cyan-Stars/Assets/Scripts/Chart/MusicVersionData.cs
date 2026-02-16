@@ -59,7 +59,7 @@ namespace CyanStars.Chart
             VersionTitle = editorData.VersionTitle.CurrentValue;
             AudioFilePath = editorData.AudioFilePath.CurrentValue;
             Offset = editorData.Offset.CurrentValue;
-            Staffs = new Dictionary<string, List<string>>();
+            Staffs = new Dictionary<string, List<string>>(editorData.Staffs.Count);
             foreach (var staffKvp in editorData.Staffs)
                 Staffs.Add(staffKvp.Key, staffKvp.Value);
         }
