@@ -18,7 +18,7 @@ namespace CyanStars.Chart
 
         /// <summary>变速组</summary>
         /// <remarks>必定存在一个相对 1 速的变速组，不可编辑或删除</remarks>
-        public List<SpeedTemplateData> SpeedGroupDatas;
+        public List<SpeedTemplateData> SpeedTemplateDatas;
 
         /// <summary>谱面音符数据</summary>
         public List<BaseChartNoteData> Notes;
@@ -33,23 +33,11 @@ namespace CyanStars.Chart
         /// 构造函数
         /// </summary>
         [JsonConstructor]
-        public ChartData(uint readyBeat = 4, List<SpeedTemplateData>? speedGroupDatas = null,
+        public ChartData(uint readyBeat = 4, List<SpeedTemplateData>? speedTemplateDatas = null,
                          List<BaseChartNoteData>? notes = null, List<ChartTrackData>? trackDatas = null)
         {
             ReadyBeat = readyBeat;
-            SpeedGroupDatas = speedGroupDatas ??
-                              new List<SpeedTemplateData>()
-                              {
-                                  new SpeedTemplateData(SpeedGroupType.Relative,
-                                      new BezierCurves(
-                                          new BezierPoint(
-                                              new BezierPointPos(0, 1f),
-                                              new BezierPointPos(0, 1f),
-                                              new BezierPointPos(0, 1f)
-                                          )
-                                      )
-                                  )
-                              };
+            SpeedTemplateDatas = speedTemplateDatas ?? new List<SpeedTemplateData>();
             Notes = notes ?? new List<BaseChartNoteData>();
             TrackDatas = trackDatas ?? new List<ChartTrackData>();
         }
@@ -60,9 +48,9 @@ namespace CyanStars.Chart
         public ChartData(ChartDataEditorModel editorData)
         {
             ReadyBeat = editorData.ReadyBeat.CurrentValue;
-            SpeedGroupDatas = new List<SpeedTemplateData>();
-            foreach (var speedTemplate in editorData.SpeedGroupDatas)
-                SpeedGroupDatas.Add(speedTemplate);
+            SpeedTemplateDatas = new List<SpeedTemplateData>();
+            foreach (var speedTemplate in editorData.SpeedTemplateDatas)
+                SpeedTemplateDatas.Add(speedTemplate);
             Notes = new List<BaseChartNoteData>();
             foreach (var note in editorData.Notes)
                 Notes.Add(note);

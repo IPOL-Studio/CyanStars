@@ -3,7 +3,7 @@ using CyanStars.Chart.BezierCurve;
 
 namespace CyanStars.Chart
 {
-    public enum SpeedGroupType
+    public enum SpeedTemplateType
     {
         /// <summary>相对速度</summary>
         /// <remarks>最终速度 = 谱师设定速度 * 玩家设定速度，用于常规变速</remarks>
@@ -22,7 +22,7 @@ namespace CyanStars.Chart
         public string Name;
 
         /// <summary>变速组类型</summary>
-        public SpeedGroupType Type;
+        public SpeedTemplateType Type;
 
         /// <summary>贝塞尔曲线</summary>
         /// <remarks>
@@ -31,7 +31,8 @@ namespace CyanStars.Chart
         /// </remarks>
         public BezierCurves BezierCurves;
 
-        public SpeedTemplateData(SpeedGroupType type, BezierCurves bezierCurve = null)
+
+        public SpeedTemplateData(SpeedTemplateType type, BezierCurves bezierCurve = null)
         {
             Name = "";
             Type = type;
