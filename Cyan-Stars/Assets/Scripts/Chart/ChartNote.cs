@@ -24,13 +24,13 @@ namespace CyanStars.Chart
         /// 引用的变速组下标
         /// </summary>
         /// <remarks>从 0 开始，如果变速组在制谱器内发生变化，刷新所有 Note 的引用</remarks>
-        public int SpeedGroupIndex;
+        public int SpeedTemplateIndex;
 
         /// <summary>
         /// 音符的变速 Offset，用于协调多个音符的整体变速效果
         /// TODO: 实装计算逻辑
         /// </summary>
-        public int SpeedGroupOffset = 0;
+        public int SpeedTemplateOffset = 0;
 
         /// <summary>正解提示音</summary>
         /// <remarks>
@@ -70,8 +70,8 @@ namespace CyanStars.Chart
 
         public BaseChartNoteData(NoteType type,
                                  Beat judgeBeat,
-                                 int speedGroupIndex = 0,
-                                 int speedGroupOffset = 0,
+                                 int speedTemplateIndex = 0,
+                                 int speedTemplateOffset = 0,
                                  string correctAudioName = null,
                                  string hitAudioName = null,
                                  bool judgeAble = true,
@@ -79,8 +79,8 @@ namespace CyanStars.Chart
         {
             Type = type;
             JudgeBeat = judgeBeat;
-            SpeedGroupIndex = speedGroupIndex;
-            SpeedGroupOffset = speedGroupOffset;
+            SpeedTemplateIndex = speedTemplateIndex;
+            SpeedTemplateOffset = speedTemplateOffset;
             CorrectAudioName = correctAudioName;
             HitAudioName = hitAudioName;
             JudgeAble = judgeAble;
@@ -94,13 +94,13 @@ namespace CyanStars.Chart
 
         public TapChartNoteData(float pos,
                                 Beat judgeBeat,
-                                int speedGroupIndex = 0,
-                                int speedGroupOffset = 0,
+                                int speedTemplateIndex = 0,
+                                int speedTemplateOffset = 0,
                                 string correctAudioName = null,
                                 string hitAudioName = null,
                                 bool judgeAble = true,
                                 bool viewAble = true)
-            : base(NoteType.Tap, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
+            : base(NoteType.Tap, judgeBeat, speedTemplateIndex, speedTemplateOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
         {
             Pos = pos;
         }
@@ -113,7 +113,7 @@ namespace CyanStars.Chart
         /// <summary>
         /// 音符尾引用的变速组
         /// </summary>
-        public int HoldEndSpeedGroupIndex;
+        public int HoldEndSpeedTemplateIndex;
 
 
         /// <summary>长按音符结束判定拍</summary>
@@ -123,16 +123,16 @@ namespace CyanStars.Chart
         public HoldChartNoteData(float pos,
                                  Beat judgeBeat,
                                  Beat endJudgeBeat,
-                                 int speedGroupIndex = 0,
-                                 int holdEndSpeedGroupIndex = 0,
-                                 int speedGroupOffset = 0,
+                                 int speedTemplateIndex = 0,
+                                 int holdEndSpeedTemplateIndex = 0,
+                                 int speedTemplateOffset = 0,
                                  string correctAudioName = null,
                                  string hitAudioName = null,
                                  bool judgeAble = true,
                                  bool viewAble = true)
-            : base(NoteType.Hold, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
+            : base(NoteType.Hold, judgeBeat, speedTemplateIndex, speedTemplateOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
         {
-            HoldEndSpeedGroupIndex = holdEndSpeedGroupIndex;
+            HoldEndSpeedTemplateIndex = holdEndSpeedTemplateIndex;
             EndJudgeBeat = endJudgeBeat;
             Pos = pos;
         }
@@ -144,13 +144,13 @@ namespace CyanStars.Chart
 
         public DragChartNoteData(float pos,
                                  Beat judgeBeat,
-                                 int speedGroupIndex = 0,
-                                 int speedGroupOffset = 0,
+                                 int speedTemplateIndex = 0,
+                                 int speedTemplateOffset = 0,
                                  string correctAudioName = null,
                                  string hitAudioName = null,
                                  bool judgeAble = true,
                                  bool viewAble = true)
-            : base(NoteType.Drag, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
+            : base(NoteType.Drag, judgeBeat, speedTemplateIndex, speedTemplateOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
         {
             Pos = pos;
         }
@@ -162,13 +162,13 @@ namespace CyanStars.Chart
 
         public ClickChartNoteData(float pos,
                                   Beat judgeBeat,
-                                  int speedGroupIndex = 0,
-                                  int speedGroupOffset = 0,
+                                  int speedTemplateIndex = 0,
+                                  int speedTemplateOffset = 0,
                                   string correctAudioName = null,
                                   string hitAudioName = null,
                                   bool judgeAble = true,
                                   bool viewAble = true)
-            : base(NoteType.Click, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
+            : base(NoteType.Click, judgeBeat, speedTemplateIndex, speedTemplateOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
         {
             Pos = pos;
         }
@@ -181,13 +181,13 @@ namespace CyanStars.Chart
 
         public BreakChartNoteData(BreakNotePos breakNotePos,
                                   Beat judgeBeat,
-                                  int speedGroupIndex = 0,
-                                  int speedGroupOffset = 0,
+                                  int speedTemplateIndex = 0,
+                                  int speedTemplateOffset = 0,
                                   string correctAudioName = null,
                                   string hitAudioName = null,
                                   bool judgeAble = true,
                                   bool viewAble = true)
-            : base(NoteType.Break, judgeBeat, speedGroupIndex, speedGroupOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
+            : base(NoteType.Break, judgeBeat, speedTemplateIndex, speedTemplateOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
         {
             BreakNotePos = breakNotePos;
         }
