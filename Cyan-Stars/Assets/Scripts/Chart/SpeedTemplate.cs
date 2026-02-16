@@ -27,7 +27,7 @@ namespace CyanStars.Chart
 
 
         /// <summary>
-        /// 构造实例并生成速度和距离采样点
+        /// 构造实例并烘焙速度和距离采样点
         /// </summary>
         public SpeedTemplate(SpeedTemplateData speedTemplateData, float playerSpeed = 1f) // TODO: 外部传入玩家速度
         {
@@ -37,24 +37,23 @@ namespace CyanStars.Chart
             }
 
             // 根据持续时间计算采样点数量
-            int length = (int)Mathf.Abs(speedTemplateData.BezierCurve
-                .ControlPoints[speedTemplateData.BezierCurve.ControlPoints.Count - 1].Position.x);
+            int length = Mathf.Abs(speedTemplateData.BezierCurve[^1].PositionPoint.MsTime);
             int count = length / SampleInterval + 1;
 
-            // 生成speedList
+            // 烘焙 speedList
             for (int i = 0; i < count; i++)
             {
-                int time = i * SampleInterval * -1;
-                float speed = speedTemplateData.BezierCurve.GetValue(time) * playerSpeed;
+                int msTime = i * SampleInterval;
+                float speed = speedTemplateData.BezierCurve.GetValue(msTime) * playerSpeed;
                 speedList.Add(speed);
             }
 
-            // 生成distanceList
-            distanceList.Add(0f); // i=0对应logicTimeDistance=0时distance为0
+            // 烘焙 distanceList
+            distanceList.Add(0f); // i=0 对应 logicTimeDistance=0 时 distance=0
             float sumDistance = 0f;
             for (int i = 1; i < count; i++)
             {
-                sumDistance += speedList[i] * SampleInterval / 1000f;
+                sumDistance += (speedList[i - 1] + speedList[i]) * SampleInterval / 1000f; // 取相邻两个速度采样的平均值乘以时间来计算路程
                 distanceList.Add(sumDistance);
             }
         }

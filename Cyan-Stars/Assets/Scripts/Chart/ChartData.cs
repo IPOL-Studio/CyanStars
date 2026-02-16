@@ -37,7 +37,18 @@ namespace CyanStars.Chart
         {
             ReadyBeat = readyBeat;
             SpeedGroupDatas = speedGroupDatas ??
-                              new List<SpeedTemplateData>() { new SpeedTemplateData(SpeedGroupType.Relative, new BezierCurve()) };
+                              new List<SpeedTemplateData>()
+                              {
+                                  new SpeedTemplateData(SpeedGroupType.Relative,
+                                      new BezierCurve(
+                                          new BezierPoint(
+                                              new BezierPointPos(0, 1f),
+                                              new BezierPointPos(0, 1f),
+                                              new BezierPointPos(0, 1f)
+                                          )
+                                      )
+                                  )
+                              };
             Notes = notes ?? new List<BaseChartNoteData>();
             TrackDatas = trackDatas ?? new List<ChartTrackData>();
         }

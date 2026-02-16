@@ -34,7 +34,13 @@ namespace CyanStars.Chart
         {
             Name = "";
             Type = type;
-            BezierCurve = bezierCurve ?? new BezierCurve();
+            BezierCurve = bezierCurve ?? new BezierCurve(
+                new BezierPoint(
+                    new BezierPointPos(0, 1f),
+                    new BezierPointPos(0, 1f),
+                    new BezierPointPos(0, 1f)
+                )
+            );
         }
     }
 }
