@@ -1,6 +1,8 @@
 ﻿#nullable enable
 
+using System;
 using CyanStars.Chart;
+using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using ObservableCollections;
 using R3;
@@ -56,6 +58,47 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public void AddSpeedTemplateData()
         {
             Model.ChartData.CurrentValue.SpeedTemplateDatas.Add(new SpeedTemplateData());
+        }
+
+        public void DeleteSelectedSpeedTemplateData()
+        {
+            if (selectedSpeedTemplateData.CurrentValue == null)
+                throw new Exception("未选中变速模板时不可删除");
+
+            var oldData = selectedSpeedTemplateData.CurrentValue;
+            var oldIndex = Model.ChartData.CurrentValue.SpeedTemplateDatas.IndexOf(oldData);
+
+            CommandStack.ExecuteCommand(
+                () =>
+                {
+                    selectedSpeedTemplateData.Value = null;
+                    Model.ChartData.CurrentValue.SpeedTemplateDatas.Remove(oldData);
+                },
+                () =>
+                {
+                    Model.ChartData.CurrentValue.SpeedTemplateDatas.Insert(oldIndex, oldData);
+                    selectedSpeedTemplateData.Value = oldData;
+                }
+            );
+        }
+
+        public void CloneSelectedSpeedTemplateData()
+        {
+            if (selectedSpeedTemplateData.CurrentValue == null)
+                throw new Exception("未选中变速模板时不可删复制");
+
+            var oldData = selectedSpeedTemplateData.CurrentValue;
+            var newData = new SpeedTemplateData(oldData.Remark, oldData.Type, oldData.BezierCurves);
+            CommandStack.ExecuteCommand(
+                () =>
+                {
+                    Model.ChartData.CurrentValue.SpeedTemplateDatas.Add(newData);
+                }
+                , () =>
+                {
+                    Model.ChartData.CurrentValue.SpeedTemplateDatas.Remove(newData);
+                }
+            );
         }
     }
 }

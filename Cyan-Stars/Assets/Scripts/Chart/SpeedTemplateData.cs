@@ -19,7 +19,7 @@ namespace CyanStars.Chart
     {
         /// <summary>变速组名称</summary>
         /// <remarks>方便谱师识别，相当于备注，没有其他作用</remarks>
-        public string Name;
+        public string Remark;
 
         /// <summary>变速组类型</summary>
         public SpeedTemplateType Type;
@@ -31,10 +31,9 @@ namespace CyanStars.Chart
         /// </remarks>
         public BezierCurves BezierCurves;
 
-
-        public SpeedTemplateData(string name = "新变速模板", SpeedTemplateType type = SpeedTemplateType.Relative, BezierCurves bezierCurve = null)
+        public SpeedTemplateData(string remark = "新变速模板", SpeedTemplateType type = SpeedTemplateType.Relative, BezierCurves bezierCurve = null)
         {
-            Name = name;
+            Remark = remark;
             Type = type;
             BezierCurves = bezierCurve ?? new BezierCurves(
                 new BezierPoint(
