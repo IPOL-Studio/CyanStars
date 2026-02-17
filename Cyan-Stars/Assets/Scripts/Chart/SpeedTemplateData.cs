@@ -32,9 +32,9 @@ namespace CyanStars.Chart
         public BezierCurves BezierCurves;
 
 
-        public SpeedTemplateData(SpeedTemplateType type, BezierCurves bezierCurve = null)
+        public SpeedTemplateData(string name = "新变速模板", SpeedTemplateType type = SpeedTemplateType.Relative, BezierCurves bezierCurve = null)
         {
-            Name = "";
+            Name = name;
             Type = type;
             BezierCurves = bezierCurve ?? new BezierCurves(
                 new BezierPoint(
