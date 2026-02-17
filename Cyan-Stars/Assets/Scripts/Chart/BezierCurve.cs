@@ -54,9 +54,16 @@ namespace CyanStars.Chart
             return GetEnumerator();
         }
 
-        [Obsolete("请使用 TryInsert() 在插入时进行逻辑校验，且 Insert 相比 Add 更符合语义", true)]
+        /// <summary>
+        /// 自动在合适的位置插入贝塞尔点元素
+        /// </summary>
+        /// <exception cref="ArgumentException">元素已存在于列表中、元素位置点与其他位置点 x 值重复、元素控制点 x 值超过前/后一个元素位置点 x 值限制</exception>
         public void Add(BezierPoint item)
         {
+            if (!AddValidate(item, out int index))
+                throw new ArgumentException("无法添加贝塞尔点元素", nameof(item));
+
+            Points.Insert(index, item);
         }
 
         public void Clear()
@@ -91,8 +98,8 @@ namespace CyanStars.Chart
         /// </summary>
         /// <param name="msTime">要查询的时间点，通常应该为正值</param>
         /// <remarks>时间点小于等于 0 时，返回首个贝塞尔点元素的 PositionPoint.Value；超过末个贝塞尔点元素的 PositionPoint.MsTime 时，返回末个贝塞尔点元素的 PositionPoint.Value</remarks>
-        /// <returns></returns>
-        public float GetValue(int msTime)
+        /// <returns>对应的曲线值</returns>
+        public float EvaluateValue(int msTime)
         {
             if (msTime <= 0)
                 return Points[0].PositionPoint.Value;
@@ -146,6 +153,7 @@ namespace CyanStars.Chart
             return value;
         }
 
+        /// <exception cref="NotSupportedException">试图删除首个元素</exception>
         public void RemoveAt(int index)
         {
             if (index == 0)
@@ -154,20 +162,6 @@ namespace CyanStars.Chart
             Points.RemoveAt(index);
         }
 
-        /// <summary>
-        /// 校验传入的贝塞尔点是否合法，校验通过时按照位置点 x 坐标保证顺序插入
-        /// </summary>
-        /// <returns>
-        /// 在以下情况时为 false：元素已存在于列表中、元素位置点与其他位置点 x 值重复、元素控制点 x 值超过前/后一个元素位置点 x 值限制
-        /// </returns>
-        public bool TryInsert(BezierPoint item)
-        {
-            if (!InsertValidate(item, out int index))
-                return false;
-
-            Points.Insert(index, item);
-            return true;
-        }
 
         public bool TryReplace(BezierPoint oldItem, BezierPoint newItem)
         {
@@ -190,7 +184,7 @@ namespace CyanStars.Chart
         /// <param name="item">要插入的贝塞尔点</param>
         /// <param name="index">如果校验通过，建议插入在此下标处</param>
         /// <returns>是否校验通过？在以下情况时为 false：元素已存在于列表中、元素位置点与其他位置点 x 值重复、元素控制点 x 值超过前/后一个元素位置点 x 值限制</returns>
-        private bool InsertValidate(BezierPoint item, out int index)
+        private bool AddValidate(BezierPoint item, out int index)
         {
             index = 0;
 
@@ -255,7 +249,7 @@ namespace CyanStars.Chart
 
 
         /// <summary>
-        /// 二分法查找给定x值在贝塞尔曲线段上的参数t
+        /// 二分法查找给定 x 值在贝塞尔曲线段上的参数 t
         /// </summary>
         private float FindTForX(float x, float p0X, float p1X, float p2X, float p3X)
         {
@@ -286,7 +280,7 @@ namespace CyanStars.Chart
         }
 
         /// <summary>
-        /// 计算一维三次贝塞尔曲线在t处的值
+        /// 计算一维三次贝塞尔曲线在 t 处的值
         /// </summary>
         private float CalculateBezierPoint(float t, float p0, float p1, float p2, float p3)
         {

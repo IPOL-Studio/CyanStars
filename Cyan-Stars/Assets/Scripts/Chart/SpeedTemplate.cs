@@ -44,7 +44,7 @@ namespace CyanStars.Chart
             for (int i = 0; i < count; i++)
             {
                 int msTime = i * SampleInterval;
-                float speed = speedTemplateData.BezierCurve.GetValue(msTime) * playerSpeed;
+                float speed = speedTemplateData.BezierCurve.EvaluateValue(msTime) * playerSpeed;
                 speedList.Add(speed);
             }
 
