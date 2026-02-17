@@ -34,7 +34,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(index => countText.text = $"#{index + 1}")
                 .AddTo(this);
             ViewModel.PropertyUpdatedSubject
-                .Subscribe(data => remarkText.text = data.Name)
+                .Subscribe(data => remarkText.text = data.Remark)
                 .AddTo(this);
 
             itemButton.OnClickAsObservable()
