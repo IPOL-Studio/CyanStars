@@ -111,13 +111,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
             for (int i = 0; i < tempBakedSpeedList.Count; i++)
             {
                 speedPoints[i] = new Vector2(
-                    i * SpeedTemplateHelper.SampleIntervalMsTime / scaleX - offsetX,
-                    tempBakedSpeedList[i] / scaleY - offsetY
+                    (i * SpeedTemplateHelper.SampleIntervalMsTime - offsetX) / scaleX,
+                    (tempBakedSpeedList[i] - offsetY) / scaleY
                 );
 
                 distancePoints[i] = new Vector2(
-                    i * SpeedTemplateHelper.SampleIntervalMsTime / scaleX - offsetX,
-                    tempBakedDistanceList[i] / scaleY - offsetY
+                    (i * SpeedTemplateHelper.SampleIntervalMsTime - offsetX) / scaleX,
+                    (tempBakedDistanceList[i] - offsetY) / scaleY
                 );
             }
 
