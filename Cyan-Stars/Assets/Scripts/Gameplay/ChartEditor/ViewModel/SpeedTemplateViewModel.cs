@@ -38,6 +38,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
         }
 
+        /// <summary>
+        /// 工厂方法：实例化新的 SpeedTemplateCurveFrameViewModel 子 VM
+        /// </summary>
+        public SpeedTemplateCurveFrameViewModel NewCurveFrameViewModel()
+        {
+            return new SpeedTemplateCurveFrameViewModel(Model, this);
+        }
+
         private void RefreshAllIndices()
         {
             int index = 0;
