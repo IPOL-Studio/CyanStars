@@ -4,6 +4,7 @@ using System;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
+using CyanStars.Utils.SpeedTemplate;
 using ObservableCollections;
 using R3;
 
@@ -65,7 +66,26 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void AddSpeedTemplateData()
         {
-            Model.ChartData.CurrentValue.SpeedTemplateDatas.Add(new SpeedTemplateData());
+            BezierCurves bezierCurves = new BezierCurves(
+                new BezierPoint(
+                    new BezierPointPos(0, 0),
+                    new BezierPointPos(0, 0),
+                    new BezierPointPos(0, 0)
+                )
+            )
+            {
+                new BezierPoint(
+                    new BezierPointPos(500, 100),
+                    new BezierPointPos(200, 100),
+                    new BezierPointPos(800, 100)
+                ),
+                new BezierPoint(
+                    new BezierPointPos(1000, 0),
+                    new BezierPointPos(1000, 0),
+                    new BezierPointPos(1000, 0)
+                )
+            };
+            Model.ChartData.CurrentValue.SpeedTemplateDatas.Add(new SpeedTemplateData(bezierCurve: bezierCurves));
         }
 
         public void DeleteSelectedSpeedTemplateData()

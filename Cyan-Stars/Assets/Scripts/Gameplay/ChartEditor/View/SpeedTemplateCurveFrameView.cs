@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using CyanStars.Utils.SpeedTemplate;
+using R3;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
 
@@ -17,61 +18,118 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private UILineRenderer distanceCurveRenderer = null!;
 
+        [SerializeField]
+        private RangeSlider verticalRangeSliderFrame = null!;
 
-        // 用于控制当前编辑区域的位置和缩放
-        private const float DefaultMinX = 0f;
-        private const float DefaultMaxX = 1000f;
-        private const float DefaultMinY = -200f;
-        private const float DefaultMaxY = 200f;
+        [SerializeField]
+        private RangeSlider horizontalRangeSliderFrame = null!;
 
-        private float viewportMinX = DefaultMinX;
-        private float viewportMaxX = DefaultMaxX;
-        private float viewportMinY = DefaultMinY;
-        private float viewportMaxY = DefaultMaxY;
 
-        private float OffsetX => (viewportMaxX + viewportMinX) / 2f - (DefaultMaxX + DefaultMinX) / 2f;
-        private float OffsetY => (viewportMaxY + viewportMinY) / 2f - (DefaultMaxY + DefaultMinY) / 2f;
-        private float ScaleX => (viewportMaxX - viewportMinX) / (DefaultMaxX - DefaultMinX);
-        private float ScaleY => (viewportMaxY - viewportMinY) / (DefaultMaxY - DefaultMinY);
+        private const float DefaultViewportX = 1000f;
+        private const float DefaultViewportY = 400f;
+
+        private float scaleX = 1f;
+        private float scaleY = 1f;
+        private float offsetX = 0f;
+        private float offsetY = 0f;
+
+        // 缓存的从已烘焙的坐标，当 x 视界大小变化或视界内贝塞尔点属性变化时需要重新烘焙
+        // 视界左侧之外的曲线不会参与此处烘焙
+        private List<float> tempBakedSpeedList = new List<float>();
+        private List<float> tempBakedDistanceList = new List<float>();
 
 
         public override void Bind(SpeedTemplateCurveFrameViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
 
-            BezierCurve bezierCurve = new BezierCurve(
-                new BezierPoint(
-                    new BezierPointPos(0, 0),
-                    new BezierPointPos(0, 0),
-                    new BezierPointPos(0, 0)
-                )
-            )
-            {
-                new BezierPoint(
-                    new BezierPointPos(500, 100),
-                    new BezierPointPos(200, 100),
-                    new BezierPointPos(800, 100)
-                ),
-                new BezierPoint(
-                    new BezierPointPos(1000, 0),
-                    new BezierPointPos(1000, 0),
-                    new BezierPointPos(1000, 0)
-                )
-            };
+            verticalRangeSliderFrame.OnValueChanged.AddListener(OnVerticalChanged);
+            horizontalRangeSliderFrame.OnValueChanged.AddListener(OnHorizontalChanged);
 
-            var std = new SpeedTemplateData(bezierCurve: bezierCurve);
-            SpeedTemplateHelper.Bake(std, 1f, out List<float> speedList, out List<float> distanceList);
+            // 当选择了新的变速模板，或贝塞尔曲线内部数据变化时，重新烘焙并重绘曲线
+            Observable.Merge(
+                    ViewModel.SelectedSpeedTemplateData
+                        .Select(speedTemplate => speedTemplate?.BezierCurve),
+                    ViewModel.SelectedBezierCurvePropertyUpdatedSubject
+                        .Select(data => (BezierCurve?)data)
+                )
+                .Subscribe(data =>
+                    {
+                        if (data == null || ViewModel.SelectedSpeedTemplateData.CurrentValue == null)
+                            return;
 
-            Vector2[] speedPoints = new Vector2[speedList.Count - 1];
-            Vector2[] distancePoints = new Vector2[distanceList.Count - 1];
-            for (int i = 0; i < distanceList.Count - 1; i++)
+                        SpeedTemplateHelper.Bake(
+                            ViewModel.SelectedSpeedTemplateData.CurrentValue,
+                            1f,
+                            (int)horizontalRangeSliderFrame.HighValue,
+                            out tempBakedSpeedList,
+                            out tempBakedDistanceList
+                        );
+
+                        DrawCurve();
+                    }
+                )
+                .AddTo(this);
+        }
+
+
+        private void OnVerticalChanged(float lowY, float highY)
+        {
+            scaleY = (highY - lowY) / DefaultViewportY;
+            offsetY = (highY + lowY) / 2f;
+            DrawCurve();
+        }
+
+        private void OnHorizontalChanged(float lowX, float highX)
+        {
+            if (ViewModel.SelectedSpeedTemplateData.CurrentValue == null)
+                return;
+
+            SpeedTemplateHelper.Bake(
+                ViewModel.SelectedSpeedTemplateData.CurrentValue,
+                1f,
+                (int)horizontalRangeSliderFrame.HighValue,
+                out tempBakedSpeedList,
+                out tempBakedDistanceList
+            );
+
+            scaleX = (highX - lowX) / DefaultViewportX;
+            offsetX = lowX;
+
+            DrawCurve();
+        }
+
+
+        /// <summary>
+        /// 根据已烘焙的曲线列表来绘制曲线
+        /// </summary>
+        private void DrawCurve()
+        {
+            Vector2[] speedPoints = new Vector2[tempBakedSpeedList.Count];
+            Vector2[] distancePoints = new Vector2[tempBakedDistanceList.Count];
+
+            for (int i = 0; i < tempBakedSpeedList.Count; i++)
             {
-                speedPoints[i] = new Vector2(i * SpeedTemplateHelper.SampleIntervalMs, speedList[i]);
-                distancePoints[i] = new Vector2(i * SpeedTemplateHelper.SampleIntervalMs, distanceList[i]);
+                speedPoints[i] = new Vector2(
+                    i * SpeedTemplateHelper.SampleIntervalMsTime / scaleX - offsetX,
+                    tempBakedSpeedList[i] / scaleY - offsetY
+                );
+
+                distancePoints[i] = new Vector2(
+                    i * SpeedTemplateHelper.SampleIntervalMsTime / scaleX - offsetX,
+                    tempBakedDistanceList[i] / scaleY - offsetY
+                );
             }
 
             speedCurveRenderer.Points = speedPoints;
             distanceCurveRenderer.Points = distancePoints;
+        }
+
+
+        private void OnDestroy()
+        {
+            verticalRangeSliderFrame.OnValueChanged.RemoveListener(OnVerticalChanged);
+            horizontalRangeSliderFrame.OnValueChanged.RemoveListener(OnHorizontalChanged);
         }
     }
 }
