@@ -13,6 +13,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
     public class SpeedTemplateView : BaseView<SpeedTemplateViewModel>
     {
         [SerializeField]
+        private SpeedTemplateCurveFrameView speedTemplateCurveFrameView = null!;
+
+
+        [SerializeField]
         private Canvas canvas = null!;
 
         [SerializeField]
@@ -49,6 +53,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         public override void Bind(SpeedTemplateViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
+            speedTemplateCurveFrameView.Bind(ViewModel.NewCurveFrameViewModel());
 
             closeCanvasButton.OnClickAsObservable()
                 .Subscribe(_ => canvas.enabled = false)
