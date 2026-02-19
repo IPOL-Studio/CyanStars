@@ -17,7 +17,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         /// <summary>
         /// 选中的变速模板中的贝塞尔曲线数据发生了变化
         /// </summary>
-        public Subject<BezierCurve> SelectedBezierCurvePropertyUpdatedSubject = new();
+        public Subject<BezierCurves> SelectedBezierCurvePropertyUpdatedSubject = new();
 
 
         /// <summary>

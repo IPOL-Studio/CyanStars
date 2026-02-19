@@ -85,7 +85,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     new BezierPointPos(1000, 0)
                 )
             };
-            Model.ChartData.CurrentValue.SpeedTemplateDatas.Add(new SpeedTemplateData(bezierCurve: bezierCurves));
+            Model.ChartData.CurrentValue.SpeedTemplateDatas.Add(new SpeedTemplateData(bezierCurves: bezierCurves));
         }
 
         public void DeleteSelectedSpeedTemplateData()
