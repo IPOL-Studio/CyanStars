@@ -5,12 +5,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CyanStars.Chart
+namespace CyanStars.Utils.SpeedTemplate
 {
     /// <summary>
     /// 用于变速模板的贝塞尔曲线组。对于任意给定的时间(x)，返回唯一的瞬时速度(y)
     /// </summary>
-    public class BezierCurve : ICollection<BezierPoint>
+    /// <remarks>整条曲线是由多条首尾相连的三次贝塞尔曲线构成的，整条曲线在 x 轴上连续单调递增的，意味着每个 x 都有且仅有一个 y</remarks>
+    public class BezierCurves : ICollection<BezierPoint>
     {
         // 二分法根据 x 查找 t 时的深度和精度
         private const int MaxIterations = 20; // 查找深度
@@ -36,7 +37,7 @@ namespace CyanStars.Chart
         /// 实例化贝塞尔曲线组
         /// </summary>
         /// <param name="firstBezierPoint">注意：首个元素的 PositionPoint.MsTime 应该等于 0</param>
-        public BezierCurve(BezierPoint firstBezierPoint)
+        public BezierCurves(BezierPoint firstBezierPoint)
         {
             if (firstBezierPoint.PositionPoint.MsTime != 0)
                 throw new ArgumentOutOfRangeException(nameof(firstBezierPoint.PositionPoint.MsTime), "首个元素的 PositionPoint.MsTime 应该等于 0");
@@ -142,7 +143,7 @@ namespace CyanStars.Chart
             );
 
             // 根据 t 计算 Value
-            float value = CalculateBezierPoint(
+            float value = CalculateValueForT(
                 t,
                 startNode.PositionPoint.Value,
                 startNode.RightControlPoint.Value,
@@ -178,6 +179,7 @@ namespace CyanStars.Chart
             return true;
         }
 
+
         /// <summary>
         /// 校验给定的贝塞尔点能否插入到列表内
         /// </summary>
@@ -205,7 +207,7 @@ namespace CyanStars.Chart
             // 除非插入在列表头部，否则需要校验左侧控制点是否超过上一个元素位置点&位置点是否超过上个元素右侧控制点
             if (index != 0)
             {
-                if (!(Points[index - 1].PositionPoint.MsTime < item.LeftControlPoint.MsTime &&
+                if (!(Points[index - 1].PositionPoint.MsTime <= item.LeftControlPoint.MsTime &&
                       Points[index - 1].RightControlPoint.MsTime <= item.PositionPoint.MsTime))
                     return false;
             }
@@ -213,7 +215,7 @@ namespace CyanStars.Chart
             // 除非插入在列表尾部，否则需要校验右侧控制点是否超过下一个元素位置点&位置点是否超过下个元素左侧控制点
             if (index != Points.Count)
             {
-                if (!(item.RightControlPoint.MsTime < Points[index].PositionPoint.MsTime &&
+                if (!(item.RightControlPoint.MsTime <= Points[index].PositionPoint.MsTime &&
                       item.PositionPoint.MsTime <= Points[index].LeftControlPoint.MsTime))
                     return false;
             }
@@ -262,7 +264,7 @@ namespace CyanStars.Chart
             do
             {
                 t = (tLow + tHigh) / 2;
-                currentX = CalculateBezierPoint(t, p0X, p1X, p2X, p3X);
+                currentX = CalculateValueForT(t, p0X, p1X, p2X, p3X);
 
                 if (currentX > x)
                 {
@@ -282,7 +284,7 @@ namespace CyanStars.Chart
         /// <summary>
         /// 计算一维三次贝塞尔曲线在 t 处的值
         /// </summary>
-        private float CalculateBezierPoint(float t, float p0, float p1, float p2, float p3)
+        private float CalculateValueForT(float t, float p0, float p1, float p2, float p3)
         {
             float u = 1 - t;
             float tt = t * t;

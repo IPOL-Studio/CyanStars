@@ -37,14 +37,14 @@ namespace CyanStars.Chart
             }
 
             // 根据持续时间计算采样点数量
-            int length = Mathf.Abs(speedTemplateData.BezierCurve[^1].PositionPoint.MsTime);
+            int length = Mathf.Abs(speedTemplateData.BezierCurves[^1].PositionPoint.MsTime);
             int count = length / SampleInterval + 1;
 
             // 烘焙 speedList
             for (int i = 0; i < count; i++)
             {
                 int msTime = i * SampleInterval;
-                float speed = speedTemplateData.BezierCurve.EvaluateValue(msTime) * playerSpeed;
+                float speed = speedTemplateData.BezierCurves.EvaluateValue(msTime) * playerSpeed;
                 speedList.Add(speed);
             }
 
