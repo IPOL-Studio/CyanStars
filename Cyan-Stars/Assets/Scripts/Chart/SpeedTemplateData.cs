@@ -31,11 +31,12 @@ namespace CyanStars.Chart
         /// </remarks>
         public BezierCurves BezierCurves;
 
-        public SpeedTemplateData(string remark = "新变速模板", SpeedTemplateType type = SpeedTemplateType.Relative, BezierCurves bezierCurve = null)
+
+        public SpeedTemplateData(string remark = "新变速模板", SpeedTemplateType type = SpeedTemplateType.Relative, BezierCurves bezierCurves = null)
         {
             Remark = remark;
             Type = type;
-            BezierCurves = bezierCurve ?? new BezierCurves(
+            BezierCurves = bezierCurves ?? new BezierCurves(
                 new BezierPoint(
                     new BezierPointPos(0, 1f),
                     new BezierPointPos(0, 1f),

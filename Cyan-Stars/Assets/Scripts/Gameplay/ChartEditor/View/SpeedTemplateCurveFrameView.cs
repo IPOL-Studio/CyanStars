@@ -49,9 +49,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
             // 当选择了新的变速模板，或贝塞尔曲线内部数据变化时，重新烘焙并重绘曲线
             Observable.Merge(
                     ViewModel.SelectedSpeedTemplateData
-                        .Select(speedTemplate => speedTemplate?.BezierCurve),
+                        .Select(speedTemplate => speedTemplate?.BezierCurves),
                     ViewModel.SelectedBezierCurvePropertyUpdatedSubject
-                        .Select(data => (BezierCurve?)data)
+                        .Select(data => (BezierCurves?)data)
                 )
                 .Subscribe(data =>
                     {
