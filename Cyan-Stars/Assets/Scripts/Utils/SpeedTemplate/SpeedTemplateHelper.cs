@@ -75,16 +75,14 @@ namespace CyanStars.Utils.SpeedTemplate
                     break;
                 }
 
-                // 计算当前曲线段的结束时间对应的采样点下标。
-                // 如果结束时间正好落在采样频率整数倍上，暂不采样此时间点，交给下个曲线段处理。
-                int maxSampleIndex =
-                    speedTemplateData.BezierCurves[curveIndex + 1].PositionPoint.MsTime / SampleIntervalMsTime;
-
                 // 从缓存采样点中拷贝数据
-                for (; sampleIndex <= maxSampleIndex; sampleIndex++)
+                // 如果结束时间正好落在采样频率整数倍上，暂不采样此时间点，交给下个曲线段处理。
+                int nextMsTime = speedTemplateData.BezierCurves[curveIndex + 1].PositionPoint.MsTime;
+                while (sampleIndex * SampleIntervalMsTime < nextMsTime)
                 {
                     speedList.Add(tempedSpeedList[sampleIndex]);
                     distanceList.Add(tempedDisplacementList[sampleIndex]);
+                    sampleIndex++;
                 }
 
                 // 累加位移
@@ -95,13 +93,10 @@ namespace CyanStars.Utils.SpeedTemplate
             // 缓存失效，需要继续迭代计算后续曲线段的 位移-时间 积分，然后根据曲线和积分采样速度和位移
             for (; curveIndex <= speedTemplateData.BezierCurves.Count - 2; curveIndex++)
             {
-                // 计算当前曲线段的结束时间对应的采样点下标。
-                // 如果结束时间正好落在采样频率整数倍上，暂不采样此时间点，交给下个曲线段处理。
-                int maxSampleIndex =
-                    speedTemplateData.BezierCurves[curveIndex + 1].PositionPoint.MsTime / SampleIntervalMsTime;
-
                 // 采样速度和位移
-                for (; sampleIndex < maxSampleIndex; sampleIndex++)
+                // 如果结束时间正好落在采样频率整数倍上，暂不采样此时间点，交给下个曲线段处理。
+                int nextMsTime = speedTemplateData.BezierCurves[curveIndex + 1].PositionPoint.MsTime;
+                while (sampleIndex * SampleIntervalMsTime < nextMsTime)
                 {
                     // 二分法查找 T->t
                     float t = BezierHelper.FindTForX(
@@ -125,31 +120,29 @@ namespace CyanStars.Utils.SpeedTemplate
                     );
 
                     // 积分获取多项式面积，t->D 采样位移，将采样位移与积累位移相加后存入
-                    distanceList.Add(
-                        (float)sumDisplacement +
-                        playerSpeed *
-                        (float)BezierHelper.CalculateBezierArea(
-                            t,
-                            speedTemplateData.BezierCurves[curveIndex].PositionPoint,
-                            speedTemplateData.BezierCurves[curveIndex].RightControlPoint,
-                            speedTemplateData.BezierCurves[curveIndex + 1].LeftControlPoint,
-                            speedTemplateData.BezierCurves[curveIndex + 1].PositionPoint
-                        )
-                    );
-                }
-
-                // 采样结束，将本条曲线 t=1 时的位移累加到缓存
-                double distance =
-                    playerSpeed *
-                    BezierHelper.CalculateBezierArea(
-                        1,
+                    double segmentDistance = BezierHelper.CalculateBezierArea(
+                        t,
                         speedTemplateData.BezierCurves[curveIndex].PositionPoint,
                         speedTemplateData.BezierCurves[curveIndex].RightControlPoint,
                         speedTemplateData.BezierCurves[curveIndex + 1].LeftControlPoint,
                         speedTemplateData.BezierCurves[curveIndex + 1].PositionPoint
                     );
-                displacements.Add(distance);
-                sumDisplacement += distance;
+
+                    distanceList.Add((float)sumDisplacement + (float)segmentDistance * playerSpeed * 0.001f);
+
+                    sampleIndex++;
+                }
+
+                // 采样结束，将本条曲线 t=1 时的位移累加到缓存
+                double distance = BezierHelper.CalculateBezierArea(
+                    1,
+                    speedTemplateData.BezierCurves[curveIndex].PositionPoint,
+                    speedTemplateData.BezierCurves[curveIndex].RightControlPoint,
+                    speedTemplateData.BezierCurves[curveIndex + 1].LeftControlPoint,
+                    speedTemplateData.BezierCurves[curveIndex + 1].PositionPoint
+                );
+                displacements.Add(distance * playerSpeed * 0.001f);
+                sumDisplacement += distance * playerSpeed * 0.001f;
             }
 
             // 用本次计算的拷贝数据更新缓存
