@@ -61,7 +61,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                         SpeedTemplateHelper.Bake(
                             ViewModel.SelectedSpeedTemplateData.CurrentValue,
                             1f,
-                            (int)horizontalRangeSliderFrame.HighValue,
                             out tempBakedSpeedList,
                             out tempBakedDistanceList
                         );
@@ -88,7 +87,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
             SpeedTemplateHelper.Bake(
                 ViewModel.SelectedSpeedTemplateData.CurrentValue,
                 1f,
-                (int)horizontalRangeSliderFrame.HighValue,
                 out tempBakedSpeedList,
                 out tempBakedDistanceList
             );
