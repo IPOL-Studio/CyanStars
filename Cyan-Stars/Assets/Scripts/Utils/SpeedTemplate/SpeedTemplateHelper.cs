@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using CyanStars.Chart;
+using UnityEngine;
 
 namespace CyanStars.Utils.SpeedTemplate
 {
@@ -21,7 +22,7 @@ namespace CyanStars.Utils.SpeedTemplate
         /// <summary>
         /// 缓存的上次烘焙时的曲线，下次烘焙时可以跳过开头相等的部分来提高性能
         /// </summary>
-        private static List<BezierPoint> tempedBezierPoints = new();
+        private static readonly List<BezierPoint> TempedBezierPoints = new();
 
         /// <summary>
         /// 缓存的每个完整的贝塞尔曲线段所造成的总位移（即对贝塞尔曲线段积分后带入 t=1）
@@ -31,12 +32,18 @@ namespace CyanStars.Utils.SpeedTemplate
         /// <summary>
         /// 缓存的速度采样点
         /// </summary>
-        private static List<float> tempedSpeedList = new();
+        private static readonly List<float> TempedSpeedList = new();
 
         /// <summary>
         /// 缓存的位移采样点
         /// </summary>
-        private static List<float> tempedDisplacementList = new();
+        private static readonly List<float> TempedDisplacementList = new();
+
+        /// <summary>
+        /// 缓存的真实速度
+        /// </summary>
+        /// <remarks>绝对变速时为 1，其他时候为玩家速度</remarks>
+        private static float tempedRealSpeed = 1f;
 
 
         /// <summary>
@@ -67,10 +74,11 @@ namespace CyanStars.Utils.SpeedTemplate
             // curveIndex 和 curveIndex+1 两个贝塞尔点组成一条曲线段
             for (; curveIndex <= speedTemplateData.BezierCurves.Count - 2; curveIndex++)
             {
-                // 如果远端贝塞尔点下标超出缓存下标（缓存中缺少元素），或与缓存数据不匹配，则结束从缓存调取，转为手动重算
-                if (curveIndex + 1 <= tempedBezierPoints.Count ||
-                    tempedBezierPoints[curveIndex] != speedTemplateData.BezierCurves[curveIndex] ||
-                    tempedBezierPoints[curveIndex + 1] != speedTemplateData.BezierCurves[curveIndex + 1])
+                // 如果速度不一致，或远端贝塞尔点下标超出缓存下标（缓存中缺少元素），或与缓存数据不匹配，则结束从缓存调取，转为手动重算
+                if (!Mathf.Approximately(playerSpeed, tempedRealSpeed) ||
+                    curveIndex + 1 >= TempedBezierPoints.Count ||
+                    TempedBezierPoints[curveIndex] != speedTemplateData.BezierCurves[curveIndex] ||
+                    TempedBezierPoints[curveIndex + 1] != speedTemplateData.BezierCurves[curveIndex + 1])
                 {
                     break;
                 }
@@ -80,8 +88,8 @@ namespace CyanStars.Utils.SpeedTemplate
                 int nextMsTime = speedTemplateData.BezierCurves[curveIndex + 1].PositionPoint.MsTime;
                 while (sampleIndex * SampleIntervalMsTime < nextMsTime)
                 {
-                    speedList.Add(tempedSpeedList[sampleIndex]);
-                    distanceList.Add(tempedDisplacementList[sampleIndex]);
+                    speedList.Add(TempedSpeedList[sampleIndex]);
+                    distanceList.Add(TempedDisplacementList[sampleIndex]);
                     sampleIndex++;
                 }
 
@@ -146,10 +154,14 @@ namespace CyanStars.Utils.SpeedTemplate
             }
 
             // 用本次计算的拷贝数据更新缓存
-            tempedBezierPoints = new List<BezierPoint>(speedTemplateData.BezierCurves.Points);
+            tempedRealSpeed = playerSpeed;
+            TempedBezierPoints.Clear();
+            TempedBezierPoints.AddRange(speedTemplateData.BezierCurves.Points);
             tempedCurveFinalDisplacements = displacements;
-            tempedSpeedList = new List<float>(speedList);
-            tempedDisplacementList = new List<float>(distanceList);
+            TempedSpeedList.Clear();
+            TempedSpeedList.AddRange(speedList);
+            TempedDisplacementList.Clear();
+            TempedDisplacementList.AddRange(distanceList);
         }
     }
 }
