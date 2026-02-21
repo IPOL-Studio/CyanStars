@@ -138,7 +138,7 @@ namespace CyanStars.Chart.BezierCurve
             );
 
             // 根据 t 计算 Value
-            float value = BezierHelper.CalculateVForT(
+            float value = (float)BezierHelper.CalculateValueForT(
                 t,
                 startNode.PositionPoint.Value,
                 startNode.RightControlPoint.Value,

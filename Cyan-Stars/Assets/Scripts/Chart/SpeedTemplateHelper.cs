@@ -118,7 +118,7 @@ namespace CyanStars.Chart.BezierCurve
                     // 对贝塞尔曲线 t->V 采样速度
                     speedList.Add(
                         playerSpeed *
-                        BezierHelper.CalculateVForT(
+                        (float)BezierHelper.CalculateValueForT(
                             t,
                             speedTemplateData.BezierCurves[curveIndex].PositionPoint.Value,
                             speedTemplateData.BezierCurves[curveIndex].RightControlPoint.Value,
