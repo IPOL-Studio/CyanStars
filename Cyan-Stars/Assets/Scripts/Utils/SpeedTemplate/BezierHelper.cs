@@ -127,12 +127,14 @@ namespace CyanStars.Utils.SpeedTemplate
             double t5 = t4 * t;
             double t6 = t5 * t;
 
-            return (c5 / 6.0) * t6 +
-                   (c4 / 5.0) * t5 +
-                   (c3 / 4.0) * t4 +
-                   (c2 / 3.0) * t3 +
-                   (c1 / 2.0) * t2 +
-                   (c0) * t;
+            return (
+                (c5 / 6.0) * t6 +
+                (c4 / 5.0) * t5 +
+                (c3 / 4.0) * t4 +
+                (c2 / 3.0) * t3 +
+                (c1 / 2.0) * t2 +
+                (c0) * t
+            ) / 1000;
         }
     }
 }

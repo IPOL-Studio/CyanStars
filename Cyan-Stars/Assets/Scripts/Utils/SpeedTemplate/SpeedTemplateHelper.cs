@@ -49,10 +49,10 @@ namespace CyanStars.Utils.SpeedTemplate
         /// <summary>
         /// 烘焙 速度-时间 和 位移-时间 列表
         /// </summary>
-        public static void Bake(SpeedTemplateData speedTemplateData, float playerSpeed, out List<float> speedList, out List<float> distanceList)
+        public static void Bake(SpeedTemplateData speedTemplateData, float playerSpeed, out List<float> speedList, out List<float> displacementList)
         {
             speedList = new List<float>();
-            distanceList = new List<float>();
+            displacementList = new List<float>();
 
             // 如果曲线组贝塞尔点小于等于 1 个，返回空列表。请直接用 [^1].Value 获取
             if (speedTemplateData.BezierCurves.Count <= 1)
@@ -89,7 +89,7 @@ namespace CyanStars.Utils.SpeedTemplate
                 while (sampleIndex * SampleIntervalMsTime < nextMsTime)
                 {
                     speedList.Add(TempedSpeedList[sampleIndex]);
-                    distanceList.Add(TempedDisplacementList[sampleIndex]);
+                    displacementList.Add(TempedDisplacementList[sampleIndex]);
                     sampleIndex++;
                 }
 
@@ -136,7 +136,7 @@ namespace CyanStars.Utils.SpeedTemplate
                         speedTemplateData.BezierCurves[curveIndex + 1].PositionPoint
                     );
 
-                    distanceList.Add((float)sumDisplacement + (float)segmentDistance * playerSpeed * 0.001f);
+                    displacementList.Add((float)sumDisplacement + (float)segmentDistance * playerSpeed);
 
                     sampleIndex++;
                 }
@@ -149,8 +149,8 @@ namespace CyanStars.Utils.SpeedTemplate
                     speedTemplateData.BezierCurves[curveIndex + 1].LeftControlPoint,
                     speedTemplateData.BezierCurves[curveIndex + 1].PositionPoint
                 );
-                displacements.Add(distance * playerSpeed * 0.001f);
-                sumDisplacement += distance * playerSpeed * 0.001f;
+                displacements.Add(distance * playerSpeed);
+                sumDisplacement += distance * playerSpeed;
             }
 
             // 用本次计算的拷贝数据更新缓存
@@ -161,7 +161,38 @@ namespace CyanStars.Utils.SpeedTemplate
             TempedSpeedList.Clear();
             TempedSpeedList.AddRange(speedList);
             TempedDisplacementList.Clear();
-            TempedDisplacementList.AddRange(distanceList);
+            TempedDisplacementList.AddRange(displacementList);
+        }
+
+        /// <summary>
+        /// 获取整组曲线结束时的最终位移
+        /// </summary>
+        public static double GetFinalDisplacement(SpeedTemplateData speedTemplateData, float playerSpeed)
+        {
+            if (speedTemplateData.BezierCurves.Count <= 1)
+            {
+                return 0.0;
+            }
+
+            if (speedTemplateData.Type == SpeedGroupType.Absolute)
+            {
+                playerSpeed = 1f;
+            }
+
+            double sumDisplacement = 0.0;
+            for (int i = 0; i <= speedTemplateData.BezierCurves.Count - 2; i++)
+            {
+                double distance = BezierHelper.CalculateBezierArea(
+                    1,
+                    speedTemplateData.BezierCurves[i].PositionPoint,
+                    speedTemplateData.BezierCurves[i].RightControlPoint,
+                    speedTemplateData.BezierCurves[i + 1].LeftControlPoint,
+                    speedTemplateData.BezierCurves[i + 1].PositionPoint
+                );
+                sumDisplacement += distance * playerSpeed;
+            }
+
+            return sumDisplacement;
         }
     }
 }

@@ -90,7 +90,7 @@ namespace CyanStars.Utils.SpeedTemplate
 
 
         /// <summary>
-        /// 根据传入的时间返回此时的曲线值
+        /// 根据传入的时间返回此时的曲线 Value（瞬时速度）
         /// </summary>
         /// <param name="msTime">要查询的时间点，通常应该为正值</param>
         /// <remarks>时间点小于等于 0 时，返回首个贝塞尔点元素的 PositionPoint.Value；超过末个贝塞尔点元素的 PositionPoint.MsTime 时，返回末个贝塞尔点元素的 PositionPoint.Value</remarks>
