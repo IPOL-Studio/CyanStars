@@ -1,0 +1,19 @@
+{
+    "name": "CyanStars.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0a3f27cf3414da34bb39dba68c01b4ec",
+        "GUID:c5ecc461727906345a35491a0440694f"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
