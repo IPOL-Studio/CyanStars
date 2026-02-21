@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace CyanStars.Utils.SpeedTemplate
+namespace CyanStars.Chart.BezierCurve
 {
     /// <summary>
     /// 贝塞尔曲线计算工具类

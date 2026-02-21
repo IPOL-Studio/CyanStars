@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CyanStars.Utils.SpeedTemplate
+namespace CyanStars.Chart.BezierCurve
 {
     /// <summary>
     /// 用于变速模板的贝塞尔曲线组。对于任意给定的时间(x)，返回唯一的瞬时速度(y)

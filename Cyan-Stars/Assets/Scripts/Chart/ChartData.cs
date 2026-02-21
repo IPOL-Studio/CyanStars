@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 using CyanStars.Gameplay.ChartEditor.Model;
-using CyanStars.Utils.SpeedTemplate;
+using CyanStars.Chart.BezierCurve;
 using Newtonsoft.Json;
 
 namespace CyanStars.Chart

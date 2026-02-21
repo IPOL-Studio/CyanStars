@@ -1,5 +1,5 @@
 using System;
-using CyanStars.Utils.SpeedTemplate;
+using CyanStars.Chart.BezierCurve;
 
 namespace CyanStars.Chart
 {

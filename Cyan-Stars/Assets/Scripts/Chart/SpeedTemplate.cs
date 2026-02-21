@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using CyanStars.Utils.SpeedTemplate;
+using CyanStars.Chart.BezierCurve;
 using UnityEngine;
 
 namespace CyanStars.Chart

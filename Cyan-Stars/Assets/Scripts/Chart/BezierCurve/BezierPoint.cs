@@ -2,7 +2,7 @@
 
 using System;
 
-namespace CyanStars.Utils.SpeedTemplate
+namespace CyanStars.Chart.BezierCurve
 {
     /// <summary>
     /// 贝塞尔点元素

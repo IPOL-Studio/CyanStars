@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using CyanStars.Chart;
 using UnityEngine;
 
-namespace CyanStars.Utils.SpeedTemplate
+namespace CyanStars.Chart.BezierCurve
 {
     public static class SpeedTemplateHelper
     {
