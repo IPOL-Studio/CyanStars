@@ -2,9 +2,9 @@
 
 using System;
 using CyanStars.Chart;
+using CyanStars.Chart.BezierCurve;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
-using CyanStars.Utils.SpeedTemplate;
 using ObservableCollections;
 using R3;
 
