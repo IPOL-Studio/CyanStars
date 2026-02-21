@@ -991,7 +991,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RegisterAssemblies:
-  - Assembly-CSharp
+  - CyanStars
 --- !u!1 &1651403616
 GameObject:
   m_ObjectHideFlags: 0

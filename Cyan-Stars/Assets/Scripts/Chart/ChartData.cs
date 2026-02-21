@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using CyanStars.Gameplay.ChartEditor.Model;
+using CyanStars.Chart.BezierCurve;
 using Newtonsoft.Json;
 
 namespace CyanStars.Chart
@@ -37,7 +38,18 @@ namespace CyanStars.Chart
         {
             ReadyBeat = readyBeat;
             SpeedGroupDatas = speedGroupDatas ??
-                              new List<SpeedTemplateData>() { new SpeedTemplateData(SpeedGroupType.Relative, new BezierCurve()) };
+                              new List<SpeedTemplateData>()
+                              {
+                                  new SpeedTemplateData(SpeedGroupType.Relative,
+                                      new BezierCurves(
+                                          new BezierPoint(
+                                              new BezierPointPos(0, 1f),
+                                              new BezierPointPos(0, 1f),
+                                              new BezierPointPos(0, 1f)
+                                          )
+                                      )
+                                  )
+                              };
             Notes = notes ?? new List<BaseChartNoteData>();
             TrackDatas = trackDatas ?? new List<ChartTrackData>();
         }
