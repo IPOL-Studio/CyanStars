@@ -1,9 +1,8 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
-using CyanStars.Chart;
+using CyanStars.Chart.BezierCurve;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
-using CyanStars.Utils.SpeedTemplate;
 using R3;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
