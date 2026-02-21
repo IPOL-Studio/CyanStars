@@ -1,8 +1,8 @@
 ﻿#nullable enable
 
 using CyanStars.Chart;
+using CyanStars.Chart.BezierCurve;
 using CyanStars.Gameplay.ChartEditor.Model;
-using CyanStars.Utils.SpeedTemplate;
 using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
