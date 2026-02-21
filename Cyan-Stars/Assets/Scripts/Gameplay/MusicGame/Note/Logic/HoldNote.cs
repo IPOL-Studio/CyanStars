@@ -68,7 +68,7 @@ namespace CyanStars.Gameplay.MusicGame
             endTime = BpmGroupHelper.CalculateTime(bpmGroup, (data as HoldChartNoteData).EndJudgeBeat) / 1000f;
 
             endSpeedTemplate =
-                new SpeedTemplate(chartData.SpeedGroupDatas[(data as HoldChartNoteData).HoldEndSpeedGroupIndex],
+                new SpeedTemplate(chartData.SpeedTemplateDatas[(data as HoldChartNoteData).HoldEndSpeedTemplateIndex],
                     1f);
         }
 
