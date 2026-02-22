@@ -11,9 +11,9 @@ namespace CyanStars.Chart.BezierCurve
     /// <remarks>所有 VectorX 默认为 System.Numerics 命名空间下，而非 UnityEngine，以提高效率</remarks>
     public static class BezierHelper
     {
-        // 二分法根据 x 查找 t 时的深度和精度
-        private const int MaxIterations = 20; // 查找深度
-        private const float Epsilon = 0.0001f; // 查找精度（当 x 误差小于此值时返回 t。返回的 t 与真实的 t 的误差可能会大于此值）
+        // 查找 t 时的深度和精度
+        private const double ToleranceT = 0.00001;
+        private const double ToleranceX = 0.00001;
 
 
         /// <summary>
@@ -21,16 +21,39 @@ namespace CyanStars.Chart.BezierCurve
         /// </summary>
         public static float FindTForX(float x, float p0X, float p1X, float p2X, float p3X)
         {
-            double tLow = 0;
-            double tHigh = 1;
-            double t;
-            double currentX;
-            int iterations = 0;
+            // 1. 边界情况直接返回
+            if (x <= p0X)
+                return 0f;
+            if (x >= p3X)
+                return 1f;
 
-            do
+            // 2. 初始猜测值
+            double t = (x - p0X) / (p3X - p0X);
+
+            // 3. 尝试使用 牛顿迭代法
+            for (int i = 0; i < 8; i++)
             {
-                t = (tLow + tHigh) / 2;
-                currentX = CalculateValueForT(t, p0X, p1X, p2X, p3X);
+                double currentX = CalculateValueForT(t, p0X, p1X, p2X, p3X) - x;
+
+                if (Math.Abs(currentX) < ToleranceX)
+                    return (float)t;
+
+                double slope = CalculateDerivativeForT(t, p0X, p1X, p2X, p3X);
+
+                if (Math.Abs(slope) < 1e-6)
+                    break;
+
+                t -= currentX / slope;
+            }
+
+            // 4. 二分法兜底
+            double tLow = 0.0;
+            double tHigh = 1.0;
+
+            while (tHigh - tLow > ToleranceT)
+            {
+                t = (tLow + tHigh) * 0.5;
+                double currentX = CalculateValueForT(t, p0X, p1X, p2X, p3X);
 
                 if (currentX > x)
                 {
@@ -40,20 +63,9 @@ namespace CyanStars.Chart.BezierCurve
                 {
                     tLow = t;
                 }
-
-                iterations++;
-            } while (Math.Abs(currentX - x) > Epsilon && iterations < MaxIterations);
-
-            if (iterations >= MaxIterations && Math.Abs(currentX - x) > Epsilon)
-            {
-                Debug.LogWarning($"达到最大迭代次数({MaxIterations})，结果可能仍有误差: {Math.Abs(currentX - x)} > {Epsilon}");
-            }
-            else
-            {
-                Debug.Log($"小于目标误差，结束查找。深度: {iterations}，精度: {Math.Abs(currentX - x)} < {Epsilon}");
             }
 
-            return (float)t;
+            return (float)((tLow + tHigh) * 0.5);
         }
 
         /// <summary>
@@ -62,20 +74,26 @@ namespace CyanStars.Chart.BezierCurve
         /// <remarks>
         /// 后面四个参数接受统一的 x 或 y 坐标，返回值代表 t 在对应 x 或 y 轴上的值
         /// </remarks>
-        public static double CalculateValueForT(double t, float p0, float p1, float p2, float p3)
+        public static double CalculateValueForT(double t, double p0, double p1, double p2, double p3)
         {
-            double u = 1 - t;
-            double tt = t * t;
-            double uu = u * u;
-            double uuu = uu * u;
-            double ttt = tt * t;
+            double a = -p0 + 3.0 * p1 - 3.0 * p2 + p3;
+            double b = 3.0 * p0 - 6.0 * p1 + 3.0 * p2;
+            double c = -3.0 * p0 + 3.0 * p1;
+            double d = p0;
 
-            double p = uuu * p0; // (1-t)^3 * P0
-            p += 3 * uu * t * p1; // 3 * (1-t)^2 * t * P1
-            p += 3 * u * tt * p2; // 3 * (1-t) * t^2 * P2
-            p += ttt * p3; // t^3 * P3
+            return d + t * (c + t * (b + t * a));
+        }
 
-            return p;
+        /// <summary>
+        /// 计算三次贝塞尔曲线的一阶导数
+        /// </summary>
+        private static double CalculateDerivativeForT(double t, double p0, double p1, double p2, double p3)
+        {
+            double mt = 1.0 - t;
+
+            return 3.0 * mt * mt * (p1 - p0) +
+                   6.0 * mt * t * (p2 - p1) +
+                   3.0 * t * t * (p3 - p2);
         }
 
         /// <summary>

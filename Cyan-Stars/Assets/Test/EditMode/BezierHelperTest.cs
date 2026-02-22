@@ -23,7 +23,7 @@ namespace Test.EditMode
         private static readonly BezierPointPos[] Points2 = { new(0, 0), new(1, 0), new(0, 100000), new(1, 100000) };
         private static readonly BezierPointPos[] Points3 = { new(0, 0), new(100, 100), new(900, -100), new(1000, 0) };
 
-        private static IEnumerable<TestCaseData> FindTForXTest
+        private static IEnumerable<TestCaseData> FindTForXTestCase
         {
             get
             {
@@ -39,8 +39,8 @@ namespace Test.EditMode
             }
         }
 
-        [Test, TestCaseSource(nameof(FindTForXTest))]
-        public void Test(BezierPointPos[] points, int inputX, float expectedResult)
+        [Test, TestCaseSource(nameof(FindTForXTestCase))]
+        public void FindTForXTest(BezierPointPos[] points, int inputX, float expectedResult)
         {
             var result = BezierHelper.FindTForX(
                 inputX,
