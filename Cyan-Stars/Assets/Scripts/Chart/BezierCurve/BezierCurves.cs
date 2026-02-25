@@ -153,7 +153,7 @@ namespace CyanStars.Chart.BezierCurve
         public void RemoveAt(int index)
         {
             if (index == 0)
-                throw new NotSupportedException("首个元素不能被删除，请使用 Replace() 替换之");
+                throw new InvalidOperationException("首个元素不能被删除，请使用 Replace() 替换之");
 
             points.RemoveAt(index);
         }

@@ -13,11 +13,11 @@ namespace CyanStars.Chart.BezierCurve
     ///  - LeftControlPoint：左形变控制点，调整本条曲线和上一条曲线的形状
     ///  - RightControlPoint：右形变控制点，调整本条曲线和下一条曲线的形状
     /// </remarks>
-    public struct BezierPoint : IEquatable<BezierPoint>
+    public readonly struct BezierPoint : IEquatable<BezierPoint>
     {
-        public BezierPointPos PositionPoint { get; }
-        public BezierPointPos LeftControlPoint { get; }
-        public BezierPointPos RightControlPoint { get; }
+        public readonly BezierPointPos PositionPoint;
+        public readonly BezierPointPos LeftControlPoint;
+        public readonly BezierPointPos RightControlPoint;
 
         public BezierPoint(BezierPointPos positionPoint, BezierPointPos leftControlPoint, BezierPointPos rightControlPoint)
         {
