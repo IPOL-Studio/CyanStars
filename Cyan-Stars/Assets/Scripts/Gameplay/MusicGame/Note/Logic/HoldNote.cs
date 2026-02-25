@@ -61,15 +61,14 @@ namespace CyanStars.Gameplay.MusicGame
         public float Pos { get; set; }
 
 
-        public override void Init(BaseChartNoteData data, List<BpmGroupItem> bpmGroup, ChartData chartData, NoteClip clip)
+        public override void Init(BaseChartNoteData data, ChartContext context, ChartData chartData, NoteClip clip)
         {
-            base.Init(data, bpmGroup, chartData, clip);
+            base.Init(data, context, chartData, clip);
             Pos = (data as HoldChartNoteData).Pos;
-            endTime = BpmGroupHelper.CalculateTime(bpmGroup, (data as HoldChartNoteData).EndJudgeBeat) / 1000f;
+            endTime = BpmGroupHelper.CalculateTime(context.BpmGroup, (data as HoldChartNoteData).EndJudgeBeat) / 1000f;
 
             endSpeedTemplate =
-                new SpeedTemplate(chartData.SpeedGroupDatas[(data as HoldChartNoteData).HoldEndSpeedGroupIndex],
-                    1f);
+                context.SpeedTemplateProvider.GetSpeedTemplate(chartData.SpeedGroupDatas[(data as HoldChartNoteData).HoldEndSpeedGroupIndex]);
         }
 
         public override bool CanReceiveInput()

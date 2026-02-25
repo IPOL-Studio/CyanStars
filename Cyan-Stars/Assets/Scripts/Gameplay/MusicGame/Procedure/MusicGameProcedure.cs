@@ -369,12 +369,14 @@ namespace CyanStars.Gameplay.MusicGame
             timeline = new Timeline(playingDataModule.CurTimelineLength);
             timeline.OnStop += StopTimeline;
 
+            var chartContext = CreateChartContext();
+
             // 添加音符轨道
-            List<BpmGroupItem> bpmGroup = new List<BpmGroupItem>();
-            bpmGroup.AddRange(runtimeChartPack.ChartPackData.BpmGroup);
-
-
-            NoteTrackData noteTrackData = new NoteTrackData() { BpmGroup = bpmGroup, ClipDataList = new List<ChartData>() { chartData } };
+            NoteTrackData noteTrackData = new NoteTrackData()
+            {
+                ClipDataList = new List<ChartData>() { chartData },
+                ChartContext = chartContext
+            };
             timeline.AddTrack(noteTrackData, NoteTrack.CreateClipFunc);
 
             // if (!string.IsNullOrEmpty(lrcText) && settingsModule.EnableLyricTrack)
@@ -410,7 +412,7 @@ namespace CyanStars.Gameplay.MusicGame
                 if (trackModule.TryGetTrackLoader(chartData.TrackDatas[i].TrackData.GetType(), out var trackLoader) &&
                     trackLoader.IsEnabled)
                 {
-                    trackLoader.LoadTrack(timeline, noteTrackData.BpmGroup, chartData, i);
+                    trackLoader.LoadTrack(timeline, chartContext, chartData, i);
                 }
             }
 
@@ -461,6 +463,21 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Timer.UpdateTimer.Add(UpdateTimeline);
 
             Debug.Log("时间轴创建完毕");
+        }
+
+        private ChartContext CreateChartContext()
+        {
+            // TODO: 传入玩家速度
+            var speedTemplateProvider = new SpeedTemplateProvider(new SpeedTemplateBaker(), 1f);
+            speedTemplateProvider.PopulateSpeedTemplates(chartData.SpeedGroupDatas);
+
+            List<BpmGroupItem> bpmGroup = new List<BpmGroupItem>();
+            bpmGroup.AddRange(runtimeChartPack.ChartPackData.BpmGroup);
+
+            return new ChartContext(
+                BpmGroup: bpmGroup,
+                SpeedTemplateProvider: speedTemplateProvider
+            );
         }
 
         /// <summary>

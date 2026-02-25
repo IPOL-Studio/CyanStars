@@ -22,7 +22,7 @@ namespace CyanStars.Gameplay.MusicGame
                 track);
             foreach (BaseChartNoteData noteData in chartData.Notes)
             {
-                BaseNote baseNote = CreateNote(noteData, trackData.BpmGroup, chartData, clip);
+                BaseNote baseNote = CreateNote(noteData, trackData.ChartContext, chartData, clip);
                 clip.InsertNote(baseNote);
             }
 
@@ -33,7 +33,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 根据音符数据创建音符
         /// </summary>
-        private static BaseNote CreateNote(BaseChartNoteData noteData, List<BpmGroupItem> bpmGroup, ChartData chartData,
+        private static BaseNote CreateNote(BaseChartNoteData noteData, ChartContext chartContext, ChartData chartData,
             NoteClip clip)
         {
             BaseNote note = noteData.Type switch
@@ -46,7 +46,7 @@ namespace CyanStars.Gameplay.MusicGame
                 _ => null
             };
 
-            note?.Init(noteData, bpmGroup, chartData, clip);
+            note?.Init(noteData, chartContext, chartData, clip);
             return note;
         }
     }

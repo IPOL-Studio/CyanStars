@@ -1,4 +1,5 @@
 using System;
+using CyanStars.Chart.BezierCurve;
 
 namespace CyanStars.Chart
 {
@@ -28,13 +29,19 @@ namespace CyanStars.Chart
         /// 每个点的 x 坐标为相对于 Note 判定时间的提前时间，单位ms（有且仅有一个为 0，其余的 x 值必须是负数）
         /// y 坐标为谱师设定速度
         /// </remarks>
-        public BezierCurve BezierCurve;
+        public BezierCurves BezierCurves;
 
-        public SpeedTemplateData(SpeedGroupType type, BezierCurve bezierCurve = null)
+        public SpeedTemplateData(SpeedGroupType type, BezierCurves bezierCurve = null)
         {
             Name = "";
             Type = type;
-            BezierCurve = bezierCurve ?? new BezierCurve();
+            BezierCurves = bezierCurve ?? new BezierCurves(
+                new BezierPoint(
+                    new BezierPointPos(0, 1f),
+                    new BezierPointPos(0, 1f),
+                    new BezierPointPos(0, 1f)
+                )
+            );
         }
     }
 }
