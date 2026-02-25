@@ -1,12 +1,14 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
-using CyanStars.Chart;
+using System.Diagnostics.CodeAnalysis;
+using CyanStars.Chart.BezierCurve;
 using UnityEngine;
 
-namespace CyanStars.Chart.BezierCurve
+namespace CyanStars.Chart
 {
-    public static class SpeedTemplateHelper
+
+    public sealed class CacheSpeedTemplateBaker : ISpeedTemplateBaker
     {
         /// <summary>
         /// 在游戏和制谱器内烘焙变速模板时的采样时间
@@ -18,46 +20,49 @@ namespace CyanStars.Chart.BezierCurve
         /// </remarks>
         public const int SampleIntervalMsTime = 10;
 
+        public bool IsSupportParallel => false;
+
 
         /// <summary>
         /// 缓存的上次烘焙时的曲线，下次烘焙时可以跳过开头相等的部分来提高性能
         /// </summary>
-        private static readonly List<BezierPoint> TempedBezierPoints = new();
+        private readonly List<BezierPoint> TempedBezierPoints = new();
 
         /// <summary>
         /// 缓存的每个完整的贝塞尔曲线段所造成的总位移（即对贝塞尔曲线段积分后带入 t=1）
         /// </summary>
-        private static List<double> tempedCurveFinalDisplacements = new();
+        private List<double> tempedCurveFinalDisplacements = new();
 
         /// <summary>
         /// 缓存的速度采样点
         /// </summary>
-        private static readonly List<float> TempedSpeedList = new();
+        private readonly List<float> TempedSpeedList = new();
 
         /// <summary>
         /// 缓存的位移采样点
         /// </summary>
-        private static readonly List<float> TempedDisplacementList = new();
+        private readonly List<float> TempedDisplacementList = new();
 
         /// <summary>
         /// 缓存的真实速度
         /// </summary>
         /// <remarks>绝对变速时为 1，其他时候为玩家速度</remarks>
-        private static float tempedRealSpeed = 1f;
+        private float tempedRealSpeed = 1f;
 
 
-        /// <summary>
-        /// 烘焙 速度-时间 和 位移-时间 列表
-        /// </summary>
-        public static void Bake(SpeedTemplateData speedTemplateData, float playerSpeed, out List<float> speedList, out List<float> displacementList)
+        /// <inheritdoc />
+        public bool Bake(SpeedTemplateData speedTemplateData,
+                         float playerSpeed,
+                         [NotNullWhen(true)] out List<float>? speedList,
+                         [NotNullWhen(true)] out List<float>? displacementList)
         {
-            speedList = new List<float>();
-            displacementList = new List<float>();
+            speedList = null;
+            displacementList = null;
 
             // 如果曲线组贝塞尔点小于等于 1 个，返回空列表。请直接用 [^1].Value 获取
             if (speedTemplateData.BezierCurves.Count <= 1)
             {
-                return;
+                return false;
             }
 
             if (speedTemplateData.Type == SpeedGroupType.Absolute)
@@ -65,8 +70,12 @@ namespace CyanStars.Chart.BezierCurve
                 playerSpeed = 1;
             }
 
+            int expectedSampledCount = speedTemplateData.BezierCurves[^1].PositionPoint.MsTime / SampleIntervalMsTime + 1;
+            speedList = new List<float>(expectedSampledCount);
+            displacementList = new List<float>(expectedSampledCount);
+
             int curveIndex = 0; // 当前即将进行处理的贝塞尔曲线段下标
-            int sampleIndex = 0; // 当前即将进行处理的采样点下标
+            int sampledCount = 0; // 已经处理的采样点数量，也可直接作为即将进行处理的采样点下标
             double sumDisplacement = 0; // 当前已经经过的位移
             List<double> displacements = new(); // 本次计算中的曲线组最终位移，用于更新缓存
 
@@ -86,11 +95,11 @@ namespace CyanStars.Chart.BezierCurve
                 // 从缓存采样点中拷贝数据
                 // 如果结束时间正好落在采样频率整数倍上，暂不采样此时间点，交给下个曲线段处理。
                 int nextMsTime = speedTemplateData.BezierCurves[curveIndex + 1].PositionPoint.MsTime;
-                while (sampleIndex * SampleIntervalMsTime < nextMsTime)
+                while (sampledCount * SampleIntervalMsTime < nextMsTime)
                 {
-                    speedList.Add(TempedSpeedList[sampleIndex]);
-                    displacementList.Add(TempedDisplacementList[sampleIndex]);
-                    sampleIndex++;
+                    speedList.Add(TempedSpeedList[sampledCount]);
+                    displacementList.Add(TempedDisplacementList[sampledCount]);
+                    sampledCount++;
                 }
 
                 // 累加位移
@@ -104,11 +113,11 @@ namespace CyanStars.Chart.BezierCurve
                 // 采样速度和位移
                 // 如果结束时间正好落在采样频率整数倍上，暂不采样此时间点，交给下个曲线段处理。
                 int nextMsTime = speedTemplateData.BezierCurves[curveIndex + 1].PositionPoint.MsTime;
-                while (sampleIndex * SampleIntervalMsTime < nextMsTime)
+                while (sampledCount * SampleIntervalMsTime < nextMsTime)
                 {
                     // 二分法查找 T->t
                     float t = BezierHelper.FindTForX(
-                        sampleIndex * SampleIntervalMsTime,
+                        sampledCount * SampleIntervalMsTime,
                         speedTemplateData.BezierCurves[curveIndex].PositionPoint.MsTime,
                         speedTemplateData.BezierCurves[curveIndex].RightControlPoint.MsTime,
                         speedTemplateData.BezierCurves[curveIndex + 1].LeftControlPoint.MsTime,
@@ -138,7 +147,7 @@ namespace CyanStars.Chart.BezierCurve
 
                     displacementList.Add((float)sumDisplacement + (float)segmentDistance * playerSpeed);
 
-                    sampleIndex++;
+                    sampledCount++;
                 }
 
                 // 采样结束，将本条曲线 t=1 时的位移累加到缓存
@@ -162,12 +171,12 @@ namespace CyanStars.Chart.BezierCurve
             TempedSpeedList.AddRange(speedList);
             TempedDisplacementList.Clear();
             TempedDisplacementList.AddRange(displacementList);
+
+            return true;
         }
 
-        /// <summary>
-        /// 获取整组曲线结束时的最终位移
-        /// </summary>
-        public static double GetFinalDisplacement(SpeedTemplateData speedTemplateData, float playerSpeed)
+        /// <inheritdoc />
+        public double GetFinalDisplacement(SpeedTemplateData speedTemplateData, float playerSpeed)
         {
             if (speedTemplateData.BezierCurves.Count <= 1)
             {

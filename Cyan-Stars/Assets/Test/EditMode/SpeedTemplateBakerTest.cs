@@ -9,9 +9,9 @@ using NUnit.Framework;
 namespace Test.EditMode
 {
     /// <summary>
-    /// 测试 SpeedTemplateHelper 是否正常烘焙贝塞尔曲线组在采样点时的速度和位移
+    /// 测试 SpeedTemplateBaker 是否正常烘焙贝塞尔曲线组在采样点时的速度和位移
     /// </summary>
-    public class SpeedTemplateHelperTest
+    public class SpeedTemplateBakerTest
     {
         /// <summary>
         /// 测试位移时允许的误差
@@ -78,28 +78,28 @@ namespace Test.EditMode
                 yield return new TestCaseData(
                         new SpeedTemplateData(SpeedGroupType.Absolute, bezierCurves1),
                         2f,
-                        SpeedTemplateHelper.SampleIntervalMsTime,
+                        CacheSpeedTemplateBaker.SampleIntervalMsTime,
                         0
                     )
                     .SetName("单点曲线采样数量测试 1");
                 yield return new TestCaseData(
                         new SpeedTemplateData(SpeedGroupType.Relative, bezierCurves1),
                         2f,
-                        SpeedTemplateHelper.SampleIntervalMsTime,
+                        CacheSpeedTemplateBaker.SampleIntervalMsTime,
                         0
                     )
                     .SetName("单点曲线采样数量测试 2");
                 yield return new TestCaseData(
                         new SpeedTemplateData(SpeedGroupType.Absolute, bezierCurves2),
                         2f,
-                        SpeedTemplateHelper.SampleIntervalMsTime,
+                        CacheSpeedTemplateBaker.SampleIntervalMsTime,
                         4
                     )
                     .SetName("多点曲线采样数量测试 1");
                 yield return new TestCaseData(
                         new SpeedTemplateData(SpeedGroupType.Relative, bezierCurves2),
                         2f,
-                        SpeedTemplateHelper.SampleIntervalMsTime,
+                        CacheSpeedTemplateBaker.SampleIntervalMsTime,
                         4
                     )
                     .SetName("多点曲线采样数量测试 2");
@@ -179,9 +179,9 @@ namespace Test.EditMode
         [Test, TestCaseSource(nameof(SampleCountTestCase))]
         public void SampleCountTest(SpeedTemplateData speedTemplateData, float playerSpeed, int sampleIntervalMsTime, int expectedResult)
         {
-            SpeedTemplateHelper.Bake(speedTemplateData, playerSpeed, out List<float> speedList, out List<float> displacementList);
-            Assert.AreEqual(expectedResult, speedList.Count);
-            Assert.AreEqual(expectedResult, displacementList.Count);
+            new SpeedTemplateBaker().Bake(speedTemplateData, playerSpeed, out List<float>? speedList, out List<float>? displacementList);
+            Assert.AreEqual(expectedResult, speedList!.Count);
+            Assert.AreEqual(expectedResult, displacementList!.Count);
         }
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace Test.EditMode
         [Test, TestCaseSource(nameof(GetFinalDisplacementTestCase))]
         public void GetFinalDisplacementTest(SpeedTemplateData speedTemplateData, float playerSpeed, double expectedResult)
         {
-            double displacement = SpeedTemplateHelper.GetFinalDisplacement(speedTemplateData, playerSpeed);
+            double displacement = new CacheSpeedTemplateBaker().GetFinalDisplacement(speedTemplateData, playerSpeed);
             Assert.AreEqual(expectedResult, displacement, DisplacementEpsilon);
         }
 
@@ -200,12 +200,12 @@ namespace Test.EditMode
         [Test, TestCaseSource(nameof(SampleValuesTestCase))]
         public void SampleValuesTest(SpeedTemplateData speedTemplateData, float playerSpeed, float[] speeds, float[] displacements)
         {
-            SpeedTemplateHelper.Bake(speedTemplateData, playerSpeed, out List<float> speedList, out List<float> displacementList);
+            new SpeedTemplateBaker().Bake(speedTemplateData, playerSpeed, out List<float>? speedList, out List<float>? displacementList);
 
-            for (int i = 0; i < Math.Max(speedList.Count, speeds.Length); i++)
+            for (int i = 0; i < Math.Max(speedList!.Count, speeds.Length); i++)
             {
                 Assert.AreEqual(speeds[i], speedList[i], SpeedEpsilon);
-                Assert.AreEqual(displacements[i], displacementList[i], DisplacementEpsilon);
+                Assert.AreEqual(displacements[i], displacementList![i], DisplacementEpsilon);
             }
         }
     }

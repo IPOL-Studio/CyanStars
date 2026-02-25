@@ -8,9 +8,9 @@ namespace CyanStars.Gameplay.MusicGame
         private const float NoteWidth = 0.2f;
         public float Pos { get; set; }
 
-        public override void Init(BaseChartNoteData data, List<BpmGroupItem> bpmGroup, ChartData chartData, NoteClip clip)
+        public override void Init(BaseChartNoteData data, ChartContext context, ChartData chartData, NoteClip clip)
         {
-            base.Init(data, bpmGroup, chartData, clip);
+            base.Init(data, context, chartData, clip);
             Pos = (data as TapChartNoteData).Pos;
         }
 

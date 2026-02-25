@@ -8,9 +8,9 @@ namespace CyanStars.Chart
     /// <summary>
     /// 加载到游戏内的速度组
     /// </summary>
-    public class SpeedTemplate
+    public sealed class SpeedTemplate
     {
-        private SpeedTemplateData SpeedTemplateData;
+        private readonly SpeedTemplateData SpeedTemplateData;
 
         /// <summary>
         /// 缓存的速度列表
@@ -30,20 +30,31 @@ namespace CyanStars.Chart
         private readonly double FinalDisplacement;
 
 
+        private SpeedTemplate(SpeedTemplateData speedTemplateData, List<float> speedList, List<float> displacementList, double finalDisplacement)
+        {
+            SpeedTemplateData = speedTemplateData;
+            SpeedList = speedList;
+            DisplacementList = displacementList;
+            FinalDisplacement = finalDisplacement;
+        }
+
+        // TODO: 外部传入玩家速度
         /// <summary>
         /// 构造实例并烘焙速度和距离采样点
         /// </summary>
-        public SpeedTemplate(SpeedTemplateData speedTemplateData, float playerSpeed = 1f) // TODO: 外部传入玩家速度
+        public static SpeedTemplate Create(SpeedTemplateData data, ISpeedTemplateBaker baker, float playerSpeed = 1f)
         {
-            SpeedTemplateData = speedTemplateData;
+            _ = data ?? throw new ArgumentNullException(nameof(data));
+            _ = baker ?? throw new ArgumentNullException(nameof(baker));
 
-            SpeedTemplateHelper.Bake(
-                speedTemplateData,
+            baker.Bake(
+                data,
                 playerSpeed,
-                out SpeedList,
-                out DisplacementList
+                out List<float> speedList,
+                out List<float> displacementList
             );
-            FinalDisplacement = SpeedTemplateHelper.GetFinalDisplacement(speedTemplateData, playerSpeed);
+            double finalDisplacement = baker.GetFinalDisplacement(data, playerSpeed);
+            return new SpeedTemplate(data, speedList, displacementList, finalDisplacement);
         }
 
         /// <summary>
@@ -71,8 +82,8 @@ namespace CyanStars.Chart
             {
                 // 音符落在曲线上，直接根据采样结果返回
                 // 将音符对齐到最近的采样点上
-                const float halfSampleIntervalMsTime = SpeedTemplateHelper.SampleIntervalMsTime / 2f;
-                int sampleIndex = (int)((msTime + halfSampleIntervalMsTime) / SpeedTemplateHelper.SampleIntervalMsTime);
+                const float halfSampleIntervalMsTime = CacheSpeedTemplateBaker.SampleIntervalMsTime / 2f;
+                int sampleIndex = (int)((msTime + halfSampleIntervalMsTime) / CacheSpeedTemplateBaker.SampleIntervalMsTime);
                 sampleIndex = Math.Min(sampleIndex, DisplacementList.Count - 1);
                 return DisplacementList[sampleIndex];
             }
