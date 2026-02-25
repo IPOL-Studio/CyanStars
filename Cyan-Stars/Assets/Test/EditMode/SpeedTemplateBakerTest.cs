@@ -79,14 +79,14 @@ namespace Test.EditMode
                         new SpeedTemplateData(SpeedGroupType.Absolute, bezierCurves1),
                         2f,
                         CacheSpeedTemplateBaker.SampleIntervalMsTime,
-                        0
+                        null
                     )
                     .SetName("单点曲线采样数量测试 1");
                 yield return new TestCaseData(
                         new SpeedTemplateData(SpeedGroupType.Relative, bezierCurves1),
                         2f,
                         CacheSpeedTemplateBaker.SampleIntervalMsTime,
-                        0
+                        null
                     )
                     .SetName("单点曲线采样数量测试 2");
                 yield return new TestCaseData(
@@ -144,15 +144,15 @@ namespace Test.EditMode
                 yield return new TestCaseData(
                         new SpeedTemplateData(SpeedGroupType.Absolute, bezierCurves1),
                         2f,
-                        new float[] { },
-                        new float[] { }
+                        null,
+                        null
                     )
                     .SetName("单点曲线采样测试 1");
                 yield return new TestCaseData(
                         new SpeedTemplateData(SpeedGroupType.Relative, bezierCurves1),
                         2f,
-                        new float[] { },
-                        new float[] { }
+                        null,
+                        null
                     )
                     .SetName("单点曲线采样测试 2");
                 yield return new TestCaseData(
@@ -177,11 +177,21 @@ namespace Test.EditMode
         /// 测试采样点数量是否正确
         /// </summary>
         [Test, TestCaseSource(nameof(SampleCountTestCase))]
-        public void SampleCountTest(SpeedTemplateData speedTemplateData, float playerSpeed, int sampleIntervalMsTime, int expectedResult)
+        public void SampleCountTest(SpeedTemplateData speedTemplateData, float playerSpeed, int sampleIntervalMsTime, int? expectedResult)
         {
             new SpeedTemplateBaker().Bake(speedTemplateData, playerSpeed, out List<float>? speedList, out List<float>? displacementList);
-            Assert.AreEqual(expectedResult, speedList!.Count);
-            Assert.AreEqual(expectedResult, displacementList!.Count);
+            if (expectedResult == null)
+            {
+                Assert.IsNull(speedList);
+                Assert.IsNull(displacementList);
+            }
+            else
+            {
+                Assert.IsNotNull(speedList);
+                Assert.IsNotNull(displacementList);
+                Assert.AreEqual(expectedResult, speedList?.Count);
+                Assert.AreEqual(expectedResult, displacementList?.Count);
+            }
         }
 
         /// <summary>
@@ -198,14 +208,35 @@ namespace Test.EditMode
         /// 测试采样点结果是否正确
         /// </summary>
         [Test, TestCaseSource(nameof(SampleValuesTestCase))]
-        public void SampleValuesTest(SpeedTemplateData speedTemplateData, float playerSpeed, float[] speeds, float[] displacements)
+        public void SampleValuesTest(SpeedTemplateData speedTemplateData, float playerSpeed, float[]? expectedSpeeds, float[]? expectedDisplacements)
         {
             new SpeedTemplateBaker().Bake(speedTemplateData, playerSpeed, out List<float>? speedList, out List<float>? displacementList);
 
-            for (int i = 0; i < Math.Max(speedList!.Count, speeds.Length); i++)
+            if (expectedSpeeds == null)
             {
-                Assert.AreEqual(speeds[i], speedList[i], SpeedEpsilon);
-                Assert.AreEqual(displacements[i], displacementList![i], DisplacementEpsilon);
+                Assert.IsNull(speedList);
+            }
+            else
+            {
+                Assert.IsNotNull(speedList);
+                for (int i = 0; i < Math.Max(speedList!.Count, expectedSpeeds.Length); i++)
+                {
+                    Assert.AreEqual(expectedSpeeds[i], speedList[i], SpeedEpsilon);
+                }
+            }
+
+            if (expectedDisplacements == null)
+            {
+                Assert.IsNull(displacementList);
+            }
+            else
+            {
+                Assert.IsNotNull(displacementList);
+                Assert.IsNotNull(displacementList);
+                for (int i = 0; i < Math.Max(displacementList!.Count, expectedDisplacements.Length); i++)
+                {
+                    Assert.AreEqual(expectedDisplacements[i], displacementList[i], DisplacementEpsilon);
+                }
             }
         }
     }
