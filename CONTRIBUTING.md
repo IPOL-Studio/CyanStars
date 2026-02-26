@@ -47,7 +47,7 @@ PR 最好是针对现有 Issue 的 Fix，如果希望添加一些新功能或改
 
 通过 [此表单](http://chenluan.mikecrm.com/Fkmdp4z) 向我们投稿您的音乐，作为游戏内收录曲。
 
-音乐作品的贡献遵循我们的多媒体贡献协议，请在提交表单前确认 [LICENSE](LICENSE) 和 [NOTICE](NUTICE) 中的协议。
+音乐作品的贡献遵循我们的多媒体贡献协议，请在提交表单前确认 [LICENSE](LICENSE.md) 中的协议。
 
 ## 贡献翻译
 
@@ -55,7 +55,7 @@ PR 最好是针对现有 Issue 的 Fix，如果希望添加一些新功能或改
 
 翻译贡献大约每 24 小时以 Pull request 的形式同步到仓库，随后需要由维护成员手动审核，并在下一次构建时发布给玩家，因此可能不会即时生效。
 
-翻译贡献与代码贡献的许可证一致，遵循 [LICENSE](LICENSE) 中的 Apache-2.0 License。
+翻译贡献与代码贡献的许可证一致，遵循 [LICENSE](LICENSE.md) 中的 Apache-2.0 License。
 
 ## 其他贡献
 
