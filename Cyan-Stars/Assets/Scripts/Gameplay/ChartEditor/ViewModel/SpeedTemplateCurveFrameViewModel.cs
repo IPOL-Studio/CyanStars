@@ -3,6 +3,7 @@
 using CyanStars.Chart;
 using CyanStars.Chart.BezierCurve;
 using CyanStars.Gameplay.ChartEditor.Model;
+using ObservableCollections;
 using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
@@ -11,20 +12,18 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     {
         private readonly SpeedTemplateViewModel SpeedTemplateViewModel;
 
-        public Subject<SpeedTemplateData> SelectedSpeedTemplateDataPropertyUpdatedSubject =>
-            SpeedTemplateViewModel.SelectedSpeedTemplateDataPropertyUpdatedSubject;
-
-        /// <summary>
-        /// 选中的变速模板中的贝塞尔曲线数据发生了变化
-        /// </summary>
-        public Subject<BezierCurves> SelectedBezierCurvePropertyUpdatedSubject = new();
-
-
         /// <summary>
         /// 当前选中的变速模板
         /// </summary>
-        public ReadOnlyReactiveProperty<SpeedTemplateData?> SelectedSpeedTemplateData =>
+        public ReadOnlyReactiveProperty<SpeedTemplateDataEditorModel?> SelectedSpeedTemplateData =>
             SpeedTemplateViewModel.SelectedSpeedTemplateData;
+
+        private readonly ReactiveProperty<BezierPoint?> selectedPoint = new ReactiveProperty<BezierPoint?>();
+
+        /// <summary>
+        /// 当前选中的贝塞尔点
+        /// </summary>
+        public ReadOnlyReactiveProperty<BezierPoint?> SelectedPoint => selectedPoint;
 
 
         public SpeedTemplateCurveFrameViewModel(
