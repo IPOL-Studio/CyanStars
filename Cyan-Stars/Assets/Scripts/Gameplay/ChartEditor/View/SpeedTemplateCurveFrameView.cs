@@ -1,16 +1,29 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Generic;
 using CyanStars.Chart.BezierCurve;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using ObservableCollections;
 using R3;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
+    /// <summary>
+    /// 变速模板-曲线编辑区域 View
+    /// </summary>
+    /// <remarks>
+    /// - 负责绘制速度曲线和位移曲面
+    /// - 负责动态生成、销毁贝塞尔点，并管理其位置和控制点显隐
+    /// </remarks>
     public class SpeedTemplateCurveFrameView : BaseView<SpeedTemplateCurveFrameViewModel>
     {
+        [SerializeField]
+        private GameObject bezierPointHandlePrefab = null!;
+
+
         [SerializeField]
         private UILineRenderer speedCurveRenderer = null!;
 
@@ -23,6 +36,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private RangeSlider horizontalRangeSliderFrame = null!;
 
+
+        // --- 速度和位移曲线绘制 ---
 
         private const float DefaultViewportX = 1000f;
         private const float DefaultViewportY = 400f;
@@ -38,6 +53,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private List<float> tempBakedDistanceList = new List<float>();
 
 
+        // --- 贝塞尔点位置和显隐 ---
+
+        private readonly List<SpeedTemplateBezierPointHandleItem> BezierPointHandles = new List<SpeedTemplateBezierPointHandleItem>();
+
+
         public override void Bind(SpeedTemplateCurveFrameViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
@@ -46,19 +66,26 @@ namespace CyanStars.Gameplay.ChartEditor.View
             horizontalRangeSliderFrame.OnValueChanged.AddListener(OnHorizontalChanged);
 
             // 当选择了新的变速模板，或贝塞尔曲线内部数据变化时，重新烘焙并重绘曲线
-            Observable.Merge(
-                    ViewModel.SelectedSpeedTemplateData
-                        .Select(speedTemplate => speedTemplate?.BezierCurves),
-                    ViewModel.SelectedBezierCurvePropertyUpdatedSubject
-                        .Select(data => (BezierCurves?)data)
-                )
-                .Subscribe(data =>
+            ViewModel.SelectedSpeedTemplateData
+                .Select(speedTemplateData =>
                     {
-                        if (data == null || ViewModel.SelectedSpeedTemplateData.CurrentValue == null)
-                            return;
+                        if (speedTemplateData?.BezierCurves?.Points == null)
+                            return Observable.Empty<Unit>();
+
+                        return speedTemplateData.BezierCurves.Points
+                            .ObserveChanged()
+                            .Select(_ => Unit.Default)
+                            .Prepend(Unit.Default);
+                    }
+                )
+                .Switch()
+                .Subscribe(_ =>
+                    {
+                        if (ViewModel.SelectedSpeedTemplateData.CurrentValue == null)
+                            throw new Exception("选中曲线为空时应当丢弃通知流");
 
                         SpeedTemplateHelper.Bake(
-                            ViewModel.SelectedSpeedTemplateData.CurrentValue,
+                            ViewModel.SelectedSpeedTemplateData.CurrentValue.ToSpeedTemplateData(),
                             1f,
                             out tempBakedSpeedList,
                             out tempBakedDistanceList
@@ -81,10 +108,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private void OnHorizontalChanged(float lowX, float highX)
         {
             if (ViewModel.SelectedSpeedTemplateData.CurrentValue == null)
-                return;
+                throw new Exception("选中曲线为空时不应该调整缩放");
 
             SpeedTemplateHelper.Bake(
-                ViewModel.SelectedSpeedTemplateData.CurrentValue,
+                ViewModel.SelectedSpeedTemplateData.CurrentValue.ToSpeedTemplateData(),
                 1f,
                 out tempBakedSpeedList,
                 out tempBakedDistanceList
@@ -104,6 +131,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             Vector2[] speedPoints = new Vector2[tempBakedSpeedList.Count];
             Vector2[] distancePoints = new Vector2[tempBakedDistanceList.Count];
+
+            if (scaleX == 0 || scaleY == 0)
+            {
+                // 缩放为 0 时不绘制曲线，防止除 0 异常
+                speedCurveRenderer.Points = Array.Empty<Vector2>();
+                distanceCurveRenderer.Points = Array.Empty<Vector2>();
+                return;
+            }
 
             for (int i = 0; i < tempBakedSpeedList.Count; i++)
             {

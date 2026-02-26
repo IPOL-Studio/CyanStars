@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using ObservableCollections;
@@ -61,7 +62,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             // 初始化时实例化已有的 item
             int index = 0;
-            foreach (var vm in ViewModel.SpeedTemplateData)
+            foreach (var vm in ViewModel.SpeedTemplateDatas)
             {
                 var go = Instantiate(speedTemplateItemPrefab, listContentTransform);
                 go.GetComponent<SpeedTemplateListItemView>().Bind(vm);
@@ -70,7 +71,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
 
             // VM->V 绑定列表元素
-            ViewModel.SpeedTemplateData.ObserveAdd()
+            ViewModel.SpeedTemplateDatas.ObserveAdd()
                 .Subscribe(e =>
                     {
                         var go = Instantiate(speedTemplateItemPrefab, listContentTransform);
@@ -79,7 +80,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     }
                 )
                 .AddTo(this);
-            ViewModel.SpeedTemplateData.ObserveRemove()
+            ViewModel.SpeedTemplateDatas.ObserveRemove()
                 .Subscribe(e =>
                     {
                         var itemToRemove = listContentTransform.GetChild(e.Index);
@@ -89,24 +90,29 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
             // VM->V 绑定编辑区
-            Observable.Merge(
-                    ViewModel.SelectedSpeedTemplateData,
-                    ViewModel.SelectedSpeedTemplateDataPropertyUpdatedSubject.Select(data => (SpeedTemplateData?)data)
-                )
-                .Subscribe(data =>
+            ViewModel.SelectedSpeedTemplateData
+                .Subscribe(selectedSpeedTemplate => detailFrameObject.SetActive(selectedSpeedTemplate != null))
+                .AddTo(this);
+            ViewModel.SelectedSpeedTemplateData
+                .Select(selectedSpeedTemplate => selectedSpeedTemplate?.Remark ?? Observable.Empty<string>())
+                .Switch()
+                .Subscribe(remark => remarkField.text = remark)
+                .AddTo(this);
+            ViewModel.SelectedSpeedTemplateData
+                .Select(selectedSpeedTemplate => selectedSpeedTemplate?.Type.AsObservable() ?? Observable.Empty<SpeedTemplateType>())
+                .Switch()
+                .Subscribe(type =>
                     {
-                        if (data == null)
+                        switch (type)
                         {
-                            detailFrameObject.SetActive(false);
-                            return;
+                            // Unity ToggleGroup 会自动关掉另一个
+                            case SpeedTemplateType.Relative:
+                                relativeToggle.isOn = true;
+                                break;
+                            case SpeedTemplateType.Absolute:
+                                absoluteToggle.isOn = true;
+                                break;
                         }
-
-                        detailFrameObject.SetActive(true);
-                        remarkField.text = data.Remark;
-                        if (data.Type == SpeedTemplateType.Relative) // Unity ToggleGroup 会自动关掉另一个
-                            relativeToggle.isOn = true;
-                        else
-                            absoluteToggle.isOn = true;
                     }
                 )
                 .AddTo(this);

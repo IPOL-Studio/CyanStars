@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -85,7 +87,7 @@ namespace CyanStars.Chart
                 return IntegerPart;
             }
 
-            return IntegerPart + Numerator / Denominator;
+            return IntegerPart + Numerator / (double)Denominator;
         }
 
 
@@ -96,7 +98,7 @@ namespace CyanStars.Chart
 
         /// <summary>
         /// 对两个 beat 进行等价性比较，返回 0 时代表比较对象等价，不代表按字段相等
-        /// <remarks>可使用 <see cref="Equals"/> 或 <see cref="op_Equality"/> <see cref="op_Inequality"/> 进行按字段相等性比较</remarks>
+        /// <remarks>可使用 <see cref="Equals" /> 或 <see cref="op_Equality" /> <see cref="op_Inequality" /> 进行按字段相等性比较</remarks>
         /// </summary>
         public int CompareTo(Beat other)
         {
@@ -112,7 +114,7 @@ namespace CyanStars.Chart
             return n1.CompareTo(n2);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Beat other && Equals(other);
         }

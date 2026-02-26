@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using CyanStars.Chart.BezierCurve;
 
@@ -26,13 +28,13 @@ namespace CyanStars.Chart
 
         /// <summary>贝塞尔曲线</summary>
         /// <remarks>
-        /// 每个点的 x 坐标为相对于 Note 判定时间的提前时间，单位ms（有且仅有一个为 0，其余的 x 值必须是负数）
+        /// 每个点的 x 坐标为相对于 Note 判定时间的提前时间，单位ms（有且仅有一个为 0，其余的 x 值必须是正数）
         /// y 坐标为谱师设定速度
         /// </remarks>
         public BezierCurves BezierCurves;
 
 
-        public SpeedTemplateData(string remark = "新变速模板", SpeedTemplateType type = SpeedTemplateType.Relative, BezierCurves bezierCurves = null)
+        public SpeedTemplateData(string remark = "新变速模板", SpeedTemplateType type = SpeedTemplateType.Relative, BezierCurves? bezierCurves = null)
         {
             Remark = remark;
             Type = type;

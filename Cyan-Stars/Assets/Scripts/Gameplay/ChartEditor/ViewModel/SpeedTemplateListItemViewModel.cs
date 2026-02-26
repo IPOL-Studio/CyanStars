@@ -9,13 +9,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     public class SpeedTemplateListItemViewModel : BaseViewModel
     {
         private readonly SpeedTemplateViewModel SpeedTemplateViewModel;
-        private readonly SpeedTemplateData SpeedTemplateData;
-
-
-        /// <summary>
-        /// 当自身对应的变速数据的内部属性值变化时，触发此流来提示 View 刷新；如果不是自身变化则丢弃
-        /// </summary>
-        public readonly Observable<SpeedTemplateData> PropertyUpdatedSubject;
+        private readonly SpeedTemplateDataEditorModel SpeedTemplateData;
 
 
         private readonly ReactiveProperty<int> itemIndex;
@@ -31,7 +25,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public SpeedTemplateListItemViewModel(
             ChartEditorModel model,
             SpeedTemplateViewModel speedTemplateViewModel,
-            SpeedTemplateData speedTemplateData
+            SpeedTemplateDataEditorModel speedTemplateData
         )
             : base(model)
         {
@@ -40,8 +34,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             itemIndex = new ReactiveProperty<int>();
 
-            PropertyUpdatedSubject = SpeedTemplateViewModel.SelectedSpeedTemplateDataPropertyUpdatedSubject
-                .Where(data => data == SpeedTemplateData);
 
             IsSelected = SpeedTemplateViewModel.SelectedSpeedTemplateData
                 .Select(selectedData => selectedData == SpeedTemplateData)

@@ -62,6 +62,18 @@ namespace CyanStars.Chart.BezierCurve
             points.Insert(index, item);
         }
 
+        /// <summary>
+        /// 自动在合适的位置插入贝塞尔点元素
+        /// </summary>
+        public bool TryAdd(BezierPoint item, out int index)
+        {
+            if (!AddValidate(item, out index))
+                return false;
+
+            points.Insert(index, item);
+            return true;
+        }
+
         public void Clear()
         {
             points.Clear();

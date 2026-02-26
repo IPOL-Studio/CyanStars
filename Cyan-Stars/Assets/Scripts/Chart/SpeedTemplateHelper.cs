@@ -1,7 +1,6 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
-using CyanStars.Chart;
 using UnityEngine;
 
 namespace CyanStars.Chart.BezierCurve

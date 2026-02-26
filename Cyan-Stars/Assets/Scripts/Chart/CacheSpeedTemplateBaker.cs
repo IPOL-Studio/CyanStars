@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace CyanStars.Chart
 {
-
     public sealed class CacheSpeedTemplateBaker : ISpeedTemplateBaker
     {
         /// <summary>

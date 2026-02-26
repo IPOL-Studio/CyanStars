@@ -27411,6 +27411,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98027b7db1dd450aa4b4077c9ddd45f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.SpeedTemplateCurveFrameView
+  bezierPointHandlePrefab: {fileID: 0}
   speedCurveRenderer: {fileID: 1441601135}
   distanceCurveRenderer: {fileID: 794464705}
   verticalRangeSliderFrame: {fileID: 1010255837}

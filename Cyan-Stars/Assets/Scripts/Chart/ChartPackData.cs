@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using CyanStars.Gameplay.ChartEditor.Model;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -16,40 +15,40 @@ namespace CyanStars.Chart
         // 基本信息
 
         /// <summary>谱包的数据格式版本</summary>
-        public int DataVersion;
+        public readonly int DataVersion;
 
         /// <summary>谱包标题（音乐名）</summary>
-        public string Title;
+        public readonly string Title;
 
 
         // 音乐和演唱版本
 
         /// <summary>音频信息</summary>
-        public List<MusicVersionData> MusicVersionDatas;
+        public readonly List<MusicVersionData> MusicVersionDatas;
 
         /// <summary>bpm 组</summary>
         /// <remarks>控制不同时候的拍子所占时长（拍子可转换为时间）</remarks>
-        public List<BpmGroupItem> BpmGroup;
+        public readonly List<BpmGroupItem> BpmGroup;
 
         /// <summary>游戏内选中音乐后的预览开始时间</summary>
-        public Beat MusicPreviewStartBeat;
+        public readonly Beat MusicPreviewStartBeat;
 
         /// <summary>游戏内选中音乐后的预览结束时间</summary>
-        public Beat MusicPreviewEndBeat;
+        public readonly Beat MusicPreviewEndBeat;
 
 
         // 曲绘文件
 
         /// <summary>原始曲绘相对路径（展示收藏品原图用）</summary>
-        public string? CoverFilePath;
+        public readonly string? CoverFilePath;
 
         /// <summary>开始裁剪像素（相对于图片左下角）</summary>
-        public Vector2? CropStartPosition;
+        public readonly Vector2? CropStartPosition;
 
         /// <summary>
         /// 裁剪像素高度
         /// </summary>
-        public float? CropHeight;
+        public readonly float? CropHeight;
 
         /// <summary>
         /// 裁剪像素宽度
@@ -60,28 +59,29 @@ namespace CyanStars.Chart
         // 谱面元数据
 
         /// <summary>谱面元数据</summary>
-        public List<ChartMetaData> ChartMetaDatas;
+        public readonly List<ChartMetaData> ChartMetaDatas;
 
 
-        /// <summary>
-        /// 执行浅拷贝
-        /// </summary>
-        public ChartPackData(ChartPackData oldChartPackData)
-        {
-            Title = oldChartPackData.Title;
-            MusicVersionDatas = oldChartPackData.MusicVersionDatas;
-            BpmGroup = oldChartPackData.BpmGroup;
-            MusicPreviewStartBeat = oldChartPackData.MusicPreviewStartBeat;
-            MusicPreviewEndBeat = oldChartPackData.MusicPreviewEndBeat;
-            CoverFilePath = oldChartPackData.CoverFilePath;
-            CropStartPosition = oldChartPackData.CropStartPosition;
-            CropHeight = oldChartPackData.CropHeight;
-            ChartMetaDatas = oldChartPackData.ChartMetaDatas;
-        }
+        // /// <summary>
+        // /// 执行浅拷贝
+        // /// </summary>
+        // public ChartPackData(ChartPackData oldChartPackData)
+        // {
+        //     Title = oldChartPackData.Title;
+        //     MusicVersionDatas = oldChartPackData.MusicVersionDatas;
+        //     BpmGroup = oldChartPackData.BpmGroup;
+        //     MusicPreviewStartBeat = oldChartPackData.MusicPreviewStartBeat;
+        //     MusicPreviewEndBeat = oldChartPackData.MusicPreviewEndBeat;
+        //     CoverFilePath = oldChartPackData.CoverFilePath;
+        //     CropStartPosition = oldChartPackData.CropStartPosition;
+        //     CropHeight = oldChartPackData.CropHeight;
+        //     ChartMetaDatas = oldChartPackData.ChartMetaDatas;
+        // }
 
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <remarks>谱包数据版本会被升级为最新版本</remarks>
         [JsonConstructor]
         public ChartPackData(string title, List<MusicVersionData>? musicVersionDatas = null, List<BpmGroupItem>? bpmGroup = null,
                              Beat? musicPreviewStartBeat = null, Beat? musicPreviewEndBeat = null, string? coverFilePath = null,
@@ -120,29 +120,6 @@ namespace CyanStars.Chart
             CropStartPosition = cropPosition ?? Vector2.zero;
             CropHeight = cropHeight ?? 0;
             ChartMetaDatas = chartMetaDatas ?? new List<ChartMetaData>();
-        }
-
-        /// <summary>
-        /// 将制谱器的可观察数据转为常规数据，以用于序列化
-        /// </summary>
-        public ChartPackData(ChartPackDataEditorModel editorData)
-        {
-            DataVersion = 1;
-            Title = editorData.Title.CurrentValue;
-            MusicVersionDatas = new List<MusicVersionData>();
-            foreach (var musicVersionEditorData in editorData.MusicVersions)
-                MusicVersionDatas.Add(new MusicVersionData(musicVersionEditorData));
-            BpmGroup = new List<BpmGroupItem>();
-            foreach (var bpmGroupItem in editorData.BpmGroup)
-                BpmGroup.Add(bpmGroupItem);
-            MusicPreviewStartBeat = editorData.MusicPreviewStartBeat.CurrentValue;
-            MusicPreviewEndBeat = editorData.MusicPreviewEndBeat.CurrentValue;
-            CoverFilePath = editorData.CoverFilePath.CurrentValue;
-            CropStartPosition = editorData.CropStartPosition.CurrentValue;
-            CropHeight = editorData.CropHeight.CurrentValue;
-            ChartMetaDatas = new List<ChartMetaData>();
-            foreach (var chartMetaEditorData in editorData.ChartMetaDatas)
-                ChartMetaDatas.Add(new ChartMetaData(chartMetaEditorData));
         }
     }
 }

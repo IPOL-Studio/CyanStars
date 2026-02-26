@@ -126,8 +126,8 @@ namespace CyanStars.Gameplay.ChartEditor
                                                     ChartPackDataEditorModel chartPackDataEditorModel,
                                                     ChartDataEditorModel chartDataEditorModel)
         {
-            ChartPackData chartPackData = new ChartPackData(chartPackDataEditorModel);
-            ChartData chartData = new ChartData(chartDataEditorModel);
+            ChartPackData chartPackData = chartPackDataEditorModel.ToChartPackData();
+            ChartData chartData = chartDataEditorModel.ToChartData();
 
             try
             {

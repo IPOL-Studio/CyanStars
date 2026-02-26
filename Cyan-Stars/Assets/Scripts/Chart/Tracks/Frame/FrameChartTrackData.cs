@@ -19,7 +19,7 @@ namespace CyanStars.Chart
 
 
         public FrameChartTrackData(FrameType type, Beat startBeat, Beat endBeat, float bpm, Color color,
-            float intensity, float maxAlpha, float minAlpha)
+                                   float intensity, float maxAlpha, float minAlpha)
         {
             Type = type;
             StartBeat = startBeat;

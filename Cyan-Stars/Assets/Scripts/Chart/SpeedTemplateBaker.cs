@@ -3,11 +3,9 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using CyanStars.Chart.BezierCurve;
-using UnityEngine;
 
 namespace CyanStars.Chart
 {
-
     public sealed class SpeedTemplateBaker : ISpeedTemplateBaker
     {
         /// <summary>
