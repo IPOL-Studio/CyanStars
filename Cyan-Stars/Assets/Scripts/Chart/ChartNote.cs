@@ -1,3 +1,5 @@
+#nullable enable
+
 using JetBrains.Annotations;
 
 namespace CyanStars.Chart
@@ -37,16 +39,14 @@ namespace CyanStars.Chart
         /// 在音符达到判定时间时，无论是否有输入都播放音效，
         /// 玩家可选择是否让谱师设定的音效覆盖默认收藏品音效
         /// </remarks>
-        [CanBeNull]
-        public string CorrectAudioName;
+        public string? CorrectAudioName;
 
         /// <summary>打击音</summary>
         /// <remarks>
         /// 玩家有输入后才播放音效，
         /// 玩家可选择是否让谱师设定的音效覆盖默认收藏品音效
         /// </remarks>
-        [CanBeNull]
-        public string HitAudioName;
+        public string? HitAudioName;
 
         /// <summary>在哪一拍判定</summary>
         /// <remarks>此值转换为时间后减去 offset 为相对于音乐开始的时间</remarks>
@@ -72,8 +72,8 @@ namespace CyanStars.Chart
                                  Beat judgeBeat,
                                  int speedTemplateIndex = 0,
                                  int speedTemplateOffset = 0,
-                                 string correctAudioName = null,
-                                 string hitAudioName = null,
+                                 string? correctAudioName = null,
+                                 string? hitAudioName = null,
                                  bool judgeAble = true,
                                  bool viewAble = true)
         {
@@ -96,8 +96,8 @@ namespace CyanStars.Chart
                                 Beat judgeBeat,
                                 int speedTemplateIndex = 0,
                                 int speedTemplateOffset = 0,
-                                string correctAudioName = null,
-                                string hitAudioName = null,
+                                string? correctAudioName = null,
+                                string? hitAudioName = null,
                                 bool judgeAble = true,
                                 bool viewAble = true)
             : base(NoteType.Tap, judgeBeat, speedTemplateIndex, speedTemplateOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
@@ -126,8 +126,8 @@ namespace CyanStars.Chart
                                  int speedTemplateIndex = 0,
                                  int holdEndSpeedTemplateIndex = 0,
                                  int speedTemplateOffset = 0,
-                                 string correctAudioName = null,
-                                 string hitAudioName = null,
+                                 string? correctAudioName = null,
+                                 string? hitAudioName = null,
                                  bool judgeAble = true,
                                  bool viewAble = true)
             : base(NoteType.Hold, judgeBeat, speedTemplateIndex, speedTemplateOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
@@ -146,8 +146,8 @@ namespace CyanStars.Chart
                                  Beat judgeBeat,
                                  int speedTemplateIndex = 0,
                                  int speedTemplateOffset = 0,
-                                 string correctAudioName = null,
-                                 string hitAudioName = null,
+                                 string? correctAudioName = null,
+                                 string? hitAudioName = null,
                                  bool judgeAble = true,
                                  bool viewAble = true)
             : base(NoteType.Drag, judgeBeat, speedTemplateIndex, speedTemplateOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
@@ -164,8 +164,8 @@ namespace CyanStars.Chart
                                   Beat judgeBeat,
                                   int speedTemplateIndex = 0,
                                   int speedTemplateOffset = 0,
-                                  string correctAudioName = null,
-                                  string hitAudioName = null,
+                                  string? correctAudioName = null,
+                                  string? hitAudioName = null,
                                   bool judgeAble = true,
                                   bool viewAble = true)
             : base(NoteType.Click, judgeBeat, speedTemplateIndex, speedTemplateOffset, correctAudioName, hitAudioName, judgeAble, viewAble)
@@ -183,8 +183,8 @@ namespace CyanStars.Chart
                                   Beat judgeBeat,
                                   int speedTemplateIndex = 0,
                                   int speedTemplateOffset = 0,
-                                  string correctAudioName = null,
-                                  string hitAudioName = null,
+                                  string? correctAudioName = null,
+                                  string? hitAudioName = null,
                                   bool judgeAble = true,
                                   bool viewAble = true)
             : base(NoteType.Break, judgeBeat, speedTemplateIndex, speedTemplateOffset, correctAudioName, hitAudioName, judgeAble, viewAble)

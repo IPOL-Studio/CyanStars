@@ -9,9 +9,9 @@ namespace CyanStars.Chart.BezierCurve
     /// </summary>
     /// <remarks>
     /// 每个 bezierPoint 由三个点组成：
-    ///  - Position：位置点，曲线必然穿过此点
-    ///  - LeftControlPoint：左形变控制点，调整本条曲线和上一条曲线的形状
-    ///  - RightControlPoint：右形变控制点，调整本条曲线和下一条曲线的形状
+    /// - Position：位置点，曲线必然穿过此点
+    /// - LeftControlPoint：左形变控制点，调整本条曲线和上一条曲线的形状
+    /// - RightControlPoint：右形变控制点，调整本条曲线和下一条曲线的形状
     /// </remarks>
     public readonly struct BezierPoint : IEquatable<BezierPoint>
     {

@@ -12,29 +12,23 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class SpeedTemplateViewModel : BaseViewModel
     {
-        /// <summary>
-        /// 选中的变速模板内部的属性值发生变化（备注/变速类型/贝塞尔曲线组）
-        /// </summary>
-        public readonly Subject<SpeedTemplateData> SelectedSpeedTemplateDataPropertyUpdatedSubject = new();
+        private readonly ReactiveProperty<SpeedTemplateDataEditorModel?> selectedSpeedTemplateData;
+        public ReadOnlyReactiveProperty<SpeedTemplateDataEditorModel?> SelectedSpeedTemplateData => selectedSpeedTemplateData;
 
-
-        private readonly ReactiveProperty<SpeedTemplateData?> selectedSpeedTemplateData;
-        public ReadOnlyReactiveProperty<SpeedTemplateData?> SelectedSpeedTemplateData => selectedSpeedTemplateData;
-
-        public readonly ISynchronizedView<SpeedTemplateData, SpeedTemplateListItemViewModel> SpeedTemplateData;
+        public readonly ISynchronizedView<SpeedTemplateDataEditorModel, SpeedTemplateListItemViewModel> SpeedTemplateDatas;
 
 
         public SpeedTemplateViewModel(ChartEditorModel model)
             : base(model)
         {
-            selectedSpeedTemplateData = new ReactiveProperty<SpeedTemplateData?>(null);
+            selectedSpeedTemplateData = new ReactiveProperty<SpeedTemplateDataEditorModel?>(null);
 
-            SpeedTemplateData = Model.ChartData.CurrentValue.SpeedTemplateDatas
+            SpeedTemplateDatas = Model.ChartData.CurrentValue.SpeedTemplateDatas
                 .CreateView(data =>
                     new SpeedTemplateListItemViewModel(Model, this, data)
                 )
                 .AddTo(base.Disposables);
-            SpeedTemplateData.ObserveChanged()
+            SpeedTemplateDatas.ObserveChanged()
                 .Subscribe(e => RefreshAllIndices())
                 .AddTo(base.Disposables);
         }
@@ -50,7 +44,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private void RefreshAllIndices()
         {
             int index = 0;
-            foreach (var vm in SpeedTemplateData)
+            foreach (var vm in SpeedTemplateDatas)
             {
                 vm.SetIndex(index);
                 index++;
@@ -58,7 +52,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         }
 
 
-        public void SelectSpeedTemplateData(SpeedTemplateData? data)
+        public void SelectSpeedTemplateData(SpeedTemplateDataEditorModel? data)
         {
             if (selectedSpeedTemplateData.CurrentValue != data)
                 selectedSpeedTemplateData.Value = data;
@@ -85,7 +79,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     new BezierPointPos(1000, 0)
                 )
             };
-            Model.ChartData.CurrentValue.SpeedTemplateDatas.Add(new SpeedTemplateData(bezierCurves: bezierCurves));
+            Model.ChartData.CurrentValue.SpeedTemplateDatas.Add(
+                new SpeedTemplateDataEditorModel(
+                    new SpeedTemplateData(bezierCurves: bezierCurves)
+                )
+            );
         }
 
         public void DeleteSelectedSpeedTemplateData()
@@ -116,7 +114,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 throw new Exception("未选中变速模板时不可删复制");
 
             var oldData = selectedSpeedTemplateData.CurrentValue;
-            var newData = new SpeedTemplateData(oldData.Remark, oldData.Type, oldData.BezierCurves);
+            var newSpeedTemplateData = new SpeedTemplateData(oldData.Remark.CurrentValue, oldData.Type.CurrentValue, oldData.BezierCurves.ToBezierCurves());
+            var newData = new SpeedTemplateDataEditorModel(newSpeedTemplateData);
+
             CommandStack.ExecuteCommand(
                 () =>
                 {

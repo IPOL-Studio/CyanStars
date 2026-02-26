@@ -33,12 +33,12 @@ namespace CyanStars.Chart
         /// <summary>
         /// 校验给定的 BPM List 是否合法
         /// </summary>
-        /// <seealso cref="BpmValidationStatus"/>
+        /// <seealso cref="BpmValidationStatus" />
         /// <param name="datas">需要检查的 BPM 列表</param>
         /// <returns>校验结果（有效有序/有效无序/无效）</returns>
         public static BpmValidationStatus Validate(IList<BpmGroupItem> datas)
         {
-            if (datas == null || datas.Count == 0)
+            if (datas.Count == 0)
                 return BpmValidationStatus.Invalid;
 
             bool isSorted = true;
@@ -134,11 +134,7 @@ namespace CyanStars.Chart
                 // 回写数据
                 for (int i = 0; i < datas.Count; i++)
                 {
-                    // 仅当引用不同时赋值，减少 ObservableList 可能触发的 Notify 事件
-                    if (datas[i] != temp[i])
-                    {
-                        datas[i] = temp[i];
-                    }
+                    datas[i] = temp[i];
                 }
             }
         }
