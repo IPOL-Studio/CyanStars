@@ -1,4 +1,5 @@
 #nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace CyanStars.Chart
         {
             cache = Baker.IsSupportParallel
                 ? dataList.AsParallel()
-                          .ToDictionary(data => data, data => SpeedTemplate.Create(data, Baker, PlayerSpeed))
+                    .ToDictionary(data => data, data => SpeedTemplate.Create(data, Baker, PlayerSpeed))
                 : dataList.ToDictionary(data => data, data => SpeedTemplate.Create(data, Baker, PlayerSpeed));
         }
     }

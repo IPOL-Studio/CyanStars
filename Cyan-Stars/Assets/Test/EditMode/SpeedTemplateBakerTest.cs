@@ -76,28 +76,28 @@ namespace Test.EditMode
             get
             {
                 yield return new TestCaseData(
-                        new SpeedTemplateData(SpeedGroupType.Absolute, bezierCurves1),
+                        new SpeedTemplateData("", SpeedTemplateType.Absolute, bezierCurves1),
                         2f,
                         CacheSpeedTemplateBaker.SampleIntervalMsTime,
                         null
                     )
                     .SetName("单点曲线采样数量测试 1");
                 yield return new TestCaseData(
-                        new SpeedTemplateData(SpeedGroupType.Relative, bezierCurves1),
+                        new SpeedTemplateData("", SpeedTemplateType.Relative, bezierCurves1),
                         2f,
                         CacheSpeedTemplateBaker.SampleIntervalMsTime,
                         null
                     )
                     .SetName("单点曲线采样数量测试 2");
                 yield return new TestCaseData(
-                        new SpeedTemplateData(SpeedGroupType.Absolute, bezierCurves2),
+                        new SpeedTemplateData("", SpeedTemplateType.Absolute, bezierCurves2),
                         2f,
                         CacheSpeedTemplateBaker.SampleIntervalMsTime,
                         4
                     )
                     .SetName("多点曲线采样数量测试 1");
                 yield return new TestCaseData(
-                        new SpeedTemplateData(SpeedGroupType.Relative, bezierCurves2),
+                        new SpeedTemplateData("", SpeedTemplateType.Relative, bezierCurves2),
                         2f,
                         CacheSpeedTemplateBaker.SampleIntervalMsTime,
                         4
@@ -111,25 +111,25 @@ namespace Test.EditMode
             get
             {
                 yield return new TestCaseData(
-                        new SpeedTemplateData(SpeedGroupType.Absolute, bezierCurves1),
+                        new SpeedTemplateData("", SpeedTemplateType.Absolute, bezierCurves1),
                         2f,
                         0
                     )
                     .SetName("单点曲线位移测试 1");
                 yield return new TestCaseData(
-                        new SpeedTemplateData(SpeedGroupType.Relative, bezierCurves1),
+                        new SpeedTemplateData("", SpeedTemplateType.Relative, bezierCurves1),
                         2f,
                         0
                     )
                     .SetName("单点曲线位移测试 2");
                 yield return new TestCaseData(
-                        new SpeedTemplateData(SpeedGroupType.Absolute, bezierCurves2),
+                        new SpeedTemplateData("", SpeedTemplateType.Absolute, bezierCurves2),
                         2f,
                         100
                     )
                     .SetName("多点曲线位移测试 1");
                 yield return new TestCaseData(
-                        new SpeedTemplateData(SpeedGroupType.Relative, bezierCurves2),
+                        new SpeedTemplateData("", SpeedTemplateType.Relative, bezierCurves2),
                         2f,
                         200
                     )
@@ -142,28 +142,28 @@ namespace Test.EditMode
             get
             {
                 yield return new TestCaseData(
-                        new SpeedTemplateData(SpeedGroupType.Absolute, bezierCurves1),
+                        new SpeedTemplateData("", SpeedTemplateType.Absolute, bezierCurves1),
                         2f,
                         null,
                         null
                     )
                     .SetName("单点曲线采样测试 1");
                 yield return new TestCaseData(
-                        new SpeedTemplateData(SpeedGroupType.Relative, bezierCurves1),
+                        new SpeedTemplateData("", SpeedTemplateType.Relative, bezierCurves1),
                         2f,
                         null,
                         null
                     )
                     .SetName("单点曲线采样测试 2");
                 yield return new TestCaseData(
-                        new SpeedTemplateData(SpeedGroupType.Absolute, bezierCurves2),
+                        new SpeedTemplateData("", SpeedTemplateType.Absolute, bezierCurves2),
                         2f,
                         new[] { 0f, 0f, 0f, 5000f },
                         new[] { 0f, 50f, 0f, 25f }
                     )
                     .SetName("多点曲线采样测试 1");
                 yield return new TestCaseData(
-                        new SpeedTemplateData(SpeedGroupType.Relative, bezierCurves2),
+                        new SpeedTemplateData("", SpeedTemplateType.Relative, bezierCurves2),
                         2f,
                         new[] { 0f, 0f, 0f, 10000f },
                         new[] { 0f, 100f, 0f, 50f }

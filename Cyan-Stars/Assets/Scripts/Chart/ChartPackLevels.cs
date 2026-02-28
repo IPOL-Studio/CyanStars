@@ -1,7 +1,11 @@
+#nullable enable
+
+using System;
+
 /// <summary>
 /// 用于内置谱包的定数结构体
 /// </summary>
-[System.Serializable]
+[Serializable]
 public struct ChartPackLevels
 {
     public float KuiXingLevel;

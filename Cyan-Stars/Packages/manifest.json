@@ -17,6 +17,7 @@
     "com.unity.timeline": "1.8.9",
     "com.unity.toolchain.win-x86_64-linux-x86_64": "2.0.11",
     "com.unity.ugui": "2.0.0",
+    "com.unity.uiextensions": "https://github.com/Unity-UI-Extensions/com.unity.uiextensions.git",
     "com.unity.visualeffectgraph": "17.3.0",
     "com.yasirkula.simplefilebrowser": "https://github.com/IPOL-Studio/UnitySimpleFileBrowser.git",
     "com.unity.modules.accessibility": "1.0.0",
