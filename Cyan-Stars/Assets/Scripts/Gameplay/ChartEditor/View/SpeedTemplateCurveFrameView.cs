@@ -116,8 +116,22 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private void OnVerticalChanged(float lowY, float highY)
         {
-            scaleY = (highY - lowY) / DefaultViewportY;
-            offsetY = (highY + lowY) / 2f;
+            if (ViewModel.SelectedSpeedTemplateData.CurrentValue == null)
+                throw new Exception("选中曲线为空时不应该调整缩放");
+
+            scaleY = 1 / ((highY - lowY) / DefaultViewportY);
+            offsetY = -((highY + lowY) / 2f);
+
+            // 更新贝塞尔位置点 // TODO: 优化算法，只更新视窗内的贝塞尔点
+            foreach (var kvp in SpawnedPoints)
+            {
+                ((RectTransform)kvp.Value.transform).anchoredPosition = new Vector2(
+                    (kvp.Key.BezierPoint.PositionPoint.MsTime + offsetX) * scaleX,
+                    (kvp.Key.BezierPoint.PositionPoint.Value + offsetY) * scaleY
+                );
+            }
+
+            // 更新速度曲线和位移曲面
             DrawCurve();
         }
 
@@ -126,15 +140,25 @@ namespace CyanStars.Gameplay.ChartEditor.View
             if (ViewModel.SelectedSpeedTemplateData.CurrentValue == null)
                 throw new Exception("选中曲线为空时不应该调整缩放");
 
+            scaleX = (highX - lowX) / DefaultViewportX;
+            offsetX = lowX;
+
+            // 更新贝塞尔位置点 // TODO: 优化算法，只更新视窗内的贝塞尔点
+            foreach (var kvp in SpawnedPoints)
+            {
+                ((RectTransform)kvp.Value.transform).anchoredPosition = new Vector2(
+                    (kvp.Key.BezierPoint.PositionPoint.MsTime + offsetX) * scaleX,
+                    (kvp.Key.BezierPoint.PositionPoint.Value + offsetY) * scaleY
+                );
+            }
+
+            // 更新速度曲线和位移曲面
             SpeedTemplateHelper.Bake(
                 ViewModel.SelectedSpeedTemplateData.CurrentValue.ToSpeedTemplateData(),
                 1f,
                 out tempBakedSpeedList,
                 out tempBakedDistanceList
             );
-
-            scaleX = (highX - lowX) / DefaultViewportX;
-            offsetX = lowX;
 
             DrawCurve();
         }
@@ -159,13 +183,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
             for (int i = 0; i < tempBakedSpeedList.Count; i++)
             {
                 speedPoints[i] = new Vector2(
-                    (i * SpeedTemplateHelper.SampleIntervalMsTime - offsetX) / scaleX,
-                    (tempBakedSpeedList[i] - offsetY) / scaleY
+                    (i * SpeedTemplateHelper.SampleIntervalMsTime + offsetX) * scaleX,
+                    (tempBakedSpeedList[i] + offsetY) * scaleY
                 );
 
                 distancePoints[i] = new Vector2(
-                    (i * SpeedTemplateHelper.SampleIntervalMsTime - offsetX) / scaleX,
-                    (tempBakedDistanceList[i] - offsetY) / scaleY
+                    (i * SpeedTemplateHelper.SampleIntervalMsTime + offsetX) * scaleX,
+                    (tempBakedDistanceList[i] + offsetY) * scaleY
                 );
             }
 
@@ -193,6 +217,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
             foreach (var viewModel in viewModelMap)
             {
                 GameObject go = Instantiate(bezierPointHandlePrefab, pointFrameObject.transform);
+                RectTransform rectTransform = (RectTransform)go.transform;
+                rectTransform.anchorMin = new Vector2(0f, 0.5f);
+                rectTransform.anchorMax = new Vector2(0f, 0.5f);
+                rectTransform.anchoredPosition = new Vector2(
+                    (viewModel.BezierPoint.PositionPoint.MsTime + offsetX) * scaleX,
+                    (viewModel.BezierPoint.PositionPoint.Value + offsetY) * scaleY
+                );
                 go.GetComponent<SpeedTemplateBezierPointHandleItemView>().Bind(viewModel);
                 SpawnedPoints[viewModel] = go;
             }
@@ -202,6 +233,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(e =>
                     {
                         GameObject go = Instantiate(bezierPointHandlePrefab, pointFrameObject.transform);
+                        RectTransform rectTransform = (RectTransform)go.transform;
+                        rectTransform.anchorMin = new Vector2(0f, 0.5f);
+                        rectTransform.anchorMax = new Vector2(0f, 0.5f);
+                        rectTransform.anchoredPosition = new Vector2(
+                            (e.Value.View.BezierPoint.PositionPoint.MsTime + offsetX) * scaleX,
+                            (e.Value.View.BezierPoint.PositionPoint.Value + offsetY) * scaleY
+                        );
                         go.GetComponent<SpeedTemplateBezierPointHandleItemView>().Bind(e.Value.View);
                         SpawnedPoints[e.Value.View] = go;
                     }
@@ -224,6 +262,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
                         SpawnedPoints.Remove(e.OldValue.View);
 
                         GameObject newGO = Instantiate(bezierPointHandlePrefab, pointFrameObject.transform);
+                        RectTransform rectTransform = (RectTransform)newGO.transform;
+                        rectTransform.anchorMin = new Vector2(0f, 0.5f);
+                        rectTransform.anchorMax = new Vector2(0f, 0.5f);
+                        rectTransform.anchoredPosition = new Vector2(
+                            (e.NewValue.View.BezierPoint.PositionPoint.MsTime + offsetX) * scaleX,
+                            (e.NewValue.View.BezierPoint.PositionPoint.Value + offsetY) * scaleY
+                        );
                         newGO.GetComponent<SpeedTemplateBezierPointHandleItemView>().Bind(e.NewValue.View);
                         SpawnedPoints[e.NewValue.View] = newGO;
                     }
