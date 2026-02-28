@@ -37,6 +37,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private RangeSlider horizontalRangeSliderFrame = null!;
 
 
+        [SerializeField]
+        private GameObject pointFrameObject = null!;
+
+
         // --- 速度和位移曲线绘制 ---
 
         private const float DefaultViewportX = 1000f;
@@ -53,9 +57,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private List<float> tempBakedDistanceList = new List<float>();
 
 
-        // --- 贝塞尔点位置和显隐 ---
+        // --- 贝塞尔点 VM 和 V ---
+        /// <summary>
+        /// 用于在选中的变速模板变化时断开旧集合监听
+        /// </summary>
+        private readonly CompositeDisposable CollectionDisposables = new();
 
-        private readonly List<SpeedTemplateBezierPointHandleItem> BezierPointHandles = new List<SpeedTemplateBezierPointHandleItem>();
+        /// <summary>
+        /// 记录 VM 和物体映射关系
+        /// </summary>
+        private readonly Dictionary<SpeedTemplateBezierPointHandleItemViewModel, GameObject> SpawnedPoints = new();
 
 
         public override void Bind(SpeedTemplateCurveFrameViewModel targetViewModel)
@@ -65,14 +76,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
             verticalRangeSliderFrame.OnValueChanged.AddListener(OnVerticalChanged);
             horizontalRangeSliderFrame.OnValueChanged.AddListener(OnHorizontalChanged);
 
-            // 当选择了新的变速模板，或贝塞尔曲线内部数据变化时，重新烘焙并重绘曲线
+            // 当选择了新的变速模板，或贝塞尔曲线内部数据变化时，重新烘焙并重绘速度曲线和位移曲面
             ViewModel.SelectedSpeedTemplateData
-                .Select(speedTemplateData =>
+                .Select(selectedSpeedTemplate =>
                     {
-                        if (speedTemplateData?.BezierCurves?.Points == null)
+                        if (selectedSpeedTemplate?.BezierCurves.Points == null)
                             return Observable.Empty<Unit>();
 
-                        return speedTemplateData.BezierCurves.Points
+                        return selectedSpeedTemplate.BezierCurves.Points
                             .ObserveChanged()
                             .Select(_ => Unit.Default)
                             .Prepend(Unit.Default);
@@ -94,6 +105,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
                         DrawCurve();
                     }
                 )
+                .AddTo(this);
+
+            // 当选择了新的变速模板时，重新生成全部的贝塞尔点 View
+            ViewModel.BezierPointViewModelsMap
+                .Subscribe(OnViewMapChanged)
                 .AddTo(this);
         }
 
@@ -155,6 +171,64 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             speedCurveRenderer.Points = speedPoints;
             distanceCurveRenderer.Points = distancePoints;
+        }
+
+        private void OnViewMapChanged(ISynchronizedView<BezierPoint, SpeedTemplateBezierPointHandleItemViewModel>? viewModelMap)
+        {
+            // 断开集合监听并销毁旧 go
+            CollectionDisposables.Clear();
+
+            foreach (var kvp in SpawnedPoints)
+            {
+                Destroy(kvp.Value);
+            }
+
+            SpawnedPoints.Clear();
+
+            // 未选中变速模板时直接返回
+            if (viewModelMap == null)
+                return;
+
+            // 实例化新选中的变速模板中已存在的贝塞尔点、绑定并记录
+            foreach (var viewModel in viewModelMap)
+            {
+                GameObject go = Instantiate(bezierPointHandlePrefab, pointFrameObject.transform);
+                go.GetComponent<SpeedTemplateBezierPointHandleItemView>().Bind(viewModel);
+                SpawnedPoints[viewModel] = go;
+            }
+
+            // 为新的贝塞尔曲线列表创建响应监听
+            viewModelMap.ObserveAdd()
+                .Subscribe(e =>
+                    {
+                        GameObject go = Instantiate(bezierPointHandlePrefab, pointFrameObject.transform);
+                        go.GetComponent<SpeedTemplateBezierPointHandleItemView>().Bind(e.Value.View);
+                        SpawnedPoints[e.Value.View] = go;
+                    }
+                )
+                .AddTo(CollectionDisposables);
+            viewModelMap.ObserveRemove()
+                .Subscribe(e =>
+                    {
+                        GameObject go = SpawnedPoints[e.Value.View];
+                        Destroy(go);
+                        SpawnedPoints.Remove(e.Value.View);
+                    }
+                )
+                .AddTo(CollectionDisposables);
+            viewModelMap.ObserveReplace()
+                .Subscribe(e =>
+                    {
+                        GameObject oldGO = SpawnedPoints[e.OldValue.View];
+                        Destroy(oldGO);
+                        SpawnedPoints.Remove(e.OldValue.View);
+
+                        GameObject newGO = Instantiate(bezierPointHandlePrefab, pointFrameObject.transform);
+                        newGO.GetComponent<SpeedTemplateBezierPointHandleItemView>().Bind(e.NewValue.View);
+                        SpawnedPoints[e.NewValue.View] = newGO;
+                    }
+                )
+                .AddTo(CollectionDisposables);
         }
 
 

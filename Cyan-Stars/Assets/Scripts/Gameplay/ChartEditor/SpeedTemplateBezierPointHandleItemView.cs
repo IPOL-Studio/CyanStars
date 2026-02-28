@@ -1,12 +1,14 @@
 #nullable enable
 
+using CyanStars.Gameplay.ChartEditor.View;
+using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
 
 namespace CyanStars.Gameplay.ChartEditor
 {
-    public class SpeedTemplateBezierPointHandleItem : MonoBehaviour
+    public class SpeedTemplateBezierPointHandleItemView : BaseView<SpeedTemplateBezierPointHandleItemViewModel>
     {
         [SerializeField]
         private UILineRenderer uiLineRenderer = null!;
@@ -23,10 +25,21 @@ namespace CyanStars.Gameplay.ChartEditor
 
 
         /// <summary>
-        /// 初始化方法，在实例化 go 后立刻调用
+        /// 绑定方法，在实例化 go 后立刻调用
         /// </summary>
-        public void Init()
+        public override void Bind(SpeedTemplateBezierPointHandleItemViewModel targetViewModel)
         {
+            base.Bind(targetViewModel);
+
+            ViewModel.SelfSelected
+                .Subscribe(isSelected =>
+                    {
+                        uiLineRenderer.enabled = false;
+                        leftControlPointObject.SetActive(isSelected);
+                        rightControlPointObject.SetActive(isSelected);
+                    }
+                )
+                .AddTo(this);
         }
 
 

@@ -26,6 +26,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<BezierPoint?> SelectedPoint => selectedPoint;
 
 
+        private readonly ReactiveProperty<ISynchronizedView<BezierPoint, SpeedTemplateBezierPointHandleItemViewModel>?> bezierPointViewModelsMap = new();
+
+        public ReadOnlyReactiveProperty<ISynchronizedView<BezierPoint, SpeedTemplateBezierPointHandleItemViewModel>?> BezierPointViewModelsMap => bezierPointViewModelsMap;
+
+
         public SpeedTemplateCurveFrameViewModel(
             ChartEditorModel model,
             SpeedTemplateViewModel speedTemplateViewModel
@@ -33,6 +38,35 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             : base(model)
         {
             SpeedTemplateViewModel = speedTemplateViewModel;
+
+            // 变速模板变化时清空选中的贝塞尔点
+            SelectedSpeedTemplateData
+                .Subscribe(_ => selectedPoint.Value = null)
+                .AddTo(base.Disposables);
+
+            // 变速模板变化时重新构建子 VM 和 V
+            SelectedSpeedTemplateData
+                .Subscribe(selectedData =>
+                    {
+                        bezierPointViewModelsMap.CurrentValue?.Dispose();
+
+                        if (selectedData != null)
+                        {
+                            bezierPointViewModelsMap.Value = selectedData.BezierCurves.Points
+                                .CreateView(point =>
+                                    new SpeedTemplateBezierPointHandleItemViewModel(Model, this, point)
+                                );
+                        }
+                        else
+                        {
+                            bezierPointViewModelsMap.Value = null;
+                        }
+                    }
+                )
+                .AddTo(base.Disposables);
+
+            // 确保 ViewModel 销毁时，最后一个 View 也能被正确释放
+            base.Disposables.Add(Disposable.Create(() => bezierPointViewModelsMap.CurrentValue?.Dispose()));
         }
     }
 }
