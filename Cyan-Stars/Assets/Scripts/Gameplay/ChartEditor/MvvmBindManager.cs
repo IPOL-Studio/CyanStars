@@ -43,7 +43,7 @@ namespace CyanStars.Gameplay.ChartEditor
         private ChartPackDataCoverCropFrameView cropFrameView = null!;
 
         [SerializeField]
-        private List<ChartPackDataCoverCropHandlerView> cropHandlerViews = null!;
+        private List<ChartPackDataCoverCropHandleView> cropHandlerViews = null!;
 
         [SerializeField]
         private MusicVersionView musicVersionView = null!;
