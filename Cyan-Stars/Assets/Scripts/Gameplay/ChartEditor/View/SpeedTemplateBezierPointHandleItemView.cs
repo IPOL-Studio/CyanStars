@@ -1,14 +1,12 @@
 #nullable enable
 
-using CyanStars.Chart.BezierCurve;
-using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI.Extensions;
 
-namespace CyanStars.Gameplay.ChartEditor
+namespace CyanStars.Gameplay.ChartEditor.View
 {
     public class SpeedTemplateBezierPointHandleItemView : BaseView<SpeedTemplateBezierPointHandleItemViewModel>
     {

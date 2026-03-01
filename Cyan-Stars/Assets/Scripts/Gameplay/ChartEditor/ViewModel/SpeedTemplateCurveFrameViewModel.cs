@@ -52,8 +52,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                         if (selectedData != null)
                         {
                             bezierPointViewModelsMap.Value = selectedData.BezierCurves.Points
-                                .CreateView(point =>
-                                    new SpeedTemplateBezierPointHandleItemViewModel(Model, this, point)
+                                .CreateView(pointWrapper =>
+                                    new SpeedTemplateBezierPointHandleItemViewModel(Model, this, pointWrapper)
                                 );
                         }
                         else
