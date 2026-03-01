@@ -14,7 +14,7 @@ CyanStars is a fan-made, non-commercial rhythm game about Chinese Virtual Singer
 
 Thank you for participating in the contribution of code/game content/translation. Please read the [Contribution Guide](CONTRIBUTING.md)!
 
-源代码与多媒体文件请在 [LICENSE](LICENSE.md) 中约定的范围内使用。
+Please use the specifications outlined in [LICENSE](LICENSE.md) for source code and multimedia files.
 
 ## Related Links
 
