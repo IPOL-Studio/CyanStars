@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2998906008640148653}
   - component: {fileID: 8809398660773828261}
   - component: {fileID: 4608603276635985324}
-  - component: {fileID: 6078271066597644082}
+  - component: {fileID: 2171301366499811797}
   m_Layer: 5
   m_Name: PosPoint
   m_TagString: Untagged
@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 20}
+  m_SizeDelta: {x: 10, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8809398660773828261
 CanvasRenderer:
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6078271066597644082
+--- !u!114 &2171301366499811797
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,40 +85,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 389584907249451647}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Script: {fileID: 11500000, guid: b1b17b279f574f67a2457cabbd8298d4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventTrigger
-  m_Delegates:
-  - eventID: 5
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 7670654645368227298}
-          m_TargetAssemblyTypeName: CyanStars.Gameplay.ChartEditor.BezierPointHandle,
-            CyanStars
-          m_MethodName: OnPosPointClicked
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-        - m_Target: {fileID: 7670654645368227298}
-          m_TargetAssemblyTypeName: CyanStars.Gameplay.ChartEditor.BezierPointHandle,
-            CyanStars
-          m_MethodName: OnPosPointDragging
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+  m_EditorClassIdentifier: CyanStars::CyanStars.Gameplay.ChartEditor.BezierPointHandleSubItem
+  bezierPointHandleItemView: {fileID: 7670654645368227298}
+  type: 0
 --- !u!1 &5364582898592262878
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,7 +101,7 @@ GameObject:
   - component: {fileID: 237717985413641261}
   - component: {fileID: 5908389723217722653}
   - component: {fileID: 5838808680305211358}
-  - component: {fileID: 3074962725735762926}
+  - component: {fileID: 2521064807412995734}
   m_Layer: 5
   m_Name: RightControlPoint
   m_TagString: Untagged
@@ -155,7 +126,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 20}
+  m_SizeDelta: {x: 10, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5908389723217722653
 CanvasRenderer:
@@ -195,7 +166,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3074962725735762926
+--- !u!114 &2521064807412995734
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -204,27 +175,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 5364582898592262878}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Script: {fileID: 11500000, guid: b1b17b279f574f67a2457cabbd8298d4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventTrigger
-  m_Delegates:
-  - eventID: 5
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 7670654645368227298}
-          m_TargetAssemblyTypeName: CyanStars.Gameplay.ChartEditor.BezierPointHandle,
-            CyanStars
-          m_MethodName: OnRightControlPointDragging
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+  m_EditorClassIdentifier: CyanStars::CyanStars.Gameplay.ChartEditor.BezierPointHandleSubItem
+  bezierPointHandleItemView: {fileID: 7670654645368227298}
+  type: 2
 --- !u!1 &5961318756960941090
 GameObject:
   m_ObjectHideFlags: 0
@@ -236,7 +191,7 @@ GameObject:
   - component: {fileID: 2260982574885951404}
   - component: {fileID: 4002844999793402406}
   - component: {fileID: 2640261126262125838}
-  - component: {fileID: 1623222709190789236}
+  - component: {fileID: 968908194955395897}
   m_Layer: 5
   m_Name: LeftContolPoint
   m_TagString: Untagged
@@ -261,7 +216,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 20}
+  m_SizeDelta: {x: 10, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4002844999793402406
 CanvasRenderer:
@@ -301,7 +256,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1623222709190789236
+--- !u!114 &968908194955395897
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -310,27 +265,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 5961318756960941090}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Script: {fileID: 11500000, guid: b1b17b279f574f67a2457cabbd8298d4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventTrigger
-  m_Delegates:
-  - eventID: 5
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 7670654645368227298}
-          m_TargetAssemblyTypeName: CyanStars.Gameplay.ChartEditor.BezierPointHandle,
-            CyanStars
-          m_MethodName: OnLeftControlPointDragging
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+  m_EditorClassIdentifier: CyanStars::CyanStars.Gameplay.ChartEditor.BezierPointHandleSubItem
+  bezierPointHandleItemView: {fileID: 7670654645368227298}
+  type: 1
 --- !u!1 &6569008300724398559
 GameObject:
   m_ObjectHideFlags: 0

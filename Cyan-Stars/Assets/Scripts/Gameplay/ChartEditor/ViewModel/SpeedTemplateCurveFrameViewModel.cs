@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using CyanStars.Chart;
 using CyanStars.Chart.BezierCurve;
 using CyanStars.Gameplay.ChartEditor.Model;
 using ObservableCollections;
@@ -18,17 +17,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<SpeedTemplateDataEditorModel?> SelectedSpeedTemplateData =>
             SpeedTemplateViewModel.SelectedSpeedTemplateData;
 
-        private readonly ReactiveProperty<BezierPoint?> selectedPoint = new ReactiveProperty<BezierPoint?>();
+        private readonly ReactiveProperty<BezierPointWrapperModel?> selectedPoint = new ReactiveProperty<BezierPointWrapperModel?>();
 
         /// <summary>
         /// 当前选中的贝塞尔点
         /// </summary>
-        public ReadOnlyReactiveProperty<BezierPoint?> SelectedPoint => selectedPoint;
+        public ReadOnlyReactiveProperty<BezierPointWrapperModel?> SelectedPoint => selectedPoint;
 
 
-        private readonly ReactiveProperty<ISynchronizedView<BezierPoint, SpeedTemplateBezierPointHandleItemViewModel>?> bezierPointViewModelsMap = new();
+        private readonly ReactiveProperty<ISynchronizedView<BezierPointWrapperModel, SpeedTemplateBezierPointHandleItemViewModel>?> bezierPointViewModelsMap = new();
 
-        public ReadOnlyReactiveProperty<ISynchronizedView<BezierPoint, SpeedTemplateBezierPointHandleItemViewModel>?> BezierPointViewModelsMap => bezierPointViewModelsMap;
+        public ReadOnlyReactiveProperty<ISynchronizedView<BezierPointWrapperModel, SpeedTemplateBezierPointHandleItemViewModel>?> BezierPointViewModelsMap => bezierPointViewModelsMap;
 
 
         public SpeedTemplateCurveFrameViewModel(
