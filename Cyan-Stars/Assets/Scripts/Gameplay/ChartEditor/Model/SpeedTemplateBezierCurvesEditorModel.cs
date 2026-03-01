@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using CyanStars.Chart.BezierCurve;
+using CyanStars.Gameplay.ChartEditor.Model;
 using ObservableCollections;
 
 public class SpeedTemplateBezierCurvesEditorModel
@@ -8,12 +9,12 @@ public class SpeedTemplateBezierCurvesEditorModel
     // 原始列表数据（用于复用校验逻辑）
     private readonly BezierCurves OriginCurves;
 
-    private readonly ObservableList<BezierPoint> points = new ObservableList<BezierPoint>();
+    private readonly ObservableList<BezierPointWrapperModel> points = new ObservableList<BezierPointWrapperModel>();
 
     /// <summary>
     /// 暴露给制谱器的可观察贝塞尔曲线列表，校验通过后才更新
     /// </summary>
-    public IReadOnlyObservableList<BezierPoint> Points => points;
+    public IReadOnlyObservableList<BezierPointWrapperModel> Points => points;
 
     /// <summary>
     /// 构造函数
@@ -23,7 +24,7 @@ public class SpeedTemplateBezierCurvesEditorModel
         OriginCurves = originCurves;
         foreach (var point in originCurves.Points)
         {
-            points.Add(point);
+            points.Add(new BezierPointWrapperModel(point));
         }
     }
 
@@ -39,9 +40,9 @@ public class SpeedTemplateBezierCurvesEditorModel
     /// <summary>
     /// 尝试添加一个点
     /// </summary>
-    public bool TryAddPoint(BezierPoint newPoint)
+    public bool TryAddPoint(BezierPointWrapperModel newPoint)
     {
-        if (OriginCurves.TryAdd(newPoint, out int index))
+        if (OriginCurves.TryAdd(newPoint.Point.CurrentValue, out int index))
         {
             points.Insert(index, newPoint);
             return true;
@@ -55,9 +56,9 @@ public class SpeedTemplateBezierCurvesEditorModel
     /// <summary>
     /// 尝试更新/移动一个点
     /// </summary>
-    public bool TryUpdatePoint(BezierPoint oldPoint, BezierPoint newPoint)
+    public bool TryUpdatePoint(BezierPointWrapperModel oldPoint, BezierPointWrapperModel newPoint)
     {
-        if (OriginCurves.TryReplace(oldPoint, newPoint))
+        if (OriginCurves.TryReplace(oldPoint.Point.CurrentValue, newPoint.Point.CurrentValue))
         {
             int index = points.IndexOf(oldPoint);
             points[index] = newPoint;
@@ -73,9 +74,9 @@ public class SpeedTemplateBezierCurvesEditorModel
     /// <summary>
     /// 移除一个点
     /// </summary>
-    public bool TryRemovePoint(BezierPoint oldPoint)
+    public bool TryRemovePoint(BezierPointWrapperModel oldPoint)
     {
-        if (OriginCurves.Remove(oldPoint))
+        if (OriginCurves.Remove(oldPoint.Point.CurrentValue))
         {
             points.Remove(oldPoint);
             return true;

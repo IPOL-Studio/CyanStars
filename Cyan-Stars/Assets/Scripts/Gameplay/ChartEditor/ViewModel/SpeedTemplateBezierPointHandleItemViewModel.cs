@@ -10,14 +10,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     {
         private readonly SpeedTemplateCurveFrameViewModel SpeedTemplateCurveFrameViewModel;
 
-        public readonly BezierPoint BezierPoint; // 结构体，在更新时直接销毁 VM 并重新创建
+        public readonly BezierPointWrapperModel BezierPoint; // 结构体，在更新时直接销毁 VM 并重新创建
         public readonly ReactiveProperty<bool> SelfSelected = new ReactiveProperty<bool>();
 
 
         public SpeedTemplateBezierPointHandleItemViewModel(
             ChartEditorModel model,
             SpeedTemplateCurveFrameViewModel speedTemplateCurveFrameViewModel,
-            BezierPoint bezierPoint
+            BezierPointWrapperModel bezierPoint
         )
             : base(model)
         {

@@ -1,5 +1,6 @@
 #nullable enable
 
+using CyanStars.Chart.BezierCurve;
 using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
@@ -9,10 +10,13 @@ using UnityEngine.UI.Extensions;
 
 namespace CyanStars.Gameplay.ChartEditor
 {
-    public class SpeedTemplateBezierPointHandleItemView : BaseView<SpeedTemplateBezierPointHandleItemViewModel>, IPointerDownHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
+    public class SpeedTemplateBezierPointHandleItemView : BaseView<SpeedTemplateBezierPointHandleItemViewModel>
     {
         [SerializeField]
         private UILineRenderer uiLineRenderer = null!;
+
+        [SerializeField]
+        private GameObject pointFrameObject = null!;
 
 
         [SerializeField]
@@ -46,45 +50,31 @@ namespace CyanStars.Gameplay.ChartEditor
 
         #region 位置点、控制点被点击和拖拽回调
 
-        // 由 pointObject 的 EventTrigger 组件触发，请在 Unity 内检查脚本挂载
-
-        public void OnPosPointClicked()
+        public void OnSubObjectPointClick(PointerEventData eventData, BezierPointSubItemType type)
         {
         }
 
-        public void OnPosPointDragging()
+        public void OnSubObjectDrag(PointerEventData eventData, BezierPointSubItemType type)
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                (RectTransform)transform.parent,
+                eventData.position,
+                eventData.pressEventCamera,
+                out Vector2 localPoint
+            );
+
+            Debug.Log(localPoint);
+            ((RectTransform)transform).anchoredPosition = localPoint;
+        }
+
+        public void OnSubObjectBeginDrag(PointerEventData eventData, BezierPointSubItemType type)
         {
         }
 
-        public void OnLeftControlPointDragging()
-        {
-        }
-
-        public void OnRightControlPointDragging()
+        public void OnSubObjectEndDrag(PointerEventData eventData, BezierPointSubItemType type)
         {
         }
 
         #endregion
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            // 点击时将当前 Handle 置于最上层，防止被其他 Handle 遮挡导致无法拖拽
-            transform.SetAsLastSibling();
-        }
-
-        public void OnDrag(PointerEventData eventData)
-        {
-            // TODO: 请求 VM 更新预览位置
-        }
-
-        public void OnBeginDrag(PointerEventData _)
-        {
-            // TODO: 请求 VM 记录初始位置以便撤销
-        }
-
-        public void OnEndDrag(PointerEventData _)
-        {
-            // TODO: 向 VM 提交位置更新
-        }
     }
 }
