@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using CyanStars.Chart.BezierCurve;
 using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
 
@@ -10,8 +9,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     {
         private readonly SpeedTemplateCurveFrameViewModel SpeedTemplateCurveFrameViewModel;
 
-        public readonly BezierPointWrapperModel BezierPoint; // 结构体，在更新时直接销毁 VM 并重新创建
-        public readonly ReactiveProperty<bool> SelfSelected = new ReactiveProperty<bool>();
+        public readonly ReadOnlyReactiveProperty<BezierPointWrapperModel> BezierPoint;
+
+        private readonly ReactiveProperty<bool> selfSelected = new ReactiveProperty<bool>(false);
+        public ReadOnlyReactiveProperty<bool> SelfSelected => selfSelected;
 
 
         public SpeedTemplateBezierPointHandleItemViewModel(
@@ -22,10 +23,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             : base(model)
         {
             SpeedTemplateCurveFrameViewModel = speedTemplateCurveFrameViewModel;
-            BezierPoint = bezierPoint;
+            BezierPoint = new ReactiveProperty<BezierPointWrapperModel>(bezierPoint);
 
             SpeedTemplateCurveFrameViewModel.SelectedPoint
-                .Subscribe(selectedPoint => SelfSelected.Value = selectedPoint == BezierPoint)
+                .Subscribe(selectedPoint => selfSelected.Value = selectedPoint == BezierPoint.CurrentValue)
                 .AddTo(base.Disposables);
         }
     }

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using CyanStars.Gameplay.ChartEditor.View;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
