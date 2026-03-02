@@ -17,17 +17,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<SpeedTemplateDataEditorModel?> SelectedSpeedTemplateData =>
             SpeedTemplateViewModel.SelectedSpeedTemplateData;
 
-        private readonly ReactiveProperty<BezierPointWrapperModel?> selectedPoint = new ReactiveProperty<BezierPointWrapperModel?>();
+        private readonly ReactiveProperty<ReadOnlyReactiveProperty<BezierPoint>?> selectedPoint = new ReactiveProperty<ReadOnlyReactiveProperty<BezierPoint>?>();
 
         /// <summary>
         /// 当前选中的贝塞尔点
         /// </summary>
-        public ReadOnlyReactiveProperty<BezierPointWrapperModel?> SelectedPoint => selectedPoint;
+        public ReadOnlyReactiveProperty<ReadOnlyReactiveProperty<BezierPoint>?> SelectedPoint => selectedPoint;
 
 
-        private readonly ReactiveProperty<ISynchronizedView<BezierPointWrapperModel, SpeedTemplateBezierPointHandleItemViewModel>?> bezierPointViewModelsMap = new();
+        private readonly ReactiveProperty<ISynchronizedView<ReadOnlyReactiveProperty<BezierPoint>, SpeedTemplateBezierPointHandleItemViewModel>?> bezierPointViewModelsMap = new();
 
-        public ReadOnlyReactiveProperty<ISynchronizedView<BezierPointWrapperModel, SpeedTemplateBezierPointHandleItemViewModel>?> BezierPointViewModelsMap => bezierPointViewModelsMap;
+        public ReadOnlyReactiveProperty<ISynchronizedView<ReadOnlyReactiveProperty<BezierPoint>, SpeedTemplateBezierPointHandleItemViewModel>?> BezierPointViewModelsMap => bezierPointViewModelsMap;
 
 
         public SpeedTemplateCurveFrameViewModel(

@@ -1,20 +1,24 @@
 ﻿#nullable enable
 
+using System.Linq;
 using CyanStars.Chart.BezierCurve;
-using CyanStars.Gameplay.ChartEditor.Model;
 using ObservableCollections;
+using R3;
 
 public class SpeedTemplateBezierCurvesEditorModel
 {
     // 原始列表数据（用于复用校验逻辑）
     private readonly BezierCurves OriginCurves;
 
-    private readonly ObservableList<BezierPointWrapperModel> points = new ObservableList<BezierPointWrapperModel>();
+    private readonly ObservableList<ReactiveProperty<BezierPoint>> points = new ObservableList<ReactiveProperty<BezierPoint>>();
 
     /// <summary>
     /// 暴露给制谱器的可观察贝塞尔曲线列表，校验通过后才更新
     /// </summary>
-    public IReadOnlyObservableList<BezierPointWrapperModel> Points => points;
+    public IReadOnlyObservableList<ReadOnlyReactiveProperty<BezierPoint>> Points =>
+        new ObservableList<ReadOnlyReactiveProperty<BezierPoint>>(
+            points.Select(rp => rp.ToReadOnlyReactiveProperty())
+        );
 
     /// <summary>
     /// 构造函数
@@ -22,9 +26,10 @@ public class SpeedTemplateBezierCurvesEditorModel
     public SpeedTemplateBezierCurvesEditorModel(BezierCurves originCurves)
     {
         OriginCurves = originCurves;
+
         foreach (var point in originCurves.Points)
         {
-            points.Add(new BezierPointWrapperModel(point));
+            points.Add(new ReactiveProperty<BezierPoint>(point));
         }
     }
 
@@ -40,9 +45,9 @@ public class SpeedTemplateBezierCurvesEditorModel
     /// <summary>
     /// 尝试添加一个点
     /// </summary>
-    public bool TryAddPoint(BezierPointWrapperModel newPoint)
+    public bool TryAddPoint(ReactiveProperty<BezierPoint> newPoint)
     {
-        if (OriginCurves.TryAdd(newPoint.Point.CurrentValue, out int index))
+        if (OriginCurves.TryAdd(newPoint.CurrentValue, out int index))
         {
             points.Insert(index, newPoint);
             return true;
@@ -56,9 +61,9 @@ public class SpeedTemplateBezierCurvesEditorModel
     /// <summary>
     /// 尝试更新/移动一个点
     /// </summary>
-    public bool TryUpdatePoint(BezierPointWrapperModel oldPoint, BezierPointWrapperModel newPoint)
+    public bool TryUpdatePoint(ReactiveProperty<BezierPoint> oldPoint, ReactiveProperty<BezierPoint> newPoint)
     {
-        if (OriginCurves.TryReplace(oldPoint.Point.CurrentValue, newPoint.Point.CurrentValue))
+        if (OriginCurves.TryReplace(oldPoint.CurrentValue, newPoint.CurrentValue))
         {
             int index = points.IndexOf(oldPoint);
             points[index] = newPoint;
@@ -74,9 +79,9 @@ public class SpeedTemplateBezierCurvesEditorModel
     /// <summary>
     /// 移除一个点
     /// </summary>
-    public bool TryRemovePoint(BezierPointWrapperModel oldPoint)
+    public bool TryRemovePoint(ReactiveProperty<BezierPoint> oldPoint)
     {
-        if (OriginCurves.Remove(oldPoint.Point.CurrentValue))
+        if (OriginCurves.Remove(oldPoint.CurrentValue))
         {
             points.Remove(oldPoint);
             return true;

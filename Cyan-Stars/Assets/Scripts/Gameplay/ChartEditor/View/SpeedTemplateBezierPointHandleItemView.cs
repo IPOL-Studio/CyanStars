@@ -43,6 +43,19 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     }
                 )
                 .AddTo(this);
+
+            ViewModel.BezierPointWrapper
+                .Subscribe(point =>
+                    {
+                        ((RectTransform)posPointObject.transform).anchoredPosition =
+                            new Vector2(point.PositionPoint.MsTime, point.PositionPoint.Value);
+                        ((RectTransform)leftControlPointObject.transform).anchoredPosition =
+                            new Vector2(point.LeftControlPoint.MsTime, point.LeftControlPoint.Value);
+                        ((RectTransform)rightControlPointObject.transform).anchoredPosition =
+                            new Vector2(point.RightControlPoint.MsTime, point.RightControlPoint.Value);
+                    }
+                )
+                .AddTo(this);
         }
 
 
