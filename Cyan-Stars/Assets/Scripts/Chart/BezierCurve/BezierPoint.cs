@@ -99,10 +99,5 @@ namespace CyanStars.Chart.BezierCurve
         {
             return !left.Equals(right);
         }
-
-        public Vector2 ToVector2()
-        {
-            return new Vector2(MsTime, Value);
-        }
     }
 }
