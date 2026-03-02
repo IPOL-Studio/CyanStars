@@ -11,6 +11,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     {
         private readonly SpeedTemplateViewModel SpeedTemplateViewModel;
 
+        // 各个坐标点映射到 CurveFrame 时所用的偏移和缩放。
+        // 先将数据坐标与 Offset 相加，然后得到的结果乘以 Scale，即可得到相对于 CurveFrame 局部坐标。
+        // TODO: 改为动态拓展的视窗范围
+        public const float DefaultViewportX = 1000f;
+        public const float DefaultViewportY = 400f;
+        public readonly ReactiveProperty<float> ScaleX = new ReactiveProperty<float>(1f);
+        public readonly ReactiveProperty<float> ScaleY = new ReactiveProperty<float>(1f);
+        public readonly ReactiveProperty<float> OffsetX = new ReactiveProperty<float>(0f);
+        public readonly ReactiveProperty<float> OffsetY = new ReactiveProperty<float>(0f);
+
         /// <summary>
         /// 当前选中的变速模板
         /// </summary>

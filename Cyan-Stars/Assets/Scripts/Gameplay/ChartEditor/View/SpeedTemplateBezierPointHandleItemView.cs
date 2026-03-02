@@ -34,7 +34,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
-
             ViewModel.SelfSelected
                 .Subscribe(isSelected =>
                     {
@@ -49,12 +48,18 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(point =>
                     {
                         // 当 BezierPoint 结构体中任意字段变化时，更新 SubPoints 和 uiLineRenderer 屏幕坐标
-                        ((RectTransform)transform).anchoredPosition =
-                            new Vector2(point.PositionPoint.MsTime, point.PositionPoint.Value);
-                        ((RectTransform)leftControlPointObject.transform).anchoredPosition =
-                            new Vector2(point.LeftControlPoint.MsTime - point.PositionPoint.MsTime, point.LeftControlPoint.Value - point.PositionPoint.Value);
-                        ((RectTransform)rightControlPointObject.transform).anchoredPosition =
-                            new Vector2(point.RightControlPoint.MsTime - point.PositionPoint.MsTime, point.RightControlPoint.Value - point.PositionPoint.Value);
+                        ((RectTransform)transform).anchoredPosition = new Vector2(
+                            point.PositionPoint.MsTime,
+                            point.PositionPoint.Value
+                        );
+                        ((RectTransform)leftControlPointObject.transform).anchoredPosition = new Vector2(
+                            point.LeftControlPoint.MsTime - point.PositionPoint.MsTime,
+                            point.LeftControlPoint.Value - point.PositionPoint.Value
+                        );
+                        ((RectTransform)rightControlPointObject.transform).anchoredPosition = new Vector2(
+                            point.RightControlPoint.MsTime - point.PositionPoint.MsTime,
+                            point.RightControlPoint.Value - point.PositionPoint.Value
+                        );
 
                         uiLineRenderer.Points = new[] { ((RectTransform)leftControlPointObject.transform).anchoredPosition - ((RectTransform)posPointObject.transform).anchoredPosition, Vector2.zero, ((RectTransform)rightControlPointObject.transform).anchoredPosition - ((RectTransform)posPointObject.transform).anchoredPosition };
                     }
@@ -65,7 +70,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         #region 位置点、控制点被点击和拖拽回调
 
-        public void OnSubObjectPointClick(PointerEventData eventData, BezierPointSubItemType type)
+        public void OnSubObjectPointClick(PointerEventData _, BezierPointSubItemType type)
         {
             if (type != BezierPointSubItemType.PosPoint)
                 return;
@@ -82,7 +87,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 out Vector2 localPoint
             );
 
-            Debug.Log(localPoint);
+            ViewModel.SetSubPointPos(localPoint, type);
         }
 
         public void OnSubObjectBeginDrag(PointerEventData eventData, BezierPointSubItemType type)
