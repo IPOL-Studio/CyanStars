@@ -141,8 +141,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
             if (ViewModel.SelectedSpeedTemplateData.CurrentValue == null)
                 throw new Exception("选中曲线为空时不应该调整缩放");
 
-            scaleX = (highX - lowX) / DefaultViewportX;
-            offsetX = lowX;
+            scaleX = 1 / ((highX - lowX) / DefaultViewportX);
+            offsetX = -lowX;
 
             // 更新贝塞尔位置点 // TODO: 优化算法，只更新视窗内的贝塞尔点
             foreach (var kvp in SpawnedPoints)

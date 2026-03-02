@@ -35,5 +35,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .Subscribe(selectedPoint => selfSelected.Value = selectedPoint == BezierPointWrapper)
                 .AddTo(base.Disposables);
         }
+
+
+        public void SelectPoint()
+        {
+            if (SpeedTemplateCurveFrameViewModel.SelectedPoint.CurrentValue == BezierPointWrapper)
+                return;
+
+            SpeedTemplateCurveFrameViewModel.SelectPoint(BezierPointWrapper);
+        }
     }
 }

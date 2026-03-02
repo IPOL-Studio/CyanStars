@@ -22,6 +22,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         /// <summary>
         /// 当前选中的贝塞尔点
         /// </summary>
+        /// <remarks>外层 ReadOnlyReactiveProperty 用于在选择的点变化时发送通知
+        /// 内层 ReadOnlyReactiveProperty 作为引用，防止在修改 BezierPoint 时重新销毁和生成点实例</remarks>
         public ReadOnlyReactiveProperty<ReadOnlyReactiveProperty<BezierPoint>?> SelectedPoint => selectedPoint;
 
 
@@ -66,6 +68,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             // 确保 ViewModel 销毁时，最后一个 View 也能被正确释放
             base.Disposables.Add(Disposable.Create(() => bezierPointViewModelsMap.CurrentValue?.Dispose()));
+        }
+
+        public void SelectPoint(ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper)
+        {
+            selectedPoint.Value = bezierPointWrapper;
         }
     }
 }
