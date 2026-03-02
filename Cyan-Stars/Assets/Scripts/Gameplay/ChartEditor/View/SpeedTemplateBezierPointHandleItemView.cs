@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using UnityEngine;
@@ -34,10 +35,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
+            uiLineRenderer.Points = new[] { ViewModel.BezierPointWrapper.CurrentValue.LeftControlPoint.ToVector2() - ViewModel.BezierPointWrapper.CurrentValue.PositionPoint.ToVector2(), Vector2.zero, ViewModel.BezierPointWrapper.CurrentValue.RightControlPoint.ToVector2() - ViewModel.BezierPointWrapper.CurrentValue.PositionPoint.ToVector2() };
+
             ViewModel.SelfSelected
                 .Subscribe(isSelected =>
                     {
-                        uiLineRenderer.enabled = false;
+                        uiLineRenderer.enabled = isSelected;
                         leftControlPointObject.SetActive(isSelected);
                         rightControlPointObject.SetActive(isSelected);
                     }
@@ -47,12 +50,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.BezierPointWrapper
                 .Subscribe(point =>
                     {
-                        ((RectTransform)posPointObject.transform).anchoredPosition =
+                        ((RectTransform)transform).anchoredPosition =
                             new Vector2(point.PositionPoint.MsTime, point.PositionPoint.Value);
                         ((RectTransform)leftControlPointObject.transform).anchoredPosition =
-                            new Vector2(point.LeftControlPoint.MsTime, point.LeftControlPoint.Value);
+                            new Vector2(point.LeftControlPoint.MsTime - point.PositionPoint.MsTime, point.LeftControlPoint.Value - point.PositionPoint.Value);
                         ((RectTransform)rightControlPointObject.transform).anchoredPosition =
-                            new Vector2(point.RightControlPoint.MsTime, point.RightControlPoint.Value);
+                            new Vector2(point.RightControlPoint.MsTime - point.PositionPoint.MsTime, point.RightControlPoint.Value - point.PositionPoint.Value);
                     }
                 )
                 .AddTo(this);
@@ -63,19 +66,32 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OnSubObjectPointClick(PointerEventData eventData, BezierPointSubItemType type)
         {
+            if (type != BezierPointSubItemType.PosPoint)
+                return;
+
+            ViewModel.SelectPoint();
         }
 
         public void OnSubObjectDrag(PointerEventData eventData, BezierPointSubItemType type)
         {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                (RectTransform)transform.parent,
-                eventData.position,
-                eventData.pressEventCamera,
-                out Vector2 localPoint
-            );
-
-            Debug.Log(localPoint);
-            ((RectTransform)transform).anchoredPosition = localPoint;
+            switch (type)
+            {
+                case BezierPointSubItemType.PosPoint:
+                    RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                        (RectTransform)transform.parent,
+                        eventData.position,
+                        eventData.pressEventCamera,
+                        out Vector2 localPoint
+                    );
+                    ((RectTransform)transform).anchoredPosition = localPoint;
+                    break;
+                case BezierPointSubItemType.LeftControlPoint:
+                    break;
+                case BezierPointSubItemType.RightControlPoint:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
         }
 
         public void OnSubObjectBeginDrag(PointerEventData eventData, BezierPointSubItemType type)

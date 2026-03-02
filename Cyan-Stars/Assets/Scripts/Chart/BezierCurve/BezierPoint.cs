@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using UnityEngine;
 
 namespace CyanStars.Chart.BezierCurve
 {
@@ -97,6 +98,11 @@ namespace CyanStars.Chart.BezierCurve
         public static bool operator !=(BezierPointPos left, BezierPointPos right)
         {
             return !left.Equals(right);
+        }
+
+        public Vector2 ToVector2()
+        {
+            return new Vector2(MsTime, Value);
         }
     }
 }

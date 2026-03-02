@@ -366,6 +366,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CyanStars::BezierPointHandle
   uiLineRenderer: {fileID: 1088521346085721637}
+  pointFrameObject: {fileID: 0}
   posPointObject: {fileID: 389584907249451647}
   leftControlPointObject: {fileID: 5961318756960941090}
   rightControlPointObject: {fileID: 5364582898592262878}
