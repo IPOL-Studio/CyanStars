@@ -127,8 +127,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
             foreach (var kvp in SpawnedPoints)
             {
                 ((RectTransform)kvp.Value.transform).anchoredPosition = new Vector2(
-                    (kvp.Key.BezierPoint.CurrentValue.Point.CurrentValue.PositionPoint.MsTime + offsetX) * scaleX,
-                    (kvp.Key.BezierPoint.CurrentValue.Point.CurrentValue.PositionPoint.Value + offsetY) * scaleY
+                    (kvp.Key.BezierPointWrapper.CurrentValue.PositionPoint.MsTime + offsetX) * scaleX,
+                    (kvp.Key.BezierPointWrapper.CurrentValue.PositionPoint.Value + offsetY) * scaleY
                 );
             }
 
@@ -148,8 +148,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
             foreach (var kvp in SpawnedPoints)
             {
                 ((RectTransform)kvp.Value.transform).anchoredPosition = new Vector2(
-                    (kvp.Key.BezierPoint.CurrentValue.Point.CurrentValue.PositionPoint.MsTime + offsetX) * scaleX,
-                    (kvp.Key.BezierPoint.CurrentValue.Point.CurrentValue.PositionPoint.Value + offsetY) * scaleY
+                    (kvp.Key.BezierPointWrapper.CurrentValue.PositionPoint.MsTime + offsetX) * scaleX,
+                    (kvp.Key.BezierPointWrapper.CurrentValue.PositionPoint.Value + offsetY) * scaleY
                 );
             }
 
@@ -198,7 +198,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             distanceCurveRenderer.Points = distancePoints;
         }
 
-        private void OnViewMapChanged(ISynchronizedView<BezierPointWrapperModel, SpeedTemplateBezierPointHandleItemViewModel>? viewModelMap)
+        private void OnViewMapChanged(ISynchronizedView<ReadOnlyReactiveProperty<BezierPoint>, SpeedTemplateBezierPointHandleItemViewModel>? viewModelMap)
         {
             // 断开集合监听并销毁旧 go
             CollectionDisposables.Clear();
@@ -222,8 +222,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 rectTransform.anchorMin = new Vector2(0f, 0.5f);
                 rectTransform.anchorMax = new Vector2(0f, 0.5f);
                 rectTransform.anchoredPosition = new Vector2(
-                    (viewModel.BezierPoint.CurrentValue.Point.CurrentValue.PositionPoint.MsTime + offsetX) * scaleX,
-                    (viewModel.BezierPoint.CurrentValue.Point.CurrentValue.PositionPoint.Value + offsetY) * scaleY
+                    (viewModel.BezierPointWrapper.CurrentValue.PositionPoint.MsTime + offsetX) * scaleX,
+                    (viewModel.BezierPointWrapper.CurrentValue.PositionPoint.Value + offsetY) * scaleY
                 );
                 go.GetComponent<SpeedTemplateBezierPointHandleItemView>().Bind(viewModel);
                 SpawnedPoints[viewModel] = go;
@@ -238,8 +238,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                         rectTransform.anchorMin = new Vector2(0f, 0.5f);
                         rectTransform.anchorMax = new Vector2(0f, 0.5f);
                         rectTransform.anchoredPosition = new Vector2(
-                            (e.Value.View.BezierPoint.CurrentValue.Point.CurrentValue.PositionPoint.MsTime + offsetX) * scaleX,
-                            (e.Value.View.BezierPoint.CurrentValue.Point.CurrentValue.PositionPoint.Value + offsetY) * scaleY
+                            (e.Value.View.BezierPointWrapper.CurrentValue.PositionPoint.MsTime + offsetX) * scaleX,
+                            (e.Value.View.BezierPointWrapper.CurrentValue.PositionPoint.Value + offsetY) * scaleY
                         );
                         go.GetComponent<SpeedTemplateBezierPointHandleItemView>().Bind(e.Value.View);
                         SpawnedPoints[e.Value.View] = go;
@@ -267,8 +267,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                         rectTransform.anchorMin = new Vector2(0f, 0.5f);
                         rectTransform.anchorMax = new Vector2(0f, 0.5f);
                         rectTransform.anchoredPosition = new Vector2(
-                            (e.NewValue.View.BezierPoint.CurrentValue.Point.CurrentValue.PositionPoint.MsTime + offsetX) * scaleX,
-                            (e.NewValue.View.BezierPoint.CurrentValue.Point.CurrentValue.PositionPoint.Value + offsetY) * scaleY
+                            (e.NewValue.View.BezierPointWrapper.CurrentValue.PositionPoint.MsTime + offsetX) * scaleX,
+                            (e.NewValue.View.BezierPointWrapper.CurrentValue.PositionPoint.Value + offsetY) * scaleY
                         );
                         newGO.GetComponent<SpeedTemplateBezierPointHandleItemView>().Bind(e.NewValue.View);
                         SpawnedPoints[e.NewValue.View] = newGO;
