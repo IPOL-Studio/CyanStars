@@ -1,8 +1,10 @@
 ﻿#nullable enable
 
+using System;
 using CyanStars.Chart.BezierCurve;
 using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
@@ -43,6 +45,47 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
 
             SpeedTemplateCurveFrameViewModel.SelectPoint(BezierPointWrapper);
+        }
+
+        public void SetSubPointPos(Vector2 localPoint, BezierPointSubItemType type)
+        {
+            // 将本地坐标转换到贝塞尔点数据位置
+            int msTime = (int)(localPoint.x / SpeedTemplateCurveFrameViewModel.ScaleX.CurrentValue - SpeedTemplateCurveFrameViewModel.OffsetX.CurrentValue);
+            float value = localPoint.y / SpeedTemplateCurveFrameViewModel.ScaleY.CurrentValue - SpeedTemplateCurveFrameViewModel.OffsetY.CurrentValue;
+
+            // TODO: 做个验证避免错误数据抛异常
+            BezierPoint bezierPoint;
+            switch (type)
+            {
+                case BezierPointSubItemType.PosPoint:
+                    bezierPoint = new BezierPoint(
+                        new BezierPointPos(msTime, value),
+                        new BezierPointPos(BezierPointWrapper.CurrentValue.LeftControlPoint.MsTime, BezierPointWrapper.CurrentValue.LeftControlPoint.Value),
+                        new BezierPointPos(BezierPointWrapper.CurrentValue.RightControlPoint.MsTime, BezierPointWrapper.CurrentValue.RightControlPoint.Value)
+                    );
+                    break;
+                case BezierPointSubItemType.LeftControlPoint:
+                    bezierPoint = new BezierPoint(
+                        new BezierPointPos(BezierPointWrapper.CurrentValue.PositionPoint.MsTime, BezierPointWrapper.CurrentValue.PositionPoint.Value),
+                        new BezierPointPos(msTime, value),
+                        new BezierPointPos(BezierPointWrapper.CurrentValue.RightControlPoint.MsTime, BezierPointWrapper.CurrentValue.RightControlPoint.Value)
+                    );
+                    break;
+                case BezierPointSubItemType.RightControlPoint:
+                    bezierPoint = new BezierPoint(
+                        new BezierPointPos(BezierPointWrapper.CurrentValue.PositionPoint.MsTime, BezierPointWrapper.CurrentValue.PositionPoint.Value),
+                        new BezierPointPos(BezierPointWrapper.CurrentValue.LeftControlPoint.MsTime, BezierPointWrapper.CurrentValue.LeftControlPoint.Value),
+                        new BezierPointPos(msTime, value)
+                    );
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+
+            SpeedTemplateCurveFrameViewModel.SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryUpdatePoint(
+                BezierPointWrapper,
+                bezierPoint
+            );
         }
     }
 }
