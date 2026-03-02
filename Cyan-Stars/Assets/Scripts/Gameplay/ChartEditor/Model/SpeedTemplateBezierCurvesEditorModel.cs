@@ -45,11 +45,11 @@ public class SpeedTemplateBezierCurvesEditorModel
     /// <summary>
     /// 尝试添加一个点
     /// </summary>
-    public bool TryAddPoint(ReactiveProperty<BezierPoint> newPoint)
+    public bool TryAddPoint(BezierPoint newPoint)
     {
-        if (OriginCurves.TryAdd(newPoint.CurrentValue, out int index))
+        if (OriginCurves.TryAdd(newPoint, out int index))
         {
-            points.Insert(index, newPoint);
+            points.Insert(index, new ReactiveProperty<BezierPoint>(newPoint));
             return true;
         }
         else
@@ -61,12 +61,12 @@ public class SpeedTemplateBezierCurvesEditorModel
     /// <summary>
     /// 尝试更新/移动一个点
     /// </summary>
-    public bool TryUpdatePoint(ReactiveProperty<BezierPoint> oldPoint, ReactiveProperty<BezierPoint> newPoint)
+    public bool TryUpdatePoint(ReadOnlyReactiveProperty<BezierPoint> oldPointWrapper, BezierPoint newPoint)
     {
-        if (OriginCurves.TryReplace(oldPoint.CurrentValue, newPoint.CurrentValue))
+        if (OriginCurves.TryReplace(oldPointWrapper.CurrentValue, newPoint))
         {
-            int index = points.IndexOf(oldPoint);
-            points[index] = newPoint;
+            int index = points.IndexOf((ReactiveProperty<BezierPoint>)oldPointWrapper);
+            points[index].Value = newPoint;
             return true;
         }
         else
@@ -79,11 +79,11 @@ public class SpeedTemplateBezierCurvesEditorModel
     /// <summary>
     /// 移除一个点
     /// </summary>
-    public bool TryRemovePoint(ReactiveProperty<BezierPoint> oldPoint)
+    public bool TryRemovePoint(ReactiveProperty<BezierPoint> oldPointWrapper)
     {
-        if (OriginCurves.Remove(oldPoint.CurrentValue))
+        if (OriginCurves.Remove(oldPointWrapper.CurrentValue))
         {
-            points.Remove(oldPoint);
+            points.Remove(oldPointWrapper);
             return true;
         }
         else
