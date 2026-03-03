@@ -91,13 +91,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
             if (type != BezierPointSubItemType.PosPoint)
                 return;
 
+            // 点击时将当前 pointHandle 置于最上层，防止被其他 pointHandle 遮挡导致无法拖拽
+            transform.SetAsLastSibling();
+
             ViewModel.SelectPoint();
         }
 
         public void OnSubObjectDrag(PointerEventData eventData, BezierPointSubItemType type)
         {
-            ViewModel.SelectPoint();
-
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 (RectTransform)transform.parent,
                 eventData.position,
@@ -110,10 +111,32 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OnSubObjectBeginDrag(PointerEventData eventData, BezierPointSubItemType type)
         {
+            // 点击时将当前 pointHandle 置于最上层，防止被其他 pointHandle 遮挡导致无法拖拽
+            transform.SetAsLastSibling();
+
+            if (type == BezierPointSubItemType.PosPoint)
+                ViewModel.SelectPoint();
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                (RectTransform)transform.parent,
+                eventData.position,
+                eventData.pressEventCamera,
+                out Vector2 localPoint
+            );
+
+            ViewModel.RecordSubPointPos(localPoint, type);
         }
 
         public void OnSubObjectEndDrag(PointerEventData eventData, BezierPointSubItemType type)
         {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                (RectTransform)transform.parent,
+                eventData.position,
+                eventData.pressEventCamera,
+                out Vector2 localPoint
+            );
+
+            ViewModel.CommitSubPointPos(localPoint, type);
         }
 
         #endregion

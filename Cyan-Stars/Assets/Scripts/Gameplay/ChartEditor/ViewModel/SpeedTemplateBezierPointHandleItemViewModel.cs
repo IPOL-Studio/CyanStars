@@ -2,6 +2,7 @@
 
 using System;
 using CyanStars.Chart.BezierCurve;
+using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
 using UnityEngine;
@@ -22,6 +23,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<float> ScaleY => SpeedTemplateCurveFrameViewModel.ScaleY;
         public ReadOnlyReactiveProperty<float> OffsetX => SpeedTemplateCurveFrameViewModel.OffsetX;
         public ReadOnlyReactiveProperty<float> OffsetY => SpeedTemplateCurveFrameViewModel.OffsetY;
+
+        private Vector2? recordedLocalPoint = null;
+        private BezierPointSubItemType? recordedType = null!;
 
 
         /// <summary>
@@ -55,12 +59,63 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void SetSubPointPos(Vector2 localPoint, BezierPointSubItemType type)
         {
+            if (recordedLocalPoint == null || recordedType == null)
+                throw new Exception("记录的开始拖拽点位置或类型为空！");
+            if (recordedType != type)
+                throw new Exception("拖拽时的 type 与开始拖拽时记录的不一致，请检查！");
+
+            GetPointDataByLocalPoint(localPoint, type, out BezierPoint bezierPoint);
+            SpeedTemplateCurveFrameViewModel.SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryUpdatePoint(
+                BezierPointWrapper,
+                bezierPoint
+            );
+        }
+
+        public void RecordSubPointPos(Vector2 localPoint, BezierPointSubItemType type)
+        {
+            recordedLocalPoint = localPoint;
+            recordedType = type;
+        }
+
+        public void CommitSubPointPos(Vector2 newLocalPoint, BezierPointSubItemType type)
+        {
+            if (recordedLocalPoint == null || recordedType == null)
+                throw new Exception("记录的开始拖拽点位置或类型为空！");
+            if (recordedType != type)
+                throw new Exception("结束拖拽时的 type 与开始拖拽时记录的不一致，请检查！");
+
+            GetPointDataByLocalPoint(newLocalPoint, type, out BezierPoint newBezierPoint);
+            GetPointDataByLocalPoint((Vector2)recordedLocalPoint, type, out BezierPoint oldBezierPoint);
+
+            CommandStack.ExecuteCommand(
+                () =>
+                {
+                    SpeedTemplateCurveFrameViewModel.SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryUpdatePoint(
+                        BezierPointWrapper,
+                        newBezierPoint
+                    );
+                },
+                () =>
+                {
+                    SpeedTemplateCurveFrameViewModel.SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryUpdatePoint(
+                        BezierPointWrapper,
+                        oldBezierPoint
+                    );
+                }
+            );
+
+            recordedLocalPoint = null;
+            recordedType = null;
+        }
+
+        private void GetPointDataByLocalPoint(Vector2 localPoint, BezierPointSubItemType type, out BezierPoint bezierPoint)
+        {
             // 将本地坐标转换到贝塞尔点数据位置
             int msTime = (int)(localPoint.x / SpeedTemplateCurveFrameViewModel.ScaleX.CurrentValue - SpeedTemplateCurveFrameViewModel.OffsetX.CurrentValue);
             float value = localPoint.y / SpeedTemplateCurveFrameViewModel.ScaleY.CurrentValue - SpeedTemplateCurveFrameViewModel.OffsetY.CurrentValue;
 
             // TODO: 做个验证避免错误数据抛异常
-            BezierPoint bezierPoint;
+
             switch (type)
             {
                 case BezierPointSubItemType.PosPoint:
@@ -87,11 +142,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
-
-            SpeedTemplateCurveFrameViewModel.SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryUpdatePoint(
-                BezierPointWrapper,
-                bezierPoint
-            );
         }
     }
 }
