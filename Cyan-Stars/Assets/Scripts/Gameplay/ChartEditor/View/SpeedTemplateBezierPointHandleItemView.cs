@@ -44,24 +44,40 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 )
                 .AddTo(this);
 
-            ViewModel.BezierPointWrapper
-                .Subscribe(point =>
+            Observable.CombineLatest(
+                    ViewModel.BezierPointWrapper,
+                    ViewModel.OffsetX,
+                    ViewModel.ScaleX,
+                    ViewModel.OffsetY,
+                    ViewModel.ScaleY,
+                    (pointWrapper, offsetX, scaleX, offsetY, scaleY) => (pointWrapper, offsetX, scaleX, offsetY, scaleY)
+                )
+                .Subscribe(datas =>
                     {
-                        // 当 BezierPoint 结构体中任意字段变化时，更新 SubPoints 和 uiLineRenderer 屏幕坐标
-                        ((RectTransform)transform).anchoredPosition = new Vector2(
-                            point.PositionPoint.MsTime,
-                            point.PositionPoint.Value
-                        );
-                        ((RectTransform)leftControlPointObject.transform).anchoredPosition = new Vector2(
-                            point.LeftControlPoint.MsTime - point.PositionPoint.MsTime,
-                            point.LeftControlPoint.Value - point.PositionPoint.Value
-                        );
-                        ((RectTransform)rightControlPointObject.transform).anchoredPosition = new Vector2(
-                            point.RightControlPoint.MsTime - point.PositionPoint.MsTime,
-                            point.RightControlPoint.Value - point.PositionPoint.Value
-                        );
+                        float posX =
+                            (datas.pointWrapper.PositionPoint.MsTime + datas.offsetX) * datas.scaleX;
+                        float posY =
+                            (datas.pointWrapper.PositionPoint.Value + datas.offsetY) * datas.scaleY;
+                        ((RectTransform)transform).anchoredPosition =
+                            new Vector2(posX, posY);
 
-                        uiLineRenderer.Points = new[] { ((RectTransform)leftControlPointObject.transform).anchoredPosition - ((RectTransform)posPointObject.transform).anchoredPosition, Vector2.zero, ((RectTransform)rightControlPointObject.transform).anchoredPosition - ((RectTransform)posPointObject.transform).anchoredPosition };
+                        ((RectTransform)posPointObject.transform).anchoredPosition = Vector2.zero;
+
+                        float leftControlSubPointPosX =
+                            (datas.pointWrapper.LeftControlPoint.MsTime - datas.pointWrapper.PositionPoint.MsTime) * datas.scaleX;
+                        float leftControlSubPointPosY =
+                            (datas.pointWrapper.LeftControlPoint.Value - datas.pointWrapper.PositionPoint.Value) * datas.scaleY;
+                        ((RectTransform)leftControlPointObject.transform).anchoredPosition =
+                            new Vector2(leftControlSubPointPosX, leftControlSubPointPosY);
+
+                        float rightControlSubPointPosX =
+                            (datas.pointWrapper.RightControlPoint.MsTime - datas.pointWrapper.PositionPoint.MsTime) * datas.scaleX;
+                        float rightControlSubPointPosY =
+                            (datas.pointWrapper.RightControlPoint.Value - datas.pointWrapper.PositionPoint.Value) * datas.scaleY;
+                        ((RectTransform)rightControlPointObject.transform).anchoredPosition =
+                            new Vector2(rightControlSubPointPosX, rightControlSubPointPosY);
+
+                        uiLineRenderer.Points = new[] { new Vector2(leftControlSubPointPosX, leftControlSubPointPosY), new Vector2(0, 0), new Vector2(rightControlSubPointPosX, rightControlSubPointPosY) };
                     }
                 )
                 .AddTo(this);
@@ -80,6 +96,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OnSubObjectDrag(PointerEventData eventData, BezierPointSubItemType type)
         {
+            ViewModel.SelectPoint();
+
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 (RectTransform)transform.parent,
                 eventData.position,

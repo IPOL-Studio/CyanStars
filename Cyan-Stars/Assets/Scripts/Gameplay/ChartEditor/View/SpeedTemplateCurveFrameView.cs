@@ -109,6 +109,24 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.BezierPointViewModelsMap
                 .Subscribe(OnViewMapChanged)
                 .AddTo(this);
+
+            // 当前选中的 BezierPointWrapper 内贝塞尔点数值变化烘焙并时刷新曲线
+            ViewModel.SelectedPoint
+                .Select(point => point?.AsObservable() ?? Observable.Empty<BezierPoint>())
+                .Switch()
+                .ThrottleLastFrame(1)
+                .Subscribe(_ =>
+                    {
+                        SpeedTemplateHelper.Bake(
+                            ViewModel.SelectedSpeedTemplateData.CurrentValue.ToSpeedTemplateData(),
+                            1f,
+                            out tempBakedSpeedList,
+                            out tempBakedDistanceList
+                        );
+                        DrawCurve();
+                    }
+                )
+                .AddTo(this);
         }
 
 
