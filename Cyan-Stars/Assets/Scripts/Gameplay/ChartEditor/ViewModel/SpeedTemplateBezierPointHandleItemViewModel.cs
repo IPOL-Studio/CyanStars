@@ -24,6 +24,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<float> OffsetX => SpeedTemplateCurveFrameViewModel.OffsetX;
         public ReadOnlyReactiveProperty<float> OffsetY => SpeedTemplateCurveFrameViewModel.OffsetY;
 
+
+        // 控制点可用状态，首个贝塞尔点永远禁用左侧控制点，末个贝塞尔点永远禁用右侧控制点
+        public readonly bool IsFirstPoint;
+        public readonly bool IsLastPoint;
+
+
         private BezierPoint? recordedLocalPoint = null;
         private BezierPointSubItemType? recordedType = null!;
 
@@ -36,12 +42,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public SpeedTemplateBezierPointHandleItemViewModel(
             ChartEditorModel model,
             SpeedTemplateCurveFrameViewModel speedTemplateCurveFrameViewModel,
-            ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper
+            ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper,
+            bool isFirstPoint,
+            bool isLastPoint
         )
             : base(model)
         {
             SpeedTemplateCurveFrameViewModel = speedTemplateCurveFrameViewModel;
             BezierPointWrapper = bezierPointWrapper;
+            IsFirstPoint = isFirstPoint;
+            IsLastPoint = isLastPoint;
 
             SpeedTemplateCurveFrameViewModel.SelectedPoint
                 .Subscribe(selectedPoint => selfSelected.Value = selectedPoint == BezierPointWrapper)
@@ -108,6 +118,53 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             recordedType = null;
         }
 
+        public void OnDoubleClick()
+        {
+            if (IsFirstPoint && IsLastPoint)
+                return;
+
+            bool canActiveLeftControlPoint =
+                !IsFirstPoint && BezierPointWrapper.CurrentValue.LeftControlPoint == BezierPointWrapper.CurrentValue.PositionPoint;
+            bool canActiveRightControlPoint =
+                !IsLastPoint && BezierPointWrapper.CurrentValue.RightControlPoint == BezierPointWrapper.CurrentValue.PositionPoint;
+
+            BezierPoint oldBezierPoint = BezierPointWrapper.CurrentValue;
+            BezierPoint newBezierPoint;
+
+            if (canActiveLeftControlPoint || canActiveRightControlPoint)
+            {
+                // 如果至少有一个点可以激活，则把那些能激活的点都激活了
+                BezierPointPos pos = oldBezierPoint.PositionPoint;
+                BezierPointPos leftPos = canActiveLeftControlPoint ? new BezierPointPos(pos.MsTime, pos.Value - 100f) : pos;
+                BezierPointPos rightPos = canActiveRightControlPoint ? new BezierPointPos(pos.MsTime, pos.Value + 100f) : pos;
+                newBezierPoint = new BezierPoint(pos, leftPos, rightPos);
+            }
+            else
+            {
+                // 如果所有点都已经激活了，则取消激活所有的点
+                BezierPointPos pos = oldBezierPoint.PositionPoint;
+                newBezierPoint = new BezierPoint(pos, pos, pos);
+            }
+
+            CommandStack.ExecuteCommand(
+                () =>
+                {
+                    SpeedTemplateCurveFrameViewModel.SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryUpdatePoint(
+                        BezierPointWrapper,
+                        newBezierPoint
+                    );
+                },
+                () =>
+                {
+                    SpeedTemplateCurveFrameViewModel.SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryUpdatePoint(
+                        BezierPointWrapper,
+                        oldBezierPoint
+                    );
+                }
+            );
+        }
+
+
         /// <summary>
         /// 根据当前的局部位置和拖动点种类，计算贝塞尔点三个子控制点的坐标
         /// </summary>
@@ -131,13 +188,13 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     float offsetValue = value - ((BezierPoint)recordedLocalPoint).PositionPoint.Value;
 
                     bezierPoint = new BezierPoint(
-                        new BezierPointPos((int)msTime, value),
+                        new BezierPointPos(Mathf.RoundToInt(msTime), value),
                         new BezierPointPos(
-                            ((BezierPoint)recordedLocalPoint).LeftControlPoint.MsTime + (int)offsetMsTime,
+                            ((BezierPoint)recordedLocalPoint).LeftControlPoint.MsTime + Mathf.RoundToInt(offsetMsTime),
                             ((BezierPoint)recordedLocalPoint).LeftControlPoint.Value + offsetValue
                         ),
                         new BezierPointPos(
-                            ((BezierPoint)recordedLocalPoint).RightControlPoint.MsTime + (int)offsetMsTime,
+                            ((BezierPoint)recordedLocalPoint).RightControlPoint.MsTime + Mathf.RoundToInt(offsetMsTime),
                             ((BezierPoint)recordedLocalPoint).RightControlPoint.Value + offsetValue
                         )
                     );
