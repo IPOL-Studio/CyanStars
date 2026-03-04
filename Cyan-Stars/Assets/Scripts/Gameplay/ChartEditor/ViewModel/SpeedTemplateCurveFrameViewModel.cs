@@ -57,15 +57,21 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             // 变速模板变化时重新构建子 VM 和 V
             SelectedSpeedTemplateData
-                .Subscribe(selectedData =>
+                .Subscribe(selectedTemplateData =>
                     {
                         bezierPointViewModelsMap.CurrentValue?.Dispose();
 
-                        if (selectedData != null)
+                        if (selectedTemplateData != null)
                         {
-                            bezierPointViewModelsMap.Value = selectedData.BezierCurves.Points
+                            bezierPointViewModelsMap.Value = selectedTemplateData.BezierCurves.Points
                                 .CreateView(pointWrapper =>
-                                    new SpeedTemplateBezierPointHandleItemViewModel(Model, this, pointWrapper)
+                                    new SpeedTemplateBezierPointHandleItemViewModel(
+                                        Model,
+                                        this,
+                                        pointWrapper,
+                                        selectedTemplateData.BezierCurves.Points[0] == pointWrapper,
+                                        selectedTemplateData.BezierCurves.Points[^1] == pointWrapper
+                                    )
                                 );
                         }
                         else

@@ -28,21 +28,23 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
 
         /// <summary>
+        /// 在一个位置点上两次点击时，小于此间隔视为一次双击
+        /// </summary>
+        private const float DoubleClickDelaySecond = 0.5f;
+
+        /// <summary>
+        /// 上次点击时的 Time.unscaledTime
+        /// </summary>
+        /// <remarks>如果成功触发双击，将此值设为 0，避免三次点击触发两次双击判断的神秘逻辑</remarks>
+        private float lastClickTime = 0;
+
+
+        /// <summary>
         /// 绑定方法，在实例化 go 后立刻调用
         /// </summary>
         public override void Bind(SpeedTemplateBezierPointHandleItemViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
-
-            ViewModel.SelfSelected
-                .Subscribe(isSelected =>
-                    {
-                        uiLineRenderer.enabled = isSelected;
-                        leftControlPointObject.SetActive(isSelected);
-                        rightControlPointObject.SetActive(isSelected);
-                    }
-                )
-                .AddTo(this);
 
             Observable.CombineLatest(
                     ViewModel.BezierPointWrapper,
@@ -50,10 +52,22 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     ViewModel.ScaleX,
                     ViewModel.OffsetY,
                     ViewModel.ScaleY,
-                    (pointWrapper, offsetX, scaleX, offsetY, scaleY) => (pointWrapper, offsetX, scaleX, offsetY, scaleY)
+                    ViewModel.SelfSelected,
+                    (pointWrapper, offsetX, scaleX, offsetY, scaleY, selected) => (pointWrapper, offsetX, scaleX, offsetY, scaleY, selected)
                 )
                 .Subscribe(datas =>
                     {
+                        leftControlPointObject.SetActive(
+                            datas.selected &&
+                            datas.pointWrapper.LeftControlPoint != datas.pointWrapper.PositionPoint
+                        );
+                        rightControlPointObject.SetActive(
+                            datas.selected &&
+                            datas.pointWrapper.RightControlPoint != datas.pointWrapper.PositionPoint
+                        );
+                        uiLineRenderer.enabled = datas.selected &&
+                                                 (leftControlPointObject.activeSelf || rightControlPointObject.activeSelf);
+
                         float posX =
                             (datas.pointWrapper.PositionPoint.MsTime + datas.offsetX) * datas.scaleX;
                         float posY =
@@ -95,6 +109,18 @@ namespace CyanStars.Gameplay.ChartEditor.View
             transform.SetAsLastSibling();
 
             ViewModel.SelectPoint();
+
+            // 双击交互逻辑
+            if (Time.unscaledTime - lastClickTime <= DoubleClickDelaySecond)
+            {
+                // 触发双击
+                lastClickTime = 0;
+                ViewModel.OnDoubleClick();
+            }
+            else
+            {
+                lastClickTime = Time.unscaledTime;
+            }
         }
 
         public void OnSubObjectDrag(PointerEventData eventData, BezierPointSubItemType type)

@@ -42,6 +42,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private GameObject pointFrameObject = null!;
 
+
         // 缓存的从已烘焙的坐标，当 x 视界大小变化或视界内贝塞尔点属性变化时需要重新烘焙
         // 视界左侧之外的曲线不会参与此处烘焙
         private List<float> tempBakedSpeedList = new List<float>();
