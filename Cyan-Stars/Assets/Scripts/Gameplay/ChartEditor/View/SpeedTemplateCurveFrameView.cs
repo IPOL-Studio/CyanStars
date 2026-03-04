@@ -7,6 +7,7 @@ using CyanStars.Gameplay.ChartEditor.ViewModel;
 using ObservableCollections;
 using R3;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI.Extensions;
 
 namespace CyanStars.Gameplay.ChartEditor.View
@@ -266,6 +267,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             verticalRangeSliderFrame.OnValueChanged.RemoveListener(OnVerticalChanged);
             horizontalRangeSliderFrame.OnValueChanged.RemoveListener(OnHorizontalChanged);
+        }
+
+        public void OnCurveFrameSpaceClick()
+        {
+            // 点击 CurveFrame 空白处时取消选中贝塞尔点
+            // 由 CurveFrame 在 Unity 中的 Event Trigger 触发
+            ViewModel.SelectPoint(null);
         }
     }
 }

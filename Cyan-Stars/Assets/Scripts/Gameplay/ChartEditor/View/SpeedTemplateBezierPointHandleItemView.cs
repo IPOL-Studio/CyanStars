@@ -124,7 +124,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 out Vector2 localPoint
             );
 
-            ViewModel.RecordSubPointPos(localPoint, type);
+            ViewModel.RecordSubPointPos(type);
         }
 
         public void OnSubObjectEndDrag(PointerEventData eventData, BezierPointSubItemType type)

@@ -80,7 +80,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             base.Disposables.Add(Disposable.Create(() => bezierPointViewModelsMap.CurrentValue?.Dispose()));
         }
 
-        public void SelectPoint(ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper)
+        public void SelectPoint(ReadOnlyReactiveProperty<BezierPoint>? bezierPointWrapper)
         {
             selectedPoint.Value = bezierPointWrapper;
         }
