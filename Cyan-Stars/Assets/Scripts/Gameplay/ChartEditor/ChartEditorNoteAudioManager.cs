@@ -26,10 +26,7 @@ namespace CyanStars.Gameplay.ChartEditor
         public float AudioVolume
         {
             get => audioVolume;
-            set
-            {
-                audioVolume = Math.Clamp(value, 0f, 1f);
-            }
+            set => audioVolume = Math.Clamp(value, 0f, 1f);
         }
 
         public void Init(ChartEditorModel chartEditorModel)
@@ -92,7 +89,7 @@ namespace CyanStars.Gameplay.ChartEditor
             var bpmGroups = model.ChartPackData.CurrentValue.BpmGroup;
             int index = skipNoteCount;
             while (index < notes.Count)
-            {   
+            {
                 var note = notes[index];
                 var judgeTime = BpmGroupHelper.CalculateTime(bpmGroups, note.JudgeBeat);
 
