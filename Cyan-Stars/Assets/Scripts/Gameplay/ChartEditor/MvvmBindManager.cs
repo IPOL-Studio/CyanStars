@@ -16,6 +16,9 @@ namespace CyanStars.Gameplay.ChartEditor
 
 
         [SerializeField]
+        private EditAreaView editAreaView = null!;
+
+        [SerializeField]
         private ToolbarView toolbarView = null!;
 
         [SerializeField]
@@ -40,7 +43,7 @@ namespace CyanStars.Gameplay.ChartEditor
         private ChartPackDataCoverCropFrameView cropFrameView = null!;
 
         [SerializeField]
-        private List<ChartPackDataCoverCropHandlerView> cropHandlerViews = null!;
+        private List<ChartPackDataCoverCropHandleView> cropHandlerViews = null!;
 
         [SerializeField]
         private MusicVersionView musicVersionView = null!;
@@ -49,7 +52,7 @@ namespace CyanStars.Gameplay.ChartEditor
         private BpmGroupView bpmGroupView = null!;
 
         [SerializeField]
-        private EditAreaView editAreaView = null!;
+        private SpeedTemplateView speedTemplateView = null!;
 
         [SerializeField]
         private PopupView popupView = null!;
@@ -70,6 +73,9 @@ namespace CyanStars.Gameplay.ChartEditor
                 new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData);
 
             musicManager.Init(model);
+
+            var editAreaViewModel = new EditAreaViewModel(model).AddTo(Disposables);
+            editAreaView.Bind(editAreaViewModel);
 
             var toolbarViewModel = new ToolbarViewModel(model).AddTo(Disposables);
             toolbarView.Bind(toolbarViewModel);
@@ -98,11 +104,11 @@ namespace CyanStars.Gameplay.ChartEditor
             var musicVersionViewModel = new MusicVersionViewModel(model).AddTo(Disposables);
             musicVersionView.Bind(musicVersionViewModel);
 
+            var speedTemplateViewModel = new SpeedTemplateViewModel(model).AddTo(Disposables);
+            speedTemplateView.Bind(speedTemplateViewModel);
+
             var bpmGroupViewModel = new BpmGroupViewModel(model).AddTo(Disposables);
             bpmGroupView.Bind(bpmGroupViewModel);
-
-            var editAreaViewModel = new EditAreaViewModel(model).AddTo(Disposables);
-            editAreaView.Bind(editAreaViewModel);
         }
 
         /// <summary>

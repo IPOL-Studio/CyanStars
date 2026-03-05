@@ -9,7 +9,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
     /// <summary>
     /// 谱包弹窗内曲绘裁剪的四个顶点的 View，每个顶点持有一个 View。
     /// </summary>
-    public class ChartPackDataCoverCropHandlerView : BaseView<ChartPackDataCoverViewModel>, IDragHandler, IPointerDownHandler, IBeginDragHandler, IEndDragHandler
+    public class ChartPackDataCoverCropHandleView : BaseView<ChartPackDataCoverViewModel>, IDragHandler, IPointerDownHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField]
         private CoverCropHandlerType type;
@@ -24,9 +24,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
-            selfRect = GetComponent<RectTransform>();
+            selfRect = (RectTransform)this.transform;
 
-            // handler 无需监听 ViewModel 变化，所有的变化由其父物体 frame 自动更新，handler 由 Unity 布局系统自动更新位置到 frame 四角
+            // handle 无需监听 ViewModel 变化，所有的变化由其父物体 frame 自动更新，handle 由 Unity 布局系统自动更新位置到 frame 四角
         }
 
         public void OnPointerDown(PointerEventData eventData)
@@ -37,7 +37,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (ViewModel?.CoverSprite.CurrentValue == null)
+            if (ViewModel.CoverSprite.CurrentValue == null)
                 return;
 
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -57,12 +57,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OnBeginDrag(PointerEventData _)
         {
-            ViewModel?.RecordCropData();
+            ViewModel.RecordCropData();
         }
 
         public void OnEndDrag(PointerEventData _)
         {
-            ViewModel?.CommitCropData();
+            ViewModel.CommitCropData();
         }
     }
 }
