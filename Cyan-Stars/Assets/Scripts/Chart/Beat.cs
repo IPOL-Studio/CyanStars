@@ -85,7 +85,7 @@ namespace CyanStars.Chart
                 return IntegerPart;
             }
 
-            return IntegerPart + Numerator / Denominator;
+            return IntegerPart + Numerator / (double)Denominator;
         }
 
 
