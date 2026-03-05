@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace CyanStars.Chart.BezierCurve
@@ -27,6 +28,14 @@ namespace CyanStars.Chart.BezierCurve
 
 
         public BezierPoint this[int index] => points[index];
+
+        /// <summary>
+        /// 用于 json 序列化的构造函数
+        /// </summary>
+        [JsonConstructor]
+        private BezierCurves()
+        {
+        }
 
         /// <summary>
         /// 实例化贝塞尔曲线组
