@@ -21,12 +21,16 @@ public class ChartEditorSceneRoot : MonoBehaviour
     private ChartEditorMusicManager musicManager = null!;
 
     [SerializeField]
+    private ChartEditorNoteAudioManager noteAudioManager = null!;
+
+    [SerializeField]
     private ChartEditorFileManager fileManager = null!;
 
 
     public static MvvmBindManager MvvmBindManager = null!;
     public static CommandStack CommandStack = null!;
     public static ChartEditorMusicManager MusicManager = null!;
+    public static ChartEditorNoteAudioManager NoteAudioManager = null!;
     public static ChartEditorFileManager FileManager = null!;
 
 
@@ -36,6 +40,7 @@ public class ChartEditorSceneRoot : MonoBehaviour
         CommandStack = commandStack;
         MusicManager = musicManager;
         FileManager = fileManager;
+        NoteAudioManager = noteAudioManager;
     }
 
 
@@ -92,7 +97,7 @@ public class ChartEditorSceneRoot : MonoBehaviour
             chartMetadataIndex = (int)chartModule.SelectedChartMetadataIndex;
         }
 
-        mvvmBindManager.StartBind(workspacePath, chartMetadataIndex, chartPackData, chartData, musicManager);
+        mvvmBindManager.StartBind(workspacePath, chartMetadataIndex, chartPackData, chartData, musicManager, noteAudioManager);
     }
 
     /// <summary>
