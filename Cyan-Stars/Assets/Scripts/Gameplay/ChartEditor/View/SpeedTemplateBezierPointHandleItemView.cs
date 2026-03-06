@@ -100,26 +100,34 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         #region 位置点、控制点被点击和拖拽回调
 
-        public void OnSubObjectPointClick(PointerEventData _, BezierPointSubItemType type)
+        public void OnSubObjectPointClick(PointerEventData eventData, BezierPointSubItemType type)
         {
-            if (type != BezierPointSubItemType.PosPoint)
-                return;
-
-            // 点击时将当前 pointHandle 置于最上层，防止被其他 pointHandle 遮挡导致无法拖拽
-            transform.SetAsLastSibling();
-
-            ViewModel.SelectPoint();
-
-            // 双击交互逻辑
-            if (Time.unscaledTime - lastClickTime <= DoubleClickDelaySecond)
+            if (eventData.button == PointerEventData.InputButton.Right)
             {
-                // 触发双击
-                lastClickTime = 0;
-                ViewModel.OnDoubleClick();
+                ViewModel.DeletePoint();
             }
-            else
+
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
-                lastClickTime = Time.unscaledTime;
+                if (type != BezierPointSubItemType.PosPoint)
+                    return;
+
+                // 点击时将当前 pointHandle 置于最上层，防止被其他 pointHandle 遮挡导致无法拖拽
+                transform.SetAsLastSibling();
+
+                ViewModel.SelectPoint();
+
+                // 双击交互逻辑
+                if (Time.unscaledTime - lastClickTime <= DoubleClickDelaySecond)
+                {
+                    // 触发双击
+                    lastClickTime = 0;
+                    ViewModel.OnDoubleClick();
+                }
+                else
+                {
+                    lastClickTime = Time.unscaledTime;
+                }
             }
         }
 
@@ -142,13 +150,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             if (type == BezierPointSubItemType.PosPoint)
                 ViewModel.SelectPoint();
-
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                (RectTransform)transform.parent,
-                eventData.position,
-                eventData.pressEventCamera,
-                out Vector2 localPoint
-            );
 
             ViewModel.RecordSubPointPos(type);
         }

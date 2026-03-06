@@ -411,6 +411,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OnPointerClick(PointerEventData eventData)
         {
+            // TODO: 左键长按时删除音符，以便移动设备操作
+
             if (eventData.button == PointerEventData.InputButton.Right || !ViewModel.CanPutNote.CurrentValue)
             {
                 // 如果是右键点击到了非音符的空白区域，或当前没有设置音乐/BPM，则取消选中音符

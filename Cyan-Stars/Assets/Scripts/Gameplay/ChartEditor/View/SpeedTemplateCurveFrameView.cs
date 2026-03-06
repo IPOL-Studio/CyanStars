@@ -7,7 +7,7 @@ using CyanStars.Gameplay.ChartEditor.ViewModel;
 using ObservableCollections;
 using R3;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
 
 namespace CyanStars.Gameplay.ChartEditor.View
@@ -33,14 +33,20 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private UILineRenderer distanceCurveRenderer = null!;
 
         [SerializeField]
+        private Image postProhibitionImage = null!;
+
+        [SerializeField]
+        private Image preProhibitionImage = null!;
+
+        [SerializeField]
+        private GameObject pointFrameObject = null!;
+
+
+        [SerializeField]
         private RangeSlider verticalRangeSliderFrame = null!;
 
         [SerializeField]
         private RangeSlider horizontalRangeSliderFrame = null!;
-
-
-        [SerializeField]
-        private GameObject pointFrameObject = null!;
 
 
         // 缓存的从已烘焙的坐标，当 x 视界大小变化或视界内贝塞尔点属性变化时需要重新烘焙
@@ -109,7 +115,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             // 当选择了新的变速模板时，重新生成全部的贝塞尔点 View
             ViewModel.BezierPointViewModelsMap
-                .Subscribe(OnViewMapChanged)
+                .Subscribe(OnViewMapRebuild)
                 .AddTo(this);
 
             // 当前选中的 BezierPointWrapper 内贝塞尔点数值变化烘焙并时刷新曲线
@@ -184,7 +190,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             distanceCurveRenderer.Points = distancePoints;
         }
 
-        private void OnViewMapChanged(ISynchronizedView<ReadOnlyReactiveProperty<BezierPoint>, SpeedTemplateBezierPointHandleItemViewModel>? viewModelMap)
+        private void OnViewMapRebuild(ISynchronizedView<ReactiveProperty<BezierPoint>, SpeedTemplateBezierPointHandleItemViewModel>? viewModelMap)
         {
             // 断开集合监听并销毁旧 go
             CollectionDisposables.Clear();
@@ -270,11 +276,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
             horizontalRangeSliderFrame.OnValueChanged.RemoveListener(OnHorizontalChanged);
         }
 
-        public void OnCurveFrameSpaceClick()
+        public void OnClick()
         {
-            // 点击 CurveFrame 空白处时取消选中贝塞尔点
-            // 由 CurveFrame 在 Unity 中的 Event Trigger 触发
             ViewModel.SelectPoint(null);
+        }
+
+        public void OnDoubleClick(Vector2 position)
+        {
+            ViewModel.TryAddPoint(position);
         }
     }
 }

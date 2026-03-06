@@ -4,6 +4,7 @@ using CyanStars.Chart.BezierCurve;
 using CyanStars.Gameplay.ChartEditor.Model;
 using ObservableCollections;
 using R3;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
@@ -37,9 +38,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<ReadOnlyReactiveProperty<BezierPoint>?> SelectedPoint => selectedPoint;
 
 
-        private readonly ReactiveProperty<ISynchronizedView<ReadOnlyReactiveProperty<BezierPoint>, SpeedTemplateBezierPointHandleItemViewModel>?> bezierPointViewModelsMap = new();
+        private readonly ReactiveProperty<ISynchronizedView<ReactiveProperty<BezierPoint>, SpeedTemplateBezierPointHandleItemViewModel>?> bezierPointViewModelsMap = new();
 
-        public ReadOnlyReactiveProperty<ISynchronizedView<ReadOnlyReactiveProperty<BezierPoint>, SpeedTemplateBezierPointHandleItemViewModel>?> BezierPointViewModelsMap => bezierPointViewModelsMap;
+        public ReadOnlyReactiveProperty<ISynchronizedView<ReactiveProperty<BezierPoint>, SpeedTemplateBezierPointHandleItemViewModel>?> BezierPointViewModelsMap => bezierPointViewModelsMap;
 
 
         public SpeedTemplateCurveFrameViewModel(
@@ -55,7 +56,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .Subscribe(_ => selectedPoint.Value = null)
                 .AddTo(base.Disposables);
 
-            // 变速模板变化时重新构建子 VM 和 V
+            // 切换选中变速模板时重新构建子 VM 和 V
             SelectedSpeedTemplateData
                 .Subscribe(selectedTemplateData =>
                     {
@@ -70,7 +71,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                                         this,
                                         pointWrapper,
                                         selectedTemplateData.BezierCurves.Points[0] == pointWrapper,
-                                        selectedTemplateData.BezierCurves.Points[^1] == pointWrapper
+                                        selectedTemplateData.BezierCurves.LastPointWrapper
                                     )
                                 );
                         }
@@ -82,6 +83,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 )
                 .AddTo(base.Disposables);
 
+
             // 确保 ViewModel 销毁时，最后一个 View 也能被正确释放
             base.Disposables.Add(Disposable.Create(() => bezierPointViewModelsMap.CurrentValue?.Dispose()));
         }
@@ -89,6 +91,18 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public void SelectPoint(ReadOnlyReactiveProperty<BezierPoint>? bezierPointWrapper)
         {
             selectedPoint.Value = bezierPointWrapper;
+        }
+
+        public void TryAddPoint(Vector2 position)
+        {
+            BezierPointPos bezierPointPos = new(
+                Mathf.RoundToInt(position.x / ScaleX.CurrentValue - OffsetX.CurrentValue),
+                position.y / ScaleY.CurrentValue - OffsetY.CurrentValue
+            );
+
+            SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryAddPoint(
+                new BezierPoint(bezierPointPos, bezierPointPos, bezierPointPos)
+            );
         }
     }
 }
