@@ -1,6 +1,8 @@
 ﻿#nullable enable
 
+using System;
 using CyanStars.Chart.BezierCurve;
+using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using ObservableCollections;
 using R3;
@@ -38,9 +40,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<ReadOnlyReactiveProperty<BezierPoint>?> SelectedPoint => selectedPoint;
 
 
+        /// <summary>
+        /// 当前选中的变速模板的贝塞尔点 VM 映射表
+        /// </summary>
         private readonly ReactiveProperty<ISynchronizedView<ReactiveProperty<BezierPoint>, SpeedTemplateBezierPointHandleItemViewModel>?> bezierPointViewModelsMap = new();
 
         public ReadOnlyReactiveProperty<ISynchronizedView<ReactiveProperty<BezierPoint>, SpeedTemplateBezierPointHandleItemViewModel>?> BezierPointViewModelsMap => bezierPointViewModelsMap;
+
+
+        // 开始拖拽时记录的贝塞尔点位置和类型，位置用于撤销命令和拖拽位置点时计算控制点相对位移
+        private BezierPoint? recordedLocalPoint = null;
+        private BezierPointSubItemType? recordedType = null!;
 
 
         public SpeedTemplateCurveFrameViewModel(
@@ -69,9 +79,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                                     new SpeedTemplateBezierPointHandleItemViewModel(
                                         Model,
                                         this,
-                                        pointWrapper,
-                                        selectedTemplateData.BezierCurves.Points[0] == pointWrapper,
-                                        selectedTemplateData.BezierCurves.LastPointWrapper
+                                        pointWrapper
                                     )
                                 );
                         }
@@ -103,6 +111,166 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryAddPoint(
                 new BezierPoint(bezierPointPos, bezierPointPos, bezierPointPos)
             );
+        }
+
+        public void UpdateSubPointPos(ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper, Vector2 localPoint, BezierPointSubItemType type)
+        {
+            if (recordedLocalPoint == null || recordedType == null)
+                throw new Exception("记录的开始拖拽点位置或类型为空！");
+            if (recordedType != type)
+                throw new Exception("拖拽时的 type 与开始拖拽时记录的不一致，请检查！");
+
+            GetPointDataByLocalPoint(bezierPointWrapper, localPoint, type, out BezierPoint bezierPoint);
+            SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryUpdatePoint(
+                bezierPointWrapper,
+                bezierPoint
+            );
+        }
+
+        public void RecordSubPointPos(ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper, BezierPointSubItemType draggingHandleType)
+        {
+            recordedLocalPoint = bezierPointWrapper.CurrentValue;
+            recordedType = draggingHandleType;
+        }
+
+        public void CommitSubPointPos(ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper, Vector2 newLocalPoint, BezierPointSubItemType type)
+        {
+            if (recordedLocalPoint == null || recordedType == null)
+                throw new Exception("记录的开始拖拽点位置或类型为空！");
+            if (recordedType != type)
+                throw new Exception("结束拖拽时的 type 与开始拖拽时记录的不一致，请检查！");
+
+            GetPointDataByLocalPoint(bezierPointWrapper, newLocalPoint, type, out BezierPoint newBezierPoint);
+            BezierPoint oldBezierPoint = (BezierPoint)recordedLocalPoint;
+
+            CommandStack.ExecuteCommand(
+                () =>
+                {
+                    SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryUpdatePoint(
+                        bezierPointWrapper,
+                        newBezierPoint
+                    );
+                },
+                () =>
+                {
+                    SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryUpdatePoint(
+                        bezierPointWrapper,
+                        oldBezierPoint
+                    );
+                }
+            );
+
+            recordedLocalPoint = null;
+            recordedType = null;
+        }
+
+        public void OnDoubleClick(ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper)
+        {
+            bool isFirstPoint =
+                SpeedTemplateViewModel.SelectedSpeedTemplateData.CurrentValue.BezierCurves.Points[0] == bezierPointWrapper;
+            bool isLastPoint =
+                SpeedTemplateViewModel.SelectedSpeedTemplateData.CurrentValue.BezierCurves.Points[^1] == bezierPointWrapper;
+
+            if (isFirstPoint && isLastPoint)
+                return;
+
+            bool canActiveLeftControlPoint =
+                !isFirstPoint && bezierPointWrapper.CurrentValue.LeftControlPoint == bezierPointWrapper.CurrentValue.PositionPoint;
+            bool canActiveRightControlPoint =
+                !isLastPoint && bezierPointWrapper.CurrentValue.RightControlPoint == bezierPointWrapper.CurrentValue.PositionPoint;
+
+            BezierPoint oldBezierPoint = bezierPointWrapper.CurrentValue;
+            BezierPoint newBezierPoint;
+
+            if (canActiveLeftControlPoint || canActiveRightControlPoint)
+            {
+                // 如果至少有一个点可以激活，则把那些能激活的点都激活了
+                BezierPointPos pos = oldBezierPoint.PositionPoint;
+                BezierPointPos leftPos = canActiveLeftControlPoint ? new BezierPointPos(pos.MsTime, pos.Value - 100f) : pos;
+                BezierPointPos rightPos = canActiveRightControlPoint ? new BezierPointPos(pos.MsTime, pos.Value + 100f) : pos;
+                newBezierPoint = new BezierPoint(pos, leftPos, rightPos);
+            }
+            else
+            {
+                // 如果所有点都已经激活了，则取消激活所有的点
+                BezierPointPos pos = oldBezierPoint.PositionPoint;
+                newBezierPoint = new BezierPoint(pos, pos, pos);
+            }
+
+            CommandStack.ExecuteCommand(
+                () =>
+                {
+                    SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryUpdatePoint(
+                        bezierPointWrapper,
+                        newBezierPoint
+                    );
+                },
+                () =>
+                {
+                    SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryUpdatePoint(
+                        bezierPointWrapper,
+                        oldBezierPoint
+                    );
+                }
+            );
+        }
+
+        /// <summary>
+        /// 根据当前的局部位置和拖动点种类，计算贝塞尔点三个子控制点的坐标
+        /// </summary>
+        /// <remarks>最终输出的坐标会确保单个贝塞尔点的三个点按照正确的时间顺序排列，且拖动位置点时会同步更新左右控制点位置</remarks>
+        private void GetPointDataByLocalPoint(ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper, Vector2 localPoint, BezierPointSubItemType type, out BezierPoint bezierPoint)
+        {
+            // 将指针的本地坐标转换到贝塞尔点数据位置
+            float msTime = localPoint.x / ScaleX.CurrentValue - OffsetX.CurrentValue;
+            float value = localPoint.y / ScaleY.CurrentValue - OffsetY.CurrentValue;
+
+            switch (type)
+            {
+                case BezierPointSubItemType.PosPoint:
+                    float offsetMsTime = msTime - ((BezierPoint)recordedLocalPoint).PositionPoint.MsTime;
+                    float offsetValue = value - ((BezierPoint)recordedLocalPoint).PositionPoint.Value;
+
+                    bezierPoint = new BezierPoint(
+                        new BezierPointPos(Mathf.RoundToInt(msTime), value),
+                        new BezierPointPos(
+                            ((BezierPoint)recordedLocalPoint).LeftControlPoint.MsTime + Mathf.RoundToInt(offsetMsTime),
+                            ((BezierPoint)recordedLocalPoint).LeftControlPoint.Value + offsetValue
+                        ),
+                        new BezierPointPos(
+                            ((BezierPoint)recordedLocalPoint).RightControlPoint.MsTime + Mathf.RoundToInt(offsetMsTime),
+                            ((BezierPoint)recordedLocalPoint).RightControlPoint.Value + offsetValue
+                        )
+                    );
+
+                    // 如果 bezierPointWrapper 是首个元素点，将其位置点时间设为 0，将其做控制点位置设为坐标点，并撤销右控制点的横向偏移修改
+                    if (bezierPointWrapper == SelectedSpeedTemplateData.CurrentValue.BezierCurves.Points[0])
+                    {
+                        bezierPoint = new BezierPoint(
+                            new BezierPointPos(0, bezierPoint.PositionPoint.Value),
+                            new BezierPointPos(0, bezierPoint.PositionPoint.Value),
+                            new BezierPointPos(bezierPoint.RightControlPoint.MsTime - Mathf.RoundToInt(offsetMsTime), bezierPoint.RightControlPoint.Value)
+                        );
+                    }
+
+                    break;
+                case BezierPointSubItemType.LeftControlPoint:
+                    bezierPoint = new BezierPoint(
+                        new BezierPointPos(bezierPointWrapper.CurrentValue.PositionPoint.MsTime, bezierPointWrapper.CurrentValue.PositionPoint.Value),
+                        new BezierPointPos(Math.Min((int)msTime, bezierPointWrapper.CurrentValue.PositionPoint.MsTime), value),
+                        new BezierPointPos(bezierPointWrapper.CurrentValue.RightControlPoint.MsTime, bezierPointWrapper.CurrentValue.RightControlPoint.Value)
+                    );
+                    break;
+                case BezierPointSubItemType.RightControlPoint:
+                    bezierPoint = new BezierPoint(
+                        new BezierPointPos(bezierPointWrapper.CurrentValue.PositionPoint.MsTime, bezierPointWrapper.CurrentValue.PositionPoint.Value),
+                        new BezierPointPos(bezierPointWrapper.CurrentValue.LeftControlPoint.MsTime, bezierPointWrapper.CurrentValue.LeftControlPoint.Value),
+                        new BezierPointPos(Math.Max((int)msTime, bezierPointWrapper.CurrentValue.PositionPoint.MsTime), value)
+                    );
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
         }
     }
 }
