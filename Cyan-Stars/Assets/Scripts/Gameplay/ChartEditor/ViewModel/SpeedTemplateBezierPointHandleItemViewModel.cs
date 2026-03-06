@@ -27,7 +27,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         // 控制点可用状态，首个贝塞尔点永远禁用左侧控制点，末个贝塞尔点永远禁用右侧控制点
         public readonly bool IsFirstPoint;
-        public readonly bool IsLastPoint;
+        public bool IsLastPoint;
 
 
         private BezierPoint? recordedLocalPoint = null;
@@ -44,20 +44,40 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             SpeedTemplateCurveFrameViewModel speedTemplateCurveFrameViewModel,
             ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper,
             bool isFirstPoint,
-            bool isLastPoint
+            ReadOnlyReactiveProperty<ReadOnlyReactiveProperty<BezierPoint>> lastPointWrapper
         )
             : base(model)
         {
             SpeedTemplateCurveFrameViewModel = speedTemplateCurveFrameViewModel;
             BezierPointWrapper = bezierPointWrapper;
             IsFirstPoint = isFirstPoint;
-            IsLastPoint = isLastPoint;
-
+            lastPointWrapper
+                .Subscribe(currentLastPointWrapper => IsLastPoint = currentLastPointWrapper == BezierPointWrapper)
+                .AddTo(base.Disposables);
             SpeedTemplateCurveFrameViewModel.SelectedPoint
                 .Subscribe(selectedPoint => selfSelected.Value = selectedPoint == BezierPointWrapper)
                 .AddTo(base.Disposables);
         }
 
+
+        public void DeletePoint()
+        {
+            BezierPoint bezierPoint = BezierPointWrapper.CurrentValue;
+            CommandStack.ExecuteCommand(
+                () =>
+                {
+                    SpeedTemplateCurveFrameViewModel.SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryRemovePoint(
+                        BezierPointWrapper
+                    );
+                },
+                () =>
+                {
+                    SpeedTemplateCurveFrameViewModel.SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryAddPoint(
+                        bezierPoint
+                    );
+                }
+            );
+        }
 
         public void SelectPoint()
         {

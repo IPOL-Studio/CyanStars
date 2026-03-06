@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using System.Linq;
 using CyanStars.Chart.BezierCurve;
 using ObservableCollections;
 using R3;
@@ -15,10 +14,12 @@ public class SpeedTemplateBezierCurvesEditorModel
     /// <summary>
     /// 暴露给制谱器的可观察贝塞尔曲线列表，校验通过后才更新
     /// </summary>
-    public IReadOnlyObservableList<ReadOnlyReactiveProperty<BezierPoint>> Points =>
-        new ObservableList<ReadOnlyReactiveProperty<BezierPoint>>(
-            points.Select(rp => rp.ToReadOnlyReactiveProperty())
-        );
+    public IReadOnlyObservableList<ReactiveProperty<BezierPoint>> Points => points;
+
+    // 当在列表末尾新增或删除元素时可能会变化，需要对 wrapper 进行观察
+    private readonly ReactiveProperty<ReadOnlyReactiveProperty<BezierPoint>> lastPointWrapper = new();
+    public ReadOnlyReactiveProperty<ReadOnlyReactiveProperty<BezierPoint>> LastPointWrapper => lastPointWrapper;
+
 
     /// <summary>
     /// 构造函数
@@ -31,6 +32,8 @@ public class SpeedTemplateBezierCurvesEditorModel
         {
             points.Add(new ReactiveProperty<BezierPoint>(point));
         }
+
+        lastPointWrapper.Value = points[^1];
     }
 
     /// <summary>
@@ -50,6 +53,7 @@ public class SpeedTemplateBezierCurvesEditorModel
         if (OriginCurves.TryAdd(newPoint, out int index))
         {
             points.Insert(index, new ReactiveProperty<BezierPoint>(newPoint));
+            lastPointWrapper.Value = points[^1];
             return true;
         }
         else
@@ -79,11 +83,12 @@ public class SpeedTemplateBezierCurvesEditorModel
     /// <summary>
     /// 移除一个点
     /// </summary>
-    public bool TryRemovePoint(ReactiveProperty<BezierPoint> oldPointWrapper)
+    public bool TryRemovePoint(ReadOnlyReactiveProperty<BezierPoint> oldPointWrapper)
     {
         if (OriginCurves.Remove(oldPointWrapper.CurrentValue))
         {
-            points.Remove(oldPointWrapper);
+            points.Remove((ReactiveProperty<BezierPoint>)oldPointWrapper);
+            lastPointWrapper.Value = points[^1];
             return true;
         }
         else
