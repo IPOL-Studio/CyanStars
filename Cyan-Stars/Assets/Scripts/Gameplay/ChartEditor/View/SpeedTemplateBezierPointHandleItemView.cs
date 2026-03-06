@@ -140,7 +140,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 out Vector2 localPoint
             );
 
-            ViewModel.SetSubPointPos(localPoint, type);
+            ViewModel.UpdateSubPointPos(localPoint, type);
         }
 
         public void OnSubObjectBeginDrag(PointerEventData eventData, BezierPointSubItemType type)
