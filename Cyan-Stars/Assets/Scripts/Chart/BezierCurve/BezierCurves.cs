@@ -240,7 +240,7 @@ namespace CyanStars.Chart.BezierCurve
             // 除非替换首个元素，否则需要校验左侧控制点是否超过上一个元素位置点&位置点是否超过上个元素右侧控制点
             if (oldItemIndex != 0)
             {
-                if (!(points[oldItemIndex - 1].PositionPoint.MsTime < newItem.LeftControlPoint.MsTime &&
+                if (!(points[oldItemIndex - 1].PositionPoint.MsTime <= newItem.LeftControlPoint.MsTime &&
                       points[oldItemIndex - 1].RightControlPoint.MsTime <= newItem.PositionPoint.MsTime))
                     return false;
             }
@@ -248,7 +248,7 @@ namespace CyanStars.Chart.BezierCurve
             // 除非替换末个元素，否则需要校验右侧控制点是否超过下一个元素位置点&位置点是否超过下个元素左侧控制点
             if (oldItemIndex != points.Count - 1)
             {
-                if (!(newItem.RightControlPoint.MsTime < points[oldItemIndex + 1].PositionPoint.MsTime &&
+                if (!(newItem.RightControlPoint.MsTime <= points[oldItemIndex + 1].PositionPoint.MsTime &&
                       newItem.PositionPoint.MsTime <= points[oldItemIndex + 1].LeftControlPoint.MsTime))
                     return false;
             }
