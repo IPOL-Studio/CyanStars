@@ -38,6 +38,11 @@ public class SpeedTemplateBezierCurvesEditorModel
         return OriginCurves;
     }
 
+    public int GetPointIndex(ReadOnlyReactiveProperty<BezierPoint> pointWrapper)
+    {
+        return points.IndexOf((ReactiveProperty<BezierPoint>)pointWrapper);
+    }
+
 
     /// <summary>
     /// 尝试添加一个点

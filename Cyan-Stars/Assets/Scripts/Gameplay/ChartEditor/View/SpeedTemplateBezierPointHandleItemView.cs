@@ -57,6 +57,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 )
                 .Subscribe(datas =>
                     {
+                        // 如果选中了此贝塞尔点，则显示控制点和连线
                         leftControlPointObject.SetActive(
                             datas.selected &&
                             datas.pointWrapper.LeftControlPoint != datas.pointWrapper.PositionPoint
@@ -65,9 +66,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
                             datas.selected &&
                             datas.pointWrapper.RightControlPoint != datas.pointWrapper.PositionPoint
                         );
-                        uiLineRenderer.enabled = datas.selected &&
-                                                 (leftControlPointObject.activeSelf || rightControlPointObject.activeSelf);
+                        uiLineRenderer.enabled =
+                            datas.selected && (leftControlPointObject.activeSelf || rightControlPointObject.activeSelf);
 
+                        // 值或缩放变化时，刷新贝塞尔点和连线的位置
                         float posX =
                             (datas.pointWrapper.PositionPoint.MsTime + datas.offsetX) * datas.scaleX;
                         float posY =

@@ -218,46 +218,111 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         /// <summary>
         /// 根据当前的局部位置和拖动点种类，计算贝塞尔点三个子控制点的坐标
         /// </summary>
-        /// <remarks>最终输出的坐标会确保单个贝塞尔点的三个点按照正确的时间顺序排列，且拖动位置点时会同步更新左右控制点位置</remarks>
+        /// <remarks>最终输出的坐标会确保曲线符合约束条件，且拖动位置点时会同步更新左右控制点位置</remarks>
         private void GetPointDataByLocalPoint(ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper, Vector2 localPoint, BezierPointSubItemType type, out BezierPoint bezierPoint)
         {
             // 将指针的本地坐标转换到贝塞尔点数据位置
-            float msTime = localPoint.x / ScaleX.CurrentValue - OffsetX.CurrentValue;
-            float value = localPoint.y / ScaleY.CurrentValue - OffsetY.CurrentValue;
+            float pointX = localPoint.x / ScaleX.CurrentValue - OffsetX.CurrentValue;
+            float pointY = localPoint.y / ScaleY.CurrentValue - OffsetY.CurrentValue;
 
+            IReadOnlyObservableList<ReactiveProperty<BezierPoint>> points =
+                SelectedSpeedTemplateData.CurrentValue.BezierCurves.Points;
+            int pointWrapperIndex =
+                SelectedSpeedTemplateData.CurrentValue.BezierCurves.GetPointIndex(bezierPointWrapper);
+
+            //  根据约束条件限制 x 坐标
+            int minX, maxX;
             switch (type)
             {
                 case BezierPointSubItemType.PosPoint:
-                    float offsetMsTime = msTime - ((BezierPoint)recordedLocalPoint).PositionPoint.MsTime;
-                    float offsetValue = value - ((BezierPoint)recordedLocalPoint).PositionPoint.Value;
-
-                    bezierPoint = new BezierPoint(
-                        new BezierPointPos(Mathf.RoundToInt(msTime), value),
-                        new BezierPointPos(
-                            ((BezierPoint)recordedLocalPoint).LeftControlPoint.MsTime + Mathf.RoundToInt(offsetMsTime),
-                            ((BezierPoint)recordedLocalPoint).LeftControlPoint.Value + offsetValue
-                        ),
-                        new BezierPointPos(
-                            ((BezierPoint)recordedLocalPoint).RightControlPoint.MsTime + Mathf.RoundToInt(offsetMsTime),
-                            ((BezierPoint)recordedLocalPoint).RightControlPoint.Value + offsetValue
-                        )
-                    );
-
-                    // 如果 bezierPointWrapper 是首个元素点，将其位置点时间设为 0，将其做控制点位置设为坐标点，并撤销右控制点的横向偏移修改
-                    if (bezierPointWrapper == SelectedSpeedTemplateData.CurrentValue.BezierCurves.Points[0])
+                    if (pointWrapperIndex == 0)
                     {
-                        bezierPoint = new BezierPoint(
-                            new BezierPointPos(0, bezierPoint.PositionPoint.Value),
-                            new BezierPointPos(0, bezierPoint.PositionPoint.Value),
-                            new BezierPointPos(bezierPoint.RightControlPoint.MsTime - Mathf.RoundToInt(offsetMsTime), bezierPoint.RightControlPoint.Value)
+                        minX = 0;
+                        maxX = 0;
+                        break;
+                    }
+
+                    minX = Math.Max(0, bezierPointWrapper.CurrentValue.PositionPoint.MsTime - bezierPointWrapper.CurrentValue.LeftControlPoint.MsTime); // 拖动位置点时，一并移动的左控制点也要大于等于 0
+                    maxX = int.MaxValue;
+
+                    // this-1.右控制点 <= this.位置点 && this-1.位置点 <= this.左控制点
+                    if (0 < pointWrapperIndex)
+                    {
+                        minX = Math.Max(
+                            points[pointWrapperIndex - 1].CurrentValue.RightControlPoint.MsTime,
+                            points[pointWrapperIndex - 1].CurrentValue.PositionPoint.MsTime +
+                            (bezierPointWrapper.CurrentValue.PositionPoint.MsTime -
+                             bezierPointWrapper.CurrentValue.LeftControlPoint.MsTime)
+                        );
+                    }
+
+                    // this.位置点 <= this+1.左控制点 && this.右控制点 <= this+1.位置点
+                    if (pointWrapperIndex < points.Count - 1)
+                    {
+                        maxX = Math.Min(
+                            points[pointWrapperIndex + 1].CurrentValue.LeftControlPoint.MsTime,
+                            points[pointWrapperIndex + 1].CurrentValue.PositionPoint.MsTime -
+                            (bezierPointWrapper.CurrentValue.RightControlPoint.MsTime -
+                             bezierPointWrapper.CurrentValue.PositionPoint.MsTime)
                         );
                     }
 
                     break;
                 case BezierPointSubItemType.LeftControlPoint:
+                    // 确保左控制点 x 小于等于自身位置点
+                    minX = 0;
+                    maxX = bezierPointWrapper.CurrentValue.PositionPoint.MsTime;
+
+                    if (0 < pointWrapperIndex)
+                    {
+                        minX = Math.Max(minX, points[pointWrapperIndex - 1].CurrentValue.PositionPoint.MsTime);
+                    }
+
+                    break;
+                case BezierPointSubItemType.RightControlPoint:
+                    // 确保左控制点 x 大于等于自身位置点
+                    minX = bezierPointWrapper.CurrentValue.PositionPoint.MsTime;
+                    maxX = int.MaxValue;
+
+                    if (pointWrapperIndex < points.Count - 1)
+                    {
+                        maxX = Math.Min(maxX, points[pointWrapperIndex + 1].CurrentValue.PositionPoint.MsTime);
+                    }
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+
+            int finalX = Mathf.RoundToInt(Mathf.Clamp(pointX, minX, maxX));
+
+            switch (type)
+            {
+                case BezierPointSubItemType.PosPoint:
+                    // 获取开始拖拽时的贝塞尔点数据位置，计算偏移量
+                    BezierPoint recordedPoint = (BezierPoint)recordedLocalPoint;
+                    int recordX = recordedPoint.PositionPoint.MsTime;
+                    float recordY = recordedPoint.PositionPoint.Value;
+
+                    int offsetMsTime = finalX - recordX;
+                    float offsetValue = pointY - recordY;
+
+                    bezierPoint = new BezierPoint(
+                        new BezierPointPos(finalX, pointY),
+                        new BezierPointPos(
+                            recordedPoint.LeftControlPoint.MsTime + offsetMsTime,
+                            recordedPoint.LeftControlPoint.Value + offsetValue
+                        ),
+                        new BezierPointPos(
+                            recordedPoint.RightControlPoint.MsTime + offsetMsTime,
+                            recordedPoint.RightControlPoint.Value + offsetValue
+                        )
+                    );
+                    break;
+                case BezierPointSubItemType.LeftControlPoint:
                     bezierPoint = new BezierPoint(
                         new BezierPointPos(bezierPointWrapper.CurrentValue.PositionPoint.MsTime, bezierPointWrapper.CurrentValue.PositionPoint.Value),
-                        new BezierPointPos(Math.Min((int)msTime, bezierPointWrapper.CurrentValue.PositionPoint.MsTime), value),
+                        new BezierPointPos(finalX, pointY),
                         new BezierPointPos(bezierPointWrapper.CurrentValue.RightControlPoint.MsTime, bezierPointWrapper.CurrentValue.RightControlPoint.Value)
                     );
                     break;
@@ -265,7 +330,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     bezierPoint = new BezierPoint(
                         new BezierPointPos(bezierPointWrapper.CurrentValue.PositionPoint.MsTime, bezierPointWrapper.CurrentValue.PositionPoint.Value),
                         new BezierPointPos(bezierPointWrapper.CurrentValue.LeftControlPoint.MsTime, bezierPointWrapper.CurrentValue.LeftControlPoint.Value),
-                        new BezierPointPos(Math.Max((int)msTime, bezierPointWrapper.CurrentValue.PositionPoint.MsTime), value)
+                        new BezierPointPos(finalX, pointY)
                     );
                     break;
                 default:
