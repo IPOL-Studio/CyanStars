@@ -29,10 +29,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<float> OffsetY => offsetY;
 
         // 用于显示拖拽/添加贝塞尔点时的边界
-        private readonly ReactiveProperty<int?> minMsTime = new ReactiveProperty<int?>(null);
-        private readonly ReactiveProperty<int?> maxMsTime = new ReactiveProperty<int?>(null);
-        public ReadOnlyReactiveProperty<int?> MinMsTime => minMsTime;
-        public ReadOnlyReactiveProperty<int?> MaxMsTime => maxMsTime;
+        public int MinMsTime { get; private set; } = 0;
+        public int MaxMsTime { get; private set; } = int.MaxValue;
 
 
         /// <summary>
@@ -60,7 +58,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
 
         // 开始拖拽时记录的贝塞尔点位置和类型，位置用于撤销命令和拖拽位置点时计算控制点相对位移
-        private BezierPoint? recordedLocalPoint = null;
+        private readonly ReactiveProperty<BezierPoint?> recordedLocalPoint = new ReactiveProperty<BezierPoint?>();
+        public ReadOnlyReactiveProperty<BezierPoint?> RecordedLocalPoint => recordedLocalPoint;
         private BezierPointSubItemType? recordedType = null;
 
 
@@ -159,7 +158,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void RecordSubPointPos(ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper, BezierPointSubItemType draggingHandleType)
         {
-            recordedLocalPoint = bezierPointWrapper.CurrentValue;
+            recordedLocalPoint.Value = bezierPointWrapper.CurrentValue;
             recordedType = draggingHandleType;
         }
 
@@ -171,7 +170,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 throw new Exception("结束拖拽时的 type 与开始拖拽时记录的不一致，请检查！");
 
             GetPointDataByLocalPoint(bezierPointWrapper, newLocalPoint, type, out BezierPoint newBezierPoint);
-            BezierPoint oldBezierPoint = (BezierPoint)recordedLocalPoint;
+            BezierPoint oldBezierPoint = (BezierPoint)RecordedLocalPoint.CurrentValue;
 
             CommandStack.ExecuteCommand(
                 () =>
@@ -190,17 +189,22 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 }
             );
 
-            recordedLocalPoint = null;
+            recordedLocalPoint.Value = null;
             recordedType = null;
         }
 
-        public void OnDoubleClick(ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper)
+        /// <summary>
+        /// 当贝塞尔点被双击时，显示或隐藏其控制点
+        /// </summary>
+        /// <param name="bezierPointWrapper">被双击的贝塞尔点</param>
+        public void OnPointDoubleClick(ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper)
         {
             bool isFirstPoint =
                 SpeedTemplateViewModel.SelectedSpeedTemplateData.CurrentValue.BezierCurves.Points[0] == bezierPointWrapper;
             bool isLastPoint =
                 SpeedTemplateViewModel.SelectedSpeedTemplateData.CurrentValue.BezierCurves.Points[^1] == bezierPointWrapper;
 
+            // 如果整条曲线就这一个点，双击将不起作用
             if (isFirstPoint && isLastPoint)
                 return;
 
@@ -216,8 +220,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             {
                 // 如果至少有一个点可以激活，则把那些能激活的点都激活了
                 BezierPointPos pos = oldBezierPoint.PositionPoint;
-                BezierPointPos leftPos = canActiveLeftControlPoint ? new BezierPointPos(pos.MsTime, pos.Value - 100f) : pos;
-                BezierPointPos rightPos = canActiveRightControlPoint ? new BezierPointPos(pos.MsTime, pos.Value + 100f) : pos;
+                BezierPointPos leftPos = canActiveLeftControlPoint ? new BezierPointPos(pos.MsTime, pos.Value + 100f) : pos;
+                BezierPointPos rightPos = canActiveRightControlPoint ? new BezierPointPos(pos.MsTime, pos.Value - 100f) : pos;
                 newBezierPoint = new BezierPoint(pos, leftPos, rightPos);
             }
             else
@@ -246,7 +250,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         }
 
         /// <summary>
-        /// 根据当前的局部位置和拖动点种类，计算贝塞尔点三个子控制点的坐标
+        /// 根据当前的局部位置和拖动点种类，计算贝塞尔点三个子控制点的坐标，并更新 MinMsTime 和 MaxMsTime
         /// </summary>
         /// <remarks>最终输出的坐标会确保曲线符合约束条件，且拖动位置点时会同步更新左右控制点位置</remarks>
         private void GetPointDataByLocalPoint(ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper, Vector2 localPoint, BezierPointSubItemType type, out BezierPoint bezierPoint)
@@ -322,13 +326,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
 
+            // 将最后用于赋值的 finalX 限制在约束范围内
             int finalX = Mathf.RoundToInt(Mathf.Clamp(pointX, minX, maxX));
 
+            // 赋值贝塞尔点
             switch (type)
             {
                 case BezierPointSubItemType.PosPoint:
+                    // 如果拖动的是位置点，还要一并更新左右控制点的坐标
                     // 获取开始拖拽时的贝塞尔点数据位置，计算偏移量
-                    BezierPoint recordedPoint = (BezierPoint)recordedLocalPoint;
+                    BezierPoint recordedPoint = (BezierPoint)RecordedLocalPoint.CurrentValue;
                     int recordX = recordedPoint.PositionPoint.MsTime;
                     float recordY = recordedPoint.PositionPoint.Value;
 
@@ -364,6 +371,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
+
+            MinMsTime = minX;
+            MaxMsTime = maxX;
         }
     }
 }
