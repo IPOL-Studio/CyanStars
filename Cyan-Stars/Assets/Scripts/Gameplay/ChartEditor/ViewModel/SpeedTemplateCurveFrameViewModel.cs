@@ -245,26 +245,24 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     minX = Math.Max(0, bezierPointWrapper.CurrentValue.PositionPoint.MsTime - bezierPointWrapper.CurrentValue.LeftControlPoint.MsTime); // 拖动位置点时，一并移动的左控制点也要大于等于 0
                     maxX = int.MaxValue;
 
-                    // this-1.右控制点 <= this.位置点 && this-1.位置点 <= this.左控制点
+                    // this-1.右控制点 <= this.位置点 && this-1.位置点 <= this.左控制点 && this-1.位置点+1 <= this.位置点
                     if (0 < pointWrapperIndex)
                     {
-                        minX = Math.Max(
-                            points[pointWrapperIndex - 1].CurrentValue.RightControlPoint.MsTime,
-                            points[pointWrapperIndex - 1].CurrentValue.PositionPoint.MsTime +
-                            (bezierPointWrapper.CurrentValue.PositionPoint.MsTime -
-                             bezierPointWrapper.CurrentValue.LeftControlPoint.MsTime)
-                        );
+                        minX = Math.Max(minX, points[pointWrapperIndex - 1].CurrentValue.RightControlPoint.MsTime);
+                        minX = Math.Max(minX, points[pointWrapperIndex - 1].CurrentValue.PositionPoint.MsTime +
+                                              (bezierPointWrapper.CurrentValue.PositionPoint.MsTime -
+                                               bezierPointWrapper.CurrentValue.LeftControlPoint.MsTime));
+                        minX = Math.Max(minX, points[pointWrapperIndex - 1].CurrentValue.PositionPoint.MsTime + 1);
                     }
 
-                    // this.位置点 <= this+1.左控制点 && this.右控制点 <= this+1.位置点
+                    // this.位置点 <= this+1.左控制点 && this.右控制点 <= this+1.位置点 && this.位置点 <= this-1.位置点-1
                     if (pointWrapperIndex < points.Count - 1)
                     {
-                        maxX = Math.Min(
-                            points[pointWrapperIndex + 1].CurrentValue.LeftControlPoint.MsTime,
-                            points[pointWrapperIndex + 1].CurrentValue.PositionPoint.MsTime -
-                            (bezierPointWrapper.CurrentValue.RightControlPoint.MsTime -
-                             bezierPointWrapper.CurrentValue.PositionPoint.MsTime)
-                        );
+                        maxX = Math.Min(maxX, points[pointWrapperIndex + 1].CurrentValue.LeftControlPoint.MsTime);
+                        maxX = Math.Min(maxX, points[pointWrapperIndex + 1].CurrentValue.PositionPoint.MsTime -
+                                              (bezierPointWrapper.CurrentValue.RightControlPoint.MsTime -
+                                               bezierPointWrapper.CurrentValue.PositionPoint.MsTime));
+                        maxX = Math.Min(maxX, points[pointWrapperIndex + 1].CurrentValue.PositionPoint.MsTime - 1);
                     }
 
                     break;
