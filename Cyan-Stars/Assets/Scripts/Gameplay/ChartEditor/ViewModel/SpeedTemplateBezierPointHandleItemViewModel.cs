@@ -88,7 +88,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void OnDoubleClick()
         {
-            SpeedTemplateCurveFrameViewModel.OnDoubleClick(BezierPointWrapper);
+            SpeedTemplateCurveFrameViewModel.OnPointDoubleClick(BezierPointWrapper);
         }
     }
 }
