@@ -71,8 +71,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
-            verticalRangeSliderFrame.OnValueChanged.AddListener(OnVerticalChanged);
-            horizontalRangeSliderFrame.OnValueChanged.AddListener(OnHorizontalChanged);
+            verticalRangeSliderFrame.OnValueChanged.AddListener(ViewModel.OnVerticalChanged);
+            horizontalRangeSliderFrame.OnValueChanged.AddListener(ViewModel.OnHorizontalChanged);
 
             // 当选择了新的变速模板，或贝塞尔曲线内部数据变化时，重新烘焙并重绘速度曲线和位移曲面
             ViewModel.SelectedSpeedTemplateData
@@ -135,25 +135,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     }
                 )
                 .AddTo(this);
-        }
-
-
-        private void OnVerticalChanged(float lowY, float highY)
-        {
-            if (ViewModel.SelectedSpeedTemplateData.CurrentValue == null)
-                throw new Exception("选中曲线为空时不应该调整缩放");
-
-            ViewModel.ScaleY.Value = 1 / ((highY - lowY) / SpeedTemplateCurveFrameViewModel.DefaultViewportY);
-            ViewModel.OffsetY.Value = -((highY + lowY) / 2f);
-        }
-
-        private void OnHorizontalChanged(float lowX, float highX)
-        {
-            if (ViewModel.SelectedSpeedTemplateData.CurrentValue == null)
-                throw new Exception("选中曲线为空时不应该调整缩放");
-
-            ViewModel.ScaleX.Value = 1 / ((highX - lowX) / SpeedTemplateCurveFrameViewModel.DefaultViewportX);
-            ViewModel.OffsetX.Value = -lowX;
         }
 
 
@@ -270,12 +251,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         }
 
 
-        private void OnDestroy()
-        {
-            verticalRangeSliderFrame.OnValueChanged.RemoveListener(OnVerticalChanged);
-            horizontalRangeSliderFrame.OnValueChanged.RemoveListener(OnHorizontalChanged);
-        }
-
         public void OnClick()
         {
             ViewModel.SelectPoint(null);
@@ -284,6 +259,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
         public void OnDoubleClick(Vector2 position)
         {
             ViewModel.TryAddPoint(position);
+        }
+
+
+        private void OnDestroy()
+        {
+            verticalRangeSliderFrame.OnValueChanged.RemoveListener(ViewModel.OnVerticalChanged);
+            horizontalRangeSliderFrame.OnValueChanged.RemoveListener(ViewModel.OnHorizontalChanged);
         }
     }
 }
