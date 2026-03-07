@@ -17,12 +17,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         // 各个坐标点映射到 CurveFrame 时所用的偏移和缩放。
         // 先将数据坐标与 Offset 相加，然后得到的结果乘以 Scale，即可得到相对于 CurveFrame 局部坐标。
         // TODO: 改为动态拓展的视窗范围
-        public const float DefaultViewportX = 1000f;
-        public const float DefaultViewportY = 400f;
-        public readonly ReactiveProperty<float> ScaleX = new ReactiveProperty<float>(1f);
-        public readonly ReactiveProperty<float> ScaleY = new ReactiveProperty<float>(1f);
-        public readonly ReactiveProperty<float> OffsetX = new ReactiveProperty<float>(0f);
-        public readonly ReactiveProperty<float> OffsetY = new ReactiveProperty<float>(0f);
+        private const float DefaultViewportX = 1000f;
+        private const float DefaultViewportY = 1000f;
+        private readonly ReactiveProperty<float> scaleX = new ReactiveProperty<float>(1f);
+        private readonly ReactiveProperty<float> scaleY = new ReactiveProperty<float>(1f);
+        private readonly ReactiveProperty<float> offsetX = new ReactiveProperty<float>(0f);
+        private readonly ReactiveProperty<float> offsetY = new ReactiveProperty<float>(0f);
+        public ReadOnlyReactiveProperty<float> ScaleX => scaleX;
+        public ReadOnlyReactiveProperty<float> ScaleY => scaleY;
+        public ReadOnlyReactiveProperty<float> OffsetX => offsetX;
+        public ReadOnlyReactiveProperty<float> OffsetY => offsetY;
 
         /// <summary>
         /// 当前选中的变速模板
@@ -95,6 +99,26 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // 确保 ViewModel 销毁时，最后一个 View 也能被正确释放
             base.Disposables.Add(Disposable.Create(() => bezierPointViewModelsMap.CurrentValue?.Dispose()));
         }
+
+
+        public void OnHorizontalChanged(float lowX, float highX)
+        {
+            if (SelectedSpeedTemplateData.CurrentValue == null)
+                throw new Exception("选中曲线为空时不应该调整缩放");
+
+            scaleX.Value = 1 / ((highX - lowX) / DefaultViewportX);
+            offsetX.Value = -lowX;
+        }
+
+        public void OnVerticalChanged(float lowY, float highY)
+        {
+            if (SelectedSpeedTemplateData.CurrentValue == null)
+                throw new Exception("选中曲线为空时不应该调整缩放");
+
+            scaleY.Value = 1 / ((highY - lowY) / DefaultViewportY);
+            offsetY.Value = -((highY + lowY) / 2f);
+        }
+
 
         public void SelectPoint(ReadOnlyReactiveProperty<BezierPoint>? bezierPointWrapper)
         {
