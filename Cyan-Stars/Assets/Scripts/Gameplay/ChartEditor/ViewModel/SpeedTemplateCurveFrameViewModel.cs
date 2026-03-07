@@ -28,6 +28,13 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<float> OffsetX => offsetX;
         public ReadOnlyReactiveProperty<float> OffsetY => offsetY;
 
+        // 用于显示拖拽/添加贝塞尔点时的边界
+        private readonly ReactiveProperty<int?> minMsTime = new ReactiveProperty<int?>(null);
+        private readonly ReactiveProperty<int?> maxMsTime = new ReactiveProperty<int?>(null);
+        public ReadOnlyReactiveProperty<int?> MinMsTime => minMsTime;
+        public ReadOnlyReactiveProperty<int?> MaxMsTime => maxMsTime;
+
+
         /// <summary>
         /// 当前选中的变速模板
         /// </summary>
@@ -54,7 +61,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         // 开始拖拽时记录的贝塞尔点位置和类型，位置用于撤销命令和拖拽位置点时计算控制点相对位移
         private BezierPoint? recordedLocalPoint = null;
-        private BezierPointSubItemType? recordedType = null!;
+        private BezierPointSubItemType? recordedType = null;
 
 
         public SpeedTemplateCurveFrameViewModel(
@@ -95,7 +102,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 )
                 .AddTo(base.Disposables);
 
-
             // 确保 ViewModel 销毁时，最后一个 View 也能被正确释放
             base.Disposables.Add(Disposable.Create(() => bezierPointViewModelsMap.CurrentValue?.Dispose()));
         }
@@ -125,14 +131,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             selectedPoint.Value = bezierPointWrapper;
         }
 
-        public void TryAddPoint(Vector2 position)
+        public bool TryAddPoint(Vector2 position)
         {
             BezierPointPos bezierPointPos = new(
                 Mathf.RoundToInt(position.x / ScaleX.CurrentValue - OffsetX.CurrentValue),
                 position.y / ScaleY.CurrentValue - OffsetY.CurrentValue
             );
 
-            SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryAddPoint(
+            return SelectedSpeedTemplateData.CurrentValue.BezierCurves.TryAddPoint(
                 new BezierPoint(bezierPointPos, bezierPointPos, bezierPointPos)
             );
         }
