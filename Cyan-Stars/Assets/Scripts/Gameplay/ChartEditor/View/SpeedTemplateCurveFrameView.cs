@@ -135,6 +135,35 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     }
                 )
                 .AddTo(this);
+
+            Observable
+                .CombineLatest(
+                    ViewModel.RecordedLocalPoint,
+                    ViewModel.OffsetX,
+                    ViewModel.OffsetY,
+                    ViewModel.ScaleX,
+                    ViewModel.ScaleY,
+                    (recordedPoint, offsetX, offsetY, scaleX, scaleY) => (recordedPoint, offsetX, offsetY, scaleX, scaleY)
+                )
+                .Subscribe(datas =>
+                    {
+                        if (datas.recordedPoint == null)
+                        {
+                            preProhibitionImage.gameObject.SetActive(false);
+                            postProhibitionImage.gameObject.SetActive(false);
+                        }
+                        else
+                        {
+                            ((RectTransform)preProhibitionImage.gameObject.transform).anchoredPosition =
+                                new Vector2((ViewModel.MinMsTime + datas.offsetX) * datas.scaleX, 0);
+                            ((RectTransform)postProhibitionImage.gameObject.transform).anchoredPosition =
+                                new Vector2((ViewModel.MaxMsTime + datas.offsetX) * datas.scaleX, 0);
+                            preProhibitionImage.gameObject.SetActive(true);
+                            postProhibitionImage.gameObject.SetActive(true);
+                        }
+                    }
+                )
+                .AddTo(this);
         }
 
 

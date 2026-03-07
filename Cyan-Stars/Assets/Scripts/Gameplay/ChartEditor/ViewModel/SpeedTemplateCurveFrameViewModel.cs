@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using System.Collections.Generic;
 using CyanStars.Chart.BezierCurve;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
@@ -158,6 +159,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void RecordSubPointPos(ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper, BezierPointSubItemType draggingHandleType)
         {
+            IReadOnlyObservableList<ReactiveProperty<BezierPoint>> points =
+                SelectedSpeedTemplateData.CurrentValue.BezierCurves.Points;
+            GetMsTimeRangeWhenUpdatePoint(points, bezierPointWrapper, draggingHandleType, out int minX, out int maxX);
+            MinMsTime = minX;
+            MaxMsTime = maxX;
+
             recordedLocalPoint.Value = bezierPointWrapper.CurrentValue;
             recordedType = draggingHandleType;
         }
@@ -256,78 +263,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private void GetPointDataByLocalPoint(ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper, Vector2 localPoint, BezierPointSubItemType type, out BezierPoint bezierPoint)
         {
             // 将指针的本地坐标转换到贝塞尔点数据位置
-            float pointX = localPoint.x / ScaleX.CurrentValue - OffsetX.CurrentValue;
+            float x = localPoint.x / ScaleX.CurrentValue - OffsetX.CurrentValue;
+            int pointX = Mathf.RoundToInt(Mathf.Clamp(x, MinMsTime, MaxMsTime));
             float pointY = localPoint.y / ScaleY.CurrentValue - OffsetY.CurrentValue;
-
-            IReadOnlyObservableList<ReactiveProperty<BezierPoint>> points =
-                SelectedSpeedTemplateData.CurrentValue.BezierCurves.Points;
-            int pointWrapperIndex =
-                SelectedSpeedTemplateData.CurrentValue.BezierCurves.GetPointIndex(bezierPointWrapper);
-
-            //  根据约束条件限制 x 坐标
-            int minX, maxX;
-            switch (type)
-            {
-                case BezierPointSubItemType.PosPoint:
-                    if (pointWrapperIndex == 0)
-                    {
-                        minX = 0;
-                        maxX = 0;
-                        break;
-                    }
-
-                    minX = Math.Max(0, bezierPointWrapper.CurrentValue.PositionPoint.MsTime - bezierPointWrapper.CurrentValue.LeftControlPoint.MsTime); // 拖动位置点时，一并移动的左控制点也要大于等于 0
-                    maxX = int.MaxValue;
-
-                    // this-1.右控制点 <= this.位置点 && this-1.位置点 <= this.左控制点 && this-1.位置点+1 <= this.位置点
-                    if (0 < pointWrapperIndex)
-                    {
-                        minX = Math.Max(minX, points[pointWrapperIndex - 1].CurrentValue.RightControlPoint.MsTime);
-                        minX = Math.Max(minX, points[pointWrapperIndex - 1].CurrentValue.PositionPoint.MsTime +
-                                              (bezierPointWrapper.CurrentValue.PositionPoint.MsTime -
-                                               bezierPointWrapper.CurrentValue.LeftControlPoint.MsTime));
-                        minX = Math.Max(minX, points[pointWrapperIndex - 1].CurrentValue.PositionPoint.MsTime + 1);
-                    }
-
-                    // this.位置点 <= this+1.左控制点 && this.右控制点 <= this+1.位置点 && this.位置点 <= this-1.位置点-1
-                    if (pointWrapperIndex < points.Count - 1)
-                    {
-                        maxX = Math.Min(maxX, points[pointWrapperIndex + 1].CurrentValue.LeftControlPoint.MsTime);
-                        maxX = Math.Min(maxX, points[pointWrapperIndex + 1].CurrentValue.PositionPoint.MsTime -
-                                              (bezierPointWrapper.CurrentValue.RightControlPoint.MsTime -
-                                               bezierPointWrapper.CurrentValue.PositionPoint.MsTime));
-                        maxX = Math.Min(maxX, points[pointWrapperIndex + 1].CurrentValue.PositionPoint.MsTime - 1);
-                    }
-
-                    break;
-                case BezierPointSubItemType.LeftControlPoint:
-                    // 确保左控制点 x 小于等于自身位置点
-                    minX = 0;
-                    maxX = bezierPointWrapper.CurrentValue.PositionPoint.MsTime;
-
-                    if (0 < pointWrapperIndex)
-                    {
-                        minX = Math.Max(minX, points[pointWrapperIndex - 1].CurrentValue.PositionPoint.MsTime);
-                    }
-
-                    break;
-                case BezierPointSubItemType.RightControlPoint:
-                    // 确保左控制点 x 大于等于自身位置点
-                    minX = bezierPointWrapper.CurrentValue.PositionPoint.MsTime;
-                    maxX = int.MaxValue;
-
-                    if (pointWrapperIndex < points.Count - 1)
-                    {
-                        maxX = Math.Min(maxX, points[pointWrapperIndex + 1].CurrentValue.PositionPoint.MsTime);
-                    }
-
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
-
-            // 将最后用于赋值的 finalX 限制在约束范围内
-            int finalX = Mathf.RoundToInt(Mathf.Clamp(pointX, minX, maxX));
 
             // 赋值贝塞尔点
             switch (type)
@@ -339,11 +277,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     int recordX = recordedPoint.PositionPoint.MsTime;
                     float recordY = recordedPoint.PositionPoint.Value;
 
-                    int offsetMsTime = finalX - recordX;
+                    int offsetMsTime = pointX - recordX;
                     float offsetValue = pointY - recordY;
 
                     bezierPoint = new BezierPoint(
-                        new BezierPointPos(finalX, pointY),
+                        new BezierPointPos(pointX, pointY),
                         new BezierPointPos(
                             recordedPoint.LeftControlPoint.MsTime + offsetMsTime,
                             recordedPoint.LeftControlPoint.Value + offsetValue
@@ -357,7 +295,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 case BezierPointSubItemType.LeftControlPoint:
                     bezierPoint = new BezierPoint(
                         new BezierPointPos(bezierPointWrapper.CurrentValue.PositionPoint.MsTime, bezierPointWrapper.CurrentValue.PositionPoint.Value),
-                        new BezierPointPos(finalX, pointY),
+                        new BezierPointPos(pointX, pointY),
                         new BezierPointPos(bezierPointWrapper.CurrentValue.RightControlPoint.MsTime, bezierPointWrapper.CurrentValue.RightControlPoint.Value)
                     );
                     break;
@@ -365,15 +303,106 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     bezierPoint = new BezierPoint(
                         new BezierPointPos(bezierPointWrapper.CurrentValue.PositionPoint.MsTime, bezierPointWrapper.CurrentValue.PositionPoint.Value),
                         new BezierPointPos(bezierPointWrapper.CurrentValue.LeftControlPoint.MsTime, bezierPointWrapper.CurrentValue.LeftControlPoint.Value),
-                        new BezierPointPos(finalX, pointY)
+                        new BezierPointPos(pointX, pointY)
                     );
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
+        }
 
-            MinMsTime = minX;
-            MaxMsTime = maxX;
+
+        /// <summary>
+        /// 根据约束条件，计算并返回拖拽时 sunPoint 时允许的时间范围（含双端点值）
+        /// </summary>
+        /// <param name="points">基于此曲线进行比较</param>
+        /// <param name="bezierPointWrapper">要更新的贝塞尔点包装</param>
+        /// <param name="type">sunPoint 类型</param>
+        /// <param name="minMsTime">所容许的最小的时间</param>
+        /// <param name="maxMsTime">所容许的最大的时间</param>
+        private void GetMsTimeRangeWhenUpdatePoint(
+            IReadOnlyList<ReactiveProperty<BezierPoint>> points,
+            ReadOnlyReactiveProperty<BezierPoint> bezierPointWrapper,
+            BezierPointSubItemType type,
+            out int minMsTime,
+            out int maxMsTime
+        )
+        {
+            int pointWrapperIndex =
+                SelectedSpeedTemplateData.CurrentValue.BezierCurves.GetPointIndex(bezierPointWrapper);
+            switch (type)
+            {
+                case BezierPointSubItemType.PosPoint:
+                    if (pointWrapperIndex == 0)
+                    {
+                        minMsTime = 0;
+                        maxMsTime = 0;
+                        break;
+                    }
+
+                    minMsTime = Math.Max(0, bezierPointWrapper.CurrentValue.PositionPoint.MsTime - bezierPointWrapper.CurrentValue.LeftControlPoint.MsTime); // 拖动位置点时，一并移动的左控制点也要大于等于 0
+                    maxMsTime = int.MaxValue;
+
+                    // this-1.右控制点 <= this.位置点 && this-1.位置点 <= this.左控制点 && this-1.位置点+1 <= this.位置点
+                    if (0 < pointWrapperIndex)
+                    {
+                        minMsTime = Math.Max(minMsTime, points[pointWrapperIndex - 1].CurrentValue.RightControlPoint.MsTime);
+                        minMsTime = Math.Max(minMsTime, points[pointWrapperIndex - 1].CurrentValue.PositionPoint.MsTime +
+                                                        (bezierPointWrapper.CurrentValue.PositionPoint.MsTime -
+                                                         bezierPointWrapper.CurrentValue.LeftControlPoint.MsTime));
+                        minMsTime = Math.Max(minMsTime, points[pointWrapperIndex - 1].CurrentValue.PositionPoint.MsTime + 1);
+                    }
+
+                    // this.位置点 <= this+1.左控制点 && this.右控制点 <= this+1.位置点 && this.位置点 <= this-1.位置点-1
+                    if (pointWrapperIndex < points.Count - 1)
+                    {
+                        maxMsTime = Math.Min(maxMsTime, points[pointWrapperIndex + 1].CurrentValue.LeftControlPoint.MsTime);
+                        maxMsTime = Math.Min(maxMsTime, points[pointWrapperIndex + 1].CurrentValue.PositionPoint.MsTime -
+                                                        (bezierPointWrapper.CurrentValue.RightControlPoint.MsTime -
+                                                         bezierPointWrapper.CurrentValue.PositionPoint.MsTime));
+                        maxMsTime = Math.Min(maxMsTime, points[pointWrapperIndex + 1].CurrentValue.PositionPoint.MsTime - 1);
+                    }
+
+                    break;
+                case BezierPointSubItemType.LeftControlPoint:
+                    // 确保左控制点 x 小于等于自身位置点
+                    minMsTime = 0;
+                    maxMsTime = bezierPointWrapper.CurrentValue.PositionPoint.MsTime;
+
+                    if (0 < pointWrapperIndex)
+                    {
+                        minMsTime = Math.Max(minMsTime, points[pointWrapperIndex - 1].CurrentValue.PositionPoint.MsTime);
+                    }
+
+                    break;
+                case BezierPointSubItemType.RightControlPoint:
+                    // 确保左控制点 x 大于等于自身位置点
+                    minMsTime = bezierPointWrapper.CurrentValue.PositionPoint.MsTime;
+                    maxMsTime = int.MaxValue;
+
+                    if (pointWrapperIndex < points.Count - 1)
+                    {
+                        maxMsTime = Math.Min(maxMsTime, points[pointWrapperIndex + 1].CurrentValue.PositionPoint.MsTime);
+                    }
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
+
+        /// <summary>
+        /// 检查当前点能否新建贝塞尔点
+        /// </summary>
+        /// <remarks>注意 minMsTime 可能大于 maxMsTime，此时代表不可能创建</remarks>
+        /// <param name="points">基于此曲线进行比较</param>
+        /// <param name="msTime">试图在此时间点创建贝塞尔点</param>
+        /// <param name="minMsTime">所容许的最小的时间</param>
+        /// <param name="maxMsTime">所容许的最大的时间</param>
+        /// <returns>能否在 msTime 处创建新的贝塞尔点</returns>
+        private bool GetMsTimeRangeWhenCreatePoint(IReadOnlyList<ReactiveProperty<BezierPoint>> points, int msTime, out int minMsTime, out int maxMsTime)
+        {
+            throw new NotImplementedException();
         }
     }
 }
