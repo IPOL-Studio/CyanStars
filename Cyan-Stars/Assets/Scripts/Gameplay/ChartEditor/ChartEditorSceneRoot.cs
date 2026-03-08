@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor;
@@ -11,6 +12,9 @@ using UnityEngine;
 
 public class ChartEditorSceneRoot : MonoBehaviour
 {
+    [SerializeField]
+    private ChartEditorAssetManager assetsManager = null!;
+
     [SerializeField]
     private MvvmBindManager mvvmBindManager = null!;
 
@@ -27,6 +31,7 @@ public class ChartEditorSceneRoot : MonoBehaviour
     private ChartEditorFileManager fileManager = null!;
 
 
+    public static ChartEditorAssetManager AssetsManager = null!;
     public static MvvmBindManager MvvmBindManager = null!;
     public static CommandStack CommandStack = null!;
     public static ChartEditorMusicManager MusicManager = null!;
@@ -36,6 +41,7 @@ public class ChartEditorSceneRoot : MonoBehaviour
 
     private void Awake()
     {
+        AssetsManager = assetsManager;
         MvvmBindManager = mvvmBindManager;
         CommandStack = commandStack;
         MusicManager = musicManager;
@@ -47,6 +53,9 @@ public class ChartEditorSceneRoot : MonoBehaviour
     public void InitSceneRoot()
     {
         var chartModule = GameRoot.GetDataModule<ChartModule>();
+
+        // TODO: 这里本来应该用 await 的，但是 Unity Update() 会抢在预热完成前抛一大堆错误，故先临时凑合，之后重构生命周期管理
+        _ = assetsManager.Init();
 
         string workspacePath;
         int chartMetadataIndex;
