@@ -8,13 +8,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using CyanStars.Chart;
 using CyanStars.Framework;
-using CyanStars.Framework.GameObjectPool;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using Gameplay.ChartEditor;
 using ObservableCollections;
 using R3;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using GameObjectPoolManager = CyanStars.Framework.GameObjectPool.GameObjectPoolManager;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
@@ -41,14 +42,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private RectTransform judgeLineRect = null!;
 
-        // 预制体路径
-        private const string PosLinePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/PosLine.prefab";
-        private const string BeatLinePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/BeatLine.prefab";
-        private const string TapNotePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/TapNote.prefab";
-        private const string DragNotePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/DragNote.prefab";
-        private const string HoldNotePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/HoldNote.prefab";
-        private const string ClickNotePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/ClickNote.prefab";
-        private const string BreakNotePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/BreakNote.prefab";
 
         private readonly CancellationTokenSource Cts = new CancellationTokenSource();
         private static GameObjectPoolManager PoolManager => GameRoot.GameObjectPool;
@@ -131,13 +124,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
             for (int i = oldPosLineCount; i > count; i--)
             {
                 var go = posLinesFrameObject.transform.GetChild(i).gameObject;
-                PoolManager.ReleaseGameObject(PosLinePath, go);
+                PoolManager.ReleaseGameObject(ChartEditorAssetHelper.PosLinePath, go);
             }
         }
 
         private async Task CreatePosLine()
         {
-            GameObject go = await PoolManager.GetGameObjectAsync(PosLinePath, posLinesFrameObject.transform);
+            GameObject go = await PoolManager.GetGameObjectAsync(ChartEditorAssetHelper.PosLinePath, posLinesFrameObject.transform);
             go.transform.localPosition = Vector3.one;
         }
 
@@ -149,7 +142,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             foreach (var kvp in ActiveBeatLines)
                 if (kvp.Value != null)
-                    PoolManager.ReleaseGameObject(BeatLinePath, kvp.Value);
+                    PoolManager.ReleaseGameObject(ChartEditorAssetHelper.BeatLinePath, kvp.Value);
             ActiveBeatLines.Clear();
             UpdateBeatLinesVisibility();
         }
@@ -191,7 +184,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             {
                 if (ActiveBeatLines.TryGetValue(key, out var go))
                 {
-                    if (go != null) PoolManager.ReleaseGameObject(BeatLinePath, go);
+                    if (go != null) PoolManager.ReleaseGameObject(ChartEditorAssetHelper.BeatLinePath, go);
                     ActiveBeatLines.Remove(key);
                 }
             }
@@ -211,16 +204,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async Task CreateBeatLine(int index, double distance, int accuracy)
         {
-            GameObject go = await PoolManager.GetGameObjectAsync(BeatLinePath, beatLinesFrameRect, Cts.Token);
+            GameObject go = await PoolManager.GetGameObjectAsync(ChartEditorAssetHelper.BeatLinePath, beatLinesFrameRect, Cts.Token);
             go.transform.localScale = Vector3.one;
 
             if (Cts.Token.IsCancellationRequested || !ActiveBeatLines.ContainsKey(index))
             {
-                PoolManager.ReleaseGameObject(BeatLinePath, go);
+                PoolManager.ReleaseGameObject(ChartEditorAssetHelper.BeatLinePath, go);
                 return;
             }
 
-            if (ActiveBeatLines[index] is not null) PoolManager.ReleaseGameObject(BeatLinePath, ActiveBeatLines[index]);
+            if (ActiveBeatLines[index] is not null) PoolManager.ReleaseGameObject(ChartEditorAssetHelper.BeatLinePath, ActiveBeatLines[index]);
 
             ActiveBeatLines[index] = go;
             if (go.TryGetComponent<BeatLineItem>(out var item))
@@ -395,13 +388,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
         }
 
-        private string GetPrefabPath(NoteType type) => type switch
+        private static string GetPrefabPath(NoteType type) => type switch
         {
-            NoteType.Tap => TapNotePath,
-            NoteType.Drag => DragNotePath,
-            NoteType.Hold => HoldNotePath,
-            NoteType.Click => ClickNotePath,
-            NoteType.Break => BreakNotePath,
+            NoteType.Tap => ChartEditorAssetHelper.TapNotePath,
+            NoteType.Drag => ChartEditorAssetHelper.DragNotePath,
+            NoteType.Hold => ChartEditorAssetHelper.HoldNotePath,
+            NoteType.Click => ChartEditorAssetHelper.ClickNotePath,
+            NoteType.Break => ChartEditorAssetHelper.BreakNotePath,
             _ => throw new NotSupportedException()
         };
 
@@ -441,7 +434,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         #endregion
 
-
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -463,7 +455,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             // 清理节拍线
             foreach (var kvp in ActiveBeatLines)
                 if (kvp.Value is not null)
-                    PoolManager.ReleaseGameObject(BeatLinePath, kvp.Value);
+                    PoolManager.ReleaseGameObject(ChartEditorAssetHelper.BeatLinePath, kvp.Value);
             ActiveBeatLines.Clear();
 
             // 清理音符
