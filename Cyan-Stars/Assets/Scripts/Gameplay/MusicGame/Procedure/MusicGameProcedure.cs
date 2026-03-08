@@ -372,11 +372,7 @@ namespace CyanStars.Gameplay.MusicGame
             var chartContext = CreateChartContext();
 
             // 添加音符轨道
-            NoteTrackData noteTrackData = new NoteTrackData()
-            {
-                ClipDataList = new List<ChartData>() { chartData },
-                ChartContext = chartContext
-            };
+            NoteTrackData noteTrackData = new NoteTrackData() { ClipDataList = new List<ChartData>() { chartData }, ChartContext = chartContext };
             timeline.AddTrack(noteTrackData, NoteTrack.CreateClipFunc);
 
             // if (!string.IsNullOrEmpty(lrcText) && settingsModule.EnableLyricTrack)
@@ -469,7 +465,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             // TODO: 传入玩家速度
             var speedTemplateProvider = new SpeedTemplateProvider(new SpeedTemplateBaker(), 1f);
-            speedTemplateProvider.PopulateSpeedTemplates(chartData.SpeedGroupDatas);
+            speedTemplateProvider.PopulateSpeedTemplates(chartData.SpeedTemplateDatas);
 
             List<BpmGroupItem> bpmGroup = new List<BpmGroupItem>();
             bpmGroup.AddRange(runtimeChartPack.ChartPackData.BpmGroup);

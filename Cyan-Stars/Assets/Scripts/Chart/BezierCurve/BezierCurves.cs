@@ -71,6 +71,18 @@ namespace CyanStars.Chart.BezierCurve
             points.Insert(index, item);
         }
 
+        /// <summary>
+        /// 自动在合适的位置插入贝塞尔点元素
+        /// </summary>
+        public bool TryAdd(BezierPoint item, out int index)
+        {
+            if (!AddValidate(item, out index))
+                return false;
+
+            points.Insert(index, item);
+            return true;
+        }
+
         public void Clear()
         {
             points.Clear();
@@ -234,19 +246,21 @@ namespace CyanStars.Chart.BezierCurve
                 return false;
 
             // 交叉校验新替换点和相邻点的位置点和控制点
-            // 除非替换首个元素，否则需要校验左侧控制点是否超过上一个元素位置点&位置点是否超过上个元素右侧控制点
+            // 除非替换首个元素，否则需要校验：左侧控制点必须大于等于上一个元素位置点&位置点必须大于等于上个元素右侧控制点&位置点必须大于上个元素位置点
             if (oldItemIndex != 0)
             {
-                if (!(points[oldItemIndex - 1].PositionPoint.MsTime < newItem.LeftControlPoint.MsTime &&
-                      points[oldItemIndex - 1].RightControlPoint.MsTime <= newItem.PositionPoint.MsTime))
+                if (!(points[oldItemIndex - 1].PositionPoint.MsTime <= newItem.LeftControlPoint.MsTime &&
+                      points[oldItemIndex - 1].RightControlPoint.MsTime <= newItem.PositionPoint.MsTime &&
+                      points[oldItemIndex - 1].PositionPoint.MsTime < newItem.PositionPoint.MsTime))
                     return false;
             }
 
-            // 除非替换末个元素，否则需要校验右侧控制点是否超过下一个元素位置点&位置点是否超过下个元素左侧控制点
+            // 除非替换末个元素，否则需要校验：右侧控制点必须小于等于下一个元素位置点&位置点必须小于等于下个元素左侧控制点&位置点必须小于下个元素位置点
             if (oldItemIndex != points.Count - 1)
             {
-                if (!(newItem.RightControlPoint.MsTime < points[oldItemIndex + 1].PositionPoint.MsTime &&
-                      newItem.PositionPoint.MsTime <= points[oldItemIndex + 1].LeftControlPoint.MsTime))
+                if (!(newItem.RightControlPoint.MsTime <= points[oldItemIndex + 1].PositionPoint.MsTime &&
+                      newItem.PositionPoint.MsTime <= points[oldItemIndex + 1].LeftControlPoint.MsTime &&
+                      newItem.PositionPoint.MsTime < points[oldItemIndex + 1].PositionPoint.MsTime))
                     return false;
             }
 

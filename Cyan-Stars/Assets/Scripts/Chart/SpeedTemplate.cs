@@ -1,7 +1,7 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
-using CyanStars.Chart.BezierCurve;
-using UnityEngine;
 
 namespace CyanStars.Chart
 {
@@ -50,9 +50,13 @@ namespace CyanStars.Chart
             baker.Bake(
                 data,
                 playerSpeed,
-                out List<float> speedList,
-                out List<float> displacementList
+                out List<float>? speedList,
+                out List<float>? displacementList
             );
+
+            speedList ??= new List<float>();
+            displacementList ??= new List<float>();
+
             double finalDisplacement = baker.GetFinalDisplacement(data, playerSpeed);
             return new SpeedTemplate(data, speedList, displacementList, finalDisplacement);
         }

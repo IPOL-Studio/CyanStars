@@ -38,7 +38,7 @@ namespace CyanStars.Chart
 
 
         public RuntimeChartPack(ChartPackData chartPackData, bool isInternal, ChartPackLevels levels,
-            string workspacePath, HashSet<ChartDifficulty> difficultiesAbleToPlay)
+                                string workspacePath, HashSet<ChartDifficulty> difficultiesAbleToPlay)
         {
             ChartPackData = chartPackData;
             IsInternal = isInternal;
