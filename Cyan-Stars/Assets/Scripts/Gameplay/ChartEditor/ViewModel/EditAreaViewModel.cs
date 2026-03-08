@@ -307,29 +307,35 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             switch (currentTool)
             {
                 case EditToolType.TapPen:
-                    noteData = new TapChartNoteData(pos, beat);
+                    if (0 <= pos && pos <= 0.8f)
+                        noteData = new TapChartNoteData(pos, beat);
                     break;
                 case EditToolType.DragPen:
-                    noteData = new DragChartNoteData(pos, beat);
+                    if (0 <= pos && pos <= 0.8f)
+                        noteData = new DragChartNoteData(pos, beat);
                     break;
                 case EditToolType.ClickPen:
-                    noteData = new ClickChartNoteData(pos, beat);
+                    if (0 <= pos && pos <= 0.8f)
+                        noteData = new ClickChartNoteData(pos, beat);
                     break;
                 case EditToolType.HoldPen:
                     // Hold 音符需要结束时间。
-                    // 默认创建时长度为 0 (Start == End)，后续由用户调整。
-                    noteData = new HoldChartNoteData(pos, beat, beat);
+                    // TODO: 默认创建时长度为 0 (Start == End)，要求由用户调整。后续改成拖拽或两次点击创建。
+                    if (0 <= pos && pos <= 0.8f)
+                        noteData = new HoldChartNoteData(pos, beat, beat);
                     break;
                 case EditToolType.BreakPen:
                     // Break 音符使用枚举而不是浮点 Pos。
                     // 左侧 Break 对应 -1f，右侧 Break 对应 2f。
-                    BreakNotePos breakPos = pos < 0.5f ? BreakNotePos.Left : BreakNotePos.Right;
-                    noteData = new BreakChartNoteData(breakPos, beat);
+                    if (pos < 0)
+                        noteData = new BreakChartNoteData(BreakNotePos.Left, beat);
+                    else if (1 < pos)
+                        noteData = new BreakChartNoteData(BreakNotePos.Right, beat);
                     break;
             }
 
             if (noteData == null)
-                throw new Exception("未能正确创建音符！");
+                return;
 
             var notesCollection = Model.ChartData.CurrentValue.Notes;
 
