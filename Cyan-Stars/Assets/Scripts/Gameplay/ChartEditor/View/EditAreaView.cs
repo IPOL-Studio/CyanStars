@@ -121,13 +121,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
             for (int i = oldPosLineCount; i > count; i--)
             {
                 var go = posLinesFrameObject.transform.GetChild(i).gameObject;
-                AssetManager.ReleaseGameObject(ChartEditorAssetManager.PosLinePath, go);
+                AssetManager.ReleaseGameObject(ChartEditorAssetType.PosLine, go);
             }
         }
 
         private async Task CreatePosLine()
         {
-            GameObject go = await AssetManager.GetGameObjectAsync(ChartEditorAssetManager.PosLinePath, posLinesFrameObject.transform);
+            GameObject go = await AssetManager.GetGameObjectAsync(ChartEditorAssetType.PosLine, posLinesFrameObject.transform);
             go.transform.localPosition = Vector3.one;
         }
 
@@ -139,7 +139,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             foreach (var kvp in ActiveBeatLines)
                 if (kvp.Value != null)
-                    AssetManager.ReleaseGameObject(ChartEditorAssetManager.BeatLinePath, kvp.Value);
+                    AssetManager.ReleaseGameObject(ChartEditorAssetType.BeatLine, kvp.Value);
             ActiveBeatLines.Clear();
             UpdateBeatLinesVisibility();
         }
@@ -181,7 +181,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             {
                 if (ActiveBeatLines.TryGetValue(key, out var go))
                 {
-                    if (go != null) AssetManager.ReleaseGameObject(ChartEditorAssetManager.BeatLinePath, go);
+                    if (go != null) AssetManager.ReleaseGameObject(ChartEditorAssetType.BeatLine, go);
                     ActiveBeatLines.Remove(key);
                 }
             }
@@ -201,16 +201,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async Task CreateBeatLine(int index, double distance, int accuracy)
         {
-            GameObject go = await AssetManager.GetGameObjectAsync(ChartEditorAssetManager.BeatLinePath, beatLinesFrameRect, Cts.Token);
+            GameObject go = await AssetManager.GetGameObjectAsync(ChartEditorAssetType.BeatLine, beatLinesFrameRect, Cts.Token);
             go.transform.localScale = Vector3.one;
 
             if (Cts.Token.IsCancellationRequested || !ActiveBeatLines.ContainsKey(index))
             {
-                AssetManager.ReleaseGameObject(ChartEditorAssetManager.BeatLinePath, go);
+                AssetManager.ReleaseGameObject(ChartEditorAssetType.BeatLine, go);
                 return;
             }
 
-            if (ActiveBeatLines[index] is not null) AssetManager.ReleaseGameObject(ChartEditorAssetManager.BeatLinePath, ActiveBeatLines[index]);
+            if (ActiveBeatLines[index] is not null) AssetManager.ReleaseGameObject(ChartEditorAssetType.BeatLine, ActiveBeatLines[index]);
 
             ActiveBeatLines[index] = go;
             if (go.TryGetComponent<BeatLineItem>(out var item))
@@ -299,7 +299,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     {
                         var (vm, view) = pair.Value;
                         vm.Dispose(); // 销毁 VM
-                        AssetManager.ReleaseGameObject(GetPrefabPath(note.Type), view.gameObject);
+                        AssetManager.ReleaseGameObject(note.Type, view.gameObject);
                     }
 
                     ActiveNotes.Remove(note);
@@ -351,15 +351,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async Task CreateNoteObject(BaseChartNoteData note)
         {
-            string path = GetPrefabPath(note.Type);
-
-            GameObject go = await AssetManager.GetGameObjectAsync(path, notesFrameRect, Cts.Token);
+            GameObject go = await AssetManager.GetGameObjectAsync(note.Type, notesFrameRect, Cts.Token);
             go.transform.localScale = Vector3.one;
 
             // 双重检查：异步加载过程中可能已经不再需要显示该 Note，或者 View 被销毁
             if (Cts.Token.IsCancellationRequested || !ActiveNotes.ContainsKey(note))
             {
-                AssetManager.ReleaseGameObject(path, go);
+                AssetManager.ReleaseGameObject(note.Type, go);
                 return;
             }
 
@@ -367,7 +365,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             if (ActiveNotes[note] is { } oldPair)
             {
                 oldPair.vm.Dispose();
-                AssetManager.ReleaseGameObject(path, oldPair.view.gameObject);
+                AssetManager.ReleaseGameObject(note.Type, oldPair.view.gameObject);
             }
 
             if (go.TryGetComponent<EditAreaNoteView>(out var view))
@@ -379,21 +377,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
             else
             {
-                Debug.LogError($"Prefab at {path} missing EditAreaNoteView component!");
-                AssetManager.ReleaseGameObject(path, go);
+                Debug.LogError($"Prefab at {note.Type} missing EditAreaNoteView component!");
+                AssetManager.ReleaseGameObject(note.Type, go);
                 ActiveNotes.Remove(note);
             }
         }
-
-        private string GetPrefabPath(NoteType type) => type switch
-        {
-            NoteType.Tap => ChartEditorAssetManager.TapNotePath,
-            NoteType.Drag => ChartEditorAssetManager.DragNotePath,
-            NoteType.Hold => ChartEditorAssetManager.HoldNotePath,
-            NoteType.Click => ChartEditorAssetManager.ClickNotePath,
-            NoteType.Break => ChartEditorAssetManager.BreakNotePath,
-            _ => throw new NotSupportedException()
-        };
 
         #endregion
 
@@ -452,7 +440,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             // 清理节拍线
             foreach (var kvp in ActiveBeatLines)
                 if (kvp.Value is not null)
-                    AssetManager.ReleaseGameObject(ChartEditorAssetManager.BeatLinePath, kvp.Value);
+                    AssetManager.ReleaseGameObject(ChartEditorAssetType.BeatLine, kvp.Value);
             ActiveBeatLines.Clear();
 
             // 清理音符
@@ -462,7 +450,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 {
                     var (vm, view) = kvp.Value.Value;
                     vm.Dispose();
-                    AssetManager.ReleaseGameObject(GetPrefabPath(kvp.Key.Type), view.gameObject);
+                    AssetManager.ReleaseGameObject(kvp.Key.Type, view.gameObject);
                 }
             }
 
