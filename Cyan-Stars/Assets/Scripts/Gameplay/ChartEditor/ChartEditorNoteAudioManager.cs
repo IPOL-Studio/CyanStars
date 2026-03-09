@@ -86,6 +86,7 @@ namespace CyanStars.Gameplay.ChartEditor
             // 之后可以看看能不能把 notes 的运行时存储改为时间轮
             foreach (var note in CollectHitNotes(model.CurrentTimelineTimeMs))
             {
+                // TODO: 后续考虑用 audioSource 对象池 + PlayScheduled 提供更高精度的音效
                 // GameRoot.Audio.Play2DSound(FallbackAudioAssetName, AudioVolume);
                 audioSource.PlayOneShot(fallbackAudioAssetHandler.Asset, AudioVolume);
             }
