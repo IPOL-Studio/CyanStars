@@ -13,16 +13,22 @@ namespace CyanStars.Gameplay.ChartEditor
     // 没有优化，也无扩展
     public class ChartEditorNoteAudioManager : MonoBehaviour
     {
+        [SerializeField]
+        private AudioSource audioSource = null!;
+
+
         private ChartEditorModel model = null!;
         private int prevTimeMs = 0;
         private int skipNoteCount = 0;
 
         private const string FallbackAudioAssetName = "Assets/BundleRes/Audio/PromptTone/ns_ka.ogg";
+
         // 预加载内置提示音，但在实际播放时不会使用这个 handler
         // 只是为了避免被资源框架卸载
         private AssetHandler<AudioClip> fallbackAudioAssetHandler;
 
         private float audioVolume = 1f;
+
         public float AudioVolume
         {
             get => audioVolume;
@@ -60,6 +66,7 @@ namespace CyanStars.Gameplay.ChartEditor
 
                 count++;
             }
+
             return count;
         }
 
@@ -77,13 +84,15 @@ namespace CyanStars.Gameplay.ChartEditor
             // 作为临时的 hack 实现，这里可以选择只收集需要播放的数量
             // 但还是直接把所有 note 收集起来
             // 之后可以看看能不能把 notes 的运行时存储改为时间轮
-            foreach (var note in CollectHitedNotes(model.CurrentTimelineTimeMs))
+            foreach (var note in CollectHitNotes(model.CurrentTimelineTimeMs))
             {
-                GameRoot.Audio.Play2DSound(FallbackAudioAssetName, AudioVolume);
+                // TODO: 后续考虑用 audioSource 对象池 + PlayScheduled 提供更高精度的音效
+                // GameRoot.Audio.Play2DSound(FallbackAudioAssetName, AudioVolume);
+                audioSource.PlayOneShot(fallbackAudioAssetHandler.Asset, AudioVolume);
             }
         }
 
-        public IEnumerable<BaseChartNoteData> CollectHitedNotes(int toTimeMs)
+        public IEnumerable<BaseChartNoteData> CollectHitNotes(int toTimeMs)
         {
             var notes = model.ChartData.CurrentValue.Notes;
             var bpmGroups = model.ChartPackData.CurrentValue.BpmGroup;
@@ -103,6 +112,7 @@ namespace CyanStars.Gameplay.ChartEditor
 
                 index++;
             }
+
             skipNoteCount = index;
         }
     }
