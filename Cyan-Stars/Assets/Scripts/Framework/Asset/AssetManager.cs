@@ -71,7 +71,7 @@ namespace CyanStars.Framework.Asset
         /// <summary>
         /// 注册自定义原生资源转换方法
         /// </summary>
-        public void RegisterCustomRawAssetConverter(Type type, CustomRawAssetConverter converter)
+        public void RegisterCustomRawAssetConverter(Type type, ICustomRawAssetConverter converter)
         {
             CatAssetManager.RegisterCustomRawAssetConverter(type, converter);
         }
