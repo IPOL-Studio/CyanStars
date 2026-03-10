@@ -166,37 +166,40 @@ namespace CyanStars.Chart
             var newPacks = new List<RuntimeChartPack>();
             for (int i = 0; i < paths.Count; i++)
             {
-                ChartPackData chartPackData = batchAssetHandler.Handlers[i].AssetAs<ChartPackData>();
-                if (chartPackData == null)
-                {
-                    Debug.LogError($"无法将 {paths[i]} 转换为 {nameof(ChartPackData)}，相关谱包无法加载！");
-                    continue;
-                }
+                batchAssetHandler.Handlers[i].AssetAs<ChartPackData>(chartPackData =>
+                    {
+                        if (chartPackData == null)
+                        {
+                            Debug.LogError($"无法将 {paths[i]} 转换为 {nameof(ChartPackData)}，相关谱包无法加载！");
+                            return;
+                        }
 
-                bool isInternal = i < internalPacksCount;
+                        bool isInternal = i < internalPacksCount;
 
-                string? workspacePath = Path.GetDirectoryName(paths[i]);
-                if (workspacePath == null)
-                {
-                    Debug.LogError($"谱包路径为空：{chartPackData.Title}");
-                    continue;
-                }
+                        string? workspacePath = Path.GetDirectoryName(paths[i]);
+                        if (workspacePath == null)
+                        {
+                            Debug.LogError($"谱包路径为空：{chartPackData.Title}");
+                            return;
+                        }
 
-                ChartPackLevels levels = levelsList[i];
+                        ChartPackLevels levels = levelsList[i];
 
-                VerifyChartPacks(chartPackData, out bool canLoad, out HashSet<ChartDifficulty> difficultiesAbleToPlay);
-                if (isInternal && (!canLoad || difficultiesAbleToPlay.Count != 4))
-                {
-                    Debug.LogError($"某个内置谱包加载失败或有无法游玩的难度：{chartPackData.Title}");
-                }
+                        VerifyChartPacks(chartPackData, out bool canLoad, out HashSet<ChartDifficulty> difficultiesAbleToPlay);
+                        if (isInternal && (!canLoad || difficultiesAbleToPlay.Count != 4))
+                        {
+                            Debug.LogError($"某个内置谱包加载失败或有无法游玩的难度：{chartPackData.Title}");
+                        }
 
-                if (!canLoad)
-                {
-                    continue;
-                }
+                        if (!canLoad)
+                        {
+                            return;
+                        }
 
-                newPacks.Add(new RuntimeChartPack(chartPackData, isInternal, levels, workspacePath,
-                    difficultiesAbleToPlay));
+                        newPacks.Add(new RuntimeChartPack(chartPackData, isInternal, levels, workspacePath,
+                            difficultiesAbleToPlay));
+                    }
+                );
             }
 
             runtimeChartPacks.AddRange(newPacks);
