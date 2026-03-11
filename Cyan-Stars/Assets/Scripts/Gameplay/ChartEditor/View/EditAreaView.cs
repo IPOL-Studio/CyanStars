@@ -70,7 +70,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
             // 1. 位置线逻辑
-            ViewModel.PosLineCount.Subscribe(UpdatePosLines).AddTo(this);
+            ViewModel.PosLineCount
+                .ThrottleLastFrame(1)
+                .Subscribe(UpdatePosLines)
+                .AddTo(this);
 
             // 2. 节拍线重绘逻辑 (布局变化)
             Observable.CombineLatest(
@@ -79,10 +82,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     ViewModel.TotalBeats,
                     (_, _, _) => true
                 )
+                .ThrottleLastFrame(1)
                 .Subscribe(_ => ForceRebuildBeatLines()).AddTo(this);
 
             // 3. 滚动时刷新节拍线和音符，如果没在播放音乐则一并更新时间轴时间
             scrollRect.onValueChanged.AsObservable()
+                .ThrottleLastFrame(1)
                 .Subscribe(_ =>
                     {
                         UpdateBeatLinesVisibility();
@@ -101,7 +106,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     ViewModel.BeatZoom.Select(_ => Unit.Default),
                     ViewModel.SelectedNoteDataChangedSubject.Select(_ => Unit.Default)
                 )
-                .ThrottleLastFrame(1) // 避免同一帧多次刷新
+                .ThrottleLastFrame(1)
                 .Subscribe(_ => UpdateNotesVisibility())
                 .AddTo(this);
         }

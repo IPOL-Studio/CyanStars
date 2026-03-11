@@ -109,12 +109,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
             // 当修改视窗缩放或偏移时，不烘焙，仅重新绘制曲线曲面
             Observable
                 .CombineLatest(ViewModel.OffsetX, ViewModel.OffsetY, ViewModel.ScaleX, ViewModel.ScaleY)
-                .ThrottleLastFrame(1) // 避免同一帧多次刷新
+                .ThrottleLastFrame(1)
                 .Subscribe(_ => DrawCurve())
                 .AddTo(this);
 
             // 当选择了新的变速模板时，重新生成全部的贝塞尔点 View
             ViewModel.BezierPointViewModelsMap
+                .ThrottleLastFrame(1)
                 .Subscribe(OnViewMapRebuild)
                 .AddTo(this);
 
@@ -145,6 +146,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     ViewModel.ScaleY,
                     (recordedPoint, offsetX, offsetY, scaleX, scaleY) => (recordedPoint, offsetX, offsetY, scaleX, scaleY)
                 )
+                .ThrottleLastFrame(1)
                 .Subscribe(datas =>
                     {
                         if (datas.recordedPoint == null)
