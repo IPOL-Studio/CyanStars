@@ -7,7 +7,6 @@ namespace CyanStars.Framework.Timeline
     /// </summary>
     public abstract class BaseTrack
     {
-
         /// <summary>
         /// 持有此轨道的时间轴
         /// </summary>
@@ -47,7 +46,7 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 更新轨道
         /// </summary>
-        public virtual void OnUpdate(float currentTime, float previousTime)
+        public virtual void OnUpdate(in TimelineContext ctx)
         {
             if (!Enabled)
             {
@@ -66,25 +65,25 @@ namespace CyanStars.Framework.Timeline
                     continue;
                 }
 
-                bool needEnter = currentTime >= clip.StartTime && previousTime < clip.StartTime;
+                bool needEnter = ctx.CurrentTime >= clip.StartTime && ctx.PreviousTime < clip.StartTime;
                 if (needEnter)
                 {
                     //进入片段
-                    clip.OnEnter();
+                    clip.OnEnter(in ctx);
                 }
 
-                bool needUpdate = currentTime >= clip.StartTime && currentTime <= clip.EndTime;
+                bool needUpdate = ctx.CurrentTime >= clip.StartTime && ctx.CurrentTime <= clip.EndTime;
                 if (needUpdate)
                 {
                     //更新片段
-                    clip.OnUpdate(currentTime, previousTime);
+                    clip.OnUpdate(in ctx);
                 }
 
-                bool needExit = currentTime > clip.EndTime && previousTime <= clip.EndTime;
+                bool needExit = ctx.CurrentTime > clip.EndTime && ctx.PreviousTime <= clip.EndTime;
                 if (needExit)
                 {
                     //退出片段
-                    clip.OnExit();
+                    clip.OnExit(in ctx);
                 }
 
                 if (!needEnter && !needUpdate && !needExit)

@@ -366,17 +366,13 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void CreateTimeline()
         {
-            timeline = new Timeline(playingDataModule.CurTimelineLength);
+            timeline = new Timeline(true, playingDataModule.CurTimelineLength);
             timeline.OnStop += StopTimeline;
 
             var chartContext = CreateChartContext();
 
             // 添加音符轨道
-            NoteTrackData noteTrackData = new NoteTrackData()
-            {
-                ClipDataList = new List<ChartData>() { chartData },
-                ChartContext = chartContext
-            };
+            NoteTrackData noteTrackData = new NoteTrackData() { ClipDataList = new List<ChartData>() { chartData }, ChartContext = chartContext };
             timeline.AddTrack(noteTrackData, NoteTrack.CreateClipFunc);
 
             // if (!string.IsNullOrEmpty(lrcText) && settingsModule.EnableLyricTrack)
