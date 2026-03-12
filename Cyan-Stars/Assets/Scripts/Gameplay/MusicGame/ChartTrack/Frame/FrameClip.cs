@@ -26,19 +26,19 @@ namespace CyanStars.Gameplay.MusicGame
             this.maxAlpha = maxAlpha;
         }
 
-        public override void OnEnter()
+        public override void OnEnter(in TimelineContext _)
         {
             Owner.ImgFrame.color = color;
             Owner.ImgFrame.pixelsPerUnitMultiplier = 1 - intensity;
         }
 
-        public override void OnUpdate(float currentTime, float previousTime)
+        public override void OnUpdate(in TimelineContext ctx)
         {
             switch (type)
             {
                 case FrameType.Flash:
                 {
-                    float t = (currentTime - StartTime) % (60 / bpm);
+                    float t = (ctx.CurrentTime - StartTime) % (60 / bpm);
                     float alpha = EasingFunction.EaseOutQuart(maxAlpha, minAlpha, t, 60 / bpm);
                     color.a = alpha;
                     Owner.ImgFrame.color = color;
@@ -46,7 +46,7 @@ namespace CyanStars.Gameplay.MusicGame
                 }
                 case FrameType.Breath:
                 {
-                    float alpha = Mathf.Abs(Mathf.Sin((currentTime - StartTime) * bpm * Mathf.PI / 60)) *
+                    float alpha = Mathf.Abs(Mathf.Sin((ctx.CurrentTime - StartTime) * bpm * Mathf.PI / 60)) *
                         (maxAlpha - minAlpha) + minAlpha;
                     color.a = alpha;
                     Owner.ImgFrame.color = color;
