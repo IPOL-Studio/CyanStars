@@ -12,26 +12,23 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 轨道列表
         /// </summary>
-        private List<BaseTrack> tracks = new List<BaseTrack>();
+        private readonly List<BaseTrack> Tracks;
 
         /// <summary>
-        /// 长度
+        /// 时间轴播放状态上下文
         /// </summary>
-        public readonly float Length;
+        public TimelineContext Context;
 
         /// <summary>
         /// 时间轴停止回调
         /// </summary>
         public event Action OnStop;
 
-        /// <summary>
-        /// 当前时间
-        /// </summary>
-        public float CurrentTime { get; private set; } = -float.Epsilon;
 
-        public Timeline(float length)
+        public Timeline(bool isMusicGameMode, float length)
         {
-            Length = length;
+            Tracks = new List<BaseTrack>();
+            Context = new TimelineContext(isMusicGameMode, length, false, 1f, -float.Epsilon, -float.Epsilon);
         }
 
 
@@ -39,14 +36,14 @@ namespace CyanStars.Framework.Timeline
         /// 添加轨道
         /// </summary>
         public TTrack AddTrack<TTrack, TTrackData, TClipData>(TTrackData trackData,
-            CreateClipFunc<TTrack, TTrackData, TClipData> creator)
+                                                              CreateClipFunc<TTrack, TTrackData, TClipData> creator)
             where TTrack : BaseTrack, new()
             where TTrackData : ITrackData<TClipData>
         {
             TTrack track = TrackBuilder<TTrack, TTrackData, TClipData>.Build(trackData, creator);
 
             track.Owner = this;
-            tracks.Add(track);
+            Tracks.Add(track);
 
             return track;
         }
@@ -56,12 +53,12 @@ namespace CyanStars.Framework.Timeline
         /// </summary>
         public BaseTrack GetTrack(int index)
         {
-            if (index < 0 || index >= tracks.Count)
+            if (index < 0 || index >= Tracks.Count)
             {
                 return null;
             }
 
-            return tracks[index];
+            return Tracks[index];
         }
 
         /// <summary>
@@ -77,9 +74,9 @@ namespace CyanStars.Framework.Timeline
         /// </summary>
         public T GetTrack<T>() where T : BaseTrack
         {
-            for (int i = 0; i < tracks.Count; i++)
+            for (int i = 0; i < Tracks.Count; i++)
             {
-                BaseTrack track = tracks[i];
+                BaseTrack track = Tracks[i];
                 if (track.GetType() == typeof(T))
                 {
                     return (T)track;
@@ -94,21 +91,19 @@ namespace CyanStars.Framework.Timeline
         /// </summary>
         public void OnUpdate(float deltaTime)
         {
-            if (deltaTime <= 0 || CurrentTime >= Length)
+            if (deltaTime <= 0 || Context.CurrentTime >= Context.Length)
             {
                 return;
             }
 
-            float previousTime = CurrentTime;
-            CurrentTime += deltaTime;
-            for (int i = 0; i < tracks.Count; i++)
+            Context.PreviousTime = Context.CurrentTime;
+            Context.CurrentTime += deltaTime;
+            foreach (var track in Tracks)
             {
-                //更新轨道
-                BaseTrack track = tracks[i];
-                track.OnUpdate(CurrentTime, previousTime);
+                track.OnUpdate(in Context);
             }
 
-            if (CurrentTime >= Length)
+            if (Context.CurrentTime >= Context.Length)
             {
                 OnStop?.Invoke();
             }

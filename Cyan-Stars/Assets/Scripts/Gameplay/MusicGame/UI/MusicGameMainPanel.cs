@@ -37,7 +37,10 @@ namespace CyanStars.Gameplay.MusicGame
                 BtnStart.gameObject.SetActive(false);
             });
 
-            BtnPause.onClick.AddListener(() => { GameRoot.UI.OpenUIPanelAsync<MusicGamePausePanel>(); });
+            BtnPause.onClick.AddListener(() =>
+            {
+                GameRoot.UI.OpenUIPanelAsync<MusicGamePausePanel>();
+            });
         }
 
         public override void OnOpen()
@@ -65,7 +68,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             if (playingDataModule.RunningTimeline != null)
             {
-                ImgProgress.fillAmount = playingDataModule.RunningTimeline.CurrentTime / playingDataModule.RunningTimeline.Length;
+                ImgProgress.fillAmount = playingDataModule.RunningTimeline.Context.CurrentTime / playingDataModule.RunningTimeline.Context.Length;
             }
         }
 
