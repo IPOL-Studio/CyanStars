@@ -44,20 +44,20 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
-        public override void OnEnter()
+        public override void OnEnter(in TimelineContext _)
         {
             GameRoot.Event.AddListener(EventConst.MusicGameEndEvent, OnMusicGameEnd);
             GameRoot.Event.AddListener(InputEventArgs.EventName, OnInput);
         }
 
-        public override void OnUpdate(float currentTime, float previousTime)
+        public override void OnUpdate(in TimelineContext ctx)
         {
             if (GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode)
             {
                 LinkedListNode<BaseNote> node = Notes.Last;
                 while (node != null)
                 {
-                    node.Value.OnUpdateInAutoMode(currentTime);
+                    node.Value.OnUpdateInAutoMode((float)ctx.CurrentTime);
                     node = node.Previous;
                 }
             }
@@ -66,7 +66,7 @@ namespace CyanStars.Gameplay.MusicGame
                 LinkedListNode<BaseNote> node = Notes.Last;
                 while (node != null)
                 {
-                    node.Value.OnUpdate(currentTime);
+                    node.Value.OnUpdate((float)ctx.CurrentTime);
                     node = node.Previous;
                 }
             }

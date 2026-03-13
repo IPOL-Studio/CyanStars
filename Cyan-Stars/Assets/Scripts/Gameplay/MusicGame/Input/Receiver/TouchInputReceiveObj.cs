@@ -23,15 +23,15 @@ namespace CyanStars.Gameplay.MusicGame
 
         private void Awake()
         {
-            GameRoot.Timer.UpdateTimer.Add(OnUpdate);
+            GameRoot.DspTimer.UpdateTimer.Add(OnUpdate);
         }
 
         private void OnDestroy()
         {
-            GameRoot.Timer.UpdateTimer.Remove(OnUpdate);
+            GameRoot.DspTimer.UpdateTimer.Remove(OnUpdate);
         }
 
-        private void OnUpdate(float deltaTime,object userdata)
+        private void OnUpdate(double deltaTime,object userdata)
         {
             if (isTouchDown)
             {

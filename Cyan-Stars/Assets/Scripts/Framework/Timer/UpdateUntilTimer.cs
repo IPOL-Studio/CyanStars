@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CyanStars.Framework.Timer
 {
-    public delegate bool UpdateTimerUntilCallback(float deltaTime, object userdata);
+    public delegate bool UpdateTimerUntilCallback(double deltaTime, object userdata);
 
     /// <summary>
     /// 在每个 Update 调用的计时器
@@ -49,7 +49,7 @@ namespace CyanStars.Framework.Timer
 
         private TimerListContainer<Timer> runningTimers = new TimerListContainer<Timer>();
 
-        public void OnUpdate(float deltaTime)
+        public void OnUpdate(double deltaTime)
         {
             if (runningTimers.Count == 0)
             {

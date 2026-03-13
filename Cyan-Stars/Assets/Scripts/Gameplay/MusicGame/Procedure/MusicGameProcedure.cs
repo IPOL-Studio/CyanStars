@@ -56,7 +56,6 @@ namespace CyanStars.Gameplay.MusicGame
 
         //  --- --- 流程逻辑相关 --- ---
         private BaseInputReceiver inputReceiver;
-        private float lastTime = -float.Epsilon;
         private int preDistanceBarChangedCount;
 
 
@@ -127,7 +126,6 @@ namespace CyanStars.Gameplay.MusicGame
             timeline = null;
 
             inputReceiver = null;
-            lastTime = -float.Epsilon;
 
             preDistanceBarChangedCount = 0;
 
@@ -366,17 +364,13 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void CreateTimeline()
         {
-            timeline = new Timeline(playingDataModule.CurTimelineLength);
+            timeline = new Timeline(true, playingDataModule.CurTimelineLength);
             timeline.OnStop += StopTimeline;
 
             var chartContext = CreateChartContext();
 
             // 添加音符轨道
-            NoteTrackData noteTrackData = new NoteTrackData()
-            {
-                ClipDataList = new List<ChartData>() { chartData },
-                ChartContext = chartContext
-            };
+            NoteTrackData noteTrackData = new NoteTrackData() { ClipDataList = new List<ChartData>() { chartData }, ChartContext = chartContext };
             timeline.AddTrack(noteTrackData, NoteTrack.CreateClipFunc);
 
             // if (!string.IsNullOrEmpty(lrcText) && settingsModule.EnableLyricTrack)
@@ -460,7 +454,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             playingDataModule.RunningTimeline = timeline;
 
-            GameRoot.Timer.UpdateTimer.Add(UpdateTimeline);
+            GameRoot.DspTimer.UpdateTimer.Add(UpdateTimeline);
 
             Debug.Log("时间轴创建完毕");
         }
@@ -483,13 +477,10 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 更新时间轴
         /// </summary>
-        private void UpdateTimeline(float deltaTime, object userdata)
+        private void UpdateTimeline(double deltaTime, object userdata)
         {
-            float timelineDeltaTime = audioSource.time - lastTime;
-            lastTime = audioSource.time;
-
-            timeline.OnUpdate(timelineDeltaTime);
-            UpdateDistanceBar(timelineDeltaTime);
+            timeline.OnUpdate(deltaTime);
+            UpdateDistanceBar(deltaTime);
 
             //音游流程中 按下ESC打开暂停
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -501,7 +492,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 更新判定误差指示
         /// </summary>
-        private void UpdateDistanceBar(float deltaTime)
+        private void UpdateDistanceBar(double deltaTime)
         {
             var data = playingDataModule.DistanceBarData;
             data.ReduceHeight(deltaTime);
@@ -517,10 +508,9 @@ namespace CyanStars.Gameplay.MusicGame
         private void StopTimeline()
         {
             timeline = null;
-            lastTime = -float.Epsilon;
             audioSource.clip = null;
 
-            GameRoot.Timer.UpdateTimer.Remove(UpdateTimeline);
+            GameRoot.DspTimer.UpdateTimer.Remove(UpdateTimeline);
             inputReceiver?.EndReceive();
 
             GameRoot.Event.Dispatch(EventConst.MusicGameEndEvent, this, EmptyEventArgs.Create());

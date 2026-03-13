@@ -41,14 +41,14 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 进入此片段时调用
         /// </summary>
-        public virtual void OnEnter()
+        public virtual void OnEnter(in TimelineContext ctx)
         {
         }
 
         /// <summary>
         /// 离开此片段时调用
         /// </summary>
-        public virtual void OnExit()
+        public virtual void OnExit(in TimelineContext ctx)
         {
             Valid = false;
         }
@@ -56,7 +56,7 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 更新片段
         /// </summary>
-        public virtual void OnUpdate(float currentTime, float previousTime)
+        public virtual void OnUpdate(in TimelineContext ctx)
         {
         }
     }
