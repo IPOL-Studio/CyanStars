@@ -64,7 +64,7 @@ namespace CyanStars.Framework
         /// <summary>
         /// 定时器管理器
         /// </summary>
-        public static TimerManager Timer { get; private set; }
+        public static DspTimerManager DspTimer { get; private set; }
 
         /// <summary>
         /// UI管理器
@@ -105,7 +105,7 @@ namespace CyanStars.Framework
             Event = GetManager<EventManager>();
             FSM = GetManager<FSMManager>();
             GameObjectPool = GetManager<GameObjectPoolManager>();
-            Timer = GetManager<TimerManager>();
+            DspTimer = GetManager<DspTimerManager>();
             UI = GetManager<UIManager>();
             Logger = GetManager<LoggerManager>();
             File = GetManager<FileManager>();

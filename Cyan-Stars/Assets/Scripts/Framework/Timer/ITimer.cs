@@ -2,6 +2,6 @@
 {
     public interface ITimer
     {
-        void OnUpdate(float deltaTime);
+        void OnUpdate(double deltaTime);
     }
 }
