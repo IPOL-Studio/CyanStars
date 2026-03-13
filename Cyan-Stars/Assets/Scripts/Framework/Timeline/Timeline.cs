@@ -89,7 +89,7 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 更新时间轴
         /// </summary>
-        public void OnUpdate(float deltaTime)
+        public void OnUpdate(double deltaTime)
         {
             if (deltaTime <= 0 || Context.CurrentTime >= Context.Length)
             {

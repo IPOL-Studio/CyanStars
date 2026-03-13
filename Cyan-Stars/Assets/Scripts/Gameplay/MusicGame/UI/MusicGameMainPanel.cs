@@ -68,7 +68,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             if (playingDataModule.RunningTimeline != null)
             {
-                ImgProgress.fillAmount = playingDataModule.RunningTimeline.Context.CurrentTime / playingDataModule.RunningTimeline.Context.Length;
+                ImgProgress.fillAmount = (float)playingDataModule.RunningTimeline.Context.CurrentTime / playingDataModule.RunningTimeline.Context.Length;
             }
         }
 

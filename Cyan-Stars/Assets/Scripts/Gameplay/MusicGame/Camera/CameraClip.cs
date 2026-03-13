@@ -48,7 +48,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnUpdate(in TimelineContext ctx)
         {
-            float localTimer = ctx.CurrentTime - StartTime;
+            float localTimer = (float)ctx.CurrentTime - StartTime;
 
             switch (easingType) //缓动
             {

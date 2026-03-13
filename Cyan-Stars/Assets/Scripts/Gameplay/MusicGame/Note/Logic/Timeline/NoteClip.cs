@@ -57,7 +57,7 @@ namespace CyanStars.Gameplay.MusicGame
                 LinkedListNode<BaseNote> node = Notes.Last;
                 while (node != null)
                 {
-                    node.Value.OnUpdateInAutoMode(ctx.CurrentTime);
+                    node.Value.OnUpdateInAutoMode((float)ctx.CurrentTime);
                     node = node.Previous;
                 }
             }
@@ -66,7 +66,7 @@ namespace CyanStars.Gameplay.MusicGame
                 LinkedListNode<BaseNote> node = Notes.Last;
                 while (node != null)
                 {
-                    node.Value.OnUpdate(ctx.CurrentTime);
+                    node.Value.OnUpdate((float)ctx.CurrentTime);
                     node = node.Previous;
                 }
             }
