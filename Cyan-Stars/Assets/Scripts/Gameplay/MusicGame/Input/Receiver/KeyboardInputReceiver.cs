@@ -20,15 +20,15 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void StartReceive()
         {
-            GameRoot.Timer.UpdateTimer.Add(OnUpdate);
+            GameRoot.DspTimer.UpdateTimer.Add(OnUpdate);
         }
 
         public override void EndReceive()
         {
-            GameRoot.Timer.UpdateTimer.Remove(OnUpdate);
+            GameRoot.DspTimer.UpdateTimer.Remove(OnUpdate);
         }
 
-        private void OnUpdate(float deltaTime,object userdata)
+        private void OnUpdate(double deltaTime,object userdata)
         {
             foreach (InputMapData.Item item in InputMapData.Items)
             {

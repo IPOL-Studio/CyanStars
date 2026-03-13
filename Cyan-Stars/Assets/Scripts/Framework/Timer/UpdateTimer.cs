@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CyanStars.Framework.Timer
 {
-    public delegate void UpdateTimerCallback(float deltaTime, object userdata);
+    public delegate void UpdateTimerCallback(double deltaTime, object userdata);
 
     public sealed class UpdateTimer : ITimer
     {
@@ -44,7 +44,7 @@ namespace CyanStars.Framework.Timer
 
         private TimerListContainer<Timer> timers = new TimerListContainer<Timer>();
 
-        public void OnUpdate(float deltaTime)
+        public void OnUpdate(double deltaTime)
         {
             if (timers.Count == 0)
             {

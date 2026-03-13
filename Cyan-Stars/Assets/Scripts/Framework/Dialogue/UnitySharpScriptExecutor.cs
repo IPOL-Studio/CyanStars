@@ -157,7 +157,7 @@ namespace CyanStars.Framework.Dialogue
 
             CancellationTokenSource cts = new CancellationTokenSource();
             this.pauseContext.CancellationSource = cts;
-            GameRoot.Timer.GetTimer<IntervalTimer>().Add((float)time, WaitPauseCallback, pauseTask, 1, cts.Token);
+            GameRoot.DspTimer.GetTimer<IntervalTimer>().Add((float)time, WaitPauseCallback, pauseTask, 1, cts.Token);
         }
 
         public void Resume()
