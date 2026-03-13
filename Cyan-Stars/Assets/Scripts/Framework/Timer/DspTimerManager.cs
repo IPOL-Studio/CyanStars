@@ -75,28 +75,27 @@ namespace CyanStars.Framework.Timer
 
         public override void OnUpdate(float _)
         {
+            double deltaTime;
             if (Math.Abs(AudioSettings.dspTime - previousDspTime) > 0.000001)
             {
                 // dspTime 发生更新
                 previousDspTime = AudioSettings.dspTime;
                 errorTime = previousDspTime - managerTime;
-
-                // 如果 managerTime 延后较大，则强制向前跳转以纠正误差
-                if (errorTime > MaxErrorTime)
-                {
-                    Debug.LogWarning($"{nameof(managerTime)} 误差达到 {errorTime}s，强制跳转时间到 {AudioSettings.dspTime}s。");
-                    managerTime = AudioSettings.dspTime;
-                    errorTime = 0;
-                }
             }
 
-            // 如果 managerTime 提前较大，则停止此帧更新以纠正误差
-            double deltaTime;
-            if (-errorTime > MaxErrorTime)
+            if (errorTime > MaxErrorTime)
             {
+                // 如果 managerTime 延后较大，则强制向前跳转以纠正误差
+                Debug.LogWarning($"{nameof(managerTime)} 误差达到 {errorTime}s，强制跳转时间到 {AudioSettings.dspTime}s。");
+                deltaTime = AudioSettings.dspTime - managerTime;
+                managerTime = AudioSettings.dspTime;
+                errorTime = 0;
+            }
+            else if (-errorTime > MaxErrorTime)
+            {
+                // 如果 managerTime 提前较大，则停止此帧更新以纠正误差
                 Debug.LogWarning($"{nameof(managerTime)} 误差达到 {errorTime}s，本帧停止更新。");
                 deltaTime = 0;
-                errorTime += Time.unscaledDeltaTime;
             }
             else
             {
