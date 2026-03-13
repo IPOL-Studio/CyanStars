@@ -56,7 +56,6 @@ namespace CyanStars.Gameplay.MusicGame
 
         //  --- --- 流程逻辑相关 --- ---
         private BaseInputReceiver inputReceiver;
-        private float lastTime = -float.Epsilon;
         private int preDistanceBarChangedCount;
 
 
@@ -127,7 +126,6 @@ namespace CyanStars.Gameplay.MusicGame
             timeline = null;
 
             inputReceiver = null;
-            lastTime = -float.Epsilon;
 
             preDistanceBarChangedCount = 0;
 
@@ -481,11 +479,8 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void UpdateTimeline(double deltaTime, object userdata)
         {
-            float timelineDeltaTime = audioSource.time - lastTime;
-            lastTime = audioSource.time;
-
-            timeline.OnUpdate(timelineDeltaTime);
-            UpdateDistanceBar(timelineDeltaTime);
+            timeline.OnUpdate(deltaTime);
+            UpdateDistanceBar(deltaTime);
 
             //音游流程中 按下ESC打开暂停
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -497,7 +492,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 更新判定误差指示
         /// </summary>
-        private void UpdateDistanceBar(float deltaTime)
+        private void UpdateDistanceBar(double deltaTime)
         {
             var data = playingDataModule.DistanceBarData;
             data.ReduceHeight(deltaTime);
@@ -513,7 +508,6 @@ namespace CyanStars.Gameplay.MusicGame
         private void StopTimeline()
         {
             timeline = null;
-            lastTime = -float.Epsilon;
             audioSource.clip = null;
 
             GameRoot.DspTimer.UpdateTimer.Remove(UpdateTimeline);

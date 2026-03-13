@@ -12,6 +12,15 @@ namespace CyanStars.Framework.Timeline
     public struct TimelineContext
     {
         /// <summary>
+        /// 当前时间轴在正向播放
+        /// </summary>
+        /// <remarks>
+        /// 建议在此值为 true 时进行额外的处理，如在进入 clip 时播放音效；而在为 false 时直接瞬间切换属性值。
+        /// </remarks>
+        public bool IsPositivePlaying => IsPlaying && PlaybackSpeed > 0;
+
+
+        /// <summary>
         /// timeline 总长度 (s)
         /// </summary>
         public readonly float Length;
@@ -46,13 +55,13 @@ namespace CyanStars.Framework.Timeline
         /// <remarks>
         /// track 和 clip 不应该使用此值来计算差值时间，应该直接通过 CurrentTime 计算目标时间点的值，以兼容制谱器模式下时间变化。
         /// </remarks>
-        public float PreviousTime;
+        public double PreviousTime;
 
         /// <summary>
         /// timeline 当前时间 (s)
         /// </summary>
         /// <remarks>此值可能小于 PreviousTime，见于 timeline 倒放的情况</remarks>
-        public float CurrentTime;
+        public double CurrentTime;
 
 
         public TimelineContext(

@@ -104,7 +104,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 根据时间回落条带高度
         /// </summary>
-        public void ReduceHeight(float deltaTime)
+        public void ReduceHeight(double deltaTime)
         {
             if (deltaTime <= 0)
             {
@@ -116,7 +116,7 @@ namespace CyanStars.Gameplay.MusicGame
                 if (BarHeights[i] - MinHeight < 0.001f)
                     continue; // 差距够小时认为相等
 
-                BarHeights[i] -= ReduceF * deltaTime;
+                BarHeights[i] -= (float)(ReduceF * deltaTime);
                 BarHeights[i] = Mathf.Max(BarHeights[i], MinHeight); // BarsHeight[i] 必须大于 RawHeight
             }
 
