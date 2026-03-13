@@ -28,16 +28,16 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 进入此片段
         /// </summary>
-        public void OnEnter(in TimelineContext ctx);
+        public void OnEnter(IReadOnlyTimelineContext ctx);
 
         /// <summary>
         /// 更新此片段
         /// </summary>
-        public void OnUpdate(in TimelineContext ctx);
+        public void OnUpdate(IReadOnlyTimelineContext ctx);
 
         /// <summary>
         /// 离开此片段
         /// </summary>
-        public void OnExit(in TimelineContext ctx);
+        public void OnExit(IReadOnlyTimelineContext ctx);
     }
 }
