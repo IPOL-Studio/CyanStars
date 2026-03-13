@@ -38,7 +38,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 case FrameType.Flash:
                 {
-                    float t = (ctx.CurrentTime - StartTime) % (60 / bpm);
+                    float t = (float)(ctx.CurrentTime - StartTime) % (60 / bpm);
                     float alpha = EasingFunction.EaseOutQuart(maxAlpha, minAlpha, t, 60 / bpm);
                     color.a = alpha;
                     Owner.ImgFrame.color = color;
@@ -46,7 +46,7 @@ namespace CyanStars.Gameplay.MusicGame
                 }
                 case FrameType.Breath:
                 {
-                    float alpha = Mathf.Abs(Mathf.Sin((ctx.CurrentTime - StartTime) * bpm * Mathf.PI / 60)) *
+                    float alpha = Mathf.Abs(Mathf.Sin((float)(ctx.CurrentTime - StartTime) * bpm * Mathf.PI / 60)) *
                         (maxAlpha - minAlpha) + minAlpha;
                     color.a = alpha;
                     Owner.ImgFrame.color = color;
