@@ -68,7 +68,7 @@ namespace CyanStars.Framework.Timer
         private LinkedList<Timer> runningTimers = new LinkedList<Timer>();
         private List<Timer> waitRemoveTimers = new List<Timer>();
 
-        public void OnUpdate(float deltaTime)
+        public void OnUpdate(double deltaTime)
         {
             //处理timer
             if (runningTimers.Count > 0)
