@@ -16,7 +16,7 @@ namespace CyanStars.Gameplay.MusicGame
 
 
         public FrameClip(float startTime, float endTime, FrameTrack owner, FrameType type, Color color, float intensity,
-            float bpm, float minAlpha, float maxAlpha) : base(startTime, endTime, owner)
+                         float bpm, float minAlpha, float maxAlpha) : base(startTime, endTime, owner)
         {
             this.type = type;
             this.color = color;
@@ -26,13 +26,13 @@ namespace CyanStars.Gameplay.MusicGame
             this.maxAlpha = maxAlpha;
         }
 
-        public override void OnEnter(in TimelineContext _)
+        public override void OnEnter(IReadOnlyTimelineContext _)
         {
             Owner.ImgFrame.color = color;
             Owner.ImgFrame.pixelsPerUnitMultiplier = 1 - intensity;
         }
 
-        public override void OnUpdate(in TimelineContext ctx)
+        public override void OnUpdate(IReadOnlyTimelineContext ctx)
         {
             switch (type)
             {

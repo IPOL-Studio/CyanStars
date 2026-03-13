@@ -46,7 +46,7 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 更新轨道
         /// </summary>
-        public virtual void OnUpdate(in TimelineContext ctx)
+        public virtual void OnUpdate(TimelineContext ctx)
         {
             if (!Enabled)
             {
@@ -69,21 +69,21 @@ namespace CyanStars.Framework.Timeline
                 if (needEnter)
                 {
                     //进入片段
-                    clip.OnEnter(in ctx);
+                    clip.OnEnter(ctx);
                 }
 
                 bool needUpdate = ctx.CurrentTime >= clip.StartTime && ctx.CurrentTime <= clip.EndTime;
                 if (needUpdate)
                 {
                     //更新片段
-                    clip.OnUpdate(in ctx);
+                    clip.OnUpdate(ctx);
                 }
 
                 bool needExit = ctx.CurrentTime > clip.EndTime && ctx.PreviousTime <= clip.EndTime;
                 if (needExit)
                 {
                     //退出片段
-                    clip.OnExit(in ctx);
+                    clip.OnExit(ctx);
                 }
 
                 if (!needEnter && !needUpdate && !needExit)

@@ -44,13 +44,13 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
-        public override void OnEnter(in TimelineContext _)
+        public override void OnEnter(IReadOnlyTimelineContext _)
         {
             GameRoot.Event.AddListener(EventConst.MusicGameEndEvent, OnMusicGameEnd);
             GameRoot.Event.AddListener(InputEventArgs.EventName, OnInput);
         }
 
-        public override void OnUpdate(in TimelineContext ctx)
+        public override void OnUpdate(IReadOnlyTimelineContext ctx)
         {
             if (GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode)
             {
