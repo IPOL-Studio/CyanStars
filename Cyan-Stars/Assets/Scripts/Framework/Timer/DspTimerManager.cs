@@ -84,6 +84,7 @@ namespace CyanStars.Framework.Timer
                 // 如果 managerTime 延后较大，则强制向前跳转以纠正误差
                 if (errorTime > MaxErrorTime)
                 {
+                    Debug.LogWarning($"{nameof(managerTime)} 误差达到 {errorTime}s，强制跳转时间到 {AudioSettings.dspTime}s。");
                     managerTime = AudioSettings.dspTime;
                     errorTime = 0;
                 }
@@ -93,6 +94,7 @@ namespace CyanStars.Framework.Timer
             double deltaTime;
             if (-errorTime > MaxErrorTime)
             {
+                Debug.LogWarning($"{nameof(managerTime)} 误差达到 {errorTime}s，本帧停止更新。");
                 deltaTime = 0;
                 errorTime += Time.unscaledDeltaTime;
             }
