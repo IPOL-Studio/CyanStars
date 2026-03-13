@@ -17,7 +17,7 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 时间轴播放状态上下文
         /// </summary>
-        public TimelineContext Context;
+        public readonly TimelineContext Context;
 
         /// <summary>
         /// 时间轴停止回调
@@ -87,26 +87,39 @@ namespace CyanStars.Framework.Timeline
         }
 
         /// <summary>
-        /// 更新时间轴
+        /// 每帧传入 deltaTime，但只有在 playing 时才会更新时间轴时间
         /// </summary>
         public void OnUpdate(double deltaTime)
         {
-            if (deltaTime <= 0 || Context.CurrentTime >= Context.Length)
-            {
+            if (deltaTime < 0)
+                throw new ArgumentOutOfRangeException(nameof(deltaTime));
+
+            if (!Context.IsPlaying || deltaTime == 0 || Context.PlaybackSpeed == 0)
                 return;
-            }
 
             Context.PreviousTime = Context.CurrentTime;
-            Context.CurrentTime += deltaTime;
+            Context.CurrentTime += deltaTime * Context.PlaybackSpeed;
+
             foreach (var track in Tracks)
             {
-                track.OnUpdate(in Context);
+                track.OnUpdate(Context);
             }
 
             if (Context.CurrentTime >= Context.Length)
             {
                 OnStop?.Invoke();
             }
+        }
+
+
+        public void Play()
+        {
+            Context.IsPlaying = true;
+        }
+
+        public void Pause()
+        {
+            Context.IsPlaying = false;
         }
     }
 }
