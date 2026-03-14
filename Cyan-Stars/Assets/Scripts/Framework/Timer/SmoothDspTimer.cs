@@ -9,9 +9,6 @@ namespace CyanStars.Framework.SmoothDspTimer
 {
     public class SmoothDspTimer
     {
-        private readonly Dictionary<Type, ITimer> TimerDict = new Dictionary<Type, ITimer>();
-
-
         /* DspTimerManager 计算逻辑：
          * Manager 时间以 AudioSetting.dspTime 为准
          * 但是 dspTime 不保证每帧更新，而下游需要每帧获取时间变化量
@@ -59,9 +56,9 @@ namespace CyanStars.Framework.SmoothDspTimer
         private double errorTime = 0;
 
         /// <summary>
-        /// 由调用者每帧驱动
+        /// 由调用者每帧驱动，返回平滑后的 deltaDspTime
         /// </summary>
-        public void OnUpdate()
+        public double OnUpdate()
         {
             double deltaTime;
             if (Math.Abs(AudioSettings.dspTime - previousDspTime) > 0.000001)
@@ -94,26 +91,7 @@ namespace CyanStars.Framework.SmoothDspTimer
                 currentTime += deltaTime;
             }
 
-            foreach (var timer in TimerDict.Values)
-            {
-                timer?.OnUpdate(deltaTime);
-            }
-        }
-
-
-        public void AddTimer<T>(T timer) where T : class, ITimer
-        {
-            TimerDict[typeof(T)] = timer ?? throw new ArgumentNullException(nameof(timer));
-        }
-
-        public T? GetTimer<T>() where T : class, ITimer
-        {
-            return TimerDict.GetValueOrDefault(typeof(T)) as T;
-        }
-
-        public void RemoveTimer<T>() where T : class, ITimer
-        {
-            TimerDict.Remove(typeof(T));
+            return deltaTime;
         }
     }
 }

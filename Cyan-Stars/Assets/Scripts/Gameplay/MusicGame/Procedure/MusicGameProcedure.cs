@@ -9,6 +9,7 @@ using CyanStars.Framework.Logging;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Base;
 using CyanStars.Chart;
+using CyanStars.Framework.SmoothDspTimer;
 using CyanStars.Graphics.Band;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -52,6 +53,7 @@ namespace CyanStars.Gameplay.MusicGame
 
 
         //  --- --- 时间轴相关对象 --- ---
+        private SmoothDspTimer smoothDspTimer;
         private Timeline timeline;
 
         //  --- --- 流程逻辑相关 --- ---
@@ -123,6 +125,7 @@ namespace CyanStars.Gameplay.MusicGame
             // timelineData = null;
             // lrcText = null;
 
+            smoothDspTimer = null;
             timeline = null;
 
             inputReceiver = null;
@@ -364,6 +367,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void CreateTimeline()
         {
+            smoothDspTimer = new SmoothDspTimer();
             timeline = new Timeline(true, playingDataModule.CurTimelineLength);
             timeline.OnStop += StopTimeline;
 
@@ -479,8 +483,9 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void UpdateTimeline(double deltaTime, object userdata)
         {
-            timeline.OnUpdate(deltaTime);
-            UpdateDistanceBar(deltaTime);
+            double smoothDeltaDspTime = smoothDspTimer.OnUpdate();
+            timeline.OnUpdate(smoothDeltaDspTime);
+            UpdateDistanceBar(smoothDeltaDspTime);
 
             //音游流程中 按下ESC打开暂停
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -492,10 +497,10 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 更新判定误差指示
         /// </summary>
-        private void UpdateDistanceBar(double deltaTime)
+        private void UpdateDistanceBar(double smoothDeltaDspTime)
         {
             var data = playingDataModule.DistanceBarData;
-            data.ReduceHeight(deltaTime);
+            data.ReduceHeight(smoothDeltaDspTime);
             if (data.IsDataChangedAndSet(ref preDistanceBarChangedCount))
             {
                 band.UpdateBand(data.BarHeights);
@@ -507,6 +512,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void StopTimeline()
         {
+            smoothDspTimer = null;
             timeline = null;
             audioSource.clip = null;
 
