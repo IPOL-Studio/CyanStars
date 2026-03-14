@@ -1,6 +1,7 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CyanStars.Framework.Timeline
 {
@@ -20,9 +21,10 @@ namespace CyanStars.Framework.Timeline
         public readonly TimelineContext Context;
 
         /// <summary>
-        /// 时间轴停止回调
+        /// 音游模式下时间轴停止回调
         /// </summary>
-        public event Action OnStop;
+        /// <remarks>时间轴在 isMusicGameMode 模式下且 CurrentTime 大于等于 Length</remarks>
+        public event Action? OnEndInMusicGameMode;
 
 
         public Timeline(bool isMusicGameMode, float length)
@@ -48,10 +50,12 @@ namespace CyanStars.Framework.Timeline
             return track;
         }
 
+        #region Tracks
+
         /// <summary>
         /// 获取轨道
         /// </summary>
-        public BaseTrack GetTrack(int index)
+        public BaseTrack? GetTrack(int index)
         {
             if (index < 0 || index >= Tracks.Count)
             {
@@ -64,7 +68,7 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 获取轨道
         /// </summary>
-        public T GetTrack<T>(int index) where T : BaseTrack
+        public T? GetTrack<T>(int index) where T : BaseTrack
         {
             return GetTrack(index) as T;
         }
@@ -72,7 +76,7 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 获取轨道（指定类型的第一个）
         /// </summary>
-        public T GetTrack<T>() where T : BaseTrack
+        public T? GetTrack<T>() where T : BaseTrack
         {
             for (int i = 0; i < Tracks.Count; i++)
             {
@@ -86,29 +90,50 @@ namespace CyanStars.Framework.Timeline
             return null;
         }
 
-        /// <summary>
-        /// 每帧传入 deltaTime，但只有在 playing 时才会更新时间轴时间
-        /// </summary>
-        public void OnUpdate(double deltaTime)
-        {
-            if (deltaTime < 0)
-                throw new ArgumentOutOfRangeException(nameof(deltaTime));
+        #endregion
 
-            if (!Context.IsPlaying || deltaTime == 0 || Context.PlaybackSpeed == 0)
+        #region Timeline
+
+        /// <summary>
+        /// 每帧传入 smoothDeltaDspTime，但只有在 playing 时才会更新时间轴时间
+        /// </summary>
+        public void OnUpdate(double smoothDeltaDspTime)
+        {
+            if (smoothDeltaDspTime < 0)
+                throw new ArgumentOutOfRangeException(nameof(smoothDeltaDspTime));
+
+            if (!Context.IsPlaying || smoothDeltaDspTime == 0 || Context.PlaybackSpeed == 0)
                 return;
 
             Context.PreviousTime = Context.CurrentTime;
-            Context.CurrentTime += deltaTime * Context.PlaybackSpeed;
+            Context.CurrentTime += smoothDeltaDspTime * Context.PlaybackSpeed; // 对 smoothDeltaDspTime 乘以播放倍速
+            Context.CurrentTime = smoothDeltaDspTime * Context.PlaybackSpeed > 0
+                ? Math.Min(Context.CurrentTime, Context.Length) // 如果正向播放，确保当前时间不大于 Length
+                : Math.Max(Context.CurrentTime, 0); // 如果反向播放，确保当前时间不小于 0
 
+            UpdateAllTracks(Context);
+
+            if (Context.IsMusicGameMode && Context.CurrentTime >= Context.Length)
+                OnEndInMusicGameMode?.Invoke();
+        }
+
+        /// <summary>
+        /// 跳转到某个时间点 (s)
+        /// </summary>
+        /// <remarks>
+        /// 跳转时没有限制时间点在 [0,Length] 范围内，播放时根据播放倍速正负值可能会再次钳制
+        /// </remarks>
+        public void JumpTo(double targetTime)
+        {
+            Context.PreviousTime = Context.CurrentTime;
+            Context.CurrentTime = targetTime;
+            UpdateAllTracks(Context);
+        }
+
+        private void UpdateAllTracks(TimelineContext context)
+        {
             foreach (var track in Tracks)
-            {
-                track.OnUpdate(Context);
-            }
-
-            if (Context.CurrentTime >= Context.Length)
-            {
-                OnStop?.Invoke();
-            }
+                track.OnUpdate(context);
         }
 
 
@@ -121,5 +146,7 @@ namespace CyanStars.Framework.Timeline
         {
             Context.IsPlaying = false;
         }
+
+        #endregion
     }
 }
