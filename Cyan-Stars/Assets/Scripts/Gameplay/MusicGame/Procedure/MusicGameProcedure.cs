@@ -369,7 +369,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             smoothDspTimer = new SmoothDspTimer();
             timeline = new Timeline(true, playingDataModule.CurTimelineLength);
-            timeline.OnStop += StopTimeline;
+            timeline.OnEndInMusicGameMode += StopTimeline;
 
             var chartContext = CreateChartContext();
 

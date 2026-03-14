@@ -20,7 +20,7 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 轨道是否被启用
         /// </summary>
-        public bool Enabled { get; set; } = true;
+        public bool Enabled { get; set; } = true; // TODO: 在 timeline 中途启用或停用轨道可能会导致 bug
 
         /// <summary>
         /// 更新时遍历clip的开始索引，从上次更新时最前面的有效clip开始
@@ -59,7 +59,7 @@ namespace CyanStars.Framework.Timeline
             {
                 IClip clip = Clips[i];
 
-                if (!clip.Valid)
+                if (ctx.IsMusicGameMode && !clip.Valid)
                 {
                     //已经exit过了
                     continue;
