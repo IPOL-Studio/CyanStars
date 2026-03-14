@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections.Generic;
-using CyanStars.Framework.Timer;
 using UnityEngine;
 
 namespace CyanStars.Framework.SmoothDspTimer
@@ -60,7 +58,7 @@ namespace CyanStars.Framework.SmoothDspTimer
         /// </summary>
         public double OnUpdate()
         {
-            double deltaTime;
+            double smoothDeltaDspTime;
             if (Math.Abs(AudioSettings.dspTime - previousDspTime) > 0.000001)
             {
                 // dspTime 发生更新
@@ -72,7 +70,7 @@ namespace CyanStars.Framework.SmoothDspTimer
             {
                 // 如果 managerTime 延后较大，则强制向前跳转以纠正误差
                 Debug.LogWarning($"{nameof(currentTime)} 误差达到 {errorTime}s，强制跳转时间到 {AudioSettings.dspTime}s。");
-                deltaTime = AudioSettings.dspTime - currentTime;
+                smoothDeltaDspTime = AudioSettings.dspTime - currentTime;
                 currentTime = AudioSettings.dspTime;
                 errorTime = 0;
             }
@@ -80,18 +78,18 @@ namespace CyanStars.Framework.SmoothDspTimer
             {
                 // 如果 managerTime 提前较大，则停止此帧更新以纠正误差
                 Debug.LogWarning($"{nameof(currentTime)} 误差达到 {errorTime}s，本帧停止更新。");
-                deltaTime = 0;
+                smoothDeltaDspTime = 0;
             }
             else
             {
                 double correctionTime = errorTime * ErrorTimeDamping;
                 correctionTime = Math.Max(correctionTime, -Time.unscaledDeltaTime); // 修正之后的 deltaTime 必须为非负数
-                deltaTime = Time.unscaledDeltaTime + correctionTime;
+                smoothDeltaDspTime = Time.unscaledDeltaTime + correctionTime;
                 errorTime -= correctionTime;
-                currentTime += deltaTime;
+                currentTime += smoothDeltaDspTime;
             }
 
-            return deltaTime;
+            return smoothDeltaDspTime;
         }
     }
 }
