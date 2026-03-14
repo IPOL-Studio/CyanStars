@@ -454,7 +454,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             playingDataModule.RunningTimeline = timeline;
 
-            GameRoot.DspTimer.UpdateTimer.Add(UpdateTimeline);
+            GameRoot.Timer.UpdateTimer.Add(UpdateTimeline);
 
             Debug.Log("时间轴创建完毕");
         }
@@ -510,7 +510,7 @@ namespace CyanStars.Gameplay.MusicGame
             timeline = null;
             audioSource.clip = null;
 
-            GameRoot.DspTimer.UpdateTimer.Remove(UpdateTimeline);
+            GameRoot.Timer.UpdateTimer.Remove(UpdateTimeline);
             inputReceiver?.EndReceive();
 
             GameRoot.Event.Dispatch(EventConst.MusicGameEndEvent, this, EmptyEventArgs.Create());
