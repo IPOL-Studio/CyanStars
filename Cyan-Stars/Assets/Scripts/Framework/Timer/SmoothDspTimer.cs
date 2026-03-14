@@ -1,18 +1,16 @@
+﻿#nullable enable
+
 using System;
 using System.Collections.Generic;
+using CyanStars.Framework.Timer;
 using UnityEngine;
 
-namespace CyanStars.Framework.Timer
+namespace CyanStars.Framework.SmoothDspTimer
 {
-    /// <summary>
-    /// 定时管理器
-    /// </summary>
-    public class DspTimerManager : BaseManager
+    public class SmoothDspTimer
     {
-        /// <inheritdoc />
-        public override int Priority { get; }
-
         private readonly Dictionary<Type, ITimer> TimerDict = new Dictionary<Type, ITimer>();
+
 
         /* DspTimerManager 计算逻辑：
          * Manager 时间以 AudioSetting.dspTime 为准
@@ -33,8 +31,8 @@ namespace CyanStars.Framework.Timer
         /// 最大误差时间 (s)，[0,+∞)
         /// </summary>
         /// <remarks>
-        /// 若 managerTime 延后超过此误差值，则强制跳转到 dspTime；
-        /// 若 managerTime 提前超过此误差值，则停止 managerTime 更新直到误差小于范围
+        /// 若 currentTime 延后超过此误差值，则强制跳转到 dspTime；
+        /// 若 currentTime 提前超过此误差值，则停止 currentTime 更新直到误差小于范围
         /// </remarks>
         private const double MaxErrorTime = 1;
 
@@ -44,7 +42,7 @@ namespace CyanStars.Framework.Timer
         /// <remarks>
         /// 每帧更新，用于在两个 dspTime 的间隔之间平滑差值；保证时间正向更新，不会在 dspTime 变化时发生时光倒流
         /// </remarks>
-        private double managerTime;
+        private double currentTime;
 
         /// <summary>
         /// dspTime 上次更新时的值 (s)
@@ -55,46 +53,36 @@ namespace CyanStars.Framework.Timer
         private double previousDspTime;
 
         /// <summary>
-        /// managerTime 与 previousDspTime 之间的误差时间，managerTime 提前时为负数 (s)
+        /// currentTime 与 previousDspTime 之间的误差时间，currentTime 提前时为负数 (s)
         /// </summary>
-        /// <remarks>用于纠正 managerTime 的误差</remarks>
+        /// <remarks>用于纠正 currentTime 的误差</remarks>
         private double errorTime = 0;
 
-
-        public UpdateTimer UpdateTimer { get; private set; }
-
-        public override void OnInit()
-        {
-            managerTime = previousDspTime = AudioSettings.dspTime;
-
-            UpdateTimer = new UpdateTimer();
-            AddTimer(UpdateTimer);
-            AddTimer(new UpdateUntilTimer());
-            AddTimer(new IntervalTimer());
-        }
-
-        public override void OnUpdate(float _)
+        /// <summary>
+        /// 由调用者每帧驱动
+        /// </summary>
+        public void OnUpdate()
         {
             double deltaTime;
             if (Math.Abs(AudioSettings.dspTime - previousDspTime) > 0.000001)
             {
                 // dspTime 发生更新
                 previousDspTime = AudioSettings.dspTime;
-                errorTime = previousDspTime - managerTime;
+                errorTime = previousDspTime - currentTime;
             }
 
             if (errorTime > MaxErrorTime)
             {
                 // 如果 managerTime 延后较大，则强制向前跳转以纠正误差
-                Debug.LogWarning($"{nameof(managerTime)} 误差达到 {errorTime}s，强制跳转时间到 {AudioSettings.dspTime}s。");
-                deltaTime = AudioSettings.dspTime - managerTime;
-                managerTime = AudioSettings.dspTime;
+                Debug.LogWarning($"{nameof(currentTime)} 误差达到 {errorTime}s，强制跳转时间到 {AudioSettings.dspTime}s。");
+                deltaTime = AudioSettings.dspTime - currentTime;
+                currentTime = AudioSettings.dspTime;
                 errorTime = 0;
             }
             else if (-errorTime > MaxErrorTime)
             {
                 // 如果 managerTime 提前较大，则停止此帧更新以纠正误差
-                Debug.LogWarning($"{nameof(managerTime)} 误差达到 {errorTime}s，本帧停止更新。");
+                Debug.LogWarning($"{nameof(currentTime)} 误差达到 {errorTime}s，本帧停止更新。");
                 deltaTime = 0;
             }
             else
@@ -103,7 +91,7 @@ namespace CyanStars.Framework.Timer
                 correctionTime = Math.Max(correctionTime, -Time.unscaledDeltaTime); // 修正之后的 deltaTime 必须为非负数
                 deltaTime = Time.unscaledDeltaTime + correctionTime;
                 errorTime -= correctionTime;
-                managerTime += deltaTime;
+                currentTime += deltaTime;
             }
 
             foreach (var timer in TimerDict.Values)
@@ -112,19 +100,20 @@ namespace CyanStars.Framework.Timer
             }
         }
 
+
         public void AddTimer<T>(T timer) where T : class, ITimer
         {
-            if (timer is null)
-            {
-                throw new NullReferenceException(nameof(timer));
-            }
-
-            TimerDict.Add(typeof(T), timer);
+            TimerDict[typeof(T)] = timer ?? throw new ArgumentNullException(nameof(timer));
         }
 
-        public T GetTimer<T>() where T : class, ITimer
+        public T? GetTimer<T>() where T : class, ITimer
         {
             return TimerDict.GetValueOrDefault(typeof(T)) as T;
+        }
+
+        public void RemoveTimer<T>() where T : class, ITimer
+        {
+            TimerDict.Remove(typeof(T));
         }
     }
 }

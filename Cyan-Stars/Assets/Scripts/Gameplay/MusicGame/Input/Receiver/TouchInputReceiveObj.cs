@@ -23,12 +23,12 @@ namespace CyanStars.Gameplay.MusicGame
 
         private void Awake()
         {
-            GameRoot.DspTimer.UpdateTimer.Add(OnUpdate);
+            GameRoot.Timer.UpdateTimer.Add(OnUpdate);
         }
 
         private void OnDestroy()
         {
-            GameRoot.DspTimer.UpdateTimer.Remove(OnUpdate);
+            GameRoot.Timer.UpdateTimer.Remove(OnUpdate);
         }
 
         private void OnUpdate(double deltaTime,object userdata)
