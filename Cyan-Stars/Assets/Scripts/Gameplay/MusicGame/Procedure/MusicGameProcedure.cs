@@ -11,6 +11,7 @@ using CyanStars.Gameplay.Base;
 using CyanStars.Chart;
 using CyanStars.Framework.SmoothDspTimer;
 using CyanStars.Graphics.Band;
+using CyanStars.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -74,6 +75,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             //打开游戏场景
             var sceneHandler = await GameRoot.Asset.LoadSceneAsync(currentSceneInfo.ScenePath);
+            SceneManager.SetActiveScene(sceneHandler.Scene);
 
             if (sceneHandler.IsValid && sceneHandler.IsSuccess)
             {
@@ -242,20 +244,16 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 谱面
             runtimeChartPack = chartModule.SelectedRuntimeChartPack;
-            await chartModule.SelectChartDataAsync(0); // TODO: 根据选择的难度来加载谱面
-            if (chartModule.ChartData == null)
-            {
-                Debug.LogError("谱面加载失败");
-            }
-
+            chartData = chartModule.ChartData;
 
             // 音乐
             if (chartModule.SelectedMusicVersionIndex != null)
             {
                 MusicVersionData musicVersionData =
                     runtimeChartPack.ChartPackData.MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex];
+                string musicFilePath = PathUtil.Combine(runtimeChartPack.WorkspacePath, musicVersionData.AudioFilePath);
                 AudioClip music =
-                    (await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.AudioFilePath)).BindTo(sceneRoot).Asset;
+                    (await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicFilePath)).BindTo(sceneRoot).Asset;
                 if (!music)
                 {
                     Debug.LogError($"谱包 {runtimeChartPack.ChartPackData.Title} 的音乐加载失败");
@@ -459,6 +457,7 @@ namespace CyanStars.Gameplay.MusicGame
             playingDataModule.RunningTimeline = timeline;
 
             GameRoot.Timer.UpdateTimer.Add(UpdateTimeline);
+            timeline.Play();
 
             Debug.Log("时间轴创建完毕");
         }

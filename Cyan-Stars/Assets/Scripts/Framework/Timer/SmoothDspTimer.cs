@@ -20,7 +20,7 @@ namespace CyanStars.Framework.SmoothDspTimer
         /// <remarks>
         /// 每帧抹除当前积累误差的几倍，就像半衰期一样
         /// </remarks>
-        private const double ErrorTimeDamping = 0.1;
+        private const double ErrorTimeDamping = 0.1; // TODO: 改为每秒抹除多少误差，以排除不同帧率的影响
 
         /// <summary>
         /// 最大误差时间 (s)，[0,+∞)
@@ -37,7 +37,7 @@ namespace CyanStars.Framework.SmoothDspTimer
         /// <remarks>
         /// 每帧更新，用于在两个 dspTime 的间隔之间平滑差值；保证时间正向更新，不会在 dspTime 变化时发生时光倒流
         /// </remarks>
-        private double currentTime;
+        private double currentTime = AudioSettings.dspTime;
 
         /// <summary>
         /// dspTime 上次更新时的值 (s)
@@ -45,7 +45,7 @@ namespace CyanStars.Framework.SmoothDspTimer
         /// <remarks>
         /// dspTime 更准确，但不保证每帧更新
         /// </remarks>
-        private double previousDspTime;
+        private double previousDspTime = AudioSettings.dspTime;
 
         /// <summary>
         /// currentTime 与 previousDspTime 之间的误差时间，currentTime 提前时为负数 (s)
