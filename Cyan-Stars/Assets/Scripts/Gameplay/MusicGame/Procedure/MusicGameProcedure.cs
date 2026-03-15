@@ -457,7 +457,6 @@ namespace CyanStars.Gameplay.MusicGame
             playingDataModule.RunningTimeline = timeline;
 
             GameRoot.Timer.UpdateTimer.Add(UpdateTimeline);
-            timeline.Play();
 
             Debug.Log("时间轴创建完毕");
         }
@@ -483,7 +482,7 @@ namespace CyanStars.Gameplay.MusicGame
         private void UpdateTimeline(double deltaTime, object userdata)
         {
             double smoothDeltaDspTime = smoothDspTimer.OnUpdate();
-            timeline.OnUpdate(smoothDeltaDspTime);
+            timeline.OnPlayingUpdate(smoothDeltaDspTime);
             UpdateDistanceBar(smoothDeltaDspTime);
 
             //音游流程中 按下ESC打开暂停

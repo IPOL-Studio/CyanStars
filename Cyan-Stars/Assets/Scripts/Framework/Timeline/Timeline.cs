@@ -30,7 +30,7 @@ namespace CyanStars.Framework.Timeline
         public Timeline(bool isMusicGameMode, float length)
         {
             Tracks = new List<BaseTrack>();
-            Context = new TimelineContext(isMusicGameMode, length, false, 1f, -float.Epsilon, -float.Epsilon);
+            Context = new TimelineContext(isMusicGameMode, length, 1f, -float.Epsilon, -float.Epsilon);
         }
 
 
@@ -95,14 +95,14 @@ namespace CyanStars.Framework.Timeline
         #region Timeline
 
         /// <summary>
-        /// 每帧传入 smoothDeltaDspTime，但只有在 playing 时才会更新时间轴时间
+        /// 在播放时每帧传入 dspTime，timeline 内部将乘以播放速度，需要暂停 timeline 时停止传入 dspTime
         /// </summary>
-        public void OnUpdate(double smoothDeltaDspTime)
+        public void OnPlayingUpdate(double smoothDeltaDspTime)
         {
             if (smoothDeltaDspTime < 0)
                 throw new ArgumentOutOfRangeException(nameof(smoothDeltaDspTime));
 
-            if (!Context.IsPlaying || smoothDeltaDspTime == 0 || Context.PlaybackSpeed == 0)
+            if (smoothDeltaDspTime == 0 || Context.PlaybackSpeed == 0)
                 return;
 
             Context.PreviousTime = Context.CurrentTime;
@@ -111,14 +111,15 @@ namespace CyanStars.Framework.Timeline
                 ? Math.Min(Context.CurrentTime, Context.Length) // 如果正向播放，确保当前时间不大于 Length
                 : Math.Max(Context.CurrentTime, 0); // 如果反向播放，确保当前时间不小于 0
 
-            UpdateAllTracks(Context);
+            foreach (var track in Tracks)
+                track.OnPlayingUpdate(Context);
 
             if (Context.IsMusicGameMode && Context.CurrentTime >= Context.Length)
                 OnEndInMusicGameMode?.Invoke();
         }
 
         /// <summary>
-        /// 跳转到某个时间点 (s)
+        /// 在制谱器模式下跳转到某个时间点 (s)
         /// </summary>
         /// <remarks>
         /// 跳转时没有限制时间点在 [0,Length] 范围内，播放时根据播放倍速正负值可能会再次钳制
@@ -127,24 +128,8 @@ namespace CyanStars.Framework.Timeline
         {
             Context.PreviousTime = Context.CurrentTime;
             Context.CurrentTime = targetTime;
-            UpdateAllTracks(Context);
-        }
-
-        private void UpdateAllTracks(TimelineContext context)
-        {
             foreach (var track in Tracks)
-                track.OnUpdate(context);
-        }
-
-
-        public void Play()
-        {
-            Context.IsPlaying = true;
-        }
-
-        public void Pause()
-        {
-            Context.IsPlaying = false;
+                track.OnTimeJump(Context);
         }
 
         #endregion
