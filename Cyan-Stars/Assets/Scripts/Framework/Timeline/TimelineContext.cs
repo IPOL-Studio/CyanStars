@@ -4,12 +4,10 @@ namespace CyanStars.Framework.Timeline
 {
     public interface IReadOnlyTimelineContext
     {
-        public bool IsPositivePlaying => IsPlaying && PlaybackSpeed > 0;
-
         public float Length { get; }
         public bool IsMusicGameMode { get; }
 
-        public bool IsPlaying { get; }
+
         public float PlaybackSpeed { get; }
         public double PreviousTime { get; }
         public double CurrentTime { get; }
@@ -24,15 +22,6 @@ namespace CyanStars.Framework.Timeline
     public class TimelineContext : IReadOnlyTimelineContext
     {
         /// <summary>
-        /// 当前时间轴在正向播放
-        /// </summary>
-        /// <remarks>
-        /// 建议在此值为 true 时进行额外的处理，如在进入 clip 时播放音效；而在为 false 时直接瞬间切换属性值。
-        /// </remarks>
-        public bool IsPositivePlaying => IsPlaying && PlaybackSpeed > 0;
-
-
-        /// <summary>
         /// timeline 总长度 (s)
         /// </summary>
         public float Length { get; }
@@ -46,14 +35,6 @@ namespace CyanStars.Framework.Timeline
         /// </remarks>
         public bool IsMusicGameMode { get; }
 
-
-        /// <summary>
-        /// 当前是否正在播放
-        /// </summary>
-        /// <remarks>
-        /// false = 正在暂停
-        /// </remarks>
-        public bool IsPlaying { get; set; }
 
         /// <summary>
         /// 当前的播放倍速
@@ -79,14 +60,12 @@ namespace CyanStars.Framework.Timeline
         public TimelineContext(
             bool isMusicGameMode,
             float length,
-            bool isPlaying = false,
             float playbackSpeed = 1f,
             double previousTime = -double.Epsilon,
             double currentTime = -double.Epsilon
         )
         {
             IsMusicGameMode = isMusicGameMode;
-            IsPlaying = isPlaying;
             PlaybackSpeed = playbackSpeed;
             Length = length;
             PreviousTime = previousTime;

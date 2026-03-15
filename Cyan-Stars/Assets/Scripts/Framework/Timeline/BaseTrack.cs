@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace CyanStars.Framework.Timeline
@@ -44,9 +45,9 @@ namespace CyanStars.Framework.Timeline
         }
 
         /// <summary>
-        /// 更新轨道
+        /// 时间轴播放时每帧更新轨道
         /// </summary>
-        public virtual void OnUpdate(TimelineContext ctx)
+        public virtual void OnPlayingUpdate(TimelineContext ctx)
         {
             if (!Enabled)
             {
@@ -101,6 +102,11 @@ namespace CyanStars.Framework.Timeline
                     }
                 }
             }
+        }
+
+        public virtual void OnTimeJump(TimelineContext ctx)
+        {
+            throw new NotImplementedException();
         }
     }
 }
