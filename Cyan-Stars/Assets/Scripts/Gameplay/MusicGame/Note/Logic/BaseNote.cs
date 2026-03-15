@@ -125,7 +125,7 @@ namespace CyanStars.Gameplay.MusicGame
                 Debug.LogWarning("一个音符在销毁时仍未成功创建视图物体，已取消创建，可能导致显示异常。");
 
             NoteClip.Notes.Remove(this);
-            ViewObject?.DestroySelf(autoMove);
+            ViewObject.DestroySelf(autoMove);
             ViewObject = null;
         }
 
