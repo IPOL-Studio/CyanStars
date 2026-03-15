@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using CyanStars.Chart;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -53,6 +55,9 @@ namespace CyanStars.Gameplay.MusicGame
         public float CurViewDistance { get; private set; }
 
 
+        private CancellationTokenSource cts = new CancellationTokenSource();
+
+
         /// <summary>
         /// 初始化数据
         /// </summary>
@@ -96,7 +101,7 @@ namespace CyanStars.Gameplay.MusicGame
                 //到创建视图层物体的时间点了
                 createdViewObject = true;
 
-                ViewObject = await ViewHelper.CreateViewObject(NoteData, this);
+                ViewObject = await ViewHelper.CreateViewObject(NoteData, this, cts.Token);
             }
         }
 
@@ -113,8 +118,14 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         protected void DestroySelf(bool autoMove = true)
         {
+            cts.Cancel();
+            cts.Dispose();
+
+            if (ViewObject == null)
+                Debug.LogWarning("一个音符在销毁时仍未成功创建视图物体，已取消创建，可能导致显示异常。");
+
             NoteClip.Notes.Remove(this);
-            ViewObject.DestroySelf(autoMove);
+            ViewObject?.DestroySelf(autoMove);
             ViewObject = null;
         }
 

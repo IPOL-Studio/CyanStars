@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using CyanStars.Framework;
 using CyanStars.Chart;
 using UnityEngine;
@@ -28,13 +29,13 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 创建视图层物体
         /// </summary>
-        public static async Task<IView> CreateViewObject(BaseChartNoteData data, BaseNote note)
+        public static async Task<IView> CreateViewObject(BaseChartNoteData data, BaseNote note, CancellationToken cancellationToken)
         {
             MusicGamePlayingDataModule playingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
             GameObject go = null;
             string prefabName = playingDataModule.NotePrefabNameDict[data.Type];
 
-            go = await GameRoot.GameObjectPool.GetGameObjectAsync(prefabName, ViewRoot);
+            go = await GameRoot.GameObjectPool.GetGameObjectAsync(prefabName, ViewRoot, cancellationToken);
 
             //这里因为用了异步await，所以需要使用note在物体创建成功后这一刻的视图层时间作为viewCreateTime，否则位置会对不上
             go.transform.position = GetViewObjectPos(data, note.CurViewDistance);
