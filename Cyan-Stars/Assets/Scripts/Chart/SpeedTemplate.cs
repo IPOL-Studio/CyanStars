@@ -1,7 +1,7 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
-using CyanStars.Chart.BezierCurve;
-using UnityEngine;
 
 namespace CyanStars.Chart
 {
@@ -29,31 +29,34 @@ namespace CyanStars.Chart
         /// </summary>
         private readonly double FinalDisplacement;
 
+        /// <summary>
+        /// 缓存的玩家流速
+        /// </summary>
+        private readonly float PlayerSpeed;
 
-        private SpeedTemplate(SpeedTemplateData speedTemplateData, List<float> speedList, List<float> displacementList, double finalDisplacement)
-        {
-            SpeedTemplateData = speedTemplateData;
-            SpeedList = speedList;
-            DisplacementList = displacementList;
-            FinalDisplacement = finalDisplacement;
-        }
 
         /// <summary>
         /// 构造实例并烘焙速度和距离采样点
         /// </summary>
-        public static SpeedTemplate Create(SpeedTemplateData data, ISpeedTemplateBaker baker, float playerSpeed)
+        public SpeedTemplate(SpeedTemplateData data, ISpeedTemplateBaker baker, float playerSpeed)
         {
             _ = data ?? throw new ArgumentNullException(nameof(data));
             _ = baker ?? throw new ArgumentNullException(nameof(baker));
 
-            baker.Bake(
-                data,
-                playerSpeed,
-                out List<float> speedList,
-                out List<float> displacementList
-            );
+            if (!baker.Bake(data, playerSpeed, out List<float>? speedList, out List<float>? displacementList))
+            {
+                // false 代表整个曲线只有 1 个元素，此时 out 的 list 为 null
+                speedList = new List<float>();
+                displacementList = new List<float>();
+            }
+
             double finalDisplacement = baker.GetFinalDisplacement(data, playerSpeed);
-            return new SpeedTemplate(data, speedList, displacementList, finalDisplacement);
+
+            SpeedTemplateData = data;
+            SpeedList = speedList;
+            DisplacementList = displacementList;
+            FinalDisplacement = finalDisplacement;
+            PlayerSpeed = playerSpeed;
         }
 
         /// <summary>
