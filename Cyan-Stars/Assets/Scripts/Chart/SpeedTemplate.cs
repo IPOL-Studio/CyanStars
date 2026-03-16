@@ -66,29 +66,32 @@ namespace CyanStars.Chart
         {
             msTime = msTime * -1; // TODO: 历史遗留问题，逻辑层时间提前时为负数
 
-            if (msTime <= 0)
-            {
-                // 音符已经超过判定时间，根据 [0] 贝塞尔点线性计算位移
-                var speed = SpeedTemplateData.BezierCurves[0].PositionPoint.Value;
-                return speed * msTime / 1000f;
-            }
-            else if (SpeedTemplateData.BezierCurves[^1].PositionPoint.Value <= msTime)
-            {
-                // 音符还未达到判定时间，且在最远端贝塞尔点之外
-                // 线性计算超出贝塞尔点时间部分的位移，然后加上整段位移
-                var segmentMsTime = msTime - SpeedTemplateData.BezierCurves[^1].PositionPoint.MsTime;
-                var speed = SpeedTemplateData.BezierCurves[^1].PositionPoint.Value;
-                return (float)FinalDisplacement + speed * segmentMsTime / 1000f;
-            }
-            else
-            {
-                // 音符落在曲线上，直接根据采样结果返回
-                // 将音符对齐到最近的采样点上
-                const float halfSampleIntervalMsTime = CacheSpeedTemplateBaker.SampleIntervalMsTime / 2f;
-                int sampleIndex = (int)((msTime + halfSampleIntervalMsTime) / CacheSpeedTemplateBaker.SampleIntervalMsTime);
-                sampleIndex = Math.Min(sampleIndex, DisplacementList.Count - 1);
-                return DisplacementList[sampleIndex];
-            }
+            // TODO: 目前忽略一切流速设计，单纯按照玩家速度和距离时间来计算距离，只是为了预览能跑起来
+            return PlayerSpeed * msTime / 1000f;
+
+            // if (msTime <= 0)
+            // {
+            //     // 音符已经超过判定时间，根据 [0] 贝塞尔点线性计算位移
+            //     var speed = SpeedTemplateData.BezierCurves[0].PositionPoint.Value;
+            //     return speed * msTime / 1000f * -50;
+            // }
+            // else if (SpeedTemplateData.BezierCurves[^1].PositionPoint.Value <= msTime)
+            // {
+            //     // 音符还未达到判定时间，且在最远端贝塞尔点之外
+            //     // 线性计算超出贝塞尔点时间部分的位移，然后加上整段位移
+            //     var segmentMsTime = msTime - SpeedTemplateData.BezierCurves[^1].PositionPoint.MsTime;
+            //     var speed = SpeedTemplateData.BezierCurves[^1].PositionPoint.Value;
+            //     return (float)FinalDisplacement + speed * segmentMsTime / 1000f * -50;
+            // }
+            // else
+            // {
+            //     // 音符落在曲线上，直接根据采样结果返回
+            //     // 将音符对齐到最近的采样点上
+            //     const float halfSampleIntervalMsTime = CacheSpeedTemplateBaker.SampleIntervalMsTime / 2f;
+            //     int sampleIndex = (int)((msTime + halfSampleIntervalMsTime) / CacheSpeedTemplateBaker.SampleIntervalMsTime);
+            //     sampleIndex = Math.Min(sampleIndex, DisplacementList.Count - 1);
+            //     return DisplacementList[sampleIndex] * -50;
+            // }
         }
     }
 }

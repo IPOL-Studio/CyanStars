@@ -67,7 +67,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             Vector3 p = transform.position;
-            p.z = -viewDistance;
+            p.z = viewDistance;
             transform.position = p;
 
             SetLength();
@@ -78,11 +78,11 @@ namespace CyanStars.Gameplay.MusicGame
             Vector3 s = transform.localScale;
             if (pressed)
             {
-                s.z = -(note.EndViewDistance - 0);
+                s.z = note.EndViewDistance;
             }
             else
             {
-                s.z = -(note.EndViewDistance - note.CurViewDistance);
+                s.z = note.EndViewDistance - note.CurViewDistance;
             }
 
             transform.localScale = s;

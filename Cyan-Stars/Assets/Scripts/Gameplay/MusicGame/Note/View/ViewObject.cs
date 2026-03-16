@@ -37,7 +37,7 @@ namespace CyanStars.Gameplay.MusicGame
             ViewDeltaTime = ViewDistance - viewDistance;
             ViewDistance = viewDistance;
             Vector3 pos = transform.position;
-            pos.z = -viewDistance;
+            pos.z = viewDistance;
             transform.position = pos;
         }
 
@@ -102,7 +102,7 @@ namespace CyanStars.Gameplay.MusicGame
 
                 ViewDistance -= ViewDeltaTime;
                 Vector3 pos = trans.position;
-                pos.z = -ViewDistance;
+                pos.z = ViewDistance;
                 trans.position = pos;
 
                 if (timer >= 1f)
