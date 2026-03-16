@@ -38,11 +38,10 @@ namespace CyanStars.Chart
             FinalDisplacement = finalDisplacement;
         }
 
-        // TODO: 外部传入玩家速度
         /// <summary>
         /// 构造实例并烘焙速度和距离采样点
         /// </summary>
-        public static SpeedTemplate Create(SpeedTemplateData data, ISpeedTemplateBaker baker, float playerSpeed = 1f)
+        public static SpeedTemplate Create(SpeedTemplateData data, ISpeedTemplateBaker baker, float playerSpeed)
         {
             _ = data ?? throw new ArgumentNullException(nameof(data));
             _ = baker ?? throw new ArgumentNullException(nameof(baker));
