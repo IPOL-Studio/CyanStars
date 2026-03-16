@@ -6,6 +6,7 @@ using CatAsset.Runtime;
 using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Procedure;
+using CyanStars.Gameplay.MusicGame;
 using CyanStars.Utils;
 using SimpleFileBrowser;
 using TMPro;
@@ -92,15 +93,21 @@ namespace CyanStars
 
                                 GameObject newButtonObject = Instantiate(chartButtonObjectPrefab, chartsFrame.transform);
                                 newButtonObject.transform.SetSiblingIndex(chartsFrame.transform.childCount - 2);
-                                Temp_ChartButton button = newButtonObject.GetComponent<Temp_ChartButton>();
+                                Temp_ChartButtonFrame buttonFrame = newButtonObject.GetComponent<Temp_ChartButtonFrame>();
                                 ChartMetaData chartMetaData = chartModule.SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas[i];
                                 string difficultText = GetDifficultText(chartMetaData.Difficulty);
-                                button.Text.text = $"【{difficultText}】{chartMetaData.FilePath}";
+                                buttonFrame.Text.text = $"【{difficultText}】{chartMetaData.FilePath}";
                                 int index = i;
-                                button.Button.onClick.AddListener(async () =>
+                                buttonFrame.LoadButton.onClick.AddListener(async () =>
                                     {
                                         await chartModule.SelectChartDataAsync(index);
                                         GameRoot.ChangeProcedure<ChartEditorProcedure>();
+                                    }
+                                );
+                                buttonFrame.TestButton.onClick.AddListener(async () =>
+                                    {
+                                        await chartModule.SelectChartDataAsync(index);
+                                        GameRoot.ChangeProcedure<MusicGameProcedure>();
                                     }
                                 );
                             }

@@ -6,15 +6,15 @@ using UnityEngine.UI;
 
 namespace CyanStars
 {
-    public class Temp_ChartButton : MonoBehaviour
+    public class Temp_ChartButtonFrame : MonoBehaviour
     {
         [SerializeField]
-        public Button Button = null!;
-
-        [SerializeField]
-        public Image Image = null!;
+        public Button LoadButton = null!;
 
         [SerializeField]
         public TMP_Text Text = null!;
+
+        [SerializeField]
+        public Button TestButton = null!;
     }
 }
