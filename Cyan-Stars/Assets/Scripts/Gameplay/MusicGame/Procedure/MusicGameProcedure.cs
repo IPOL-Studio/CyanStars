@@ -9,7 +9,7 @@ using CyanStars.Framework.Logging;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Base;
 using CyanStars.Chart;
-using CyanStars.Framework.SmoothDspTimer;
+using CyanStars.Framework.Timer;
 using CyanStars.Graphics.Band;
 using CyanStars.Utils;
 using UnityEngine;

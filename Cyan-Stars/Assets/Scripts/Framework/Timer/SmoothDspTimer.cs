@@ -3,8 +3,9 @@
 using System;
 using UnityEngine;
 
-namespace CyanStars.Framework.SmoothDspTimer
+namespace CyanStars.Framework.Timer
 {
+    // TODO: 安卓平台上 AudioSettings.dspTime 更新频率慢，待测试
     public class SmoothDspTimer
     {
         /* DspTimerManager 计算逻辑：
