@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace CyanStars.Framework.Timer
 {
-    // TODO: 安卓平台上 AudioSettings.dspTime 更新频率慢，待测试
     public class SmoothDspTimer
     {
         /* DspTimerManager 计算逻辑：
@@ -19,9 +18,9 @@ namespace CyanStars.Framework.Timer
         /// 阻尼系数，[0,1]
         /// </summary>
         /// <remarks>
-        /// 每帧抹除当前积累误差的几倍，就像半衰期一样
+        /// 每秒抹除当前积累误差的几倍，就像半衰期一样
         /// </remarks>
-        private const double ErrorTimeDamping = 0.1; // TODO: 改为每秒抹除多少误差，以排除不同帧率的影响
+        private const double ErrorCorrectionRatePerSecond = 0.2;
 
         /// <summary>
         /// 最大误差时间 (s)，[0,+∞)
@@ -32,13 +31,14 @@ namespace CyanStars.Framework.Timer
         /// </remarks>
         private const double MaxErrorTime = 1;
 
+
         /// <summary>
         /// 此 manager 实例记录的，经过矫正后的时间 (s)
         /// </summary>
         /// <remarks>
         /// 每帧更新，用于在两个 dspTime 的间隔之间平滑差值；保证时间正向更新，不会在 dspTime 变化时发生时光倒流
         /// </remarks>
-        private double currentTime = AudioSettings.dspTime;
+        private double currentTime;
 
         /// <summary>
         /// dspTime 上次更新时的值 (s)
@@ -46,17 +46,38 @@ namespace CyanStars.Framework.Timer
         /// <remarks>
         /// dspTime 更准确，但不保证每帧更新
         /// </remarks>
-        private double previousDspTime = AudioSettings.dspTime;
+        private double previousDspTime;
 
         /// <summary>
         /// currentTime 与 previousDspTime 之间的误差时间，currentTime 提前时为负数 (s)
         /// </summary>
         /// <remarks>用于纠正 currentTime 的误差</remarks>
-        private double errorTime = 0;
+        private double errorTime;
 
         /// <summary>
-        /// 由调用者每帧驱动，返回平滑后的 deltaDspTime
+        /// 构造函数：为内部属性赋初始值
         /// </summary>
+        public SmoothDspTimer()
+        {
+            Reset();
+        }
+
+        /// <summary>
+        /// 重置内部属性，遗忘之前记录的累计时间，在下次 Update() 时视为暂停后重新开始计时而不是试图纠正到暂停前的时间
+        /// </summary>
+        public void Reset()
+        {
+            currentTime = AudioSettings.dspTime;
+            previousDspTime = AudioSettings.dspTime;
+            errorTime = 0;
+        }
+
+        /// <summary>
+        /// 由调用者在进行计时时每帧驱动，返回平滑后的 deltaDspTime
+        /// </summary>
+        /// <remarks>
+        /// 在暂停后重新启动计时时，请先调用一次 Reset()，否则 SmoothDspTimer 将会把这个暂停理解成一个巨大的卡顿并返回很大的 deltaTime。
+        /// </remarks>
         public double OnUpdate()
         {
             double smoothDeltaDspTime;
@@ -83,7 +104,8 @@ namespace CyanStars.Framework.Timer
             }
             else
             {
-                double correctionTime = errorTime * ErrorTimeDamping;
+                double frameCorrectionRate = 1.0 - Math.Pow(1.0 - ErrorCorrectionRatePerSecond, Time.unscaledDeltaTime);
+                double correctionTime = errorTime * frameCorrectionRate;
                 correctionTime = Math.Max(correctionTime, -Time.unscaledDeltaTime); // 修正之后的 deltaTime 必须为非负数
                 smoothDeltaDspTime = Time.unscaledDeltaTime + correctionTime;
                 errorTime -= correctionTime;
