@@ -60,7 +60,7 @@ namespace CyanStars.Framework.Timeline
             {
                 IClip clip = Clips[i];
 
-                if (ctx.IsMusicGameMode && !clip.Valid)
+                if (!clip.Valid)
                 {
                     //已经exit过了
                     continue;
@@ -89,24 +89,50 @@ namespace CyanStars.Framework.Timeline
 
                 if (!needEnter && !needUpdate && !needExit)
                 {
+                    // 查找到了某个无需操作的片段，代表前面需要操作的片段都已经更新了
                     return;
                 }
-                else
-                {
-                    if (!flag)
-                    {
-                        flag = true;
 
-                        //将下次update的startIndex设置为本次最前面的有效clip
-                        startIndex = i;
-                    }
+                if (!flag)
+                {
+                    //将下次update的startIndex设置为本次最前面的有效clip
+                    flag = true;
+                    startIndex = i;
                 }
             }
         }
 
-        public virtual void OnTimeJump(TimelineContext ctx)
+        public virtual void OnTimeSkip(TimelineContext ctx)
         {
-            throw new NotImplementedException();
+            bool flag = false;
+            for (int i = startIndex; i < Clips.Count; i++)
+            {
+                IClip clip = Clips[i];
+                if (!clip.Valid)
+                {
+                    // 已经被整段跳过/跳出了
+                    continue;
+                }
+
+                bool needSkip = !(ctx.CurrentTime < clip.StartTime && ctx.PreviousTime < clip.EndTime);
+                if (needSkip)
+                {
+                    clip.OnSkip(ctx);
+                }
+
+                if (!needSkip)
+                {
+                    // 查找到了某个无需跳过的片段，代表前面需要跳过的片段都已经更新了
+                    return;
+                }
+
+                if (!flag)
+                {
+                    // 将下次update的startIndex设置为本次最前面的有效clip
+                    flag = true;
+                    startIndex = i;
+                }
+            }
         }
     }
 }

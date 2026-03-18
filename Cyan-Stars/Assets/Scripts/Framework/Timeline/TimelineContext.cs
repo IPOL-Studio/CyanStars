@@ -5,10 +5,10 @@ namespace CyanStars.Framework.Timeline
     public interface IReadOnlyTimelineContext
     {
         public float Length { get; }
-        public bool IsMusicGameMode { get; }
+        // public bool IsMusicGameMode { get; }
 
 
-        public float PlaybackSpeed { get; }
+        // public float PlaybackSpeed { get; } // TODO: 支持跳回到旧时间
         public double PreviousTime { get; }
         public double CurrentTime { get; }
     }
@@ -26,21 +26,21 @@ namespace CyanStars.Framework.Timeline
         /// </summary>
         public float Length { get; }
 
-        /// <summary>
-        /// 当前是否在音游模式内播放
-        /// </summary>
-        /// <remarks>
-        /// true = 在音游模式下播放，timeline 的时间应该是连贯的
-        /// false = 在制谱器模式下播放，允许暂停、时间跳变、倍速、倒带
-        /// </remarks>
-        public bool IsMusicGameMode { get; }
+        // /// <summary>
+        // /// 当前是否在音游模式内播放
+        // /// </summary>
+        // /// <remarks>
+        // /// true = 在音游模式下播放，timeline 的时间应该是连贯的
+        // /// false = 在制谱器模式下播放，允许暂停、时间跳变、倍速、倒带
+        // /// </remarks>
+        // public bool IsMusicGameMode { get; }
 
 
-        /// <summary>
-        /// 当前的播放倍速
-        /// </summary>
-        /// <remarks>允许为 0 或负数，代表逻辑播放但不增加时间，或倒带播放</remarks>
-        public float PlaybackSpeed { get; set; }
+        // /// <summary>
+        // /// 当前的播放倍速
+        // /// </summary>
+        // /// <remarks>允许为 0 或负数，代表逻辑播放但不增加时间，或倒带播放</remarks>
+        // public float PlaybackSpeed { get; set; }
 
         /// <summary>
         /// timeline 上次更新时的时间 (s)
@@ -58,16 +58,16 @@ namespace CyanStars.Framework.Timeline
 
 
         public TimelineContext(
-            bool isMusicGameMode,
+            // bool isMusicGameMode,
             float length,
-            float playbackSpeed = 1f,
+            // float playbackSpeed = 1f,
             double previousTime = -double.Epsilon,
             double currentTime = -double.Epsilon
         )
         {
-            IsMusicGameMode = isMusicGameMode;
-            PlaybackSpeed = playbackSpeed;
+            // IsMusicGameMode = isMusicGameMode;
             Length = length;
+            // PlaybackSpeed = playbackSpeed;
             PreviousTime = previousTime;
             CurrentTime = currentTime;
         }

@@ -59,5 +59,14 @@ namespace CyanStars.Framework.Timeline
         public virtual void OnUpdate(IReadOnlyTimelineContext ctx)
         {
         }
+
+        /// <summary>
+        /// 跳入/跳出/整段跳过
+        /// </summary>
+        public virtual void OnSkip(IReadOnlyTimelineContext ctx)
+        {
+            if (EndTime <= ctx.CurrentTime)
+                Valid = false;
+        }
     }
 }

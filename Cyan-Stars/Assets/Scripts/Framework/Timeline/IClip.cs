@@ -39,5 +39,10 @@ namespace CyanStars.Framework.Timeline
         /// 离开此片段
         /// </summary>
         public void OnExit(IReadOnlyTimelineContext ctx);
+
+        /// <summary>
+        /// 时间点跳转时，片段被跳出/跳入/整段跳过
+        /// </summary>
+        public void OnSkip(IReadOnlyTimelineContext ctx);
     }
 }
