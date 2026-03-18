@@ -77,6 +77,7 @@ namespace CyanStars.Framework.Timer
         /// </summary>
         /// <remarks>
         /// 在暂停后重新启动计时时，请先调用一次 Reset()，否则 SmoothDspTimer 将会把这个暂停理解成一个巨大的卡顿并返回很大的 deltaTime。
+        /// 首次启动也可以调用，避免实例化到首次调用之间的误差时间。
         /// </remarks>
         public double OnUpdate()
         {
