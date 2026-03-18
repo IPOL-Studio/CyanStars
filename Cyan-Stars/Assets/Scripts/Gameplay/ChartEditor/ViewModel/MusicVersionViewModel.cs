@@ -124,7 +124,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .Select(data => data?.Offset ?? Observable.Return(0).AsObservable())
                 .Switch()
                 .Select(offset => offset.ToString())
-                .ToReadOnlyReactiveProperty(SelectedMusicVersionData.CurrentValue?.Offset.Value.ToString() ?? "0")
+                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, SelectedMusicVersionData.CurrentValue?.Offset.Value.ToString() ?? "0")
                 .AddTo(base.Disposables);
         }
 
