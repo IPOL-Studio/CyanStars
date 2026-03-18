@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using CatAsset.Runtime;
+using CyanStars.Utils;
 using CyanStars.Utils.JsonSerialization;
 using Newtonsoft.Json;
 
@@ -30,6 +31,9 @@ namespace CyanStars.Framework.File
         public override int Priority { get; }
 
 
+        private static string TempSessionFolderPath =>
+            PathUtil.Combine(Application.persistentDataPath, GlobalConstants.TempSessionFolderName);
+
         public readonly FileBrowser.Filter ChartFilter = new FileBrowser.Filter("谱面文件", ".json");
         public readonly FileBrowser.Filter SpriteFilter = new FileBrowser.Filter("图片", ".png");
         public readonly FileBrowser.Filter AudioFilter = new FileBrowser.Filter("音频", ".ogg");
@@ -37,6 +41,9 @@ namespace CyanStars.Framework.File
 
         public override void OnInit()
         {
+            // 删除上次游戏的临时文件
+            DeleteTempSessionFolder();
+
             // 设置颜色主题
             FileBrowser.Skin = fileBrowserSkin;
 
@@ -52,6 +59,24 @@ namespace CyanStars.Framework.File
 
         public override void OnUpdate(float deltaTime)
         {
+        }
+
+
+        private void DeleteTempSessionFolder()
+        {
+            // 清理旧的缓存路径
+            if (Directory.Exists(TempSessionFolderPath))
+            {
+                try
+                {
+                    Directory.Delete(TempSessionFolderPath, true);
+                    Debug.Log($"已清除缓存文件夹：{TempSessionFolderPath}");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"在删除缓存文件夹时捕获了异常：{e.Message}");
+                }
+            }
         }
 
 
