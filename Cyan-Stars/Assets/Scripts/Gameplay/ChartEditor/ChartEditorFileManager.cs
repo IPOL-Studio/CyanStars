@@ -19,7 +19,7 @@ namespace CyanStars.Gameplay.ChartEditor
     {
         public const string ChartPackAssetsFolderName = "Assets";
 
-        private static string TempFolderPath => PathUtil.Combine(Application.persistentDataPath, GlobalConstants.TempSessionFolderName, "ChartEditorFileManager");
+        private static string TempFolderPath => PathUtil.Combine(Application.persistentDataPath, GlobalConstants.TempSessionFolderName, nameof(ChartEditorFileManager));
         private static readonly Dictionary<string, TempFileHandler> TempPathToHandlerMap = new(); // 缓存路径->句柄 映射表，一定是齐全的
         private static readonly Dictionary<string, TempFileHandler> TargetPathToHandlerMap = new(); // 目标路径->句柄 映射表，不一定齐全（文件缓存了但没有指定映射路径，用于制谱器可撤销操作时缓存文件）
 
