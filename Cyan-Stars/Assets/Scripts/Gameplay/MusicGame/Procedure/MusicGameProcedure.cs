@@ -166,6 +166,8 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
+
+            GameRoot.Timer.UpdateTimer.Remove(UpdateTimeline);
             audioSource.Pause();
             inputReceiver?.EndReceive();
         }
@@ -180,6 +182,8 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
+            smoothDspTimer.Reset();
+            GameRoot.Timer.UpdateTimer.Add(UpdateTimeline);
             audioSource.UnPause();
             inputReceiver?.StartReceive();
         }
@@ -456,6 +460,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             playingDataModule.RunningTimeline = timeline;
 
+            smoothDspTimer.Reset();
             GameRoot.Timer.UpdateTimer.Add(UpdateTimeline);
 
             Debug.Log("时间轴创建完毕");

@@ -34,6 +34,8 @@ namespace CyanStars.Framework.Timeline
         }
 
 
+        #region Tracks
+
         /// <summary>
         /// 添加轨道
         /// </summary>
@@ -49,8 +51,6 @@ namespace CyanStars.Framework.Timeline
 
             return track;
         }
-
-        #region Tracks
 
         /// <summary>
         /// 获取轨道
