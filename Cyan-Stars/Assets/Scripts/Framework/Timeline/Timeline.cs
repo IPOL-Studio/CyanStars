@@ -106,7 +106,8 @@ namespace CyanStars.Framework.Timeline
                 return;
 
             Context.PreviousTime = Context.CurrentTime;
-            Context.CurrentTime += Math.Min(Context.CurrentTime, Context.Length);
+            Context.CurrentTime += smoothDeltaDspTime;
+            Context.CurrentTime = Math.Min(Context.CurrentTime, Context.Length);
 
             foreach (var track in Tracks)
                 track.OnPlayingUpdate(Context);
