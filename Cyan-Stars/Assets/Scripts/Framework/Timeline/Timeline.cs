@@ -121,6 +121,10 @@ namespace CyanStars.Framework.Timeline
         public void SkipTo(double targetTime)
         {
             Context.PreviousTime = Context.CurrentTime;
+
+            if (targetTime < Context.PreviousTime)
+                throw new ArgumentOutOfRangeException(nameof(targetTime), "不允许 Skip 到之前的时间，请重建一个 timeline 实例后从零开始 Skip");
+
             Context.CurrentTime = targetTime;
             foreach (var track in Tracks)
                 track.OnTimeSkip(Context);

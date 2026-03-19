@@ -23,9 +23,9 @@ namespace CyanStars.Gameplay.MusicGame
             Pos = (data as DragChartNoteData).Pos;
         }
 
-        public override void OnUpdate(float curLogicTime)
+        public override void OnUpdate(float curLogicTime, bool isAutoMode = false, bool noEffect = false)
         {
-            base.OnUpdate(curLogicTime);
+            base.OnUpdate(curLogicTime, isAutoMode, noEffect);
 
             if (isHit && LogicTimeDistance >= 0) //接住并过线
             {
@@ -34,23 +34,20 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
-            if (LogicTimeDistance > EvaluateHelper.DragJudgeDistanceRange) //没接住Miss
+            if (!isAutoMode && LogicTimeDistance > EvaluateHelper.DragJudgeDistanceRange) //没接住Miss
             {
                 DestroySelf(); //延迟销毁
 
                 NoteJudger.DragJudge(NoteData as DragChartNoteData, true);
             }
-        }
 
-        public override void OnUpdateInAutoMode(float curLogicTime)
-        {
-            base.OnUpdateInAutoMode(curLogicTime);
-
-            if (LogicTimeDistance >= 0)
+            if (isAutoMode && LogicTimeDistance >= 0)
             {
                 isHit = true;
 
-                ViewObject.CreateEffectObj(NoteWidth); //生成特效
+                if (!noEffect)
+                    ViewObject.CreateEffectObj(NoteWidth); //生成特效
+
                 DestroySelf(false); //立即销毁
 
                 NoteJudger.DragJudge(NoteData as DragChartNoteData, false);

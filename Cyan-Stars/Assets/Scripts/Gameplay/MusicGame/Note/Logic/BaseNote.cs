@@ -67,12 +67,7 @@ namespace CyanStars.Gameplay.MusicGame
             JudgeTime = BpmGroupHelper.CalculateTime(context.BpmGroup, data.JudgeBeat) / 1000f;
         }
 
-        public virtual void OnUpdate(float curLogicTime)
-        {
-            OnBaseUpdate(curLogicTime);
-        }
-
-        public virtual void OnUpdateInAutoMode(float curLogicTime)
+        public virtual void OnUpdate(float curLogicTime, bool isAutoMode = false, bool noEffect = false)
         {
             OnBaseUpdate(curLogicTime);
         }

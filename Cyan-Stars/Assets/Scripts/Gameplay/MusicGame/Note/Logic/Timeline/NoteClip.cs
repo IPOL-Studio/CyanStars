@@ -52,23 +52,29 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnUpdate(IReadOnlyTimelineContext ctx)
         {
-            if (GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode)
+            base.OnUpdate(ctx);
+
+            LinkedListNode<BaseNote> node = Notes.Last;
+
+            bool isAutoMode = GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode;
+            while (node != null)
             {
-                LinkedListNode<BaseNote> node = Notes.Last;
-                while (node != null)
-                {
-                    node.Value.OnUpdateInAutoMode((float)ctx.CurrentTime);
-                    node = node.Previous;
-                }
+                node.Value.OnUpdate((float)ctx.CurrentTime, isAutoMode, false);
+                node = node.Previous;
             }
-            else
+        }
+
+        public override void OnSkip(IReadOnlyTimelineContext ctx)
+        {
+            base.OnSkip(ctx);
+
+            LinkedListNode<BaseNote> node = Notes.Last;
+
+            bool isAutoMode = GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode;
+            while (node != null)
             {
-                LinkedListNode<BaseNote> node = Notes.Last;
-                while (node != null)
-                {
-                    node.Value.OnUpdate((float)ctx.CurrentTime);
-                    node = node.Previous;
-                }
+                node.Value.OnUpdate((float)ctx.CurrentTime, isAutoMode, true);
+                node = node.Previous;
             }
         }
 
