@@ -34,6 +34,10 @@ namespace CyanStars.Framework.File
         private static string TempSessionFolderPath =>
             PathUtil.Combine(Application.persistentDataPath, GlobalConstants.TempSessionFolderName);
 
+        private static string TempFolderPath =>
+            PathUtil.Combine(TempSessionFolderPath, nameof(FileManager));
+
+
         public readonly FileBrowser.Filter ChartFilter = new FileBrowser.Filter("谱面文件", ".json");
         public readonly FileBrowser.Filter SpriteFilter = new FileBrowser.Filter("图片", ".png");
         public readonly FileBrowser.Filter AudioFilter = new FileBrowser.Filter("音频", ".ogg");
@@ -104,7 +108,12 @@ namespace CyanStars.Framework.File
             {
                 if (paths.Length > 0)
                 {
-                    onSuccess?.Invoke(paths[0]);
+                    string path = paths[0];
+
+                    if (path.StartsWith("content://"))
+                        path = CopyContentFileToAppData(paths[0]); // TODO: 改为异步任务执行，目前没想好怎么在复制的时候展示 UI 交互，干脆先整个同步卡着
+
+                    onSuccess?.Invoke(path);
                 }
             };
 
@@ -163,7 +172,12 @@ namespace CyanStars.Framework.File
             {
                 if (paths.Length > 0)
                 {
-                    onSuccess?.Invoke(paths[0]);
+                    string path = paths[0];
+
+                    if (path.StartsWith("content://"))
+                        path = CopyContentFolderToAppData(path);
+
+                    onSuccess?.Invoke(path);
                 }
             };
 
@@ -211,6 +225,92 @@ namespace CyanStars.Framework.File
             }
 
             return false;
+        }
+
+
+        /// <summary>
+        /// 将安卓的 content:// 文件复制到 TempFolderPath，并返回复制后的文件的 file://
+        /// </summary>
+        private string CopyContentFileToAppData(string contentUri)
+        {
+            // 检查 uri 合法性
+            if (string.IsNullOrEmpty(contentUri) || !contentUri.StartsWith("content://"))
+                throw new ArgumentException($"传入的路径不是 contentUri：{contentUri}", nameof(contentUri));
+
+            try
+            {
+                // 获取文件名
+                string fileName = FileBrowserHelpers.GetFilename(contentUri);
+                if (string.IsNullOrEmpty(fileName))
+                    throw new Exception("无法获取文件名，可能是暂不支持此操作");
+
+                // 拼接并创建目标路径
+                string destinationPath = PathUtil.Combine(TempFolderPath, fileName);
+                if (!Directory.Exists(TempFolderPath))
+                    Directory.CreateDirectory(TempFolderPath);
+
+                // 如果目标文件已存在，先删除它（避免覆盖报错）
+                if (System.IO.File.Exists(destinationPath))
+                    System.IO.File.Exists(destinationPath);
+
+                // 使用 FileBrowserHelpers 进行拷贝
+                FileBrowserHelpers.CopyFile(contentUri, destinationPath);
+
+                // 检查是否拷贝成功
+                if (!System.IO.File.Exists(destinationPath))
+                    throw new Exception("文件复制失败，目标文件未生成。");
+
+
+                return "file://" + destinationPath;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("复制文件时发生异常: " + e.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 将安卓的 content:// 路径复制到 TempFolderPath，并返回复制后的路径
+        /// </summary>
+        private string CopyContentFolderToAppData(string contentUri)
+        {
+            // 检查 uri 合法性
+            if (string.IsNullOrEmpty(contentUri) || !contentUri.StartsWith("content://"))
+                throw new ArgumentException($"传入的路径不是有效的 contentUri：{contentUri}", nameof(contentUri));
+
+            try
+            {
+                // 获取文件夹名称
+                string folderName = FileBrowserHelpers.GetFilename(contentUri);
+                if (string.IsNullOrEmpty(folderName))
+                    throw new Exception("无法获取文件夹名，可能是暂不支持此操作");
+
+                // 拼接目标路径
+                string destinationFolderPath = PathUtil.Combine(TempFolderPath, folderName);
+
+                // 确保父目录存在
+                if (!Directory.Exists(TempFolderPath))
+                    Directory.CreateDirectory(TempFolderPath);
+
+                // 如果目标文件夹已存在，先删除它
+                if (Directory.Exists(destinationFolderPath))
+                    Directory.Delete(destinationFolderPath, true);
+
+                // 使用 FileBrowserHelpers 进行文件夹拷贝
+                FileBrowserHelpers.CopyDirectory(contentUri, destinationFolderPath);
+
+                // 检查是否拷贝成功
+                if (!Directory.Exists(destinationFolderPath))
+                    throw new Exception("文件夹复制失败，目标目录未生成。");
+
+                return destinationFolderPath;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("复制文件夹时发生异常: " + e.Message);
+                throw;
+            }
         }
 
         #endregion
