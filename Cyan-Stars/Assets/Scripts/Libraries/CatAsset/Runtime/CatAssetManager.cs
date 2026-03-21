@@ -164,14 +164,20 @@ namespace CatAsset.Runtime
             converterDict[type] = converter;
         }
 
-        public static void RegisterCustomRawAssetConverter<T>(AsyncCustomRawAssetConverterFunc<T> conveter)
-        {
-            RegisterCustomRawAssetConverter(typeof(T), new AnymousCustomRawAssetConverter<T>(conveter));
-        }
-
+        /// <summary>
+        /// 注册匿名同步自定义原生资源转换方法
+        /// </summary>
         public static void RegisterCustomRawAssetConverter<T>(CustomRawAssetConverterFunc<T> converter)
         {
-            RegisterCustomRawAssetConverter(typeof(T), new AnymousCustomRawAssetConverter<T>(converter));
+            RegisterCustomRawAssetConverter(typeof(T), CustomRawAssetConverter.Create(converter));
+        }
+
+        /// <summary>
+        /// 注册匿名异步自定义原生资源转换方法
+        /// </summary>
+        public static void RegisterAsyncCustomRawAssetConverter<T>(AsyncCustomRawAssetConverterFunc<T> converter)
+        {
+            RegisterCustomRawAssetConverter(typeof(T), CustomRawAssetConverter.CreateAsync(converter));
         }
 
         /// <summary>

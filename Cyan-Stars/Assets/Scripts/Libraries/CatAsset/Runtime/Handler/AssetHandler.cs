@@ -193,7 +193,7 @@ namespace CatAsset.Runtime
                 onLoadedCallback -= value;
             }
         }
-
+        
         /// <inheritdoc />
         internal override void SetAsset(object loadedAsset)
         {
@@ -206,7 +206,7 @@ namespace CatAsset.Runtime
                 Asset = asset;
                 CheckError();
                 onLoadedCallback?.Invoke(this);
-                AsyncStateMachineMoveNext?.Invoke();
+                AsyncStateMachineMoveNext?.Invoke(); 
             });
         }
 
@@ -220,10 +220,10 @@ namespace CatAsset.Runtime
                 Debug.LogError($"await了一个无效的{GetType().Name}：{Name}");
                 return default;
             }
-
+            
             return new HandlerAwaiter<AssetHandler<T>>(this);
         }
-
+        
         public static AssetHandler<T> Create(string name = null,AssetCategory category = AssetCategory.None)
         {
             AssetHandler<T> handler = ReferencePool.Get<AssetHandler<T>>();
