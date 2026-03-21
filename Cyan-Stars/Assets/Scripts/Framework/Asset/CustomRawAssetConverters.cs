@@ -17,17 +17,21 @@ namespace CyanStars.Framework.Asset
     /// </summary>
     public static class CustomRawAssetConverters
     {
-        /// <summary>
-        /// 类型-自定义解析器 字典
-        /// </summary>
-        public static readonly Dictionary<Type, ICustomRawAssetConverter> Converters =
-            new Dictionary<Type, ICustomRawAssetConverter>()
-            {
-                // 当 AssetsManager 解析这些类型时，将会自动用下面的解析器
-                { typeof(ChartPackData), new AnymousCustomRawAssetConverter<ChartPackData>(ChartPackDataConverter) }, { typeof(ChartData), new AnymousCustomRawAssetConverter<ChartData>(ChartDataConverter) }, { typeof(AudioClip), new AnymousCustomRawAssetConverter<AudioClip>(AudioClipConverter) }
-            };
+        public static void Register()
+        {
+            CatAssetManager.RegisterAsyncCustomRawAssetConverter(AudioClipConverter);
+            CatAssetManager.RegisterCustomRawAssetConverter(ChartPackDataConverter);
+            CatAssetManager.RegisterCustomRawAssetConverter(ChartDataConverter);
+        }
 
-        private static async Task<AudioClip> AudioClipConverter(byte[] bytes)
+
+        private static async
+#if !UNITASK
+            Task<AudioClip>
+#else
+            UniTask<AudioClip>
+#endif
+            AudioClipConverter(byte[] bytes)
         {
             if (bytes == null || bytes.Length == 0)
             {
@@ -36,29 +40,30 @@ namespace CyanStars.Framework.Asset
 
             try
             {
-                var audioData = await Task.Run(() =>
-                    {
-                        // 使用 MemoryStream 将 byte[] 加载到内存中
-                        using var memoryStream = new MemoryStream(bytes);
+                var audioData =
+                    await Task.Run(() =>
+                        {
+                            // 使用 MemoryStream 将 byte[] 加载到内存中
+                            using var memoryStream = new MemoryStream(bytes);
 
-                        // 使用 NVorbis 的 VorbisReader 来读取 OGG 数据
-                        using var vorbisReader = new VorbisReader(memoryStream, true);
+                            // 使用 NVorbis 的 VorbisReader 来读取 OGG 数据
+                            using var vorbisReader = new VorbisReader(memoryStream, true);
 
-                        // 获取音频信息
-                        var channels = vorbisReader.Channels;
-                        var sampleRate = vorbisReader.SampleRate;
-                        var totalSamples = (int)vorbisReader.TotalSamples;
+                            // 获取音频信息
+                            var channels = vorbisReader.Channels;
+                            var sampleRate = vorbisReader.SampleRate;
+                            var totalSamples = (int)vorbisReader.TotalSamples;
 
-                        // 创建一个 float[] 来存放解码后的 PCM 数据
-                        var pcmData = new float[totalSamples * channels];
+                            // 创建一个 float[] 来存放解码后的 PCM 数据
+                            var pcmData = new float[totalSamples * channels];
 
-                        // 读取所有样本
-                        vorbisReader.ReadSamples(pcmData, 0, pcmData.Length);
+                            // 读取所有样本
+                            vorbisReader.ReadSamples(pcmData, 0, pcmData.Length);
 
-                        // 返回解码后的数据
-                        return (channels, sampleRate, totalSamples, pcmData);
-                    }
-                );
+                            // 返回解码后的数据
+                            return (channels, sampleRate, totalSamples, pcmData);
+                        }
+                    );
 
                 // 创建 AudioClip
                 AudioClip audioClip = AudioClip.Create(

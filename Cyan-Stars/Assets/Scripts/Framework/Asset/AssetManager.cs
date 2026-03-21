@@ -37,10 +37,7 @@ namespace CyanStars.Framework.Asset
             CatAssetManager.MaxTaskRunCount = MaxTaskRunCount;
 
             // 注册一些自定义原生资源解析器
-            foreach (var converter in CustomRawAssetConverters.Converters)
-            {
-                RegisterCustomRawAssetConverter(converter.Key, converter.Value);
-            }
+            CustomRawAssetConverters.Register();
 
             //添加调试分析器组件
             gameObject.AddComponent<ProfilerComponent>();
