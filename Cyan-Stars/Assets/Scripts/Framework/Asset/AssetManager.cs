@@ -37,10 +37,7 @@ namespace CyanStars.Framework.Asset
             CatAssetManager.MaxTaskRunCount = MaxTaskRunCount;
 
             // 注册一些自定义原生资源解析器
-            foreach (var converter in CustomRawAssetConverters.Converters)
-            {
-                RegisterCustomRawAssetConverter(converter.Key, converter.Value);
-            }
+            CustomRawAssetConverters.Register();
 
             //添加调试分析器组件
             gameObject.AddComponent<ProfilerComponent>();
@@ -71,7 +68,7 @@ namespace CyanStars.Framework.Asset
         /// <summary>
         /// 注册自定义原生资源转换方法
         /// </summary>
-        public void RegisterCustomRawAssetConverter(Type type, CustomRawAssetConverter converter)
+        public void RegisterCustomRawAssetConverter(Type type, ICustomRawAssetConverter converter)
         {
             CatAssetManager.RegisterCustomRawAssetConverter(type, converter);
         }
