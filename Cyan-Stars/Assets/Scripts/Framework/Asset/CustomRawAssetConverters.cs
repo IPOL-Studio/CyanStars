@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
@@ -25,13 +24,7 @@ namespace CyanStars.Framework.Asset
         }
 
 
-        private static async
-#if !UNITASK
-            Task<AudioClip>
-#else
-            UniTask<AudioClip>
-#endif
-            AudioClipConverter(byte[] bytes)
+        private static async Task<AudioClip> AudioClipConverter(byte[] bytes)
         {
             if (bytes == null || bytes.Length == 0)
             {
