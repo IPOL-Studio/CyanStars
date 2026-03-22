@@ -31,11 +31,8 @@ namespace CyanStars.Framework.File
         public override int Priority { get; }
 
 
-        private static string TempSessionFolderPath =>
-            PathUtil.Combine(Application.persistentDataPath, GlobalConstants.TempSessionFolderName);
-
         private static string TempFolderPath =>
-            PathUtil.Combine(TempSessionFolderPath, nameof(FileManager));
+            PathUtil.Combine(Application.temporaryCachePath, nameof(FileManager));
 
 
         public readonly FileBrowser.Filter ChartFilter = new FileBrowser.Filter("谱面文件", ".json");
@@ -69,12 +66,12 @@ namespace CyanStars.Framework.File
         private void DeleteTempSessionFolder()
         {
             // 清理旧的缓存路径
-            if (Directory.Exists(TempSessionFolderPath))
+            if (Directory.Exists(Application.temporaryCachePath))
             {
                 try
                 {
-                    Directory.Delete(TempSessionFolderPath, true);
-                    Debug.Log($"已清除缓存文件夹：{TempSessionFolderPath}");
+                    Directory.Delete(Application.temporaryCachePath, true);
+                    Debug.Log($"已清除缓存文件夹：{Application.temporaryCachePath}");
                 }
                 catch (Exception e)
                 {
