@@ -248,7 +248,7 @@ namespace CyanStars.Framework.File
 
                 // 如果目标文件已存在，先删除它（避免覆盖报错）
                 if (System.IO.File.Exists(destinationPath))
-                    System.IO.File.Exists(destinationPath);
+                    System.IO.File.Delete(destinationPath);
 
                 // 使用 FileBrowserHelpers 进行拷贝
                 FileBrowserHelpers.CopyFile(contentUri, destinationPath);
