@@ -23,9 +23,9 @@ namespace CyanStars.Gameplay.MusicGame
             Pos = (data as DragChartNoteData).Pos;
         }
 
-        public override void OnUpdate(float curLogicTime, bool isAutoMode = false, bool noEffect = false)
+        public override void OnUpdate(float curLogicTime, bool noEffect = false)
         {
-            base.OnUpdate(curLogicTime, isAutoMode, noEffect);
+            base.OnUpdate(curLogicTime, noEffect);
 
             if (isHit && LogicTimeDistance >= 0) //接住并过线
             {
@@ -34,14 +34,19 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
-            if (!isAutoMode && LogicTimeDistance > EvaluateHelper.DragJudgeDistanceRange) //没接住Miss
+            if (LogicTimeDistance > EvaluateHelper.DragJudgeDistanceRange) //没接住Miss
             {
                 DestroySelf(); //延迟销毁
 
                 NoteJudger.DragJudge(NoteData as DragChartNoteData, true);
             }
+        }
 
-            if (isAutoMode && LogicTimeDistance >= 0)
+        public override void OnUpdateInAutoMode(float curLogicTime, bool noEffect = false)
+        {
+            base.OnUpdateInAutoMode(curLogicTime, noEffect);
+
+            if (LogicTimeDistance >= 0)
             {
                 isHit = true;
 

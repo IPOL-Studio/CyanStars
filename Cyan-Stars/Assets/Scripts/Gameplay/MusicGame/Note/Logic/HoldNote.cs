@@ -77,111 +77,108 @@ namespace CyanStars.Gameplay.MusicGame
                    LogicTimeDistance <= HoldLength;
         }
 
-        public override void OnUpdate(float curLogicTime, bool isAutoMode = false, bool noEffect = false)
+        public override void OnUpdate(float curLogicTime, bool noEffect = false)
         {
-            base.OnUpdate(curLogicTime, isAutoMode, noEffect);
+            base.OnUpdate(curLogicTime, noEffect);
 
-            // TODO: 整理下面这堆代码
-            if (!isAutoMode)
+            // 1. 判定头判 Miss
+            // 2. 累加这一帧的按住时长，并计算视图长度
+            // 3. 判定尾判
+            float deltaTime = curLogicTime - CurLogicTime;
+
+            EndViewDistance = endSpeedTemplate.GetDistance((CurLogicTime - endTime) * 1000);
+
+            // 头判 Miss
+            if (!headChecked && EvaluateHelper.IsMiss(LogicTimeDistance))
             {
-                // 1. 判定头判 Miss
-                // 2. 累加这一帧的按住时长，并计算视图长度
-                // 3. 判定尾判
-                float deltaTime = curLogicTime - CurLogicTime;
+                headChecked = true;
+                NoteJudger.HoldHeadJudge(NoteData as HoldChartNoteData, LogicTimeDistance);
+            }
 
-                EndViewDistance = endSpeedTemplate.GetDistance((CurLogicTime - endTime) * 1000);
-
-                // 头判 Miss
-                if (!headChecked && EvaluateHelper.IsMiss(LogicTimeDistance))
-                {
-                    headChecked = true;
-                    NoteJudger.HoldHeadJudge(NoteData as HoldChartNoteData, LogicTimeDistance);
-                }
-
-                // 累加时长
-                if (!isPressed)
-                {
-                    //这里isPressed为false 就表示从上一次OnUpdate到这次OnUpdate之间没有Press类型的输入
-                    ViewObject?.DestroyEffectObj();
-                }
-                else
-                {
-                    //重置Press标记
-                    isPressed = false;
-
-                    if (-Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Bad) <= LogicTimeDistance &&
-                        LogicTimeDistance <= HoldLength)
-                    {
-                        // 只在 判定时间-Bad区间~结束时间 区间内才累计时长
-                        pressTimeLength += deltaTime;
-                    }
-                }
-
-                // Hold 已结束（当前时间>Hold尾判时间，且当前时间>Hold头判时间+头判Right区间）
-                // 判定尾判
-                if (HoldLength < LogicTimeDistance &&
-                    MusicGameSettingsModule.EvaluateRange.Right < LogicTimeDistance)
-                {
-                    float allLength;
-                    if (endTime > JudgeTime + Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Right))
-                    {
-                        // 一般情况：Hold 结束时间大于开始时间+Right区间
-                        // 要求按住的总时长s = Hold结束时间 - (Hold开始时间 + Right区间)
-                        allLength = endTime - (JudgeTime + Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Right));
-                    }
-                    else
-                    {
-                        // 极短的 Hold：Hold 结束时间小于开始时间+Right区间
-                        // 此时只要头判非 Miss，或头判 Miss 但从头判前就按住了对应位置（无KeyDown但KeyPress），尾判都算 Exact
-                        allLength = 0;
-                    }
-
-                    if (allLength != 0)
-                    {
-                        // 正常判定
-                        pressTimeLength = Mathf.Clamp(pressTimeLength, pressTimeLength, allLength);
-                        value = pressTimeLength / allLength;
-                        NoteJudger.HoldTailJudge(NoteData as HoldChartNoteData, pressTimeLength, value);
-                    }
-                    else
-                    {
-                        // 短 Hold 判定
-                        if (headCheckTime == 0 && pressTimeLength == 0)
-                        {
-                            NoteJudger.HoldTailJudge(NoteData as HoldChartNoteData, pressTimeLength, 0f);
-                        }
-                        else
-                        {
-                            NoteJudger.HoldTailJudge(NoteData as HoldChartNoteData, pressTimeLength, 1f);
-                        }
-                    }
-
-                    ViewObject?.DestroyEffectObj();
-                    DestroySelf(false);
-                }
+            // 累加时长
+            if (!isPressed)
+            {
+                //这里isPressed为false 就表示从上一次OnUpdate到这次OnUpdate之间没有Press类型的输入
+                ViewObject?.DestroyEffectObj();
             }
             else
             {
-                // Is Auto Mode
+                //重置Press标记
+                isPressed = false;
 
-                EndViewDistance = endSpeedTemplate.GetDistance(LogicTimeDistance * 1000f);
-                HoldViewObject holdViewObject = ViewObject as HoldViewObject;
-
-                if (!headChecked && LogicTimeDistance <= 0)
+                if (-Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Bad) <= LogicTimeDistance &&
+                    LogicTimeDistance <= HoldLength)
                 {
-                    headChecked = true;
-                    holdViewObject?.OpenFlicker();
-                    ViewObject.CreateEffectObj(NoteWidth);
-                    NoteJudger.HoldHeadJudge(NoteData as HoldChartNoteData, 0); // Auto Mode 杂率为0
-                    holdViewObject?.SetPressed(true);
+                    // 只在 判定时间-Bad区间~结束时间 区间内才累计时长
+                    pressTimeLength += deltaTime;
+                }
+            }
+
+            // Hold 已结束（当前时间>Hold尾判时间，且当前时间>Hold头判时间+头判Right区间）
+            // 判定尾判
+            if (HoldLength < LogicTimeDistance &&
+                MusicGameSettingsModule.EvaluateRange.Right < LogicTimeDistance)
+            {
+                float allLength;
+                if (endTime > JudgeTime + Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Right))
+                {
+                    // 一般情况：Hold 结束时间大于开始时间+Right区间
+                    // 要求按住的总时长s = Hold结束时间 - (Hold开始时间 + Right区间)
+                    allLength = endTime - (JudgeTime + Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Right));
+                }
+                else
+                {
+                    // 极短的 Hold：Hold 结束时间小于开始时间+Right区间
+                    // 此时只要头判非 Miss，或头判 Miss 但从头判前就按住了对应位置（无KeyDown但KeyPress），尾判都算 Exact
+                    allLength = 0;
                 }
 
-                if (LogicTimeDistance < HoldLength)
+                if (allLength != 0)
                 {
-                    ViewObject?.DestroyEffectObj();
-                    DestroySelf(false);
-                    NoteJudger.HoldTailJudge(NoteData as HoldChartNoteData, HoldLength, 1);
+                    // 正常判定
+                    pressTimeLength = Mathf.Clamp(pressTimeLength, pressTimeLength, allLength);
+                    value = pressTimeLength / allLength;
+                    NoteJudger.HoldTailJudge(NoteData as HoldChartNoteData, pressTimeLength, value);
                 }
+                else
+                {
+                    // 短 Hold 判定
+                    if (headCheckTime == 0 && pressTimeLength == 0)
+                    {
+                        NoteJudger.HoldTailJudge(NoteData as HoldChartNoteData, pressTimeLength, 0f);
+                    }
+                    else
+                    {
+                        NoteJudger.HoldTailJudge(NoteData as HoldChartNoteData, pressTimeLength, 1f);
+                    }
+                }
+
+                ViewObject?.DestroyEffectObj();
+                DestroySelf(false);
+            }
+        }
+
+        public override void OnUpdateInAutoMode(float curLogicTime, bool noEffect = false)
+        {
+            base.OnUpdateInAutoMode(curLogicTime, noEffect);
+
+            EndViewDistance = endSpeedTemplate.GetDistance(LogicTimeDistance * 1000f);
+            HoldViewObject holdViewObject = ViewObject as HoldViewObject;
+
+            if (!headChecked && LogicTimeDistance <= 0)
+            {
+                headChecked = true;
+                holdViewObject?.OpenFlicker();
+                ViewObject.CreateEffectObj(NoteWidth);
+                NoteJudger.HoldHeadJudge(NoteData as HoldChartNoteData, 0); // Auto Mode 杂率为0
+                holdViewObject?.SetPressed(true);
+            }
+
+            if (LogicTimeDistance < HoldLength)
+            {
+                ViewObject?.DestroyEffectObj();
+                DestroySelf(false);
+                NoteJudger.HoldTailJudge(NoteData as HoldChartNoteData, HoldLength, 1);
             }
         }
 

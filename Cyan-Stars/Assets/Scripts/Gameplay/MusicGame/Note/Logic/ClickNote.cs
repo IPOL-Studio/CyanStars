@@ -29,11 +29,11 @@ namespace CyanStars.Gameplay.MusicGame
             Pos = (data as ClickChartNoteData).Pos;
         }
 
-        public override void OnUpdate(float curLogicTime, bool isAutoMode = false, bool noEffect = false)
+        public override void OnUpdate(float curLogicTime, bool noEffect = false)
         {
-            base.OnUpdate(curLogicTime, isAutoMode, noEffect);
+            base.OnUpdate(curLogicTime, noEffect);
 
-            if (!isAutoMode && EvaluateHelper.IsMiss(LogicTimeDistance))
+            if (EvaluateHelper.IsMiss(LogicTimeDistance))
             {
                 if (!headChecked)
                 {
@@ -54,8 +54,13 @@ namespace CyanStars.Gameplay.MusicGame
                     NoteJudger.ClickTailJudge(NoteData as ClickChartNoteData, timeLength);
                 }
             }
+        }
 
-            if (isAutoMode && LogicTimeDistance <= 0 && !headChecked)
+        public override void OnUpdateInAutoMode(float curLogicTime, bool noEffect = false)
+        {
+            base.OnUpdateInAutoMode(curLogicTime, noEffect);
+
+            if (LogicTimeDistance <= 0 && !headChecked)
             {
                 headChecked = true;
                 NoteJudger.ClickHeadJudge(NoteData as ClickChartNoteData, 0);

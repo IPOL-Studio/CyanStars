@@ -59,7 +59,10 @@ namespace CyanStars.Gameplay.MusicGame
             bool isAutoMode = GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode;
             while (node != null)
             {
-                node.Value.OnUpdate((float)ctx.CurrentTime, isAutoMode, false);
+                if (isAutoMode)
+                    node.Value.OnUpdateInAutoMode((float)ctx.CurrentTime, false);
+                else
+                    node.Value.OnUpdate((float)ctx.CurrentTime, false);
                 node = node.Previous;
             }
         }
@@ -73,7 +76,10 @@ namespace CyanStars.Gameplay.MusicGame
             bool isAutoMode = GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode;
             while (node != null)
             {
-                node.Value.OnUpdate((float)ctx.CurrentTime, isAutoMode, true);
+                if (isAutoMode)
+                    node.Value.OnUpdateInAutoMode((float)ctx.CurrentTime, true);
+                else
+                    node.Value.OnUpdate((float)ctx.CurrentTime, true);
                 node = node.Previous;
             }
         }
