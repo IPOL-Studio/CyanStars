@@ -34,7 +34,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnUpdateInAutoMode(curLogicTime, noEffect);
 
-            if (LogicTimeDistance >= 0)
+            if (0<=LogicTimeDistance)
             {
                 // 在自动播放时达到判定时间点
                 if (!noEffect)

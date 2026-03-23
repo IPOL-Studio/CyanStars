@@ -60,7 +60,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnUpdateInAutoMode(curLogicTime, noEffect);
 
-            if (LogicTimeDistance <= 0 && !headChecked)
+            if (0 <= LogicTimeDistance && !headChecked)
             {
                 headChecked = true;
                 NoteJudger.ClickHeadJudge(NoteData as ClickChartNoteData, 0);

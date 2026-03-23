@@ -106,7 +106,7 @@ namespace CyanStars.Gameplay.MusicGame
                 //重置Press标记
                 isPressed = false;
 
-                if (-Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Bad) <= LogicTimeDistance &&
+                if (Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Bad) <= LogicTimeDistance &&
                     LogicTimeDistance <= HoldLength)
                 {
                     // 只在 判定时间-Bad区间~结束时间 区间内才累计时长
@@ -165,7 +165,7 @@ namespace CyanStars.Gameplay.MusicGame
             EndViewDistance = endSpeedTemplate.GetDistance(LogicTimeDistance * 1000f);
             HoldViewObject holdViewObject = ViewObject as HoldViewObject;
 
-            if (!headChecked && LogicTimeDistance <= 0)
+            if (!headChecked && 0 <= LogicTimeDistance)
             {
                 headChecked = true;
                 holdViewObject?.OpenFlicker();
@@ -174,7 +174,7 @@ namespace CyanStars.Gameplay.MusicGame
                 holdViewObject?.SetPressed(true);
             }
 
-            if (LogicTimeDistance < HoldLength)
+            if (HoldLength < LogicTimeDistance)
             {
                 ViewObject?.DestroyEffectObj();
                 DestroySelf(false);

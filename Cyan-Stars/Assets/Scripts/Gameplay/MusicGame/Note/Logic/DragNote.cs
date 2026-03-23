@@ -27,14 +27,14 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnUpdate(curLogicTime, noEffect);
 
-            if (isHit && LogicTimeDistance >= 0) //接住并过线
+            if (isHit && 0 <= LogicTimeDistance) //接住并过线
             {
                 ViewObject.CreateEffectObj(NoteWidth); //生成特效
                 DestroySelf(false); //立即销毁
                 return;
             }
 
-            if (LogicTimeDistance > EvaluateHelper.DragJudgeDistanceRange) //没接住Miss
+            if (EvaluateHelper.DragJudgeDistanceRange < LogicTimeDistance) //没接住Miss
             {
                 DestroySelf(); //延迟销毁
 
@@ -46,7 +46,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnUpdateInAutoMode(curLogicTime, noEffect);
 
-            if (LogicTimeDistance >= 0)
+            if (0 <= LogicTimeDistance)
             {
                 isHit = true;
 
