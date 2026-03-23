@@ -19,28 +19,9 @@ namespace CyanStars.Gameplay.ChartEditor
     {
         public const string ChartPackAssetsFolderName = "Assets";
 
-        private static string TempFolderPath => PathUtil.Combine(Application.persistentDataPath, "TempSession", "ChartEditorFileManager");
+        private static string TempFolderPath => PathUtil.Combine(Application.temporaryCachePath, nameof(ChartEditorFileManager));
         private static readonly Dictionary<string, TempFileHandler> TempPathToHandlerMap = new(); // 缓存路径->句柄 映射表，一定是齐全的
         private static readonly Dictionary<string, TempFileHandler> TargetPathToHandlerMap = new(); // 目标路径->句柄 映射表，不一定齐全（文件缓存了但没有指定映射路径，用于制谱器可撤销操作时缓存文件）
-
-
-        public void Start()
-        {
-            // 清理旧的缓存路径
-            if (Directory.Exists(TempFolderPath))
-            {
-                try
-                {
-                    Directory.Delete(TempFolderPath, true);
-                    Debug.Log($"已清除缓存文件夹：{TempFolderPath}");
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning($"在删除缓存文件夹时捕获了异常：{e.Message}");
-                }
-            }
-        }
-
 
         /// <summary>
         /// 将原始文件复制到缓存区
