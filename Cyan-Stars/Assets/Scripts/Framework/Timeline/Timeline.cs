@@ -55,13 +55,8 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 获取轨道
         /// </summary>
-        public BaseTrack? GetTrack(int index)
+        public BaseTrack GetTrack(int index)
         {
-            if (index < 0 || index >= Tracks.Count)
-            {
-                return null;
-            }
-
             return Tracks[index];
         }
 
@@ -81,9 +76,9 @@ namespace CyanStars.Framework.Timeline
             for (int i = 0; i < Tracks.Count; i++)
             {
                 BaseTrack track = Tracks[i];
-                if (track.GetType() == typeof(T))
+                if (track is T baseTrack)
                 {
-                    return (T)track;
+                    return baseTrack;
                 }
             }
 
