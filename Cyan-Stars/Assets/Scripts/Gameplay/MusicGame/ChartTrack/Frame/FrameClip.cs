@@ -16,7 +16,7 @@ namespace CyanStars.Gameplay.MusicGame
 
 
         public FrameClip(float startTime, float endTime, FrameTrack owner, FrameType type, Color color, float intensity,
-            float bpm, float minAlpha, float maxAlpha) : base(startTime, endTime, owner)
+                         float bpm, float minAlpha, float maxAlpha) : base(startTime, endTime, owner)
         {
             this.type = type;
             this.color = color;
@@ -26,19 +26,19 @@ namespace CyanStars.Gameplay.MusicGame
             this.maxAlpha = maxAlpha;
         }
 
-        public override void OnEnter()
+        public override void OnEnter(IReadOnlyTimelineContext _)
         {
             Owner.ImgFrame.color = color;
             Owner.ImgFrame.pixelsPerUnitMultiplier = 1 - intensity;
         }
 
-        public override void OnUpdate(float currentTime, float previousTime)
+        public override void OnUpdate(IReadOnlyTimelineContext ctx)
         {
             switch (type)
             {
                 case FrameType.Flash:
                 {
-                    float t = (currentTime - StartTime) % (60 / bpm);
+                    float t = (float)(ctx.CurrentTime - StartTime) % (60 / bpm);
                     float alpha = EasingFunction.EaseOutQuart(maxAlpha, minAlpha, t, 60 / bpm);
                     color.a = alpha;
                     Owner.ImgFrame.color = color;
@@ -46,7 +46,7 @@ namespace CyanStars.Gameplay.MusicGame
                 }
                 case FrameType.Breath:
                 {
-                    float alpha = Mathf.Abs(Mathf.Sin((currentTime - StartTime) * bpm * Mathf.PI / 60)) *
+                    float alpha = Mathf.Abs(Mathf.Sin((float)(ctx.CurrentTime - StartTime) * bpm * Mathf.PI / 60)) *
                         (maxAlpha - minAlpha) + minAlpha;
                     color.a = alpha;
                     Owner.ImgFrame.color = color;

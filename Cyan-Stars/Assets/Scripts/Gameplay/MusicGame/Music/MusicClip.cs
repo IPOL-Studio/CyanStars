@@ -22,7 +22,7 @@ namespace CyanStars.Gameplay.MusicGame
             this.prePlayTime = prePlayTime;
         }
 
-        public override void OnEnter()
+        public override void OnEnter(IReadOnlyTimelineContext _)
         {
             Owner.AudioSource.clip = music;
             Owner.AudioSource.time = prePlayTime;

@@ -44,31 +44,43 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
-        public override void OnEnter()
+        public override void OnEnter(IReadOnlyTimelineContext _)
         {
             GameRoot.Event.AddListener(EventConst.MusicGameEndEvent, OnMusicGameEnd);
             GameRoot.Event.AddListener(InputEventArgs.EventName, OnInput);
         }
 
-        public override void OnUpdate(float currentTime, float previousTime)
+        public override void OnUpdate(IReadOnlyTimelineContext ctx)
         {
-            if (GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode)
+            base.OnUpdate(ctx);
+
+            LinkedListNode<BaseNote> node = Notes.Last;
+
+            bool isAutoMode = GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode;
+            while (node != null)
             {
-                LinkedListNode<BaseNote> node = Notes.Last;
-                while (node != null)
-                {
-                    node.Value.OnUpdateInAutoMode(currentTime);
-                    node = node.Previous;
-                }
+                if (isAutoMode)
+                    node.Value.OnUpdateInAutoMode((float)ctx.CurrentTime, false);
+                else
+                    node.Value.OnUpdate((float)ctx.CurrentTime, false);
+                node = node.Previous;
             }
-            else
+        }
+
+        public override void OnSkip(IReadOnlyTimelineContext ctx)
+        {
+            base.OnSkip(ctx);
+
+            LinkedListNode<BaseNote> node = Notes.Last;
+
+            bool isAutoMode = GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode;
+            while (node != null)
             {
-                LinkedListNode<BaseNote> node = Notes.Last;
-                while (node != null)
-                {
-                    node.Value.OnUpdate(currentTime);
-                    node = node.Previous;
-                }
+                if (isAutoMode)
+                    node.Value.OnUpdateInAutoMode((float)ctx.CurrentTime, true);
+                else
+                    node.Value.OnUpdate((float)ctx.CurrentTime, true);
+                node = node.Previous;
             }
         }
 

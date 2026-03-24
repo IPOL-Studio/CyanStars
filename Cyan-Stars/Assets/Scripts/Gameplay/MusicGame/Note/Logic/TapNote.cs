@@ -14,27 +14,28 @@ namespace CyanStars.Gameplay.MusicGame
             Pos = (data as TapChartNoteData).Pos;
         }
 
-        public override void OnUpdate(float curLogicTime)
+        public override void OnUpdate(float curLogicTime, bool noEffect = false)
         {
-            base.OnUpdate(curLogicTime);
+            base.OnUpdate(curLogicTime, noEffect);
 
-            if (EvaluateHelper.IsMiss(LogicTimeDistance)) //没接住Miss
+            if (EvaluateHelper.IsMiss(LogicTimeDistance))
             {
-                DestroySelf(); //延迟销毁
-
+                // 在玩家游玩时达到 miss 时间点
+                DestroySelf(); // 等待音符再过线一段距离后销毁
                 NoteJudger.TapJudge(NoteData as TapChartNoteData, LogicTimeDistance);
             }
         }
 
-        public override void OnUpdateInAutoMode(float curLogicTime)
+        public override void OnUpdateInAutoMode(float curLogicTime, bool noEffect = false)
         {
-            base.OnUpdateInAutoMode(curLogicTime);
+            base.OnUpdateInAutoMode(curLogicTime, noEffect);
 
-            if (LogicTimeDistance >= 0)
+            if (0 <= LogicTimeDistance)
             {
-                ViewObject.CreateEffectObj(NoteWidth); //生成特效
-                DestroySelf(false); //销毁
-
+                // 在自动播放时达到判定时间点
+                if (!noEffect)
+                    ViewObject.CreateEffectObj(NoteWidth); // 生成特效
+                DestroySelf(false); // 让音符在判定线上立刻销毁
                 NoteJudger.TapJudge(NoteData as TapChartNoteData, 0); // Auto Mode 杂率为0
             }
         }

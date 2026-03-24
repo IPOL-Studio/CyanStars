@@ -29,7 +29,7 @@ namespace CyanStars.Gameplay.MusicGame
             length = EndTime - StartTime;
         }
 
-        public override void OnEnter()
+        public override void OnEnter(IReadOnlyTimelineContext _)
         {
             camTrans = Owner.CameraTrans;
             newPos = Owner.DefaultCameraPos + position;
@@ -38,17 +38,17 @@ namespace CyanStars.Gameplay.MusicGame
             oldRot = Owner.OldRot;
         }
 
-        public override void OnExit()
+        public override void OnExit(IReadOnlyTimelineContext _)
         {
-            base.OnExit();
+            base.OnExit(_);
             Owner.OldRot = newRot;
             camTrans.position = newPos;
             camTrans.localEulerAngles = newRot;
         }
 
-        public override void OnUpdate(float currentTime, float previousTime)
+        public override void OnUpdate(IReadOnlyTimelineContext ctx)
         {
-            float localTimer = currentTime - StartTime;
+            float localTimer = (float)ctx.CurrentTime - StartTime;
 
             switch (easingType) //缓动
             {

@@ -15,7 +15,7 @@ namespace CyanStars.Gameplay.MusicGame
             this.lrcText = lrcText;
         }
 
-        public override void OnEnter()
+        public override void OnEnter(IReadOnlyTimelineContext _)
         {
             //显示歌词到UI上
             Owner.TxtLrc.text = lrcText;

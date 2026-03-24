@@ -31,7 +31,7 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Timer.UpdateTimer.Remove(OnUpdate);
         }
 
-        private void OnUpdate(float deltaTime,object userdata)
+        private void OnUpdate(double deltaTime,object userdata)
         {
             if (isTouchDown)
             {

@@ -10,6 +10,7 @@ using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Base;
 using CyanStars.Chart;
 using CyanStars.Graphics.Band;
+using CyanStars.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -73,6 +74,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             //打开游戏场景
             var sceneHandler = await GameRoot.Asset.LoadSceneAsync(currentSceneInfo.ScenePath);
+            SceneManager.SetActiveScene(sceneHandler.Scene);
 
             if (sceneHandler.IsValid && sceneHandler.IsSuccess)
             {
@@ -163,6 +165,7 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
+            GameRoot.Timer.UpdateTimer.Remove(UpdateTimeline);
             audioSource.Pause();
             inputReceiver?.EndReceive();
         }
@@ -177,6 +180,7 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
+            GameRoot.Timer.UpdateTimer.Add(UpdateTimeline);
             audioSource.UnPause();
             inputReceiver?.StartReceive();
         }
@@ -241,11 +245,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 谱面
             runtimeChartPack = chartModule.SelectedRuntimeChartPack;
-            await chartModule.SelectChartDataAsync(0); // TODO: 根据选择的难度来加载谱面
-            if (chartModule.ChartData == null)
-            {
-                Debug.LogError("谱面加载失败");
-            }
+            chartData = chartModule.ChartData;
 
 
             // 音乐
@@ -253,8 +253,9 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 MusicVersionData musicVersionData =
                     runtimeChartPack.ChartPackData.MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex];
+                string musicFilePath = PathUtil.Combine(runtimeChartPack.WorkspacePath, musicVersionData.AudioFilePath);
                 AudioClip music =
-                    (await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicVersionData.AudioFilePath)).BindTo(sceneRoot).Asset;
+                    (await GameRoot.Asset.LoadAssetAsync<AudioClip>(musicFilePath)).BindTo(sceneRoot).Asset;
                 if (!music)
                 {
                     Debug.LogError($"谱包 {runtimeChartPack.ChartPackData.Title} 的音乐加载失败");
@@ -367,16 +368,12 @@ namespace CyanStars.Gameplay.MusicGame
         private void CreateTimeline()
         {
             timeline = new Timeline(playingDataModule.CurTimelineLength);
-            timeline.OnStop += StopTimeline;
+            timeline.OnEndInMusicGameMode += StopTimeline;
 
             var chartContext = CreateChartContext();
 
             // 添加音符轨道
-            NoteTrackData noteTrackData = new NoteTrackData()
-            {
-                ClipDataList = new List<ChartData>() { chartData },
-                ChartContext = chartContext
-            };
+            NoteTrackData noteTrackData = new NoteTrackData() { ClipDataList = new List<ChartData>() { chartData }, ChartContext = chartContext };
             timeline.AddTrack(noteTrackData, NoteTrack.CreateClipFunc);
 
             // if (!string.IsNullOrEmpty(lrcText) && settingsModule.EnableLyricTrack)
@@ -483,12 +480,12 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 更新时间轴
         /// </summary>
-        private void UpdateTimeline(float deltaTime, object userdata)
+        private void UpdateTimeline(double deltaTime, object userdata)
         {
             float timelineDeltaTime = audioSource.time - lastTime;
             lastTime = audioSource.time;
 
-            timeline.OnUpdate(timelineDeltaTime);
+            timeline.OnPlayingUpdate(timelineDeltaTime);
             UpdateDistanceBar(timelineDeltaTime);
 
             //音游流程中 按下ESC打开暂停
@@ -501,7 +498,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 更新判定误差指示
         /// </summary>
-        private void UpdateDistanceBar(float deltaTime)
+        private void UpdateDistanceBar(double deltaTime)
         {
             var data = playingDataModule.DistanceBarData;
             data.ReduceHeight(deltaTime);

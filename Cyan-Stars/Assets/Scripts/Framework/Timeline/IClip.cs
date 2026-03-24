@@ -23,21 +23,26 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 是否有效
         /// </summary>
-        public bool Valid { get;}
+        public bool Valid { get; }
 
         /// <summary>
         /// 进入此片段
         /// </summary>
-        public void OnEnter();
+        public void OnEnter(IReadOnlyTimelineContext ctx);
 
         /// <summary>
         /// 更新此片段
         /// </summary>
-        public void OnUpdate(float currentTime, float previousTime);
+        public void OnUpdate(IReadOnlyTimelineContext ctx);
 
         /// <summary>
         /// 离开此片段
         /// </summary>
-        public void OnExit();
+        public void OnExit(IReadOnlyTimelineContext ctx);
+
+        /// <summary>
+        /// 时间点跳转时，片段被跳出/跳入/整段跳过
+        /// </summary>
+        public void OnSkip(IReadOnlyTimelineContext ctx);
     }
 }

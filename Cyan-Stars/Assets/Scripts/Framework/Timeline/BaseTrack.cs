@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace CyanStars.Framework.Timeline
@@ -7,7 +8,6 @@ namespace CyanStars.Framework.Timeline
     /// </summary>
     public abstract class BaseTrack
     {
-
         /// <summary>
         /// 持有此轨道的时间轴
         /// </summary>
@@ -21,7 +21,7 @@ namespace CyanStars.Framework.Timeline
         /// <summary>
         /// 轨道是否被启用
         /// </summary>
-        public bool Enabled { get; set; } = true;
+        public bool Enabled { get; set; } = true; // TODO: 在 timeline 中途启用或停用轨道可能会导致 bug
 
         /// <summary>
         /// 更新时遍历clip的开始索引，从上次更新时最前面的有效clip开始
@@ -45,9 +45,9 @@ namespace CyanStars.Framework.Timeline
         }
 
         /// <summary>
-        /// 更新轨道
+        /// 时间轴播放时每帧更新轨道
         /// </summary>
-        public virtual void OnUpdate(float currentTime, float previousTime)
+        public virtual void OnPlayingUpdate(TimelineContext ctx)
         {
             if (!Enabled)
             {
@@ -66,40 +66,71 @@ namespace CyanStars.Framework.Timeline
                     continue;
                 }
 
-                bool needEnter = currentTime >= clip.StartTime && previousTime < clip.StartTime;
+                bool needEnter = ctx.CurrentTime >= clip.StartTime && ctx.PreviousTime < clip.StartTime;
                 if (needEnter)
                 {
                     //进入片段
-                    clip.OnEnter();
+                    clip.OnEnter(ctx);
                 }
 
-                bool needUpdate = currentTime >= clip.StartTime && currentTime <= clip.EndTime;
+                bool needUpdate = ctx.CurrentTime >= clip.StartTime && ctx.CurrentTime <= clip.EndTime;
                 if (needUpdate)
                 {
                     //更新片段
-                    clip.OnUpdate(currentTime, previousTime);
+                    clip.OnUpdate(ctx);
                 }
 
-                bool needExit = currentTime > clip.EndTime && previousTime <= clip.EndTime;
+                bool needExit = ctx.CurrentTime > clip.EndTime && ctx.PreviousTime <= clip.EndTime;
                 if (needExit)
                 {
                     //退出片段
-                    clip.OnExit();
+                    clip.OnExit(ctx);
                 }
 
                 if (!needEnter && !needUpdate && !needExit)
                 {
+                    // 查找到了某个无需操作的片段，代表前面需要操作的片段都已经更新了
                     return;
                 }
-                else
-                {
-                    if (!flag)
-                    {
-                        flag = true;
 
-                        //将下次update的startIndex设置为本次最前面的有效clip
-                        startIndex = i;
-                    }
+                if (!flag)
+                {
+                    //将下次update的startIndex设置为本次最前面的有效clip
+                    flag = true;
+                    startIndex = i;
+                }
+            }
+        }
+
+        public virtual void OnTimeSkip(TimelineContext ctx)
+        {
+            bool flag = false;
+            for (int i = startIndex; i < Clips.Count; i++)
+            {
+                IClip clip = Clips[i];
+                if (!clip.Valid)
+                {
+                    // 已经被整段跳过/跳出了
+                    continue;
+                }
+
+                bool needSkip = !(ctx.CurrentTime < clip.StartTime && ctx.PreviousTime < clip.EndTime);
+                if (needSkip)
+                {
+                    clip.OnSkip(ctx);
+                }
+
+                if (!needSkip)
+                {
+                    // 查找到了某个无需跳过的片段，代表前面需要跳过的片段都已经更新了
+                    return;
+                }
+
+                if (!flag)
+                {
+                    // 将下次update的startIndex设置为本次最前面的有效clip
+                    flag = true;
+                    startIndex = i;
                 }
             }
         }

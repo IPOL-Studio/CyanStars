@@ -29,9 +29,9 @@ namespace CyanStars.Gameplay.MusicGame
             Pos = (data as ClickChartNoteData).Pos;
         }
 
-        public override void OnUpdate(float curLogicTime)
+        public override void OnUpdate(float curLogicTime, bool noEffect = false)
         {
-            base.OnUpdate(curLogicTime);
+            base.OnUpdate(curLogicTime, noEffect);
 
             if (EvaluateHelper.IsMiss(LogicTimeDistance))
             {
@@ -45,7 +45,9 @@ namespace CyanStars.Gameplay.MusicGame
                 else
                 {
                     //头判成功过且超时未抬起 结算尾判
-                    ViewObject.CreateEffectObj(NoteWidth);
+                    if (!noEffect)
+                        ViewObject.CreateEffectObj(NoteWidth);
+
                     DestroySelf(false);
 
                     float timeLength = curLogicTime - downTimePoint;
@@ -54,17 +56,19 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
-        public override void OnUpdateInAutoMode(float curLogicTime)
+        public override void OnUpdateInAutoMode(float curLogicTime, bool noEffect = false)
         {
-            base.OnUpdateInAutoMode(curLogicTime);
+            base.OnUpdateInAutoMode(curLogicTime, noEffect);
 
-            if (LogicTimeDistance <= 0 && !headChecked)
+            if (0 <= LogicTimeDistance && !headChecked)
             {
                 headChecked = true;
                 NoteJudger.ClickHeadJudge(NoteData as ClickChartNoteData, 0);
                 NoteJudger.ClickTailJudge(NoteData as ClickChartNoteData, 0);
 
-                ViewObject.CreateEffectObj(NoteWidth);
+                if (!noEffect)
+                    ViewObject.CreateEffectObj(NoteWidth);
+
                 DestroySelf(false);
             }
         }

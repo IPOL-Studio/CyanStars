@@ -77,43 +77,14 @@ namespace CyanStars.Gameplay.MusicGame
                    LogicTimeDistance <= HoldLength;
         }
 
-        public override void OnUpdateInAutoMode(float curLogicTime)
+        public override void OnUpdate(float curLogicTime, bool noEffect = false)
         {
-            base.OnUpdateInAutoMode(curLogicTime);
+            base.OnUpdate(curLogicTime, noEffect);
 
-            EndViewDistance = endSpeedTemplate.GetDistance(LogicTimeDistance * 1000f);
-
-            HoldViewObject holdViewObject = ViewObject as HoldViewObject;
-
-            if (!headChecked && LogicTimeDistance <= 0)
-            {
-                headChecked = true;
-
-                holdViewObject?.OpenFlicker();
-
-                ViewObject.CreateEffectObj(NoteWidth);
-
-                NoteJudger.HoldHeadJudge(NoteData as HoldChartNoteData, 0); // Auto Mode 杂率为0
-
-                holdViewObject?.SetPressed(true);
-            }
-
-            if (LogicTimeDistance < HoldLength)
-            {
-                ViewObject?.DestroyEffectObj();
-                DestroySelf(false);
-
-                NoteJudger.HoldTailJudge(NoteData as HoldChartNoteData, HoldLength, 1);
-            }
-        }
-
-        public override void OnUpdate(float curLogicTime)
-        {
             // 1. 判定头判 Miss
             // 2. 累加这一帧的按住时长，并计算视图长度
             // 3. 判定尾判
             float deltaTime = curLogicTime - CurLogicTime;
-            base.OnUpdate(curLogicTime);
 
             EndViewDistance = endSpeedTemplate.GetDistance((CurLogicTime - endTime) * 1000);
 
@@ -135,7 +106,7 @@ namespace CyanStars.Gameplay.MusicGame
                 //重置Press标记
                 isPressed = false;
 
-                if (-Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Bad) <= LogicTimeDistance &&
+                if (Mathf.Abs(MusicGameSettingsModule.EvaluateRange.Bad) <= LogicTimeDistance &&
                     LogicTimeDistance <= HoldLength)
                 {
                     // 只在 判定时间-Bad区间~结束时间 区间内才累计时长
@@ -184,6 +155,30 @@ namespace CyanStars.Gameplay.MusicGame
 
                 ViewObject?.DestroyEffectObj();
                 DestroySelf(false);
+            }
+        }
+
+        public override void OnUpdateInAutoMode(float curLogicTime, bool noEffect = false)
+        {
+            base.OnUpdateInAutoMode(curLogicTime, noEffect);
+
+            EndViewDistance = endSpeedTemplate.GetDistance(LogicTimeDistance * 1000f);
+            HoldViewObject holdViewObject = ViewObject as HoldViewObject;
+
+            if (!headChecked && 0 <= LogicTimeDistance)
+            {
+                headChecked = true;
+                holdViewObject?.OpenFlicker();
+                ViewObject.CreateEffectObj(NoteWidth);
+                NoteJudger.HoldHeadJudge(NoteData as HoldChartNoteData, 0); // Auto Mode 杂率为0
+                holdViewObject?.SetPressed(true);
+            }
+
+            if (HoldLength < LogicTimeDistance)
+            {
+                ViewObject?.DestroyEffectObj();
+                DestroySelf(false);
+                NoteJudger.HoldTailJudge(NoteData as HoldChartNoteData, HoldLength, 1);
             }
         }
 
