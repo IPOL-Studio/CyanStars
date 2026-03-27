@@ -13,7 +13,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 判定时间（逻辑层时间）（s）
         /// </summary>
-        protected float JudgeTime;
+        public float JudgeTime { get; protected set; }
 
         /// <summary>
         /// 拥有此音符的片段
@@ -113,7 +113,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         protected void DestroySelf(bool autoMove = true)
         {
-            NoteClip.Notes.Remove(this);
+            NoteClip.RemoveNote(this);
             ViewObject.DestroySelf(autoMove);
             ViewObject = null;
         }
