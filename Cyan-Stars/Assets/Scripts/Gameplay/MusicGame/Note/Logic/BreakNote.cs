@@ -26,7 +26,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 // 在玩家游玩时达到 miss 时间点
                 DestroySelf(); // 等待音符再过线一段距离后销毁
-                NoteJudger.TapJudge(NoteData as TapChartNoteData, LogicTimeDistance);
+                NoteJudger.BreakJudge(NoteData as BreakChartNoteData, LogicTimeDistance);
             }
         }
 
@@ -40,7 +40,7 @@ namespace CyanStars.Gameplay.MusicGame
                 if (!noEffect)
                     ViewObject.CreateEffectObj(0); // 生成特效，BreakNote 宽度设定为 0
                 DestroySelf(false); // 让音符在判定线上立刻销毁
-                NoteJudger.TapJudge(NoteData as TapChartNoteData, 0); // Auto Mode 杂率为0
+                NoteJudger.BreakJudge(NoteData as BreakChartNoteData, 0); // Auto Mode 杂率为0
             }
         }
 
