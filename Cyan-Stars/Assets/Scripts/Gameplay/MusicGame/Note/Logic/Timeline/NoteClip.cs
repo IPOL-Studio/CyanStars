@@ -122,11 +122,13 @@ namespace CyanStars.Gameplay.MusicGame
         {
             private LinkedList<BaseNote> notes;
             private LinkedListNode<BaseNote> currentNode;
+            private LinkedListNode<BaseNote> nextNode;
 
             public NoteNodeEnumerator(LinkedList<BaseNote> notes)
             {
                 this.notes = notes;
                 this.currentNode = null;
+                this.nextNode = null;
             }
 
             public LinkedListNode<BaseNote> Current => currentNode;
@@ -136,11 +138,46 @@ namespace CyanStars.Gameplay.MusicGame
 
             public bool MoveNext()
             {
-                currentNode = currentNode is null ? notes.First : currentNode.Next;
-                return !(currentNode is null);
+                // 初始状态
+                if (currentNode is null)
+                {
+                    currentNode = notes.First;
+                    nextNode = currentNode?.Next;
+                }
+                // 当前节点被删除了
+                else if (currentNode.List != notes)
+                {
+                    if (nextNode != null && nextNode.List != notes)
+                    {
+                        throw new InvalidOperationException("NoteClip 的 notes 枚举器状态被完全破坏，不可恢复");
+                    }
+
+                    currentNode = nextNode;
+                    nextNode = currentNode?.Next;
+                }
+                // next 节点被删除了，这不是一个设计上应该出现的情况，但遍历还可以进行
+                else if (currentNode.Next != nextNode)
+                {
+                    UnityEngine.Debug.LogWarning("当前正在通过 foreach 遍历 note clip 的 note 链表，但上一次遍历到的节点的 next 被删除了，这个情况不属于预期用例，需要检查");
+
+                    currentNode = nextNode;
+                    nextNode = currentNode?.Next;
+                }
+                // 正常情况，继续往下走
+                else
+                {
+                    currentNode = nextNode;
+                    nextNode = currentNode?.Next;
+                }
+
+                return currentNode != null;
             }
 
-            public void Reset() => currentNode = null;
+            public void Reset()
+            {
+                currentNode = null;
+                nextNode = null;
+            }
         }
     }
 }
