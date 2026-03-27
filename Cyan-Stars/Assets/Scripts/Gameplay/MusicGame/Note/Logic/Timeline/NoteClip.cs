@@ -10,8 +10,7 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public class NoteClip : BaseClip<NoteTrack>
     {
-        // 音符链表，应该保证按照判定时间从大到小排序
-        // 即判定时间越早的应该在链表后面
+        // 音符链表，应该保证按照判定时间从小到大排序
         private LinkedList<BaseNote> notes = new LinkedList<BaseNote>();
 
         // 在同一时刻应该只有一个 foreach 在遍历 notes 链表
@@ -25,20 +24,19 @@ namespace CyanStars.Gameplay.MusicGame
 
         public void InsertNote(BaseNote note)
         {
-            // 为了保证在 update 时存在的 remove 操作的性能
-            // 插入时应从 Last -> First 方向
-            // 同时确保插入时的相对顺序
-            if (notes.Count == 0 || note.JudgeTime >= notes.First.Value.JudgeTime)
+            _ = note ?? throw new ArgumentNullException(nameof(note));
+
+            if (notes.Count == 0 || note.JudgeTime >= notes.Last.Value.JudgeTime)
             {
-                notes.AddFirst(note);
+                notes.AddLast(note);
                 return;
             }
 
-            LinkedListNode<BaseNote> current = notes.Last;
+            LinkedListNode<BaseNote> current = notes.First;
             while (note.JudgeTime >= current.Value.JudgeTime)
-                current = current.Previous;
+                current = current.Next;
 
-            notes.AddAfter(current, note);
+            notes.AddBefore(current, note);
         }
 
         public override void OnEnter(IReadOnlyTimelineContext _)
@@ -55,7 +53,7 @@ namespace CyanStars.Gameplay.MusicGame
             bool isAutoMode = GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode;
             float currentTime = (float)ctx.CurrentTime;
 
-            foreach (var node in new ReverseNoteNodeEnumeratorProxy(notes))
+            foreach (var node in new NoteNodeEnumeratorProxy(notes))
             {
                 var note = node.Value;
                 currentNoteNode = node;
@@ -70,16 +68,19 @@ namespace CyanStars.Gameplay.MusicGame
 
         public void RemoveNote(BaseNote note)
         {
-            // 设计预设遍历方向总是从 last -> first
-            // 所以应该只需要直接转发 Remove 操作
+            if (notes is null)
+                return;
 
+            // 使用了自定义的枚举器，在 foreach 时应该也不影响删除当前正在访问的节点
             if (currentNoteNode != null && currentNoteNode.Value == note)
             {
                 notes.Remove(currentNoteNode);
                 currentNoteNode = null;
             }
             else
+            {
                 notes.Remove(note);
+            }
         }
 
         private void OnMusicGameEnd(object sender, EventArgs e)
@@ -95,7 +96,7 @@ namespace CyanStars.Gameplay.MusicGame
             if (notes.Count == 0)
                 return;
 
-            foreach (var node in new ReverseNoteNodeEnumeratorProxy(notes))
+            foreach (var node in new NoteNodeEnumeratorProxy(notes))
             {
                 var note = node.Value;
                 currentNoteNode = node;
@@ -105,22 +106,24 @@ namespace CyanStars.Gameplay.MusicGame
                     break; // 一次输入信号只发给一个 note
                 }
             }
+
+            currentNoteNode = null;
         }
 
-        private readonly struct ReverseNoteNodeEnumeratorProxy : IEnumerable<LinkedListNode<BaseNote>>
+        private readonly struct NoteNodeEnumeratorProxy : IEnumerable<LinkedListNode<BaseNote>>
         {
             private readonly LinkedList<BaseNote> Notes;
-            public ReverseNoteNodeEnumeratorProxy(LinkedList<BaseNote> notes) => this.Notes = notes;
-            public readonly IEnumerator<LinkedListNode<BaseNote>> GetEnumerator() => new ReverseNoteNodeEnumerator(Notes);
+            public NoteNodeEnumeratorProxy(LinkedList<BaseNote> notes) => this.Notes = notes;
+            public readonly IEnumerator<LinkedListNode<BaseNote>> GetEnumerator() => new NoteNodeEnumerator(Notes);
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
-        private struct ReverseNoteNodeEnumerator : IEnumerator<LinkedListNode<BaseNote>>
+        private struct NoteNodeEnumerator : IEnumerator<LinkedListNode<BaseNote>>
         {
             private LinkedList<BaseNote> notes;
             private LinkedListNode<BaseNote> currentNode;
 
-            public ReverseNoteNodeEnumerator(LinkedList<BaseNote> notes)
+            public NoteNodeEnumerator(LinkedList<BaseNote> notes)
             {
                 this.notes = notes;
                 this.currentNode = null;
@@ -133,7 +136,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             public bool MoveNext()
             {
-                currentNode = currentNode is null ? notes.Last : currentNode.Previous;
+                currentNode = currentNode is null ? notes.First : currentNode.Next;
                 return !(currentNode is null);
             }
 
