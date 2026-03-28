@@ -1,6 +1,9 @@
-﻿using CatAsset.Runtime;
+﻿#nullable enable
+
+using CatAsset.Runtime;
 using CyanStars.Framework;
 using CyanStars.Framework.UI;
+using CyanStars.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -13,19 +16,27 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public class MapItem : BaseUIItem
     {
-        public Image ImgCover;
+        [SerializeField]
+        private RawImage coverRawImage = null!;
 
-        public Image Mask;
-        public TextMeshProUGUI TxtName;
-        public Button BtnMap;
+        [SerializeField]
+        private Image mask = null!;
 
-        public MapItemData Data { get; private set; }
+        [SerializeField]
+        private TextMeshProUGUI txtName = null!;
 
-        public int Index;
+        [SerializeField]
+        private Button btnMap = null!;
 
         // TODO: 此事件可能会导致内存泄漏或多次订阅，当前没有独立使用，因此没有问题。后续可能需要处理
         [SerializeField]
-        private UnityEvent<MapItem> onSelect;
+        private UnityEvent<MapItem> onSelect = null!;
+
+
+        public MapItemData? Data { get; private set; }
+
+        private AssetHandler<Texture2D>? handler;
+
 
         public event UnityAction<MapItem> OnSelect
         {
@@ -35,7 +46,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnCreate()
         {
-            BtnMap.onClick.AddListener(Select);
+            btnMap.onClick.AddListener(Select);
         }
 
         public void Select()
@@ -47,7 +58,6 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnGet()
         {
-            ImgCover.sprite = null;
         }
 
         public override void OnRelease()
@@ -57,32 +67,38 @@ namespace CyanStars.Gameplay.MusicGame
                 ReferencePool.Release(Data);
                 Data = null;
             }
+
+            handler?.Unload();
         }
 
-        public void RefreshItem(MapItemData data)
+        public void Init(MapItemData data)
         {
             Data = data;
-            RefreshView();
+
+            txtName.text = Data.RuntimeChartPack!.ChartPackData.Title;
+            LoadCoverTexture();
         }
 
-        public async void RefreshView()
+        private async void LoadCoverTexture()
         {
-            TxtName.text = Data.RuntimeChartPack.ChartPackData.Title;
-            if (!string.IsNullOrEmpty(Data.RuntimeChartPack.ChartPackData.CoverFilePath))
+            if (!string.IsNullOrEmpty(Data!.RuntimeChartPack!.ChartPackData.CoverFilePath))
             {
-                // TODO: 从文件加载外部曲绘，并转为 MapItem 所需的 sprite 格式
+                string coverFilePath =
+                    PathUtil.Combine(Data.RuntimeChartPack.WorkspacePath, Data.RuntimeChartPack.ChartPackData.CoverFilePath);
+                handler = await GameRoot.Asset.LoadAssetAsync<Texture2D>(coverFilePath);
+                coverRawImage.texture = handler.Asset;
             }
             else
             {
-                ImgCover.sprite = null;
+                coverRawImage.texture = null;
             }
         }
 
         public void SetAlpha(float alpha)
         {
-            ImgCover.color = new Color(ImgCover.color.r, ImgCover.color.g, ImgCover.color.b, alpha);
-            Mask.color = new Color(Mask.color.r, Mask.color.g, Mask.color.b, alpha);
-            TxtName.color = new Color(TxtName.color.r, TxtName.color.g, TxtName.color.b, alpha);
+            coverRawImage.color = new Color(coverRawImage.color.r, coverRawImage.color.g, coverRawImage.color.b, alpha);
+            mask.color = new Color(mask.color.r, mask.color.g, mask.color.b, alpha);
+            txtName.color = new Color(txtName.color.r, txtName.color.g, txtName.color.b, alpha);
         }
     }
 }

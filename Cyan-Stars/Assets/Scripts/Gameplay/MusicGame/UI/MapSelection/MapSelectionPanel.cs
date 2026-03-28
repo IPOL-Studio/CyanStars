@@ -30,6 +30,52 @@ namespace CyanStars.Gameplay.MusicGame
 
         public MapItemData CurrentSelectedMap { get; set; }
 
+        protected override void OnCreate()
+        {
+            // 进入选曲页时，如果没有选中谱包，自动选择第一个谱包
+            // TODO: 在新建谱包进入制谱器时，此值可能为 null，后续考虑改为 bool 标记
+            // TODO: 改为玩家上次选择的序号
+            var chartModule = GameRoot.GetDataModule<ChartModule>();
+            if (chartModule.SelectedChartPackIndex == null)
+                chartModule.SelectChartPackData(0);
+            CurrentSelectedMap =
+                MapItemData.Create((int)chartModule.SelectedChartPackIndex!, chartModule.SelectedRuntimeChartPack!);
+
+            // 查找、初始化、注册选曲页子页面组件
+            var pages = this.GetComponentsInChildren<IMapSelectionPage>(true);
+            pageDict = new Dictionary<Type, IMapSelectionPage>();
+            foreach (var page in pages)
+            {
+                page.OnInit(this);
+                pageDict.Add(page.GetType(), page);
+                ((Component)page).gameObject.SetActive(false);
+            }
+
+            // 绑定各个组件回调
+            autoModeToggle.onValueChanged.AddListener((isOn) =>
+                GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode = isOn
+            );
+            backButton.onClick.AddListener(() =>
+            {
+                if (pageStack.Count > 1)
+                {
+                    BackToPrePage();
+                }
+                else if (pageStack.Count == 1)
+                {
+                    // TODO: 返回到主菜单
+                }
+            });
+        }
+
+        public override void OnOpen()
+        {
+            pageRatio = 0;
+            pageStack.Clear();
+            ChangePage<MapListPage>();
+            StarController.GenerateStars();
+        }
+
         public void ChangePage<T>() where T : IMapSelectionPage
         {
             if (!pageDict.TryGetValue(typeof(T), out IMapSelectionPage page))
@@ -57,53 +103,6 @@ namespace CyanStars.Gameplay.MusicGame
             currentPage.OnEnter(args);
         }
 
-        public bool IsActive<T>() where T : IMapSelectionPage
-        {
-            return pageStack.Count > 0 && pageStack.Peek().GetType() == typeof(T);
-        }
-
-        protected override void OnCreate()
-        {
-            var musicGamePlayingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
-            var chartModule = GameRoot.GetDataModule<ChartModule>();
-            CurrentSelectedMap = MapItemData.Create((int)chartModule.SelectedChartPackIndex,
-                chartModule.SelectedRuntimeChartPack);
-
-            var pages = this.GetComponentsInChildren<IMapSelectionPage>(true);
-            pageDict = new Dictionary<Type, IMapSelectionPage>();
-
-            foreach (var page in pages)
-            {
-                page.OnInit(this);
-                pageDict.Add(page.GetType(), page);
-                ((Component)page).gameObject.SetActive(false);
-            }
-
-            autoModeToggle.onValueChanged.AddListener((isOn) =>
-                GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode = isOn
-            );
-
-            backButton.onClick.AddListener(() =>
-            {
-                if (pageStack.Count > 1)
-                {
-                    BackToPrePage();
-                }
-                else if (pageStack.Count == 1)
-                {
-                    // TODO: 返回到上一个页面
-                }
-            });
-        }
-
-        public override void OnOpen()
-        {
-            pageRatio = 0;
-            pageStack.Clear();
-            ChangePage<MapListPage>();
-            StarController.GenerateStars();
-        }
-
         private void BackToPrePage()
         {
             var args = new MapSelectionPageChangeArgs() { FadeTime = 1.2f, AnimationEase = Ease.OutQuart };
@@ -118,6 +117,11 @@ namespace CyanStars.Gameplay.MusicGame
 
             pageStack.Pop().OnExit(args);
             pageStack.Peek().OnEnter(args);
+        }
+
+        public bool IsActive<T>() where T : IMapSelectionPage
+        {
+            return pageStack.Count > 0 && pageStack.Peek().GetType() == typeof(T);
         }
     }
 
