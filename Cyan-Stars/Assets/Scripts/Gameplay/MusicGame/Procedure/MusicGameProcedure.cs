@@ -468,7 +468,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         private ChartContext CreateChartContext()
         {
-            // TODO: 传入玩家速
+            // TODO: 传入玩家速度
             var speedTemplateProvider = new SpeedTemplateProvider(new SpeedTemplateBaker(), 100f);
             speedTemplateProvider.PopulateSpeedTemplates(chartData.SpeedGroupDatas);
 
