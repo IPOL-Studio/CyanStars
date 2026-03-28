@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System.Threading.Tasks;
 using CatAsset.Runtime;
 using CyanStars.Framework;
 using CyanStars.Framework.UI;
@@ -46,22 +47,15 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnCreate()
         {
+            base.OnCreate();
+
             btnMap.onClick.AddListener(Select);
-        }
-
-        public void Select()
-        {
-            // MapSelectionPanel parent = GameRoot.UI.GetUIPanel<MapSelectionPanel>();
-            // parent.OnSelectMap(this);
-            onSelect.Invoke(this);
-        }
-
-        public override void OnGet()
-        {
         }
 
         public override void OnRelease()
         {
+            base.OnRelease();
+
             if (Data != null)
             {
                 ReferencePool.Release(Data);
@@ -71,15 +65,19 @@ namespace CyanStars.Gameplay.MusicGame
             handler?.Unload();
         }
 
-        public void Init(MapItemData data)
+        /// <summary>
+        /// 外界在调用 GetUIItemAsync 后需要立刻调用此方法传入依赖
+        /// </summary>
+        /// <remarks>需要一些时间来加载曲绘</remarks>
+        public async Task Init(MapItemData data)
         {
             Data = data;
 
             txtName.text = Data.RuntimeChartPack!.ChartPackData.Title;
-            LoadCoverTexture();
+            await LoadCoverTexture();
         }
 
-        private async void LoadCoverTexture()
+        private async Task LoadCoverTexture()
         {
             if (!string.IsNullOrEmpty(Data!.RuntimeChartPack!.ChartPackData.CoverFilePath))
             {
@@ -87,11 +85,22 @@ namespace CyanStars.Gameplay.MusicGame
                     PathUtil.Combine(Data.RuntimeChartPack.WorkspacePath, Data.RuntimeChartPack.ChartPackData.CoverFilePath);
                 handler = await GameRoot.Asset.LoadAssetAsync<Texture2D>(coverFilePath);
                 coverRawImage.texture = handler.Asset;
+
+                // float uvX = Data.RuntimeChartPack.ChartPackData.CropStartPositionPercent?.x ?? 0f;
+                // float uvY = Data.RuntimeChartPack.ChartPackData.CropStartPositionPercent?.y ?? 0f;
+                // float uvW = (Data.RuntimeChartPack.ChartPackData.CropHeightPercent ?? 0f) * handler.Asset.height * 4 / handler.Asset.width;
+                // float uvH = Data.RuntimeChartPack.ChartPackData.CropHeightPercent ?? 0f;
+                // coverRawImage.uvRect = new Rect(uvX, uvY, uvW, uvH);
             }
             else
             {
                 coverRawImage.texture = null;
             }
+        }
+
+        public void Select()
+        {
+            onSelect.Invoke(this);
         }
 
         public void SetAlpha(float alpha)

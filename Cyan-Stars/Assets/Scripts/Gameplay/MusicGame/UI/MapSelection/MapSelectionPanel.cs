@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using CyanStars.Chart;
@@ -15,20 +17,21 @@ namespace CyanStars.Gameplay.MusicGame
     public class MapSelectionPanel : BaseUIPanel
     {
         [SerializeField]
-        private Toggle autoModeToggle;
+        private Toggle autoModeToggle = null!;
 
         [SerializeField]
-        private Button backButton;
+        private Button backButton = null!;
 
-        public StarController StarController;
+        public StarController StarController = null!;
 
-        private Dictionary<Type, IMapSelectionPage> pageDict;
-        private Stack<IMapSelectionPage> pageStack = new Stack<IMapSelectionPage>();
+        private readonly Dictionary<Type, IMapSelectionPage> PageDict = new();
+        private readonly Stack<IMapSelectionPage> PageStack = new();
 
         private float pageRatio;
-        private Tween starTween;
+        private Tween? starTween;
 
-        public MapItemData CurrentSelectedMap { get; set; }
+        public MapItemData CurrentSelectedMap { get; set; } = null!;
+
 
         protected override void OnCreate()
         {
@@ -43,11 +46,10 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 查找、初始化、注册选曲页子页面组件
             var pages = this.GetComponentsInChildren<IMapSelectionPage>(true);
-            pageDict = new Dictionary<Type, IMapSelectionPage>();
             foreach (var page in pages)
             {
                 page.OnInit(this);
-                pageDict.Add(page.GetType(), page);
+                PageDict.Add(page.GetType(), page);
                 ((Component)page).gameObject.SetActive(false);
             }
 
@@ -57,11 +59,11 @@ namespace CyanStars.Gameplay.MusicGame
             );
             backButton.onClick.AddListener(() =>
             {
-                if (pageStack.Count > 1)
+                if (PageStack.Count > 1)
                 {
                     BackToPrePage();
                 }
-                else if (pageStack.Count == 1)
+                else if (PageStack.Count == 1)
                 {
                     // TODO: 返回到主菜单
                 }
@@ -71,14 +73,14 @@ namespace CyanStars.Gameplay.MusicGame
         public override void OnOpen()
         {
             pageRatio = 0;
-            pageStack.Clear();
+            PageStack.Clear();
             ChangePage<MapListPage>();
             StarController.GenerateStars();
         }
 
         public void ChangePage<T>() where T : IMapSelectionPage
         {
-            if (!pageDict.TryGetValue(typeof(T), out IMapSelectionPage page))
+            if (!PageDict.TryGetValue(typeof(T), out IMapSelectionPage page))
             {
                 Debug.LogWarning("page can not be null");
                 return;
@@ -86,7 +88,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             var args = new MapSelectionPageChangeArgs() { FadeTime = 1.2f, AnimationEase = Ease.OutQuart };
 
-            var currentPage = pageStack.Count > 0 ? pageStack.Peek() : null;
+            var currentPage = PageStack.Count > 0 ? PageStack.Peek() : null;
 
             if (starTween?.IsPlaying() ?? false)
                 starTween.Kill(false);
@@ -99,7 +101,7 @@ namespace CyanStars.Gameplay.MusicGame
             currentPage?.OnExit(args);
 
             currentPage = page;
-            pageStack.Push(currentPage);
+            PageStack.Push(currentPage);
             currentPage.OnEnter(args);
         }
 
@@ -115,13 +117,13 @@ namespace CyanStars.Gameplay.MusicGame
                 .OnUpdate(() => StarController.OnUpdate(pageRatio))
                 .OnComplete(() => starTween = null);
 
-            pageStack.Pop().OnExit(args);
-            pageStack.Peek().OnEnter(args);
+            PageStack.Pop().OnExit(args);
+            PageStack.Peek().OnEnter(args);
         }
 
         public bool IsActive<T>() where T : IMapSelectionPage
         {
-            return pageStack.Count > 0 && pageStack.Peek().GetType() == typeof(T);
+            return PageStack.Count > 0 && PageStack.Peek().GetType() == typeof(T);
         }
     }
 
