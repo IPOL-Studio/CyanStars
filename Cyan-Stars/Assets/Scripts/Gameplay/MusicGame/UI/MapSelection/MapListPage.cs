@@ -111,9 +111,9 @@ namespace CyanStars.Gameplay.MusicGame
             for (int i = 0; i < chartPacks.Count; i++)
             {
                 RuntimeChartPack runtimeChartPack = chartPacks[i];
-                MapItem mapItem = await GameRoot.UI.GetUIItemAsync<MapItem>(mapItemTemplate, circularMapList.transform);
                 MapItemData data = MapItemData.Create(i, runtimeChartPack);
-                mapItem.Init(data);
+                MapItem mapItem = await GameRoot.UI.GetUIItemAsync<MapItem>(mapItemTemplate, circularMapList.transform);
+                await mapItem.Init(data);
                 circularMapList.AddItem(mapItem);
                 mapItems.Add(mapItem);
                 mapItem.OnSelect += OnSelectMap;
