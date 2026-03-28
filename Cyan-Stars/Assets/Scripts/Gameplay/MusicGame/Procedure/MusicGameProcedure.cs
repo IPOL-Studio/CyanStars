@@ -246,6 +246,10 @@ namespace CyanStars.Gameplay.MusicGame
             // 谱面
             runtimeChartPack = chartModule.SelectedRuntimeChartPack;
             chartData = chartModule.ChartData;
+            if (chartModule.ChartData == null)
+            {
+                Debug.LogError("谱面加载失败");
+            }
 
 
             // 音乐
@@ -464,8 +468,8 @@ namespace CyanStars.Gameplay.MusicGame
 
         private ChartContext CreateChartContext()
         {
-            // TODO: 传入玩家速度
-            var speedTemplateProvider = new SpeedTemplateProvider(new SpeedTemplateBaker(), 1f);
+            // TODO: 传入玩家速
+            var speedTemplateProvider = new SpeedTemplateProvider(new SpeedTemplateBaker(), 100f);
             speedTemplateProvider.PopulateSpeedTemplates(chartData.SpeedGroupDatas);
 
             List<BpmGroupItem> bpmGroup = new List<BpmGroupItem>();
