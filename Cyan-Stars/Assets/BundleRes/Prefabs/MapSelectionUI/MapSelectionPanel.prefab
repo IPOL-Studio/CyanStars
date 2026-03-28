@@ -1284,7 +1284,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000061035156}
+  m_AnchoredPosition: {x: 0, y: -0.00012207031}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3228962939596442925
@@ -2462,7 +2462,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 860111353162997801}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.776699
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2762,7 +2762,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e717d72e9d1172449964c334c4d9560a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scrollRect: {fileID: 5391506938459659445}
+  scrollRect: {fileID: 0}
   Items: []
   Radius: 8.5
   Padding: 2.5
@@ -3356,7 +3356,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u6EE1\u5929\u661F"
+  m_text: "\u6D4B\u8BD5\u8C31\u5305"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6eae5abb9636a4546973bd943d519581, type: 2}
   m_sharedMaterial: {fileID: -7882071970826037997, guid: 6eae5abb9636a4546973bd943d519581, type: 2}
@@ -4122,7 +4122,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 86.077255, y: 414.6667}
-  m_SizeDelta: {x: 62, y: 16}
+  m_SizeDelta: {x: 64, y: 16}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8471297816323975452
 MonoBehaviour:
@@ -4817,7 +4817,7 @@ GameObject:
   - component: {fileID: 6388777575864651938}
   - component: {fileID: 6136391108129666}
   m_Layer: 5
-  m_Name: StarsGenerator
+  m_Name: StarController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4854,7 +4854,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a4b09b29e276d14a8fd94d972a6b0d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  starPrefab: {fileID: 4251766181810322849, guid: c94fcbf4ecdf27a498c29ba438a76154, type: 3}
+  starPrefab: {fileID: 3913125800760418395, guid: c94fcbf4ecdf27a498c29ba438a76154, type: 3}
   minStarCount: 300
   maxStarCount: 300
   minStarAlpha: 0.5
@@ -5556,7 +5556,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320301, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320303, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Pivot.x
