@@ -20,9 +20,8 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public readonly ReactiveProperty<Beat> MusicPreviewStartBeat;
         public readonly ReactiveProperty<Beat> MusicPreviewEndBeat;
         public readonly ReactiveProperty<string?> CoverFilePath;
-        public readonly ReactiveProperty<Vector2?> CropStartPosition;
-        public readonly ReactiveProperty<float?> CropHeight;
-        public readonly ReadOnlyReactiveProperty<float?> CropWidth;
+        public readonly ReactiveProperty<Vector2?> CropStartPositionPercent;
+        public readonly ReactiveProperty<float?> CropHeightPercent;
         public readonly ObservableList<ChartMetaDataEditorModel> ChartMetaDatas;
 
         public ChartPackDataEditorModel(ChartPackData chartPackData)
@@ -34,9 +33,8 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             MusicPreviewStartBeat = new ReactiveProperty<Beat>(chartPackData.MusicPreviewStartBeat);
             MusicPreviewEndBeat = new ReactiveProperty<Beat>(chartPackData.MusicPreviewEndBeat);
             CoverFilePath = new ReactiveProperty<string?>(chartPackData.CoverFilePath);
-            CropStartPosition = new ReactiveProperty<Vector2?>(chartPackData.CropStartPosition);
-            CropHeight = new ReactiveProperty<float?>(chartPackData.CropHeight);
-            CropWidth = CropHeight.Select(static h => h * 4.0f).ToReadOnlyReactiveProperty();
+            CropStartPositionPercent = new ReactiveProperty<Vector2?>(chartPackData.CropStartPositionPercent);
+            CropHeightPercent = new ReactiveProperty<float?>(chartPackData.CropHeightPercent);
             ChartMetaDatas = new ObservableList<ChartMetaDataEditorModel>(chartPackData.ChartMetaDatas.Select(static d => new ChartMetaDataEditorModel(d)));
         }
     }

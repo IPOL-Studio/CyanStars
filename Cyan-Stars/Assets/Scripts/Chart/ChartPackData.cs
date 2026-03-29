@@ -43,19 +43,13 @@ namespace CyanStars.Chart
         /// <summary>原始曲绘相对路径（展示收藏品原图用）</summary>
         public string? CoverFilePath;
 
-        /// <summary>开始裁剪像素（相对于图片左下角）</summary>
-        public Vector2? CropStartPosition;
+        /// <summary>开始裁剪的坐标比例（相对于图片左下角）</summary>
+        public Vector2? CropStartPositionPercent;
 
         /// <summary>
-        /// 裁剪像素高度
+        /// 裁剪高度/全图高度的比例
         /// </summary>
-        public float? CropHeight;
-
-        /// <summary>
-        /// 裁剪像素宽度
-        /// </summary>
-        [JsonIgnore]
-        public float? CropWidth => CropHeight * 4;
+        public float? CropHeightPercent;
 
         // 谱面元数据
 
@@ -74,8 +68,8 @@ namespace CyanStars.Chart
             MusicPreviewStartBeat = oldChartPackData.MusicPreviewStartBeat;
             MusicPreviewEndBeat = oldChartPackData.MusicPreviewEndBeat;
             CoverFilePath = oldChartPackData.CoverFilePath;
-            CropStartPosition = oldChartPackData.CropStartPosition;
-            CropHeight = oldChartPackData.CropHeight;
+            CropStartPositionPercent = oldChartPackData.CropStartPositionPercent;
+            CropHeightPercent = oldChartPackData.CropHeightPercent;
             ChartMetaDatas = oldChartPackData.ChartMetaDatas;
         }
 
@@ -85,7 +79,7 @@ namespace CyanStars.Chart
         [JsonConstructor]
         public ChartPackData(string title, List<MusicVersionData>? musicVersionDatas = null, List<BpmGroupItem>? bpmGroup = null,
                              Beat? musicPreviewStartBeat = null, Beat? musicPreviewEndBeat = null, string? coverFilePath = null,
-                             Vector2? cropPosition = null, float? cropHeight = null, List<ChartMetaData>? chartMetaDatas = null)
+                             Vector2? cropPositionPercent = null, float? cropHeightPercent = null, List<ChartMetaData>? chartMetaDatas = null)
         {
             DataVersion = 1;
             Title = title;
@@ -117,8 +111,8 @@ namespace CyanStars.Chart
             }
 
             CoverFilePath = coverFilePath;
-            CropStartPosition = cropPosition ?? Vector2.zero;
-            CropHeight = cropHeight ?? 0;
+            CropStartPositionPercent = cropPositionPercent ?? Vector2.zero;
+            CropHeightPercent = cropHeightPercent ?? 0;
             ChartMetaDatas = chartMetaDatas ?? new List<ChartMetaData>();
         }
 
@@ -138,8 +132,8 @@ namespace CyanStars.Chart
             MusicPreviewStartBeat = editorData.MusicPreviewStartBeat.CurrentValue;
             MusicPreviewEndBeat = editorData.MusicPreviewEndBeat.CurrentValue;
             CoverFilePath = editorData.CoverFilePath.CurrentValue;
-            CropStartPosition = editorData.CropStartPosition.CurrentValue;
-            CropHeight = editorData.CropHeight.CurrentValue;
+            CropStartPositionPercent = editorData.CropStartPositionPercent.CurrentValue;
+            CropHeightPercent = editorData.CropHeightPercent.CurrentValue;
             ChartMetaDatas = new List<ChartMetaData>();
             foreach (var chartMetaEditorData in editorData.ChartMetaDatas)
                 ChartMetaDatas.Add(new ChartMetaData(chartMetaEditorData));

@@ -18,8 +18,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private const string CoverFileName = "Cover.png";
 
 
-        private Vector2? recordedCropStartPos;
-        private float? recordedCropHeight;
+        private Vector2? recordedCropStartPosPercent;
+        private float? recordedCropHeightPercent;
 
 
         private readonly ReactiveProperty<AssetHandler<Sprite?>?> CoverSpriteHandler;
@@ -67,15 +67,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             CropLeftBottomPercentPos = Observable
                 .CombineLatest(
                     CoverSprite,
-                    Model.ChartPackData.CurrentValue.CropStartPosition,
-                    (sprite, startPixel) =>
+                    Model.ChartPackData.CurrentValue.CropStartPositionPercent,
+                    (sprite, startPercent) =>
                     {
-                        if (sprite == null || startPixel == null)
+                        if (sprite == null || startPercent == null)
                             return Vector2.zero;
 
                         return new Vector2(
-                            Mathf.Clamp01(startPixel.Value.x / sprite.texture.width),
-                            Mathf.Clamp01(startPixel.Value.y / sprite.texture.height)
+                            Mathf.Clamp01(startPercent.Value.x),
+                            Mathf.Clamp01(startPercent.Value.y)
                         );
                     }
                 )
@@ -84,16 +84,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             CropRightTopPercentPos = Observable
                 .CombineLatest(
                     CoverSprite,
-                    Model.ChartPackData.CurrentValue.CropStartPosition,
-                    Model.ChartPackData.CurrentValue.CropHeight,
-                    (sprite, startPixel, height) =>
+                    Model.ChartPackData.CurrentValue.CropStartPositionPercent,
+                    Model.ChartPackData.CurrentValue.CropHeightPercent,
+                    (sprite, startPercent, heightPercent) =>
                     {
-                        if (sprite == null || startPixel == null || height == null)
+                        if (sprite == null || startPercent == null || heightPercent == null)
                             return Vector2.zero;
 
                         return new Vector2(
-                            Mathf.Clamp01((startPixel.Value.x + height.Value * 4f) / sprite.texture.width),
-                            Mathf.Clamp01((startPixel.Value.y + height.Value) / sprite.texture.height)
+                            Mathf.Clamp01(startPercent.Value.x + heightPercent.Value * sprite.texture.height * 4 / sprite.texture.width),
+                            Mathf.Clamp01(startPercent.Value.y + heightPercent.Value)
                         );
                     }
                 )
@@ -125,22 +125,20 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             }
         }
 
-        private void GetDefaultCoverCropData(Sprite sprite, out Vector2 startPos, out float height)
+        private void GetDefaultCoverCropData(Sprite sprite, out Vector2 startPosPercent, out float heightPercent)
         {
             float aspectRatio = (float)sprite.texture.width / sprite.texture.height;
             if (aspectRatio >= 4.0f)
             {
                 // 宽图，左右裁剪
-                height = sprite.texture.height;
-                float width = height * 4.0f;
-                startPos = new Vector2((sprite.texture.width - width) / 2.0f, 0.0f);
+                heightPercent = 1;
+                startPosPercent = new Vector2((sprite.texture.width - sprite.texture.height * 4) / 2.0f / sprite.texture.width, 0.0f);
             }
             else
             {
                 // 高图，上下裁剪
-                float width = sprite.texture.width;
-                height = width / 4.0f;
-                startPos = new Vector2(0.0f, (sprite.texture.height - height) / 2.0f);
+                heightPercent = sprite.texture.width / 4.0f / sprite.texture.height;
+                startPosPercent = new Vector2(0.0f, (sprite.texture.height - sprite.texture.width / 4f) / 2.0f / sprite.texture.height);
             }
         }
 
@@ -170,8 +168,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             // 记录旧曲绘信息
             IReadonlyTempFileHandler? oldHandler = ChartEditorFileManager.GetHandlerByTargetPath(oldTargetAbsolutePath);
-            Vector2? oldCropStartPos = Model.ChartPackData.CurrentValue.CropStartPosition.Value;
-            float? oldCropHeight = Model.ChartPackData.CurrentValue.CropHeight.Value;
+            Vector2? oldCropStartPosPercent = Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value;
+            float? oldCropHeightPercent = Model.ChartPackData.CurrentValue.CropHeightPercent.Value;
 
 
             // 仅复制文件到缓存区，暂不声明目标路径以防止自动顶替旧句柄目标路径。
@@ -194,14 +192,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     if (CoverSpriteHandler.Value?.Asset == null)
                     {
                         // 加载图片失败？
-                        Model.ChartPackData.CurrentValue.CropStartPosition.Value = null;
-                        Model.ChartPackData.CurrentValue.CropHeight.Value = null;
+                        Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value = null;
+                        Model.ChartPackData.CurrentValue.CropHeightPercent.Value = null;
                     }
                     else
                     {
                         GetDefaultCoverCropData(CoverSpriteHandler.Value.Asset, out Vector2 newCropStartPos, out float newCropHeight);
-                        Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
-                        Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
+                        Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value = newCropStartPos;
+                        Model.ChartPackData.CurrentValue.CropHeightPercent.Value = newCropHeight;
                     }
                 },
                 async () =>
@@ -217,36 +215,36 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     // 加载图片、更新谱包引用地址、更新裁剪信息
                     Model.ChartPackData.CurrentValue.CoverFilePath.Value = oldTargetRelativePath;
                     await LoadCoverSpriteAsync();
-                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = oldCropStartPos;
-                    Model.ChartPackData.CurrentValue.CropHeight.Value = oldCropHeight;
+                    Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value = oldCropStartPosPercent;
+                    Model.ChartPackData.CurrentValue.CropHeightPercent.Value = oldCropHeightPercent;
                 }
             );
         }
 
         public void RecordCropData()
         {
-            recordedCropStartPos = Model.ChartPackData.CurrentValue.CropStartPosition.Value;
-            recordedCropHeight = Model.ChartPackData.CurrentValue.CropHeight.Value;
+            recordedCropStartPosPercent = Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value;
+            recordedCropHeightPercent = Model.ChartPackData.CurrentValue.CropHeightPercent.Value;
         }
 
         public void CommitCropData()
         {
-            Vector2? newCropStartPos = Model.ChartPackData.CurrentValue.CropStartPosition.Value;
-            float? newCropHeight = Model.ChartPackData.CurrentValue.CropHeight.Value;
+            Vector2? newCropStartPos = Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value;
+            float? newCropHeight = Model.ChartPackData.CurrentValue.CropHeightPercent.Value;
 
-            if (newCropStartPos == recordedCropStartPos && newCropHeight == recordedCropHeight)
+            if (newCropStartPos == recordedCropStartPosPercent && newCropHeight == recordedCropHeightPercent)
                 return;
 
             CommandStack.ExecuteCommand(
                 () =>
                 {
-                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
-                    Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
+                    Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value = newCropStartPos;
+                    Model.ChartPackData.CurrentValue.CropHeightPercent.Value = newCropHeight;
                 },
                 () =>
                 {
-                    Model.ChartPackData.CurrentValue.CropStartPosition.Value = recordedCropStartPos;
-                    Model.ChartPackData.CurrentValue.CropHeight.Value = recordedCropHeight;
+                    Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value = recordedCropStartPosPercent;
+                    Model.ChartPackData.CurrentValue.CropHeightPercent.Value = recordedCropHeightPercent;
                 }
             );
         }
@@ -268,14 +266,19 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // 计算鼠标在原图上的像素坐标
             Vector2 mousePixelPos = new Vector2(percentPos.x * coverPixelSize.x, percentPos.y * coverPixelSize.y);
 
-            // 获取当前的状态作为基础（主要用于确定不动点）
-            float currentStartX = Model.ChartPackData.CurrentValue.CropStartPosition.CurrentValue?.x ?? 0.0f;
-            float currentStartY = Model.ChartPackData.CurrentValue.CropStartPosition.CurrentValue?.y ?? 0.0f;
-            float currentHeight = Model.ChartPackData.CurrentValue.CropHeight.CurrentValue ?? 0.0f;
-            float currentWidth = currentHeight * 4.0f; // 始终保持 4:1
+            // 将百分比坐标转为像素坐标
+            var cropData = Model.ChartPackData.CurrentValue;
+            Vector2 currentStartPercent = cropData.CropStartPositionPercent.CurrentValue ?? Vector2.zero;
+            float currentHeightPercent = cropData.CropHeightPercent.CurrentValue ?? 0.0f;
 
-            Vector2 newCropStartPos;
-            float newCropHeight = 0f;
+            // 获取当前的状态作为基础（主要用于确定不动点）
+            float currentStartX = currentStartPercent.x * coverPixelSize.x;
+            float currentStartY = currentStartPercent.y * coverPixelSize.y;
+            float currentHeight = currentHeightPercent * coverPixelSize.y;
+            float currentWidth = currentHeight * 4.0f;
+
+            Vector2 newCropStartPixel;
+            float newCropHeightPixel;
 
 
             // 自动计算 percentPosX，校验并调整裁剪区域，确保不会超出曲绘范围；然后更新 Model 中的裁剪数据
@@ -295,10 +298,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
                     float maxH = Mathf.Min(pivot.x / 4.0f, coverPixelSize.y - pivot.y);
 
-                    newCropHeight = Mathf.Max(dx / 4.0f, dy);
-                    newCropHeight = Mathf.Min(newCropHeight, maxH);
-
-                    newCropStartPos = new Vector2(pivot.x - newCropHeight * 4.0f, pivot.y);
+                    newCropHeightPixel = Mathf.Clamp(Mathf.Max(dx / 4.0f, dy), 0, maxH);
+                    newCropStartPixel = new Vector2(pivot.x - newCropHeightPixel * 4.0f, pivot.y);
                     break;
                 }
                 case CoverCropHandlerType.LeftBottom:
@@ -310,10 +311,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
                     float maxH = Mathf.Min(pivot.x / 4.0f, pivot.y);
 
-                    newCropHeight = Mathf.Max(dx / 4.0f, dy);
-                    newCropHeight = Mathf.Min(newCropHeight, maxH);
-
-                    newCropStartPos = new Vector2(pivot.x - newCropHeight * 4.0f, pivot.y - newCropHeight);
+                    newCropHeightPixel = Mathf.Clamp(Mathf.Max(dx / 4.0f, dy), 0, maxH);
+                    newCropStartPixel = new Vector2(pivot.x - newCropHeightPixel * 4.0f, pivot.y - newCropHeightPixel);
                     break;
                 }
                 case CoverCropHandlerType.RightTop:
@@ -325,10 +324,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
                     float maxH = Mathf.Min((coverPixelSize.x - pivot.x) / 4.0f, coverPixelSize.y - pivot.y);
 
-                    newCropHeight = Mathf.Max(dx / 4.0f, dy);
-                    newCropHeight = Mathf.Min(newCropHeight, maxH);
-
-                    newCropStartPos = pivot;
+                    newCropHeightPixel = Mathf.Clamp(Mathf.Max(dx / 4.0f, dy), 0, maxH);
+                    newCropStartPixel = pivot;
                     break;
                 }
                 case CoverCropHandlerType.RightBottom:
@@ -340,19 +337,21 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
                     float maxH = Mathf.Min((coverPixelSize.x - pivot.x) / 4.0f, pivot.y);
 
-                    newCropHeight = Mathf.Max(dx / 4.0f, dy);
-                    newCropHeight = Mathf.Min(newCropHeight, maxH);
-
-                    newCropStartPos = new Vector2(pivot.x, pivot.y - newCropHeight);
+                    newCropHeightPixel = Mathf.Clamp(Mathf.Max(dx / 4.0f, dy), 0, maxH);
+                    newCropStartPixel = new Vector2(pivot.x, pivot.y - newCropHeightPixel);
                     break;
                 }
                 default:
                     throw new ArgumentOutOfRangeException(nameof(handlerType), handlerType, null);
             }
 
+            // 将计算出的像素结果重新转回百分比形式
+            Vector2 newCropStartPercent = new Vector2(newCropStartPixel.x / coverPixelSize.x, newCropStartPixel.y / coverPixelSize.y);
+            float newCropHeightPercent = newCropHeightPixel / coverPixelSize.y;
+
             // 实时更新 Model 数据以实现实时预览，不生成命令
-            Model.ChartPackData.CurrentValue.CropStartPosition.Value = newCropStartPos;
-            Model.ChartPackData.CurrentValue.CropHeight.Value = newCropHeight;
+            cropData.CropStartPositionPercent.Value = newCropStartPercent;
+            cropData.CropHeightPercent.Value = newCropHeightPercent;
         }
 
         /// <summary>
@@ -369,26 +368,29 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             float imgH = sprite.rect.height;
 
             // 获取当前 Model 数据
-            Vector2 currentStartPos = Model.ChartPackData.CurrentValue.CropStartPosition.CurrentValue ?? Vector2.zero;
-            float currentWidth = Model.ChartPackData.CurrentValue.CropWidth.CurrentValue ?? 0f;
-            float currentHeight = Model.ChartPackData.CurrentValue.CropHeight.CurrentValue ?? 0f;
+            var cropData = Model.ChartPackData.CurrentValue;
+            Vector2 currentStartPercent = cropData.CropStartPositionPercent.CurrentValue ?? Vector2.zero;
+            float currentHeightPercent = cropData.CropHeightPercent.CurrentValue ?? 0f;
+
+            // 将比例转为像素
+            Vector2 currentStartPixel = new Vector2(currentStartPercent.x * imgW, currentStartPercent.y * imgH);
+            float currentHeightPixel = currentHeightPercent * imgH;
+            float currentWidthPixel = currentHeightPixel * 4.0f;
 
             // 计算像素偏移
             Vector2 deltaPixel = new Vector2(deltaRatio.x * imgW, deltaRatio.y * imgH);
-            Vector2 targetPos = currentStartPos + deltaPixel;
+            Vector2 targetPixelPos = currentStartPixel + deltaPixel;
 
             // 限制范围，确保裁剪框不超出图片边界
-            float minX = 0f;
-            float maxX = imgW - currentWidth;
-            float minY = 0f;
-            float maxY = imgH - currentHeight;
+            float maxX = imgW - currentWidthPixel;
+            float maxY = imgH - currentHeightPixel;
+            targetPixelPos.x = Mathf.Clamp(targetPixelPos.x, 0f, maxX);
+            targetPixelPos.y = Mathf.Clamp(targetPixelPos.y, 0f, maxY);
 
-            targetPos.x = Mathf.Clamp(targetPos.x, minX, maxX);
-            targetPos.y = Mathf.Clamp(targetPos.y, minY, maxY);
-
-            if (targetPos != currentStartPos)
+            if (targetPixelPos != currentStartPixel)
             {
-                Model.ChartPackData.CurrentValue.CropStartPosition.Value = targetPos;
+                Vector2 targetPercentPos = new Vector2(targetPixelPos.x / imgW, targetPixelPos.y / imgH);
+                cropData.CropStartPositionPercent.Value = targetPercentPos;
             }
         }
 
