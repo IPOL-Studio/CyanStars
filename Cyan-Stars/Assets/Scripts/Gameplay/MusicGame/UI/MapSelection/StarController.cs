@@ -149,8 +149,6 @@ namespace CyanStars.Gameplay.MusicGame
             groupCount = 1;
             foreach (var item in staffs)
             {
-                Debug.Log(item);
-
                 var sb = new StringBuilder();
                 foreach (var str in item.Value)
                 {
