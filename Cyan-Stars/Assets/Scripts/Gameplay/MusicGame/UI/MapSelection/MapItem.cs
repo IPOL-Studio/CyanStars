@@ -86,11 +86,11 @@ namespace CyanStars.Gameplay.MusicGame
                 handler = await GameRoot.Asset.LoadAssetAsync<Texture2D>(coverFilePath);
                 coverRawImage.texture = handler.Asset;
 
-                // float uvX = Data.RuntimeChartPack.ChartPackData.CropStartPositionPercent?.x ?? 0f;
-                // float uvY = Data.RuntimeChartPack.ChartPackData.CropStartPositionPercent?.y ?? 0f;
-                // float uvW = (Data.RuntimeChartPack.ChartPackData.CropHeightPercent ?? 0f) * handler.Asset.height * 4 / handler.Asset.width;
-                // float uvH = Data.RuntimeChartPack.ChartPackData.CropHeightPercent ?? 0f;
-                // coverRawImage.uvRect = new Rect(uvX, uvY, uvW, uvH);
+                float uvX = Data.RuntimeChartPack.ChartPackData.CropStartPositionPercent?.x ?? 0f;
+                float uvY = Data.RuntimeChartPack.ChartPackData.CropStartPositionPercent?.y ?? 0f;
+                float uvW = (Data.RuntimeChartPack.ChartPackData.CropHeightPercent ?? 0f) * handler.Asset.height * 4 / handler.Asset.width;
+                float uvH = Data.RuntimeChartPack.ChartPackData.CropHeightPercent ?? 0f;
+                coverRawImage.uvRect = new Rect(uvX, uvY, uvW, uvH);
             }
             else
             {
