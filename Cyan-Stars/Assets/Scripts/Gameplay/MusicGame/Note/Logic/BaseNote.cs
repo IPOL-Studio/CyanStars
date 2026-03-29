@@ -52,6 +52,10 @@ namespace CyanStars.Gameplay.MusicGame
         /// <remarks>提前时距离为负数</remarks>
         public float CurViewDistance { get; private set; }
 
+        /// <summary>
+        /// Note 是否有效，无效时不应该再参与任何外部更新或输入
+        /// </summary>
+        public bool IsValid { get; private set; }
 
         /// <summary>
         /// 初始化数据
@@ -65,6 +69,8 @@ namespace CyanStars.Gameplay.MusicGame
             // 根据 beat 计算 JudgeTime
             // 注意 Offset 是作为空白时间直接加（或减）在 MisicTrack/MusicClip 中，与 Note 判定时间无关
             JudgeTime = BpmGroupHelper.CalculateTime(context.BpmGroup, data.JudgeBeat) / 1000f;
+
+            IsValid = true;
         }
 
         public virtual void OnUpdate(float curLogicTime, bool noEffect = false)
@@ -113,7 +119,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         protected void DestroySelf(bool autoMove = true)
         {
-            NoteClip.RemoveNote(this);
+            IsValid = false;
             ViewObject.DestroySelf(autoMove);
             ViewObject = null;
         }
