@@ -1,6 +1,10 @@
-﻿using CatAsset.Runtime;
+﻿#nullable enable
+
+using System.Threading.Tasks;
+using CatAsset.Runtime;
 using CyanStars.Framework;
 using CyanStars.Framework.UI;
+using CyanStars.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -13,19 +17,27 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     public class MapItem : BaseUIItem
     {
-        public Image ImgCover;
+        [SerializeField]
+        private RawImage coverRawImage = null!;
 
-        public Image Mask;
-        public TextMeshProUGUI TxtName;
-        public Button BtnMap;
+        [SerializeField]
+        private Image mask = null!;
 
-        public MapItemData Data { get; private set; }
+        [SerializeField]
+        private TextMeshProUGUI txtName = null!;
 
-        public int Index;
+        [SerializeField]
+        private Button btnMap = null!;
 
         // TODO: 此事件可能会导致内存泄漏或多次订阅，当前没有独立使用，因此没有问题。后续可能需要处理
         [SerializeField]
-        private UnityEvent<MapItem> onSelect;
+        private UnityEvent<MapItem> onSelect = null!;
+
+
+        public MapItemData? Data { get; private set; }
+
+        private AssetHandler<Texture2D>? handler;
+
 
         public event UnityAction<MapItem> OnSelect
         {
@@ -35,54 +47,67 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnCreate()
         {
-            BtnMap.onClick.AddListener(Select);
-        }
+            base.OnCreate();
 
-        public void Select()
-        {
-            // MapSelectionPanel parent = GameRoot.UI.GetUIPanel<MapSelectionPanel>();
-            // parent.OnSelectMap(this);
-            onSelect.Invoke(this);
-        }
-
-        public override void OnGet()
-        {
-            ImgCover.sprite = null;
+            btnMap.onClick.AddListener(Select);
         }
 
         public override void OnRelease()
         {
+            base.OnRelease();
+
             if (Data != null)
             {
                 ReferencePool.Release(Data);
                 Data = null;
             }
+
+            handler?.Unload();
         }
 
-        public void RefreshItem(MapItemData data)
+        /// <summary>
+        /// 外界在调用 GetUIItemAsync 后需要立刻调用此方法传入依赖
+        /// </summary>
+        /// <remarks>需要一些时间来加载曲绘</remarks>
+        public async Task Init(MapItemData data)
         {
             Data = data;
-            RefreshView();
+
+            txtName.text = Data.RuntimeChartPack!.ChartPackData.Title;
+            await LoadCoverTexture();
         }
 
-        public async void RefreshView()
+        private async Task LoadCoverTexture()
         {
-            TxtName.text = Data.RuntimeChartPack.ChartPackData.Title;
-            if (!string.IsNullOrEmpty(Data.RuntimeChartPack.ChartPackData.CoverFilePath))
+            if (!string.IsNullOrEmpty(Data!.RuntimeChartPack!.ChartPackData.CoverFilePath))
             {
-                // TODO: 从文件加载外部曲绘，并转为 MapItem 所需的 sprite 格式
+                string coverFilePath =
+                    PathUtil.Combine(Data.RuntimeChartPack.WorkspacePath, Data.RuntimeChartPack.ChartPackData.CoverFilePath);
+                handler = await GameRoot.Asset.LoadAssetAsync<Texture2D>(coverFilePath);
+                coverRawImage.texture = handler.Asset;
+
+                float uvX = Data.RuntimeChartPack.ChartPackData.CropStartPositionPercent?.x ?? 0f;
+                float uvY = Data.RuntimeChartPack.ChartPackData.CropStartPositionPercent?.y ?? 0f;
+                float uvW = (Data.RuntimeChartPack.ChartPackData.CropHeightPercent ?? 0f) * handler.Asset.height * 4 / handler.Asset.width;
+                float uvH = Data.RuntimeChartPack.ChartPackData.CropHeightPercent ?? 0f;
+                coverRawImage.uvRect = new Rect(uvX, uvY, uvW, uvH);
             }
             else
             {
-                ImgCover.sprite = null;
+                coverRawImage.texture = null;
             }
+        }
+
+        public void Select()
+        {
+            onSelect.Invoke(this);
         }
 
         public void SetAlpha(float alpha)
         {
-            ImgCover.color = new Color(ImgCover.color.r, ImgCover.color.g, ImgCover.color.b, alpha);
-            Mask.color = new Color(Mask.color.r, Mask.color.g, Mask.color.b, alpha);
-            TxtName.color = new Color(TxtName.color.r, TxtName.color.g, TxtName.color.b, alpha);
+            coverRawImage.color = new Color(coverRawImage.color.r, coverRawImage.color.g, coverRawImage.color.b, alpha);
+            mask.color = new Color(mask.color.r, mask.color.g, mask.color.b, alpha);
+            txtName.color = new Color(txtName.color.r, txtName.color.g, txtName.color.b, alpha);
         }
     }
 }

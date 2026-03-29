@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using CatAsset.Runtime;
 using CyanStars.Chart;
 
@@ -7,17 +9,23 @@ namespace CyanStars.Gameplay.MusicGame
     /// <summary>
     /// 谱面选择item数据
     /// </summary>
-    public class MapItemData :  IReference, IEquatable<MapItemData>
+    public class MapItemData : IReference
     {
         /// <summary>
         /// 索引
         /// </summary>
-        public int Index {get; private set; }
+        public int Index { get; private set; }
 
         /// <summary>
         /// 谱面清单
         /// </summary>
-        public RuntimeChartPack RuntimeChartPack {get; private set; }
+        public RuntimeChartPack? RuntimeChartPack { get; private set; }
+
+
+        [Obsolete("构造函数仅限引用池调用，实例化时请使用 Create()", true)]
+        public MapItemData()
+        {
+        }
 
         public static MapItemData Create(int index, RuntimeChartPack runtimeChartPack)
         {
@@ -29,26 +37,8 @@ namespace CyanStars.Gameplay.MusicGame
 
         public void Clear()
         {
-            Index = default;
-            RuntimeChartPack = default;
-        }
-
-        public bool Equals(MapItemData other)
-        {
-            if (other is null)
-                return false;
-
-            return this.Index == other.Index && this.RuntimeChartPack.Equals(other.RuntimeChartPack);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is MapItemData other && Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return Index ^ 23 ^ RuntimeChartPack.GetHashCode();
+            Index = 0;
+            RuntimeChartPack = null;
         }
     }
 }

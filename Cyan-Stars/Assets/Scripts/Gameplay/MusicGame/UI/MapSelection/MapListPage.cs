@@ -48,15 +48,10 @@ namespace CyanStars.Gameplay.MusicGame
             chartModule = GameRoot.GetDataModule<ChartModule>();
             mapItems = new List<BaseUIItem>();
 
-            nextStepButton.onClick.AddListener(() => { this.owner.ChangePage<StaffPage>(); });
-
-            // backButton.onClick.AddListener(() =>
-            // {
-            //     if (this.owner.IsActive<MapListPage>())
-            //     {
-
-            //     }
-            // });
+            nextStepButton.onClick.AddListener(() =>
+            {
+                this.owner.ChangePage<StaffPage>();
+            });
         }
 
         public async void OnEnter(MapSelectionPageChangeArgs args)
@@ -111,19 +106,16 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private async Task RefreshMusicList()
         {
-            // List<MapManifest> maps = musicGameModule.GetMaps();
             IReadOnlyList<RuntimeChartPack> chartPacks = chartModule.RuntimeChartPacks;
 
             for (int i = 0; i < chartPacks.Count; i++)
             {
                 RuntimeChartPack runtimeChartPack = chartPacks[i];
+                MapItemData data = MapItemData.Create(i, runtimeChartPack);
                 MapItem mapItem = await GameRoot.UI.GetUIItemAsync<MapItem>(mapItemTemplate, circularMapList.transform);
+                await mapItem.Init(data);
                 circularMapList.AddItem(mapItem);
                 mapItems.Add(mapItem);
-                mapItem.Index = i;
-
-                MapItemData data = MapItemData.Create(i, runtimeChartPack);
-                mapItem.RefreshItem(data);
                 mapItem.OnSelect += OnSelectMap;
             }
 
@@ -133,7 +125,7 @@ namespace CyanStars.Gameplay.MusicGame
         private void OnSelectMap(MapItem mapItem)
         {
             // 将选中的谱面移到圆环中央，即使当前已经选中也执行
-            circularMapList.MoveToItemAt(mapItem.Index);
+            circularMapList.MoveToItemAt(mapItem.Data!.Index);
 
             if (this.owner.CurrentSelectedMap == mapItem.Data)
             {
@@ -142,7 +134,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             this.owner.CurrentSelectedMap = mapItem.Data;
 
-            Debug.Log("当前选中:" + mapItem.Data.RuntimeChartPack.ChartPackData.Title);
+            Debug.Log("当前选中:" + mapItem.Data.RuntimeChartPack!.ChartPackData.Title);
 
             // 标题和Staff信息渐变动画
             mapTitleText.DOFade(0, 0.2f).OnComplete(() =>
@@ -160,7 +152,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             Dictionary<string, List<string>> staffs = mapItem.Data.RuntimeChartPack.ChartPackData
                 .MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex].Staffs;
-            if (staffs == null || staffs.Count == 0)
+            if (staffs.Count == 0)
             {
                 Debug.LogWarning("没有设置 Staff 文本");
             }

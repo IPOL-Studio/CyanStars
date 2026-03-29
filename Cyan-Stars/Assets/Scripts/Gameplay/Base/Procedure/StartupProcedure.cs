@@ -16,11 +16,7 @@ namespace CyanStars.Gameplay.Base
             if (GameRoot.Asset.IsEditorMode)
             {
                 //编辑器下并且开启了编辑器资源模式 直接切换到主界面流程
-
-                // //加载内置谱面清单
-                // await GameRoot.GetDataModule<MusicGamePlayingDataModule>().LoadChartPacks();
-
-                await GameRoot.GetDataModule<ChartModule>().LoadRuntimeChartPacksFromDiskAsync();
+                await GameRoot.GetDataModule<ChartModule>().ReloadAllChartPacksAsync();
                 GameRoot.ChangeProcedure<MainHomeProcedure>();
                 return;
             }
@@ -30,10 +26,7 @@ namespace CyanStars.Gameplay.Base
             {
                 if (result.Success)
                 {
-                    // //加载内置谱面清单
-                    // await GameRoot.GetDataModule<MusicGamePlayingDataModule>().LoadChartPacks();
-
-                    await GameRoot.GetDataModule<ChartModule>().LoadRuntimeChartPacksFromDiskAsync();
+                    await GameRoot.GetDataModule<ChartModule>().ReloadAllChartPacksAsync();
                     GameRoot.ChangeProcedure<MainHomeProcedure>();
                 }
             });

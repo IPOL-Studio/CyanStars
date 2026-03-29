@@ -1,9 +1,10 @@
+#nullable enable
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -11,8 +12,11 @@ namespace CyanStars.Gameplay.MusicGame
     [RequireComponent(typeof(RectTransform))]
     public class CircularLayout : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IScrollHandler
     {
+        [SerializeField]
+        private ScrollRect scrollRect = null!;
+
         [Header("控件列表")]
-        public List<MapItem> Items;
+        public List<MapItem> Items = null!;
 
         [Header("半径")]
         public float Radius;
@@ -35,7 +39,6 @@ namespace CyanStars.Gameplay.MusicGame
         [Header("使用滚轮切换的冷却时间")]
         public float SelectByScrollingDelta = 0.5f;
 
-        private ScrollRect scrollRect;
 
         /// <summary>
         /// 第一个item的角度
@@ -53,23 +56,21 @@ namespace CyanStars.Gameplay.MusicGame
         private bool anchored = true;
 
         private float lastMoveTIme = Mathf.Infinity;
-
         private float lastScrollTime = -Mathf.Infinity;
+
 
         void Awake()
         {
-            scrollRect = transform.GetComponent<ScrollRect>();
             scrollRect.scrollSensitivity = 0; // 禁用鼠标滚轮
-
             curFirstItemAngle = OffsetAngle;
 
             float paddingAngle = (Radius != 0) ? (Padding / (2 * Mathf.PI * Radius) * 360) : 0;
-
             scrollRect.onValueChanged.AddListener((Vector2 value) =>
             {
                 float itemsTotalAngle = (Items.Count - 1) * paddingAngle; // 所有item整体所占的角度
                 float centerAngle = (StartAngle + EndAngle) / 2; // 圆环中央的角度
                 curFirstItemAngle = centerAngle - (1 - value.y) * itemsTotalAngle;
+
                 lastMoveTIme = Time.unscaledTime;
             });
         }
