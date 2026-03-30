@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using CatAsset.Runtime;
 using CyanStars.Framework;
+using CyanStars.Framework.Asset;
 using CyanStars.Gameplay.MusicGame;
 using CyanStars.Utils;
 using UnityEngine;
@@ -81,7 +82,7 @@ namespace CyanStars.Chart
         public ChartData? ChartData { get; private set; }
 
         private string? lastChartDataHash;
-        private AssetHandler<ChartData>? lastChartDataHandler;
+        private AssetHandler<TextAsset>? lastChartDataTextHandler;
 
 
         public override void OnInit()
@@ -165,11 +166,20 @@ namespace CyanStars.Chart
             var newPacks = new List<RuntimeChartPack>();
             for (int i = 0; i < paths.Count; i++)
             {
-                AssetHandler<ChartPackData> handle = GameRoot.Asset.LoadAssetAsync<ChartPackData>(paths[i]);
-                if (!handle.IsDone)
-                    await handle;
+                AssetHandler<TextAsset> textHandler = GameRoot.Asset.LoadAssetAsync<TextAsset>(paths[i]);
 
-                if (handle.Asset == null)
+                if (!textHandler.IsDone)
+                    await textHandler;
+
+                if (textHandler.Asset?.text == null)
+                {
+                    Debug.LogError($"无法将 {paths[i]} 转换为 {nameof(ChartPackData)}，相关谱包无法加载！");
+                    return;
+                }
+
+                ChartPackData? chartPackData = JsonLoadHelper.LoadData<ChartPackData>(textHandler.Asset.text);
+
+                if (chartPackData == null)
                 {
                     Debug.LogError($"无法将 {paths[i]} 转换为 {nameof(ChartPackData)}，相关谱包无法加载！");
                     return;
@@ -179,20 +189,20 @@ namespace CyanStars.Chart
                 string? workspacePath = Path.GetDirectoryName(paths[i]);
                 if (workspacePath == null)
                 {
-                    Debug.LogError($"谱包路径为空：{handle.Asset.Title}");
+                    Debug.LogError($"谱包路径为空：{chartPackData.Title}");
                     return;
                 }
 
                 bool isInternal = i < internalPacksCount;
-                CalculateDifficultiesCount(handle.Asset, out _, out HashSet<ChartDifficulty> difficultiesAbleToPlay);
+                CalculateDifficultiesCount(chartPackData, out _, out HashSet<ChartDifficulty> difficultiesAbleToPlay);
                 if (isInternal && difficultiesAbleToPlay.Count != 4)
                 {
                     // TODO: 正式发布时在内置谱包谱面数不等于 4 时抛异常
-                    Debug.LogError($"某个内置谱包难度计数不等于 4：{handle.Asset.Title}，当前已允许加载，正式发布时应当修复");
+                    Debug.LogError($"某个内置谱包难度计数不等于 4：{chartPackData.Title}，当前已允许加载，正式发布时应当修复");
                 }
 
                 ChartPackLevels levels = levelsList[i];
-                newPacks.Add(new RuntimeChartPack(handle.Asset, isInternal, levels, workspacePath, difficultiesAbleToPlay));
+                newPacks.Add(new RuntimeChartPack(chartPackData, isInternal, levels, workspacePath, difficultiesAbleToPlay));
             }
 
             runtimeChartPacks.AddRange(newPacks);
@@ -290,8 +300,8 @@ namespace CyanStars.Chart
         {
             ChartData = null;
             lastChartDataHash = null;
-            lastChartDataHandler?.Unload();
-            lastChartDataHandler = null;
+            lastChartDataTextHandler?.Unload();
+            lastChartDataTextHandler = null;
         }
 
         /// <summary>
@@ -318,21 +328,27 @@ namespace CyanStars.Chart
             // if (lastChartDataHash != metaData.ChartHash)
             if (true) // TODO: 实现了 hash 计算后改用上面一行，暂时先每次都强制加载谱面
             {
-                lastChartDataHandler?.Unload();
+                lastChartDataTextHandler?.Unload();
                 string chartFilePath = PathUtil.Combine(SelectedRuntimeChartPack.WorkspacePath, metaData.FilePath);
-                var handler = await GameRoot.Asset.LoadAssetAsync<ChartData>(chartFilePath);
-                var chartData = handler.Asset;
+                var textHandler = await GameRoot.Asset.LoadAssetAsync<TextAsset>(chartFilePath);
 
+                if (textHandler.Asset?.text == null)
+                {
+                    Debug.LogError($"无法将 {chartFilePath} 转换为 {nameof(ChartData)}，相关谱面无法加载！");
+                    return;
+                }
+
+                ChartData? chartData = JsonLoadHelper.LoadData<ChartData>(textHandler.Asset.text);
                 if (chartData == null)
                 {
-                    Debug.LogError("获取谱面时异常，未加载");
+                    Debug.LogError($"无法将 {chartFilePath} 转换为 {nameof(ChartData)}，相关谱面无法加载！");
                     return;
                 }
 
                 Debug.Log("已加载了新的的谱面");
                 ChartData = chartData;
                 lastChartDataHash = metaData.ChartHash;
-                lastChartDataHandler = handler;
+                lastChartDataTextHandler = textHandler;
             }
         }
 
