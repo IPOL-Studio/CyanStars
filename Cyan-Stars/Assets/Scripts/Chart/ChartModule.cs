@@ -173,7 +173,7 @@ namespace CyanStars.Chart
                 if (textHandler.Asset?.text == null)
                 {
                     Debug.LogError($"无法将 {paths[i]} 转换为 {nameof(ChartPackData)}，相关谱包无法加载！");
-                    return;
+                    continue;
                 }
 
                 ChartPackData? chartPackData = JsonLoadHelper.LoadData<ChartPackData>(textHandler.Asset.text);
@@ -181,15 +181,15 @@ namespace CyanStars.Chart
                 if (chartPackData == null)
                 {
                     Debug.LogError($"无法将 {paths[i]} 转换为 {nameof(ChartPackData)}，相关谱包无法加载！");
-                    return;
+                    continue;
                 }
 
                 // 工作区路径是谱包所在的绝对路径，后续相关的资源、谱面等相对路径直接拼接在工作区路径之后即可
                 string? workspacePath = Path.GetDirectoryName(paths[i]);
                 if (workspacePath == null)
                 {
-                    Debug.LogError($"谱包路径为空：{chartPackData.Title}");
-                    return;
+                    Debug.LogError($"谱包路径为空：{chartPackData.Title}，相关谱包无法加载！");
+                    continue;
                 }
 
                 bool isInternal = i < internalPacksCount;
