@@ -200,6 +200,7 @@ namespace CyanStars.Chart
                     Debug.LogError($"某个内置谱包难度计数不等于 4：{chartPackData.Title}，当前已允许加载，正式发布时应当修复");
                 }
 
+                // levels 为各个难度的定数，内置谱包此值由 Unity SO 配置，社区谱包此值固定为 0
                 ChartPackLevels levels = levelsList[i];
                 newPacks.Add(new RuntimeChartPack(chartPackData, isInternal, levels, workspacePath, difficultiesAbleToPlay));
             }
@@ -379,6 +380,7 @@ namespace CyanStars.Chart
 
             CalculateDifficultiesCount(chartPackData, out _, out HashSet<ChartDifficulty> difficultiesAbleToPlay);
 
+            // 社区谱包不参与玩家潜力值计算，定数为 0
             var runtimeChartPack =
                 new RuntimeChartPack(chartPackData, false, new ChartPackLevels(), Path.GetDirectoryName(chartPackFilePath), difficultiesAbleToPlay);
             Debug.Log($"已增量加载谱包 {chartPackFilePath}");
@@ -399,6 +401,7 @@ namespace CyanStars.Chart
 
             CalculateDifficultiesCount(chartPackData, out _, out HashSet<ChartDifficulty> difficultiesAbleToPlay);
 
+            // 社区谱包不参与玩家潜力值计算，定数为 0
             var runtimeChartPack =
                 new RuntimeChartPack(chartPackData, false, new ChartPackLevels(), Path.GetDirectoryName(chartPackFilePath), difficultiesAbleToPlay);
             Debug.Log($"已增量更新谱包 {chartPackFilePath}");
