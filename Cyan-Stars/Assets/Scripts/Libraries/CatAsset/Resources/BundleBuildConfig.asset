@@ -537,12 +537,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 190799
+    AssetsLength: 184645
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel.prefab
-      Length: 190799
+      Length: 184645
   - DirectoryName: BundleRes/Prefabs/MapSelectionUI
     BundleName: StaffLabel_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/StaffLabel_prefab.bundle
@@ -761,12 +761,12 @@ MonoBehaviour:
     BundleIdentifyName: CysMultimediaAssets/Font/Oswald/Blod.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 2188541
+    AssetsLength: 2190047
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/CysMultimediaAssets/Font/Oswald/Blod/Oswald-Bold SDF.asset
-      Length: 2135485
+      Length: 2136991
     - Name: Assets/CysMultimediaAssets/Font/Oswald/Blod/Oswald-Bold.ttf
       Length: 53056
   - DirectoryName: CysMultimediaAssets/Font/Oswald
@@ -1837,6 +1837,17 @@ MonoBehaviour:
     - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/BtnStart.png
       Length: 15780
   - DirectoryName: CysMultimediaAssets/Sprites/MapSelectionPanel/Icons
+    BundleName: Editor_png.bundle
+    BundleIdentifyName: CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/Editor_png.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 14475
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/Editor.png
+      Length: 14475
+  - DirectoryName: CysMultimediaAssets/Sprites/MapSelectionPanel/Icons
     BundleName: ImpurityImage_png.bundle
     BundleIdentifyName: CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/ImpurityImage_png.bundle
     Group: Base
@@ -1852,12 +1863,12 @@ MonoBehaviour:
     BundleIdentifyName: CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/Info_png.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 4361
+    AssetsLength: 13093
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/Info.png
-      Length: 4361
+      Length: 13093
   - DirectoryName: CysMultimediaAssets/Sprites/MapSelectionPanel/Icons
     BundleName: ScoreImage_png.bundle
     BundleIdentifyName: CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/ScoreImage_png.bundle
@@ -2233,7 +2244,7 @@ MonoBehaviour:
       Length: 4659
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
       Length: 12430
-  BundleCount: 177
-  AssetCount: 266
+  BundleCount: 178
+  AssetCount: 267
   IsExactTextureSize: 0
   IsDrawDesc: 0
