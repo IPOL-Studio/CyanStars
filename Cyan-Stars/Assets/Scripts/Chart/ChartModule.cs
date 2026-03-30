@@ -52,6 +52,8 @@ namespace CyanStars.Chart
         /// </summary>
         public IReadOnlyList<RuntimeChartPack> RuntimeChartPacks => runtimeChartPacks;
 
+        private readonly List<AssetHandler<TextAsset>> ChartPackDataTextAssetHandlers = new();
+
         /// <summary>
         /// 选中的谱包下标
         /// </summary>
@@ -129,6 +131,10 @@ namespace CyanStars.Chart
         public async Task ReloadAllChartPacksAsync()
         {
             runtimeChartPacks.Clear();
+            foreach (var handle in ChartPackDataTextAssetHandlers)
+                handle.Unload();
+
+            ChartPackDataTextAssetHandlers.Clear();
 
             var paths = new List<string>();
             var levelsList = new List<ChartPackLevels>();
@@ -167,6 +173,7 @@ namespace CyanStars.Chart
             for (int i = 0; i < paths.Count; i++)
             {
                 AssetHandler<TextAsset> textHandler = GameRoot.Asset.LoadAssetAsync<TextAsset>(paths[i]);
+                ChartPackDataTextAssetHandlers.Add(textHandler);
 
                 if (!textHandler.IsDone)
                     await textHandler;
@@ -330,7 +337,7 @@ namespace CyanStars.Chart
             {
                 lastChartDataTextHandler?.Unload();
                 string chartFilePath = PathUtil.Combine(SelectedRuntimeChartPack.WorkspacePath, metaData.FilePath);
-                var textHandler = await GameRoot.Asset.LoadAssetAsync<TextAsset>(chartFilePath);
+                using var textHandler = await GameRoot.Asset.LoadAssetAsync<TextAsset>(chartFilePath);
 
                 if (textHandler.Asset?.text == null)
                 {
@@ -338,7 +345,7 @@ namespace CyanStars.Chart
                     return;
                 }
 
-                ChartData? chartData = JsonLoadHelper.LoadData<ChartData>(textHandler.Asset.text);
+                ChartData? chartData = await Task.Run(() => JsonLoadHelper.LoadData<ChartData>(textHandler.Asset.text));
                 if (chartData == null)
                 {
                     Debug.LogError($"无法将 {chartFilePath} 转换为 {nameof(ChartData)}，相关谱面无法加载！");
@@ -360,8 +367,8 @@ namespace CyanStars.Chart
         /// <summary>
         /// !!! 测试方法 !!! 卸载全部谱包并直接加载一张谱包
         /// </summary>
-        /// <remarks>仅用于 Beta2 制谱器测试，在搭建完选曲 UI 和加载逻辑后弃用此方法！</remarks>
         /// <param name="chartPackFilePath">谱包索引文件的绝对路径</param>
+        [Obsolete("仅用于 Beta2 制谱器测试，在搭建完选曲 UI 和加载逻辑后弃用此方法！")]
         public async Task SetChartPackDataFromDesk(string chartPackFilePath)
         {
             CancelSelectChartPackData();

@@ -20,7 +20,7 @@ namespace CyanStars.Framework.Asset
         {
             CatAssetManager.RegisterAsyncCustomRawAssetConverter(AudioClipConverter);
             CatAssetManager.RegisterCustomRawAssetConverter(ChartPackDataConverter);
-            CatAssetManager.RegisterCustomRawAssetConverter(ChartDataConverter);
+            // CatAssetManager.RegisterCustomRawAssetConverter(ChartDataConverter);
         }
 
 
@@ -87,12 +87,12 @@ namespace CyanStars.Framework.Asset
             return JsonLoadHelper.LoadData<ChartPackData>(bytes);
         }
 
-        /// <summary>
-        /// 解析 ChartData 的包装函数
-        /// </summary>
-        private static ChartData ChartDataConverter(byte[] bytes)
-        {
-            return JsonLoadHelper.LoadData<ChartData>(bytes);
-        }
+        // /// <summary>
+        // /// 解析 ChartData 的包装函数
+        // /// </summary>
+        // private static ChartData ChartDataConverter(byte[] bytes)
+        // {
+        //     return JsonLoadHelper.LoadData<ChartData>(bytes);
+        // }
     }
 }
