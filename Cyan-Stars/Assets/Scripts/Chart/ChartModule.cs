@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using CatAsset.Runtime;
 using CyanStars.Framework;
+using CyanStars.Framework.Asset;
 using CyanStars.Gameplay.MusicGame;
 using CyanStars.Utils;
 using UnityEngine;
@@ -81,7 +82,6 @@ namespace CyanStars.Chart
         public ChartData? ChartData { get; private set; }
 
         private string? lastChartDataHash;
-        private AssetHandler<ChartData>? lastChartDataHandler;
 
 
         public override void OnInit()
@@ -165,34 +165,44 @@ namespace CyanStars.Chart
             var newPacks = new List<RuntimeChartPack>();
             for (int i = 0; i < paths.Count; i++)
             {
-                AssetHandler<ChartPackData> handle = GameRoot.Asset.LoadAssetAsync<ChartPackData>(paths[i]);
-                if (!handle.IsDone)
-                    await handle;
+                using AssetHandler<TextAsset> textHandler = GameRoot.Asset.LoadAssetAsync<TextAsset>(paths[i]);
 
-                if (handle.Asset == null)
+                if (!textHandler.IsDone)
+                    await textHandler;
+
+                if (textHandler.Asset?.text == null)
                 {
                     Debug.LogError($"无法将 {paths[i]} 转换为 {nameof(ChartPackData)}，相关谱包无法加载！");
-                    return;
+                    continue;
+                }
+
+                ChartPackData? chartPackData = JsonLoadHelper.LoadData<ChartPackData>(textHandler.Asset.text);
+
+                if (chartPackData == null)
+                {
+                    Debug.LogError($"无法将 {paths[i]} 转换为 {nameof(ChartPackData)}，相关谱包无法加载！");
+                    continue;
                 }
 
                 // 工作区路径是谱包所在的绝对路径，后续相关的资源、谱面等相对路径直接拼接在工作区路径之后即可
                 string? workspacePath = Path.GetDirectoryName(paths[i]);
                 if (workspacePath == null)
                 {
-                    Debug.LogError($"谱包路径为空：{handle.Asset.Title}");
-                    return;
+                    Debug.LogError($"谱包路径为空：{chartPackData.Title}，相关谱包无法加载！");
+                    continue;
                 }
 
                 bool isInternal = i < internalPacksCount;
-                CalculateDifficultiesCount(handle.Asset, out _, out HashSet<ChartDifficulty> difficultiesAbleToPlay);
+                CalculateDifficultiesCount(chartPackData, out _, out HashSet<ChartDifficulty> difficultiesAbleToPlay);
                 if (isInternal && difficultiesAbleToPlay.Count != 4)
                 {
                     // TODO: 正式发布时在内置谱包谱面数不等于 4 时抛异常
-                    Debug.LogError($"某个内置谱包难度计数不等于 4：{handle.Asset.Title}，当前已允许加载，正式发布时应当修复");
+                    Debug.LogError($"某个内置谱包难度计数不等于 4：{chartPackData.Title}，当前已允许加载，正式发布时应当修复");
                 }
 
+                // levels 为各个难度的定数，内置谱包此值由 Unity SO 配置，社区谱包此值固定为 0
                 ChartPackLevels levels = levelsList[i];
-                newPacks.Add(new RuntimeChartPack(handle.Asset, isInternal, levels, workspacePath, difficultiesAbleToPlay));
+                newPacks.Add(new RuntimeChartPack(chartPackData, isInternal, levels, workspacePath, difficultiesAbleToPlay));
             }
 
             runtimeChartPacks.AddRange(newPacks);
@@ -290,8 +300,6 @@ namespace CyanStars.Chart
         {
             ChartData = null;
             lastChartDataHash = null;
-            lastChartDataHandler?.Unload();
-            lastChartDataHandler = null;
         }
 
         /// <summary>
@@ -318,21 +326,25 @@ namespace CyanStars.Chart
             // if (lastChartDataHash != metaData.ChartHash)
             if (true) // TODO: 实现了 hash 计算后改用上面一行，暂时先每次都强制加载谱面
             {
-                lastChartDataHandler?.Unload();
                 string chartFilePath = PathUtil.Combine(SelectedRuntimeChartPack.WorkspacePath, metaData.FilePath);
-                var handler = await GameRoot.Asset.LoadAssetAsync<ChartData>(chartFilePath);
-                var chartData = handler.Asset;
+                using var textHandler = await GameRoot.Asset.LoadAssetAsync<TextAsset>(chartFilePath);
 
+                if (textHandler.Asset?.text == null)
+                {
+                    Debug.LogError($"无法将 {chartFilePath} 转换为 {nameof(ChartData)}，相关谱面无法加载！");
+                    return;
+                }
+
+                ChartData? chartData = await Task.Run(() => JsonLoadHelper.LoadData<ChartData>(textHandler.Asset.text));
                 if (chartData == null)
                 {
-                    Debug.LogError("获取谱面时异常，未加载");
+                    Debug.LogError($"无法将 {chartFilePath} 转换为 {nameof(ChartData)}，相关谱面无法加载！");
                     return;
                 }
 
                 Debug.Log("已加载了新的的谱面");
                 ChartData = chartData;
                 lastChartDataHash = metaData.ChartHash;
-                lastChartDataHandler = handler;
             }
         }
 
@@ -344,8 +356,8 @@ namespace CyanStars.Chart
         /// <summary>
         /// !!! 测试方法 !!! 卸载全部谱包并直接加载一张谱包
         /// </summary>
-        /// <remarks>仅用于 Beta2 制谱器测试，在搭建完选曲 UI 和加载逻辑后弃用此方法！</remarks>
         /// <param name="chartPackFilePath">谱包索引文件的绝对路径</param>
+        [Obsolete("仅用于 Beta2 制谱器测试，在搭建完选曲 UI 和加载逻辑后弃用此方法！")]
         public async Task SetChartPackDataFromDesk(string chartPackFilePath)
         {
             CancelSelectChartPackData();
@@ -368,6 +380,7 @@ namespace CyanStars.Chart
 
             CalculateDifficultiesCount(chartPackData, out _, out HashSet<ChartDifficulty> difficultiesAbleToPlay);
 
+            // 社区谱包不参与玩家潜力值计算，定数为 0
             var runtimeChartPack =
                 new RuntimeChartPack(chartPackData, false, new ChartPackLevels(), Path.GetDirectoryName(chartPackFilePath), difficultiesAbleToPlay);
             Debug.Log($"已增量加载谱包 {chartPackFilePath}");
@@ -388,6 +401,7 @@ namespace CyanStars.Chart
 
             CalculateDifficultiesCount(chartPackData, out _, out HashSet<ChartDifficulty> difficultiesAbleToPlay);
 
+            // 社区谱包不参与玩家潜力值计算，定数为 0
             var runtimeChartPack =
                 new RuntimeChartPack(chartPackData, false, new ChartPackLevels(), Path.GetDirectoryName(chartPackFilePath), difficultiesAbleToPlay);
             Debug.Log($"已增量更新谱包 {chartPackFilePath}");

@@ -20,7 +20,7 @@ namespace CyanStars.Framework.Asset
         {
             CatAssetManager.RegisterAsyncCustomRawAssetConverter(AudioClipConverter);
             CatAssetManager.RegisterCustomRawAssetConverter(ChartPackDataConverter);
-            CatAssetManager.RegisterCustomRawAssetConverter(ChartDataConverter);
+            // CatAssetManager.RegisterCustomRawAssetConverter(ChartDataConverter);
         }
 
 
@@ -84,54 +84,15 @@ namespace CyanStars.Framework.Asset
         /// </summary>
         private static ChartPackData ChartPackDataConverter(byte[] bytes)
         {
-            return LoadJsonFromBytes<ChartPackData>(bytes);
+            return JsonLoadHelper.LoadData<ChartPackData>(bytes);
         }
 
-        /// <summary>
-        /// 解析 ChartData 的包装函数
-        /// </summary>
-        private static ChartData ChartDataConverter(byte[] bytes)
-        {
-            return LoadJsonFromBytes<ChartData>(bytes);
-        }
-
-        /// <summary>
-        /// .json 通用解析器，用于将以 byte[] 形式的 .json 内容解析为任意兼容实例
-        /// </summary>
-        /// <param name="bytes">包含 Json 数据的字节数组 (应为 UTF-8 编码)</param>
-        /// <returns>是否成功反序列化</returns>
-        private static T LoadJsonFromBytes<T>(byte[] bytes)
-        {
-            try
-            {
-                if (bytes == null || bytes.Length == 0)
-                {
-                    Debug.LogError("用于反序列化的 byte[] 为空或 null。");
-                    return default;
-                }
-
-                // 设置反序列化格式参数
-                JsonSerializerSettings settings = new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.None,
-                    Formatting = Formatting.Indented,
-                    Culture = CultureInfo.InvariantCulture,
-                    DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                    Converters = JsonConverters.Converters
-                };
-
-                // 将 byte[] 转换为 UTF-8 字符串
-                string json = System.Text.Encoding.UTF8.GetString(bytes);
-
-                T obj = JsonConvert.DeserializeObject<T>(json, settings);
-                Debug.Log($"从 byte[] 反序列化完成。");
-                return obj;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"从 byte[] 反序列化时出现异常：{e}");
-                return default;
-            }
-        }
+        // /// <summary>
+        // /// 解析 ChartData 的包装函数
+        // /// </summary>
+        // private static ChartData ChartDataConverter(byte[] bytes)
+        // {
+        //     return JsonLoadHelper.LoadData<ChartData>(bytes);
+        // }
     }
 }
