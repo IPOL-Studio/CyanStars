@@ -52,8 +52,6 @@ namespace CyanStars.Chart
         /// </summary>
         public IReadOnlyList<RuntimeChartPack> RuntimeChartPacks => runtimeChartPacks;
 
-        private readonly List<AssetHandler<TextAsset>> ChartPackDataTextAssetHandlers = new();
-
         /// <summary>
         /// 选中的谱包下标
         /// </summary>
@@ -84,7 +82,6 @@ namespace CyanStars.Chart
         public ChartData? ChartData { get; private set; }
 
         private string? lastChartDataHash;
-        private AssetHandler<TextAsset>? lastChartDataTextHandler;
 
 
         public override void OnInit()
@@ -131,10 +128,6 @@ namespace CyanStars.Chart
         public async Task ReloadAllChartPacksAsync()
         {
             runtimeChartPacks.Clear();
-            foreach (var handle in ChartPackDataTextAssetHandlers)
-                handle.Unload();
-
-            ChartPackDataTextAssetHandlers.Clear();
 
             var paths = new List<string>();
             var levelsList = new List<ChartPackLevels>();
@@ -172,8 +165,7 @@ namespace CyanStars.Chart
             var newPacks = new List<RuntimeChartPack>();
             for (int i = 0; i < paths.Count; i++)
             {
-                AssetHandler<TextAsset> textHandler = GameRoot.Asset.LoadAssetAsync<TextAsset>(paths[i]);
-                ChartPackDataTextAssetHandlers.Add(textHandler);
+                using AssetHandler<TextAsset> textHandler = GameRoot.Asset.LoadAssetAsync<TextAsset>(paths[i]);
 
                 if (!textHandler.IsDone)
                     await textHandler;
@@ -307,8 +299,6 @@ namespace CyanStars.Chart
         {
             ChartData = null;
             lastChartDataHash = null;
-            lastChartDataTextHandler?.Unload();
-            lastChartDataTextHandler = null;
         }
 
         /// <summary>
@@ -335,7 +325,6 @@ namespace CyanStars.Chart
             // if (lastChartDataHash != metaData.ChartHash)
             if (true) // TODO: 实现了 hash 计算后改用上面一行，暂时先每次都强制加载谱面
             {
-                lastChartDataTextHandler?.Unload();
                 string chartFilePath = PathUtil.Combine(SelectedRuntimeChartPack.WorkspacePath, metaData.FilePath);
                 using var textHandler = await GameRoot.Asset.LoadAssetAsync<TextAsset>(chartFilePath);
 
@@ -355,7 +344,6 @@ namespace CyanStars.Chart
                 Debug.Log("已加载了新的的谱面");
                 ChartData = chartData;
                 lastChartDataHash = metaData.ChartHash;
-                lastChartDataTextHandler = textHandler;
             }
         }
 
