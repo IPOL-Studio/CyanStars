@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyanStars.Framework;
@@ -118,21 +119,24 @@ namespace CyanStars.Gameplay.MusicGame
                 mapItems.Add(mapItem);
                 mapItem.OnSelect += OnSelectMap;
             }
-
-            mapItemTemplate.SetActive(false);
         }
 
         private void OnSelectMap(MapItem mapItem)
         {
+            // 在 DataModule 中选中谱包
+            if (mapItem.Data == null)
+                throw new NullReferenceException(nameof(mapItem.Data));
+            chartModule.SelectChartPackData(mapItem.Data.Index);
+
             // 将选中的谱面移到圆环中央，即使当前已经选中也执行
             circularMapList.MoveToItemAt(mapItem.Data!.Index);
 
-            if (this.owner.CurrentSelectedMap == mapItem.Data)
+            if (owner.CurrentSelectedMap == mapItem.Data)
             {
                 return;
             }
 
-            this.owner.CurrentSelectedMap = mapItem.Data;
+            owner.CurrentSelectedMap = mapItem.Data;
 
             Debug.Log("当前选中:" + mapItem.Data.RuntimeChartPack!.ChartPackData.Title);
 
@@ -158,7 +162,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
             else
             {
-                this.owner.StarController.ResetAllStaffGroup(mapItem.Data.RuntimeChartPack.ChartPackData
+                owner.StarController.ResetAllStaffGroup(mapItem.Data.RuntimeChartPack.ChartPackData
                     .MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex].Staffs);
             }
         }
