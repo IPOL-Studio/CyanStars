@@ -335,7 +335,8 @@ namespace CyanStars.Chart
                     return;
                 }
 
-                ChartData? chartData = await Task.Run(() => JsonLoadHelper.LoadData<ChartData>(textHandler.Asset.text));
+                string jsonText = textHandler.Asset.text;
+                ChartData? chartData = await Task.Run(() => JsonLoadHelper.LoadData<ChartData>(jsonText));
                 if (chartData == null)
                 {
                     Debug.LogError($"无法将 {chartFilePath} 转换为 {nameof(ChartData)}，相关谱面无法加载！");
