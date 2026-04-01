@@ -52,6 +52,18 @@ namespace CyanStars.Gameplay.MusicGame
             btnMap.onClick.AddListener(Select);
         }
 
+        /// <summary>
+        /// 外界在调用 GetUIItemAsync 后需要立刻调用此方法传入依赖
+        /// </summary>
+        /// <remarks>需要一些时间来加载曲绘</remarks>
+        public async Task Init(MapItemData data)
+        {
+            Data = data;
+
+            txtName.text = Data.RuntimeChartPack!.ChartPackData.Title;
+            await LoadCoverTexture();
+        }
+
         public override void OnRelease()
         {
             base.OnRelease();
@@ -65,17 +77,18 @@ namespace CyanStars.Gameplay.MusicGame
             handler?.Unload();
         }
 
-        /// <summary>
-        /// 外界在调用 GetUIItemAsync 后需要立刻调用此方法传入依赖
-        /// </summary>
-        /// <remarks>需要一些时间来加载曲绘</remarks>
-        public async Task Init(MapItemData data)
+        public void Select()
         {
-            Data = data;
-
-            txtName.text = Data.RuntimeChartPack!.ChartPackData.Title;
-            await LoadCoverTexture();
+            onSelect.Invoke(this);
         }
+
+        public void SetAlpha(float alpha)
+        {
+            coverRawImage.color = new Color(coverRawImage.color.r, coverRawImage.color.g, coverRawImage.color.b, alpha);
+            mask.color = new Color(mask.color.r, mask.color.g, mask.color.b, alpha);
+            txtName.color = new Color(txtName.color.r, txtName.color.g, txtName.color.b, alpha);
+        }
+
 
         private async Task LoadCoverTexture()
         {
@@ -96,18 +109,6 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 coverRawImage.texture = null;
             }
-        }
-
-        public void Select()
-        {
-            onSelect.Invoke(this);
-        }
-
-        public void SetAlpha(float alpha)
-        {
-            coverRawImage.color = new Color(coverRawImage.color.r, coverRawImage.color.g, coverRawImage.color.b, alpha);
-            mask.color = new Color(mask.color.r, mask.color.g, mask.color.b, alpha);
-            txtName.color = new Color(txtName.color.r, txtName.color.g, txtName.color.b, alpha);
         }
     }
 }

@@ -533,27 +533,38 @@ MonoBehaviour:
     - Name: Assets/BundleRes/Prefabs/LoginUI/BaseLoginUI.prefab
       Length: 25641
   - DirectoryName: BundleRes/Prefabs/MapSelectionUI
+    BundleName: MapItemTemplate_prefab.bundle
+    BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/MapItemTemplate_prefab.bundle
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 11996
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: Assets/BundleRes/Prefabs/MapSelectionUI/MapItemTemplate.prefab
+      Length: 11996
+  - DirectoryName: BundleRes/Prefabs/MapSelectionUI
     BundleName: MapSelectionPanel_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 184645
+    AssetsLength: 162147
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel.prefab
-      Length: 184645
+      Length: 162147
   - DirectoryName: BundleRes/Prefabs/MapSelectionUI
     BundleName: StaffLabel_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/StaffLabel_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 30759
+    AssetsLength: 29766
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/StaffLabel.prefab
-      Length: 30759
+      Length: 29766
   - DirectoryName: BundleRes/Prefabs/MapSelectionUI
     BundleName: Star_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/Star_prefab.bundle
@@ -697,7 +708,7 @@ MonoBehaviour:
     BundleIdentifyName: "CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7.bundle"
     Group: Base
     IsRaw: 0
-    AssetsLength: 17295264
+    AssetsLength: 17295252
     CompressOption: 2
     EncryptOption: 1
     Assets:
@@ -710,7 +721,7 @@ MonoBehaviour:
     - Name: "Assets/CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/Charts/\u65E0\u57A0.json"
       Length: 105996
     - Name: "Assets/CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/LICENSE.txt"
-      Length: 9299
+      Length: 9287
   - DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
     BundleName: Blod.bundle
     BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/Blod.bundle
@@ -761,12 +772,12 @@ MonoBehaviour:
     BundleIdentifyName: CysMultimediaAssets/Font/Oswald/Blod.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 2190047
+    AssetsLength: 84736
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/CysMultimediaAssets/Font/Oswald/Blod/Oswald-Bold SDF.asset
-      Length: 2136991
+      Length: 31680
     - Name: Assets/CysMultimediaAssets/Font/Oswald/Blod/Oswald-Bold.ttf
       Length: 53056
   - DirectoryName: CysMultimediaAssets/Font/Oswald
@@ -1841,12 +1852,12 @@ MonoBehaviour:
     BundleIdentifyName: CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/Editor_png.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 14475
+    AssetsLength: 14146
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/Editor.png
-      Length: 14475
+      Length: 14146
   - DirectoryName: CysMultimediaAssets/Sprites/MapSelectionPanel/Icons
     BundleName: ImpurityImage_png.bundle
     BundleIdentifyName: CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/ImpurityImage_png.bundle
@@ -1863,12 +1874,12 @@ MonoBehaviour:
     BundleIdentifyName: CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/Info_png.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 13093
+    AssetsLength: 12989
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/Info.png
-      Length: 13093
+      Length: 12989
   - DirectoryName: CysMultimediaAssets/Sprites/MapSelectionPanel/Icons
     BundleName: ScoreImage_png.bundle
     BundleIdentifyName: CysMultimediaAssets/Sprites/MapSelectionPanel/Icons/ScoreImage_png.bundle
@@ -2244,7 +2255,7 @@ MonoBehaviour:
       Length: 4659
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
       Length: 12430
-  BundleCount: 178
-  AssetCount: 267
+  BundleCount: 179
+  AssetCount: 268
   IsExactTextureSize: 0
   IsDrawDesc: 0

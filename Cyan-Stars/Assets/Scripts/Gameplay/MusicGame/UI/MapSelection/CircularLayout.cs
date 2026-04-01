@@ -15,9 +15,6 @@ namespace CyanStars.Gameplay.MusicGame
         [SerializeField]
         private ScrollRect scrollRect = null!;
 
-        [Header("控件列表")]
-        public List<MapItem> Items = null!;
-
         [Header("半径")]
         public float Radius;
 
@@ -39,6 +36,10 @@ namespace CyanStars.Gameplay.MusicGame
         [Header("使用滚轮切换的冷却时间")]
         public float SelectByScrollingDelta = 0.5f;
 
+        /// <summary>
+        /// 控件列表
+        /// </summary>
+        private readonly List<MapItem> Items = new();
 
         /// <summary>
         /// 第一个item的角度
@@ -65,7 +66,7 @@ namespace CyanStars.Gameplay.MusicGame
             curFirstItemAngle = OffsetAngle;
 
             float paddingAngle = (Radius != 0) ? (Padding / (2 * Mathf.PI * Radius) * 360) : 0;
-            scrollRect.onValueChanged.AddListener((Vector2 value) =>
+            scrollRect.onValueChanged.AddListener((value) =>
             {
                 float itemsTotalAngle = (Items.Count - 1) * paddingAngle; // 所有item整体所占的角度
                 float centerAngle = (StartAngle + EndAngle) / 2; // 圆环中央的角度
