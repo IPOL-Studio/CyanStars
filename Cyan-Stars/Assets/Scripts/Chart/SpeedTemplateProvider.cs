@@ -35,10 +35,14 @@ namespace CyanStars.Chart
 
         public void PopulateSpeedTemplates(IReadOnlyCollection<SpeedTemplateData> dataList)
         {
+            // cache = Baker.IsSupportParallel
+            //     ? dataList.AsParallel()
+            //               .ToDictionary(data => data, data => SpeedTemplate.Create(data, Baker, PlayerSpeed))
+            //     : dataList.ToDictionary(data => data, data => SpeedTemplate.Create(data, Baker, PlayerSpeed));
             cache = Baker.IsSupportParallel
                 ? dataList.AsParallel()
-                          .ToDictionary(data => data, data => SpeedTemplate.Create(data, Baker, PlayerSpeed))
-                : dataList.ToDictionary(data => data, data => SpeedTemplate.Create(data, Baker, PlayerSpeed));
+                    .ToDictionary(data => data, data => new SpeedTemplate(PlayerSpeed))
+                : dataList.ToDictionary(data => data, data => new SpeedTemplate(PlayerSpeed));
         }
     }
 }
