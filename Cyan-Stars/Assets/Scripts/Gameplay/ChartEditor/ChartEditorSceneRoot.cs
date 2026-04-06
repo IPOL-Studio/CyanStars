@@ -29,6 +29,9 @@ namespace CyanStars.Gameplay.ChartEditor
         [SerializeField]
         private ChartEditorFileManager fileManager = null!;
 
+        [SerializeField]
+        private ShortcutManager shortcutManager = null!;
+
 
         public static MvvmBindManager MvvmBindManager = null!;
         public static CommandStack CommandStack = null!;
@@ -115,7 +118,15 @@ namespace CyanStars.Gameplay.ChartEditor
                 chartMetadataIndex = (int)chartModule.SelectedChartMetadataIndex;
             }
 
-            mvvmBindManager.StartBind(workspacePath, chartMetadataIndex, chartPackData, chartData, musicManager, noteAudioManager);
+            mvvmBindManager.StartBind(
+                workspacePath,
+                chartMetadataIndex,
+                chartPackData,
+                chartData,
+                musicManager,
+                noteAudioManager,
+                shortcutManager
+            );
         }
 
         /// <summary>
