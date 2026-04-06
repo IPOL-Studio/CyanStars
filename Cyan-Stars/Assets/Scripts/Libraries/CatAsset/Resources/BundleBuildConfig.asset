@@ -537,23 +537,23 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/MapItemTemplate_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 11996
+    AssetsLength: 12399
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/MapItemTemplate.prefab
-      Length: 11996
+      Length: 12399
   - DirectoryName: BundleRes/Prefabs/MapSelectionUI
     BundleName: MapSelectionPanel_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 162147
+    AssetsLength: 167258
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel.prefab
-      Length: 162147
+      Length: 167258
   - DirectoryName: BundleRes/Prefabs/MapSelectionUI
     BundleName: StaffLabel_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/StaffLabel_prefab.bundle
@@ -708,7 +708,7 @@ MonoBehaviour:
     BundleIdentifyName: "CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7.bundle"
     Group: Base
     IsRaw: 0
-    AssetsLength: 17295252
+    AssetsLength: 17381745
     CompressOption: 2
     EncryptOption: 1
     Assets:
@@ -719,7 +719,7 @@ MonoBehaviour:
     - Name: "Assets/CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/ChartPack.json"
       Length: 1568
     - Name: "Assets/CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/Charts/\u65E0\u57A0.json"
-      Length: 105996
+      Length: 192489
     - Name: "Assets/CysMultimediaAssets/Charts/3-\u4E91\u4E0E\u8BD7/LICENSE.txt"
       Length: 9287
   - DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
