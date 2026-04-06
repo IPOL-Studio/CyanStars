@@ -2,6 +2,7 @@
 
 using System;
 using CyanStars.Chart;
+using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
 
@@ -79,13 +80,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            if (!Beat.TryCreateBeat(integerPartInt, numeratorInt, denominatorInt, out var beat))
+            if (!Beat.TryCreateBeat(integerPartInt, numeratorInt, denominatorInt, out var newBeat))
             {
                 Model.SelectedNoteData.ForceNotify();
                 return;
             }
 
-            Model.SelectedNoteData.CurrentValue.JudgeBeat = beat;
+            Beat oldBeat = Model.SelectedNoteData.CurrentValue.JudgeBeat;
+            CommandStack.ExecuteCommand(
+                () => Model.SelectedNoteData.CurrentValue.JudgeBeat = newBeat,
+                () => Model.SelectedNoteData.CurrentValue.JudgeBeat = oldBeat
+            );
             Model.SelectedNoteDataChangedSubject.OnNext(Model.SelectedNoteData.CurrentValue);
         }
 
@@ -105,13 +110,18 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            if (!Beat.TryCreateBeat(integerPartInt, numeratorInt, denominatorInt, out var beat))
+            if (!Beat.TryCreateBeat(integerPartInt, numeratorInt, denominatorInt, out var newEndBeat))
             {
                 Model.SelectedNoteData.ForceNotify();
                 return;
             }
 
-            (Model.SelectedNoteData.CurrentValue as HoldChartNoteData).EndJudgeBeat = beat;
+            Beat oldEndBeat = ((HoldChartNoteData)Model.SelectedNoteData.CurrentValue).EndJudgeBeat;
+            CommandStack.ExecuteCommand(
+                () => ((HoldChartNoteData)Model.SelectedNoteData.CurrentValue).EndJudgeBeat = newEndBeat,
+                () => ((HoldChartNoteData)Model.SelectedNoteData.CurrentValue).EndJudgeBeat = oldEndBeat
+            );
+
             Model.SelectedNoteDataChangedSubject.OnNext(Model.SelectedNoteData.CurrentValue);
         }
 
@@ -123,17 +133,21 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (Model.SelectedNoteData.CurrentValue.Type == NoteType.Break)
                 throw new Exception("SelectedNoteData is break");
 
-            if (!float.TryParse(pos, out var posFloat) || posFloat < 0f || 0.8f < posFloat)
+            if (!float.TryParse(pos, out var newPosFloat) || newPosFloat < 0f || 0.8f < newPosFloat)
             {
                 Model.SelectedNoteData.ForceNotify();
                 return;
             }
 
-            (Model.SelectedNoteData.CurrentValue as IChartNoteNormalPos).Pos = posFloat;
+            float oldPosFloat = ((HoldChartNoteData)Model.SelectedNoteData.CurrentValue).Pos;
+            CommandStack.ExecuteCommand(
+                () => ((IChartNoteNormalPos)Model.SelectedNoteData.CurrentValue).Pos = newPosFloat,
+                () => ((IChartNoteNormalPos)Model.SelectedNoteData.CurrentValue).Pos = oldPosFloat
+            );
             Model.SelectedNoteDataChangedSubject.OnNext(Model.SelectedNoteData.CurrentValue);
         }
 
-        public void UpdateBreakNotePos(BreakNotePos pos)
+        public void UpdateBreakNotePos(BreakNotePos newBreakPos)
         {
             if (Model.SelectedNoteData.CurrentValue == null)
                 throw new Exception("SelectedNoteData is null");
@@ -141,7 +155,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (Model.SelectedNoteData.CurrentValue.Type != NoteType.Break)
                 throw new Exception("SelectedNoteData is not break");
 
-            (Model.SelectedNoteData.CurrentValue as BreakChartNoteData).BreakNotePos = pos;
+            BreakNotePos oldBreakPos = ((BreakChartNoteData)Model.SelectedNoteData.CurrentValue).BreakNotePos;
+            CommandStack.ExecuteCommand(
+                () => ((BreakChartNoteData)Model.SelectedNoteData.CurrentValue).BreakNotePos = newBreakPos,
+                () => ((BreakChartNoteData)Model.SelectedNoteData.CurrentValue).BreakNotePos = oldBreakPos
+            );
             Model.SelectedNoteDataChangedSubject.OnNext(Model.SelectedNoteData.CurrentValue);
         }
     }
