@@ -127,7 +127,7 @@ namespace CyanStars.Utils.SelectableUI
 #if UNITY_EDITOR
                 else
                 {
-                    Debug.LogError($"graphic 为 null，无法更新视觉效果，请检查");
+                    Debug.LogError($"graphic 为 null，无法更新视觉效果，请检查", gameObject);
                 }
 #endif
             }
