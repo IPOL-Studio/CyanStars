@@ -108,12 +108,10 @@ namespace CyanStars.Utils.SelectableUI
             currentEffectSequence = DOTween.Sequence();
 
             // 添加缩放动画
-            if (transformToChangeScale != null)
-            {
-                currentEffectSequence.Join(transformToChangeScale
-                    .DOScale(config.Scale, tweenDuration)
-                    .SetEase(tweenEase));
-            }
+            currentEffectSequence.Join(transformToChangeScale
+                .DOScale(config.Scale, tweenDuration)
+                .SetEase(tweenEase));
+
 
             // 添加颜色渐变动画
             foreach (var graphic in maskableGraphicToChangeColor)
