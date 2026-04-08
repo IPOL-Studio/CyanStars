@@ -8,20 +8,20 @@ using DG.Tweening;
 
 namespace CyanStars.Utils.SelectableUI
 {
+    /// <summary>
+    /// 用于为 Button 和 Toggle 处理玩家交互视觉效果
+    /// </summary>
+    /// <remarks>
+    /// 用法：
+    /// 1. 把此脚本和 SelectableStateObserver 挂载在 Button 或 toggle 物体上
+    /// 2. 把所有需要在交互时变色的图片/文字拖到 maskableGraphicToChangeColor 里面
+    /// 3. 调整效果直到满意
+    /// </remarks>
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(Selectable))]
     [RequireComponent(typeof(SelectableStateObserver))]
     public class SelectableViewEffectHandler : MonoBehaviour
     {
-        [Header("组件引用")]
-        [SerializeField]
-        private Transform? transformToChangeScale;
-
-        [SerializeField]
-        private Selectable? selectable;
-
-        [SerializeField]
-        private SelectableStateObserver? observer;
-
         [SerializeField]
         private List<MaskableGraphic> maskableGraphicToChangeColor = new();
 
@@ -48,41 +48,27 @@ namespace CyanStars.Utils.SelectableUI
         [SerializeField]
         private StateEffectConfig disabledState = new() { Scale = Vector3.one, TintColor = new Color(0.7f, 0.7f, 0.7f, 0.95f) };
 
+        private Transform transformToChangeScale = null!;
+        private Selectable selectable = null!;
+        private SelectableStateObserver observer = null!;
+        private Sequence? currentEffectSequence; // 缓存当前的动画序列，用于打断旧动画
 
-        // 缓存当前的动画序列，用于打断旧动画
-        private Sequence? currentEffectSequence;
-
-
-#if UNITY_EDITOR
-        private void Reset()
-        {
-            if (transformToChangeScale == null)
-                transformToChangeScale = GetComponent<Transform>();
-            if (selectable == null)
-                selectable = GetComponent<Selectable>();
-            if (observer == null)
-                observer = GetComponent<SelectableStateObserver>();
-        }
-#endif
 
         private void Awake()
         {
-            if (transformToChangeScale == null)
-                transformToChangeScale = GetComponent<Transform>();
-            if (selectable == null)
-                selectable = GetComponent<Selectable>();
-            if (observer == null)
-                observer = GetComponent<SelectableStateObserver>();
+            transformToChangeScale = GetComponent<Transform>();
+            selectable = GetComponent<Selectable>();
+            observer = GetComponent<SelectableStateObserver>();
         }
 
         private void Start()
         {
-            observer!.OnStateChanged.AddListener(OnStateChanged);
+            observer.OnStateChanged.AddListener(OnStateChanged);
         }
 
         private void OnDestroy()
         {
-            observer!.OnStateChanged.RemoveListener(OnStateChanged);
+            observer.OnStateChanged.RemoveListener(OnStateChanged);
 
             currentEffectSequence?.Kill();
             currentEffectSequence = null;
@@ -138,6 +124,12 @@ namespace CyanStars.Utils.SelectableUI
                         .DOColor(config.TintColor, tweenDuration)
                         .SetEase(tweenEase));
                 }
+#if UNITY_EDITOR
+                else
+                {
+                    Debug.LogError($"graphic 为 null，无法更新视觉效果，请检查");
+                }
+#endif
             }
 
             currentEffectSequence.SetLink(gameObject);

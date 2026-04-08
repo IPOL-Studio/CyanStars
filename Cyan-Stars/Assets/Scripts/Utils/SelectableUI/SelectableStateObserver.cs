@@ -1,6 +1,5 @@
 #nullable enable
 
-using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -18,8 +17,9 @@ namespace CyanStars.Utils.SelectableUI
     /// 1. 挂载在 Button 或 toggle 物体上
     /// 2. 将 Button 或 toggle 组件的过渡设为 None，否则程序会在运行时警告并覆盖
     /// 3. 按照正常的 Unity 方式（onClick/onValueChanged.AddListener 或拖拽）监听并处理 Selectable 的逻辑事件
-    /// 4. 再写一个脚本监听并处理本脚本的 OnStateChanged 视图事件
+    /// 4. 再写一个脚本监听并处理本脚本的 OnStateChanged 视图事件（参见 SelectableViewEffectHandler）
     /// </remarks>
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(Selectable))]
     public class SelectableStateObserver : UIBehaviour,
         IPointerEnterHandler, IPointerExitHandler,
@@ -30,21 +30,14 @@ namespace CyanStars.Utils.SelectableUI
 
 
         [Header("状态改变回调")]
-        public UIStateChangeEvent OnStateChanged = new();
+        public UnityEvent<UIState> OnStateChanged = new();
 
-        [SerializeField]
-        private Selectable? selectable;
+        private Selectable selectable = null!;
 
-
-        /// <remarks>
-        /// selectable as Toggle
-        /// </remarks>
-        private Toggle? toggle;
-
-
-        private bool isHovered = false; // 鼠标悬浮
-        private bool isFocused = false; // 键盘/手柄导航焦点
-        private bool isPressed = false; // 按住
+        private bool isKeepSelected; // 被选中（如果组件是 Toggle，将自动从 toggle.isOn 同步）
+        private bool isHovered; // 鼠标悬浮
+        private bool isFocused; // 键盘/手柄导航焦点
+        private bool isPressed; // 按住
 
 
         /// <summary>
@@ -53,26 +46,16 @@ namespace CyanStars.Utils.SelectableUI
         public void SetInteractable(bool interactable)
         {
             // 考虑到 UI 内可能有大量组件，故不采用 Update() 自动轮询
-            selectable!.interactable = interactable;
+            selectable.interactable = interactable;
             EvaluateState();
         }
 
 
-#if UNITY_EDITOR
-        protected override void Reset()
-        {
-            // Unity 编辑器内自动抓取组件，无需手动拖拽
-            base.Reset();
-            if (selectable == null)
-                selectable = GetComponent<Selectable>();
-        }
-#endif
-
         protected override void Awake()
         {
             base.Awake();
-            if (selectable == null)
-                selectable = GetComponent<Selectable>();
+
+            selectable = GetComponent<Selectable>();
 
             if (selectable.transition != Selectable.Transition.None)
             {
@@ -80,16 +63,18 @@ namespace CyanStars.Utils.SelectableUI
                 selectable.transition = Selectable.Transition.None;
             }
 
-            toggle = selectable as Toggle;
+            if (TryGetComponent<Toggle>(out var toggle))
+            {
+                isKeepSelected = toggle.isOn;
+                toggle.onValueChanged.AddListener(OnToggleValueChanged);
+            }
         }
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            if (toggle != null)
-                toggle.onValueChanged.AddListener(OnToggleValueChanged);
 
-
+            isKeepSelected = false;
             isHovered = false;
             isFocused = false;
             isPressed = false;
@@ -105,10 +90,11 @@ namespace CyanStars.Utils.SelectableUI
         protected override void OnDisable()
         {
             base.OnDisable();
-            if (toggle != null)
+
+            if (TryGetComponent<Toggle>(out var toggle))
                 toggle.onValueChanged.RemoveListener(OnToggleValueChanged);
 
-
+            isKeepSelected = false;
             isHovered = false;
             isFocused = false;
             isPressed = false;
@@ -121,6 +107,9 @@ namespace CyanStars.Utils.SelectableUI
         /// </summary>
         private void OnToggleValueChanged(bool value)
         {
+            if (isKeepSelected == value)
+                return;
+            isKeepSelected = value;
             EvaluateState();
         }
 
@@ -128,7 +117,7 @@ namespace CyanStars.Utils.SelectableUI
         {
             UIState newState;
 
-            if (!selectable!.IsInteractable())
+            if (!selectable.IsInteractable())
             {
                 // 禁止交互
                 newState = UIState.Disabled;
@@ -138,9 +127,9 @@ namespace CyanStars.Utils.SelectableUI
                 // 按下，且鼠标不移出组件区域/是键盘手柄导航焦点
                 newState = UIState.Pressed;
             }
-            else if (toggle != null && toggle.isOn)
+            else if (isKeepSelected)
             {
-                // 选中（仅 toggle）
+                // 选中（常见于 toggle）
                 newState = UIState.Selected;
             }
             else if (isHovered || isFocused)
@@ -203,16 +192,6 @@ namespace CyanStars.Utils.SelectableUI
         }
     }
 
-    /// <summary>
-    /// 提供 Unity 式可订阅的能力
-    /// </summary>
-    /// <example>
-    /// selectable.OnStateChanged.AddListener(()=>{});
-    /// </example>
-    [Serializable]
-    public class UIStateChangeEvent : UnityEvent<UIState>
-    {
-    }
 
     public enum UIState
     {
