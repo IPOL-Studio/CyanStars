@@ -19,7 +19,7 @@ using GameObjectPoolManager = CyanStars.Framework.GameObjectPool.GameObjectPoolM
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
-    public class EditAreaView : BaseView<EditAreaViewModel>, IPointerClickHandler
+    public class EditAreaView : BaseView<EditAreaViewModel>, IPointerDownHandler
     {
         [SerializeField]
         private GameObject posLinesFrameObject = null!;
@@ -402,7 +402,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         #region Input
 
-        public void OnPointerClick(PointerEventData eventData)
+        public void OnPointerDown(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Right || !ViewModel.CanPutNote.CurrentValue)
             {

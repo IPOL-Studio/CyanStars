@@ -12,7 +12,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
     /// <summary>
     /// 动态创建。每个编辑区的 Note 持有一个 V。
     /// </summary>
-    public class EditAreaNoteView : BaseView<EditAreaNoteViewModel>, IPointerClickHandler
+    public class EditAreaNoteView : BaseView<EditAreaNoteViewModel>, IPointerDownHandler
     {
         private RectTransform rect = null!;
 
@@ -44,15 +44,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
         }
 
-        public void OnPointerClick(PointerEventData eventData)
+        public void OnPointerDown(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Right)
             {
-                ViewModel.OnRightClick();
+                ViewModel.OnRightKeyDown();
             }
             else if (eventData.button == PointerEventData.InputButton.Left)
             {
-                ViewModel.OnLeftClick();
+                ViewModel.OnLeftKeyDown();
             }
         }
     }

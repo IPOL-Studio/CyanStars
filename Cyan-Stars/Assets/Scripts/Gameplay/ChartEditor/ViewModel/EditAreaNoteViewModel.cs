@@ -110,7 +110,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             return (float)Math.Max(0, endY - startY - 12.5f);
         }
 
-        public void OnLeftClick()
+        public void OnLeftKeyDown()
         {
             if (Model.SelectedEditTool.CurrentValue == EditToolType.Eraser)
             {
@@ -133,7 +133,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             }
         }
 
-        public void OnRightClick()
+        public void OnRightKeyDown()
         {
             if (Model.SelectedNoteData.Value == data)
             {
