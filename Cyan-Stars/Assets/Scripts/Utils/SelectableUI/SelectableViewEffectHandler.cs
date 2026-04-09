@@ -63,6 +63,7 @@ namespace CyanStars.Utils.SelectableUI
 
         private void Start()
         {
+            OnStateChanged(observer.CurrentState); // 启动时更新一次视觉效果
             observer.OnStateChanged.AddListener(OnStateChanged);
         }
 

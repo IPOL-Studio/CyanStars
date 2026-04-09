@@ -166,15 +166,24 @@ namespace CyanStars.Utils.SelectableUI
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (eventData.button != PointerEventData.InputButton.Left) return;
+            if (eventData.button != PointerEventData.InputButton.Left)
+                return;
+
             isPressed = true;
             EvaluateState();
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            if (eventData.button != PointerEventData.InputButton.Left) return;
+            if (eventData.button != PointerEventData.InputButton.Left)
+                return;
+
             isPressed = false;
+
+            // 抬起鼠标时清除焦点，防止卡在 Hover 状态
+            if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == gameObject)
+                EventSystem.current.SetSelectedGameObject(null);
+
             EvaluateState();
         }
 
