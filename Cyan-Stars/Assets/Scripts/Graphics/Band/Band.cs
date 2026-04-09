@@ -39,6 +39,7 @@ namespace CyanStars.Graphics.Band
             {
                 return;
             }
+
             computeBuffer.SetData(bandHeights);
         }
 
@@ -58,10 +59,12 @@ namespace CyanStars.Graphics.Band
             GC.SuppressFinalize(this);
         }
 
+#if UNITY_EDITOR
         ~Band()
         {
-            Dispose(false);
+            Debug.LogError($"{nameof(Band)} 资源未被正确释放！请确保显式调用了 Dispose()。这会导致 ComputeBuffer 内存泄漏。");
         }
+#endif
 
         public static bool TryCreate(BandData data, out Band band)
         {
