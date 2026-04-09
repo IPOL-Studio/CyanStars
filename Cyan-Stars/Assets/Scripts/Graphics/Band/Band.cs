@@ -39,7 +39,6 @@ namespace CyanStars.Graphics.Band
             {
                 return;
             }
-
             computeBuffer.SetData(bandHeights);
         }
 
@@ -57,6 +56,11 @@ namespace CyanStars.Graphics.Band
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        ~Band()
+        {
+            Dispose(false);
         }
 
         public static bool TryCreate(BandData data, out Band band)
