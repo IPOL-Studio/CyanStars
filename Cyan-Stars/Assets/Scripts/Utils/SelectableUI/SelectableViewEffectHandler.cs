@@ -27,26 +27,35 @@ namespace CyanStars.Utils.SelectableUI
 
         [Header("动画设置")]
         [SerializeField]
-        private float tweenDuration = 0.15f;
+        private float tweenDuration = 0.1f;
 
         [SerializeField]
         private Ease tweenEase = Ease.OutQuad;
 
         [Header("各状态配置")]
         [SerializeField]
-        private StateEffectConfig normalState = new() { Scale = Vector3.one, TintColor = new Color(1f, 1f, 1f, 0.98f) };
+        private StateEffectConfig normalState = new() { Scale = Vector3.one, TintColor = new Color(0.93f, 0.93f, 0.93f, 0.98f) };
 
         [SerializeField]
-        private StateEffectConfig hoverState = new() { Scale = new Vector3(1.01f, 1.01f, 1.01f), TintColor = new Color(1f, 0.86f, 0.4f, 0.98f) };
+        private StateEffectConfig normalSelectedState = new() { Scale = Vector3.one, TintColor = new Color(0.27f, 0.47f, 0.82f, 0.98f) };
 
         [SerializeField]
-        private StateEffectConfig pressedState = new() { Scale = new Vector3(0.99f, 0.99f, 0.99f), TintColor = new Color(0.44f, 0.37f, 0.16f, 0.98f) };
+        private StateEffectConfig hoverState = new() { Scale = new Vector3(1.02f, 1.02f, 1.02f), TintColor = new Color(0.98f, 0.98f, 0.98f, 0.98f) };
 
         [SerializeField]
-        private StateEffectConfig selectedState = new() { Scale = Vector3.one, TintColor = new Color(0.81f, 0.64f, 0.06f, 0.98f) };
+        private StateEffectConfig hoverSelectedState = new() { Scale = new Vector3(1.02f, 1.02f, 1.02f), TintColor = new Color(0.49f, 0.63f, 0.87f, 0.98f) };
 
         [SerializeField]
-        private StateEffectConfig disabledState = new() { Scale = Vector3.one, TintColor = new Color(0.7f, 0.7f, 0.7f, 0.95f) };
+        private StateEffectConfig pressedState = new() { Scale = new Vector3(0.98f, 0.98f, 0.98f), TintColor = new Color(0.62f, 0.62f, 0.62f, 0.98f) };
+
+        [SerializeField]
+        private StateEffectConfig pressedSelectedState = new() { Scale = new Vector3(0.98f, 0.98f, 0.98f), TintColor = new Color(0.29f, 0.42f, 0.62f, 0.98f) };
+
+        [SerializeField]
+        private StateEffectConfig disabledState = new() { Scale = Vector3.one, TintColor = new Color(0.33f, 0.33f, 0.33f, 0.98f) };
+
+        [SerializeField]
+        private StateEffectConfig disabledSelectedState = new() { Scale = Vector3.one, TintColor = new Color(0.11f, 0.19f, 0.33f, 0.98f) };
 
         private Transform transformToChangeScale = null!;
         private Selectable selectable = null!;
@@ -83,17 +92,26 @@ namespace CyanStars.Utils.SelectableUI
                 case UIState.Normal:
                     ApplyEffect(normalState);
                     break;
+                case UIState.NormalSelected:
+                    ApplyEffect(normalSelectedState);
+                    break;
                 case UIState.Hover:
                     ApplyEffect(hoverState);
                     break;
-                case UIState.Selected:
-                    ApplyEffect(selectedState);
+                case UIState.HoverSelected:
+                    ApplyEffect(hoverSelectedState);
                     break;
                 case UIState.Pressed:
                     ApplyEffect(pressedState);
                     break;
+                case UIState.PressedSelected:
+                    ApplyEffect(pressedSelectedState);
+                    break;
                 case UIState.Disabled:
                     ApplyEffect(disabledState);
+                    break;
+                case UIState.DisabledSelected:
+                    ApplyEffect(disabledSelectedState);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);

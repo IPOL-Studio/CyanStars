@@ -120,27 +120,22 @@ namespace CyanStars.Utils.SelectableUI
             if (!selectable.IsInteractable())
             {
                 // 禁止交互
-                newState = UIState.Disabled;
+                newState = isKeepSelected ? UIState.DisabledSelected : UIState.Disabled;
             }
             else if (isPressed && (isHovered || isFocused))
             {
                 // 按下，且鼠标不移出组件区域/是键盘手柄导航焦点
-                newState = UIState.Pressed;
-            }
-            else if (isKeepSelected)
-            {
-                // 选中（常见于 toggle）
-                newState = UIState.Selected;
+                newState = isKeepSelected ? UIState.PressedSelected : UIState.Pressed;
             }
             else if (isHovered || isFocused)
             {
                 // 鼠标悬浮/键盘手柄导航焦点
-                newState = UIState.Hover;
+                newState = isKeepSelected ? UIState.HoverSelected : UIState.Hover;
             }
             else
             {
                 // 待机
-                newState = UIState.Normal;
+                newState = isKeepSelected ? UIState.NormalSelected : UIState.Normal;
             }
 
             // 如果状态发生变化，则执行表现更新
@@ -206,9 +201,12 @@ namespace CyanStars.Utils.SelectableUI
     {
         // 越下方优先级越高，目前是用 if 手动判断优先级
         Normal, // 待机
+        NormalSelected, // 待机+已选中 (仅Toggle)
         Hover, // 鼠标悬浮
-        Selected, // 已选中 (仅Toggle)
+        HoverSelected, // 鼠标悬浮+已选中 (仅Toggle)
         Pressed, // 鼠标按下&按住
-        Disabled // 禁止交互
+        PressedSelected, // 鼠标按下&按住+已选中 (仅Toggle)
+        Disabled, // 禁止交互
+        DisabledSelected // 禁止交互+已选中 (仅Toggle)
     }
 }
