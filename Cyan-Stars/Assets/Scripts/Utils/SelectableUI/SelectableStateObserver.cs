@@ -30,7 +30,10 @@ namespace CyanStars.Utils.SelectableUI
 
 
         [Header("状态改变回调")]
-        public UnityEvent<UIState> OnStateChanged = new();
+        [SerializeField]
+        private UnityEvent<UIState> onStateChanged;
+
+        public UnityEvent<UIState> OnStateChanged => onStateChanged;
 
         private Selectable selectable = null!;
 
@@ -142,7 +145,7 @@ namespace CyanStars.Utils.SelectableUI
             if (newState != CurrentState)
             {
                 CurrentState = newState;
-                OnStateChanged.Invoke(CurrentState);
+                onStateChanged.Invoke(CurrentState);
             }
         }
 
