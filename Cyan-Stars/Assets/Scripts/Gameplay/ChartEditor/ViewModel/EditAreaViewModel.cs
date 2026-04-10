@@ -21,6 +21,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<bool> IsTimelinePlaying => Model.IsTimelinePlaying;
 
 
+        public ReadOnlyReactiveProperty<EditToolType> SelectedEditTool => Model.SelectedEditTool;
+
         // 位置线
         public ReadOnlyReactiveProperty<int> BeatAccuracy => Model.BeatAccuracy;
         public ReadOnlyReactiveProperty<double> BeatZoom => Model.BeatZoom;

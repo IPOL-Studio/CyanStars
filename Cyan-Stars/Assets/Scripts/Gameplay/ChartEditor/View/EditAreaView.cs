@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CyanStars.Chart;
 using CyanStars.Framework;
+using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using Gameplay.ChartEditor;
 using ObservableCollections;
@@ -59,6 +60,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
+            ViewModel.SelectedEditTool
+                .Subscribe(tool => scrollRect.vertical = tool == EditToolType.Select) // 只有为“选择”工具时才允许拖动 scrollRect
+                .AddTo(this);
             ViewModel.ContentAddHeight
                 .Subscribe(addHeight =>
                     {
