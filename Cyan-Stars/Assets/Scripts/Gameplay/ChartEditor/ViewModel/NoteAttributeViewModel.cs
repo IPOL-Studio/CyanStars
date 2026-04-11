@@ -80,16 +80,23 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            if (!Beat.TryCreateBeat(integerPartInt, numeratorInt, denominatorInt, out var newBeat))
+            if (!Beat.TryCreateBeat(integerPartInt, numeratorInt, denominatorInt, out var newJudgeBeat))
             {
                 Model.SelectedNoteData.ForceNotify();
                 return;
             }
 
-            Beat oldBeat = Model.SelectedNoteData.CurrentValue.JudgeBeat;
+            if (Model.SelectedNoteData.CurrentValue.Type == NoteType.Hold &&
+                ((HoldChartNoteData)Model.SelectedNoteData.CurrentValue).EndJudgeBeat < newJudgeBeat)
+            {
+                Model.SelectedNoteData.ForceNotify();
+                return;
+            }
+
+            Beat oldJudgeBeat = Model.SelectedNoteData.CurrentValue.JudgeBeat;
             CommandStack.ExecuteCommand(
-                () => Model.SelectedNoteData.CurrentValue.JudgeBeat = newBeat,
-                () => Model.SelectedNoteData.CurrentValue.JudgeBeat = oldBeat
+                () => Model.SelectedNoteData.CurrentValue.JudgeBeat = newJudgeBeat,
+                () => Model.SelectedNoteData.CurrentValue.JudgeBeat = oldJudgeBeat
             );
             Model.SelectedNoteDataChangedSubject.OnNext(Model.SelectedNoteData.CurrentValue);
         }
@@ -116,10 +123,18 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            Beat oldEndBeat = ((HoldChartNoteData)Model.SelectedNoteData.CurrentValue).EndJudgeBeat;
+            HoldChartNoteData note = (HoldChartNoteData)Model.SelectedNoteData.CurrentValue;
+
+            if (newEndBeat < note.JudgeBeat)
+            {
+                Model.SelectedNoteData.ForceNotify();
+                return;
+            }
+
+            Beat oldEndBeat = note.EndJudgeBeat;
             CommandStack.ExecuteCommand(
-                () => ((HoldChartNoteData)Model.SelectedNoteData.CurrentValue).EndJudgeBeat = newEndBeat,
-                () => ((HoldChartNoteData)Model.SelectedNoteData.CurrentValue).EndJudgeBeat = oldEndBeat
+                () => note.EndJudgeBeat = newEndBeat,
+                () => note.EndJudgeBeat = oldEndBeat
             );
 
             Model.SelectedNoteDataChangedSubject.OnNext(Model.SelectedNoteData.CurrentValue);
