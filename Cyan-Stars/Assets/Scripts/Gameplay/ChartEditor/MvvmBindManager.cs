@@ -64,14 +64,17 @@ namespace CyanStars.Gameplay.ChartEditor
                               ChartPackData chartPackData,
                               ChartData chartData,
                               ChartEditorMusicManager musicManager,
-                              ChartEditorNoteAudioManager chartEditorNoteAudioManager)
+                              ChartEditorNoteAudioManager chartEditorNoteAudioManager,
+                              ShortcutManager shortcutManager)
         {
             // TODO: 为 Model 实现 IDispose，以进一步管理生命周期
             ChartEditorModel model =
                 new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData);
 
+            // 根据 Mode 初始化一些 Manager
             musicManager.Init(model);
             chartEditorNoteAudioManager.Init(model);
+            shortcutManager.Init();
 
             var toolbarViewModel = new ToolbarViewModel(model).AddTo(Disposables);
             toolbarView.Bind(toolbarViewModel);

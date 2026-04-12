@@ -646,6 +646,7 @@ Transform:
   - {fileID: 941236135}
   - {fileID: 1322313311}
   - {fileID: 1785560136}
+  - {fileID: 1080855815}
   - {fileID: 1643976276}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -674,6 +675,7 @@ MonoBehaviour:
   musicManager: {fileID: 941236136}
   noteAudioManager: {fileID: 1785560137}
   fileManager: {fileID: 1322313312}
+  shortcutManager: {fileID: 1080855816}
 --- !u!1 &42740033 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 994941279456320296, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
@@ -1281,8 +1283,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1595764879}
   m_HandleRect: {fileID: 1595764877}
   m_Direction: 2
-  m_Value: 1.0000001
-  m_Size: 0.5787458
+  m_Value: 0.9999999
+  m_Size: 0.5710538
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4646,7 +4648,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1070775234}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.3964961
+  m_Size: 0.39229107
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -16737,7 +16739,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 173007117}
   m_HandleRect: {fileID: 173007115}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -19004,6 +19006,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1078332145}
   m_CullTransparentMesh: 1
+--- !u!1 &1080855814
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1080855815}
+  - component: {fileID: 1080855816}
+  m_Layer: 0
+  m_Name: ShortcutManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1080855815
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080855814}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 32066487}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1080855816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080855814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4386e62fbff8df54eabe111db11e7811, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CyanStars::ShortcutManager
+  commandStack: {fileID: 239559645}
 --- !u!1 &1084251855
 GameObject:
   m_ObjectHideFlags: 0
