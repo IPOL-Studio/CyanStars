@@ -79,13 +79,12 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnUpdate(float curLogicTime, bool noEffect = false)
         {
+            float deltaTime = curLogicTime - CurLogicTime;
             base.OnUpdate(curLogicTime, noEffect);
 
             // 1. 判定头判 Miss
             // 2. 累加这一帧的按住时长，并计算视图长度
             // 3. 判定尾判
-            float deltaTime = curLogicTime - CurLogicTime;
-
             EndViewDistance = endSpeedTemplate.GetDistance((CurLogicTime - endTime) * 1000);
 
             // 头判 Miss
