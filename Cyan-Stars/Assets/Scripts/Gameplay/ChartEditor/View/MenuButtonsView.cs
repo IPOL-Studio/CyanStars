@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System.Collections.Generic;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using UnityEngine;
@@ -68,7 +69,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
 
         private readonly ReactiveProperty<bool> FunctionCanvasVisibility = new ReactiveProperty<bool>(false);
+        private readonly List<ShortcutCommand.ListenerDisposable> ShortcutListeners = new();
 
+        private void Start()
+        {
+            ShortcutListeners.Add(ShortcutCommandRegistry.Save.RegisterListener(OnSaveRequested));
+            ShortcutListeners.Add(ShortcutCommandRegistry.Undo.RegisterListener(OnUndoRequested));
+            ShortcutListeners.Add(ShortcutCommandRegistry.Redo.RegisterListener(OnRedoRequested));
+        }
 
         public override void Bind(MenuButtonsViewModel targetViewModel)
         {
@@ -102,16 +110,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
             saveButton
                 .OnClickAsObservable()
-                .Subscribe(_ => ViewModel.SaveFileToDesk())
+                .Subscribe(_ => OnSaveRequested())
                 .AddTo(this);
             // testButton ...
             undoButton
                 .OnClickAsObservable()
-                .Subscribe(_ => ViewModel.Undo())
+                .Subscribe(_ => OnUndoRequested())
                 .AddTo(this);
             redoButton
                 .OnClickAsObservable()
-                .Subscribe(_ => ViewModel.Redo())
+                .Subscribe(_ => OnRedoRequested())
                 .AddTo(this);
 
             chartPackDataButton
@@ -145,6 +153,18 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private void SetFunctionCanvasVisibility(bool visibility)
         {
             FunctionCanvasVisibility.Value = visibility;
+        }
+
+        private void OnSaveRequested() => ViewModel.SaveFileToDesk();
+        private void OnUndoRequested() => ViewModel.Undo();
+        private void OnRedoRequested() => ViewModel.Redo();
+
+        private void OnDisable()
+        {
+            for (int i = ShortcutListeners.Count - 1; i >= 0; i--)
+            {
+                ShortcutListeners[i].Dispose();
+            }
         }
     }
 }

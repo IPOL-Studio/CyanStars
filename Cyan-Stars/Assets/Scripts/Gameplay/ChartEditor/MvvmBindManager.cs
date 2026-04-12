@@ -74,7 +74,7 @@ namespace CyanStars.Gameplay.ChartEditor
             // 根据 Mode 初始化一些 Manager
             musicManager.Init(model);
             chartEditorNoteAudioManager.Init(model);
-            shortcutManager.Init(model);
+            shortcutManager.Init();
 
             var toolbarViewModel = new ToolbarViewModel(model).AddTo(Disposables);
             toolbarView.Bind(toolbarViewModel);
