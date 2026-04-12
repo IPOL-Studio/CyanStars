@@ -71,7 +71,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private readonly ReactiveProperty<bool> FunctionCanvasVisibility = new ReactiveProperty<bool>(false);
         private readonly List<ShortcutCommand.ListenerDisposable> ShortcutListeners = new();
 
-        private void Start()
+        private void OnEnable()
         {
             ShortcutListeners.Add(ShortcutCommandRegistry.Save.RegisterListener(OnSaveRequested));
             ShortcutListeners.Add(ShortcutCommandRegistry.Undo.RegisterListener(OnUndoRequested));
