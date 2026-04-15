@@ -78,6 +78,24 @@ namespace CyanStars.Gameplay.MusicGame
             StarController.GenerateStars();
         }
 
+        public override void OnClose()
+        {
+            if (starTween?.IsPlaying() ?? false)
+            {
+                starTween.Kill();
+                starTween = null;
+            }
+
+            var args = new MapSelectionPageChangeArgs() { FadeTime = 0f };
+            while (PageStack.Count > 0)
+            {
+                var page = PageStack.Pop();
+                page.OnExit(args);
+            }
+
+            base.OnClose();
+        }
+
         public void ChangePage<T>() where T : IMapSelectionPage
         {
             if (!PageDict.TryGetValue(typeof(T), out IMapSelectionPage page))
