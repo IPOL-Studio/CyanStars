@@ -9,7 +9,6 @@ using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using ObservableCollections;
 using R3;
-using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
@@ -20,6 +19,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public Subject<BaseChartNoteData> SelectedNoteDataChangedSubject => Model.SelectedNoteDataChangedSubject;
         public ReadOnlyReactiveProperty<bool> IsTimelinePlaying => Model.IsTimelinePlaying;
 
+
+        public ReadOnlyReactiveProperty<EditToolType> SelectedEditTool => Model.SelectedEditTool;
 
         // 位置线
         public ReadOnlyReactiveProperty<int> BeatAccuracy => Model.BeatAccuracy;
@@ -32,8 +33,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public IReadOnlyObservableList<BaseChartNoteData> Notes => Model.ChartData.CurrentValue.Notes;
         private readonly List<HoldChartNoteData> holdNotes = new List<HoldChartNoteData>();
         public IReadOnlyList<HoldChartNoteData> HoldNotes => holdNotes; // 无序排列的 HoldNotes，用于全量遍历校验 holdNote 是否有位于可视范围内的部分
-        private ReadOnlyReactiveProperty<bool> PosMagnetState => Model.PosMagnet;
-        private ReadOnlyReactiveProperty<int> PosAccuracy => Model.PosAccuracy;
+        public ReadOnlyReactiveProperty<bool> PosMagnetState => Model.PosMagnet;
+        public ReadOnlyReactiveProperty<int> PosAccuracy => Model.PosAccuracy;
 
 
         public readonly ReadOnlyReactiveProperty<bool> CanPutNote;
@@ -189,90 +190,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public double GetMajorBeatLineDistance()
         {
             return DefaultMajorBeatLineInterval * BeatZoom.CurrentValue;
-        }
-
-        /// <summary>
-        /// 获取两条细分节拍线之间的像素距离
-        /// </summary>
-        public double GetMinorBeatLineDistance()
-        {
-            return DefaultMajorBeatLineInterval * BeatZoom.CurrentValue / BeatAccuracy.CurrentValue;
-        }
-
-        /// <summary>
-        /// 计算点击位置对应的音符数据 (Pos, Beat)
-        /// </summary>
-        /// <param name="localPosition">相对于 Content 底部中心的坐标</param>
-        /// <param name="judgeLineY">判定线在 Content 中的 Y 轴偏移</param>
-        public (float pos, Beat beat)? CalculateNotePlacement(Vector2 localPosition, float judgeLineY)
-        {
-            // 计算横坐标
-            float notePos;
-            const float leftBreakThreshold = -421f;
-            const float rightBreakThreshold = 421f;
-            const float centralMin = -400f;
-            const float centralMax = 400f;
-
-            if (localPosition.x <= leftBreakThreshold)
-            {
-                // Left Break
-                notePos = -1f;
-            }
-            else if (rightBreakThreshold <= localPosition.x)
-            {
-                // Right Break
-                notePos = 2f;
-            }
-            else if (centralMin <= localPosition.x && localPosition.x <= centralMax)
-            {
-                // 开启了横坐标吸附
-                if (PosMagnetState.CurrentValue)
-                {
-                    int posAcc = PosAccuracy.CurrentValue;
-                    if (posAcc == 0)
-                    {
-                        notePos = 0.4f;
-                    }
-                    else
-                    {
-                        float subSectionWidth = (800f / (posAcc + 1)) / 2f;
-                        float relativePosX = localPosition.x + 400f;
-                        float snappingIndex = Mathf.Round(relativePosX / subSectionWidth);
-                        float maxIndex = 2 * posAcc + 1;
-                        snappingIndex = Mathf.Clamp(snappingIndex, 1f, maxIndex);
-                        float snappedRelativePos = snappingIndex * subSectionWidth;
-                        float posX = snappedRelativePos - 400f;
-                        notePos = (posX + 320f) / 800f;
-                        notePos = Mathf.Clamp(notePos, 0f, 0.8f);
-                    }
-                }
-                else
-                {
-                    // 未开启位置吸附
-                    notePos = (localPosition.x + 320f) / 800f;
-                    notePos = Mathf.Clamp(notePos, 0f, 0.8f);
-                }
-            }
-            else
-            {
-                // 点击了缝隙
-                return null;
-            }
-
-            // 计算纵坐标
-            float relativeY = localPosition.y - judgeLineY;
-            double beatDistance = GetMinorBeatLineDistance(); // 单个细分拍的距离
-
-            int subBeatIndex = (int)Math.Round(relativeY / beatDistance);
-            subBeatIndex = Mathf.Max(0, subBeatIndex);
-
-            int acc = BeatAccuracy.CurrentValue;
-            if (!Beat.TryCreateBeat(subBeatIndex / acc, subBeatIndex % acc, acc, out Beat noteBeat))
-            {
-                return null;
-            }
-
-            return (notePos, noteBeat);
         }
 
         /// <summary>

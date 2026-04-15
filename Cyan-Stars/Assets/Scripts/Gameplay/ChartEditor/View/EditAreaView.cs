@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CyanStars.Chart;
 using CyanStars.Framework;
+using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using Gameplay.ChartEditor;
 using ObservableCollections;
@@ -19,7 +20,7 @@ using GameObjectPoolManager = CyanStars.Framework.GameObjectPool.GameObjectPoolM
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
-    public class EditAreaView : BaseView<EditAreaViewModel>, IPointerClickHandler
+    public class EditAreaView : BaseView<EditAreaViewModel>, IPointerDownHandler
     {
         [SerializeField]
         private GameObject posLinesFrameObject = null!;
@@ -59,6 +60,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
+            ViewModel.SelectedEditTool
+                .Subscribe(tool => scrollRect.vertical = tool == EditToolType.Select) // 只有为“选择”工具时才允许拖动 scrollRect
+                .AddTo(this);
             ViewModel.ContentAddHeight
                 .Subscribe(addHeight =>
                     {
@@ -163,7 +167,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             float minVisibleY = scrollY - 100f;
             float maxVisibleY = scrollY + viewportHeight + 100f;
 
-            double beatLineDist = ViewModel.GetMinorBeatLineDistance();
+            double beatLineDist = EditAreaViewHelper.GetMinorBeatLineDistance(ViewModel.BeatAccuracy.CurrentValue, ViewModel.BeatZoom.CurrentValue);
             float judgeLineY = judgeLineRect.anchoredPosition.y;
 
             int minIndex = (int)Math.Floor((minVisibleY - judgeLineY) / beatLineDist);
@@ -402,7 +406,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         #region Input
 
-        public void OnPointerClick(PointerEventData eventData)
+        public void OnPointerDown(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Right || !ViewModel.CanPutNote.CurrentValue)
             {
@@ -423,12 +427,21 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 out Vector2 localPoint
             );
 
-            var result = ViewModel.CalculateNotePlacement(localPoint, judgeLineRect.anchoredPosition.y);
+            bool needCreateNote = EditAreaViewHelper.CalculateNotePlacement(
+                localPoint,
+                judgeLineRect.anchoredPosition.y,
+                ViewModel.PosMagnetState.CurrentValue,
+                ViewModel.PosAccuracy.CurrentValue,
+                ViewModel.BeatAccuracy.CurrentValue,
+                ViewModel.BeatZoom.CurrentValue,
+                out float pos,
+                out Beat beat
+            );
 
-            // 如果点到间隙（result == null）就不处理
-            if (result != null)
+            // 如果点到间隙就不处理
+            if (needCreateNote)
             {
-                ViewModel.CreateNote(result.Value.pos, result.Value.beat);
+                ViewModel.CreateNote(pos, beat);
             }
         }
 
