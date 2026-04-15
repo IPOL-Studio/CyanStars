@@ -72,7 +72,6 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnOpen()
         {
-            base.OnOpen();
             pageRatio = 0;
             PageStack.Clear();
             ChangePage<MapListPage>();
@@ -87,12 +86,11 @@ namespace CyanStars.Gameplay.MusicGame
                 starTween = null;
             }
 
-            var args = new MapSelectionPageChangeArgs() { FadeTime = 1.2f, AnimationEase = Ease.OutQuart };
+            var args = new MapSelectionPageChangeArgs() { FadeTime = 0f };
             while (PageStack.Count > 0)
             {
                 var page = PageStack.Pop();
                 page.OnExit(args);
-                if (page is Component comp) comp.gameObject.SetActive(false);
             }
 
             base.OnClose();
