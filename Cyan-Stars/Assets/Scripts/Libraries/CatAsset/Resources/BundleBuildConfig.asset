@@ -705,12 +705,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/ScriptObjects/InternalMap/InternalMapList_asset.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 975
+    AssetsLength: 1008
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/ScriptObjects/InternalMap/InternalMapList.asset
-      Length: 975
+      Length: 1008
   - DirectoryName: CysMultimediaAssets/Charts
     BundleName: "0-\u5E7D\u7075\u5C11\u5973.bundle"
     BundleIdentifyName: "CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973.bundle"
