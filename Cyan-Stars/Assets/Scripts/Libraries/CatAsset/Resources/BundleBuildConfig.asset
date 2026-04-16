@@ -705,12 +705,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/ScriptObjects/InternalMap/InternalMapList_asset.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 1008
+    AssetsLength: 1150
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/ScriptObjects/InternalMap/InternalMapList.asset
-      Length: 1008
+      Length: 1150
   - DirectoryName: CysMultimediaAssets/Charts
     BundleName: "0-\u5E7D\u7075\u5C11\u5973.bundle"
     BundleIdentifyName: "CysMultimediaAssets/Charts/0-\u5E7D\u7075\u5C11\u5973.bundle"
@@ -768,6 +768,23 @@ MonoBehaviour:
       Length: 192489
     - Name: "Assets/CysMultimediaAssets/Charts/2-\u4E91\u4E0E\u8BD7/LICENSE.txt"
       Length: 9292
+  - DirectoryName: CysMultimediaAssets/Charts
+    BundleName: "3-\u76DB\u5178.bundle"
+    BundleIdentifyName: "CysMultimediaAssets/Charts/3-\u76DB\u5178.bundle"
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 20202074
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Charts/3-\u76DB\u5178/Assets/Cover.png"
+      Length: 12270885
+    - Name: "Assets/CysMultimediaAssets/Charts/3-\u76DB\u5178/Assets/\u76DB\u5178.ogg"
+      Length: 7588520
+    - Name: "Assets/CysMultimediaAssets/Charts/3-\u76DB\u5178/ChartPack.json"
+      Length: 1086
+    - Name: "Assets/CysMultimediaAssets/Charts/3-\u76DB\u5178/Charts/\u65E0\u57A0.json"
+      Length: 341583
   - DirectoryName: CysMultimediaAssets/Font/LxgwWenKai
     BundleName: Blod.bundle
     BundleIdentifyName: CysMultimediaAssets/Font/LxgwWenKai/Blod.bundle
@@ -818,12 +835,12 @@ MonoBehaviour:
     BundleIdentifyName: CysMultimediaAssets/Font/Oswald/Blod.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 84736
+    AssetsLength: 2188541
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/CysMultimediaAssets/Font/Oswald/Blod/Oswald-Bold SDF.asset
-      Length: 31680
+      Length: 2135485
     - Name: Assets/CysMultimediaAssets/Font/Oswald/Blod/Oswald-Bold.ttf
       Length: 53056
   - DirectoryName: CysMultimediaAssets/Font/Oswald
@@ -906,14 +923,14 @@ MonoBehaviour:
     BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/Medium.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 48975459
+    AssetsLength: 48976662
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Medium/SourceHanSerifCN-Medium.otf
       Length: 11373656
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Medium/SourceHanSerifCN-Medium-Dynamic-SDF.asset
-      Length: 2123311
+      Length: 2124514
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Medium/SourceHanSerifCN-Medium-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35478492
   - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
@@ -2301,7 +2318,7 @@ MonoBehaviour:
       Length: 4659
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
       Length: 12430
-  BundleCount: 181
-  AssetCount: 282
+  BundleCount: 182
+  AssetCount: 286
   IsExactTextureSize: 0
   IsDrawDesc: 0
