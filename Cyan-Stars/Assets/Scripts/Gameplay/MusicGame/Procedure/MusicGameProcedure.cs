@@ -486,8 +486,20 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void UpdateTimeline(double deltaTime, object userdata)
         {
-            float timelineDeltaTime = audioSource.time - lastTime;
-            lastTime = audioSource.time;
+            // TODO: 这是个临时修复，后续实现 DSPTimer 后直接用 DspDeltaTime
+            float timelineDeltaTime = 0;
+
+            if (audioSource.time <= 0)
+            {
+                // 如果音频需要留白，则以 deltaTime 来计时留白部分
+                timelineDeltaTime = (float)deltaTime;
+            }
+            else
+            {
+                // 如果已经开始播放音频了，则暂时根据音频时间计时
+                timelineDeltaTime = audioSource.time - lastTime;
+                lastTime = audioSource.time;
+            }
 
             timeline.OnPlayingUpdate(timelineDeltaTime);
             UpdateDistanceBar(timelineDeltaTime);
