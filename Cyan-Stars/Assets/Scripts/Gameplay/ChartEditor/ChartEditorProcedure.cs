@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using CatAsset.Runtime;
 using CyanStars.Framework;
 using CyanStars.Framework.FSM;
 using UnityEngine.SceneManagement;
@@ -13,15 +14,18 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
         private const string ScenePath = "Assets/BundleRes/Scenes/ChartEditor.unity";
         private const string SceneRootName = "SceneRoot";
 
+        private SceneHandler chartEditorSceneHandler;
+
 
         public override async void OnEnter()
         {
             // 打开场景并检查制谱器 SceneRoot 状态
-            Scene scene = (await GameRoot.Asset.LoadSceneAsync(ScenePath)).Scene;
+            chartEditorSceneHandler = await GameRoot.Asset.LoadSceneAsync(ScenePath);
+            Scene chartEditorScene = chartEditorSceneHandler.Scene;
 
             ChartEditorSceneRoot? sceneRoot = null;
             int foundCount = 0;
-            foreach (var rootGameObject in scene.GetRootGameObjects())
+            foreach (var rootGameObject in chartEditorScene.GetRootGameObjects())
             {
                 if (rootGameObject.name != SceneRootName)
                 {
@@ -58,6 +62,7 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
         {
             ChartEditorDataModule chartEditorDataModule = GameRoot.GetDataModule<ChartEditorDataModule>();
             chartEditorDataModule.OnExitChartEditorProcedure();
+            GameRoot.Asset.UnloadScene(chartEditorSceneHandler);
         }
     }
 }
