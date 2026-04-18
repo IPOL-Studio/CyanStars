@@ -54,6 +54,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private Button enterSimplificationModeButton = null!;
 
+        [SerializeField]
+        private Button exitChartEditorButton = null!;
+
         [Header("CanvasView 绑定")]
         [SerializeField]
         private ChartPackDataView chartPackDataView = null!;
@@ -147,6 +150,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
             enterSimplificationModeButton
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.SetSimplificationMode(true))
+                .AddTo(this);
+            exitChartEditorButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.ExitChartEditor())
                 .AddTo(this);
         }
 
