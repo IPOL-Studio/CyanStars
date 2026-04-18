@@ -79,6 +79,13 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .Select(item => item != null ? item.StartBeat.Denominator.ToString() : "")
                 .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, "")
                 .AddTo(Disposables);
+
+            Observable.Merge(
+                    BpmListItems.ObserveRemove().Select(e => e.Value.View),
+                    BpmListItems.ObserveReplace().Select(e => e.OldValue.View)
+                )
+                .Subscribe(view => view.Dispose())
+                .AddTo(Disposables);
         }
 
 
@@ -245,6 +252,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     selectedBpmItem.Value = oldBpmItem;
                 }
             );
+        }
+
+        public override void Dispose()
+        {
+            foreach (var (_, viewModel) in BpmListItems.Unfiltered)
+            {
+                viewModel.Dispose();
+            }
+
+            base.Dispose();
         }
     }
 }
