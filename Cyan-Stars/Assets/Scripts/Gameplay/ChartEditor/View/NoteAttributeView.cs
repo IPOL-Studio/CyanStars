@@ -104,10 +104,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
             posFrameVisibility = ViewModel.SelectedNoteData
                 .Select(note => note?.Type != NoteType.Break)
-                .ToReadOnlyReactiveProperty();
+                .ToReadOnlyReactiveProperty()
+                .AddTo(this);
             breakPosFrameVisibility = ViewModel.SelectedNoteData
                 .Select(note => note?.Type == NoteType.Break)
-                .ToReadOnlyReactiveProperty();
+                .ToReadOnlyReactiveProperty()
+                .AddTo(this);
             correctAudioFrameVisibility = new ReactiveProperty<bool>(false); // TODO
             hitAudioFrameVisibility = new ReactiveProperty<bool>(false); // TODO
             speedTemplateFrameVisibility = new ReactiveProperty<bool>(false); // TODO
