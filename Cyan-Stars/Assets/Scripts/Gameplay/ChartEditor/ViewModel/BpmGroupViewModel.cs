@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
@@ -20,18 +19,13 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<bool> IsSimplificationMode => Model.IsSimplificationMode;
         public ReadOnlyReactiveProperty<ChartPackDataEditorModel> ChartPackData => Model.ChartPackData;
 
-
-        public readonly ISynchronizedView<BpmGroupItem, BpmGroupListItemViewModel> BpmListItems;
+        public ObservableList<BpmGroupItem> BpmItems => Model.ChartPackData.CurrentValue.BpmGroup;
 
         private readonly ReactiveProperty<BpmGroupItem?> selectedBpmItem;
         public ReadOnlyReactiveProperty<BpmGroupItem?> SelectedBpmItem => selectedBpmItem;
 
 
         public readonly ReadOnlyReactiveProperty<int?> SelectedBpmItemIndex;
-        public readonly ReadOnlyReactiveProperty<string> BpmText;
-        public readonly ReadOnlyReactiveProperty<string> StartBeatText1;
-        public readonly ReadOnlyReactiveProperty<string> StartBeatText2;
-        public readonly ReadOnlyReactiveProperty<string> StartBeatText3;
 
 
         public BpmGroupViewModel(ChartEditorModel model)
@@ -44,16 +38,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 throw new NotImplementedException();
 
             selectedBpmItem = new ReactiveProperty<BpmGroupItem?>(Model.ChartPackData.CurrentValue.BpmGroup[0]);
-            BpmListItems = Model.ChartPackData.CurrentValue.BpmGroup
-                .CreateView(bpmItem =>
-                    new BpmGroupListItemViewModel(
-                        Model,
-                        this,
-                        bpmItem,
-                        Model.ChartPackData.CurrentValue.BpmGroup
-                    )
-                )
-                .AddTo(base.Disposables);
 
             Model.IsSimplificationMode.ToReadOnlyReactiveProperty().AddTo(Disposables);
 
@@ -63,29 +47,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     : null)
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
-            BpmText = SelectedBpmItem
-                .Select(item => item?.Bpm.ToString(CultureInfo.InvariantCulture) ?? "")
-                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, "")
-                .AddTo(Disposables);
-            StartBeatText1 = SelectedBpmItem
-                .Select(item => item != null ? item.StartBeat.IntegerPart.ToString() : "")
-                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, "")
-                .AddTo(Disposables);
-            StartBeatText2 = SelectedBpmItem
-                .Select(item => item != null ? item.StartBeat.Numerator.ToString() : "")
-                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, "")
-                .AddTo(Disposables);
-            StartBeatText3 = SelectedBpmItem
-                .Select(item => item != null ? item.StartBeat.Denominator.ToString() : "")
-                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, "")
-                .AddTo(Disposables);
-
-            Observable.Merge(
-                    BpmListItems.ObserveRemove().Select(e => e.Value.View),
-                    BpmListItems.ObserveReplace().Select(e => e.OldValue.View)
-                )
-                .Subscribe(view => view.Dispose())
-                .AddTo(Disposables);
         }
 
 
@@ -252,16 +213,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     selectedBpmItem.Value = oldBpmItem;
                 }
             );
-        }
-
-        public override void Dispose()
-        {
-            foreach (var (_, viewModel) in BpmListItems.Unfiltered)
-            {
-                viewModel.Dispose();
-            }
-
-            base.Dispose();
         }
     }
 }
