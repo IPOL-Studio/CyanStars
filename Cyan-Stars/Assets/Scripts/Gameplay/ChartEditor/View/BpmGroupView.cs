@@ -159,10 +159,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(item =>
                 {
                     detailFrameGameObject.SetActive(item != null);
-                    bpmInputField.text =   item?.Bpm.ToString() ?? "";
-                    startBeatField1.text = item?.StartBeat.IntegerPart.ToString() ?? "";
-                    startBeatField2.text = item?.StartBeat.Numerator.ToString() ?? "";
-                    startBeatField3.text = item?.StartBeat.Denominator.ToString() ?? "";
+                    bpmInputField.SetTextWithoutNotify(item?.Bpm.ToString());
+                    startBeatField1.SetTextWithoutNotify(item?.StartBeat.IntegerPart.ToString());
+                    startBeatField2.SetTextWithoutNotify(item?.StartBeat.Numerator.ToString());
+                    startBeatField3.SetTextWithoutNotify(item?.StartBeat.Denominator.ToString());
                 })
                 .AddTo(this);
 
