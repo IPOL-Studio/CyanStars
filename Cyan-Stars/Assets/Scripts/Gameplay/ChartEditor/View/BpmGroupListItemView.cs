@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using TMPro;
@@ -9,9 +10,9 @@ using UnityEngine.UI;
 namespace CyanStars.Gameplay.ChartEditor.View
 {
     /// <summary>
-    /// 动态生成。关闭精简模式后 BpmGroup 弹窗左侧的 ListItem。每个 Item 持有一个 View。
+    /// 动态生成。关闭精简模式后 BpmGroup 弹窗左侧的 ListItem
     /// </summary>
-    public class BpmGroupListItemView : BaseView<BpmGroupListItemViewModel>
+    public class BpmGroupListItemView : MonoBehaviour
     {
         [SerializeField]
         private Toggle itemToggle = null!;
@@ -25,23 +26,61 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private TMP_Text beatAndTimeText = null!;
 
+        private CompositeDisposable? disposables;
 
-        public override void Bind(BpmGroupListItemViewModel targetViewModel)
+        public void Bind(BpmGroupViewModel targetViewModel, int index)
         {
-            base.Bind(targetViewModel);
+            destroyCancellationToken.ThrowIfCancellationRequested();
 
-            itemNumberText.text = $"#{(ViewModel.ItemIndex + 1).ToString()}";
-            ViewModel.IsSelected
-                .Subscribe(isSelected => ledRawImage.enabled = isSelected)
-                .AddTo(this);
-            ViewModel.BeatAndTimeString
-                .Subscribe(text => beatAndTimeText.text = text)
-                .AddTo(this);
+            TryReleaseBind();
+            disposables = new CompositeDisposable();
+
+            itemNumberText.text = $"#{index + 1}";
+            targetViewModel.SelectedBpmItemIndex
+                .Subscribe(i => ledRawImage.enabled = i == index)
+                .AddTo(disposables);
+            targetViewModel.BpmGroupDataChangedSubject
+                .Subscribe(changedItemIndex =>
+                {
+                    if (changedItemIndex > index)
+                        return;
+
+                    var bpmItem = targetViewModel.BpmItems[index];
+
+                    // [0, 1, 2]
+                    string beatPart =
+                        $"[{bpmItem.StartBeat.IntegerPart}, {bpmItem.StartBeat.Numerator}, {bpmItem.StartBeat.Denominator}]";
+
+                    // 0:59.900 或 199:59.999
+                    int ms = BpmGroupHelper.CalculateTime(targetViewModel.BpmItems, bpmItem.StartBeat);
+                    int minutes = ms / 60000;
+                    int seconds = (ms / 1000) % 60;
+                    int milliseconds = ms % 1000;
+                    string timePart = $"{minutes}:{seconds:D2}.{milliseconds:D3}";
+
+                    beatAndTimeText.text = $"{timePart}\n{beatPart}";
+                })
+                .AddTo(disposables);
 
             itemToggle
                 .OnValueChangedAsObservable()
-                .Subscribe(ViewModel.OnToggleChanged)
-                .AddTo(this);
+                .Subscribe((targetViewModel, index), static (isOn, state) =>
+                {
+                    if (isOn)
+                        state.targetViewModel.SelectBpmItem(state.targetViewModel.BpmItems[state.index]);
+                })
+                .AddTo(disposables);
+        }
+
+        void OnDestroy()
+        {
+            TryReleaseBind();
+        }
+
+        public void TryReleaseBind()
+        {
+            disposables?.Dispose();
+            disposables = null;
         }
     }
 }
