@@ -182,7 +182,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 974659262143763815}
-  - component: {fileID: 5110728658619840835}
   m_Layer: 5
   m_Name: ScoreSettlementPanel
   m_TagString: Untagged
@@ -215,59 +214,8 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: -0.00012207031}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &5110728658619840835
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 376954650536542730}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06c53229613f2014690fbe3b7691c39e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UIRiseTime: 0.8
-  GrayImageKeepTime: 0.5
-  ScoreNumRiseTime: 2
-  ImpurityRateNumRiseTime: 1
-  MaxComboNumRiseTime: 1.5
-  ExactNumRiseTime: 1.5
-  GreatNumRiseTime: 1.5
-  RightNumRiseTime: 1.5
-  OutNumRiseTime: 1.5
-  BadAndMissNumRiseTime: 1.5
-  EarlyNumRiseTime: 1.5
-  LateNumRiseTime: 1.5
-  AveNumRiseTime: 1.5
-  Title: {fileID: 0}
-  TextScoreNum: {fileID: 0}
-  TextImpurityRateNum: {fileID: 0}
-  TextMaxComboNum: {fileID: 0}
-  TextExactNum: {fileID: 0}
-  TextGreatNum: {fileID: 0}
-  TextRightNum: {fileID: 0}
-  TextOutNum: {fileID: 0}
-  TextBadAndMissNum: {fileID: 0}
-  TextEarlyNum: {fileID: 0}
-  TextLateNum: {fileID: 0}
-  TextAveNum: {fileID: 0}
-  ImageGrade: {fileID: 0}
-  ImageSun: {fileID: 0}
-  ContinueButton: {fileID: 0}
-  MainUICanvasGroup: {fileID: 0}
-  GrayImageCanvasGroup: {fileID: 0}
-  GradeClear: {fileID: 21300000, guid: 75dba870dbe74224fafdec395024218d, type: 3}
-  GradeFullCombo: {fileID: 21300000, guid: 0bd14a61bfa28dc4fb408f2f6d9fb08b, type: 3}
-  GradeFullComboPlus: {fileID: 21300000, guid: 564abefac6bd1934a964e405dbc9a223, type: 3}
-  GradeAllExact: {fileID: 21300000, guid: 249879f882f635149a31537a69e3609a, type: 3}
-  GradeAllExactPlus: {fileID: 21300000, guid: 6ba4bd9b6ea3eb94fa9c71dd9e9457e4, type: 3}
-  GradeUltraPure: {fileID: 21300000, guid: b895171189e6b3942b84328a72243e62, type: 3}
-  SunClear: {fileID: 21300000, guid: 396415a32c5c7e0409a0abb6addf66f4, type: 3}
-  SunFc: {fileID: 21300000, guid: af39d7d9ff2a9544081bce0ad7c18d91, type: 3}
-  SunAeAndUp: {fileID: 21300000, guid: 045a0a689323dcf48804e0ecfc8b68c4, type: 3}
 --- !u!1 &503788645381789934
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,7 +322,7 @@ GameObject:
   - component: {fileID: 933302000835638377}
   - component: {fileID: 6860275122203398560}
   m_Layer: 5
-  m_Name: "\u6742\u7387Spacer"
+  m_Name: ImpurityRateSpacer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
