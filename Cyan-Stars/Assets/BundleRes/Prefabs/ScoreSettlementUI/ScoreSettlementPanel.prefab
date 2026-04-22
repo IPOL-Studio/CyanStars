@@ -1771,7 +1771,7 @@ GameObject:
   - component: {fileID: 8521011719880878484}
   - component: {fileID: 5510250464285932308}
   m_Layer: 0
-  m_Name: "\u6742\u7387"
+  m_Name: ImpurityRate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
