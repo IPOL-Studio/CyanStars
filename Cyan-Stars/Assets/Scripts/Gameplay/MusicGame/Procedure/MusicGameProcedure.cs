@@ -9,6 +9,7 @@ using CyanStars.Framework.Logging;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Base;
 using CyanStars.Chart;
+using CyanStars.Gameplay.MusicGame.UI.ScoreSettlement;
 using CyanStars.Graphics.Band;
 using CyanStars.Utils;
 using UnityEngine;
@@ -36,10 +37,10 @@ namespace CyanStars.Gameplay.MusicGame
         private MusicClipData musicClipData;
 
         //  --- --- 音游设置模块 --- ---
-        private MusicGameSettingsModule settingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
+        private readonly MusicGameSettingsModule SettingsModule = GameRoot.GetDataModule<MusicGameSettingsModule>();
 
         //  --- --- 音游场景模块 --- ---
-        private MusicGameSceneModule sceneModule = GameRoot.GetDataModule<MusicGameSceneModule>();
+        private readonly MusicGameSceneModule SceneModule = GameRoot.GetDataModule<MusicGameSceneModule>();
         private MusicGameSceneInfo currentSceneInfo;
 
         //  --- --- 场景物体与组件 --- ---
@@ -50,7 +51,6 @@ namespace CyanStars.Gameplay.MusicGame
 
         //  --- --- 场景后处理特效相关 --- ---
         private Band band;
-
 
         //  --- --- 时间轴相关对象 --- ---
         private Timeline timeline;
@@ -64,7 +64,7 @@ namespace CyanStars.Gameplay.MusicGame
         public override async void OnEnter()
         {
             GameRoot.MainCamera.gameObject.SetActive(false);
-            currentSceneInfo = sceneModule.CurrentScene;
+            currentSceneInfo = SceneModule.CurrentScene;
 
             //监听事件
             GameRoot.Event.AddListener(EventConst.MusicGameStartEvent, OnMusicGameStart);
@@ -73,33 +73,20 @@ namespace CyanStars.Gameplay.MusicGame
             GameRoot.Event.AddListener(EventConst.MusicGameExitEvent, OnMusicGameExit);
 
             //打开游戏场景
-            var sceneHandler = await GameRoot.Asset.LoadSceneAsync(currentSceneInfo.ScenePath);
-            SceneManager.SetActiveScene(sceneHandler.Scene);
+            var handler = await GameRoot.Asset.LoadSceneAsync(currentSceneInfo.ScenePath);
 
-            if (sceneHandler.IsValid && sceneHandler.IsSuccess)
+            if (handler.IsValid && handler.IsSuccess)
             {
-                this.sceneHandler = sceneHandler;
+                sceneHandler = handler;
+                SceneManager.SetActiveScene(sceneHandler.Scene);
 
-                //获取场景物体与组件
-                GetSceneObj();
-
-                //初始化音游相关 Logger
-                InitLogger();
-
-                //初始化误差条数据
-                InitDistanceBarData();
-
-                //加载打击音效
-                await LoadPromptTone();
-
-                //加载数据文件
-                await LoadDataFile();
-
-                //打开音游UI
-                OpenMusicGameUI();
-
-                //预热一些物体
-                Prewarm();
+                GetSceneObj(); //获取场景物体与组件
+                InitLogger(); //初始化音游相关 Logger
+                InitDistanceBarData(); //初始化误差条数据
+                await LoadPromptTone(); //加载打击音效
+                await LoadDataFile(); //加载数据文件
+                OpenMusicGameUI(); //打开音游UI
+                Prewarm(); //预热一些物体
             }
         }
 
@@ -116,7 +103,7 @@ namespace CyanStars.Gameplay.MusicGame
             audioSource = null;
             promptToneCollection = null;
 
-            band?.Dispose();
+            band.Dispose();
             band = null;
 
             runtimeChartPack = null;
@@ -142,7 +129,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             GameRoot.Asset.UnloadScene(sceneHandler);
             currentSceneInfo = null;
-            sceneHandler = default;
+            sceneHandler = null;
         }
 
 
@@ -152,7 +139,7 @@ namespace CyanStars.Gameplay.MusicGame
         private void OnMusicGameStart(object sender, EventArgs args)
         {
             CreateTimeline();
-            inputReceiver?.StartReceive();
+            inputReceiver.StartReceive();
         }
 
         /// <summary>
@@ -167,7 +154,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             GameRoot.Timer.UpdateTimer.Remove(UpdateTimeline);
             audioSource.Pause();
-            inputReceiver?.EndReceive();
+            inputReceiver.EndReceive();
         }
 
         /// <summary>
@@ -182,7 +169,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             GameRoot.Timer.UpdateTimer.Add(UpdateTimeline);
             audioSource.UnPause();
-            inputReceiver?.StartReceive();
+            inputReceiver.StartReceive();
         }
 
         /// <summary>
@@ -297,7 +284,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void InitDistanceBarData()
         {
-            playingDataModule.InitDistanceBarData(settingsModule.EvaluateRange);
+            playingDataModule.InitDistanceBarData(SettingsModule.EvaluateRange);
 
             var bandData = new Band.BandData
             {
@@ -308,12 +295,10 @@ namespace CyanStars.Gameplay.MusicGame
                 YOffset = 0.2f
             };
 
-            if (!Band.TryCreate(bandData, out Band band))
+            if (!Band.TryCreate(bandData, out band))
             {
                 playingDataModule.Logger.LogError("band 创建失败，可能被其他地方占用");
             }
-
-            this.band = band;
         }
 
         /// <summary>
@@ -322,7 +307,7 @@ namespace CyanStars.Gameplay.MusicGame
         private async Task LoadPromptTone()
         {
             var builtin = new Dictionary<string, AudioClip>();
-            var builtinPath = settingsModule.BuiltInPromptTones;
+            var builtinPath = SettingsModule.BuiltInPromptTones;
 
             foreach (var (name, path) in builtinPath)
             {
@@ -338,7 +323,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void OpenMusicGameUI()
         {
-            foreach (var type in this.currentSceneInfo.UITypes)
+            foreach (var type in currentSceneInfo.UITypes)
             {
                 GameRoot.UI.OpenUIPanelAsync(type);
             }
@@ -349,7 +334,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void CloseMusicGameUI()
         {
-            foreach (var type in this.currentSceneInfo.UITypes)
+            foreach (var type in currentSceneInfo.UITypes)
             {
                 GameRoot.UI.CloseUIPanel(type);
             }
@@ -372,7 +357,7 @@ namespace CyanStars.Gameplay.MusicGame
         private void CreateTimeline()
         {
             timeline = new Timeline(playingDataModule.CurTimelineLength);
-            timeline.OnEndInMusicGameMode += StopTimeline;
+            timeline.OnTimeLineFinished += OnTimeLineFinished;
 
             var chartContext = CreateChartContext();
 
@@ -524,17 +509,26 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
+        private void OnTimeLineFinished()
+        {
+            GameRoot.UI.OpenUIPanelAsync<ScoreSettlementPanel>();
+            StopTimeline();
+        }
+
         /// <summary>
-        /// 停止时间轴
+        /// 清理时间轴相关内容，停止音游更新，广播结束事件
         /// </summary>
+        /// <remarks>见于时间轴播放完成，或中途退出音游</remarks>
         private void StopTimeline()
         {
+            timeline.OnTimeLineFinished -= OnTimeLineFinished;
+
             timeline = null;
             lastTime = -float.Epsilon;
             audioSource.clip = null;
 
             GameRoot.Timer.UpdateTimer.Remove(UpdateTimeline);
-            inputReceiver?.EndReceive();
+            inputReceiver.EndReceive();
 
             GameRoot.Event.Dispatch(EventConst.MusicGameEndEvent, this, EmptyEventArgs.Create());
 
