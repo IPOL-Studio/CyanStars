@@ -21,10 +21,10 @@ namespace CyanStars.Framework.Timeline
         public readonly TimelineContext Context;
 
         /// <summary>
-        /// 音游模式下时间轴停止回调
+        /// 音游模式下时间轴播放完毕
         /// </summary>
         /// <remarks>时间轴在 isMusicGameMode 模式下且 CurrentTime 大于等于 Length</remarks>
-        public event Action? OnEndInMusicGameMode;
+        public event Action? OnTimeLineFinished;
 
 
         public Timeline(float length)
@@ -108,7 +108,7 @@ namespace CyanStars.Framework.Timeline
                 track.OnPlayingUpdate(Context);
 
             if (Context.CurrentTime >= Context.Length)
-                OnEndInMusicGameMode?.Invoke();
+                OnTimeLineFinished?.Invoke();
         }
 
         /// <summary>

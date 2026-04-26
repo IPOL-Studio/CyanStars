@@ -10,6 +10,7 @@
         /// <summary>
         /// 音游结束事件
         /// </summary>
+        /// <remarks>停止时间轴，见于正常结束和中途退出</remarks>
         public const string MusicGameEndEvent = nameof(MusicGameEndEvent);
 
         /// <summary>
@@ -30,6 +31,7 @@
         /// <summary>
         /// 音游退出事件
         /// </summary>
+        /// <remarks>结束音游流程，见于退出结算页或中途退出</remarks>
         public const string MusicGameExitEvent = nameof(MusicGameExitEvent);
     }
 }
