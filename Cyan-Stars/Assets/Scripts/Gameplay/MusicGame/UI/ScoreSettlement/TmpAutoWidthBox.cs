@@ -87,8 +87,6 @@ namespace CyanStars.Gameplay.MusicGame.UI.ScoreSettlement
 
         private void AdjustWidth()
         {
-            Debug.Log("1");
-
             // 1. 先给一个极大的宽度，让 AutoSize 能够完全根据高度来计算出正确的字体大小
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 999999f);
 
