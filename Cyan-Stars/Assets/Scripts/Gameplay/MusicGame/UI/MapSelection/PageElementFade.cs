@@ -1,7 +1,5 @@
-using System;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.MusicGame
 {
@@ -15,6 +13,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             canvasGroup = GetComponent<CanvasGroup>();
             canvasGroup.ignoreParentGroups = true;
+            canvasGroup.alpha = 0f;
         }
 
         public void OnEnter(MapSelectionPageChangeArgs args)
