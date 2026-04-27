@@ -13,6 +13,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             canvasGroup = GetComponent<CanvasGroup>();
             canvasGroup.ignoreParentGroups = true;
+            canvasGroup.alpha = 0f;
         }
 
         public void OnEnter(MapSelectionPageChangeArgs args)

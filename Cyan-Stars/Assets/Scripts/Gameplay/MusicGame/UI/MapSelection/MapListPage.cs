@@ -49,6 +49,7 @@ namespace CyanStars.Gameplay.MusicGame
             chartModule = GameRoot.GetDataModule<ChartModule>();
             mapItems = new List<BaseUIItem>();
 
+            mapTitleText.text = ""; // 防止编辑器内的示例标题参与首次打开 UI 时的淡出动画
             nextStepButton.onClick.AddListener(() =>
             {
                 this.owner.ChangePage<StaffPage>();
@@ -62,6 +63,7 @@ namespace CyanStars.Gameplay.MusicGame
                 runningTween.Kill(true);
             }
 
+            canvasGroup.alpha = 0;
             gameObject.SetActive(true);
 
             if (mapItems.Count == 0)
@@ -71,7 +73,6 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             OnSelectMap(mapItems[this.owner.CurrentSelectedMap.Index] as MapItem);
-            canvasGroup.alpha = 0;
             runningTween = canvasGroup.DOFade(1, args.FadeTime)
                 .SetEase(args.AnimationEase)
                 .OnKill(() => runningTween = null);
