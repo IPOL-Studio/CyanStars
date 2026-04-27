@@ -5,7 +5,6 @@ using CyanStars.Framework;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.UI;
 using CyanStars.Gameplay.Base;
-using CyanStars.Gameplay.MusicGame;
 using CyanStars.GameSave;
 using DG.Tweening;
 using TMPro;
@@ -139,7 +138,6 @@ namespace CyanStars.Gameplay.MusicGame.UI.ScoreSettlement
 
         protected override void OnCreate()
         {
-            base.OnCreate();
             continueButton.onClick.AddListener(() =>
                 {
                     GameRoot.UI.CloseUIPanel(this);
@@ -154,16 +152,6 @@ namespace CyanStars.Gameplay.MusicGame.UI.ScoreSettlement
             mainCanvasGroup.alpha = 0f;
             PreprocessData();
             PlayTextFadeEffect();
-        }
-
-        public override void OnClose()
-        {
-            base.OnClose();
-        }
-
-        public override void OnDestroy()
-        {
-            base.OnDestroy();
         }
 
 
