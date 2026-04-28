@@ -161,9 +161,35 @@ namespace CyanStars.Utils.SelectableUI
             }
         }
 
+        /// <summary>
+        /// 检查当前鼠标射线真正指到的物体，是否属于自己（防止被子 Selectable 触发冒泡）
+        /// </summary>
+        private bool IsEventValidForMe(PointerEventData eventData)
+        {
+            GameObject hitObj = eventData.pointerCurrentRaycast.gameObject;
+            if (hitObj == null) return true;
+
+            // 从实际指到的物体向上找最近的 Selectable
+            Selectable closestSelectable = hitObj.GetComponentInParent<Selectable>();
+
+            // 如果最近的 Selectable 是其他的组件（深层子节点），则本节点拒绝响应
+            if (closestSelectable != null && closestSelectable != selectable)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
 
         public void OnPointerEnter(PointerEventData eventData)
         {
+            if (!IsEventValidForMe(eventData))
+            {
+                isHovered = false;
+                return;
+            }
+
             isHovered = true;
             EvaluateState();
         }
@@ -178,6 +204,12 @@ namespace CyanStars.Utils.SelectableUI
         {
             if (eventData.button != PointerEventData.InputButton.Left)
                 return;
+
+            if (!IsEventValidForMe(eventData))
+            {
+                isHovered = false;
+                return;
+            }
 
             isPressed = true;
             EvaluateState();
