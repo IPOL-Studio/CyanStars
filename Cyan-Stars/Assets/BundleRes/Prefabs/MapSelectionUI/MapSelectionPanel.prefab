@@ -1082,7 +1082,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.8959961}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3228962939596442925
@@ -1217,7 +1217,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.9
+  m_fontSize: 55.65
   m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1404,8 +1404,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 113.75, y: -140}
-  m_SizeDelta: {x: 227.5, y: 0}
+  m_AnchoredPosition: {x: 1158, y: -174}
+  m_SizeDelta: {x: 2316, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3966465432295803747
 MonoBehaviour:
@@ -2047,8 +2047,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2926405019053317646}
   m_HandleRect: {fileID: 860111353162997801}
   m_Direction: 2
-  m_Value: 1.0046483
-  m_Size: 0
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4431,7 +4431,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 48.7
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_overflowMode
@@ -4608,7 +4608,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 48.7
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_overflowMode
@@ -4789,7 +4789,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320301, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320303, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Pivot.x
@@ -4950,7 +4950,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_fontSize
-      value: 31.3
+      value: 40.35
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_overflowMode
