@@ -1374,8 +1374,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1595764879}
   m_HandleRect: {fileID: 1595764877}
   m_Direction: 2
-  m_Value: 0.99999994
-  m_Size: 0.5039462
+  m_Value: 1.0000001
+  m_Size: 0.6009629
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1876,8 +1876,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 646701638}
   m_HandleRect: {fileID: 646701636}
   m_Direction: 2
-  m_Value: 1.0000122
-  m_Size: 0.91159946
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4739,7 +4739,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1070775234}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.35560524
+  m_Size: 0.40864152
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -9076,7 +9076,7 @@ MonoBehaviour:
   contentRect: {fileID: 1023559425}
   beatLinesFrameRect: {fileID: 1974464501}
   notesFrameRect: {fileID: 200356153}
-  scrollRect: {fileID: 1746494794}
+  scrollRect: {fileID: 1746494796}
   judgeLineRect: {fileID: 2134614510}
 --- !u!1 &549145901
 GameObject:
@@ -17654,7 +17654,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 477995409}
   m_HandleRect: {fileID: 477995407}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -28266,7 +28266,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1746494793}
   - component: {fileID: 1746494795}
-  - component: {fileID: 1746494794}
+  - component: {fileID: 1746494796}
   m_Layer: 5
   m_Name: ScrollView
   m_TagString: Untagged
@@ -28294,36 +28294,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0}
---- !u!114 &1746494794
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1746494792}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Content: {fileID: 1023559425}
-  m_Horizontal: 0
-  m_Vertical: 1
-  m_MovementType: 2
-  m_Elasticity: 0.1
-  m_Inertia: 0
-  m_DecelerationRate: 0
-  m_ScrollSensitivity: 60
-  m_Viewport: {fileID: 487915726}
-  m_HorizontalScrollbar: {fileID: 0}
-  m_VerticalScrollbar: {fileID: 0}
-  m_HorizontalScrollbarVisibility: 2
-  m_VerticalScrollbarVisibility: 2
-  m_HorizontalScrollbarSpacing: -3
-  m_VerticalScrollbarSpacing: -3
-  m_OnValueChanged:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!222 &1746494795
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28332,6 +28302,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1746494792}
   m_CullTransparentMesh: 1
+--- !u!114 &1746494796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746494792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff48d4041eb5e114393c5f93c0db8eec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CyanStars::CyanStars.Utils.CustomScrollRect
+  m_Content: {fileID: 1023559425}
+  m_Horizontal: 0
+  m_Vertical: 1
+  m_MovementType: 2
+  m_Elasticity: 0.1
+  m_Inertia: 0
+  m_DecelerationRate: 0.135
+  m_ScrollSensitivity: 60
+  m_Viewport: {fileID: 487915726}
+  m_HorizontalScrollbar: {fileID: 0}
+  m_VerticalScrollbar: {fileID: 0}
+  m_HorizontalScrollbarVisibility: 0
+  m_VerticalScrollbarVisibility: 0
+  m_HorizontalScrollbarSpacing: 0
+  m_VerticalScrollbarSpacing: 0
+  m_OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1755817816
 GameObject:
   m_ObjectHideFlags: 0

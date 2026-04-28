@@ -10,6 +10,7 @@ using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using CyanStars.Utils;
 using Gameplay.ChartEditor;
 using ObservableCollections;
 using R3;
@@ -38,7 +39,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private RectTransform notesFrameRect = null!;
 
         [SerializeField]
-        private ScrollRect scrollRect = null!;
+        private CustomScrollRect scrollRect = null!;
 
         [SerializeField]
         private RectTransform judgeLineRect = null!;
@@ -61,7 +62,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             base.Bind(targetViewModel);
 
             ViewModel.SelectedEditTool
-                .Subscribe(tool => scrollRect.vertical = tool == EditToolType.Select) // 只有为“选择”工具时才允许拖动 scrollRect
+                .Subscribe(tool => scrollRect.IsDragEnabled = tool == EditToolType.Select) // 只有为“选择”工具时才允许拖动 scrollRect
                 .AddTo(this);
             ViewModel.ContentAddHeight
                 .Subscribe(addHeight =>
