@@ -11,7 +11,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
     public class EditorAttributeView : BaseView<EditorAttributeViewModel>
     {
         [SerializeField]
-        private GameObject editorAttributeFrame = null!;
+        private Canvas editorAttributeCanvas = null!;
 
         [SerializeField]
         private TMP_InputField posAccuracyField = null!;
@@ -52,7 +52,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     .AddTo(this);
 
             frameVisibility
-                .Subscribe(value => editorAttributeFrame.SetActive(value))
+                .Subscribe(value => editorAttributeCanvas.enabled = value)
                 .AddTo(this);
             ViewModel.PosAccuracyString
                 .Subscribe(value => posAccuracyField.text = value)
