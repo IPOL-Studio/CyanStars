@@ -108,11 +108,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
                         }
                         else
                         {
-                            functionCanvasGroup
-                                .DOFade(0f, 0.05f)
-                                .SetEase(Ease.OutQuad);
                             ((RectTransform)functionCanvas.gameObject.transform)
                                 .DOScale(0.9f, 0.05f)
+                                .SetEase(Ease.OutQuad);
+                            functionCanvasGroup
+                                .DOFade(0f, 0.05f)
                                 .SetEase(Ease.OutQuad)
                                 .OnComplete(() => functionCanvas.enabled = false);
                         }
