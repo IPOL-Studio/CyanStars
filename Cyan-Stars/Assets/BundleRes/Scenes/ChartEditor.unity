@@ -17841,7 +17841,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d2f064765b041ab8c2443cdb4f90de6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  editorAttributeFrame: {fileID: 1037237906}
+  editorAttributeCanvas: {fileID: 1037237910}
   posAccuracyField: {fileID: 396625006}
   posMagnetToggle: {fileID: 1391379731}
   beatAccuracyField: {fileID: 607011165}
