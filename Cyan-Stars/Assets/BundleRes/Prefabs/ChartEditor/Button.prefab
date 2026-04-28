@@ -373,7 +373,8 @@ GameObject:
   - component: {fileID: 7757076495624774868}
   - component: {fileID: 7757076495624774824}
   - component: {fileID: 7757076495624774826}
-  - component: {fileID: 675697255831505478}
+  - component: {fileID: 5740303184253912632}
+  - component: {fileID: 3876099574899514790}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -431,7 +432,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 3
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -456,25 +457,64 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!95 &675697255831505478
-Animator:
-  serializedVersion: 7
+--- !u!114 &5740303184253912632
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7757076495624774869}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6127561d9510efe4487790babc610e0b, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 402188e82ed34674aa269388b0a1fbad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CyanStars::CyanStars.Utils.SelectableUI.SelectableStateObserver
+  onStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &3876099574899514790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7757076495624774869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea1e68ef37657d54b8e7bfa93b4973a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CyanStars::CyanStars.Utils.SelectableUI.SelectableViewEffectHandler
+  tweenDuration: 0.1
+  tweenEase: 6
+  rectTransformToChangeScale:
+  - {fileID: 7757076494254989243}
+  - {fileID: 629521230801178026}
+  - {fileID: 1267847065536664933}
+  - {fileID: 4050248570757427124}
+  graphicToChangeColor:
+  - {fileID: 7757076494254989242}
+  - {fileID: 2870093097978841429}
+  normal:
+    Scale: {x: 1, y: 1, z: 1}
+    TintColor: {r: 0.93, g: 0.93, b: 0.93, a: 0.98}
+  hover:
+    Scale: {x: 1.02, y: 1.02, z: 1.02}
+    TintColor: {r: 0.98, g: 0.98, b: 0.98, a: 0.98}
+  pressed:
+    Scale: {x: 0.98, y: 0.98, z: 0.98}
+    TintColor: {r: 0.62, g: 0.62, b: 0.62, a: 0.98}
+  disabled:
+    Scale: {x: 1, y: 1, z: 1}
+    TintColor: {r: 0.33, g: 0.33, b: 0.33, a: 0.98}
+  normalSelected:
+    Scale: {x: 1, y: 1, z: 1}
+    TintColor: {r: 0.27, g: 0.47, b: 0.82, a: 0.98}
+  hoverSelected:
+    Scale: {x: 1.02, y: 1.02, z: 1.02}
+    TintColor: {r: 0.49, g: 0.63, b: 0.87, a: 0.98}
+  pressedSelected:
+    Scale: {x: 0.98, y: 0.98, z: 0.98}
+    TintColor: {r: 0.29, g: 0.42, b: 0.62, a: 0.98}
+  disabledSelected:
+    Scale: {x: 1, y: 1, z: 1}
+    TintColor: {r: 0.11, g: 0.19, b: 0.33, a: 0.98}

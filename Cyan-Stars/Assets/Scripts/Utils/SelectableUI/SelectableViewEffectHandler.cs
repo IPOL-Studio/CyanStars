@@ -38,7 +38,7 @@ namespace CyanStars.Utils.SelectableUI
         [Header("各状态配置")]
         [SerializeField]
         private StateEffectConfig normal = new() { Scale = Vector3.one, TintColor = new Color(0.93f, 0.93f, 0.93f, 0.98f) };
-        
+
         [SerializeField]
         private StateEffectConfig hover = new() { Scale = new Vector3(1.02f, 1.02f, 1.02f), TintColor = new Color(0.98f, 0.98f, 0.98f, 0.98f) };
 
