@@ -11,6 +11,7 @@ using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Utils;
+using CyanStars.Gameplay.ChartEditor.Manager;
 using ObservableCollections;
 using R3;
 using UnityEngine;

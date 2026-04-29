@@ -8,6 +8,7 @@ using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Utils;
 using Gameplay.ChartEditor;
+using CyanStars.Gameplay.ChartEditor.Manager;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor

@@ -1,13 +1,13 @@
-using CyanStars.Gameplay.ChartEditor.Model;
-using UnityEngine;
-using R3;
-using CyanStars.Chart;
-using System.Collections.Generic;
-using CyanStars.Framework;
-using CatAsset.Runtime;
 using System;
+using System.Collections.Generic;
+using CatAsset.Runtime;
+using CyanStars.Chart;
+using CyanStars.Framework;
+using CyanStars.Gameplay.ChartEditor.Model;
+using R3;
+using UnityEngine;
 
-namespace CyanStars.Gameplay.ChartEditor
+namespace CyanStars.Gameplay.ChartEditor.Manager
 {
     // TODO: 这个类现在的实现非常 hack，只是为了让制谱器有打击音可用
     // 没有优化，也无扩展

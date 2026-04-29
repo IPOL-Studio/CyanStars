@@ -10,7 +10,7 @@ using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Utils;
 using UnityEngine;
 
-namespace CyanStars.Gameplay.ChartEditor
+namespace CyanStars.Gameplay.ChartEditor.Manager
 {
     /// <summary>
     /// 用于制谱器的文件管理类

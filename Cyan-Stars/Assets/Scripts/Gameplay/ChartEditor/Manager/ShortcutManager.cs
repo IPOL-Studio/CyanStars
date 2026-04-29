@@ -1,9 +1,10 @@
 #nullable enable
 
 using System.Collections.Generic;
+using CyanStars.Gameplay.ChartEditor;
 using UnityEngine;
 
-namespace CyanStars.Gameplay.ChartEditor
+namespace CyanStars.Gameplay.ChartEditor.Manager
 {
     /// <summary>
     /// 制谱器内快捷键管理器（单例）
