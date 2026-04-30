@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
-using CyanStars.Framework;
-using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using ObservableCollections;
 using R3;

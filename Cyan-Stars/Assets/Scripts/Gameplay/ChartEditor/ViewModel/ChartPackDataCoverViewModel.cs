@@ -6,9 +6,9 @@ using CatAsset.Runtime;
 using CyanStars.Framework;
 using CyanStars.Framework.File;
 using CyanStars.Gameplay.ChartEditor.Command;
+using CyanStars.Gameplay.ChartEditor.Manager;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Utils;
-using CyanStars.Gameplay.ChartEditor.Manager;
 using R3;
 using UnityEngine;
 

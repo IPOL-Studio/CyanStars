@@ -1,7 +1,6 @@
 #nullable enable
 
 using System.Collections.Generic;
-using CyanStars.Gameplay.ChartEditor;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.Manager
@@ -17,6 +16,7 @@ namespace CyanStars.Gameplay.ChartEditor.Manager
 
         private List<ShortcutDefinition> shortcuts = null!;
         private HashSet<ShortcutCommand> executedCommand = null!;
+
         public void Init()
         {
             shortcuts = new List<ShortcutDefinition>();
@@ -36,6 +36,7 @@ namespace CyanStars.Gameplay.ChartEditor.Manager
             {
                 insertIndex = ~insertIndex;
             }
+
             shortcuts.Insert(insertIndex, shortcut);
         }
 

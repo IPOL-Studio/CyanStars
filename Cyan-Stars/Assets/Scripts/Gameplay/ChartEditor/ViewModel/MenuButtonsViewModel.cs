@@ -3,8 +3,8 @@
 using CyanStars.Framework;
 using CyanStars.Gameplay.Base;
 using CyanStars.Gameplay.ChartEditor.Command;
-using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.Manager;
+using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel

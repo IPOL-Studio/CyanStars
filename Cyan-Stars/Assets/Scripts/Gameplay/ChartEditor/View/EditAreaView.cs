@@ -16,7 +16,6 @@ using ObservableCollections;
 using R3;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using GameObjectPoolManager = CyanStars.Framework.GameObjectPool.GameObjectPoolManager;
 
 namespace CyanStars.Gameplay.ChartEditor.View
