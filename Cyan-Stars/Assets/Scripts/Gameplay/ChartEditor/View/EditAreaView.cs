@@ -83,6 +83,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     ViewModel.TotalBeats,
                     (_, _, _) => true
                 )
+                .ThrottleLastFrame(1)
                 .Subscribe(_ => ForceRebuildBeatLines()).AddTo(this);
 
             // 3. 滚动时刷新节拍线和音符，如果没在播放音乐则一并更新时间轴时间
