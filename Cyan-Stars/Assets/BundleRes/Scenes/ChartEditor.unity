@@ -1775,17 +1775,25 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: b317585ec5755604c9a6072c87573ec9, type: 3}
     - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+      propertyPath: graphicToChangeColor.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: 'graphicToChangeColor.Array.data[0]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 118046560}
     - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: 'graphicToChangeColor.Array.data[2]'
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+      propertyPath: rectTransformToChangeScale.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: 'rectTransformToChangeScale.Array.data[0]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 118046559}
     - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: 'rectTransformToChangeScale.Array.data[1]'
       value: 
@@ -1922,6 +1930,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!224 &118046559 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1267847065536664933, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+  m_PrefabInstance: {fileID: 118046554}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &118046560 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2870093097978841429, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+  m_PrefabInstance: {fileID: 118046554}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &127207021
@@ -9083,8 +9107,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 3d31432bbb84f9040b93824cc6257623, type: 3}
     - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+      propertyPath: graphicToChangeColor.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: 'graphicToChangeColor.Array.data[2]'
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+      propertyPath: rectTransformToChangeScale.Array.size
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: 'rectTransformToChangeScale.Array.data[3]'
@@ -9869,7 +9901,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &584011670 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 994941278905508766, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
+  m_CorrespondingSourceObject: {fileID: 5709352133266137362, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
   m_PrefabInstance: {fileID: 584011668}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -11599,9 +11631,9 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 994941279456320296, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
   m_PrefabInstance: {fileID: 651228594}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &651228599 stripped
+--- !u!114 &651228597 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 994941278905508766, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
+  m_CorrespondingSourceObject: {fileID: 5709352133266137362, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
   m_PrefabInstance: {fileID: 651228594}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -11622,7 +11654,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 342dd9a5d12140618c61041ffab209c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.MusicVersionView
-  closeCanvasButton: {fileID: 651228599}
+  closeCanvasButton: {fileID: 651228597}
   musicListItemPrefab: {fileID: 3465736307737091252, guid: d0c774b79e1a1ad4589d9a085e82e557, type: 3}
   itemContentTransform: {fileID: 1347972552}
   musicListObject: {fileID: 82778093}
@@ -15539,7 +15571,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &945222147 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 994941278905508766, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
+  m_CorrespondingSourceObject: {fileID: 5709352133266137362, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
   m_PrefabInstance: {fileID: 945222145}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -23008,7 +23040,7 @@ MonoBehaviour:
   readyBeatField: {fileID: 1452472937}
 --- !u!114 &1403133578 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 994941278905508766, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
+  m_CorrespondingSourceObject: {fileID: 5709352133266137362, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
   m_PrefabInstance: {fileID: 1403133574}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -26532,8 +26564,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 5aaa57c84d13ebd498cd8001c99c0e11, type: 3}
     - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+      propertyPath: graphicToChangeColor.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: 'graphicToChangeColor.Array.data[2]'
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+      propertyPath: rectTransformToChangeScale.Array.size
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: 'rectTransformToChangeScale.Array.data[3]'
@@ -27588,8 +27628,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 67bde39d509c2754f9d1488e7dc722fa, type: 3}
     - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+      propertyPath: graphicToChangeColor.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: 'graphicToChangeColor.Array.data[2]'
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+      propertyPath: rectTransformToChangeScale.Array.size
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: 'rectTransformToChangeScale.Array.data[3]'
@@ -28802,8 +28850,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 42fb471c104089340a6e453ca2ef6ecf, type: 3}
     - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+      propertyPath: graphicToChangeColor.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: 'graphicToChangeColor.Array.data[2]'
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+      propertyPath: rectTransformToChangeScale.Array.size
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: 'rectTransformToChangeScale.Array.data[3]'
@@ -29137,8 +29193,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 67bde39d509c2754f9d1488e7dc722fa, type: 3}
     - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+      propertyPath: graphicToChangeColor.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: 'graphicToChangeColor.Array.data[2]'
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
+      propertyPath: rectTransformToChangeScale.Array.size
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3876099574899514790, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: 'rectTransformToChangeScale.Array.data[3]'
