@@ -153,7 +153,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             chartPackDataButton
                 .OnClickAsObservable()
-                .Subscribe(_ => chartPackDataView.OpenCanvas())
+                .Subscribe(_ => chartPackDataView.SetCanvasVisibility(true))
                 .AddTo(this);
             chartDataButton
                 .OnClickAsObservable()

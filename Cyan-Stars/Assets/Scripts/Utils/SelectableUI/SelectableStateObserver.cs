@@ -44,7 +44,7 @@ namespace CyanStars.Utils.SelectableUI
 
         [Header("状态改变回调")]
         [SerializeField]
-        private UnityEvent<UIState> onStateChanged;
+        private UnityEvent<UIState> onStateChanged = new();
 
         public UnityEvent<UIState> OnStateChanged => onStateChanged;
 
@@ -114,7 +114,10 @@ namespace CyanStars.Utils.SelectableUI
         protected override void OnCanvasGroupChanged()
         {
             base.OnCanvasGroupChanged();
-            EvaluateState();
+
+            // 防止在 Instantiate 期间 Awake 未执行时触发空引用
+            if (selectable != null)
+                EvaluateState();
         }
 
         /// <summary>

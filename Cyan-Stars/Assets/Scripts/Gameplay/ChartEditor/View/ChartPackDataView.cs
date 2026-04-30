@@ -1,7 +1,5 @@
 ﻿#nullable enable
 
-using CyanStars.Framework;
-using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using TMPro;
@@ -10,14 +8,8 @@ using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
-    public class ChartPackDataView : BaseView<ChartPackDataViewModel>
+    public class ChartPackDataView : BasePopupView<ChartPackDataViewModel>
     {
-        [SerializeField]
-        private Canvas canvas = null!;
-
-        [SerializeField]
-        private Button closeCanvasButton = null!;
-
         [SerializeField]
         private TMP_InputField chartPackTitleField = null!;
 
@@ -46,17 +38,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private GameObject coverCropFrameObject = null!;
 
         [SerializeField]
-        private Button exportChartPackButton = null!; //TODO
+        private Button exportChartPackButton = null!;
 
 
-        private readonly ReactiveProperty<bool> canvasVisibility = new ReactiveProperty<bool>(false);
         private ReadOnlyReactiveProperty<bool> coverCropFrameVisibility = null!;
 
 
         public override void Bind(ChartPackDataViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
-
 
             coverCropFrameVisibility = ViewModel.ChartPackData
                 .Select(data => data.CoverFilePath.AsObservable())
@@ -65,10 +55,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .ToReadOnlyReactiveProperty()
                 .AddTo(this);
 
-
-            canvasVisibility
-                .Subscribe(visible => canvas.enabled = visible)
-                .AddTo(this);
             ViewModel.ChartPackTitle
                 .Subscribe(title => chartPackTitleField.text = title)
                 .AddTo(this);
@@ -100,20 +86,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
 
-            closeCanvasButton
-                .OnClickAsObservable()
-                .Subscribe(_ =>
-                    {
-                        if (!canvasVisibility.CurrentValue)
-                            return;
-
-                        GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
-                            () => canvasVisibility.Value = false,
-                            () => canvasVisibility.Value = true
-                        );
-                    }
-                )
-                .AddTo(this);
             chartPackTitleField
                 .OnEndEditAsObservable()
                 .Subscribe(ViewModel.SetChartPackTitle)
@@ -123,7 +95,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             //
             // private void UpdateBeat(string s1, string s2, string s3)
             // {
-            //     Debug.LogWarning("TODO: 更新预览拍");// TODO: 更新预览拍
+            //     Debug.LogWarning("TODO: 更新预览拍");
             // }
             //
             // Observable.Merge(
@@ -203,18 +175,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.ExportChartPack())
                 .AddTo(this);
-        }
-
-
-        public void OpenCanvas()
-        {
-            if (canvasVisibility.CurrentValue)
-                return;
-
-            GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
-                () => canvasVisibility.Value = true,
-                () => canvasVisibility.Value = false
-            );
         }
     }
 }

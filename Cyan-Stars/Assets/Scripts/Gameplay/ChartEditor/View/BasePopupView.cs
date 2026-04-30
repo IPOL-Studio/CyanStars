@@ -1,0 +1,127 @@
+﻿#nullable enable
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using CyanStars.Framework;
+using CyanStars.Gameplay.ChartEditor.Command;
+using CyanStars.Gameplay.ChartEditor.ViewModel;
+using R3;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace CyanStars.Gameplay.ChartEditor.View
+{
+    /// <summary>
+    /// 制谱器弹窗 View 基类
+    /// </summary>
+    [RequireComponent(typeof(Canvas))]
+    public abstract class BasePopupView<TViewModel> : BaseView<TViewModel>
+        where TViewModel : BaseViewModel
+    {
+        [SerializeField]
+        private Button closeCanvasButton = null!;
+
+        protected Canvas Canvas = null!;
+        protected CommandStack CommandStack = null!;
+
+        private ChartEditorPopupEffectController? effectController;
+        private CancellationTokenSource? cts;
+        private readonly ReactiveProperty<bool> CanvasVisibility = new(false);
+
+
+        protected virtual void Awake()
+        {
+            Canvas = GetComponent<Canvas>();
+            TryGetComponent<ChartEditorPopupEffectController>(out effectController);
+        }
+
+        protected virtual void OnDestroy()
+        {
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = null;
+        }
+
+
+        public override void Bind(TViewModel targetViewModel)
+        {
+            base.Bind(targetViewModel);
+
+            CommandStack = GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack;
+
+            CanvasVisibility
+                .Subscribe(visible =>
+                    {
+                        if (visible)
+                            _ = OpenCanvas();
+                        else
+                            _ = CloseCanvas();
+                    }
+                )
+                .AddTo(this);
+
+            closeCanvasButton
+                .OnClickAsObservable()
+                .Subscribe(_ => SetCanvasVisibility(false))
+                .AddTo(this);
+        }
+
+        public void SetCanvasVisibility(bool visible)
+        {
+            if (CanvasVisibility.CurrentValue == visible)
+                return;
+
+            CommandStack.ExecuteCommand(
+                () => CanvasVisibility.Value = visible,
+                () => CanvasVisibility.Value = !visible
+            );
+        }
+
+
+        private async Task OpenCanvas()
+        {
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = new CancellationTokenSource();
+
+            Canvas.enabled = true;
+
+            if (effectController != null)
+            {
+                try
+                {
+                    await effectController.ShowPopupCanvas(cts.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    // 被 cts.Token 取消而抛出异常，Pass
+                }
+            }
+        }
+
+        private async Task CloseCanvas()
+        {
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = new CancellationTokenSource();
+
+            if (effectController != null)
+            {
+                try
+                {
+                    await effectController.HidePopupCanvas(cts.Token);
+                    Canvas.enabled = false;
+                }
+                catch (OperationCanceledException)
+                {
+                    // 被 cts.Token 取消而抛出异常，Pass
+                }
+            }
+            else
+            {
+                Canvas.enabled = false;
+            }
+        }
+    }
+}
