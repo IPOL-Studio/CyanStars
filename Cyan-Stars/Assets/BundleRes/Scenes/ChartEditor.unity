@@ -694,7 +694,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   closeCanvasButton: {fileID: 945222147}
-  canvas: {fileID: 42740036}
   chartPackTitleField: {fileID: 261047217}
   previewStartBeatField1: {fileID: 876355761}
   previewStartBeatField2: {fileID: 563092408}
@@ -705,11 +704,6 @@ MonoBehaviour:
   coverPathText: {fileID: 1668466727}
   coverCropFrameObject: {fileID: 1514540014}
   exportChartPackButton: {fileID: 1354379450}
---- !u!223 &42740036 stripped
-Canvas:
-  m_CorrespondingSourceObject: {fileID: 994941279456320301, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
-  m_PrefabInstance: {fileID: 945222145}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &43651018
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12038,11 +12032,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 994941279456320296, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
   m_PrefabInstance: {fileID: 651228594}
   m_PrefabAsset: {fileID: 0}
---- !u!223 &651228598 stripped
-Canvas:
-  m_CorrespondingSourceObject: {fileID: 994941279456320301, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
-  m_PrefabInstance: {fileID: 651228594}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &651228599 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 994941278905508766, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
@@ -12066,6 +12055,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 342dd9a5d12140618c61041ffab209c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.MusicVersionView
+  closeCanvasButton: {fileID: 651228599}
   musicListItemPrefab: {fileID: 3465736307737091252, guid: d0c774b79e1a1ad4589d9a085e82e557, type: 3}
   itemContentTransform: {fileID: 1347972552}
   musicListObject: {fileID: 82778093}
@@ -12073,8 +12063,6 @@ MonoBehaviour:
   staffItemPrefab: {fileID: 1570479164798640671, guid: a3981b7e3937b554bb09cc436c652156, type: 3}
   staffsContentFrameGameObject: {fileID: 217994227}
   addStaffButton: {fileID: 1341776450}
-  canvas: {fileID: 651228598}
-  closeButton: {fileID: 651228599}
   detailObject: {fileID: 1134447016}
   musicTitleField: {fileID: 1618376875376546139}
   musicFilePathText: {fileID: 1618376876756542344}
@@ -23436,10 +23424,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78a4a17fc7654fe79045bdf1edcb1f2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  closeCanvasButton: {fileID: 1403133578}
   selectedToggleSprite: {fileID: 21300000, guid: 41e29448b6c076042a17ab01d753e78e, type: 3}
   unselectedToggleSprite: {fileID: 21300000, guid: 1d0792bed21ff9341b4795cd90d39451, type: 3}
-  chartDataCanvas: {fileID: 1403133579}
-  closeCanvasButton: {fileID: 1403133578}
   kuiXingToggle: {fileID: 1518154088}
   qiMingToggle: {fileID: 647143056}
   tianShuToggle: {fileID: 1523947241}
@@ -23458,11 +23445,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!223 &1403133579 stripped
-Canvas:
-  m_CorrespondingSourceObject: {fileID: 994941279456320301, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
-  m_PrefabInstance: {fileID: 1403133574}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1419857833
 GameObject:
   m_ObjectHideFlags: 0

@@ -438,4 +438,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4425205366a8354b92a59544e6c6195, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CyanStars::CyanStars.Gameplay.ChartEditor.ChartEditorPopupEffectController
-  tweenDuration: 0.1
+  tweenDuration: 0.2

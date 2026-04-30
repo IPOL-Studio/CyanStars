@@ -79,7 +79,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         }
 
 
-        private async Task OpenCanvas()
+        protected virtual async Task OpenCanvas()
         {
             cts?.Cancel();
             cts?.Dispose();
@@ -100,7 +100,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
         }
 
-        private async Task CloseCanvas()
+        protected virtual async Task CloseCanvas()
         {
             cts?.Cancel();
             cts?.Dispose();

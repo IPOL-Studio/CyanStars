@@ -157,15 +157,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
             chartDataButton
                 .OnClickAsObservable()
-                .Subscribe(_ => chartDataView.OpenCanvas())
+                .Subscribe(_ => chartDataView.SetCanvasVisibility(true))
                 .AddTo(this);
             musicVersionButton
                 .OnClickAsObservable()
-                .Subscribe(_ => musicVersionView.OpenCanvas())
+                .Subscribe(_ => musicVersionView.SetCanvasVisibility(true))
                 .AddTo(this);
             bpmGroupButton
                 .OnClickAsObservable()
-                .Subscribe(_ => bpmGroupView.OpenCanvas())
+                .Subscribe(_ => bpmGroupView.SetCanvasVisibility(true))
                 .AddTo(this);
             // speedTemplateButton ...
 

@@ -19,7 +19,7 @@ namespace CyanStars.Gameplay.ChartEditor
     public class ChartEditorPopupEffectController : MonoBehaviour
     {
         [SerializeField]
-        private float tweenDuration = 0.1f;
+        private float tweenDuration = 0.2f;
 
         private CanvasGroup canvasGroup = null!;
         private RectTransform rectTransform = null!;
@@ -30,7 +30,7 @@ namespace CyanStars.Gameplay.ChartEditor
             canvasGroup = GetComponent<CanvasGroup>();
             rectTransform = (transform as RectTransform)!;
             canvasGroup.alpha = 0;
-            rectTransform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+            rectTransform.localScale = new Vector3(0.9f, 0.9f, 0.9f);
         }
 
         // ↓↓ API ↓↓
