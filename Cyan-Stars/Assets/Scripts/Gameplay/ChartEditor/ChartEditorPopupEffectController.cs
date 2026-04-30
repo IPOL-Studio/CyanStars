@@ -33,7 +33,6 @@ namespace CyanStars.Gameplay.ChartEditor
             rectTransform.localScale = new Vector3(0.9f, 0.9f, 0.9f);
         }
 
-        // ↓↓ API ↓↓
 
         /// <summary>
         /// 播放弹窗打开动画
@@ -86,6 +85,7 @@ namespace CyanStars.Gameplay.ChartEditor
 
             await AwaitTweenSafely(activeSequence, token);
         }
+
 
         /// <summary>
         /// 安全等待 Tween 完成
