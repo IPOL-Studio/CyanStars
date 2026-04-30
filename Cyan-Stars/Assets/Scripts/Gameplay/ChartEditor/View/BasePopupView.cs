@@ -22,8 +22,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private Button closeCanvasButton = null!;
 
-        protected Canvas Canvas = null!;
-        protected CommandStack CommandStack = null!;
+        private Canvas canvas = null!;
+        private CommandStack commandStack = null!;
 
         private ChartEditorPopupEffectController? effectController;
         private CancellationTokenSource? cts;
@@ -32,7 +32,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected virtual void Awake()
         {
-            Canvas = GetComponent<Canvas>();
+            canvas = GetComponent<Canvas>();
             TryGetComponent<ChartEditorPopupEffectController>(out effectController);
         }
 
@@ -48,7 +48,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
-            CommandStack = GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack;
+            commandStack = GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack;
 
             CanvasVisibility
                 .Subscribe(visible =>
@@ -72,7 +72,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             if (CanvasVisibility.CurrentValue == visible)
                 return;
 
-            CommandStack.ExecuteCommand(
+            commandStack.ExecuteCommand(
                 () => CanvasVisibility.Value = visible,
                 () => CanvasVisibility.Value = !visible
             );
@@ -85,7 +85,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             cts?.Dispose();
             cts = new CancellationTokenSource();
 
-            Canvas.enabled = true;
+            canvas.enabled = true;
 
             if (effectController != null)
             {
@@ -111,7 +111,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 try
                 {
                     await effectController.HidePopupCanvas(cts.Token);
-                    Canvas.enabled = false;
+                    canvas.enabled = false;
                 }
                 catch (OperationCanceledException)
                 {
@@ -120,7 +120,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
             else
             {
-                Canvas.enabled = false;
+                canvas.enabled = false;
             }
         }
     }
