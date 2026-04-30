@@ -2,13 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using CatAsset.Runtime;
 using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Manager;
 using CyanStars.Utils;
-using Gameplay.ChartEditor;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor
@@ -54,21 +52,6 @@ namespace CyanStars.Gameplay.ChartEditor
         public void InitSceneRoot()
         {
             var chartModule = GameRoot.GetDataModule<ChartModule>();
-
-            // 预热资源防止制谱器播放中动态加载偶发加载失败报错
-            // TODO: 这里本来应该用 await 的，但是 Unity Update() 会抢在预热完成前访问 VM，并抛一大堆错误，故先临时凑合，之后重构生命周期管理
-            // TODO: 细查动态加载的报错原因
-            List<string> assetsToInit = new()
-            {
-                ChartEditorAssetHelper.PosLinePath,
-                ChartEditorAssetHelper.BeatLinePath,
-                ChartEditorAssetHelper.TapNotePath,
-                ChartEditorAssetHelper.HoldNotePath,
-                ChartEditorAssetHelper.DragNotePath,
-                ChartEditorAssetHelper.ClickNotePath,
-                ChartEditorAssetHelper.BreakNotePath
-            };
-            _ = GameRoot.Asset.BatchLoadAssetAsync(assetsToInit).BindTo(gameObject);
 
             string workspacePath;
             int chartMetadataIndex;
