@@ -6030,7 +6030,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7757076495624774869, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_Name
-      value: Button
+      value: DeleteButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -7496,7 +7496,7 @@ MonoBehaviour:
   m_ChildAlignment: 1
   m_Spacing: 24
   m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+  m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
@@ -10007,7 +10007,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.BpmGroupView
   closeCanvasButton: {fileID: 584011670}
-  bpmListItemPrefab: {fileID: 3465736307737091252, guid: 78080fde604ba704695c1a24e0700812, type: 3}
+  bpmListItemPrefab: {fileID: 1084994031255308922, guid: a5036c9887aeb494f912cb0b7b23c632, type: 3}
+  bpmListToggleGroup: {fileID: 475630460}
   itemContentTransform: {fileID: 475630455}
   bpmGroupListGameObject: {fileID: 2075881149}
   addBpmItemButton: {fileID: 1372622811}
@@ -16734,7 +16735,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1013333565}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 

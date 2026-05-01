@@ -39,7 +39,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             selectedBpmItem = new ReactiveProperty<BpmGroupItem?>(Model.ChartPackData.CurrentValue.BpmGroup[0]);
 
-            Model.IsSimplificationMode.ToReadOnlyReactiveProperty().AddTo(Disposables);
+            Model.IsSimplificationMode.ToReadOnlyReactiveProperty().AddTo(base.Disposables);
 
             SelectedBpmItemIndex = SelectedBpmItem
                 .Select(item => item != null

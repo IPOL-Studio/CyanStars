@@ -14,7 +14,7 @@ namespace CyanStars.Chart
         /// <summary>此 BPM 组经过几拍后开始生效</summary>
         /// <remarks>
         /// ...一直生效直到有新的 BPM 组取代之
-        /// 首个 BPM 组必须从 [0,0,0] 开始，末个 BPM 组持续到谱面结束。
+        /// 首个 BPM 组必须从 [0,0,1] 开始，末个 BPM 组持续到谱面结束。
         /// </remarks>
         public Beat StartBeat;
 
