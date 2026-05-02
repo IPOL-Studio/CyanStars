@@ -1,9 +1,11 @@
 ﻿#nullable enable
 
 using System;
+using System.Collections.Generic;
 using CatAsset.Runtime;
 using CyanStars.Framework;
 using CyanStars.Framework.FSM;
+using Gameplay.ChartEditor;
 using UnityEngine.SceneManagement;
 
 namespace CyanStars.Gameplay.ChartEditor.Procedure
@@ -50,8 +52,14 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
             ChartEditorDataModule chartEditorDataModule = GameRoot.GetDataModule<ChartEditorDataModule>();
             chartEditorDataModule.OnEnterChartEditorProcedure(ChartEditorSceneRoot.CommandStack);
 
+            // 预热资源
+            sceneRoot!.gameObject.SetActive(false);
+            List<string> assetsToInit = ChartEditorAssetHelper.AllPaths;
+            await GameRoot.Asset.BatchLoadAssetAsync(assetsToInit).BindTo(sceneRoot.gameObject);
+            sceneRoot.gameObject.SetActive(true);
+
             // 初始化场景
-            sceneRoot?.InitSceneRoot();
+            sceneRoot.InitSceneRoot();
         }
 
         public override void OnUpdate(float deltaTime)

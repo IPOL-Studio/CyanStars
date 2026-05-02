@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
-using CyanStars.Framework;
-using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using ObservableCollections;
 using R3;
@@ -12,7 +10,7 @@ using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
-    public class BpmGroupView : BaseView<BpmGroupViewModel>
+    public class BpmGroupView : BasePopupView<BpmGroupViewModel>
     {
         [Header("列表子 View")]
         [SerializeField]
@@ -29,12 +27,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
 
         [Header("主 View")]
-        [SerializeField]
-        private Canvas canvas = null!;
-
-        [SerializeField]
-        private Button closeCanvasButton = null!;
-
         [SerializeField]
         private GameObject timelineGameObject = null!;
 
@@ -149,9 +141,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
             // VM -> V 绑定
-            CanvasVisibility
-                .Subscribe(visible => canvas.enabled = visible)
-                .AddTo(this);
             listVisibility
                 .Subscribe(visible => bpmGroupListGameObject.SetActive(visible))
                 .AddTo(this);
@@ -183,10 +172,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
             // V -> VM 绑定
-            closeCanvasButton
-                .OnClickAsObservable()
-                .Subscribe(_ => CloseCanvas())
-                .AddTo(this);
             addBpmItemButton
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.AddBpmItem())
@@ -216,28 +201,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private void SetBeat()
         {
             ViewModel.SetBeat(startBeatField1.text, startBeatField2.text, startBeatField3.text);
-        }
-
-        private void CloseCanvas()
-        {
-            if (!CanvasVisibility.CurrentValue)
-                return;
-
-            GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
-                () => CanvasVisibility.Value = false,
-                () => CanvasVisibility.Value = true
-            );
-        }
-
-        public void OpenCanvas()
-        {
-            if (CanvasVisibility.CurrentValue)
-                return;
-
-            GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
-                () => CanvasVisibility.Value = true,
-                () => CanvasVisibility.Value = false
-            );
         }
 
         private (GameObject go, BpmGroupListItemView view) GetOrCreateItemView()

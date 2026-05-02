@@ -6,6 +6,7 @@ using System.IO;
 using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Command;
+using CyanStars.Gameplay.ChartEditor.Manager;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Utils;

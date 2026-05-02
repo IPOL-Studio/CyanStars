@@ -5,7 +5,7 @@ using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
 using UnityEngine;
 
-namespace CyanStars.Gameplay.ChartEditor
+namespace CyanStars.Gameplay.ChartEditor.Manager
 {
     /// <summary>
     /// 在播放音乐时自动更新时间，或是在暂停播放时接受时间跳转

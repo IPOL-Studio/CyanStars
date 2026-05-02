@@ -20,7 +20,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         [Header("Frames")]
         [SerializeField]
-        private GameObject noteAttributeFrame = null!;
+        private Canvas noteAttributeCanvas = null!;
 
         [SerializeField]
         private GameObject judgeBeatFrame = null!;
@@ -117,7 +117,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             // Frame 绑定
             frameVisibility
-                .Subscribe(visibility => noteAttributeFrame.SetActive(visibility))
+                .Subscribe(visibility => noteAttributeCanvas.enabled = visibility)
                 .AddTo(this);
             judgeBeatFrameVisibility
                 .Subscribe(visibility => judgeBeatFrame.SetActive(visibility))
