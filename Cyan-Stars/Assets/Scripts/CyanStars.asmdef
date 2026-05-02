@@ -1,6 +1,6 @@
 {
     "name": "CyanStars",
-    "rootNamespace": "",
+    "rootNamespace": "CyanStars",
     "references": [
         "GUID:a6b40c9ae77eca3438197e7d0aafc4d6",
         "GUID:d8b63aba1907145bea998dd612889d6b",

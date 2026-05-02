@@ -22,9 +22,6 @@ namespace CyanStars.Utils.SelectableUI
     [RequireComponent(typeof(SelectableStateObserver))]
     public class SelectableViewEffectHandler : MonoBehaviour
     {
-        [SerializeField]
-        private List<MaskableGraphic> maskableGraphicToChangeColor = new();
-
         [Header("动画设置")]
         [SerializeField]
         private float tweenDuration = 0.1f;
@@ -32,32 +29,38 @@ namespace CyanStars.Utils.SelectableUI
         [SerializeField]
         private Ease tweenEase = Ease.OutQuad;
 
+        [SerializeField]
+        private List<RectTransform> rectTransformToChangeScale = new();
+
+        [SerializeField]
+        private List<Graphic> graphicToChangeColor = new();
+
         [Header("各状态配置")]
         [SerializeField]
-        private StateEffectConfig normalState = new() { Scale = Vector3.one, TintColor = new Color(0.93f, 0.93f, 0.93f, 0.98f) };
+        private StateEffectConfig normal = new() { Scale = Vector3.one, TintColor = new Color(0.93f, 0.93f, 0.93f, 0.98f) };
 
         [SerializeField]
-        private StateEffectConfig normalSelectedState = new() { Scale = Vector3.one, TintColor = new Color(0.27f, 0.47f, 0.82f, 0.98f) };
+        private StateEffectConfig hover = new() { Scale = new Vector3(1.02f, 1.02f, 1.02f), TintColor = new Color(0.98f, 0.98f, 0.98f, 0.98f) };
 
         [SerializeField]
-        private StateEffectConfig hoverState = new() { Scale = new Vector3(1.02f, 1.02f, 1.02f), TintColor = new Color(0.98f, 0.98f, 0.98f, 0.98f) };
+        private StateEffectConfig pressed = new() { Scale = new Vector3(0.98f, 0.98f, 0.98f), TintColor = new Color(0.62f, 0.62f, 0.62f, 0.98f) };
 
         [SerializeField]
-        private StateEffectConfig hoverSelectedState = new() { Scale = new Vector3(1.02f, 1.02f, 1.02f), TintColor = new Color(0.49f, 0.63f, 0.87f, 0.98f) };
+        private StateEffectConfig disabled = new() { Scale = Vector3.one, TintColor = new Color(0.33f, 0.33f, 0.33f, 0.98f) };
 
         [SerializeField]
-        private StateEffectConfig pressedState = new() { Scale = new Vector3(0.98f, 0.98f, 0.98f), TintColor = new Color(0.62f, 0.62f, 0.62f, 0.98f) };
+        private StateEffectConfig normalSelected = new() { Scale = Vector3.one, TintColor = new Color(0.27f, 0.47f, 0.82f, 0.98f) };
 
         [SerializeField]
-        private StateEffectConfig pressedSelectedState = new() { Scale = new Vector3(0.98f, 0.98f, 0.98f), TintColor = new Color(0.29f, 0.42f, 0.62f, 0.98f) };
+        private StateEffectConfig hoverSelected = new() { Scale = new Vector3(1.02f, 1.02f, 1.02f), TintColor = new Color(0.49f, 0.63f, 0.87f, 0.98f) };
 
         [SerializeField]
-        private StateEffectConfig disabledState = new() { Scale = Vector3.one, TintColor = new Color(0.33f, 0.33f, 0.33f, 0.98f) };
+        private StateEffectConfig pressedSelected = new() { Scale = new Vector3(0.98f, 0.98f, 0.98f), TintColor = new Color(0.29f, 0.42f, 0.62f, 0.98f) };
 
         [SerializeField]
-        private StateEffectConfig disabledSelectedState = new() { Scale = Vector3.one, TintColor = new Color(0.11f, 0.19f, 0.33f, 0.98f) };
+        private StateEffectConfig disabledSelected = new() { Scale = Vector3.one, TintColor = new Color(0.11f, 0.19f, 0.33f, 0.98f) };
 
-        private Transform transformToChangeScale = null!;
+
         private Selectable selectable = null!;
         private SelectableStateObserver observer = null!;
         private Sequence? currentEffectSequence; // 缓存当前的动画序列，用于打断旧动画
@@ -65,81 +68,94 @@ namespace CyanStars.Utils.SelectableUI
 
         private void Awake()
         {
-            transformToChangeScale = GetComponent<Transform>();
             selectable = GetComponent<Selectable>();
             observer = GetComponent<SelectableStateObserver>();
         }
 
-        private void Start()
+        private void OnEnable()
         {
-            OnStateChanged(observer.CurrentState); // 启动时更新一次视觉效果
-            observer.OnStateChanged.AddListener(OnStateChanged);
+            OnStateChanged(observer.CurrentState, true);
+            observer.OnStateChanged.AddListener(OnStateChangedListener);
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
-            observer.OnStateChanged.RemoveListener(OnStateChanged);
-
+            observer.OnStateChanged.RemoveListener(OnStateChangedListener);
             currentEffectSequence?.Kill();
             currentEffectSequence = null;
         }
 
+        private void OnStateChangedListener(UIState state) => OnStateChanged(state, false);
 
-        private void OnStateChanged(UIState state)
+        private void OnStateChanged(UIState state, bool instant)
         {
-            switch (state)
+            var targetConfig = state switch
             {
-                case UIState.Normal:
-                    ApplyEffect(normalState);
-                    break;
-                case UIState.NormalSelected:
-                    ApplyEffect(normalSelectedState);
-                    break;
-                case UIState.Hover:
-                    ApplyEffect(hoverState);
-                    break;
-                case UIState.HoverSelected:
-                    ApplyEffect(hoverSelectedState);
-                    break;
-                case UIState.Pressed:
-                    ApplyEffect(pressedState);
-                    break;
-                case UIState.PressedSelected:
-                    ApplyEffect(pressedSelectedState);
-                    break;
-                case UIState.Disabled:
-                    ApplyEffect(disabledState);
-                    break;
-                case UIState.DisabledSelected:
-                    ApplyEffect(disabledSelectedState);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
-            }
+                UIState.Normal => normal,
+                UIState.NormalSelected => normalSelected,
+                UIState.Hover => hover,
+                UIState.HoverSelected => hoverSelected,
+                UIState.Pressed => pressed,
+                UIState.PressedSelected => pressedSelected,
+                UIState.Disabled => disabled,
+                UIState.DisabledSelected => disabledSelected,
+                _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
+            };
+
+            ApplyEffect(targetConfig, instant);
         }
 
         /// <summary>
         /// 应用动画效果
         /// </summary>
-        private void ApplyEffect(StateEffectConfig config)
+        private void ApplyEffect(StateEffectConfig config, bool instant)
         {
             currentEffectSequence?.Kill();
+
+            if (instant)
+            {
+                foreach (var rectTransform in rectTransformToChangeScale)
+                {
+                    rectTransform.localScale = config.Scale;
+                }
+
+                foreach (var graphic in graphicToChangeColor)
+                {
+                    if (graphic != null) graphic.color = config.TintColor;
+                }
+
+                return;
+            }
+
             currentEffectSequence = DOTween.Sequence();
 
             // 添加缩放动画
-            currentEffectSequence.Join(transformToChangeScale
-                .DOScale(config.Scale, tweenDuration)
-                .SetEase(tweenEase));
-
+            foreach (var rectTransform in rectTransformToChangeScale)
+            {
+                if (rectTransform != null)
+                {
+                    currentEffectSequence.Join(rectTransform
+                        .DOScale(config.Scale, tweenDuration)
+                        .SetEase(tweenEase)
+                    );
+                }
+#if UNITY_EDITOR
+                else
+                {
+                    Debug.LogError($"rectTransform 为 null，无法更新视觉效果，请检查", gameObject);
+                }
+#endif
+            }
 
             // 添加颜色渐变动画
-            foreach (var graphic in maskableGraphicToChangeColor)
+            foreach (var graphic in graphicToChangeColor)
             {
                 if (graphic != null)
                 {
                     currentEffectSequence.Join(graphic
                         .DOColor(config.TintColor, tweenDuration)
-                        .SetEase(tweenEase));
+                        .SetEase(tweenEase)
+                    );
                 }
 #if UNITY_EDITOR
                 else

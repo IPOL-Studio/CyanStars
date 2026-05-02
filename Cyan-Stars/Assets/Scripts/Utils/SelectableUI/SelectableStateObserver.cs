@@ -7,6 +7,19 @@ using UnityEngine.UI;
 
 namespace CyanStars.Utils.SelectableUI
 {
+    public enum UIState
+    {
+        // 越下方优先级越高，目前是用 if 手动判断优先级
+        Normal, // 待机
+        NormalSelected, // 待机+已选中 (仅Toggle)
+        Hover, // 鼠标悬浮
+        HoverSelected, // 鼠标悬浮+已选中 (仅Toggle)
+        Pressed, // 鼠标按下&按住
+        PressedSelected, // 鼠标按下&按住+已选中 (仅Toggle)
+        Disabled, // 禁止交互
+        DisabledSelected // 禁止交互+已选中 (仅Toggle)
+    }
+
     /// <summary>
     /// 用于为 Button 和 Toggle 提供玩家 UI 交互状态触发
     /// </summary>
@@ -31,7 +44,7 @@ namespace CyanStars.Utils.SelectableUI
 
         [Header("状态改变回调")]
         [SerializeField]
-        private UnityEvent<UIState> onStateChanged;
+        private UnityEvent<UIState> onStateChanged = new();
 
         public UnityEvent<UIState> OnStateChanged => onStateChanged;
 
@@ -41,17 +54,6 @@ namespace CyanStars.Utils.SelectableUI
         private bool isHovered; // 鼠标悬浮
         private bool isFocused; // 键盘/手柄导航焦点
         private bool isPressed; // 按住
-
-
-        /// <summary>
-        /// 外部手动修改组件可交互性，同时一并触发视觉效果更新
-        /// </summary>
-        public void SetInteractable(bool interactable)
-        {
-            // 考虑到 UI 内可能有大量组件，故不采用 Update() 自动轮询
-            selectable.interactable = interactable;
-            EvaluateState();
-        }
 
 
         protected override void Awake()
@@ -65,36 +67,29 @@ namespace CyanStars.Utils.SelectableUI
                 Debug.LogWarning($"{nameof(SelectableStateObserver)} 已自动禁用 selectable.transition，请检查是否为预期效果。", gameObject);
                 selectable.transition = Selectable.Transition.None;
             }
-
-            if (TryGetComponent<Toggle>(out var toggle))
-            {
-                isKeepSelected = toggle.isOn;
-                toggle.onValueChanged.AddListener(OnToggleValueChanged);
-            }
         }
 
         protected override void OnEnable()
         {
-            base.OnEnable();
+            if (selectable is Toggle toggle)
+            {
+                isKeepSelected = toggle.isOn;
+                toggle.onValueChanged.AddListener(OnToggleValueChanged);
+            }
+            else
+            {
+                isKeepSelected = false;
+            }
 
-            isKeepSelected = false;
             isHovered = false;
             isFocused = false;
             isPressed = false;
             EvaluateState();
         }
 
-        protected override void OnCanvasGroupChanged()
-        {
-            base.OnCanvasGroupChanged();
-            EvaluateState();
-        }
-
         protected override void OnDisable()
         {
-            base.OnDisable();
-
-            if (TryGetComponent<Toggle>(out var toggle))
+            if (selectable is Toggle toggle)
                 toggle.onValueChanged.RemoveListener(OnToggleValueChanged);
 
             isKeepSelected = false;
@@ -104,6 +99,26 @@ namespace CyanStars.Utils.SelectableUI
             CurrentState = UIState.Normal;
         }
 
+
+        /// <summary>
+        /// 外部手动修改组件可交互性，同时一并触发视觉效果更新
+        /// </summary>
+        public void SetInteractable(bool interactable)
+        {
+            // 考虑到 UI 内可能有大量 SelectableStateObserver 组件，故不采用 Update() 自动轮询
+            selectable.interactable = interactable;
+            EvaluateState();
+        }
+
+
+        protected override void OnCanvasGroupChanged()
+        {
+            base.OnCanvasGroupChanged();
+
+            // 防止在 Instantiate 期间 Awake 未执行时触发空引用
+            if (selectable != null)
+                EvaluateState();
+        }
 
         /// <summary>
         /// 当 selectable 是 toggle 时，外界改变 toggle.isOn 时也会自动改变视觉效果
@@ -149,9 +164,35 @@ namespace CyanStars.Utils.SelectableUI
             }
         }
 
+        /// <summary>
+        /// 检查当前鼠标射线真正指到的物体，是否属于自己（防止被子 Selectable 触发冒泡）
+        /// </summary>
+        private bool IsEventValidForMe(PointerEventData eventData)
+        {
+            GameObject hitObj = eventData.pointerCurrentRaycast.gameObject;
+            if (hitObj == null) return true;
+
+            // 从实际指到的物体向上找最近的 Selectable
+            Selectable closestSelectable = hitObj.GetComponentInParent<Selectable>();
+
+            // 如果最近的 Selectable 是其他的组件（深层子节点），则本节点拒绝响应
+            if (closestSelectable != null && closestSelectable != selectable)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
 
         public void OnPointerEnter(PointerEventData eventData)
         {
+            if (!IsEventValidForMe(eventData))
+            {
+                isHovered = false;
+                return;
+            }
+
             isHovered = true;
             EvaluateState();
         }
@@ -166,6 +207,12 @@ namespace CyanStars.Utils.SelectableUI
         {
             if (eventData.button != PointerEventData.InputButton.Left)
                 return;
+
+            if (!IsEventValidForMe(eventData))
+            {
+                isHovered = false;
+                return;
+            }
 
             isPressed = true;
             EvaluateState();
@@ -197,19 +244,5 @@ namespace CyanStars.Utils.SelectableUI
             isFocused = false;
             EvaluateState();
         }
-    }
-
-
-    public enum UIState
-    {
-        // 越下方优先级越高，目前是用 if 手动判断优先级
-        Normal, // 待机
-        NormalSelected, // 待机+已选中 (仅Toggle)
-        Hover, // 鼠标悬浮
-        HoverSelected, // 鼠标悬浮+已选中 (仅Toggle)
-        Pressed, // 鼠标按下&按住
-        PressedSelected, // 鼠标按下&按住+已选中 (仅Toggle)
-        Disabled, // 禁止交互
-        DisabledSelected // 禁止交互+已选中 (仅Toggle)
     }
 }

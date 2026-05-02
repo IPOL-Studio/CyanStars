@@ -2,8 +2,6 @@
 
 using System;
 using CyanStars.Chart;
-using CyanStars.Framework;
-using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using TMPro;
@@ -12,7 +10,7 @@ using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
-    public class ChartDataView : BaseView<ChartDataViewModel>
+    public class ChartDataView : BasePopupView<ChartDataViewModel>
     {
         [SerializeField]
         private Sprite selectedToggleSprite = null!;
@@ -20,12 +18,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private Sprite unselectedToggleSprite = null!;
 
-
-        [SerializeField]
-        private Canvas chartDataCanvas = null!;
-
-        [SerializeField]
-        private Button closeCanvasButton = null!;
 
         [SerializeField]
         private Toggle kuiXingToggle = null!;
@@ -49,20 +41,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private TMP_InputField readyBeatField = null!;
 
 
-        private readonly ReactiveProperty<bool> CanvasVisibility = new ReactiveProperty<bool>(false);
-
-
         public override void Bind(ChartDataViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
 
-            CanvasVisibility
-                .Subscribe(isVisibility =>
-                    {
-                        chartDataCanvas.enabled = isVisibility;
-                    }
-                )
-                .AddTo(this);
             ViewModel.ChartDifficulty
                 .Subscribe(difficulty =>
                     {
@@ -98,20 +80,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(text => readyBeatField.text = text)
                 .AddTo(this);
 
-            closeCanvasButton
-                .OnClickAsObservable()
-                .Subscribe(_ =>
-                    {
-                        if (!CanvasVisibility.CurrentValue)
-                            return;
-
-                        GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
-                            () => CanvasVisibility.Value = false,
-                            () => CanvasVisibility.Value = true
-                        );
-                    }
-                )
-                .AddTo(this);
             kuiXingToggle
                 .OnValueChangedAsObservable()
                 .Subscribe(isOn =>
@@ -165,24 +133,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
         }
 
-        public void OpenCanvas()
-        {
-            if (CanvasVisibility.CurrentValue)
-                return;
-
-            GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
-                () => CanvasVisibility.Value = true,
-                () => CanvasVisibility.Value = false
-            );
-        }
-
         private Toggle GetDifficultyToggle(ChartDifficulty? difficulty) => difficulty switch
         {
             ChartDifficulty.KuiXing => kuiXingToggle,
-            ChartDifficulty.QiMing  => qiMingToggle,
+            ChartDifficulty.QiMing => qiMingToggle,
             ChartDifficulty.TianShu => tianShuToggle,
-            ChartDifficulty.WuYin   => wuYinToggle,
-            null                    => undefinedToggle,
+            ChartDifficulty.WuYin => wuYinToggle,
+            null => undefinedToggle,
             _ => throw new NotSupportedException()
         };
     }

@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CyanStars.Gameplay.ChartEditor
+namespace CyanStars.Gameplay.ChartEditor.Manager
 {
     /// <summary>
     /// 制谱器内快捷键管理器（单例）
@@ -16,6 +16,7 @@ namespace CyanStars.Gameplay.ChartEditor
 
         private List<ShortcutDefinition> shortcuts = null!;
         private HashSet<ShortcutCommand> executedCommand = null!;
+
         public void Init()
         {
             shortcuts = new List<ShortcutDefinition>();
@@ -35,6 +36,7 @@ namespace CyanStars.Gameplay.ChartEditor
             {
                 insertIndex = ~insertIndex;
             }
+
             shortcuts.Insert(insertIndex, shortcut);
         }
 

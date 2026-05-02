@@ -16,7 +16,6 @@ using ObservableCollections;
 using R3;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using GameObjectPoolManager = CyanStars.Framework.GameObjectPool.GameObjectPoolManager;
 
 namespace CyanStars.Gameplay.ChartEditor.View
@@ -84,6 +83,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     ViewModel.TotalBeats,
                     (_, _, _) => true
                 )
+                .ThrottleLastFrame(1) // 避免同一帧多次刷新
                 .Subscribe(_ => ForceRebuildBeatLines()).AddTo(this);
 
             // 3. 滚动时刷新节拍线和音符，如果没在播放音乐则一并更新时间轴时间

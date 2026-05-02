@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using DG.Tweening;
 using R3;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,7 +32,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         [Header("功能按钮相关")]
         [SerializeField]
-        private Canvas functionCanvas = null!;
+        private CanvasGroup functionCanvasGroup = null!;
 
         [SerializeField]
         private Button chartPackDataButton = null!;
@@ -74,6 +75,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private readonly ReactiveProperty<bool> FunctionCanvasVisibility = new ReactiveProperty<bool>(false);
         private readonly List<ShortcutCommand.ListenerDisposable> ShortcutListeners = new();
 
+        private Canvas functionCanvas = null!;
+
+
         private void OnEnable()
         {
             ShortcutListeners.Add(ShortcutCommandRegistry.Save.RegisterListener(OnSaveRequested));
@@ -85,11 +89,33 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
+            functionCanvas = functionCanvasGroup.GetComponent<Canvas>();
+
             FunctionCanvasVisibility
                 .Subscribe(isVisible =>
                     {
                         functionToggle.SetIsOnWithoutNotify(isVisible);
-                        functionCanvas.enabled = isVisible;
+
+                        if (isVisible)
+                        {
+                            functionCanvas.enabled = true;
+                            functionCanvasGroup
+                                .DOFade(1f, 0.05f)
+                                .SetEase(Ease.OutQuad);
+                            ((RectTransform)functionCanvas.gameObject.transform)
+                                .DOScale(1f, 0.05f)
+                                .SetEase(Ease.OutQuad);
+                        }
+                        else
+                        {
+                            ((RectTransform)functionCanvas.gameObject.transform)
+                                .DOScale(0.9f, 0.05f)
+                                .SetEase(Ease.OutQuad);
+                            functionCanvasGroup
+                                .DOFade(0f, 0.05f)
+                                .SetEase(Ease.OutQuad)
+                                .OnComplete(() => functionCanvas.enabled = false);
+                        }
                     }
                 )
                 .AddTo(this);
@@ -127,19 +153,19 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             chartPackDataButton
                 .OnClickAsObservable()
-                .Subscribe(_ => chartPackDataView.OpenCanvas())
+                .Subscribe(_ => chartPackDataView.SetCanvasVisibility(true))
                 .AddTo(this);
             chartDataButton
                 .OnClickAsObservable()
-                .Subscribe(_ => chartDataView.OpenCanvas())
+                .Subscribe(_ => chartDataView.SetCanvasVisibility(true))
                 .AddTo(this);
             musicVersionButton
                 .OnClickAsObservable()
-                .Subscribe(_ => musicVersionView.OpenCanvas())
+                .Subscribe(_ => musicVersionView.SetCanvasVisibility(true))
                 .AddTo(this);
             bpmGroupButton
                 .OnClickAsObservable()
-                .Subscribe(_ => bpmGroupView.OpenCanvas())
+                .Subscribe(_ => bpmGroupView.SetCanvasVisibility(true))
                 .AddTo(this);
             // speedTemplateButton ...
 
