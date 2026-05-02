@@ -39,13 +39,13 @@ Pull requests (PR) 允许您间接修改仓库源代码，在提出 PR 前请注
 
 PR 最好是针对现有 Issue 的 Fix，如果希望添加一些新功能或改进原有代码，强烈建议您在 PR 之前提出 Issue 讨论一下。
 
-一旦提出 PR，即表明您同意遵守 [LICENSE] 中的贡献协议。
+一旦提出 PR，即表明您同意遵守 [LICENSE](LICENSE.md) 中的贡献协议。
 
 ## 贡献音乐作品
 
 感谢您有兴趣参与贡献，音乐作品仅限版权所有人本人申请。
 
-通过 [此表单](http://chenluan.mikecrm.com/Fkmdp4z) 向我们投稿您的音乐，作为游戏内收录曲。
+通过 [此表单](https://docs.qq.com/form/page/DSXpPV2xFbHpvUFpD) 向我们投稿您的音乐，作为游戏内收录曲。
 
 音乐作品的贡献遵循我们的多媒体贡献协议，请在提交表单前确认 [LICENSE](LICENSE.md) 中的协议。
 
@@ -59,4 +59,4 @@ PR 最好是针对现有 Issue 的 Fix，如果希望添加一些新功能或改
 
 ## 其他贡献
 
-对于美术、谱面、文案或者更加细致的交流，可通过 [此表单](http://chenluan.mikecrm.com/JeKq3DU) 申请加入我们的开发群。
+对于美术、谱面、文案或者更加细致的交流，可通过 [此表单](https://docs.qq.com/form/page/DSWd4WXBkZkVkTWpr) 申请加入我们的开发群。
