@@ -54,7 +54,7 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
 
             // 预热资源
             sceneRoot!.gameObject.SetActive(false);
-            List<string> assetsToInit = ChartEditorAssetHelper.GetAllPaths();
+            List<string> assetsToInit = ChartEditorAssetHelper.AllPaths;
             await GameRoot.Asset.BatchLoadAssetAsync(assetsToInit).BindTo(sceneRoot.gameObject);
             sceneRoot.gameObject.SetActive(true);
 
