@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
-using System;
-using CyanStars.Framework;
-using CyanStars.Gameplay.ChartEditor.Command;
+using System.Threading.Tasks;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using ObservableCollections;
 using R3;
@@ -12,7 +10,7 @@ using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
-    public class MusicVersionView : BaseView<MusicVersionViewModel>
+    public class MusicVersionView : BasePopupView<MusicVersionViewModel>
     {
         [Header("列表子 View")]
         [SerializeField]
@@ -40,12 +38,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
 
         [Header("主 View")]
-        [SerializeField]
-        private Canvas canvas = null!;
-
-        [SerializeField]
-        private Button closeButton = null!;
-
         [SerializeField]
         private GameObject detailObject = null!;
 
@@ -98,6 +90,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private void Start()
         {
             staffsContentFrameRectTransform = (RectTransform)staffsContentFrameGameObject.transform;
+        }
+
+        protected override async Task CloseCanvas()
+        {
+            await base.CloseCanvas();
+            ViewModel.LoadAudio();
         }
 
         public override void Bind(MusicVersionViewModel targetViewModel)
@@ -220,9 +218,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
 
             // VM -> V 绑定
-            CanvasVisibility
-                .Subscribe(visible => canvas.enabled = visible)
-                .AddTo(this);
             listVisibility
                 .Subscribe(visible => musicListObject.SetActive(visible))
                 .AddTo(this);
@@ -243,10 +238,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
             addListItemButton
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.AddMusicVersionItem())
-                .AddTo(this);
-            closeButton
-                .OnClickAsObservable()
-                .Subscribe(_ => CloseCanvasAndLoadAudio())
                 .AddTo(this);
             musicTitleField
                 .OnEndEditAsObservable()
@@ -296,30 +287,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.TopItem())
                 .AddTo(this);
-        }
-
-        private void CloseCanvasAndLoadAudio()
-        {
-            if (!CanvasVisibility.CurrentValue)
-                return;
-
-            GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
-                () => CanvasVisibility.Value = false,
-                () => CanvasVisibility.Value = true
-            );
-
-            ViewModel.LoadAudio();
-        }
-
-        public void OpenCanvas()
-        {
-            if (CanvasVisibility.CurrentValue)
-                return;
-
-            GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
-                () => CanvasVisibility.Value = true,
-                () => CanvasVisibility.Value = false
-            );
         }
 
         private void LateUpdate()

@@ -1,9 +1,8 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
-using CyanStars.Framework;
-using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using CyanStars.Utils.SelectableUI;
 using ObservableCollections;
 using R3;
 using TMPro;
@@ -12,11 +11,14 @@ using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
-    public class BpmGroupView : BaseView<BpmGroupViewModel>
+    public class BpmGroupView : BasePopupView<BpmGroupViewModel>
     {
         [Header("列表子 View")]
         [SerializeField]
         private GameObject bpmListItemPrefab = null!;
+
+        [SerializeField]
+        private ToggleGroup bpmListToggleGroup = null!;
 
         [SerializeField]
         private RectTransform itemContentTransform = null!;
@@ -29,12 +31,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
 
         [Header("主 View")]
-        [SerializeField]
-        private Canvas canvas = null!;
-
-        [SerializeField]
-        private Button closeCanvasButton = null!;
-
         [SerializeField]
         private GameObject timelineGameObject = null!;
 
@@ -69,15 +65,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private Button testButton = null!;
 
 
-        private readonly ReactiveProperty<bool> CanvasVisibility = new ReactiveProperty<bool>(false);
         private ReadOnlyReactiveProperty<bool> listVisibility = null!;
-
         private Stack<BpmGroupListItemView> disabledListItemViews = new Stack<BpmGroupListItemView>();
+        private SelectableStateObserver? deleteItemButtonSelectableStateObserver;
 
 
         public override void Bind(BpmGroupViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
+
+            deleteItemButton.TryGetComponent<SelectableStateObserver>(out deleteItemButtonSelectableStateObserver);
 
             listVisibility = Observable.CombineLatest(
                     ViewModel.IsSimplificationMode,
@@ -91,7 +88,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             for (int i = 0; i < ViewModel.BpmItems.Count; i++)
             {
                 var go = Instantiate(bpmListItemPrefab, itemContentTransform);
-                go.GetComponent<BpmGroupListItemView>().Bind(ViewModel, i);
+                go.GetComponent<BpmGroupListItemView>().Bind(ViewModel, bpmListToggleGroup, i);
                 go.transform.SetSiblingIndex(itemContentTransform.childCount - 2);
             }
 
@@ -99,7 +96,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(e =>
                 {
                     var (go, itemView) = GetOrCreateItemView();
-                    itemView.Bind(ViewModel, e.Index);
+                    itemView.Bind(ViewModel, bpmListToggleGroup, e.Index);
                     go.transform.SetSiblingIndex(e.Index);
                 })
                 .AddTo(this);
@@ -118,14 +115,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 {
                     var itemToMove = itemContentTransform.GetChild(e.OldIndex);
                     itemToMove.SetSiblingIndex(e.NewIndex);
-                    itemToMove.GetComponent<BpmGroupListItemView>().Bind(ViewModel, e.NewIndex);
+                    itemToMove.GetComponent<BpmGroupListItemView>().Bind(ViewModel, bpmListToggleGroup, e.NewIndex);
                 })
                 .AddTo(this);
             ViewModel.BpmItems.ObserveReplace()
                 .Subscribe(e =>
                 {
                     var trans = itemContentTransform.GetChild(e.Index);
-                    trans.GetComponent<BpmGroupListItemView>().Bind(ViewModel, e.Index);
+                    trans.GetComponent<BpmGroupListItemView>().Bind(ViewModel, bpmListToggleGroup, e.Index);
                     trans.SetSiblingIndex(e.Index);
                 })
                 .AddTo(this);
@@ -142,16 +139,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     for (int i = 0; i < ViewModel.BpmItems.Count; i++)
                     {
                         var (go, item) = GetOrCreateItemView();
-                        item.Bind(ViewModel, i);
+                        item.Bind(ViewModel, bpmListToggleGroup, i);
                         item.transform.SetSiblingIndex(itemContentTransform.childCount - 2);
                     }
                 })
                 .AddTo(this);
 
             // VM -> V 绑定
-            CanvasVisibility
-                .Subscribe(visible => canvas.enabled = visible)
-                .AddTo(this);
             listVisibility
                 .Subscribe(visible => bpmGroupListGameObject.SetActive(visible))
                 .AddTo(this);
@@ -178,15 +172,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     startBeatField3.interactable = index != 0;
 
                     // 如果是首个元素，则不允许删除
-                    deleteItemButton.interactable = index != 0;
+                    if (deleteItemButtonSelectableStateObserver != null)
+                        // 挂载了 SelectableStateObserver，用 SelectableStateObserver 的方法设置并刷新视觉效果
+                        deleteItemButtonSelectableStateObserver.SetInteractable(index != 0);
+                    else
+                        // 没有挂载 SelectableStateObserver，用 Unity 原生方法设置
+                        deleteItemButton.interactable = index != 0;
                 })
                 .AddTo(this);
 
             // V -> VM 绑定
-            closeCanvasButton
-                .OnClickAsObservable()
-                .Subscribe(_ => CloseCanvas())
-                .AddTo(this);
             addBpmItemButton
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.AddBpmItem())
@@ -216,28 +211,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private void SetBeat()
         {
             ViewModel.SetBeat(startBeatField1.text, startBeatField2.text, startBeatField3.text);
-        }
-
-        private void CloseCanvas()
-        {
-            if (!CanvasVisibility.CurrentValue)
-                return;
-
-            GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
-                () => CanvasVisibility.Value = false,
-                () => CanvasVisibility.Value = true
-            );
-        }
-
-        public void OpenCanvas()
-        {
-            if (CanvasVisibility.CurrentValue)
-                return;
-
-            GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack.ExecuteCommand(
-                () => CanvasVisibility.Value = true,
-                () => CanvasVisibility.Value = false
-            );
         }
 
         private (GameObject go, BpmGroupListItemView view) GetOrCreateItemView()

@@ -175,7 +175,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 1024
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
@@ -372,11 +372,11 @@ GameObject:
   m_Component:
   - component: {fileID: 7757076495624774868}
   - component: {fileID: 7757076495624774824}
-  - component: {fileID: 7757076495624774826}
-  - component: {fileID: 5740303184253912632}
-  - component: {fileID: 3876099574899514790}
+  - component: {fileID: 3772911852209222044}
+  - component: {fileID: 6618725857359216087}
+  - component: {fileID: 2789716454516837567}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Toggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -413,7 +413,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7757076495624774869}
   m_CullTransparentMesh: 1
---- !u!114 &7757076495624774826
+--- !u!114 &3772911852209222044
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -422,11 +422,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7757076495624774869}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
   m_Navigation:
-    m_Mode: 0
+    m_Mode: 3
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -454,10 +454,14 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 0}
-  m_OnClick:
+  toggleTransition: 1
+  graphic: {fileID: 0}
+  m_Group: {fileID: 0}
+  onValueChanged:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5740303184253912632
+  m_IsOn: 0
+--- !u!114 &6618725857359216087
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -472,7 +476,7 @@ MonoBehaviour:
   onStateChanged:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &3876099574899514790
+--- !u!114 &2789716454516837567
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -18,8 +18,10 @@ namespace CyanStars.Gameplay.ChartEditor
                 {
                     throw new System.ArgumentException($"Command with id {command.Id} already exists.");
                 }
+
                 return existing;
             }
+
             Commands[command.Id] = command;
             return command;
         }
