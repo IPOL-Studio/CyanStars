@@ -74,7 +74,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
-            deleteItemButton.TryGetComponent<SelectableStateObserver>(out deleteItemButtonSelectableStateObserver);
+            deleteItemButtonSelectableStateObserver = deleteItemButton.GetComponent<SelectableStateObserver>();
 
             listVisibility = Observable.CombineLatest(
                     ViewModel.IsSimplificationMode,
