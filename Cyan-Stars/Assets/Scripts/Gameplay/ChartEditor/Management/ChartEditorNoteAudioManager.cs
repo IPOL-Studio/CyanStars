@@ -7,7 +7,7 @@ using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
 using UnityEngine;
 
-namespace CyanStars.Gameplay.ChartEditor.Manager
+namespace CyanStars.Gameplay.ChartEditor.Management
 {
     // TODO: 这个类现在的实现非常 hack，只是为了让制谱器有打击音可用
     // 没有优化，也无扩展

@@ -8,7 +8,7 @@ using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using UnityEngine;
 
-namespace CyanStars.Gameplay.ChartEditor.Manager
+namespace CyanStars.Gameplay.ChartEditor.Management
 {
     public class MvvmBindManager : MonoBehaviour
     {

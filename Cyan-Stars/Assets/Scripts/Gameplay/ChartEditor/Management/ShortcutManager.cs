@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CyanStars.Gameplay.ChartEditor.Manager
+namespace CyanStars.Gameplay.ChartEditor.Management
 {
     /// <summary>
     /// 制谱器内快捷键管理器（单例）

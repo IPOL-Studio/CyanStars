@@ -52,13 +52,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             CanvasVisibility
                 .Subscribe(visible =>
-                    {
-                        if (visible)
-                            _ = OpenCanvas();
-                        else
-                            _ = CloseCanvas();
-                    }
-                )
+                {
+                    if (visible)
+                        _ = OpenCanvas();
+                    else
+                        _ = CloseCanvas();
+                })
                 .AddTo(this);
 
             closeCanvasButton
