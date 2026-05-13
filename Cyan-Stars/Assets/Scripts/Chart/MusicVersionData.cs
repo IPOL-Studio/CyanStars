@@ -50,18 +50,5 @@ namespace CyanStars.Chart
             Offset = offset;
             Staffs = staffs ?? new Dictionary<string, List<string>>();
         }
-
-        /// <summary>
-        /// 将制谱器的可观察数据转为常规数据，以用于序列化
-        /// </summary>
-        public MusicVersionData(MusicVersionDataEditorModel editorData)
-        {
-            VersionTitle = editorData.VersionTitle.CurrentValue;
-            AudioFilePath = editorData.AudioFilePath.CurrentValue;
-            Offset = editorData.Offset.CurrentValue;
-            Staffs = new Dictionary<string, List<string>>(editorData.Staffs.Count);
-            foreach (var staffKvp in editorData.Staffs)
-                Staffs.Add(staffKvp.Key, staffKvp.Value);
-        }
     }
 }

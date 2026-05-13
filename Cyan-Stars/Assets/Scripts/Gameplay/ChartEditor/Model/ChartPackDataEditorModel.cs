@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Diagnostics.Contracts;
 using System.Linq;
 using CyanStars.Chart;
 using ObservableCollections;
@@ -36,6 +37,26 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             CropStartPositionPercent = new ReactiveProperty<Vector2?>(chartPackData.CropStartPositionPercent);
             CropHeightPercent = new ReactiveProperty<float?>(chartPackData.CropHeightPercent);
             ChartMetaDatas = new ObservableList<ChartMetaDataEditorModel>(chartPackData.ChartMetaDatas.Select(static d => new ChartMetaDataEditorModel(d)));
+        }
+
+        /// <summary>
+        /// 将制谱器的可观察数据转为常规数据，以用于序列化
+        /// </summary>
+        [Pure]
+        public ChartPackData ToChartPackData()
+        {
+            var title = Title.CurrentValue;
+            var musicVersionDatas =
+                MusicVersions.Select(musicVersionEditorDatas => musicVersionEditorDatas.ToMusicVersionData()).ToList();
+            var bpmGroup = BpmGroup.ToList();
+            var musicPreviewStartBeat = MusicPreviewStartBeat.CurrentValue;
+            var musicPreviewEndBeat = MusicPreviewEndBeat.CurrentValue;
+            var coverFilePath = CoverFilePath.CurrentValue;
+            var cropStartPositionPercent = CropStartPositionPercent.CurrentValue;
+            var cropHeightPercent = CropHeightPercent.CurrentValue;
+            var chartMetaDatas =
+                ChartMetaDatas.Select(chartMetaEditorData => chartMetaEditorData.ToChartMetaData()).ToList();
+            return new ChartPackData(title, musicVersionDatas, bpmGroup, musicPreviewStartBeat, musicPreviewEndBeat, coverFilePath, cropStartPositionPercent, cropHeightPercent, chartMetaDatas);
         }
     }
 }
