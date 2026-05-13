@@ -1,6 +1,7 @@
 #nullable enable
 
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using CyanStars.Chart;
 using ObservableCollections;
 using R3;
@@ -27,6 +28,21 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             AudioFilePath = new ReactiveProperty<string>(musicVersionData.AudioFilePath);
             Offset = new ReactiveProperty<int>(musicVersionData.Offset);
             Staffs = new ObservableDictionary<string, List<string>>(musicVersionData.Staffs);
+        }
+
+        /// <summary>
+        /// 将制谱器的可观察数据转为常规数据，以用于序列化
+        /// </summary>
+        [Pure]
+        public MusicVersionData ToMusicVersionData()
+        {
+            var versionTitle = VersionTitle.CurrentValue;
+            var audioFilePath = AudioFilePath.CurrentValue;
+            var offset = Offset.CurrentValue;
+            var staffs = new Dictionary<string, List<string>>(Staffs.Count);
+            foreach (var staffKvp in Staffs)
+                Staffs.Add(staffKvp.Key, staffKvp.Value);
+            return new MusicVersionData(versionTitle, audioFilePath, offset, staffs);
         }
     }
 }

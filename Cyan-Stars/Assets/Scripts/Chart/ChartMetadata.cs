@@ -1,4 +1,3 @@
-using CyanStars.Gameplay.ChartEditor.Model;
 using Newtonsoft.Json;
 
 namespace CyanStars.Chart
@@ -35,17 +34,6 @@ namespace CyanStars.Chart
             Difficulty = difficulty;
             Level = level ?? "";
             ChartHash = chartHash;
-        }
-
-        /// <summary>
-        /// 将制谱器的可观察数据转为常规数据，以用于序列化
-        /// </summary>
-        public ChartMetaData(ChartMetaDataEditorModel editorData)
-        {
-            FilePath = editorData.FilePath.CurrentValue;
-            Difficulty = editorData.Difficulty.CurrentValue;
-            Level = editorData.Level.CurrentValue;
-            ChartHash = editorData.ChartHash.CurrentValue;
         }
     }
 }

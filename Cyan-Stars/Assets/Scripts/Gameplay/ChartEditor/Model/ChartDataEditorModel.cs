@@ -1,5 +1,7 @@
 #nullable enable
 
+using System.Diagnostics.Contracts;
+using System.Linq;
 using CyanStars.Chart;
 using ObservableCollections;
 using R3;
@@ -26,6 +28,19 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             SpeedGroupDatas = new ObservableList<SpeedTemplateData>(chartData.SpeedGroupDatas);
             Notes = new ObservableList<BaseChartNoteData>(chartData.Notes);
             TrackDatas = new ObservableList<ChartTrackData>(chartData.TrackDatas);
+        }
+
+        /// <summary>
+        /// 将制谱器的可观察数据转为常规数据，以用于序列化
+        /// </summary>
+        [Pure]
+        public ChartData ToChartData()
+        {
+            var readyBeat = ReadyBeat.CurrentValue;
+            var speedGroupDatas = SpeedGroupDatas.ToList();
+            var notes = Notes.ToList();
+            var trackDatas = TrackDatas.ToList();
+            return new ChartData(readyBeat, speedGroupDatas, notes, trackDatas);
         }
     }
 }
