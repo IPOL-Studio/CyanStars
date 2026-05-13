@@ -139,7 +139,7 @@ namespace CyanStars.Gameplay.MusicGame
         private void OnMusicGameStart(object sender, EventArgs args)
         {
             CreateTimeline();
-            inputReceiver.StartReceive();
+            inputReceiver?.StartReceive();
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             GameRoot.Timer.UpdateTimer.Remove(UpdateTimeline);
             audioSource.Pause();
-            inputReceiver.EndReceive();
+            inputReceiver?.EndReceive();
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             GameRoot.Timer.UpdateTimer.Add(UpdateTimeline);
             audioSource.UnPause();
-            inputReceiver.StartReceive();
+            inputReceiver?.StartReceive();
         }
 
         /// <summary>
@@ -528,7 +528,7 @@ namespace CyanStars.Gameplay.MusicGame
             audioSource.clip = null;
 
             GameRoot.Timer.UpdateTimer.Remove(UpdateTimeline);
-            inputReceiver.EndReceive();
+            inputReceiver?.EndReceive();
 
             GameRoot.Event.Dispatch(EventConst.MusicGameEndEvent, this, EmptyEventArgs.Create());
 

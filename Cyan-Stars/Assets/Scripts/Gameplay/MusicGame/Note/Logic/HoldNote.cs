@@ -161,7 +161,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             base.OnUpdateInAutoMode(curLogicTime, noEffect);
 
-            EndViewDistance = endSpeedTemplate.GetDistance(LogicTimeDistance * 1000f);
+            EndViewDistance = endSpeedTemplate.GetDistance((CurLogicTime - endTime) * 1000f);
             HoldViewObject holdViewObject = ViewObject as HoldViewObject;
 
             if (!headChecked && 0 <= LogicTimeDistance)
