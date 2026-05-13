@@ -18,9 +18,7 @@
 
 ## 相关链接
 
-社区贡献者/收录曲目/隐私协议等，见于 [附属文档](https://ipol-studio.github.io/CyanStars_Docs/)。
-
-- 附：[附属文档仓库](https://github.com/IPOL-Studio/CyanStars_Docs)
+社区贡献者/收录曲目/隐私协议等，见于 [仓库 Wiki](https://github.com/IPOL-Studio/CyanStars/wiki)。
 
 多媒体文件作为子模块引用，路径为 `Cyan-Stars/Assets/CysMultimediaAssets`，对于多媒体文件的贡献指南请查阅子模块仓库说明。
 
