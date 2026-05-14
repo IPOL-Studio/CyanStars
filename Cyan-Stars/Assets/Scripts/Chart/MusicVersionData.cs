@@ -1,8 +1,6 @@
 #nullable enable
 
 using System.Collections.Generic;
-using CyanStars.Gameplay.ChartEditor.Model;
-using JetBrains.Annotations;
 using Newtonsoft.Json;
 
 namespace CyanStars.Chart
