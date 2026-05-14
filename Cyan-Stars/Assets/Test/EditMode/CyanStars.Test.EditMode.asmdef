@@ -1,6 +1,6 @@
 {
     "name": "CyanStars.Test.EditMode",
-    "rootNamespace": "",
+    "rootNamespace": "CyanStars.Test.EditMode",
     "references": [
         "CyanStars",
         "UnityEngine.TestRunner",
