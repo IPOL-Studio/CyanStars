@@ -32,8 +32,10 @@ namespace CyanStars.Chart
         /// 构造函数
         /// </summary>
         [JsonConstructor]
-        public ChartData(uint readyBeat = 4, List<SpeedTemplateData>? speedGroupDatas = null,
-                         List<BaseChartNoteData>? notes = null, List<ChartTrackData>? trackDatas = null)
+        public ChartData(uint readyBeat = 4,
+                         List<SpeedTemplateData>? speedGroupDatas = null,
+                         List<BaseChartNoteData>? notes = null,
+                         List<ChartTrackData>? trackDatas = null)
         {
             ReadyBeat = readyBeat;
             SpeedGroupDatas = speedGroupDatas ??

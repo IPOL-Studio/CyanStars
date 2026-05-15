@@ -14,35 +14,53 @@ namespace CyanStars.Chart
     {
         // 基本信息
 
-        /// <summary>谱包的数据格式版本</summary>
+        /// <summary>
+        /// 谱包的数据格式版本
+        /// </summary>
         public int DataVersion;
 
-        /// <summary>谱包标题（音乐名）</summary>
+        /// <summary>
+        /// 谱包标题（音乐名）
+        /// </summary>
         public string Title;
 
 
         // 音乐和演唱版本
 
-        /// <summary>音频信息</summary>
+        /// <summary>
+        /// 音频信息
+        /// </summary>
         public List<MusicVersionData> MusicVersionDatas;
 
-        /// <summary>bpm 组</summary>
-        /// <remarks>控制不同时候的拍子所占时长（拍子可转换为时间）</remarks>
+        /// <summary>
+        /// bpm 组
+        /// </summary>
+        /// <remarks>
+        /// 控制不同时候的拍子所占时长（拍子可转换为时间）
+        /// </remarks>
         public List<BpmGroupItem> BpmGroup;
 
-        /// <summary>游戏内选中音乐后的预览开始时间</summary>
+        /// <summary>
+        /// 游戏内选中音乐后的预览开始时间
+        /// </summary>
         public Beat MusicPreviewStartBeat;
 
-        /// <summary>游戏内选中音乐后的预览结束时间</summary>
+        /// <summary>
+        /// 游戏内选中音乐后的预览结束时间
+        /// </summary>
         public Beat MusicPreviewEndBeat;
 
 
         // 曲绘文件
 
-        /// <summary>原始曲绘相对路径（展示收藏品原图用）</summary>
+        /// <summary>
+        /// 原始曲绘相对路径（展示收藏品原图用）
+        /// </summary>
         public string? CoverFilePath;
 
-        /// <summary>开始裁剪的坐标比例（相对于图片左下角）</summary>
+        /// <summary>
+        /// 开始裁剪的坐标比例（相对于图片左下角）
+        /// </summary>
         public Vector2? CropStartPositionPercent;
 
         /// <summary>
@@ -52,7 +70,9 @@ namespace CyanStars.Chart
 
         // 谱面元数据
 
-        /// <summary>谱面元数据</summary>
+        /// <summary>
+        /// 谱面元数据
+        /// </summary>
         public List<ChartMetaData> ChartMetaDatas;
 
 
@@ -76,9 +96,15 @@ namespace CyanStars.Chart
         /// 构造函数
         /// </summary>
         [JsonConstructor]
-        public ChartPackData(string title, List<MusicVersionData>? musicVersionDatas = null, List<BpmGroupItem>? bpmGroup = null,
-                             Beat? musicPreviewStartBeat = null, Beat? musicPreviewEndBeat = null, string? coverFilePath = null,
-                             Vector2? cropPositionPercent = null, float? cropHeightPercent = null, List<ChartMetaData>? chartMetaDatas = null)
+        public ChartPackData(string title,
+                             List<MusicVersionData>? musicVersionDatas = null,
+                             List<BpmGroupItem>? bpmGroup = null,
+                             Beat? musicPreviewStartBeat = null,
+                             Beat? musicPreviewEndBeat = null,
+                             string? coverFilePath = null,
+                             Vector2? cropPositionPercent = null,
+                             float? cropHeightPercent = null,
+                             List<ChartMetaData>? chartMetaDatas = null)
         {
             DataVersion = 1;
             Title = title;

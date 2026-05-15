@@ -265,7 +265,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
             addStaffButton
                 .OnClickAsObservable()
-                .Subscribe(_ => ViewModel.AddStaffItem())
+                .Subscribe(_ => ViewModel.AddStaffNameItem())
                 .AddTo(this);
             deleteItemButton
                 .OnClickAsObservable()

@@ -113,7 +113,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnEndEditAsObservable()
                 .Subscribe(_ =>
                 {
-                    bool isSuccessfullyCreated = TryCteateBeat(previewStartBeatField1.text,
+                    bool isSuccessfullyCreated = TryCreateBeat(previewStartBeatField1.text,
                         previewStartBeatField2.text,
                         previewStartBeatField3.text,
                         out Beat startBeat);
@@ -128,7 +128,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnEndEditAsObservable()
                 .Subscribe(_ =>
                 {
-                    bool isSuccessfullyCreated = TryCteateBeat(previewStartBeatField1.text,
+                    bool isSuccessfullyCreated = TryCreateBeat(previewStartBeatField1.text,
                         previewStartBeatField2.text,
                         previewStartBeatField3.text,
                         out Beat startBeat);
@@ -143,7 +143,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnEndEditAsObservable()
                 .Subscribe(_ =>
                 {
-                    bool isSuccessfullyCreated = TryCteateBeat(previewStartBeatField1.text,
+                    bool isSuccessfullyCreated = TryCreateBeat(previewStartBeatField1.text,
                         previewStartBeatField2.text,
                         previewStartBeatField3.text,
                         out Beat startBeat);
@@ -159,7 +159,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnEndEditAsObservable()
                 .Subscribe(_ =>
                 {
-                    bool isSuccessfullyCreated = TryCteateBeat(previewEndBeatField1.text,
+                    bool isSuccessfullyCreated = TryCreateBeat(previewEndBeatField1.text,
                         previewEndBeatField2.text,
                         previewEndBeatField3.text,
                         out Beat endBeat);
@@ -174,7 +174,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnEndEditAsObservable()
                 .Subscribe(_ =>
                 {
-                    bool isSuccessfullyCreated = TryCteateBeat(previewEndBeatField1.text,
+                    bool isSuccessfullyCreated = TryCreateBeat(previewEndBeatField1.text,
                         previewEndBeatField2.text,
                         previewEndBeatField3.text,
                         out Beat endBeat);
@@ -189,7 +189,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnEndEditAsObservable()
                 .Subscribe(_ =>
                 {
-                    bool isSuccessfullyCreated = TryCteateBeat(previewEndBeatField1.text,
+                    bool isSuccessfullyCreated = TryCreateBeat(previewEndBeatField1.text,
                         previewEndBeatField2.text,
                         previewEndBeatField3.text,
                         out Beat endBeat);
@@ -213,7 +213,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         /// <returns>
         /// 是否成功转换
         /// </returns>
-        private bool TryCteateBeat(string integerPartString, string numeratorString, string denominatorString, out Beat beat)
+        private static bool TryCreateBeat(string integerPartString, string numeratorString, string denominatorString, out Beat beat)
         {
             if (!int.TryParse(integerPartString, out var integerPart) ||
                 !int.TryParse(numeratorString, out var numerator) ||

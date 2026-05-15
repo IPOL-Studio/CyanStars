@@ -17,12 +17,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private TMP_InputField nameInputField = null!;
 
         [SerializeField]
-        private TMP_InputField jobsInputField = null!;
-
-        [SerializeField]
-        private Button selectJobsButton = null!; //TODO
-
-        [SerializeField]
         private Button deleteStaffItemButton = null!;
 
 
@@ -33,15 +27,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.Name
                 .Subscribe(nameString => nameInputField.text = nameString)
                 .AddTo(this);
-            jobsInputField.text = string.Join("/", ViewModel.Jobs);
 
             nameInputField
                 .OnEndEditAsObservable()
                 .Subscribe(ViewModel.UpdateName)
-                .AddTo(this);
-            jobsInputField
-                .OnEndEditAsObservable()
-                .Subscribe(ViewModel.UpdateJob)
                 .AddTo(this);
             deleteStaffItemButton
                 .OnClickAsObservable()

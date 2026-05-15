@@ -9,22 +9,21 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     public class MusicVersionStaffItemViewModel : BaseViewModel
     {
         private readonly MusicVersionViewModel MusicVersionViewModel;
-        private readonly KeyValuePair<string, List<string>> StaffData;
 
         private readonly ReactiveProperty<string> name;
         public ReadOnlyReactiveProperty<string> Name => name;
-        public IReadOnlyCollection<string> Jobs => StaffData.Value.AsReadOnly();
 
 
         public MusicVersionStaffItemViewModel(ChartEditorModel model,
                                               MusicVersionViewModel musicVersionViewModel,
-                                              KeyValuePair<string, List<string>> staffData)
+                                              string staffName)
             : base(model)
         {
             MusicVersionViewModel = musicVersionViewModel;
-            StaffData = staffData;
 
-            name = new ReactiveProperty<string>(StaffData.Key); // 此处的观察用于强制刷新，直接赋初始值并在需要强制刷新时手动刷新。更新 StaffItem 时直接消耗重建
+            // 此处的观察用于在输入非法值（重复值）时强制刷新。
+            // 如果是更新值，直接删除重建对应的子 VM 和 V。
+            name = new ReactiveProperty<string>(staffName);
         }
 
         public void UpdateName(string newName)
@@ -38,21 +37,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            MusicVersionViewModel.RebuildStaffItemData(StaffData, new KeyValuePair<string, List<string>>(newName, StaffData.Value));
-        }
-
-        public void UpdateJob(string newJobString)
-        {
-            if (newJobString == string.Join('/', StaffData.Value))
-                return;
-
-            List<string> newJobs = new List<string>(newJobString.Split('/'));
-            MusicVersionViewModel.RebuildStaffItemData(StaffData, new KeyValuePair<string, List<string>>(StaffData.Key, newJobs));
+            MusicVersionViewModel.RebuildStaffItemData(name.CurrentValue, newName);
         }
 
         public void DeleteItem()
         {
-            MusicVersionViewModel.DeleteStaffItemData(StaffData);
+            MusicVersionViewModel.DeleteStaffItemData(name.CurrentValue);
         }
     }
 }

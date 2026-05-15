@@ -125,13 +125,13 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 重新分组 staff
         /// </summary>
-        public void ResetAllStaffGroup(Dictionary<string, List<string>> staffs)
+        public void ResetAllStaffGroup(HashSet<string> staffNames)
         {
-            if (staffs.Count > canShowStaffStars.Count)
+            if (staffNames.Count > canShowStaffStars.Count)
             {
                 // TODO: 先按照已加载曲包中最大 Staff 数量生成合规的星星，再随机生成装饰性星星；以修复星星数量不足导致无法完整展示 Staff 的问题
                 Debug.LogError(
-                    $"Staff数量过多，最多{canShowStaffStars.Count}个，目前{staffs.Count}个。请尝试设置更多的星星生成数量来临时解决这个问题");
+                    $"Staff数量过多，最多{canShowStaffStars.Count}个，目前{staffNames.Count}个。请尝试设置更多的星星生成数量来临时解决这个问题");
                 return;
             }
 
@@ -139,7 +139,7 @@ namespace CyanStars.Gameplay.MusicGame
             staffShowingStars.Clear();
             staffLabelCountInGroupDict.Clear();
 
-            if (staffs.Count == 0)
+            if (staffNames.Count == 0)
             {
                 groupCount = 0;
                 currentShowingGroupId = 0;
@@ -147,19 +147,11 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             groupCount = 1;
-            foreach (var item in staffs)
+            foreach (var staffName in staffNames)
             {
-                var sb = new StringBuilder();
-                foreach (var str in item.Value)
-                {
-                    sb.Append(str);
-                }
-
-                string combined = sb.ToString();
-
                 while (true)
                 {
-                    if (SetGroup(combined, item.Key, groupCount))
+                    if (SetGroup(staffName, groupCount))
                         break;
 
                     groupCount++;
@@ -217,7 +209,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
 
-        private bool SetGroup(string duty, string name, int groupId)
+        private bool SetGroup(string name, int groupId)
         {
             foreach (var star in canShowStaffStars)
             {
@@ -226,7 +218,7 @@ namespace CyanStars.Gameplay.MusicGame
                     continue;
                 }
 
-                star.SetStaffLabelText(duty, name);
+                star.SetStaffLabelText(name);
 
                 int staffLabelCount = staffLabelCountInGroupDict.GetValueOrDefault(groupId);
 

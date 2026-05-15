@@ -14,9 +14,6 @@ namespace CyanStars.Gameplay.MusicGame
         private CanvasGroup canvasGroup = null!;
 
         [SerializeField]
-        private TMP_Text dutyText = null!;
-
-        [SerializeField]
         private TMP_Text nameText = null!;
 
         private Tween? tween;
@@ -29,15 +26,12 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         /// <summary>
-        /// 设置职务和 staff 文本，并立刻刷新自动布局
+        /// 设置职务和 staff 文本
         /// </summary>
-        /// <param name="dutyStr">职务文本</param>
         /// <param name="nameStr">staff 名字</param>
-        public void SetText(string dutyStr, string nameStr)
+        public void SetText(string nameStr)
         {
-            dutyText.text = dutyStr;
             nameText.text = nameStr;
-            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)transform);
         }
 
         /// <summary>
