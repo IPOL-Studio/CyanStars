@@ -28,10 +28,10 @@ namespace CyanStars.Chart
         /// </remarks>
         public int Offset;
 
-        /// <summary>音乐创作者、歌姬、谱师、游戏曲绘作者等信息</summary>
-        /// <example>{"xxxx": ["作曲", "编曲", "调校", "谱面", "游戏曲绘"]}</example>
-        /// <example>{"xxxx": ["作", "编", "调", "谱", "绘"]}</example>
-        public Dictionary<string, List<string>> Staffs;
+        /// <summary>
+        /// 音乐创作者、歌姬、谱师、游戏曲绘作者等 ID
+        /// </summary>
+        public HashSet<string> StaffNames;
 
 
         /// <summary>
@@ -41,12 +41,12 @@ namespace CyanStars.Chart
         public MusicVersionData(string versionTitle = "",
                                 string audioFilePath = "",
                                 int offset = 0,
-                                Dictionary<string, List<string>>? staffs = null)
+                                HashSet<string>? staffNames = null)
         {
             VersionTitle = versionTitle;
             AudioFilePath = audioFilePath;
             Offset = offset;
-            Staffs = staffs ?? new Dictionary<string, List<string>>();
+            StaffNames = staffNames ?? new HashSet<string>();
         }
     }
 }

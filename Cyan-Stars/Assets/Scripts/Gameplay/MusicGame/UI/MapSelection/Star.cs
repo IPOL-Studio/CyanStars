@@ -41,9 +41,9 @@ namespace CyanStars.Gameplay.MusicGame
             starImage.transform.localScale = Vector3.one * size;
         }
 
-        public void SetStaffLabelText(string dutyStr, string nameStr)
+        public void SetStaffLabelText(string nameStr)
         {
-            staffLabel.SetText(dutyStr, nameStr);
+            staffLabel.SetText(nameStr);
         }
 
         public void SetRender(float targetAlpha, float gradientTime)
