@@ -17,27 +17,41 @@ namespace CyanStars.Gameplay.MusicGame
         UIPrefabName = "Assets/BundleRes/Prefabs/MusicGameUI/MusicGameMainPanel.prefab")]
     public class MusicGameMainPanel : BaseUIPanel
     {
-        public Image ImgProgress;
-        public TextMeshProUGUI TxtCombo;
-        public TextMeshProUGUI TxtScore;
+        [SerializeField]
+        private Image imgProgress;
+
+        [SerializeField]
+        private TextMeshProUGUI txtCombo;
+
+        [SerializeField]
+        private TMP_Text txtScore;
+
+        [SerializeField]
+        private TMP_Text txtImpurityRate;
+
         public Image ImgFrame;
-        public Button BtnStart;
-        public TextMeshProUGUI TxtLrc;
-        public Button BtnPause;
+
+        [SerializeField]
+        private Button btnStart;
+
+        [SerializeField]
+        private Button btnPause;
+
 
         private MusicGamePlayingDataModule playingDataModule;
+
 
         protected override void OnCreate()
         {
             playingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
 
-            BtnStart.onClick.AddListener(() =>
+            btnStart.onClick.AddListener(() =>
             {
                 GameRoot.Event.Dispatch(EventConst.MusicGameStartEvent, this, EmptyEventArgs.Create());
-                BtnStart.gameObject.SetActive(false);
+                btnStart.gameObject.SetActive(false);
             });
 
-            BtnPause.onClick.AddListener(() =>
+            btnPause.onClick.AddListener(() =>
             {
                 GameRoot.UI.OpenUIPanelAsync<MusicGamePausePanel>();
             });
@@ -45,11 +59,13 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnOpen()
         {
-            ImgProgress.fillAmount = 0;
-            TxtCombo.text = "0";
-            TxtScore.text = "SCORE(DEBUG):0";
-            BtnStart.gameObject.SetActive(true);
-            TxtLrc.text = null;
+            imgProgress.fillAmount = 0;
+            txtCombo.text = "0";
+            txtScore.text = "0000000";
+            txtScore.color = new Color(1, 0.841f, 0.078f, 0.87f);
+            txtImpurityRate.text = "0.00ms";
+            txtImpurityRate.color = new Color(1, 0.841f, 0.078f, 0.87f);
+            btnStart.gameObject.SetActive(true);
             Color color = ImgFrame.color;
             color.a = 0;
             ImgFrame.color = color;
@@ -68,7 +84,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             if (playingDataModule.RunningTimeline != null)
             {
-                ImgProgress.fillAmount = (float)playingDataModule.RunningTimeline.Context.CurrentTime / playingDataModule.RunningTimeline.Context.Length;
+                imgProgress.fillAmount = (float)playingDataModule.RunningTimeline.Context.CurrentTime / playingDataModule.RunningTimeline.Context.Length;
             }
         }
 
@@ -77,10 +93,27 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void OnMusicGameDataRefresh(object sender, EventArgs args)
         {
-            TxtCombo.text = playingDataModule.MusicGamePlayData.Combo < 2
+            txtCombo.text = playingDataModule.MusicGamePlayData.Combo < 2
                 ? string.Empty
                 : playingDataModule.MusicGamePlayData.Combo.ToString();
-            TxtScore.text = "SCORE(DEBUG):" + playingDataModule.MusicGamePlayData.Score;
+            int score = (int)Math.Floor(playingDataModule.MusicGamePlayData.Score / playingDataModule.MusicGamePlayData.FullScore * 1000000);
+            txtScore.text = score.ToString("D7");
+            decimal impurityRate = Math.Ceiling((decimal)playingDataModule.MusicGamePlayData.ImpurityRate * 100) / 100;
+            txtImpurityRate.text = impurityRate.ToString("F2") + "ms";
+
+            if (playingDataModule.MusicGamePlayData.MissNum > 0)
+                txtScore.color = new Color(1, 1, 1, 0.87f);
+            else if (playingDataModule.MusicGamePlayData is not { GreatNum: 0, RightNum: 0, OutNum: 0, BadNum: 0, MissNum: 0 })
+                txtScore.color = new Color(0.4f, 0.667f, 1, 0.87f);
+            else
+                txtScore.color = new Color(1, 0.841f, 0.078f, 0.87f);
+
+            txtImpurityRate.color = playingDataModule.MusicGamePlayData.ImpurityRate switch
+            {
+                > 50 => new Color(1, 1, 1, 0.87f),
+                > 30 => new Color(0.4f, 0.667f, 1, 0.87f),
+                _ => new Color(1, 0.841f, 0.078f, 0.87f)
+            };
         }
     }
 }

@@ -12,7 +12,7 @@ namespace CyanStars.Gameplay.MusicGame
          * Drag，0.25分
          * Break，2分 */
         public int Combo; // Combo数量
-        public int MaxCombo; // 玩家在此次游玩时的最大连击数量
+        public int PlayerMaxCombo; // 玩家在此次游玩时的最大连击数量
         public float Score; // 当前分数
         public float MaxScore; // 当前的理论最高分
         public float FullScore; // 全谱总分

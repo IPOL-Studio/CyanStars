@@ -173,7 +173,7 @@ namespace CyanStars.Gameplay.MusicGame.UI.ScoreSettlement
                 : Mathf.RoundToInt(musicGamePlayData.Score /
                     musicGamePlayData.FullScore * 1000000);
             targetImpurityRateNum = musicGamePlayData.ImpurityRate;
-            targetMaxComboNum = musicGamePlayData.MaxCombo;
+            targetMaxComboNum = musicGamePlayData.PlayerMaxCombo;
 
             targetExactCountNum = musicGamePlayData.ExactNum;
             targetGreatCountNum = musicGamePlayData.GreatNum;

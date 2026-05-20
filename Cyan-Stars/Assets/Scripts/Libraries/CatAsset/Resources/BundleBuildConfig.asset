@@ -603,31 +603,23 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/MusicGameUI/MusicGame3DUIPanel_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 2643770
+    AssetsLength: 17920
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/MusicGameUI/MusicGame3DUIPanel.prefab
-      Length: 18671
-    - Name: Assets/TextMeshPro/Fonts/LiberationSans.ttf
-      Length: 350200
-    - Name: Assets/TextMeshPro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset
-      Length: 9713
-    - Name: Assets/TextMeshPro/Resources/Fonts & Materials/LiberationSans SDF.asset
-      Length: 2256862
-    - Name: Assets/TextMeshPro/Shaders/TMP_SDF-Mobile.shader
-      Length: 8324
+      Length: 17920
   - DirectoryName: BundleRes/Prefabs/MusicGameUI
     BundleName: MusicGameMainPanel_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/MusicGameUI/MusicGameMainPanel_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 72948
+    AssetsLength: 75775
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/MusicGameUI/MusicGameMainPanel.prefab
-      Length: 33272
+      Length: 36099
     - Name: Assets/TextMeshPro/Examples & Extras/Fonts/Bangers.ttf
       Length: 39676
   - DirectoryName: BundleRes/Prefabs/MusicGameUI
@@ -635,12 +627,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/MusicGameUI/MusicGamePausePanel_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 16431
+    AssetsLength: 29194
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/MusicGameUI/MusicGamePausePanel.prefab
-      Length: 16431
+      Length: 29194
   - DirectoryName: BundleRes/Prefabs/ScoreSettlementUI
     BundleName: DeprecatedScoreSettlementPanel_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ScoreSettlementUI/DeprecatedScoreSettlementPanel_prefab.bundle
@@ -668,7 +660,7 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Scenes.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 1363453
+    AssetsLength: 1367201
     CompressOption: 2
     EncryptOption: 1
     Assets:
@@ -677,7 +669,7 @@ MonoBehaviour:
     - Name: Assets/BundleRes/Scenes/Dark.unity
       Length: 57120
     - Name: Assets/BundleRes/Scenes/Warm.unity
-      Length: 59433
+      Length: 63181
   - DirectoryName: BundleRes
     BundleName: Scenes_res.bundle
     BundleIdentifyName: BundleRes/Scenes_res.bundle
@@ -2066,6 +2058,50 @@ MonoBehaviour:
     Assets:
     - Name: Assets/CysMultimediaAssets/Sprites/MapSelectionPanel/TrackStartButton.png
       Length: 53567
+  - DirectoryName: CysMultimediaAssets/Sprites/MusicGamePlay
+    BundleName: "\u6682\u505C\u6309\u94AE_png.bundle"
+    BundleIdentifyName: "CysMultimediaAssets/Sprites/MusicGamePlay/\u6682\u505C\u6309\u94AE_png.bundle"
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 14772
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Sprites/MusicGamePlay/\u6682\u505C\u6309\u94AE.png"
+      Length: 14772
+  - DirectoryName: CysMultimediaAssets/Sprites/MusicGamePlay
+    BundleName: "\u6682\u505C\u8986\u5C42_png.bundle"
+    BundleIdentifyName: "CysMultimediaAssets/Sprites/MusicGamePlay/\u6682\u505C\u8986\u5C42_png.bundle"
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 945125
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Sprites/MusicGamePlay/\u6682\u505C\u8986\u5C42.png"
+      Length: 945125
+  - DirectoryName: CysMultimediaAssets/Sprites/MusicGamePlay
+    BundleName: "\u6682\u505C\u8F68\u9053_png.bundle"
+    BundleIdentifyName: "CysMultimediaAssets/Sprites/MusicGamePlay/\u6682\u505C\u8F68\u9053_png.bundle"
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 335357
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Sprites/MusicGamePlay/\u6682\u505C\u8F68\u9053.png"
+      Length: 335357
+  - DirectoryName: CysMultimediaAssets/Sprites/MusicGamePlay
+    BundleName: "\u97F3\u6E38\u6682\u505C64px(27x30)_png.bundle"
+    BundleIdentifyName: "CysMultimediaAssets/Sprites/MusicGamePlay/\u97F3\u6E38\u6682\u505C64px(27x30)_png.bundle"
+    Group: Base
+    IsRaw: 0
+    AssetsLength: 3413
+    CompressOption: 2
+    EncryptOption: 1
+    Assets:
+    - Name: "Assets/CysMultimediaAssets/Sprites/MusicGamePlay/\u97F3\u6E38\u6682\u505C64px(27x30).png"
+      Length: 3413
   - DirectoryName: CysMultimediaAssets/Sprites
     BundleName: PauseButton_png.bundle
     BundleIdentifyName: CysMultimediaAssets/Sprites/PauseButton_png.bundle
@@ -2304,12 +2340,20 @@ MonoBehaviour:
     BundleIdentifyName: Redundancy_0.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 430723
+    AssetsLength: 3055822
     CompressOption: 2
     EncryptOption: 1
     Assets:
+    - Name: Assets/TextMeshPro/Fonts/LiberationSans.ttf
+      Length: 350200
+    - Name: Assets/TextMeshPro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset
+      Length: 9713
+    - Name: Assets/TextMeshPro/Resources/Fonts & Materials/LiberationSans SDF.asset
+      Length: 2256862
     - Name: Assets/TextMeshPro/Shaders/TMP_SDF.shader
       Length: 11353
+    - Name: Assets/TextMeshPro/Shaders/TMP_SDF-Mobile.shader
+      Length: 8324
     - Name: Packages/com.unity.render-pipelines.universal/Runtime/Materials/Lit.mat
       Length: 4123
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader
@@ -2340,7 +2384,7 @@ MonoBehaviour:
       Length: 4659
     - Name: Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
       Length: 12430
-  BundleCount: 184
-  AssetCount: 289
+  BundleCount: 188
+  AssetCount: 293
   IsExactTextureSize: 0
   IsDrawDesc: 0
