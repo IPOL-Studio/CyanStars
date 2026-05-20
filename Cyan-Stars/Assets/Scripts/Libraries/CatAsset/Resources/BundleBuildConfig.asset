@@ -627,12 +627,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/MusicGameUI/MusicGamePausePanel_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 29194
+    AssetsLength: 29687
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/MusicGameUI/MusicGamePausePanel.prefab
-      Length: 29194
+      Length: 29687
   - DirectoryName: BundleRes/Prefabs/ScoreSettlementUI
     BundleName: DeprecatedScoreSettlementPanel_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ScoreSettlementUI/DeprecatedScoreSettlementPanel_prefab.bundle
@@ -851,14 +851,14 @@ MonoBehaviour:
     BundleIdentifyName: CysMultimediaAssets/Font/Oswald/Bold.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 2218760
+    AssetsLength: 116570
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/CysMultimediaAssets/Font/Oswald/Bold/Oswald-Bold SDF.asset
       Length: 31680
     - Name: Assets/CysMultimediaAssets/Font/Oswald/Bold/Oswald-Bold Shadow SDF.asset
-      Length: 2134024
+      Length: 31834
     - Name: Assets/CysMultimediaAssets/Font/Oswald/Bold/Oswald-Bold.ttf
       Length: 53056
   - DirectoryName: CysMultimediaAssets/Font/Oswald
