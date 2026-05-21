@@ -17,6 +17,17 @@ namespace CyanStars.Gameplay.MusicGame
         UIPrefabName = "Assets/BundleRes/Prefabs/MusicGameUI/MusicGameMainPanel.prefab")]
     public class MusicGameMainPanel : BaseUIPanel
     {
+        [Header("颜色配置")]
+        [SerializeField]
+        private Color apColor = new(1, 0.841f, 0.078f, 0.87f);
+
+        [SerializeField]
+        private Color fcColor = new(0.4f, 0.667f, 1, 0.87f);
+
+        [SerializeField]
+        private Color normalColor = new(1, 1, 1, 0.87f);
+
+        [Header("物体引用")]
         [SerializeField]
         private Image imgProgress;
 
@@ -29,13 +40,13 @@ namespace CyanStars.Gameplay.MusicGame
         [SerializeField]
         private TMP_Text txtImpurityRate;
 
-        public Image ImgFrame;
-
         [SerializeField]
         private Button btnStart;
 
         [SerializeField]
         private Button btnPause;
+
+        public Image ImgFrame; // TODO: 边框闪烁暂时弃用，待重构
 
 
         private MusicGamePlayingDataModule playingDataModule;
@@ -62,9 +73,9 @@ namespace CyanStars.Gameplay.MusicGame
             imgProgress.fillAmount = 0;
             txtCombo.text = "0";
             txtScore.text = "0000000";
-            txtScore.color = new Color(1, 0.841f, 0.078f, 0.87f);
+            txtScore.color = apColor;
             txtImpurityRate.text = "0.00ms";
-            txtImpurityRate.color = new Color(1, 0.841f, 0.078f, 0.87f);
+            txtImpurityRate.color = apColor;
             btnStart.gameObject.SetActive(true);
             Color color = ImgFrame.color;
             color.a = 0;
@@ -102,17 +113,17 @@ namespace CyanStars.Gameplay.MusicGame
             txtImpurityRate.text = impurityRate.ToString("F2") + "ms";
 
             if (playingDataModule.MusicGamePlayData.MissNum > 0)
-                txtScore.color = new Color(1, 1, 1, 0.87f);
+                txtScore.color = normalColor;
             else if (playingDataModule.MusicGamePlayData is not { GreatNum: 0, RightNum: 0, OutNum: 0, BadNum: 0, MissNum: 0 })
-                txtScore.color = new Color(0.4f, 0.667f, 1, 0.87f);
+                txtScore.color = fcColor;
             else
-                txtScore.color = new Color(1, 0.841f, 0.078f, 0.87f);
+                txtScore.color = apColor;
 
             txtImpurityRate.color = playingDataModule.MusicGamePlayData.ImpurityRate switch
             {
-                > 50 => new Color(1, 1, 1, 0.87f),
-                > 30 => new Color(0.4f, 0.667f, 1, 0.87f),
-                _ => new Color(1, 0.841f, 0.078f, 0.87f)
+                > 50 => normalColor,
+                > 30 => fcColor,
+                _ => apColor
             };
         }
     }
