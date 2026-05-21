@@ -192,7 +192,7 @@ namespace CyanStars.Gameplay.MusicGame
             else
             {
                 MusicGamePlayData.Combo += addCombo;
-                MusicGamePlayData.MaxCombo = Mathf.Max(MusicGamePlayData.Combo, MusicGamePlayData.MaxCombo);
+                MusicGamePlayData.PlayerMaxCombo = Mathf.Max(MusicGamePlayData.Combo, MusicGamePlayData.PlayerMaxCombo);
                 MusicGamePlayData.Score += addScore;
             }
 
