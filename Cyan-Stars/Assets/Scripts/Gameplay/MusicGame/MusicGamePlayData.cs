@@ -5,7 +5,7 @@ namespace CyanStars.Gameplay.MusicGame
     /// <summary>
     /// 玩家游玩音游时的数据的结构
     /// </summary>
-    public struct MusicGamePlayData
+    public class MusicGamePlayData
     {
         /* 以下的“分数”和“总分”等为Note计分：
          * Tap/Hold头/Hold尾/Click头/Click尾，各1分
