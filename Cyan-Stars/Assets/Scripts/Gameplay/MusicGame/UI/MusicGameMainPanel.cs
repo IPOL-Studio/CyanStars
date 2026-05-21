@@ -109,17 +109,21 @@ namespace CyanStars.Gameplay.MusicGame
                 : playingDataModule.MusicGamePlayData.Combo.ToString();
             int score = (int)Math.Floor(playingDataModule.MusicGamePlayData.Score / playingDataModule.MusicGamePlayData.FullScore * 1000000);
             txtScore.text = score.ToString("D7");
-            decimal impurityRate = Math.Ceiling((decimal)playingDataModule.MusicGamePlayData.ImpurityRate * 100) / 100;
+            double impurityRate = Math.Ceiling(playingDataModule.MusicGamePlayData.ImpurityRate * 100) / 100;
             txtImpurityRate.text = impurityRate.ToString("F2") + "ms";
 
-            if (playingDataModule.MusicGamePlayData.MissNum > 0)
-                txtScore.color = normalColor;
-            else if (playingDataModule.MusicGamePlayData is not { GreatNum: 0, RightNum: 0, OutNum: 0, BadNum: 0, MissNum: 0 })
-                txtScore.color = fcColor;
-            else
-                txtScore.color = apColor;
+            var playData = playingDataModule.MusicGamePlayData;
+            bool isAllExact = playData is { GreatNum: 0, RightNum: 0, OutNum: 0, BadNum: 0, MissNum: 0 };
+            bool hasMiss = playData.MissNum > 0;
 
-            txtImpurityRate.color = playingDataModule.MusicGamePlayData.ImpurityRate switch
+            if (hasMiss)
+                txtScore.color = normalColor;
+            else if (isAllExact)
+                txtScore.color = apColor;
+            else
+                txtScore.color = fcColor;
+
+            txtImpurityRate.color = playData.ImpurityRate switch
             {
                 > 50 => normalColor,
                 > 30 => fcColor,
