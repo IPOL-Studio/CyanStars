@@ -10,6 +10,7 @@ using CyanStars.Gameplay.ChartEditor.Management;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Utils;
+using ObservableCollections;
 using R3;
 using UnityEngine;
 
@@ -26,7 +27,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<Beat> PreviewStartBeat;
         public readonly ReadOnlyReactiveProperty<Beat> PreviewEndBeat;
         public readonly ReadOnlyReactiveProperty<string> CoverFilePathString;
-
+        public readonly ReadOnlyReactiveProperty<string> ChartPackInfo;
+        public readonly ISynchronizedView<ChartPackLinkDataEditorModel, ChartPackDataLinkItemViewModel> ChartPackLinks;
 
         private const int MaxRecursiveDeep = 5;
 
@@ -57,12 +59,21 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 )
                 .AddTo(base.Disposables);
 
-
             CoverFilePathString = Model.ChartPackData
                 .Select(data => data.CoverFilePath.AsObservable())
                 .Switch()
                 .Select(path => path ?? "")
                 .ToReadOnlyReactiveProperty("")
+                .AddTo(base.Disposables);
+
+            ChartPackInfo = Model.ChartPackData
+                .Select(data => data.ChartPackInfo.AsObservable())
+                .Switch()
+                .Select(info => info ?? "")
+                .ToReadOnlyReactiveProperty("")
+                .AddTo(base.Disposables);
+            ChartPackLinks = Model.ChartPackData.CurrentValue.ChartPackLinks
+                .CreateView(data => new ChartPackDataLinkItemViewModel(model, this, data))
                 .AddTo(base.Disposables);
         }
 
@@ -114,6 +125,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             CommandStack.ExecuteCommand(
                 () => Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = newBeat,
                 () => Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = oldBeat
+            );
+        }
+
+        public void AddLinkItem()
+        {
+            var chartPackLink = new ChartPackLinkDataEditorModel(new ChartPackLinkData(null, "", ""));
+            CommandStack.ExecuteCommand(
+                () => Model.ChartPackData.CurrentValue.ChartPackLinks.Add(chartPackLink),
+                () => Model.ChartPackData.CurrentValue.ChartPackLinks.Remove(chartPackLink)
             );
         }
 
