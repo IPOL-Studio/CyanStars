@@ -2,6 +2,7 @@
 
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using ObservableCollections;
 using R3;
 using TMPro;
 using UnityEngine;
@@ -39,6 +40,18 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private GameObject coverCropFrameObject = null!;
 
         [SerializeField]
+        private TMP_InputField infoInputField = null!;
+
+        [SerializeField]
+        private GameObject linksFrameGameObject = null!;
+
+        [SerializeField]
+        private GameObject linkItemPrefab = null!;
+
+        [SerializeField]
+        private Button addLinkItemButton = null!;
+
+        [SerializeField]
         private Button exportChartPackButton = null!;
 
 
@@ -49,6 +62,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
+            // 首次加载时生成一次 links
+            linksFrameGameObject.SetActive(ViewModel.ChartPackLinks.Count >= 1);
+            foreach (var linkItemViewModel in ViewModel.ChartPackLinks)
+            {
+                var go = Instantiate(linkItemPrefab, linksFrameGameObject.transform);
+                var itemView = go.GetComponent<ChartPackDataLinkItemView>();
+                itemView.Bind(linkItemViewModel);
+            }
+
+            // VM -> V
             coverCropFrameVisibility = ViewModel.ChartPackData
                 .Select(data => data.CoverFilePath.AsObservable())
                 .Switch()
@@ -84,30 +107,38 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(isVisible => coverCropFrameObject.SetActive(isVisible))
                 .AddTo(this);
 
+            ViewModel.ChartPackInfo
+                .Subscribe(text => infoInputField.text = text)
+                .AddTo(this);
+            ViewModel.ChartPackLinks
+                .ObserveAdd()
+                .Subscribe(e =>
+                {
+                    var go = Instantiate(linkItemPrefab, linksFrameGameObject.transform);
+                    go.transform.SetSiblingIndex(e.Index);
+                    var itemView = go.GetComponent<ChartPackDataLinkItemView>();
+                    itemView.Bind(e.Value.View);
 
+                    if (ViewModel.ChartPackLinks.Count == 1)
+                        linksFrameGameObject.SetActive(true);
+                })
+                .AddTo(this);
+            ViewModel.ChartPackLinks
+                .ObserveRemove()
+                .Subscribe(e =>
+                {
+                    if (ViewModel.ChartPackLinks.Count == 0)
+                        linksFrameGameObject.SetActive(false); // 禁用 go 防止自动布局时添加额外的间隙空位
+
+                    Destroy(linksFrameGameObject.transform.GetChild(e.Index).gameObject);
+                })
+                .AddTo(this);
+
+            // V -> VM
             chartPackTitleField
                 .OnEndEditAsObservable()
                 .Subscribe(ViewModel.SetChartPackTitle)
                 .AddTo(this);
-
-            // TODO: 用此方法统一更新预览拍
-            //
-            // private void UpdateBeat(string s1, string s2, string s3)
-            // {
-            //     Debug.LogWarning("TODO: 更新预览拍");
-            // }
-            //
-            // Observable.Merge(
-            //         previewStartBeatField1.onEndEdit.AsObservable(),
-            //         previewStartBeatField2.onEndEdit.AsObservable(),
-            //         previewStartBeatField3.onEndEdit.AsObservable()
-            //     )
-            //     .Subscribe(_ =>
-            //         {
-            //             UpdateBeat(previewStartBeatField1.text, previewStartBeatField2.text, previewStartBeatField3.text);
-            //         }
-            //     )
-            //     .AddTo(this);
 
             previewStartBeatField1
                 .OnEndEditAsObservable()
@@ -199,6 +230,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     else
                         ViewModel.SetPreviewEndBeat(endBeat);
                 })
+                .AddTo(this);
+
+            addLinkItemButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.AddLinkItem())
                 .AddTo(this);
 
             exportChartPackButton

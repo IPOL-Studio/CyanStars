@@ -16,6 +16,8 @@ namespace CyanStars.Gameplay.ChartEditor.Model
     {
         public readonly ReactiveProperty<int> DataVersion;
         public readonly ReactiveProperty<string> Title;
+        public readonly ReactiveProperty<string> ChartPackInfo;
+        public readonly ObservableList<ChartPackLinkDataEditorModel> ChartPackLinks;
         public readonly ObservableList<MusicVersionDataEditorModel> MusicVersions;
         public readonly ObservableList<BpmGroupItem> BpmGroup;
         public readonly ReactiveProperty<Beat> MusicPreviewStartBeat;
@@ -29,14 +31,25 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         {
             DataVersion = new ReactiveProperty<int>(chartPackData.DataVersion);
             Title = new ReactiveProperty<string>(chartPackData.Title);
-            MusicVersions = new ObservableList<MusicVersionDataEditorModel>(chartPackData.MusicVersionDatas.Select(static v => new MusicVersionDataEditorModel(v)));
+            ChartPackInfo = new ReactiveProperty<string>(chartPackData.ChartPackInfo);
+            ChartPackLinks = new ObservableList<ChartPackLinkDataEditorModel>(
+                chartPackData.ChartPackLinks
+                    .Select(static d => new ChartPackLinkDataEditorModel(d))
+            );
+            MusicVersions = new ObservableList<MusicVersionDataEditorModel>(
+                chartPackData.MusicVersionDatas
+                    .Select(static v => new MusicVersionDataEditorModel(v))
+            );
             BpmGroup = new ObservableList<BpmGroupItem>(chartPackData.BpmGroup);
             MusicPreviewStartBeat = new ReactiveProperty<Beat>(chartPackData.MusicPreviewStartBeat);
             MusicPreviewEndBeat = new ReactiveProperty<Beat>(chartPackData.MusicPreviewEndBeat);
             CoverFilePath = new ReactiveProperty<string?>(chartPackData.CoverFilePath);
             CropStartPositionPercent = new ReactiveProperty<Vector2?>(chartPackData.CropStartPositionPercent);
             CropHeightPercent = new ReactiveProperty<float?>(chartPackData.CropHeightPercent);
-            ChartMetaDatas = new ObservableList<ChartMetaDataEditorModel>(chartPackData.ChartMetaDatas.Select(static d => new ChartMetaDataEditorModel(d)));
+            ChartMetaDatas = new ObservableList<ChartMetaDataEditorModel>(
+                chartPackData.ChartMetaDatas
+                    .Select(static d => new ChartMetaDataEditorModel(d))
+            );
         }
 
         /// <summary>
@@ -46,6 +59,9 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public ChartPackData ToChartPackData()
         {
             var title = Title.CurrentValue;
+            var chartPackInfo = ChartPackInfo.CurrentValue;
+            var chartPackLinks =
+                ChartPackLinks.Select(chartPackLinksEditorDatas => chartPackLinksEditorDatas.ToChartPackLinkData()).ToList();
             var musicVersionDatas =
                 MusicVersions.Select(musicVersionEditorDatas => musicVersionEditorDatas.ToMusicVersionData()).ToList();
             var bpmGroup = BpmGroup.ToList();
@@ -56,7 +72,19 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             var cropHeightPercent = CropHeightPercent.CurrentValue;
             var chartMetaDatas =
                 ChartMetaDatas.Select(chartMetaEditorData => chartMetaEditorData.ToChartMetaData()).ToList();
-            return new ChartPackData(title, musicVersionDatas, bpmGroup, musicPreviewStartBeat, musicPreviewEndBeat, coverFilePath, cropStartPositionPercent, cropHeightPercent, chartMetaDatas);
+            return new ChartPackData(
+                title,
+                chartPackInfo,
+                chartPackLinks,
+                musicVersionDatas,
+                bpmGroup,
+                musicPreviewStartBeat,
+                musicPreviewEndBeat,
+                coverFilePath,
+                cropStartPositionPercent,
+                cropHeightPercent,
+                chartMetaDatas
+            );
         }
     }
 }
