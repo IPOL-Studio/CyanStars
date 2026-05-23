@@ -128,6 +128,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             );
         }
 
+        public void UpdateInfo(string newText)
+        {
+            // TODO: 实时更新字段 + 一段时间停止输入或失焦时压入 CommandStack
+            var oldText = Model.ChartPackData.CurrentValue.ChartPackInfo.CurrentValue;
+            CommandStack.ExecuteCommand(
+                () => Model.ChartPackData.CurrentValue.ChartPackInfo.Value = newText,
+                () => Model.ChartPackData.CurrentValue.ChartPackInfo.Value = oldText
+            );
+        }
+
         public void AddLinkItem()
         {
             var chartPackLink = new ChartPackLinkDataEditorModel(new ChartPackLinkData(null, "", ""));
