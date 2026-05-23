@@ -25,18 +25,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private Button addListItemButton = null!;
 
-
-        [Header("Staffs 子 View")]
-        [SerializeField]
-        private GameObject staffItemPrefab = null!;
-
-        [SerializeField]
-        private GameObject staffsContentFrameGameObject = null!;
-
-        [SerializeField]
-        private Button addStaffButton = null!;
-
-
         [Header("主 View")]
         [SerializeField]
         private GameObject detailObject = null!;
@@ -82,15 +70,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private ReadOnlyReactiveProperty<bool> listVisibility = null!;
         private ReadOnlyReactiveProperty<bool> detailVisibility = null!;
 
-        // 用于在添加或删除 StaffItem 后强制刷新 UI 自动布局
-        private bool needForceRebuildLayoutFlag = false;
-        private RectTransform staffsContentFrameRectTransform = null!;
-
-
-        private void Start()
-        {
-            staffsContentFrameRectTransform = (RectTransform)staffsContentFrameGameObject.transform;
-        }
 
         protected override async Task CloseCanvas()
         {
@@ -186,37 +165,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 )
                 .AddTo(this);
 
-
-            // 创建 Staff VM 和 V 并绑定
-            foreach (var staffItemViewModel in ViewModel.StaffItems)
-            {
-                var go = Instantiate(staffItemPrefab, staffsContentFrameGameObject.transform);
-                go.GetComponent<MusicVersionStaffItemView>().Bind(staffItemViewModel);
-                go.transform.SetSiblingIndex(staffsContentFrameGameObject.transform.childCount - 1);
-            }
-
-            // TODO: 有任何变化时直接全量刷新，之后再优化
-            ViewModel.StaffItems.ObserveChanged()
-                .Subscribe(e =>
-                    {
-                        for (int i = staffsContentFrameGameObject.transform.childCount - 1; i >= 0; i--)
-                        {
-                            Destroy(staffsContentFrameGameObject.transform.GetChild(i).gameObject);
-                        }
-
-                        foreach (var viewModelItem in ViewModel.StaffItems)
-                        {
-                            var go = Instantiate(staffItemPrefab, staffsContentFrameGameObject.transform);
-                            go.GetComponent<MusicVersionStaffItemView>().Bind(viewModelItem);
-                            go.transform.SetSiblingIndex(staffsContentFrameGameObject.transform.childCount - 1);
-                        }
-
-                        needForceRebuildLayoutFlag = true;
-                    }
-                )
-                .AddTo(this);
-
-
             // VM -> V 绑定
             listVisibility
                 .Subscribe(visible => musicListObject.SetActive(visible))
@@ -263,10 +211,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.TestOffset())
                 .AddTo(this);
-            addStaffButton
-                .OnClickAsObservable()
-                .Subscribe(_ => ViewModel.AddStaffNameItem())
-                .AddTo(this);
             deleteItemButton
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.DeleteItem())
@@ -287,15 +231,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.TopItem())
                 .AddTo(this);
-        }
-
-        private void LateUpdate()
-        {
-            if (needForceRebuildLayoutFlag)
-            {
-                needForceRebuildLayoutFlag = false;
-                LayoutRebuilder.ForceRebuildLayoutImmediate(staffsContentFrameRectTransform);
-            }
         }
     }
 }

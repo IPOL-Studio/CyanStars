@@ -28,11 +28,6 @@ namespace CyanStars.Chart
         /// </remarks>
         public int Offset;
 
-        /// <summary>
-        /// 音乐创作者、歌姬、谱师、游戏曲绘作者等 ID
-        /// </summary>
-        public HashSet<string> StaffNames;
-
 
         /// <summary>
         /// 构造函数
@@ -40,13 +35,11 @@ namespace CyanStars.Chart
         [JsonConstructor]
         public MusicVersionData(string versionTitle = "",
                                 string audioFilePath = "",
-                                int offset = 0,
-                                HashSet<string>? staffNames = null)
+                                int offset = 0)
         {
             VersionTitle = versionTitle;
             AudioFilePath = audioFilePath;
             Offset = offset;
-            StaffNames = staffNames ?? new HashSet<string>();
         }
     }
 }

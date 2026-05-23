@@ -175,8 +175,8 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
-            HashSet<string> staffNames = mapItem.Data.RuntimeChartPack.ChartPackData
-                .MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex].StaffNames;
+            string chartPackInfo = mapItem.Data.RuntimeChartPack.ChartPackData.ChartPackInfo;
+            HashSet<string> staffNames = ChartPackInfoHelper.ToStaffs(chartPackInfo);
             owner.StarController.ResetAllStaffGroup(staffNames);
         }
     }
