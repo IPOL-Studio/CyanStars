@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System.Text.RegularExpressions;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using ObservableCollections;
@@ -12,6 +13,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 {
     public class ChartPackDataView : BasePopupView<ChartPackDataViewModel>
     {
+        [Header("组件引用")]
         [SerializeField]
         private TMP_InputField chartPackTitleField = null!;
 
@@ -43,6 +45,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private TMP_InputField infoInputField = null!;
 
         [SerializeField]
+        private TMP_Text infoPreviewText = null!;
+
+        [SerializeField]
         private GameObject linksFrameGameObject = null!;
 
         [SerializeField]
@@ -54,8 +59,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private Button exportChartPackButton = null!;
 
+        [Header("@ 的解析颜色")]
+        [SerializeField]
+        private Color atColor = new(0.4f, 0.667f, 1, 0.87f);
+
 
         private ReadOnlyReactiveProperty<bool> coverCropFrameVisibility = null!;
+        private bool infoInputFieldIsChangeFromView = true; // 只在自身更新时向 VM 发送更新，如果是 VM 更新就不再发送
 
 
         public override void Bind(ChartPackDataViewModel targetViewModel)
@@ -108,7 +118,19 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
             ViewModel.ChartPackInfo
-                .Subscribe(text => infoInputField.text = text)
+                .Subscribe(text =>
+                {
+                    infoInputFieldIsChangeFromView = false;
+                    infoInputField.text = text;
+                    infoInputFieldIsChangeFromView = true;
+                })
+                .AddTo(this);
+            ViewModel.ChartPackInfo
+                .Subscribe(text =>
+                {
+                    infoPreviewText.gameObject.SetActive(!string.IsNullOrEmpty(text));
+                    infoPreviewText.text = FormattingInfoString(text);
+                })
                 .AddTo(this);
             ViewModel.ChartPackLinks
                 .ObserveAdd()
@@ -232,6 +254,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 })
                 .AddTo(this);
 
+            infoInputField
+                .OnValueChangedAsObservable()
+                .Subscribe(text =>
+                {
+                    if (infoInputFieldIsChangeFromView)
+                        ViewModel.UpdateInfo(text);
+                })
+                .AddTo(this);
+
             addLinkItemButton
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.AddLinkItem())
@@ -261,6 +292,23 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             Beat.TryCreateBeat(integerPart, numerator, denominator, out beat);
             return true;
+        }
+
+        /// <summary>
+        /// 解析 InfoText 并返回带格式的 TMP Text
+        /// </summary>
+        private string FormattingInfoString(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return "";
+
+            string atHexColor = ColorUtility.ToHtmlStringRGBA(atColor);
+            string pattern = @"@\[([^\]]+)\]";
+            string replacement = $"<color=#{atHexColor}>@$1</color>";
+
+            text = Regex.Replace(text, pattern, replacement);
+
+            return text;
         }
     }
 }
