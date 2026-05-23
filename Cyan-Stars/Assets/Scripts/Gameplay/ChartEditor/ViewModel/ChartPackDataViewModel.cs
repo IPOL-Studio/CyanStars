@@ -28,7 +28,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<Beat> PreviewEndBeat;
         public readonly ReadOnlyReactiveProperty<string> CoverFilePathString;
         public readonly ReadOnlyReactiveProperty<string> ChartPackInfo;
-        public readonly ISynchronizedView<ChartPackLinkDataEditorModel, ChartPackDataLinkItemViewModel> ChartPackLinks;
 
         private const int MaxRecursiveDeep = 5;
 
@@ -71,9 +70,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .Switch()
                 .Select(info => info ?? "")
                 .ToReadOnlyReactiveProperty("")
-                .AddTo(base.Disposables);
-            ChartPackLinks = Model.ChartPackData.CurrentValue.ChartPackLinks
-                .CreateView(data => new ChartPackDataLinkItemViewModel(model, this, data))
                 .AddTo(base.Disposables);
         }
 
@@ -135,15 +131,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             CommandStack.ExecuteCommand(
                 () => Model.ChartPackData.CurrentValue.ChartPackInfo.Value = newText,
                 () => Model.ChartPackData.CurrentValue.ChartPackInfo.Value = oldText
-            );
-        }
-
-        public void AddLinkItem()
-        {
-            var chartPackLink = new ChartPackLinkDataEditorModel(new ChartPackLinkData(null, "", ""));
-            CommandStack.ExecuteCommand(
-                () => Model.ChartPackData.CurrentValue.ChartPackLinks.Add(chartPackLink),
-                () => Model.ChartPackData.CurrentValue.ChartPackLinks.Remove(chartPackLink)
             );
         }
 

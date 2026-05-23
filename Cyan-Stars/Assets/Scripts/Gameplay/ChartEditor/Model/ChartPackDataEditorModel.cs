@@ -17,7 +17,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public readonly ReactiveProperty<int> DataVersion;
         public readonly ReactiveProperty<string> Title;
         public readonly ReactiveProperty<string> ChartPackInfo;
-        public readonly ObservableList<ChartPackLinkDataEditorModel> ChartPackLinks;
         public readonly ObservableList<MusicVersionDataEditorModel> MusicVersions;
         public readonly ObservableList<BpmGroupItem> BpmGroup;
         public readonly ReactiveProperty<Beat> MusicPreviewStartBeat;
@@ -32,10 +31,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             DataVersion = new ReactiveProperty<int>(chartPackData.DataVersion);
             Title = new ReactiveProperty<string>(chartPackData.Title);
             ChartPackInfo = new ReactiveProperty<string>(chartPackData.ChartPackInfo);
-            ChartPackLinks = new ObservableList<ChartPackLinkDataEditorModel>(
-                chartPackData.ChartPackLinks
-                    .Select(static d => new ChartPackLinkDataEditorModel(d))
-            );
             MusicVersions = new ObservableList<MusicVersionDataEditorModel>(
                 chartPackData.MusicVersionDatas
                     .Select(static v => new MusicVersionDataEditorModel(v))
@@ -60,8 +55,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         {
             var title = Title.CurrentValue;
             var chartPackInfo = ChartPackInfo.CurrentValue;
-            var chartPackLinks =
-                ChartPackLinks.Select(chartPackLinksEditorDatas => chartPackLinksEditorDatas.ToChartPackLinkData()).ToList();
             var musicVersionDatas =
                 MusicVersions.Select(musicVersionEditorDatas => musicVersionEditorDatas.ToMusicVersionData()).ToList();
             var bpmGroup = BpmGroup.ToList();
@@ -75,7 +68,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             return new ChartPackData(
                 title,
                 chartPackInfo,
-                chartPackLinks,
                 musicVersionDatas,
                 bpmGroup,
                 musicPreviewStartBeat,
