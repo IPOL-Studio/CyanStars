@@ -29,11 +29,6 @@ namespace CyanStars.Chart
         /// </summary>
         public string ChartPackInfo;
 
-        /// <summary>
-        /// 谱包相关链接，一键跳转原曲
-        /// </summary>
-        public List<ChartPackLinkData> ChartPackLinks;
-
 
         // 音乐和演唱版本
 
@@ -94,7 +89,6 @@ namespace CyanStars.Chart
             Title = oldChartPackData.Title;
             MusicVersionDatas = oldChartPackData.MusicVersionDatas;
             ChartPackInfo = oldChartPackData.ChartPackInfo;
-            ChartPackLinks = oldChartPackData.ChartPackLinks;
             BpmGroup = oldChartPackData.BpmGroup;
             MusicPreviewStartBeat = oldChartPackData.MusicPreviewStartBeat;
             MusicPreviewEndBeat = oldChartPackData.MusicPreviewEndBeat;
@@ -110,7 +104,6 @@ namespace CyanStars.Chart
         [JsonConstructor]
         public ChartPackData(string title,
                              string chartPackInfo = "",
-                             List<ChartPackLinkData>? chartPackLinks = null, 
                              List<MusicVersionData>? musicVersionDatas = null,
                              List<BpmGroupItem>? bpmGroup = null,
                              Beat? musicPreviewStartBeat = null,
@@ -123,7 +116,6 @@ namespace CyanStars.Chart
             DataVersion = 1;
             Title = title;
             ChartPackInfo = chartPackInfo;
-            ChartPackLinks = chartPackLinks ?? new List<ChartPackLinkData>();
             MusicVersionDatas = musicVersionDatas ?? new List<MusicVersionData>();
             BpmGroup = bpmGroup ?? new List<BpmGroupItem>();
 

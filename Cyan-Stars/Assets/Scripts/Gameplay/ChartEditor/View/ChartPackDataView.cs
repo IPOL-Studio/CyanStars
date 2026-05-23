@@ -48,15 +48,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private TMP_Text infoPreviewText = null!;
 
         [SerializeField]
-        private GameObject linksFrameGameObject = null!;
-
-        [SerializeField]
-        private GameObject linkItemPrefab = null!;
-
-        [SerializeField]
-        private Button addLinkItemButton = null!;
-
-        [SerializeField]
         private Button exportChartPackButton = null!;
 
         [Header("@ 的解析颜色")]
@@ -71,15 +62,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         public override void Bind(ChartPackDataViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
-
-            // 首次加载时生成一次 links
-            linksFrameGameObject.SetActive(ViewModel.ChartPackLinks.Count >= 1);
-            foreach (var linkItemViewModel in ViewModel.ChartPackLinks)
-            {
-                var go = Instantiate(linkItemPrefab, linksFrameGameObject.transform);
-                var itemView = go.GetComponent<ChartPackDataLinkItemView>();
-                itemView.Bind(linkItemViewModel);
-            }
 
             // VM -> V
             coverCropFrameVisibility = ViewModel.ChartPackData
@@ -130,29 +112,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 {
                     infoPreviewText.gameObject.SetActive(!string.IsNullOrEmpty(text));
                     infoPreviewText.text = FormattingInfoString(text);
-                })
-                .AddTo(this);
-            ViewModel.ChartPackLinks
-                .ObserveAdd()
-                .Subscribe(e =>
-                {
-                    var go = Instantiate(linkItemPrefab, linksFrameGameObject.transform);
-                    go.transform.SetSiblingIndex(e.Index);
-                    var itemView = go.GetComponent<ChartPackDataLinkItemView>();
-                    itemView.Bind(e.Value.View);
-
-                    if (ViewModel.ChartPackLinks.Count == 1)
-                        linksFrameGameObject.SetActive(true);
-                })
-                .AddTo(this);
-            ViewModel.ChartPackLinks
-                .ObserveRemove()
-                .Subscribe(e =>
-                {
-                    if (ViewModel.ChartPackLinks.Count == 0)
-                        linksFrameGameObject.SetActive(false); // 禁用 go 防止自动布局时添加额外的间隙空位
-
-                    Destroy(linksFrameGameObject.transform.GetChild(e.Index).gameObject);
                 })
                 .AddTo(this);
 
@@ -263,11 +222,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 })
                 .AddTo(this);
 
-            addLinkItemButton
-                .OnClickAsObservable()
-                .Subscribe(_ => ViewModel.AddLinkItem())
-                .AddTo(this);
-
             exportChartPackButton
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.ExportChartPack())
@@ -303,10 +257,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 return "";
 
             string atHexColor = ColorUtility.ToHtmlStringRGBA(atColor);
-            string pattern = @"@\[([^\]]+)\]";
+            string pattern = @"\[@([^\]]+)\]";
             string replacement = $"<color=#{atHexColor}>@$1</color>";
-
             text = Regex.Replace(text, pattern, replacement);
+
+            // TODO: 进行 Markdown 格式解析
 
             return text;
         }
