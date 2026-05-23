@@ -1,9 +1,7 @@
 ﻿#nullable enable
 
-using System.Text.RegularExpressions;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
-using ObservableCollections;
 using R3;
 using TMPro;
 using UnityEngine;
@@ -49,10 +47,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         [SerializeField]
         private Button exportChartPackButton = null!;
-
-        [Header("@ 的解析颜色")]
-        [SerializeField]
-        private Color atColor = new(0.4f, 0.667f, 1, 0.87f);
 
 
         private ReadOnlyReactiveProperty<bool> coverCropFrameVisibility = null!;
@@ -111,7 +105,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(text =>
                 {
                     infoPreviewText.gameObject.SetActive(!string.IsNullOrEmpty(text));
-                    infoPreviewText.text = FormattingInfoString(text);
+                    infoPreviewText.text = ChartPackInfoHelper.ToTmpText(text);
                 })
                 .AddTo(this);
 
@@ -246,24 +240,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             Beat.TryCreateBeat(integerPart, numerator, denominator, out beat);
             return true;
-        }
-
-        /// <summary>
-        /// 解析 InfoText 并返回带格式的 TMP Text
-        /// </summary>
-        private string FormattingInfoString(string text)
-        {
-            if (string.IsNullOrEmpty(text))
-                return "";
-
-            string atHexColor = ColorUtility.ToHtmlStringRGBA(atColor);
-            string pattern = @"\[@([^\]]+)\]";
-            string replacement = $"<color=#{atHexColor}>@$1</color>";
-            text = Regex.Replace(text, pattern, replacement);
-
-            // TODO: 进行 Markdown 格式解析
-
-            return text;
         }
     }
 }

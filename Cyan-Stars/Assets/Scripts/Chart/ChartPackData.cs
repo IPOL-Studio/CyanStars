@@ -82,6 +82,19 @@ namespace CyanStars.Chart
 
 
         /// <summary>
+        /// 用于反序列化的构造
+        /// </summary>
+        [JsonConstructor]
+        private ChartPackData()
+        {
+            Title = "";
+            ChartPackInfo = "";
+            MusicVersionDatas = new List<MusicVersionData>();
+            BpmGroup = new List<BpmGroupItem>();
+            ChartMetaDatas = new List<ChartMetaData>();
+        }
+
+        /// <summary>
         /// 执行浅拷贝
         /// </summary>
         public ChartPackData(ChartPackData oldChartPackData)
@@ -101,7 +114,6 @@ namespace CyanStars.Chart
         /// <summary>
         /// 构造函数
         /// </summary>
-        [JsonConstructor]
         public ChartPackData(string title,
                              string chartPackInfo = "",
                              List<MusicVersionData>? musicVersionDatas = null,
@@ -109,7 +121,7 @@ namespace CyanStars.Chart
                              Beat? musicPreviewStartBeat = null,
                              Beat? musicPreviewEndBeat = null,
                              string? coverFilePath = null,
-                             Vector2? cropPositionPercent = null,
+                             Vector2? cropStartPositionPercent = null,
                              float? cropHeightPercent = null,
                              List<ChartMetaData>? chartMetaDatas = null)
         {
@@ -144,7 +156,7 @@ namespace CyanStars.Chart
             }
 
             CoverFilePath = coverFilePath;
-            CropStartPositionPercent = cropPositionPercent ?? Vector2.zero;
+            CropStartPositionPercent = cropStartPositionPercent ?? Vector2.zero;
             CropHeightPercent = cropHeightPercent ?? 0;
             ChartMetaDatas = chartMetaDatas ?? new List<ChartMetaData>();
         }
