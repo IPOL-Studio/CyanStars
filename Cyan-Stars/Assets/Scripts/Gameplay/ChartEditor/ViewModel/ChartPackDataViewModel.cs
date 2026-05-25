@@ -10,6 +10,7 @@ using CyanStars.Gameplay.ChartEditor.Management;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Utils;
+using ObservableCollections;
 using R3;
 using UnityEngine;
 
@@ -26,7 +27,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<Beat> PreviewStartBeat;
         public readonly ReadOnlyReactiveProperty<Beat> PreviewEndBeat;
         public readonly ReadOnlyReactiveProperty<string> CoverFilePathString;
-
+        public readonly ReadOnlyReactiveProperty<string> ChartPackInfo;
 
         private const int MaxRecursiveDeep = 5;
 
@@ -57,11 +58,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 )
                 .AddTo(base.Disposables);
 
-
             CoverFilePathString = Model.ChartPackData
                 .Select(data => data.CoverFilePath.AsObservable())
                 .Switch()
                 .Select(path => path ?? "")
+                .ToReadOnlyReactiveProperty("")
+                .AddTo(base.Disposables);
+
+            ChartPackInfo = Model.ChartPackData
+                .Select(data => data.ChartPackInfo.AsObservable())
+                .Switch()
+                .Select(info => info ?? "")
                 .ToReadOnlyReactiveProperty("")
                 .AddTo(base.Disposables);
         }
@@ -114,6 +121,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             CommandStack.ExecuteCommand(
                 () => Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = newBeat,
                 () => Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = oldBeat
+            );
+        }
+
+        public void UpdateInfo(string newText)
+        {
+            // TODO: 实时更新字段 + 一段时间停止输入或失焦时压入 CommandStack
+            var oldText = Model.ChartPackData.CurrentValue.ChartPackInfo.CurrentValue;
+            CommandStack.ExecuteCommand(
+                () => Model.ChartPackData.CurrentValue.ChartPackInfo.Value = newText,
+                () => Model.ChartPackData.CurrentValue.ChartPackInfo.Value = oldText
             );
         }
 

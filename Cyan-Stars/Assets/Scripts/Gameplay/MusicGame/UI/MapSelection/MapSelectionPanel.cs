@@ -22,6 +22,13 @@ namespace CyanStars.Gameplay.MusicGame
         [SerializeField]
         private Button backButton = null!;
 
+        [SerializeField]
+        private Button showInfoButton = null!;
+
+        [SerializeField]
+        private ChartPackInfoPopup chartPackInfoPopup = null!;
+
+
         public StarController StarController = null!;
 
         private readonly Dictionary<Type, IMapSelectionPage> PageDict = new();
@@ -74,12 +81,17 @@ namespace CyanStars.Gameplay.MusicGame
         {
             pageRatio = 0;
             PageStack.Clear();
+
+            showInfoButton.onClick.AddListener(OpenInfoPopup);
+
             ChangePage<MapListPage>();
             StarController.GenerateStars();
         }
 
         public override void OnClose()
         {
+            showInfoButton.onClick.RemoveListener(OpenInfoPopup);
+
             if (starTween?.IsPlaying() ?? false)
             {
                 starTween.Kill();
@@ -142,6 +154,12 @@ namespace CyanStars.Gameplay.MusicGame
         public bool IsActive<T>() where T : IMapSelectionPage
         {
             return PageStack.Count > 0 && PageStack.Peek().GetType() == typeof(T);
+        }
+
+        private void OpenInfoPopup()
+        {
+            chartPackInfoPopup.SetInfoRawText(CurrentSelectedMap.RuntimeChartPack.ChartPackData.ChartPackInfo);
+            chartPackInfoPopup.gameObject.SetActive(true);
         }
     }
 

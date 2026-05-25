@@ -11,6 +11,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 {
     public class ChartPackDataView : BasePopupView<ChartPackDataViewModel>
     {
+        [Header("组件引用")]
         [SerializeField]
         private TMP_InputField chartPackTitleField = null!;
 
@@ -39,16 +40,24 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private GameObject coverCropFrameObject = null!;
 
         [SerializeField]
+        private TMP_InputField infoInputField = null!;
+
+        [SerializeField]
+        private TMP_Text infoPreviewText = null!;
+
+        [SerializeField]
         private Button exportChartPackButton = null!;
 
 
         private ReadOnlyReactiveProperty<bool> coverCropFrameVisibility = null!;
+        private bool infoInputFieldIsChangeFromView = true; // 只在自身更新时向 VM 发送更新，如果是 VM 更新就不再发送
 
 
         public override void Bind(ChartPackDataViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
 
+            // VM -> V
             coverCropFrameVisibility = ViewModel.ChartPackData
                 .Select(data => data.CoverFilePath.AsObservable())
                 .Switch()
@@ -84,36 +93,33 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(isVisible => coverCropFrameObject.SetActive(isVisible))
                 .AddTo(this);
 
+            ViewModel.ChartPackInfo
+                .Subscribe(text =>
+                {
+                    infoInputFieldIsChangeFromView = false;
+                    infoInputField.text = text;
+                    infoInputFieldIsChangeFromView = true;
+                })
+                .AddTo(this);
+            ViewModel.ChartPackInfo
+                .Subscribe(text =>
+                {
+                    infoPreviewText.gameObject.SetActive(!string.IsNullOrEmpty(text));
+                    infoPreviewText.text = ChartPackInfoHelper.ToTmpText(text);
+                })
+                .AddTo(this);
 
+            // V -> VM
             chartPackTitleField
                 .OnEndEditAsObservable()
                 .Subscribe(ViewModel.SetChartPackTitle)
                 .AddTo(this);
 
-            // TODO: 用此方法统一更新预览拍
-            //
-            // private void UpdateBeat(string s1, string s2, string s3)
-            // {
-            //     Debug.LogWarning("TODO: 更新预览拍");
-            // }
-            //
-            // Observable.Merge(
-            //         previewStartBeatField1.onEndEdit.AsObservable(),
-            //         previewStartBeatField2.onEndEdit.AsObservable(),
-            //         previewStartBeatField3.onEndEdit.AsObservable()
-            //     )
-            //     .Subscribe(_ =>
-            //         {
-            //             UpdateBeat(previewStartBeatField1.text, previewStartBeatField2.text, previewStartBeatField3.text);
-            //         }
-            //     )
-            //     .AddTo(this);
-
             previewStartBeatField1
                 .OnEndEditAsObservable()
                 .Subscribe(_ =>
                 {
-                    bool isSuccessfullyCreated = TryCteateBeat(previewStartBeatField1.text,
+                    bool isSuccessfullyCreated = TryCreateBeat(previewStartBeatField1.text,
                         previewStartBeatField2.text,
                         previewStartBeatField3.text,
                         out Beat startBeat);
@@ -128,7 +134,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnEndEditAsObservable()
                 .Subscribe(_ =>
                 {
-                    bool isSuccessfullyCreated = TryCteateBeat(previewStartBeatField1.text,
+                    bool isSuccessfullyCreated = TryCreateBeat(previewStartBeatField1.text,
                         previewStartBeatField2.text,
                         previewStartBeatField3.text,
                         out Beat startBeat);
@@ -143,7 +149,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnEndEditAsObservable()
                 .Subscribe(_ =>
                 {
-                    bool isSuccessfullyCreated = TryCteateBeat(previewStartBeatField1.text,
+                    bool isSuccessfullyCreated = TryCreateBeat(previewStartBeatField1.text,
                         previewStartBeatField2.text,
                         previewStartBeatField3.text,
                         out Beat startBeat);
@@ -159,7 +165,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnEndEditAsObservable()
                 .Subscribe(_ =>
                 {
-                    bool isSuccessfullyCreated = TryCteateBeat(previewEndBeatField1.text,
+                    bool isSuccessfullyCreated = TryCreateBeat(previewEndBeatField1.text,
                         previewEndBeatField2.text,
                         previewEndBeatField3.text,
                         out Beat endBeat);
@@ -174,7 +180,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnEndEditAsObservable()
                 .Subscribe(_ =>
                 {
-                    bool isSuccessfullyCreated = TryCteateBeat(previewEndBeatField1.text,
+                    bool isSuccessfullyCreated = TryCreateBeat(previewEndBeatField1.text,
                         previewEndBeatField2.text,
                         previewEndBeatField3.text,
                         out Beat endBeat);
@@ -189,7 +195,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnEndEditAsObservable()
                 .Subscribe(_ =>
                 {
-                    bool isSuccessfullyCreated = TryCteateBeat(previewEndBeatField1.text,
+                    bool isSuccessfullyCreated = TryCreateBeat(previewEndBeatField1.text,
                         previewEndBeatField2.text,
                         previewEndBeatField3.text,
                         out Beat endBeat);
@@ -198,6 +204,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
                         previewEndBeatField3.text = ViewModel.PreviewEndBeat.CurrentValue.Denominator.ToString();
                     else
                         ViewModel.SetPreviewEndBeat(endBeat);
+                })
+                .AddTo(this);
+
+            infoInputField
+                .OnValueChangedAsObservable()
+                .Subscribe(text =>
+                {
+                    if (infoInputFieldIsChangeFromView)
+                        ViewModel.UpdateInfo(text);
                 })
                 .AddTo(this);
 
@@ -213,7 +228,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         /// <returns>
         /// 是否成功转换
         /// </returns>
-        private bool TryCteateBeat(string integerPartString, string numeratorString, string denominatorString, out Beat beat)
+        private static bool TryCreateBeat(string integerPartString, string numeratorString, string denominatorString, out Beat beat)
         {
             if (!int.TryParse(integerPartString, out var integerPart) ||
                 !int.TryParse(numeratorString, out var numerator) ||
