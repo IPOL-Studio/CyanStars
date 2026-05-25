@@ -154,7 +154,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            float oldPosFloat = ((HoldChartNoteData)Model.SelectedNoteData.CurrentValue).Pos;
+            float oldPosFloat = ((IChartNoteNormalPos)Model.SelectedNoteData.CurrentValue).Pos;
             CommandStack.ExecuteCommand(
                 () => ((IChartNoteNormalPos)Model.SelectedNoteData.CurrentValue).Pos = newPosFloat,
                 () => ((IChartNoteNormalPos)Model.SelectedNoteData.CurrentValue).Pos = oldPosFloat
