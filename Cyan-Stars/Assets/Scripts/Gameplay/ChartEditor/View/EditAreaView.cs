@@ -11,17 +11,25 @@ using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using CyanStars.Utils;
+using DG.Tweening;
 using Gameplay.ChartEditor;
 using ObservableCollections;
 using R3;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using GameObjectPoolManager = CyanStars.Framework.GameObjectPool.GameObjectPoolManager;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
     public class EditAreaView : BaseView<EditAreaViewModel>, IPointerDownHandler
     {
+        [SerializeField]
+        private Image centerTrackHighlightImage = null!;
+
+        [SerializeField]
+        private Image sideTrackHighlightImage = null!;
+
         [SerializeField]
         private GameObject posLinesFrameObject = null!;
 
@@ -61,7 +69,19 @@ namespace CyanStars.Gameplay.ChartEditor.View
             base.Bind(targetViewModel);
 
             ViewModel.SelectedEditTool
-                .Subscribe(tool => scrollRect.IsDragEnabled = tool == EditToolType.Select) // 只有为“选择”工具时才允许拖动 scrollRect
+                .Subscribe(tool =>
+                {
+                    // 只有为“选择”工具时才允许拖动 scrollRect
+                    scrollRect.IsDragEnabled = tool == EditToolType.Select;
+
+                    centerTrackHighlightImage.DOKill();
+                    centerTrackHighlightImage.DOFade(tool == EditToolType.BreakPen ? 0 : 0.39f, 0.1f);
+                    sideTrackHighlightImage.DOKill();
+                    sideTrackHighlightImage.DOFade(
+                        tool is EditToolType.Select or EditToolType.BreakPen or EditToolType.Eraser ? 0.39f : 0,
+                        0.1f
+                    );
+                })
                 .AddTo(this);
             ViewModel.ContentAddHeight
                 .Subscribe(addHeight =>
