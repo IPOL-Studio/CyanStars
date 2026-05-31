@@ -148,7 +148,6 @@ namespace CyanStars.Gameplay.MusicGame
                 mapTitleText.DOFade(1, 0.2f);
             });
 
-            // 将原始 Staff 文本传递给 StarsGenerator 以进一步处理
             if (chartModule.SelectedMusicVersionIndex == null)
             {
                 Debug.LogWarning("没有设置音乐版本");
@@ -157,15 +156,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             Dictionary<string, List<string>> staffs = mapItem.Data.RuntimeChartPack.ChartPackData
                 .MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex].Staffs;
-            if (staffs.Count == 0)
-            {
-                Debug.LogWarning("没有设置 Staff 文本");
-            }
-            else
-            {
-                owner.StarController.ResetAllStaffGroup(mapItem.Data.RuntimeChartPack.ChartPackData
-                    .MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex].Staffs);
-            }
+            owner.StarController.ResetAllStaffGroup(staffs);
         }
     }
 }
