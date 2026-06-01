@@ -7396,7 +7396,6 @@ GameObject:
   - component: {fileID: 475630458}
   - component: {fileID: 475630457}
   - component: {fileID: 475630456}
-  - component: {fileID: 475630460}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -7502,19 +7501,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &475630460
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 475630454}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ToggleGroup
-  m_AllowSwitchOff: 0
 --- !u!1001 &477594328
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10010,7 +9996,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.BpmGroupView
   closeCanvasButton: {fileID: 584011670}
   bpmListItemPrefab: {fileID: 1084994031255308922, guid: a5036c9887aeb494f912cb0b7b23c632, type: 3}
-  bpmListToggleGroup: {fileID: 475630460}
+  bpmListToggleGroup: {fileID: 0}
   itemContentTransform: {fileID: 475630455}
   bpmGroupListGameObject: {fileID: 2075881149}
   addBpmItemButton: {fileID: 1372622811}

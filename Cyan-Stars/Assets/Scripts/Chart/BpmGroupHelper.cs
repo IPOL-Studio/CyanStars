@@ -106,7 +106,7 @@ namespace CyanStars.Chart
 
             if (status == BpmValidationStatus.Valid)
             {
-                Debug.LogWarning("列表已经有序了！");
+                Debug.Log("列表已经有序了！");
                 return; // 已经有序直接返回，避免触发 Change 事件
             }
             else if (status == BpmValidationStatus.Invalid)

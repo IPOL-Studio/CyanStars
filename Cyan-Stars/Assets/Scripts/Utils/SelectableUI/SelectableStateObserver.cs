@@ -110,6 +110,16 @@ namespace CyanStars.Utils.SelectableUI
             EvaluateState();
         }
 
+        /// <summary>
+        /// 外界直接以 SetIsOnWithoutNotify() 修改 Toggle 时将无法收到监听，可手动调用此方法强制更新。
+        /// </summary>
+        public void RefreshToggleIson()
+        {
+            if (selectable is Toggle toggle)
+                isKeepSelected = toggle.isOn;
+            EvaluateState();
+        }
+
 
         protected override void OnCanvasGroupChanged()
         {
