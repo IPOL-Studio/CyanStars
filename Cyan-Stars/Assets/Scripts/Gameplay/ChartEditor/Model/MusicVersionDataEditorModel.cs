@@ -41,7 +41,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             var offset = Offset.CurrentValue;
             var staffs = new Dictionary<string, List<string>>(Staffs.Count);
             foreach (var staffKvp in Staffs)
-                Staffs.Add(staffKvp.Key, staffKvp.Value);
+                staffs.Add(staffKvp.Key, staffKvp.Value);
             return new MusicVersionData(versionTitle, audioFilePath, offset, staffs);
         }
     }
