@@ -302,7 +302,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             // TODO: 维护一个按 JudgeBeat 有序排列的列表以使用二分查找提高性能
             foreach (var holdNote in holdNotes)
             {
-                if (holdNote.JudgeBeat.ToDouble() <= maxVisibleFBeatVal ||
+                if (holdNote.JudgeBeat.ToDouble() <= maxVisibleFBeatVal &&
                     holdNote.EndJudgeBeat.ToDouble() >= minVisibleFBeatVal)
                 {
                     visibleNotes.Add(holdNote);
