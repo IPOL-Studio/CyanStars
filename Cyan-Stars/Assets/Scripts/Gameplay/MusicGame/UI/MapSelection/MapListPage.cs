@@ -35,7 +35,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         private MusicGamePlayingDataModule musicGamePlayingDataModule;
         private ChartModule chartModule;
-        private List<BaseUIItem> mapItems;
+        private List<MapItem> mapItems;
 
 
         public void OnInit(MapSelectionPanel owner)
@@ -47,7 +47,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             musicGamePlayingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
             chartModule = GameRoot.GetDataModule<ChartModule>();
-            mapItems = new List<BaseUIItem>();
+            mapItems = new List<MapItem>();
 
             mapTitleText.text = ""; // 防止编辑器内的示例标题参与首次打开 UI 时的淡出动画
             nextStepButton.onClick.AddListener(() =>
@@ -66,11 +66,10 @@ namespace CyanStars.Gameplay.MusicGame
             canvasGroup.alpha = 0;
             gameObject.SetActive(true);
 
-            if (mapItems.Count == 0)
-            {
-                circularMapList.ResetItems();
-                await RefreshMusicList();
-            }
+            ClearMapItems();
+            circularMapList.ResetItems();
+            await RefreshMusicList();
+
 
             OnSelectMap(mapItems[this.owner.CurrentSelectedMap.Index] as MapItem);
             runningTween = canvasGroup.DOFade(1, args.FadeTime)
@@ -99,8 +98,30 @@ namespace CyanStars.Gameplay.MusicGame
 
             runningTween = canvasGroup.DOFade(0, args.FadeTime)
                 .SetEase(args.AnimationEase)
-                .OnComplete(() => gameObject.SetActive(false))
+                .OnComplete(() =>
+                {
+                    ClearMapItems();
+                    gameObject.SetActive(false);
+                })
                 .OnKill(() => runningTween = null);
+        }
+
+        /// <summary>
+        /// 清理旧的谱面项，解绑事件并销毁/回收物体
+        /// </summary>
+        private void ClearMapItems()
+        {
+            if (mapItems == null)
+                return;
+
+            for (int i = mapItems.Count - 1; i >= 0; i--)
+            {
+                var item = mapItems[i];
+                item.OnSelect -= OnSelectMap;
+                GameRoot.UI.ReleaseUIItem(item);
+            }
+
+            mapItems.Clear();
         }
 
         /// <summary>
@@ -148,6 +169,7 @@ namespace CyanStars.Gameplay.MusicGame
                 mapTitleText.DOFade(1, 0.2f);
             });
 
+            // 将原始 Staff 文本传递给 StarsGenerator 以进一步处理
             if (chartModule.SelectedMusicVersionIndex == null)
             {
                 Debug.LogWarning("没有设置音乐版本");
@@ -156,7 +178,15 @@ namespace CyanStars.Gameplay.MusicGame
 
             Dictionary<string, List<string>> staffs = mapItem.Data.RuntimeChartPack.ChartPackData
                 .MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex].Staffs;
-            owner.StarController.ResetAllStaffGroup(staffs);
+            if (staffs.Count == 0)
+            {
+                Debug.LogWarning("没有设置 Staff 文本");
+            }
+            else
+            {
+                owner.StarController.ResetAllStaffGroup(mapItem.Data.RuntimeChartPack.ChartPackData
+                    .MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex].Staffs);
+            }
         }
     }
 }

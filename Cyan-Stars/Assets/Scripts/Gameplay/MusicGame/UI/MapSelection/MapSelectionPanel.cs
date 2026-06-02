@@ -35,12 +35,14 @@ namespace CyanStars.Gameplay.MusicGame
 
         protected override void OnCreate()
         {
-            // 进入选曲页时，如果没有选中谱包，自动选择第一个谱包
+            // 进入选曲页时，如果没有选中谱包，自动选择第一个谱包，如果下标越界则自动选择最后一个谱包
             // TODO: 在新建谱包进入制谱器时，此值可能为 null，后续考虑改为 bool 标记
             // TODO: 改为玩家上次选择的序号
             var chartModule = GameRoot.GetDataModule<ChartModule>();
             if (chartModule.SelectedChartPackIndex == null)
                 chartModule.SelectChartPackData(0);
+            if (chartModule.SelectedChartPackIndex >= chartModule.RuntimeChartPacks.Count)
+                chartModule.SelectChartPackData(chartModule.RuntimeChartPacks.Count - 1);
             CurrentSelectedMap =
                 MapItemData.Create((int)chartModule.SelectedChartPackIndex!, chartModule.SelectedRuntimeChartPack!);
 
