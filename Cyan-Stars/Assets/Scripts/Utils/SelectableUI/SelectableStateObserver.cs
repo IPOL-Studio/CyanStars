@@ -133,8 +133,13 @@ namespace CyanStars.Utils.SelectableUI
         /// <summary>
         /// 当 selectable 是 toggle 时，外界改变 toggle.isOn 时也会自动改变视觉效果
         /// </summary>
-        private void OnToggleValueChanged(bool value)
+        private void OnToggleValueChanged(bool _)
         {
+            bool value = false;
+
+            if (selectable is Toggle toggle) // 手动获取真实状态，以防被拦截修改时依然接收到错误的事件参数
+                value = toggle.isOn;
+
             if (isKeepSelected == value)
                 return;
             isKeepSelected = value;

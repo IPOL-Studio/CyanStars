@@ -43,12 +43,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
             itemNumberText.text = $"#{index + 1}";
             beatAndTimeText.text = GetDetailText(targetViewModel, index);
 
-            var selectableStateObserver = itemToggle.GetComponent<SelectableStateObserver>();
+            SelectableStateObserver? selectableStateObserver = itemToggle.GetComponent<SelectableStateObserver>();
             targetViewModel.SelectedBpmItemIndex
                 .Subscribe(i =>
                 {
                     itemToggle.SetIsOnWithoutNotify(i == index);
-                    selectableStateObserver.RefreshToggleIson();
+                    selectableStateObserver?.RefreshToggleIson();
                 })
                 .AddTo(disposables);
             targetViewModel.BpmGroupDataChangedSubject
@@ -61,6 +61,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 })
                 .AddTo(disposables);
 
+            // TODO: 后续改为 RadioButton 控制 Toggle 状态
             itemToggle
                 .OnValueChangedAsObservable()
                 .Subscribe((targetViewModel, index, itemToggle, selectableStateObserver), static (isOn, state) =>
