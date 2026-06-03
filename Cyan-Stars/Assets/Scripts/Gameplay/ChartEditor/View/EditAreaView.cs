@@ -63,8 +63,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private readonly Dictionary<BaseChartNoteData, (EditAreaNoteViewModel vm, EditAreaNoteView view)?> ActiveNotes =
             new Dictionary<BaseChartNoteData, (EditAreaNoteViewModel, EditAreaNoteView)?>();
 
-        // 防止拖拽/滚动 scrollRect 时更新 time 后再做一次无意义的 scrollRect 位置更新
-        private bool timelineTimeChangeBySelf = false;
+        // 防止拖拽/滚动 scrollRect 更新 time 后再做一次无意义的 scrollRect 位置更新
+        private bool isTimelineTimeChangeBySelf = false;
 
 
         public override void Bind(EditAreaViewModel targetViewModel)
@@ -100,7 +100,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.CurrentTimelineTimeMs
                 .Subscribe(_ =>
                 {
-                    if (!timelineTimeChangeBySelf)
+                    if (!isTimelineTimeChangeBySelf)
                         scrollRect.SetNormalizedPositionWithoutNotify(
                             new Vector2(0, ViewModel.GetNormalizedPositionYByTimelineTime())
                         );
@@ -129,9 +129,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     UpdateNotesVisibility();
                     if (!ViewModel.IsTimelinePlaying.CurrentValue) // 正在播放时由 ChartEditorMusicManager 更新时间
                     {
-                        timelineTimeChangeBySelf = true;
+                        isTimelineTimeChangeBySelf = true;
                         ViewModel.TryUpdateTimelineTime(scrollRect.normalizedPosition.y);
-                        timelineTimeChangeBySelf = false;
+                        isTimelineTimeChangeBySelf = false;
                     }
                 })
                 .AddTo(this);

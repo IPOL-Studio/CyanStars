@@ -48,12 +48,19 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private TMP_Text musicTimeText = null!;
 
         [SerializeField]
-        private Button playPauseButton = null!;
+        private PlayPauseButton playPauseButton = null!;
+
+        [SerializeField]
+        private Sprite playSprite = null!;
+
+        [SerializeField]
+        private Sprite pauseSprite = null!;
 
 
         private ReadOnlyReactiveProperty<bool> frameVisibility = null!;
-        private ReadOnlyReactiveProperty<bool> isTimeLineReadyToPlay = null!; // true == 已加载音乐，bpm 组有至少 1 个 item，music 组有至少 1 个 item
+        private ReadOnlyReactiveProperty<bool> isTimelineReadyToPlay = null!; // 已加载音乐 && bpm 组有至少 1 个 item && music 组有至少 1 个 item
         private ReadOnlyReactiveProperty<int?> firstMusicOffset = null!; // 缓存的首个音乐的可观察 offset
+        private bool isTimelineTimeChangeBySelf = false; // 防止拖拽/滚动进度条更新 time 后再做一次无意义的 scrollRect 位置更新
 
 
         public override void Bind(EditorAttributeViewModel targetViewModel)
@@ -82,7 +89,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(value => beatZoomField.text = value)
                 .AddTo(this);
 
-            isTimeLineReadyToPlay = Observable
+            isTimelineReadyToPlay = Observable
                 .CombineLatest(
                     ViewModel.AudioClipHandler,
                     ViewModel.BpmGroup.ObserveCountChanged(notifyCurrentCount: true),
@@ -107,16 +114,21 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             Observable.CombineLatest(
                     ViewModel.IsTimelinePlaying,
-                    isTimeLineReadyToPlay,
+                    isTimelineReadyToPlay,
                     (isPlaying, isReadyToPlay) => !isPlaying && isReadyToPlay
                 )
                 .Subscribe(interactable => slider.interactable = interactable)
                 .AddTo(this);
-            firstMusicOffset
+            Observable.CombineLatest(
+                    ViewModel.CurrentTimelineTimeMs,
+                    firstMusicOffset,
+                    ViewModel.AudioClipHandler,
+                    (_, _, _) => Unit.Default
+                )
                 .Subscribe(_ => RefreshUiItem())
                 .AddTo(this);
-            ViewModel.AudioClipHandler
-                .Subscribe(_ => RefreshUiItem())
+            ViewModel.IsTimelinePlaying
+                .Subscribe(isPlaying => playPauseButton.Image.sprite = isPlaying ? pauseSprite : playSprite)
                 .AddTo(this);
 
 
@@ -162,13 +174,23 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
                     var musicMsLength = ViewModel.AudioClipHandler.CurrentValue.Asset.length * 1000f;
                     var offset = (int)firstMusicOffset.CurrentValue;
+
+                    isTimelineTimeChangeBySelf = true;
                     ViewModel.SetTimeLineTime((int)(value * (musicMsLength + offset)));
+                    isTimelineTimeChangeBySelf = false;
                 })
+                .AddTo(this);
+            playPauseButton.Button
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.SwitchPlayStaus())
                 .AddTo(this);
         }
 
         private void RefreshUiItem()
         {
+            if (isTimelineTimeChangeBySelf)
+                return;
+
             if (ViewModel.AudioClipHandler.CurrentValue?.Asset == null) // 考虑到首次进入时 asset 可能还在加载，故只检查 handler
             {
                 slider.SetValueWithoutNotify(0);
@@ -203,12 +225,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 seconds,
                 milliseconds
             );
-        }
-
-        private void Update()
-        {
-            if (ViewModel.IsTimelinePlaying.CurrentValue)
-                RefreshUiItem();
         }
     }
 }

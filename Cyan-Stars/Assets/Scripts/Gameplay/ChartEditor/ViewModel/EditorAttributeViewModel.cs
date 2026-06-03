@@ -22,11 +22,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<string> BeatZoomString;
 
         public ReadOnlyReactiveProperty<bool> IsTimelinePlaying => Model.IsTimelinePlaying;
+        public ReadOnlyReactiveProperty<int> CurrentTimelineTimeMs => Model.CurrentTimelineTimeMs;
         public ReadOnlyReactiveProperty<AssetHandler<AudioClip?>?> AudioClipHandler => Model.AudioClipHandler;
         public IReadOnlyObservableList<BpmGroupItem> BpmGroup => Model.ChartPackData.CurrentValue.BpmGroup;
         public IReadOnlyObservableList<MusicVersionDataEditorModel> MusicVersions => Model.ChartPackData.CurrentValue.MusicVersions;
 
-        public ReadOnlyReactiveProperty<int> CurrentTimelineTimeMs => Model.CurrentTimelineTimeMs;
 
         public EditorAttributeViewModel(ChartEditorModel model)
             : base(model)
@@ -116,6 +116,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public void SetTimeLineTime(int msTime)
         {
             Model.CurrentTimelineTimeMs.Value = msTime;
+        }
+
+        public void SwitchPlayStaus()
+        {
+            Model.IsTimelinePlaying.Value = !Model.IsTimelinePlaying.CurrentValue;
         }
     }
 }
