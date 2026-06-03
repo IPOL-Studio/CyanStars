@@ -177,7 +177,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             if (groupCount == 0)
             {
-                Debug.LogError("请先调用 ResetAllStaffGroup 方法");
+                Debug.LogWarning("Staff 为空或未调用 ResetAllStaffGroup 方法");
                 return;
             }
 

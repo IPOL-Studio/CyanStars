@@ -169,7 +169,6 @@ namespace CyanStars.Gameplay.MusicGame
                 mapTitleText.DOFade(1, 0.2f);
             });
 
-            // 将原始 Staff 文本传递给 StarsGenerator 以进一步处理
             if (chartModule.SelectedMusicVersionIndex == null)
             {
                 Debug.LogWarning("没有设置音乐版本");
