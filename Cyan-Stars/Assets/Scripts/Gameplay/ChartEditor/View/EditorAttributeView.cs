@@ -195,8 +195,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
             int minutes = absMs / 60000;
             int seconds = (absMs % 60000) / 1000;
             int milliseconds = absMs % 1000;
-            string sign = isNegative ? "-" : "";
-            musicTimeText.text = $"{sign}{minutes:D2}:{seconds:D2}<color=#858585DD>.{milliseconds:D3}</color>";
+            musicTimeText.SetText( // 避免 musicTimeText.text=$""; 的高频 GC
+                isNegative
+                    ? "-{0:00}:{1:00}<color=#858585DD>.{2:000}</color>"
+                    : "{0:00}:{1:00}<color=#858585DD>.{2:000}</color>",
+                minutes,
+                seconds,
+                milliseconds
+            );
         }
 
         private void Update()
