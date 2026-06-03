@@ -182,8 +182,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             float contentHeight = contentRect.rect.height;
 
             // 当 verticalNormalizedPosition = 0 时，显示底部 (0 ~ viewportHeight)
-            float scrollY = (contentHeight - viewportHeight) * scrollRect.verticalNormalizedPosition;
-            scrollY = Mathf.Max(0, scrollY); // 防止负数
+            float scrollY = Mathf.Max(0, -contentRect.anchoredPosition.y);
 
             float minVisibleY = scrollY - 100f;
             float maxVisibleY = scrollY + viewportHeight + 100f;
@@ -268,8 +267,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             float viewportHeight = viewportRect.rect.height;
             float contentHeight = contentRect.rect.height;
 
-            float scrollY = (contentHeight - viewportHeight) * scrollRect.verticalNormalizedPosition;
-            scrollY = Mathf.Max(0, scrollY);
+            float scrollY = Mathf.Max(0, -contentRect.anchoredPosition.y);
 
             float viewMinY = scrollY - 100f;
             float viewMaxY = scrollY + viewportHeight + 100f;

@@ -1,9 +1,12 @@
 ﻿#nullable enable
 
 using System.Globalization;
+using CatAsset.Runtime;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Model;
+using ObservableCollections;
 using R3;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
@@ -18,6 +21,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<string> BeatAccuracyString;
         public readonly ReadOnlyReactiveProperty<string> BeatZoomString;
 
+        public ReadOnlyReactiveProperty<bool> IsTimelinePlaying => Model.IsTimelinePlaying;
+        public ReadOnlyReactiveProperty<AssetHandler<AudioClip?>?> AudioClipHandler => Model.AudioClipHandler;
+        public IReadOnlyObservableList<BpmGroupItem> BpmGroup => Model.ChartPackData.CurrentValue.BpmGroup;
+        public IReadOnlyObservableList<MusicVersionDataEditorModel> MusicVersions => Model.ChartPackData.CurrentValue.MusicVersions;
+
+        public int CurrentTimelineTimeMs => Model.CurrentTimelineTimeMs;
 
         public EditorAttributeViewModel(ChartEditorModel model)
             : base(model)
@@ -38,6 +47,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .Select(beatZoom => beatZoom.ToString("0.##", CultureInfo.InvariantCulture))
                 .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, Model.BeatZoom.Value.ToString("0.##", CultureInfo.InvariantCulture))
                 .AddTo(base.Disposables);
+            // CurrentTimelineTimeMs = Model.CurrentTimelineTimeMs
+            //     .ThrottleLastFrame(1)
+            //     .ToReadOnlyReactiveProperty()
+            //     .AddTo(base.Disposables);
         }
 
         public void SetPosAccuracy(string accuracyString)
@@ -102,6 +115,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public void ZoomIn()
         {
             Model.BeatZoom.Value += ZoomStep;
+        }
+
+        public void SetTimeLineTime(int msTime)
+        {
+            Model.CurrentTimelineTimeMs = msTime;
         }
     }
 }
