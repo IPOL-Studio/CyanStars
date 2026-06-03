@@ -187,9 +187,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             float musicMsLength = ViewModel.AudioClipHandler.CurrentValue.Asset.length * 1000f;
             int offset = (int)firstMusicOffset.CurrentValue!;
-            slider.SetValueWithoutNotify(ViewModel.CurrentTimelineTimeMs / (musicMsLength + offset));
+            slider.SetValueWithoutNotify(ViewModel.CurrentTimelineTimeMs.CurrentValue / (musicMsLength + offset));
 
-            int textMsTime = ViewModel.CurrentTimelineTimeMs - offset;
+            int textMsTime = ViewModel.CurrentTimelineTimeMs.CurrentValue - offset;
             bool isNegative = textMsTime < 0;
             int absMs = Math.Abs(textMsTime);
             int minutes = absMs / 60000;

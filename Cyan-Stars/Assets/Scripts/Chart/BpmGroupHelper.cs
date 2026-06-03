@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -144,6 +145,7 @@ namespace CyanStars.Chart
         }
 
 
+        [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static double CalculateMsDurationInSegment(double fStartBeat, double fEndBeat, double bpm)
         {
@@ -202,6 +204,7 @@ namespace CyanStars.Chart
         /// <param name="datas">基于此 Bpm List 进行计算</param>
         /// <param name="msTime">已经计算 offset 后的毫秒时间（由 offset = 0 后开始计算）</param>
         /// <returns>float 形式的拍子</returns>
+        [Pure]
         public static double CalculateBeat(IList<BpmGroupItem> datas, int msTime)
         {
             if (datas.Count == 0)
