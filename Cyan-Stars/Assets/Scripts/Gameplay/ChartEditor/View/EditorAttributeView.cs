@@ -48,7 +48,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private TMP_Text musicTimeText = null!;
 
         [SerializeField]
-        private PlayPauseButton playPauseButton = null!;
+        private Button playPauseButton = null!;
+
+        [SerializeField]
+        private Image playPauseImage = null!;
 
         [SerializeField]
         private Sprite playSprite = null!;
@@ -128,7 +131,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(_ => RefreshUiItem())
                 .AddTo(this);
             ViewModel.IsTimelinePlaying
-                .Subscribe(isPlaying => playPauseButton.Image.sprite = isPlaying ? pauseSprite : playSprite)
+                .Subscribe(isPlaying => playPauseImage.sprite = isPlaying ? pauseSprite : playSprite)
                 .AddTo(this);
 
 
@@ -180,7 +183,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     isTimelineTimeChangeBySelf = false;
                 })
                 .AddTo(this);
-            playPauseButton.Button
+            playPauseButton
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.SwitchPlayStaus())
                 .AddTo(this);

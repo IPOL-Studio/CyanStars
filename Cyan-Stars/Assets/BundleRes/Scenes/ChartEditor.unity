@@ -17725,7 +17725,8 @@ MonoBehaviour:
   zoomInButton: {fileID: 1960918611}
   slider: {fileID: 108352927}
   musicTimeText: {fileID: 1522546815}
-  playPauseButton: {fileID: 4983655380978801329}
+  playPauseButton: {fileID: 4983655380978801330}
+  playPauseImage: {fileID: 4983655380978801329}
   playSprite: {fileID: 21300000, guid: d34f29c8cee6e744b878d133c1a0e2ee, type: 3}
   pauseSprite: {fileID: 21300000, guid: e61b123c35d96464c90bbe7e84e29aef, type: 3}
 --- !u!223 &1037237910
@@ -36663,15 +36664,26 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 776a386553fffad4bb8f343ab1ddb2df, type: 3}
 --- !u!114 &4983655380978801329 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3734390384676065572, guid: 776a386553fffad4bb8f343ab1ddb2df, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4029066605407247544, guid: 776a386553fffad4bb8f343ab1ddb2df, type: 3}
   m_PrefabInstance: {fileID: 4983655380978801328}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6141ddfe2d0548e29402dd3b7dd62294, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: CyanStars::CyanStars.Gameplay.ChartEditor.PlayPauseButton
+  m_EditorClassIdentifier: 
+--- !u!114 &4983655380978801330 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8905915770024456519, guid: 776a386553fffad4bb8f343ab1ddb2df, type: 3}
+  m_PrefabInstance: {fileID: 4983655380978801328}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!222 &5056794981885233671
 CanvasRenderer:
   m_ObjectHideFlags: 0
