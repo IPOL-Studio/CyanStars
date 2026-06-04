@@ -2,6 +2,7 @@
 
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using CyanStars.Utils.SelectableUI;
 using R3;
 using TMPro;
 using UnityEngine;
@@ -32,20 +33,23 @@ namespace CyanStars.Gameplay.ChartEditor.View
             itemToggle = GetComponent<Toggle>();
         }
 
-        public void Bind(BpmGroupViewModel targetViewModel, ToggleGroup bpmListToggleGroup, int index)
+        public void Bind(BpmGroupViewModel targetViewModel, int index)
         {
             destroyCancellationToken.ThrowIfCancellationRequested();
 
             TryReleaseBind();
             disposables = new CompositeDisposable();
 
-            itemToggle.group = bpmListToggleGroup;
-
             itemNumberText.text = $"#{index + 1}";
             beatAndTimeText.text = GetDetailText(targetViewModel, index);
 
+            SelectableStateObserver? selectableStateObserver = itemToggle.GetComponent<SelectableStateObserver>();
             targetViewModel.SelectedBpmItemIndex
-                .Subscribe(i => itemToggle.isOn = i == index)
+                .Subscribe(i =>
+                {
+                    itemToggle.SetIsOnWithoutNotify(i == index);
+                    selectableStateObserver?.RefreshToggleIson();
+                })
                 .AddTo(disposables);
             targetViewModel.BpmGroupDataChangedSubject
                 .Subscribe(changedItemIndex =>
@@ -57,12 +61,19 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 })
                 .AddTo(disposables);
 
+            // TODO: 后续改为 RadioButton 控制 Toggle 状态
             itemToggle
                 .OnValueChangedAsObservable()
-                .Subscribe((targetViewModel, index), static (isOn, state) =>
+                .Subscribe((targetViewModel, index, itemToggle, selectableStateObserver), static (isOn, state) =>
                 {
                     if (isOn)
                         state.targetViewModel.SelectBpmItem(state.targetViewModel.BpmItems[state.index]);
+                    else if (state.targetViewModel.SelectedBpmItemIndex.CurrentValue == state.index)
+                    {
+                        // 拦截用户的取消勾选
+                        state.itemToggle.SetIsOnWithoutNotify(true);
+                        state.selectableStateObserver.RefreshToggleIson();
+                    }
                 })
                 .AddTo(disposables);
         }
@@ -76,6 +87,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             disposables?.Dispose();
             disposables = null;
+
+            itemToggle.group = null;
+            itemToggle.isOn = false;
         }
 
         private string GetDetailText(BpmGroupViewModel targetViewModel, int index)

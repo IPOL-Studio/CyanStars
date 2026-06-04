@@ -1,6 +1,8 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using CyanStars.Utils.SelectableUI;
 using ObservableCollections;
@@ -16,9 +18,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [Header("列表子 View")]
         [SerializeField]
         private GameObject bpmListItemPrefab = null!;
-
-        [SerializeField]
-        private ToggleGroup bpmListToggleGroup = null!;
 
         [SerializeField]
         private RectTransform itemContentTransform = null!;
@@ -66,7 +65,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
 
         private ReadOnlyReactiveProperty<bool> listVisibility = null!;
-        private Stack<BpmGroupListItemView> disabledListItemViews = new Stack<BpmGroupListItemView>();
+        private Stack<BpmGroupListItemView> disabledListItemViews = new Stack<BpmGroupListItemView>(); // 当做对象池来用
         private SelectableStateObserver? deleteItemButtonSelectableStateObserver;
 
 
@@ -88,60 +87,25 @@ namespace CyanStars.Gameplay.ChartEditor.View
             for (int i = 0; i < ViewModel.BpmItems.Count; i++)
             {
                 var go = Instantiate(bpmListItemPrefab, itemContentTransform);
-                go.GetComponent<BpmGroupListItemView>().Bind(ViewModel, bpmListToggleGroup, i);
+                go.GetComponent<BpmGroupListItemView>().Bind(ViewModel, i);
                 go.transform.SetSiblingIndex(itemContentTransform.childCount - 2);
             }
 
-            ViewModel.BpmItems.ObserveAdd()
+            ViewModel.BpmItems.ObserveChanged()
                 .Subscribe(e =>
                 {
-                    var (go, itemView) = GetOrCreateItemView();
-                    itemView.Bind(ViewModel, bpmListToggleGroup, e.Index);
-                    go.transform.SetSiblingIndex(e.Index);
-                })
-                .AddTo(this);
-            ViewModel.BpmItems.ObserveRemove()
-                .Subscribe(e =>
-                {
-                    var itemToRemove = itemContentTransform.GetChild(e.Index);
-                    var itemView = itemToRemove.GetComponent<BpmGroupListItemView>();
-                    itemView.TryReleaseBind();
-                    disabledListItemViews.Push(itemView);
-                    itemToRemove.gameObject.SetActive(false);
-                })
-                .AddTo(this);
-            ViewModel.BpmItems.ObserveMove()
-                .Subscribe(e =>
-                {
-                    var itemToMove = itemContentTransform.GetChild(e.OldIndex);
-                    itemToMove.SetSiblingIndex(e.NewIndex);
-                    itemToMove.GetComponent<BpmGroupListItemView>().Bind(ViewModel, bpmListToggleGroup, e.NewIndex);
-                })
-                .AddTo(this);
-            ViewModel.BpmItems.ObserveReplace()
-                .Subscribe(e =>
-                {
-                    var trans = itemContentTransform.GetChild(e.Index);
-                    trans.GetComponent<BpmGroupListItemView>().Bind(ViewModel, bpmListToggleGroup, e.Index);
-                    trans.SetSiblingIndex(e.Index);
-                })
-                .AddTo(this);
-            ViewModel.BpmItems.ObserveReset()
-                .Subscribe(e =>
-                {
-                    for (int i = itemContentTransform.childCount - 2; i >= 0; i--)
-                    {
-                        var item = itemContentTransform.GetChild(i);
-                        disabledListItemViews.Push(item.GetComponent<BpmGroupListItemView>());
-                        item.gameObject.SetActive(false);
-                    }
-
-                    for (int i = 0; i < ViewModel.BpmItems.Count; i++)
-                    {
-                        var (go, item) = GetOrCreateItemView();
-                        item.Bind(ViewModel, bpmListToggleGroup, i);
-                        item.transform.SetSiblingIndex(itemContentTransform.childCount - 2);
-                    }
+                    // 将所有的 -1 视为不参与比较，然后从所有参与比较的数中取最小值，刷新其与其后的所有 index
+                    // 显然如果观察到列表变化，两者都小于 0 的情况是不可能的
+                    int index;
+                    if (e.OldStartingIndex >= 0 && e.NewStartingIndex >= 0)
+                        index = Math.Min(e.OldStartingIndex, e.NewStartingIndex);
+                    else if (e.OldStartingIndex >= 0 && e.NewStartingIndex < 0)
+                        index = e.OldStartingIndex;
+                    else if (e.OldStartingIndex < 0 && e.NewStartingIndex >= 0)
+                        index = e.NewStartingIndex;
+                    else
+                        throw new Exception("列表发生变化但变化 index 均小于 0。");
+                    RebuildBpmItemViews(index);
                 })
                 .AddTo(this);
 
@@ -153,7 +117,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(item =>
                 {
                     detailFrameGameObject.SetActive(item != null);
-                    bpmInputField.SetTextWithoutNotify(item?.Bpm.ToString());
+                    bpmInputField.SetTextWithoutNotify(item?.Bpm.ToString(CultureInfo.InvariantCulture));
                     startBeatField1.SetTextWithoutNotify(item?.StartBeat.IntegerPart.ToString());
                     startBeatField2.SetTextWithoutNotify(item?.StartBeat.Numerator.ToString());
                     startBeatField3.SetTextWithoutNotify(item?.StartBeat.Denominator.ToString());
@@ -224,6 +188,28 @@ namespace CyanStars.Gameplay.ChartEditor.View
             {
                 var go = Instantiate(bpmListItemPrefab, itemContentTransform);
                 return (go, go.GetComponent<BpmGroupListItemView>());
+            }
+        }
+
+        private void RebuildBpmItemViews(int afterIndex = 0)
+        {
+            // TODO: itemContentTransform 末尾有一个添加按钮，故 -2，考虑下次将所有 item 单独移到一个 Frame 内
+            for (int i = itemContentTransform.childCount - 2; i >= afterIndex; i--)
+            {
+                var item = itemContentTransform.GetChild(i);
+                if (!item.gameObject.activeSelf)
+                    continue;
+                var itemView = item.GetComponent<BpmGroupListItemView>();
+                itemView.TryReleaseBind();
+                disabledListItemViews.Push(item.GetComponent<BpmGroupListItemView>());
+                item.gameObject.SetActive(false);
+            }
+
+            for (int i = afterIndex; i < ViewModel.BpmItems.Count; i++)
+            {
+                var (go, item) = GetOrCreateItemView();
+                item.Bind(ViewModel, i);
+                item.transform.SetSiblingIndex(itemContentTransform.childCount - 2);
             }
         }
     }

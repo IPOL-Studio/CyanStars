@@ -78,16 +78,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     oldStartBeat.Denominator, out Beat newStartBeat))
                 throw new Exception("无法正确构建 Beat");
 
+            var newItem = new BpmGroupItem(oldBpm, newStartBeat);
             CommandStack.ExecuteCommand(
-                () =>
-                {
-                    Model.ChartPackData.CurrentValue.BpmGroup.Add(new BpmGroupItem(oldBpm, newStartBeat));
-                },
-                () =>
-                {
-                    int lastItemIndex = Model.ChartPackData.CurrentValue.BpmGroup.Count - 1;
-                    Model.ChartPackData.CurrentValue.BpmGroup.RemoveAt(lastItemIndex);
-                }
+                () => Model.ChartPackData.CurrentValue.BpmGroup.Add(newItem),
+                () => Model.ChartPackData.CurrentValue.BpmGroup.Remove(newItem)
             );
         }
 
@@ -117,13 +111,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 {
                     selectedBpmItem.CurrentValue.Bpm = newBpm;
                     BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
-                    Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
+                    int newIndex = Model.ChartPackData.CurrentValue.BpmGroup.IndexOf(selectedBpmItem.CurrentValue);
+                    Model.BpmGroupDataChangedSubject.OnNext(Math.Min(itemIndex, newIndex));
                 },
                 () =>
                 {
                     selectedBpmItem.CurrentValue.Bpm = oldBpm;
                     BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
-                    Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
+                    int newIndex = Model.ChartPackData.CurrentValue.BpmGroup.IndexOf(selectedBpmItem.CurrentValue);
+                    Model.BpmGroupDataChangedSubject.OnNext(Math.Min(itemIndex, newIndex));
                 }
             );
         }
@@ -161,6 +157,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             List<BpmGroupItem> newList = new List<BpmGroupItem>(Model.ChartPackData.CurrentValue.BpmGroup);
             newList.Remove(SelectedBpmItem.CurrentValue);
             newList.Add(new BpmGroupItem(selectedBpmItem.CurrentValue.Bpm, newBeat));
+            BpmGroupHelper.Sort(newList);
             if (BpmGroupHelper.Validate(newList) == BpmGroupHelper.BpmValidationStatus.Invalid)
             {
                 // 强制纠正 UI 的详情面板属性
@@ -174,15 +171,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 {
                     selectedBpmItem.CurrentValue.StartBeat = newBeat;
                     BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
-                    Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
-                    selectedBpmItem.ForceNotify(); // 刷新当前选中的 item 的详情面板属性，如 Number
+                    int newIndex = Model.ChartPackData.CurrentValue.BpmGroup.IndexOf(selectedBpmItem.CurrentValue);
+                    Model.BpmGroupDataChangedSubject.OnNext(Math.Min(itemIndex, newIndex));
+                    selectedBpmItem.ForceNotify();
                 },
                 () =>
                 {
                     selectedBpmItem.CurrentValue.StartBeat = oldBeat;
                     BpmGroupHelper.Sort(Model.ChartPackData.CurrentValue.BpmGroup);
-                    Model.BpmGroupDataChangedSubject.OnNext(itemIndex);
-                    selectedBpmItem.ForceNotify(); // 刷新当前选中的 item 的详情面板属性，如 Number
+                    int newIndex = Model.ChartPackData.CurrentValue.BpmGroup.IndexOf(selectedBpmItem.CurrentValue);
+                    Model.BpmGroupDataChangedSubject.OnNext(Math.Min(itemIndex, newIndex));
+                    selectedBpmItem.ForceNotify();
                 }
             );
         }
@@ -204,8 +203,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             CommandStack.ExecuteCommand(
                 () =>
                 {
-                    Model.ChartPackData.CurrentValue.BpmGroup.RemoveAt(oldIndex);
                     selectedBpmItem.Value = null;
+                    Model.ChartPackData.CurrentValue.BpmGroup.RemoveAt(oldIndex);
                 },
                 () =>
                 {
