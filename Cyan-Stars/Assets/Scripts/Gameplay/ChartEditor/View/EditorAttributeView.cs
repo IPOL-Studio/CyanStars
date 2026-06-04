@@ -204,7 +204,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             if (ViewModel.BpmGroup.Count <= 0)
             {
                 // 目前能保证至少存在一个 bpm item，理论上不会触发，能触发就是有问题
-                throw new Exception();
+                throw new InvalidOperationException("Bpm item 数量小于等于 0，请检查。");
                 // slider.SetValueWithoutNotify(0);
                 // musicTimeText.text = "未设置 BPM";
                 // return;
