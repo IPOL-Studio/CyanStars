@@ -21,9 +21,12 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
 
         public override async void OnEnter()
         {
+            GameRoot.MainCamera.gameObject.SetActive(false);
+
             // 打开场景并检查制谱器 SceneRoot 状态
             chartEditorSceneHandler = await GameRoot.Asset.LoadSceneAsync(ScenePath);
             Scene chartEditorScene = chartEditorSceneHandler.Scene;
+            SceneManager.SetActiveScene(chartEditorScene);
 
             ChartEditorSceneRoot? sceneRoot = null;
             int foundCount = 0;
@@ -68,6 +71,8 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
 
         public override void OnExit()
         {
+            GameRoot.MainCamera.gameObject.SetActive(true);
+
             ChartEditorDataModule chartEditorDataModule = GameRoot.GetDataModule<ChartEditorDataModule>();
             chartEditorDataModule.OnExitChartEditorProcedure();
             GameRoot.Asset.UnloadScene(chartEditorSceneHandler);
