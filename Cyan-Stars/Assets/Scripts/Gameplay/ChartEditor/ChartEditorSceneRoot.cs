@@ -14,6 +14,9 @@ namespace CyanStars.Gameplay.ChartEditor
     public class ChartEditorSceneRoot : MonoBehaviour
     {
         [SerializeField]
+        private Camera sceneCamera = null!;
+
+        [SerializeField]
         private MvvmBindManager mvvmBindManager = null!;
 
         [SerializeField]
