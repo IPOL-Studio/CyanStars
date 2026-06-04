@@ -100,10 +100,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.CurrentTimelineTimeMs
                 .Subscribe(_ =>
                 {
-                    if (!isTimelineTimeChangeBySelf)
-                        scrollRect.SetNormalizedPositionWithoutNotify(
-                            new Vector2(0, ViewModel.GetNormalizedPositionYByTimelineTime())
-                        );
+                    if (isTimelineTimeChangeBySelf)
+                        return;
+
+                    scrollRect.SetNormalizedPositionWithoutNotify(
+                        new Vector2(0, ViewModel.GetNormalizedPositionYByTimelineTime())
+                    );
+                    UpdateBeatLinesVisibility();
+                    UpdateNotesVisibility();
                 })
                 .AddTo(this);
 
