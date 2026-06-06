@@ -63,7 +63,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private ReadOnlyReactiveProperty<bool> frameVisibility = null!;
         private ReadOnlyReactiveProperty<bool> isTimelineReadyToPlay = null!; // 已加载音乐 && bpm 组有至少 1 个 item && music 组有至少 1 个 item
         private ReadOnlyReactiveProperty<int?> firstMusicOffset = null!; // 缓存的首个音乐的可观察 offset
-        private bool isTimelineTimeChangeBySelf = false; // 防止拖拽/滚动进度条更新 time 后再做一次无意义的 scrollRect 位置更新
+        private bool isTimelineTimeChangeBySlider = false; // 防止拖拽/滚动进度条更新 time 后再做一次无意义的 scrollRect 位置更新
 
 
         public override void Bind(EditorAttributeViewModel targetViewModel)
@@ -178,9 +178,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     var musicMsLength = ViewModel.AudioClipHandler.CurrentValue.Asset.length * 1000f;
                     var offset = (int)firstMusicOffset.CurrentValue;
 
-                    isTimelineTimeChangeBySelf = true;
+                    isTimelineTimeChangeBySlider = true;
                     ViewModel.SetTimeLineTime((int)(value * (musicMsLength + offset)));
-                    isTimelineTimeChangeBySelf = false;
+                    isTimelineTimeChangeBySlider = false;
                 })
                 .AddTo(this);
             playPauseButton
@@ -191,9 +191,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private void RefreshUiItem()
         {
-            if (isTimelineTimeChangeBySelf)
-                return;
-
             if (ViewModel.AudioClipHandler.CurrentValue?.Asset == null) // 考虑到首次进入时 asset 可能还在加载，故只检查 handler
             {
                 slider.SetValueWithoutNotify(0);
@@ -210,9 +207,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 // return;
             }
 
-            float musicMsLength = ViewModel.AudioClipHandler.CurrentValue.Asset.length * 1000f;
             int offset = (int)firstMusicOffset.CurrentValue!;
-            slider.SetValueWithoutNotify(ViewModel.CurrentTimelineTimeMs.CurrentValue / (musicMsLength + offset));
+
+            if (!isTimelineTimeChangeBySlider)
+            {
+                float musicMsLength = ViewModel.AudioClipHandler.CurrentValue.Asset.length * 1000f;
+                slider.SetValueWithoutNotify(ViewModel.CurrentTimelineTimeMs.CurrentValue / (musicMsLength + offset));
+            }
 
             int textMsTime = ViewModel.CurrentTimelineTimeMs.CurrentValue - offset;
             bool isNegative = textMsTime < 0;
