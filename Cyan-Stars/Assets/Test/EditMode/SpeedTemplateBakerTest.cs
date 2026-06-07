@@ -6,7 +6,7 @@ using CyanStars.Chart;
 using CyanStars.Chart.BezierCurve;
 using NUnit.Framework;
 
-namespace Test.EditMode
+namespace CyanStars.Test.EditMode
 {
     /// <summary>
     /// 测试 SpeedTemplateBaker 是否正常烘焙贝塞尔曲线组在采样点时的速度和位移
