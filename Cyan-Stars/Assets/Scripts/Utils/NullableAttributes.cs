@@ -3,13 +3,11 @@
 // This code is a "polyfill" to enable newer C# features on older .NET runtimes.
 // See: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/attributes/nullable-analysis
 
-#if !NETCOREAPP3_0_OR_GREATER && !NETSTANDARD2_1_OR_GREATER
-
 namespace System.Diagnostics.CodeAnalysis
 {
     /// <summary>Specifies that when a method returns, a member will not be null.</summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, Inherited = false, AllowMultiple = true)]
-    internal sealed class MemberNotNullAttribute : Attribute
+    public sealed class MemberNotNullAttribute : Attribute
     {
         /// <summary>Initializes the attribute with a field or property member.</summary>
         /// <param name="member">The field or property member that is promised to be not-null.</param>
@@ -23,5 +21,3 @@ namespace System.Diagnostics.CodeAnalysis
         public string[] Members { get; }
     }
 }
-
-#endif
