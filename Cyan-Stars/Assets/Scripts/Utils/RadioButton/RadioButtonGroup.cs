@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -7,46 +9,31 @@ namespace CyanStars.Utils.RadioButton
 {
     public class RadioButtonGroup : UIBehaviour
     {
-        public enum AddBehavior
-        {
-            SelectIfNoneSelected,
-            Select,
-            Deselect,
-            //RespectItem
-        }
-
         public enum CollectionChangeType
         {
             Add,
             Remove
         }
 
-        private bool ignoreSelectionChange = false;
-        private List<RadioButton> buttons = new List<RadioButton>();
+        public enum AllowSwitchOffType
+        {
+            Always, // 可以取消选中所有
+            ScriptOnly, // 玩家无法取消选中，但脚本添加未选中的 button / 取消选中 button 不受影响
+            Never // 不能取消选中所有
+        }
 
-        private RadioButton selectedItem;
-        public RadioButton SelectedItem => selectedItem;
-
-        [SerializeField]
-        private AddBehavior itemAddBehavior = AddBehavior.SelectIfNoneSelected;
-
-        [SerializeField]
-        private bool allowSwitchOff = false;
 
         [SerializeField]
-        private UnityEvent<RadioButton, RadioButton> onSelectedItemChanged = new UnityEvent<RadioButton, RadioButton>();
+        private AllowSwitchOffType allowSwitchOff;
+
+        [SerializeField]
+        private UnityEvent<RadioButton?, RadioButton?> onSelectedItemChanged = new UnityEvent<RadioButton?, RadioButton?>();
 
         [SerializeField]
         private UnityEvent<RadioButton, CollectionChangeType> onCollectionChanged = new UnityEvent<RadioButton, CollectionChangeType>();
 
 
-        public AddBehavior ItemAddBehavior
-        {
-            get => itemAddBehavior;
-            set => itemAddBehavior = value;
-        }
-
-        public bool AllowSwitchOff
+        public AllowSwitchOffType AllowSwitchOff
         {
             get => allowSwitchOff;
             set
@@ -56,41 +43,38 @@ namespace CyanStars.Utils.RadioButton
             }
         }
 
-        public UnityEvent<RadioButton, RadioButton> OnSelectedItemChanged => onSelectedItemChanged;
+        public RadioButton? SelectedItem { get; private set; }
+        public UnityEvent<RadioButton?, RadioButton?> OnSelectedItemChanged => onSelectedItemChanged;
         public UnityEvent<RadioButton, CollectionChangeType> OnCollectionChanged => onCollectionChanged;
+
+        private bool uncheckByGroup = false;
+        private readonly List<RadioButton> Buttons = new List<RadioButton>();
+
 
         /// <summary>
         /// Only add a button to the group
         /// <para>If you want to set the group of a radio button, please set the <see cref="RadioButton.Group"/> or use the <see cref="RadioButtonGroupExtensions.Register"/></para>
         /// </summary>
-        /// <param name="button"></param>
         internal void Add(RadioButton button)
         {
-            if (button == null || buttons.Contains(button))
+            if (button == null || Buttons.Contains(button))
                 return;
 
-            buttons.Add(button);
-            onCollectionChanged.Invoke(button, CollectionChangeType.Add);
+            Buttons.Add(button);
 
-            switch (itemAddBehavior)
+            if (button.IsChecked)
             {
-                case AddBehavior.SelectIfNoneSelected:
-                    if (selectedItem == null)
-                        SelectInGroup(button);
-                    else if (button.IsChecked)
-                        button.IsChecked = false;
-                    break;
-                case AddBehavior.Select:
-                    SelectInGroup(button);
-                    break;
-                case AddBehavior.Deselect:
-                    if (button.IsChecked)
-                        button.IsChecked = false;
-                    break;
-                // case AddBehavior.RespectItem:
-                //     break;
+                if (SelectedItem == null)
+                {
+                    SelectedItem = button;
+                }
+                else if (SelectedItem != button)
+                {
+                    button.IsChecked = false;
+                }
             }
 
+            onCollectionChanged.Invoke(button, CollectionChangeType.Add);
             EnsureValidState();
         }
 
@@ -100,11 +84,14 @@ namespace CyanStars.Utils.RadioButton
         /// </summary>
         internal bool Remove(RadioButton button)
         {
-            if (button is null || !buttons.Remove(button))
+            if (button is null || !Buttons.Remove(button))
                 return false;
 
-            if (selectedItem == button)
-                selectedItem = null;
+            if (SelectedItem == button)
+            {
+                SelectedItem = null;
+                onSelectedItemChanged.Invoke(button, null);
+            }
 
             EnsureValidState();
             onCollectionChanged.Invoke(button, CollectionChangeType.Remove);
@@ -113,55 +100,67 @@ namespace CyanStars.Utils.RadioButton
 
         public void EnsureValidState()
         {
-            if (allowSwitchOff) return;
-
-            if (selectedItem != null && selectedItem.IsActive())
+            if (allowSwitchOff == AllowSwitchOffType.Always)
                 return;
 
-            for (int i = 0; i < buttons.Count; i++)
+            if (SelectedItem != null && SelectedItem.IsActive())
+                return;
+
+            for (int i = 0; i < Buttons.Count; i++)
             {
-                RadioButton item = buttons[i];
+                RadioButton item = Buttons[i];
                 if (item.IsInteractable() && item.IsActive())
                 {
-                    SelectInGroup(item);
+                    item.IsChecked = true;
                     return;
                 }
             }
         }
 
-        public void Select(RadioButton button)
+        public bool TrySetCheckedState(RadioButton button, bool targetValue, bool uncheckByPlayer)
         {
-            if (button == null || !buttons.Contains(button))
-                return;
+            if (button == null || !Buttons.Contains(button))
+                return false;
 
-            if (selectedItem == button)
-                return;
+            if (uncheckByGroup)
+                return true;
 
-            if (ignoreSelectionChange)
-                return;
+            var old = SelectedItem;
 
-            ignoreSelectionChange = true;
-
-            var old = selectedItem;
-            selectedItem = button;
-            old.IsChecked = false;
-
-            ignoreSelectionChange = false;
-            onSelectedItemChanged.Invoke(old, selectedItem);
-        }
-
-        private void SelectInGroup(RadioButton button)
-        {
-            if (button == SelectedItem)
-                return;
-
-            if (button.IsChecked)
+            if (!targetValue)
             {
-                Select(button);
-                return;
-            }
+                // -- 处理取消选中 --
+                if (allowSwitchOff == AllowSwitchOffType.Never)
+                    return false;
+                if (allowSwitchOff == AllowSwitchOffType.ScriptOnly && uncheckByPlayer)
+                    return false;
 
-            button.IsChecked = true;
+                if (old == button)
+                {
+                    SelectedItem = null;
+                    onSelectedItemChanged.Invoke(old, null);
+                }
+
+                return true;
+            }
+            else
+            {
+                // -- 处理选中 --
+                if (old == button)
+                    return true;
+
+                uncheckByGroup = true;
+                if (old != null)
+                {
+                    old.IsChecked = false;
+                }
+
+                uncheckByGroup = false;
+
+                SelectedItem = button;
+                onSelectedItemChanged.Invoke(old, SelectedItem);
+                return true;
+            }
         }
 
 #if UNITY_EDITOR
@@ -173,29 +172,5 @@ namespace CyanStars.Utils.RadioButton
             EnsureValidState();
         }
 #endif
-    }
-
-    public static class RadioButtonGroupExtensions
-    {
-        public static void Register(this RadioButtonGroup group, RadioButton button)
-        {
-            if (group == null)
-                throw new System.ArgumentNullException(nameof(group));
-            if (button == null)
-                throw new System.ArgumentNullException(nameof(button));
-
-            button.Group = group;
-        }
-
-        public static void Unregister(this RadioButtonGroup group, RadioButton button)
-        {
-            if (group == null)
-                throw new System.ArgumentNullException(nameof(group));
-            if (button == null)
-                throw new System.ArgumentNullException(nameof(button));
-
-            if (button.Group == group)
-                button.Group = null;
-        }
     }
 }
