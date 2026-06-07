@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using CyanStars.Chart.BezierCurve;
 using NUnit.Framework;
 
-namespace Test.EditMode
+namespace CyanStars.Tests.EditMode
 {
     /// <summary>
     /// 测试 BezierHelper：
