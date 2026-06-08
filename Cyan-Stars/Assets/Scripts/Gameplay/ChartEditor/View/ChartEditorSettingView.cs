@@ -11,18 +11,29 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private RadioButtonItem compactNoteButtonAreaButton = null!;
 
+        [SerializeField]
+        private RadioButtonItem multiBpmItemButton = null!;
+
+        [SerializeField]
+        private RadioButtonItem multiMusicItemButton = null!;
+
+
         public override void Bind(ChartEditorSettingViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
             compactNoteButtonAreaButton.IsChecked = ViewModel.CompactNoteButtonArea.CurrentValue;
-            compactNoteButtonAreaButton.OnValueChanged.AddListener(OnValueChanged);
+            multiBpmItemButton.IsChecked = ViewModel.MultiBpmItemMode.CurrentValue;
+            multiMusicItemButton.IsChecked = ViewModel.MultiMusicItemMode.CurrentValue;
+            compactNoteButtonAreaButton.OnValueChanged.AddListener(ViewModel.SetCompactNoteButtonArea);
+            multiBpmItemButton.OnValueChanged.AddListener(ViewModel.SetMultiBpmItemMode);
+            multiMusicItemButton.OnValueChanged.AddListener(ViewModel.SetMultiMusicItemMode);
         }
-
-        private void OnValueChanged(bool value) => ViewModel.SetCompactNoteButtonArea(value);
 
         protected override void OnDestroy()
         {
-            compactNoteButtonAreaButton.OnValueChanged.RemoveListener(OnValueChanged);
+            compactNoteButtonAreaButton.OnValueChanged.RemoveListener(ViewModel.SetCompactNoteButtonArea);
+            multiBpmItemButton.OnValueChanged.RemoveListener(ViewModel.SetMultiBpmItemMode);
+            multiMusicItemButton.OnValueChanged.RemoveListener(ViewModel.SetMultiMusicItemMode);
             base.OnDestroy();
         }
     }

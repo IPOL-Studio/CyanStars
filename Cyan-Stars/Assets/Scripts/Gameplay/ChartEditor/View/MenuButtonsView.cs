@@ -53,12 +53,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private Button chartEditorSettingButton = null!;
 
         [SerializeField]
-        private Button exitSimplificationModeButton = null!;
-
-        [SerializeField]
-        private Button enterSimplificationModeButton = null!;
-
-        [SerializeField]
         private Button exitChartEditorButton = null!;
 
         [Header("CanvasView 绑定")]
@@ -125,15 +119,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     }
                 )
                 .AddTo(this);
-            ViewModel.IsSimplificationMode
-                .Subscribe(isSimplificationMode =>
-                {
-                    // speedTemplateButton.gameObject.SetActive(!isSimplificationMode);
-                    enterSimplificationModeButton.gameObject.SetActive(!isSimplificationMode);
-                    exitSimplificationModeButton.gameObject.SetActive(isSimplificationMode);
-                })
-                .AddTo(this);
-
 
             functionToggle
                 .OnValueChangedAsObservable()
@@ -179,14 +164,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(_ => chartEditorSettingView.SetCanvasVisibility(true))
                 .AddTo(this);
 
-            exitSimplificationModeButton
-                .OnClickAsObservable()
-                .Subscribe(_ => ViewModel.SetSimplificationMode(false))
-                .AddTo(this);
-            enterSimplificationModeButton
-                .OnClickAsObservable()
-                .Subscribe(_ => ViewModel.SetSimplificationMode(true))
-                .AddTo(this);
             exitChartEditorButton
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.ExitChartEditor())

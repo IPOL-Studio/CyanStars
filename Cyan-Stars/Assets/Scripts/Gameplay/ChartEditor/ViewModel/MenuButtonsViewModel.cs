@@ -11,30 +11,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class MenuButtonsViewModel : BaseViewModel
     {
-        public ReadOnlyReactiveProperty<bool> IsSimplificationMode => Model.IsSimplificationMode;
-
-
         public MenuButtonsViewModel(ChartEditorModel model)
             : base(model)
         {
-        }
-
-
-        public void SetSimplificationMode(bool newValue)
-        {
-            if (newValue == Model.IsSimplificationMode.Value)
-                return;
-
-            CommandStack.ExecuteCommand(
-                () =>
-                {
-                    Model.IsSimplificationMode.Value = newValue;
-                },
-                () =>
-                {
-                    Model.IsSimplificationMode.Value = !newValue;
-                }
-            );
         }
 
         public void ExitChartEditor()

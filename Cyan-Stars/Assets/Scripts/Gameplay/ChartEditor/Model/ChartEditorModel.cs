@@ -41,8 +41,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
 
         // == == 编辑器运行时数据 == ==
 
-        // 编辑模式
-        public readonly ReactiveProperty<bool> IsSimplificationMode = new ReactiveProperty<bool>(true);
+        // 编辑工具
         public readonly ReactiveProperty<EditToolType> SelectedEditTool = new ReactiveProperty<EditToolType>(EditToolType.Select);
 
         #region offset 说明
@@ -81,6 +80,8 @@ namespace CyanStars.Gameplay.ChartEditor.Model
 
         // 制谱器设置
         public readonly ReactiveProperty<bool> CompactNoteButtonArea = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> MultiBpmItemMode = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> MultiMusicItemMode = new ReactiveProperty<bool>(false);
 
 
         /// <summary>
