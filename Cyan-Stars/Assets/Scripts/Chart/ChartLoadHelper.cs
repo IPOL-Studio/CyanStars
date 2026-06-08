@@ -41,8 +41,8 @@ namespace CyanStars.Chart
             var levelsList = new List<ChartPackLevels>();
 
             // 将内置谱包路径添加到列表
-            InternalChartPackListSO internalChartPackListSO =
-                (await GameRoot.Asset.LoadAssetAsync<InternalChartPackListSO>(InternalChartPackListFilePath)).Asset;
+            using var internalListHandler = await GameRoot.Asset.LoadAssetAsync<InternalChartPackListSO>(InternalChartPackListFilePath);
+            InternalChartPackListSO internalChartPackListSO = internalListHandler.Asset;
             foreach (var item in internalChartPackListSO.InternalChartPacks)
             {
                 paths.Add(item.Path);
@@ -127,7 +127,8 @@ namespace CyanStars.Chart
         /// <remarks>通过此方法加载的谱包视为玩家谱包</remarks>
         public static async Task<RuntimeChartPack> AddChartPackDataFromDisk(string chartPackFilePath)
         {
-            ChartPackData? chartPackData = (await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackFilePath)).Asset;
+            using var handler = await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackFilePath);
+            ChartPackData? chartPackData = handler.Asset;
 
             if (chartPackData == null)
                 throw new NullReferenceException("尝试加载的谱包为 null，加载失败！");
@@ -148,7 +149,8 @@ namespace CyanStars.Chart
         {
             string chartPackFilePath = PathUtil.Combine(workspacePath, ChartModule.ChartPackFileName);
 
-            ChartPackData? chartPackData = (await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackFilePath)).Asset;
+            using var reloadHandler = await GameRoot.Asset.LoadAssetAsync<ChartPackData>(chartPackFilePath);
+            ChartPackData? chartPackData = reloadHandler.Asset;
             if (chartPackData == null)
                 throw new NullReferenceException("尝试加载的谱包为 null，增量更新失败！");
 
