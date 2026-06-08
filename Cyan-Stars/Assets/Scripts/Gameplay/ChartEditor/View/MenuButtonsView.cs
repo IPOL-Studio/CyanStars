@@ -188,7 +188,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             FunctionCanvasVisibility.Value = visibility;
         }
 
-        private void OnSaveRequested() => ViewModel.SaveFileToDesk();
+        private void OnSaveRequested() => ViewModel.SaveFileToDisk();
         private void OnUndoRequested() => ViewModel.Undo();
         private void OnRedoRequested() => ViewModel.Redo();
 

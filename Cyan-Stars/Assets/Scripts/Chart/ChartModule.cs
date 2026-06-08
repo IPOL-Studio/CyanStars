@@ -197,7 +197,7 @@ namespace CyanStars.Chart
         /// </summary>
         /// <param name="chartPackFilePath">谱包索引文件的绝对路径</param>
         [Obsolete("仅用于 v0.2 制谱器测试，在搭建完选曲 UI 和加载逻辑后弃用此方法！")]
-        public async Task SetChartPackDataFromDesk(string chartPackFilePath)
+        public async Task SetChartPackDataFromDisk(string chartPackFilePath)
         {
             CancelSelectChartPackData();
             runtimeChartPacks.Clear();
