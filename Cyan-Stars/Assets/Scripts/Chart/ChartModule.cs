@@ -115,6 +115,7 @@ namespace CyanStars.Chart
         /// <param name="index">新的谱包下标</param>
         public void SelectChartPackData(int index)
         {
+            CancelSelectChartData();
             SelectedChartPackIndex = index;
             SelectedChartMetadataIndex = (RuntimeChartPacks[index].ChartPackData.ChartMetaDatas.Count >= 1) ? 0 : null;
             SelectedMusicVersionIndex = (RuntimeChartPacks[index].ChartPackData.MusicVersionDatas.Count >= 1) ? 0 : null;
@@ -174,6 +175,8 @@ namespace CyanStars.Chart
                 Debug.LogError("尚未选择谱面，无法加载谱面数据。");
                 return;
             }
+
+            CancelSelectChartData();
 
             // TODO：计算谱面哈希并校验/覆盖元数据内容
             ChartData = await ChartLoadHelper.LoadChartDataAsync(SelectedRuntimeChartPack, (int)SelectedChartMetadataIndex);
