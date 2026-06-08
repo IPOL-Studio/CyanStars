@@ -165,6 +165,9 @@ namespace CyanStars.Chart
             var newPacks = new List<RuntimeChartPack>();
             for (int i = 0; i < paths.Count; i++)
             {
+                // 此处采用 AssetHandler<TextAsset> 而非 AssetHandler<ChartPackData>，
+                // 是因为 BatchLoadAssetAsync 无法指定资源转换类型，无法走自定义解析器，
+                // 故批量加载后统一解析 json 以提高效率。
                 using AssetHandler<TextAsset> textHandler = GameRoot.Asset.LoadAssetAsync<TextAsset>(paths[i]);
 
                 if (!textHandler.IsDone)
@@ -185,6 +188,7 @@ namespace CyanStars.Chart
                 }
 
                 // 工作区路径是谱包所在的绝对路径，后续相关的资源、谱面等相对路径直接拼接在工作区路径之后即可
+                // TODO: 安卓系统无法在读写区外直径拼接路径，会被视为无权限，需要将整包复制进读写区后在此拼接路径。
                 string? workspacePath = Path.GetDirectoryName(paths[i]);
                 if (workspacePath == null)
                 {
@@ -327,24 +331,16 @@ namespace CyanStars.Chart
             if (true) // TODO: 实现了 hash 计算后改用上面一行，暂时先每次都强制加载谱面
             {
                 string chartFilePath = PathUtil.Combine(SelectedRuntimeChartPack.WorkspacePath, metaData.FilePath);
-                using var textHandler = await GameRoot.Asset.LoadAssetAsync<TextAsset>(chartFilePath);
+                using var chartHandler = await GameRoot.Asset.LoadAssetAsync<ChartData>(chartFilePath);
 
-                if (textHandler.Asset?.text == null)
-                {
-                    Debug.LogError($"无法将 {chartFilePath} 转换为 {nameof(ChartData)}，相关谱面无法加载！");
-                    return;
-                }
-
-                string jsonText = textHandler.Asset.text;
-                ChartData? chartData = await Task.Run(() => JsonLoadHelper.LoadData<ChartData>(jsonText));
-                if (chartData == null)
+                if (chartHandler.Asset == null)
                 {
                     Debug.LogError($"无法将 {chartFilePath} 转换为 {nameof(ChartData)}，相关谱面无法加载！");
                     return;
                 }
 
                 Debug.Log("已加载了新的的谱面");
-                ChartData = chartData;
+                ChartData = chartHandler.Asset;
                 lastChartDataHash = metaData.ChartHash;
             }
         }
@@ -358,7 +354,7 @@ namespace CyanStars.Chart
         /// !!! 测试方法 !!! 卸载全部谱包并直接加载一张谱包
         /// </summary>
         /// <param name="chartPackFilePath">谱包索引文件的绝对路径</param>
-        [Obsolete("仅用于 Beta2 制谱器测试，在搭建完选曲 UI 和加载逻辑后弃用此方法！")]
+        [Obsolete("仅用于 v0.2 制谱器测试，在搭建完选曲 UI 和加载逻辑后弃用此方法！")]
         public async Task SetChartPackDataFromDesk(string chartPackFilePath)
         {
             CancelSelectChartPackData();
