@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -7,7 +8,7 @@ using UnityEngine.EventSystems;
 
 namespace CyanStars.Utils.RadioButton
 {
-    public class RadioButtonGroup : UIBehaviour
+    public class RadioButtonGroup : UIBehaviour, IEnumerable<RadioButton>
     {
         public enum CollectionChangeType
         {
@@ -161,6 +162,16 @@ namespace CyanStars.Utils.RadioButton
                 onSelectedItemChanged.Invoke(old, SelectedItem);
                 return true;
             }
+        }
+
+        public IEnumerator<RadioButton> GetEnumerator()
+        {
+            return Buttons.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
 #if UNITY_EDITOR
