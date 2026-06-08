@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using CyanStars.Framework;
-using CyanStars.Gameplay.MusicGame;
 using CyanStars.Utils;
 using UnityEngine;
 
@@ -15,6 +14,7 @@ namespace CyanStars.Chart
     /// 谱包与谱面数据模块
     /// </summary>
     /// <remarks>提供给音游流程和制谱器流程使用。注意制谱器流程需要存一份深拷贝的谱包+谱面副本用于编辑。</remarks>
+    // ReSharper disable once ClassNeverInstantiated.Global // 由反射实例化
     public class ChartModule : BaseDataModule
     {
         /// <summary>
@@ -70,8 +70,6 @@ namespace CyanStars.Chart
         /// </summary>
         public ChartData? ChartData { get; private set; }
 
-        private string? lastChartDataHash;
-
 
         public override void OnInit()
         {
@@ -120,48 +118,6 @@ namespace CyanStars.Chart
             SelectedChartPackIndex = index;
             SelectedChartMetadataIndex = (RuntimeChartPacks[index].ChartPackData.ChartMetaDatas.Count >= 1) ? 0 : null;
             SelectedMusicVersionIndex = (RuntimeChartPacks[index].ChartPackData.MusicVersionDatas.Count >= 1) ? 0 : null;
-
-            HashSet<ChartDifficulty> difficultiesAbleToPlay = RuntimeChartPacks[index].DifficultiesAbleToPlay;
-
-            // // TODO:将难度设为上个谱包选中难度中最接近的那一个
-            // var currentDifficulty =
-            //     RuntimeChartPacks[index].ChartPackData.ChartMetaDatas[(int)SelectedChartMetadataIndex].Difficulty;
-            // var difficulty = difficultiesAbleToPlay
-            //     .OrderBy(e => Math.Abs(Convert.ToInt32(e) - (int)currentDifficulty))
-            //     .ThenBy(e => Convert.ToInt32(e))
-            //     .First();
-        }
-
-        /// <summary>
-        /// 根据难度选中谱面
-        /// </summary>
-        /// <param name="difficulty">难度</param>
-        public async Task SelectChartDataAsync(ChartDifficulty difficulty)
-        {
-            if (SelectedRuntimeChartPack == null)
-            {
-                Debug.LogError("尚未选择谱包，无法根据难度选择谱面。");
-                return;
-            }
-
-            var difficultiesAbleToPlay = SelectedRuntimeChartPack.DifficultiesAbleToPlay;
-            if (!difficultiesAbleToPlay.Contains(difficulty))
-            {
-                Debug.LogError($"此谱包的 {difficulty} 难度不可用！");
-                return;
-            }
-
-            int index;
-            for (index = 0; index < SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas.Count; index++)
-            {
-                if (SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas[index].Difficulty == difficulty)
-                {
-                    break;
-                }
-            }
-
-            SelectedChartMetadataIndex = index;
-            await LoadChartDataAsync();
         }
 
         /// <summary>
@@ -202,7 +158,6 @@ namespace CyanStars.Chart
         public void CancelSelectChartData()
         {
             ChartData = null;
-            lastChartDataHash = null;
         }
 
 
@@ -221,9 +176,7 @@ namespace CyanStars.Chart
             }
 
             // TODO：计算谱面哈希并校验/覆盖元数据内容
-            ChartMetaData metaData = SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas[(int)SelectedChartMetadataIndex];
             ChartData = await ChartLoadHelper.LoadChartDataAsync(SelectedRuntimeChartPack, (int)SelectedChartMetadataIndex);
-            lastChartDataHash = metaData.ChartHash;
         }
 
 
@@ -264,8 +217,8 @@ namespace CyanStars.Chart
         /// <param name="index">需要重载的谱包的下标</param>
         public async Task ReloadChartPackDataFromDisk(int index)
         {
-            runtimeChartPacks[index] = await ChartLoadHelper.ReloadChartPackDataFromDisk(
-                runtimeChartPacks[index].WorkspacePath);
+            runtimeChartPacks[index] =
+                await ChartLoadHelper.ReloadChartPackDataFromDisk(runtimeChartPacks[index].WorkspacePath);
         }
     }
 }
