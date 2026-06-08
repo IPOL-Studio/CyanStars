@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
@@ -18,8 +19,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public Subject<BaseChartNoteData> SelectedNoteDataChangedSubject => Model.SelectedNoteDataChangedSubject;
         public ReadOnlyReactiveProperty<bool> IsTimelinePlaying => Model.IsTimelinePlaying;
-
-
+        public ReadOnlyReactiveProperty<int> CurrentTimelineTimeMs => Model.CurrentTimelineTimeMs;
         public ReadOnlyReactiveProperty<EditToolType> SelectedEditTool => Model.SelectedEditTool;
 
         // 位置线
@@ -27,7 +27,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<double> BeatZoom => Model.BeatZoom;
 
         // 节拍线和音符
-        public readonly ReadOnlyReactiveProperty<double> ContentAddHeight; // 在原有的屏幕高度上再增加此高度
+        public readonly ReadOnlyReactiveProperty<double> ContentExtraHeight; // 在原有的屏幕高度上再增加此高度
         public readonly ReadOnlyReactiveProperty<double> TotalBeats;
         public readonly ReadOnlyReactiveProperty<int> PosLineCount;
         public IReadOnlyObservableList<BaseChartNoteData> Notes => Model.ChartData.CurrentValue.Notes;
@@ -93,12 +93,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 )
                 .AddTo(base.Disposables);
 
-            // 更新 ContentAddHeight，当：
+            // 更新 ContentExtraHeight，当：
             // - BpmGroup 列表更新（元素增加、删除、移动）
             // - 手动触发了 BpmGroupDataChangedSubject（BpmGroup 中某一元素的 bpm 或 startBeat 更新）
             // - BeatZoom 更新
             // - AudioClipHandler 更新（音乐变化后音频时长可能改变）
-            ContentAddHeight = Observable
+            ContentExtraHeight = Observable
                 .Merge(
                     Model.ChartPackData.CurrentValue.BpmGroup.ObserveChanged().Select(_ => Unit.Default),
                     Model.BpmGroupDataChangedSubject.Select(_ => Unit.Default)
@@ -262,7 +262,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             );
         }
 
-        public void TryUpdateTimelineTime(float contentY)
+        public void TryUpdateTimelineTime(float normalizedPositionY)
         {
             if (Model.AudioClipHandler.CurrentValue?.Asset == null)
                 return;
@@ -273,19 +273,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            // 判定线位置在计算中正好约掉，无需得知判定线位置
-            double beatPrecent = -contentY / ContentAddHeight.CurrentValue;
-            beatPrecent = Math.Clamp(beatPrecent, 0, 1);
-            int timelineTimeMs = BpmGroupHelper.CalculateTime(Model.ChartPackData.CurrentValue.BpmGroup, TotalBeats.CurrentValue * beatPrecent);
-            Model.CurrentTimelineTimeMs = timelineTimeMs;
+            int timelineTimeMs = BpmGroupHelper.CalculateTime(Model.ChartPackData.CurrentValue.BpmGroup, TotalBeats.CurrentValue * normalizedPositionY);
+            Model.CurrentTimelineTimeMs.Value = timelineTimeMs;
         }
 
-        public float GetContentYByTimelineTime()
+        [Pure]
+        public float GetNormalizedPositionYByTimelineTime()
         {
-            double currentFBeat = BpmGroupHelper.CalculateBeat(Model.ChartPackData.CurrentValue.BpmGroup, Model.CurrentTimelineTimeMs);
+            double currentFBeat = BpmGroupHelper.CalculateBeat(Model.ChartPackData.CurrentValue.BpmGroup, Model.CurrentTimelineTimeMs.CurrentValue);
             double beatPrecent = currentFBeat / TotalBeats.CurrentValue;
             beatPrecent = Math.Clamp(beatPrecent, 0, 1);
-            return (float)(-beatPrecent * ContentAddHeight.CurrentValue);
+            return (float)beatPrecent;
         }
 
 

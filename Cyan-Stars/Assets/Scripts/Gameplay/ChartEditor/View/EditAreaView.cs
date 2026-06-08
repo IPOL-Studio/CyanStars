@@ -63,11 +63,17 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private readonly Dictionary<BaseChartNoteData, (EditAreaNoteViewModel vm, EditAreaNoteView view)?> ActiveNotes =
             new Dictionary<BaseChartNoteData, (EditAreaNoteViewModel, EditAreaNoteView)?>();
 
+        // 防止拖拽/滚动 scrollRect 更新 time 后再做一次无意义的 scrollRect 位置更新
+        private bool isTimelineTimeChangeBySelf = false;
+
 
         public override void Bind(EditAreaViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
 
+            ViewModel.IsTimelinePlaying
+                .Subscribe(isPlaying => scrollRect.vertical = !isPlaying) // 正在播放时完全禁止拖动/滚动 scrollRect
+                .AddTo(this);
             ViewModel.SelectedEditTool
                 .Subscribe(tool =>
                 {
@@ -83,15 +89,28 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     );
                 })
                 .AddTo(this);
-            ViewModel.ContentAddHeight
+            ViewModel.ContentExtraHeight
                 .Subscribe(addHeight =>
-                    {
-                        var verticalNormalizedPosition = scrollRect.verticalNormalizedPosition;
-                        contentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, (float)(viewportRect.rect.height + addHeight));
-                        scrollRect.verticalNormalizedPosition = verticalNormalizedPosition;
-                    }
-                )
+                {
+                    var verticalNormalizedPosition = scrollRect.verticalNormalizedPosition;
+                    contentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, (float)(viewportRect.rect.height + addHeight));
+                    scrollRect.verticalNormalizedPosition = verticalNormalizedPosition;
+                })
                 .AddTo(this);
+            ViewModel.CurrentTimelineTimeMs
+                .Subscribe(_ =>
+                {
+                    if (isTimelineTimeChangeBySelf)
+                        return;
+
+                    scrollRect.SetNormalizedPositionWithoutNotify(
+                        new Vector2(0, ViewModel.GetNormalizedPositionYByTimelineTime())
+                    );
+                    UpdateBeatLinesVisibility();
+                    UpdateNotesVisibility();
+                })
+                .AddTo(this);
+
 
             // 1. 位置线逻辑
             ViewModel.PosLineCount.Subscribe(UpdatePosLines).AddTo(this);
@@ -109,15 +128,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
             // 3. 滚动时刷新节拍线和音符，如果没在播放音乐则一并更新时间轴时间
             scrollRect.onValueChanged.AsObservable()
                 .Subscribe(_ =>
+                {
+                    UpdateBeatLinesVisibility();
+                    UpdateNotesVisibility();
+                    if (!ViewModel.IsTimelinePlaying.CurrentValue) // 正在播放时由 ChartEditorMusicManager 更新时间
                     {
-                        UpdateBeatLinesVisibility();
-                        UpdateNotesVisibility();
-                        if (!ViewModel.IsTimelinePlaying.CurrentValue)
-                        {
-                            ViewModel.TryUpdateTimelineTime(contentRect.anchoredPosition.y);
-                        }
+                        isTimelineTimeChangeBySelf = true;
+                        ViewModel.TryUpdateTimelineTime(scrollRect.normalizedPosition.y);
+                        isTimelineTimeChangeBySelf = false;
                     }
-                )
+                })
                 .AddTo(this);
 
             // 4. 音符列表、缩放、选中音符的位置或节拍变化时刷新音符
@@ -182,8 +202,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             float contentHeight = contentRect.rect.height;
 
             // 当 verticalNormalizedPosition = 0 时，显示底部 (0 ~ viewportHeight)
-            float scrollY = (contentHeight - viewportHeight) * scrollRect.verticalNormalizedPosition;
-            scrollY = Mathf.Max(0, scrollY); // 防止负数
+            float scrollY = Mathf.Max(0, -contentRect.anchoredPosition.y);
 
             float minVisibleY = scrollY - 100f;
             float maxVisibleY = scrollY + viewportHeight + 100f;
@@ -268,8 +287,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             float viewportHeight = viewportRect.rect.height;
             float contentHeight = contentRect.rect.height;
 
-            float scrollY = (contentHeight - viewportHeight) * scrollRect.verticalNormalizedPosition;
-            scrollY = Mathf.Max(0, scrollY);
+            float scrollY = Mathf.Max(0, -contentRect.anchoredPosition.y);
 
             float viewMinY = scrollY - 100f;
             float viewMaxY = scrollY + viewportHeight + 100f;
@@ -471,14 +489,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Space))
-            {
                 ViewModel.OnSpaceDown();
-            }
-
-            if (ViewModel.IsTimelinePlaying.CurrentValue)
-            {
-                contentRect.anchoredPosition = new Vector2(contentRect.anchoredPosition.x, ViewModel.GetContentYByTimelineTime());
-            }
         }
 
         protected void OnDestroy()

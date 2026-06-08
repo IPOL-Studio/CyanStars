@@ -1,6 +1,8 @@
 ﻿#nullable enable
 
+using System;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using ObservableCollections;
 using R3;
 using TMPro;
 using UnityEngine;
@@ -10,6 +12,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 {
     public class EditorAttributeView : BaseView<EditorAttributeViewModel>
     {
+        [Header("编辑器属性")]
         [SerializeField]
         private Canvas editorAttributeCanvas = null!;
 
@@ -37,8 +40,30 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private Button zoomInButton = null!;
 
+        [Header("进度条")]
+        [SerializeField]
+        private Slider slider = null!;
+
+        [SerializeField]
+        private TMP_Text musicTimeText = null!;
+
+        [SerializeField]
+        private Button playPauseButton = null!;
+
+        [SerializeField]
+        private Image playPauseImage = null!;
+
+        [SerializeField]
+        private Sprite playSprite = null!;
+
+        [SerializeField]
+        private Sprite pauseSprite = null!;
+
 
         private ReadOnlyReactiveProperty<bool> frameVisibility = null!;
+        private ReadOnlyReactiveProperty<bool> isTimelineReadyToPlay = null!; // 已加载音乐 && bpm 组有至少 1 个 item && music 组有至少 1 个 item
+        private ReadOnlyReactiveProperty<int?> firstMusicOffset = null!; // 缓存的首个音乐的可观察 offset
+        private bool isTimelineTimeChangeBySlider = false; // 防止拖拽/滚动进度条更新 time 后再做一次无意义的 scrollRect 位置更新
 
 
         public override void Bind(EditorAttributeViewModel targetViewModel)
@@ -66,6 +91,49 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.BeatZoomString
                 .Subscribe(value => beatZoomField.text = value)
                 .AddTo(this);
+
+            isTimelineReadyToPlay = Observable
+                .CombineLatest(
+                    ViewModel.AudioClipHandler,
+                    ViewModel.BpmGroup.ObserveCountChanged(notifyCurrentCount: true),
+                    ViewModel.MusicVersions.ObserveCountChanged(notifyCurrentCount: true),
+                    (audioClipHandler, bpmGroupCount, musicVersionCount) =>
+                        audioClipHandler?.Asset != null && bpmGroupCount >= 1 && musicVersionCount >= 1
+                )
+                .ToReadOnlyReactiveProperty()
+                .AddTo(this);
+            var firstMusicVersionObservable = ViewModel.MusicVersions
+                .ObserveChanged()
+                .Select(_ => ViewModel.MusicVersions.Count > 0 ? ViewModel.MusicVersions[0] : null)
+                .Prepend(ViewModel.MusicVersions.Count > 0 ? ViewModel.MusicVersions[0] : null);
+            firstMusicOffset = firstMusicVersionObservable
+                .Select(version => version == null
+                    ? Observable.Return<int?>(null)
+                    : version.Offset.Select(offset => (int?)offset)
+                )
+                .Switch()
+                .ToReadOnlyReactiveProperty()
+                .AddTo(this);
+
+            Observable.CombineLatest(
+                    ViewModel.IsTimelinePlaying,
+                    isTimelineReadyToPlay,
+                    (isPlaying, isReadyToPlay) => !isPlaying && isReadyToPlay
+                )
+                .Subscribe(interactable => slider.interactable = interactable)
+                .AddTo(this);
+            Observable.CombineLatest(
+                    ViewModel.CurrentTimelineTimeMs,
+                    firstMusicOffset,
+                    ViewModel.AudioClipHandler,
+                    (_, _, _) => Unit.Default
+                )
+                .Subscribe(_ => RefreshUiItem())
+                .AddTo(this);
+            ViewModel.IsTimelinePlaying
+                .Subscribe(isPlaying => playPauseImage.sprite = isPlaying ? pauseSprite : playSprite)
+                .AddTo(this);
+
 
             posAccuracyField
                 .OnEndEditAsObservable()
@@ -99,6 +167,68 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.ZoomIn())
                 .AddTo(this);
+
+            slider
+                .OnValueChangedAsObservable()
+                .Subscribe(value =>
+                {
+                    if (ViewModel.AudioClipHandler.CurrentValue?.Asset == null || firstMusicOffset.CurrentValue == null)
+                        return; // 首次进入时等待加载
+
+                    var musicMsLength = ViewModel.AudioClipHandler.CurrentValue.Asset.length * 1000f;
+                    var offset = (int)firstMusicOffset.CurrentValue;
+
+                    isTimelineTimeChangeBySlider = true;
+                    ViewModel.SetTimeLineTime((int)(value * (musicMsLength + offset)));
+                    isTimelineTimeChangeBySlider = false;
+                })
+                .AddTo(this);
+            playPauseButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.SwitchPlayStaus())
+                .AddTo(this);
+        }
+
+        private void RefreshUiItem()
+        {
+            if (ViewModel.AudioClipHandler.CurrentValue?.Asset == null) // 考虑到首次进入时 asset 可能还在加载，故只检查 handler
+            {
+                slider.SetValueWithoutNotify(0);
+                musicTimeText.text = "未设置音乐";
+                return;
+            }
+
+            if (ViewModel.BpmGroup.Count <= 0)
+            {
+                // 目前能保证至少存在一个 bpm item，理论上不会触发，能触发就是有问题
+                throw new InvalidOperationException("Bpm item 数量小于等于 0，请检查。");
+                // slider.SetValueWithoutNotify(0);
+                // musicTimeText.text = "未设置 BPM";
+                // return;
+            }
+
+            int offset = (int)firstMusicOffset.CurrentValue!;
+
+            if (!isTimelineTimeChangeBySlider)
+            {
+                float musicMsLength = ViewModel.AudioClipHandler.CurrentValue.Asset.length * 1000f;
+                slider.SetValueWithoutNotify(ViewModel.CurrentTimelineTimeMs.CurrentValue / (musicMsLength + offset));
+            }
+
+            int textMsTime = ViewModel.CurrentTimelineTimeMs.CurrentValue - offset;
+            bool isNegative = textMsTime < 0;
+            int absMs = Math.Abs(textMsTime);
+            int minutes = absMs / 60000;
+            int seconds = (absMs % 60000) / 1000;
+            int milliseconds = absMs % 1000;
+            musicTimeText.SetText( // 避免 musicTimeText.text=$""; 的高频 GC
+                isNegative
+                    ? "-{0:00}:{1:00}<color=#858585DD>.{2:000}</color>"
+                    : "{0:00}:{1:00}<color=#858585DD>.{2:000}</color>",
+                minutes,
+                seconds,
+                milliseconds
+            );
         }
     }
 }

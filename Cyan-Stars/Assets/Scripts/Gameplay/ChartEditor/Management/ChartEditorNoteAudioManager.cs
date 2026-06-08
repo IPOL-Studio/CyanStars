@@ -45,7 +45,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                     if (!toPlay)
                         return;
 
-                    prevTimeMs = model.CurrentTimelineTimeMs;
+                    prevTimeMs = model.CurrentTimelineTimeMs.CurrentValue;
                     skipNoteCount = GetSkippedNoteCount(prevTimeMs);
                 })
                 .AddTo(this);
@@ -75,7 +75,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
             if (model is null || !model.IsTimelinePlaying.CurrentValue)
                 return;
 
-            if (model.CurrentTimelineTimeMs == prevTimeMs)
+            if (model.CurrentTimelineTimeMs.CurrentValue == prevTimeMs)
                 return;
 
             if (skipNoteCount >= model.ChartData.CurrentValue.Notes.Count)
@@ -84,7 +84,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
             // 作为临时的 hack 实现，这里可以选择只收集需要播放的数量
             // 但还是直接把所有 note 收集起来
             // 之后可以看看能不能把 notes 的运行时存储改为时间轮
-            foreach (var note in CollectHitNotes(model.CurrentTimelineTimeMs))
+            foreach (var note in CollectHitNotes(model.CurrentTimelineTimeMs.CurrentValue))
             {
                 // TODO: 后续考虑用 audioSource 对象池 + PlayScheduled 提供更高精度的音效
                 // GameRoot.Audio.Play2DSound(FallbackAudioAssetName, AudioVolume);

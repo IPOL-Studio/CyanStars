@@ -1,9 +1,12 @@
 ﻿#nullable enable
 
 using System.Globalization;
+using CatAsset.Runtime;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Model;
+using ObservableCollections;
 using R3;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
@@ -17,6 +20,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<bool> PosMagnetState;
         public readonly ReadOnlyReactiveProperty<string> BeatAccuracyString;
         public readonly ReadOnlyReactiveProperty<string> BeatZoomString;
+
+        public ReadOnlyReactiveProperty<bool> IsTimelinePlaying => Model.IsTimelinePlaying;
+        public ReadOnlyReactiveProperty<int> CurrentTimelineTimeMs => Model.CurrentTimelineTimeMs;
+        public ReadOnlyReactiveProperty<AssetHandler<AudioClip?>?> AudioClipHandler => Model.AudioClipHandler;
+        public IReadOnlyObservableList<BpmGroupItem> BpmGroup => Model.ChartPackData.CurrentValue.BpmGroup;
+        public IReadOnlyObservableList<MusicVersionDataEditorModel> MusicVersions => Model.ChartPackData.CurrentValue.MusicVersions;
 
 
         public EditorAttributeViewModel(ChartEditorModel model)
@@ -102,6 +111,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public void ZoomIn()
         {
             Model.BeatZoom.Value += ZoomStep;
+        }
+
+        public void SetTimeLineTime(int msTime)
+        {
+            Model.CurrentTimelineTimeMs.Value = msTime;
+        }
+
+        public void SwitchPlayStaus()
+        {
+            Model.IsTimelinePlaying.Value = !Model.IsTimelinePlaying.CurrentValue;
         }
     }
 }
