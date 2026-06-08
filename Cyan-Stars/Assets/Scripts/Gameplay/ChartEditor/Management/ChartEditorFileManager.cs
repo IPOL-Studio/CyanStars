@@ -102,7 +102,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         /// <param name="chartPackDataEditorModel">谱包实例</param>
         /// <param name="chartDataEditorModel">谱面实例</param>
         /// <returns></returns>
-        public static bool SaveChartAndAssetsToDesk(string workspacePath,
+        public static bool SaveChartAndAssetsToDisk(string workspacePath,
                                                     int chartMetaDataIndex,
                                                     ChartPackDataEditorModel chartPackDataEditorModel,
                                                     ChartDataEditorModel chartDataEditorModel)
