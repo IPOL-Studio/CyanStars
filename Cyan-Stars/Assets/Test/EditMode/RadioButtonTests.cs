@@ -63,47 +63,31 @@ namespace CyanStars.Test.EditMode
         }
 
         [Test]
-        public void AllowSwitchOff_Always_CanUncheck()
+        public void AllowSwitchOff_True_CanUncheck()
         {
-            group.AllowSwitchOff = RadioButtonGroup.AllowSwitchOffType.Always;
+            group.AllowSwitchOff = true;
             btn1.IsChecked = true;
 
             // 玩家点击取消选中
             btn1.OnPointerClick(new PointerEventData(EventSystem.current) { button = PointerEventData.InputButton.Left });
 
-            Assert.IsFalse(btn1.IsChecked, "Always模式下，玩家应该可以取消选中");
+            Assert.IsFalse(btn1.IsChecked, "AllowSwitchOff=true时，玩家应该可以取消选中");
             Assert.IsNull(group.SelectedItem, "取消选中后，Group的SelectedItem应该为null");
         }
 
         [Test]
-        public void AllowSwitchOff_Never_CannotUncheck()
+        public void AllowSwitchOff_False_CannotUncheck()
         {
-            group.AllowSwitchOff = RadioButtonGroup.AllowSwitchOffType.Never;
+            group.AllowSwitchOff = false;
             btn1.IsChecked = true;
 
             // 尝试通过代码取消选中
             btn1.IsChecked = false;
-            Assert.IsTrue(btn1.IsChecked, "Never模式下，代码不应该能取消选中唯一选中的按钮");
+            Assert.IsTrue(btn1.IsChecked, "AllowSwitchOff=false时，代码不应该能取消选中唯一选中的按钮");
 
             // 尝试通过玩家点击取消选中
             btn1.OnPointerClick(new PointerEventData(EventSystem.current) { button = PointerEventData.InputButton.Left });
-            Assert.IsTrue(btn1.IsChecked, "Never模式下，玩家不应该能取消选中唯一选中的按钮");
-        }
-
-        [Test]
-        public void AllowSwitchOff_ScriptOnly_PlayerCannotUncheck()
-        {
-            group.AllowSwitchOff = RadioButtonGroup.AllowSwitchOffType.ScriptOnly;
-            btn1.IsChecked = true;
-
-            // 模拟玩家点击取消选中
-            btn1.OnPointerClick(new PointerEventData(EventSystem.current) { button = PointerEventData.InputButton.Left });
-            Assert.IsTrue(btn1.IsChecked, "ScriptOnly模式下，玩家点击不能取消选中");
-
-            // 模拟代码取消选中
-            btn1.IsChecked = false;
-            Assert.IsFalse(btn1.IsChecked, "ScriptOnly模式下，脚本可以取消选中");
-            Assert.IsNull(group.SelectedItem);
+            Assert.IsTrue(btn1.IsChecked, "AllowSwitchOff=false时，玩家不应该能取消选中唯一选中的按钮");
         }
 
         [Test]
@@ -131,7 +115,7 @@ namespace CyanStars.Test.EditMode
 
             // 禁用btn1
             btn1.gameObject.SetActive(false);
-            Assert.IsNull(group.SelectedItem, "禁用当前选中的按钮后，Group的选中项应该清空");
+            Assert.AreEqual(btn3, group.SelectedItem, "禁用了被选中的按钮后，由于 AllowSwitchOff 默认为 false，Group 应选中下一个可用的按钮");
         }
     }
 }

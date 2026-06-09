@@ -20,7 +20,12 @@
                 throw new System.ArgumentNullException(nameof(button));
 
             if (button.Group == group)
+            {
                 button.Group = null;
+#if UNITY_EDITOR
+                UnityEngine.Debug.Log($"RadioButton {button.name} unregistered from group {group.name}");
+#endif
+            }
         }
     }
 }

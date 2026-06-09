@@ -47,39 +47,42 @@ namespace CyanStars.Utils.RadioButton
         public bool IsChecked
         {
             get => isChecked;
-            set
-            {
-                if (isChecked == value)
-                    return;
-
-                if (group == null)
-                {
-                    isChecked = value;
-                    if (!noValueChangedNotice)
-                    {
-                        onValueChanged.Invoke(isChecked);
-                    }
-                }
-                else
-                {
-                    if (group.TrySetCheckedState(this, value, isChangeByPlayer))
-                    {
-                        isChecked = value;
-                        if (!noValueChangedNotice)
-                        {
-                            onValueChanged.Invoke(isChecked);
-                        }
-                    }
-                }
-            }
+            set => SetCheckState(value, true);
         }
 
         public UnityEvent<bool> OnValueChanged => onValueChanged;
         public UnityEvent<RadioButtonGroup?, RadioButtonGroup?> OnGroupChanged => onGroupChanged;
 
 
-        private bool isChangeByPlayer = false;
-        private bool noValueChangedNotice = false;
+        private void SetCheckState(bool value, bool isNotifyValueChanged)
+        {
+            if (isChecked == value)
+                return;
+
+            if (group == null)
+            {
+                isChecked = value;
+                if (isNotifyValueChanged)
+                    onValueChanged.Invoke(isChecked);
+            }
+            else
+            {
+                if (group.TrySetCheckedState(this, value))
+                {
+                    isChecked = value;
+                    if (isNotifyValueChanged)
+                        onValueChanged.Invoke(isChecked);
+                }
+            }
+        }
+
+        internal void SetIsCheckedByGroup(bool value)
+        {
+            if (isChecked == value)
+                return;
+            isChecked = value;
+            onValueChanged.Invoke(value);
+        }
 
 
         protected override void OnEnable()
@@ -112,9 +115,7 @@ namespace CyanStars.Utils.RadioButton
 
             if (IsActive() && IsInteractable())
             {
-                isChangeByPlayer = true;
                 IsChecked = !IsChecked;
-                isChangeByPlayer = false;
             }
         }
 
@@ -122,23 +123,13 @@ namespace CyanStars.Utils.RadioButton
         {
             if (IsActive() && IsInteractable())
             {
-                isChangeByPlayer = true;
                 IsChecked = !IsChecked;
-                isChangeByPlayer = false;
             }
         }
 
         public void SetCheckedWithoutNotify(bool value)
         {
-            noValueChangedNotice = true;
-            try
-            {
-                IsChecked = value;
-            }
-            finally
-            {
-                noValueChangedNotice = false;
-            }
+            SetCheckState(value, false);
         }
     }
 }

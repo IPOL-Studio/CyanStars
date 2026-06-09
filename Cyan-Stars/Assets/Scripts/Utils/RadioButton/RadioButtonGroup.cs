@@ -16,16 +16,8 @@ namespace CyanStars.Utils.RadioButton
             Remove
         }
 
-        public enum AllowSwitchOffType
-        {
-            Always, // 可以取消选中所有
-            ScriptOnly, // 玩家无法取消选中，但脚本添加未选中的 button / 取消选中 button 不受影响
-            Never // 不能取消选中所有
-        }
-
-
         [SerializeField]
-        private AllowSwitchOffType allowSwitchOff;
+        private bool allowSwitchOff;
 
         [SerializeField]
         private UnityEvent<RadioButton?, RadioButton?> onSelectedItemChanged = new UnityEvent<RadioButton?, RadioButton?>();
@@ -34,7 +26,7 @@ namespace CyanStars.Utils.RadioButton
         private UnityEvent<RadioButton, CollectionChangeType> onCollectionChanged = new UnityEvent<RadioButton, CollectionChangeType>();
 
 
-        public AllowSwitchOffType AllowSwitchOff
+        public bool AllowSwitchOff
         {
             get => allowSwitchOff;
             set
@@ -48,7 +40,6 @@ namespace CyanStars.Utils.RadioButton
         public UnityEvent<RadioButton?, RadioButton?> OnSelectedItemChanged => onSelectedItemChanged;
         public UnityEvent<RadioButton, CollectionChangeType> OnCollectionChanged => onCollectionChanged;
 
-        private bool uncheckByGroup = false;
         private readonly List<RadioButton> Buttons = new List<RadioButton>();
 
 
@@ -101,7 +92,7 @@ namespace CyanStars.Utils.RadioButton
 
         public void EnsureValidState()
         {
-            if (allowSwitchOff == AllowSwitchOffType.Always)
+            if (allowSwitchOff)
                 return;
 
             if (SelectedItem != null && SelectedItem.IsActive())
@@ -118,22 +109,17 @@ namespace CyanStars.Utils.RadioButton
             }
         }
 
-        public bool TrySetCheckedState(RadioButton button, bool targetValue, bool uncheckByPlayer)
+        public bool TrySetCheckedState(RadioButton button, bool targetValue)
         {
             if (button == null || !Buttons.Contains(button))
                 return false;
-
-            if (uncheckByGroup)
-                return true;
 
             var old = SelectedItem;
 
             if (!targetValue)
             {
                 // -- 处理取消选中 --
-                if (allowSwitchOff == AllowSwitchOffType.Never)
-                    return false;
-                if (allowSwitchOff == AllowSwitchOffType.ScriptOnly && uncheckByPlayer)
+                if (!allowSwitchOff)
                     return false;
 
                 if (old == button)
@@ -150,13 +136,10 @@ namespace CyanStars.Utils.RadioButton
                 if (old == button)
                     return true;
 
-                uncheckByGroup = true;
                 if (old != null)
                 {
-                    old.IsChecked = false;
+                    old.SetIsCheckedByGroup(false);
                 }
-
-                uncheckByGroup = false;
 
                 SelectedItem = button;
                 onSelectedItemChanged.Invoke(old, SelectedItem);
