@@ -77,7 +77,7 @@ namespace CyanStars
 
                             // 加载谱包并选中
                             chartPackFilePathText.text = path;
-                            await chartModule.SetChartPackDataFromDesk(path);
+                            await chartModule.SetChartPackDataFromDisk(path);
                             chartModule.SelectChartPackData(0);
 
                             // 清空旧谱面列表，生成新谱面列表
