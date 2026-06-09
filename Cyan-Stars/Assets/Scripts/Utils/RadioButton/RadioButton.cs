@@ -47,14 +47,14 @@ namespace CyanStars.Utils.RadioButton
         public bool IsChecked
         {
             get => isChecked;
-            set => SetCheckState(value, true);
+            set => SetIsChecked(value, true);
         }
 
         public UnityEvent<bool> OnValueChanged => onValueChanged;
         public UnityEvent<RadioButtonGroup?, RadioButtonGroup?> OnGroupChanged => onGroupChanged;
 
 
-        private void SetCheckState(bool value, bool isNotifyValueChanged)
+        private void SetIsChecked(bool value, bool isNotifyValueChanged)
         {
             if (isChecked == value)
                 return;
@@ -67,7 +67,7 @@ namespace CyanStars.Utils.RadioButton
             }
             else
             {
-                if (group.TrySetCheckedState(this, value))
+                if (group.TrySetIsChecked(this, value))
                 {
                     isChecked = value;
                     if (isNotifyValueChanged)
@@ -127,9 +127,9 @@ namespace CyanStars.Utils.RadioButton
             }
         }
 
-        public void SetCheckedWithoutNotify(bool value)
+        public void SetIsCheckedWithoutNotify(bool value)
         {
-            SetCheckState(value, false);
+            SetIsChecked(value, false);
         }
     }
 }

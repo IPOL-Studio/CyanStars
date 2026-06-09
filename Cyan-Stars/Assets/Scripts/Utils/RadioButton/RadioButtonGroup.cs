@@ -109,7 +109,7 @@ namespace CyanStars.Utils.RadioButton
             }
         }
 
-        public bool TrySetCheckedState(RadioButton button, bool targetValue)
+        public bool TrySetIsChecked(RadioButton button, bool targetValue)
         {
             if (button == null || !Buttons.Contains(button))
                 return false;

@@ -91,12 +91,12 @@ namespace CyanStars.Test.EditMode
         }
 
         [Test]
-        public void SetCheckedWithoutNotify_DoesNotFireEvent()
+        public void SetIsCheckedWithoutNotify_DoesNotFireEvent()
         {
             bool eventFired = false;
             btn1.OnValueChanged.AddListener((val) => eventFired = true);
 
-            btn1.SetCheckedWithoutNotify(true);
+            btn1.SetIsCheckedWithoutNotify(true);
 
             Assert.IsTrue(btn1.IsChecked, "状态应该被改变");
             Assert.IsFalse(eventFired, "事件不应该被触发");
