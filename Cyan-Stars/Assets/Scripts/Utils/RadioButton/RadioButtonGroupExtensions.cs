@@ -21,11 +21,14 @@
 
             if (button.Group == group)
             {
-                button.Group = null;
-#if UNITY_EDITOR
-                UnityEngine.Debug.Log($"RadioButton {button.name} unregistered from group {group.name}");
-#endif
+                button.group = null;
             }
+#if UNITY_EDITOR
+            else
+            {
+                Debug.Log($"Unregister failed, RadioButton {button.name} do not belong to group {group.name}");
+            }
+#endif
         }
     }
 }
