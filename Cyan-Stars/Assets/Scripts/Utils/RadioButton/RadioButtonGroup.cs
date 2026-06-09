@@ -62,7 +62,7 @@ namespace CyanStars.Utils.RadioButton
                 }
                 else if (SelectedItem != button)
                 {
-                    button.IsChecked = false;
+                    button.SetIsCheckedByGroup(false);
                 }
             }
 
