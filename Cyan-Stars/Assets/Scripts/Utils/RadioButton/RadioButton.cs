@@ -127,9 +127,9 @@ namespace CyanStars.Utils.RadioButton
             }
         }
 
-        public void SetIsCheckedWithoutNotify(bool value)
-        {
-            SetIsChecked(value, false);
-        }
+        // public void SetIsCheckedWithoutNotify(bool value)
+        // {
+        //     SetIsChecked(value, false);
+        // }
     }
 }

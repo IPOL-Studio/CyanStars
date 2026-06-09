@@ -1,4 +1,8 @@
-﻿namespace CyanStars.Utils.RadioButton
+﻿#nullable enable
+
+using UnityEngine;
+
+namespace CyanStars.Utils.RadioButton
 {
     public static class RadioButtonGroupExtensions
     {
@@ -21,7 +25,7 @@
 
             if (button.Group == group)
             {
-                button.group = null;
+                button.Group = null;
             }
 #if UNITY_EDITOR
             else

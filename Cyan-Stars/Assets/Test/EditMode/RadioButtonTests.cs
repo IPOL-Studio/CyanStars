@@ -90,17 +90,17 @@ namespace CyanStars.Test.EditMode
             Assert.IsTrue(btn1.IsChecked, "AllowSwitchOff=false时，玩家不应该能取消选中唯一选中的按钮");
         }
 
-        [Test]
-        public void SetIsCheckedWithoutNotify_DoesNotFireEvent()
-        {
-            bool eventFired = false;
-            btn1.OnValueChanged.AddListener((val) => eventFired = true);
-
-            btn1.SetIsCheckedWithoutNotify(true);
-
-            Assert.IsTrue(btn1.IsChecked, "状态应该被改变");
-            Assert.IsFalse(eventFired, "事件不应该被触发");
-        }
+        // [Test]
+        // public void SetIsCheckedWithoutNotify_DoesNotFireEvent()
+        // {
+        //     bool eventFired = false;
+        //     btn1.OnValueChanged.AddListener((val) => eventFired = true);
+        //
+        //     btn1.SetIsCheckedWithoutNotify(true);
+        //
+        //     Assert.IsTrue(btn1.IsChecked, "状态应该被改变");
+        //     Assert.IsFalse(eventFired, "事件不应该被触发");
+        // }
 
         [Test]
         public void OnDisable_RemovesFromGroup_DoesNotDestroyGroupStateIfOthersExist()
