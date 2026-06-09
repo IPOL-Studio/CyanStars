@@ -134,7 +134,7 @@ namespace CyanStars.Utils.RadioButton
             {
                 // -- 处理选中 --
                 if (old == button)
-                    return true;
+                    return false;
 
                 if (old != null)
                 {
