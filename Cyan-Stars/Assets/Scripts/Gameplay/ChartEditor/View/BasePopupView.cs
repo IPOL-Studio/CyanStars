@@ -38,6 +38,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected virtual void OnDestroy()
         {
+            if (CanvasVisibility.CurrentValue) // 如果销毁时弹窗出于打开状态，先发送关闭通知。之后如果改用对象池需要再次验证逻辑，目前无问题
+                ViewModel.NotifyCanvasVisibilityChanged(false);
+
             cts?.Cancel();
             cts?.Dispose();
             cts = null;
@@ -58,6 +61,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     else
                         _ = CloseCanvas();
                 })
+                .AddTo(this);
+            CanvasVisibility
+                .Skip(1) // 防止初始化时意外计数
+                .Subscribe(visible => ViewModel.NotifyCanvasVisibilityChanged(visible))
                 .AddTo(this);
 
             closeCanvasButton

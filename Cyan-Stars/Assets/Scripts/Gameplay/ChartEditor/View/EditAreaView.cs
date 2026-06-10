@@ -15,6 +15,7 @@ using DG.Tweening;
 using Gameplay.ChartEditor;
 using ObservableCollections;
 using R3;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -488,8 +489,17 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-                ViewModel.OnSpaceDown();
+            if (!Input.GetKeyDown(KeyCode.Space))
+                return;
+
+            if (ViewModel.OpenCanvasCount.CurrentValue >= 1)
+                return;
+
+            if (EventSystem.current.currentSelectedGameObject != null &&
+                EventSystem.current.currentSelectedGameObject.TryGetComponent(out TMP_InputField _))
+                return; // 焦点位于输入框时拦截 Space 响应
+
+            ViewModel.OnSpaceDown();
         }
 
         protected void OnDestroy()

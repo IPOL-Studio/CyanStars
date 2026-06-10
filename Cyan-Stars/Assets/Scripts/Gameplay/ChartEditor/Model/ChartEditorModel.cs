@@ -71,6 +71,9 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         // TODO: 后续用 list 拓展为选中多个音符一次编辑
         public readonly ReactiveProperty<BaseChartNoteData?> SelectedNoteData = new ReactiveProperty<BaseChartNoteData?>(null);
 
+        // 当前打开的 Canvas 总数
+        public readonly ReactiveProperty<int> OpenCanvasCount = new ReactiveProperty<int>(0);
+
         // 编辑器属性
         public readonly ReactiveProperty<int> PosAccuracy = new ReactiveProperty<int>(4);
         public readonly ReactiveProperty<bool> PosMagnet = new ReactiveProperty<bool>(true);
