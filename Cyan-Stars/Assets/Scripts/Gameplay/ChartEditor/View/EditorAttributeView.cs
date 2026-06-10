@@ -120,7 +120,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     isTimelineReadyToPlay,
                     (isPlaying, isReadyToPlay) => !isPlaying && isReadyToPlay
                 )
-                .Subscribe(interactable => slider.interactable = interactable)
+                .Subscribe(interactable =>
+                {
+                    slider.interactable = interactable;
+                    playPauseButton.interactable = interactable;
+                })
                 .AddTo(this);
             Observable.CombineLatest(
                     ViewModel.CurrentTimelineTimeMs,
