@@ -197,7 +197,7 @@ namespace CyanStars.Chart
                 if (isInternal && difficultiesAbleToPlay.Count != 4)
                 {
                     // TODO: 正式发布时在内置谱包谱面数不等于 4 时抛异常
-                    Debug.LogError($"某个内置谱包难度计数不等于 4：{chartPackData.Title}，当前已允许加载，正式发布时应当修复");
+                    Debug.LogWarning($"某个内置谱包难度计数不等于 4：{chartPackData.Title}，当前已允许加载，正式发布时应当修复");
                 }
 
                 // levels 为各个难度的定数，内置谱包此值由 Unity SO 配置，社区谱包此值固定为 0
