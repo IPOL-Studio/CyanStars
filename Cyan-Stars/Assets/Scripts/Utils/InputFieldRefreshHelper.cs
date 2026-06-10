@@ -72,7 +72,7 @@ namespace CyanStars
             textHeight += verticalPadding;
 
             float newHeight = Mathf.Max(layoutElement.minHeight, textHeight);
-            
+
             if (Mathf.Abs(layoutElement.preferredHeight - newHeight) > 0.1f)
                 layoutElement.preferredHeight = newHeight;
         }
