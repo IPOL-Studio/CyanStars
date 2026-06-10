@@ -18,7 +18,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public readonly ReactiveProperty<string> VersionTitle;
         public readonly ReactiveProperty<string> AudioFilePath;
         public readonly ReactiveProperty<int> Offset;
-        public readonly ObservableDictionary<string, List<string>> Staffs;
 
         public MusicVersionDataEditorModel(MusicVersionData musicVersionData)
         {
@@ -27,7 +26,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             VersionTitle = new ReactiveProperty<string>(musicVersionData.VersionTitle);
             AudioFilePath = new ReactiveProperty<string>(musicVersionData.AudioFilePath);
             Offset = new ReactiveProperty<int>(musicVersionData.Offset);
-            Staffs = new ObservableDictionary<string, List<string>>(musicVersionData.Staffs);
         }
 
         /// <summary>
@@ -39,10 +37,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             var versionTitle = VersionTitle.CurrentValue;
             var audioFilePath = AudioFilePath.CurrentValue;
             var offset = Offset.CurrentValue;
-            var staffs = new Dictionary<string, List<string>>(Staffs.Count);
-            foreach (var staffKvp in Staffs)
-                staffs.Add(staffKvp.Key, staffKvp.Value);
-            return new MusicVersionData(versionTitle, audioFilePath, offset, staffs);
+            return new MusicVersionData(versionTitle, audioFilePath, offset);
         }
     }
 }

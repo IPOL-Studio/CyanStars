@@ -175,17 +175,9 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
-            Dictionary<string, List<string>> staffs = mapItem.Data.RuntimeChartPack.ChartPackData
-                .MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex].Staffs;
-            if (staffs.Count == 0)
-            {
-                Debug.LogWarning("没有设置 Staff 文本");
-            }
-            else
-            {
-                owner.StarController.ResetAllStaffGroup(mapItem.Data.RuntimeChartPack.ChartPackData
-                    .MusicVersionDatas[(int)chartModule.SelectedMusicVersionIndex].Staffs);
-            }
+            string chartPackInfo = mapItem.Data.RuntimeChartPack.ChartPackData.ChartPackInfo;
+            HashSet<string> staffNames = ChartPackInfoHelper.ToStaffs(chartPackInfo);
+            owner.StarController.ResetAllStaffGroup(staffNames);
         }
     }
 }

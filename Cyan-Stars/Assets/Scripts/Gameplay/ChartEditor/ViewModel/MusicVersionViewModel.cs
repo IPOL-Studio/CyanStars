@@ -31,10 +31,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private readonly ReactiveProperty<MusicVersionDataEditorModel?> selectedMusicVersionData;
         public ReadOnlyReactiveProperty<MusicVersionDataEditorModel?> SelectedMusicVersionData => selectedMusicVersionData;
 
-        private readonly ObservableList<KeyValuePair<string, List<string>>> staffItemsProxy;
-        public readonly ISynchronizedView<KeyValuePair<string, List<string>>, MusicVersionStaffItemViewModel> StaffItems;
-
-
         public readonly ReadOnlyReactiveProperty<string> DetailTitle;
         public readonly ReadOnlyReactiveProperty<string> DetailAudioFilePath;
         public readonly ReadOnlyReactiveProperty<string> DetailOffset;
@@ -55,45 +51,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             MusicListItems = Model.ChartPackData.CurrentValue.MusicVersions
                 .CreateView(data => new MusicVersionListItemViewModel(model, this, data))
                 .AddTo(base.Disposables);
-
-            // 初始化代理集合和视图
-            staffItemsProxy = new ObservableList<KeyValuePair<string, List<string>>>();
-            StaffItems = staffItemsProxy
-                .CreateView(kvp => new MusicVersionStaffItemViewModel(model, this, kvp))
-                .AddTo(base.Disposables);
-
-            // 设置 StaffItems 数据同步逻辑，并使用 SerialDisposable 来管理当前选中 Staffs 集合的事件订阅，切换选中项时自动取消上一次的订阅
-            var staffSyncDisposable = new SerialDisposable().AddTo(base.Disposables);
-            selectedMusicVersionData
-                .Subscribe(data =>
-                    {
-                        // 当选择的音乐版本变化时，刷新整个 Staff 列表
-                        staffItemsProxy.Clear();
-
-                        if (data == null)
-                        {
-                            staffSyncDisposable.Disposable = null;
-                            return;
-                        }
-
-                        foreach (var item in data.Staffs)
-                        {
-                            staffItemsProxy.Add(item);
-                        }
-
-                        var d = new CompositeDisposable();
-
-                        data.Staffs.ObserveAdd().Subscribe(e => staffItemsProxy.Add(e.Value)).AddTo(d);
-                        data.Staffs.ObserveRemove().Subscribe(e => staffItemsProxy.Remove(e.Value)).AddTo(d);
-                        data.Staffs.ObserveReplace().Subscribe(e => staffItemsProxy[e.Index] = e.NewValue).AddTo(d);
-                        data.Staffs.ObserveMove().Subscribe(e => staffItemsProxy.Move(e.OldIndex, e.NewIndex)).AddTo(d);
-                        data.Staffs.ObserveReset().Subscribe(_ => staffItemsProxy.Clear()).AddTo(d);
-
-                        staffSyncDisposable.Disposable = d;
-                    }
-                )
-                .AddTo(base.Disposables);
-
 
             Model.ChartPackData // 元素数量变化时更新选中的元素
                 .Select(data =>
@@ -145,98 +102,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             );
         }
 
-        /// <summary>
-        /// 由子 VM 调用，删除并重建 Staff 数据，字典不保证排序一致，新的数据大概率会被添加到末尾
-        /// </summary>
-        public void RebuildStaffItemData(
-            KeyValuePair<string, List<string>> oldData,
-            KeyValuePair<string, List<string>> newData
-        )
-        {
-            if (selectedMusicVersionData.CurrentValue == null)
-                throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下替换 Staff 数据。");
-
-            CommandStack.ExecuteCommand(
-                () =>
-                {
-                    selectedMusicVersionData.CurrentValue.Staffs.Remove(oldData);
-                    selectedMusicVersionData.CurrentValue.Staffs.Add(newData);
-                },
-                () =>
-                {
-                    selectedMusicVersionData.CurrentValue.Staffs.Remove(newData);
-                    selectedMusicVersionData.CurrentValue.Staffs.Add(oldData);
-                }
-            );
-        }
-
-        /// <summary>
-        /// 由子 VM 调用，在选定的版本中删除一行 Staff 信息
-        /// </summary>
-        public void DeleteStaffItemData(KeyValuePair<string, List<string>> data)
-        {
-            if (selectedMusicVersionData.CurrentValue == null)
-                throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下修改 Staff 数据。");
-
-            CommandStack.ExecuteCommand(
-                () => selectedMusicVersionData.CurrentValue.Staffs.Remove(data),
-                () => selectedMusicVersionData.CurrentValue.Staffs.Add(data)
-            );
-        }
-
-        /// <summary>
-        /// 由子 VM 调用，检查新的 StaffName 可用性（不能与已有的重复）
-        /// </summary>
-        public bool CheckNewStaffNameAvailable(string newStaffName)
-        {
-            if (selectedMusicVersionData.CurrentValue == null)
-                return false;
-
-            foreach (var staffKvp in selectedMusicVersionData.CurrentValue.Staffs)
-            {
-                if (staffKvp.Key == newStaffName)
-                    return false;
-            }
-
-            return true;
-        }
-
-
         public void AddMusicVersionItem()
         {
             var newMusicVersionData = new MusicVersionDataEditorModel(new MusicVersionData("新音乐版本"));
             CommandStack.ExecuteCommand(
                 () => Model.ChartPackData.CurrentValue.MusicVersions.Add(newMusicVersionData),
                 () => Model.ChartPackData.CurrentValue.MusicVersions.Remove(newMusicVersionData)
-            );
-        }
-
-        public void AddStaffItem()
-        {
-            if (selectedMusicVersionData.CurrentValue == null)
-                throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下添加 Staff 数据。");
-
-            int i = 1;
-            while (true)
-            {
-                bool isRepeated = false;
-                foreach (var staffData in selectedMusicVersionData.CurrentValue.Staffs)
-                {
-                    if (staffData.Key == $"Staff{i}")
-                    {
-                        isRepeated = true;
-                        break;
-                    }
-                }
-
-                if (isRepeated)
-                    i++;
-                else
-                    break;
-            }
-
-            selectedMusicVersionData.CurrentValue.Staffs.Add(
-                new KeyValuePair<string, List<string>>($"Staff{i}", new List<string>())
             );
         }
 
@@ -464,25 +335,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             CommandStack.ExecuteCommand(
                 () =>
                 {
-                    // 深拷贝一个音乐版本数据
-                    var staffs = new Dictionary<string, List<string>>();
-                    foreach (var kvp in SelectedMusicVersionData.CurrentValue.Staffs)
-                    {
-                        var jobs = new List<string>();
-                        foreach (var job in kvp.Value)
-                        {
-                            jobs.Add(job);
-                        }
-
-                        staffs.Add(kvp.Key, jobs);
-                    }
-
                     var deepClonedData = new MusicVersionDataEditorModel(
                         new MusicVersionData(
                             SelectedMusicVersionData.CurrentValue.VersionTitle.Value,
                             SelectedMusicVersionData.CurrentValue.AudioFilePath.Value,
-                            SelectedMusicVersionData.CurrentValue.Offset.Value,
-                            staffs
+                            SelectedMusicVersionData.CurrentValue.Offset.Value
                         )
                     );
 
