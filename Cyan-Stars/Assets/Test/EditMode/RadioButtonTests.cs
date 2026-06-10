@@ -7,13 +7,13 @@ using CyanStars.Utils.RadioButton;
 
 namespace CyanStars.Test.EditMode
 {
-    public class RadioButtonTests
+    public class RadioButtonItemTests
     {
         private GameObject rootGo;
         private RadioButtonGroup group;
-        private RadioButton btn1;
-        private RadioButton btn2;
-        private RadioButton btn3;
+        private RadioButtonItem btn1;
+        private RadioButtonItem btn2;
+        private RadioButtonItem btn3;
 
         [SetUp]
         public void Setup()
@@ -34,11 +34,11 @@ namespace CyanStars.Test.EditMode
             Object.DestroyImmediate(rootGo);
         }
 
-        private RadioButton CreateRadioButton(string name, RadioButtonGroup parentGroup)
+        private RadioButtonItem CreateRadioButton(string name, RadioButtonGroup parentGroup)
         {
             var go = new GameObject(name);
             go.transform.SetParent(rootGo.transform);
-            var btn = go.AddComponent<RadioButton>();
+            var btn = go.AddComponent<RadioButtonItem>();
             btn.Group = parentGroup;
             return btn;
         }

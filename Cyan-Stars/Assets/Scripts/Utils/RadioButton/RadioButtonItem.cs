@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace CyanStars.Utils.RadioButton
 {
-    public class RadioButton : Selectable, IPointerClickHandler, ISubmitHandler
+    public class RadioButtonItem : Selectable, IPointerClickHandler, ISubmitHandler
     {
         [SerializeField]
         private RadioButtonGroup? group;

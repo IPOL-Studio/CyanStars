@@ -6,7 +6,7 @@ namespace CyanStars.Utils.RadioButton
 {
     public static class RadioButtonGroupExtensions
     {
-        public static void Register(this RadioButtonGroup group, RadioButton button)
+        public static void Register(this RadioButtonGroup group, RadioButtonItem button)
         {
             if (group == null)
                 throw new System.ArgumentNullException(nameof(group));
@@ -16,7 +16,7 @@ namespace CyanStars.Utils.RadioButton
             button.Group = group;
         }
 
-        public static void Unregister(this RadioButtonGroup group, RadioButton button)
+        public static void Unregister(this RadioButtonGroup group, RadioButtonItem button)
         {
             if (group == null)
                 throw new System.ArgumentNullException(nameof(group));
@@ -30,7 +30,7 @@ namespace CyanStars.Utils.RadioButton
 #if UNITY_EDITOR
             else
             {
-                Debug.Log($"Unregister failed, RadioButton {button.name} do not belong to group {group.name}");
+                Debug.Log($"Unregister failed, RadioButtonItem {button.name} do not belong to group {group.name}");
             }
 #endif
         }

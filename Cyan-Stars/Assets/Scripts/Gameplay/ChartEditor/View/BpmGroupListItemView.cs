@@ -61,7 +61,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 })
                 .AddTo(disposables);
 
-            // TODO: 后续改为 RadioButton 控制 Toggle 状态
+            // TODO: 后续改为 RadioButtonItem 控制 Toggle 状态
             itemToggle
                 .OnValueChangedAsObservable()
                 .Subscribe((targetViewModel, index, itemToggle, selectableStateObserver), static (isOn, state) =>

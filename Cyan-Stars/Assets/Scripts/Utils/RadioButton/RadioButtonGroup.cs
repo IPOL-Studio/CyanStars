@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 
 namespace CyanStars.Utils.RadioButton
 {
-    public class RadioButtonGroup : UIBehaviour, IEnumerable<RadioButton>
+    public class RadioButtonGroup : UIBehaviour, IEnumerable<RadioButtonItem>
     {
         public enum CollectionChangeType
         {
@@ -20,10 +20,10 @@ namespace CyanStars.Utils.RadioButton
         private bool allowSwitchOff;
 
         [SerializeField]
-        private UnityEvent<RadioButton?, RadioButton?> onSelectedItemChanged = new UnityEvent<RadioButton?, RadioButton?>();
+        private UnityEvent<RadioButtonItem?, RadioButtonItem?> onSelectedItemChanged = new UnityEvent<RadioButtonItem?, RadioButtonItem?>();
 
         [SerializeField]
-        private UnityEvent<RadioButton, CollectionChangeType> onCollectionChanged = new UnityEvent<RadioButton, CollectionChangeType>();
+        private UnityEvent<RadioButtonItem, CollectionChangeType> onCollectionChanged = new UnityEvent<RadioButtonItem, CollectionChangeType>();
 
 
         public bool AllowSwitchOff
@@ -36,18 +36,18 @@ namespace CyanStars.Utils.RadioButton
             }
         }
 
-        public RadioButton? SelectedItem { get; private set; }
-        public UnityEvent<RadioButton?, RadioButton?> OnSelectedItemChanged => onSelectedItemChanged;
-        public UnityEvent<RadioButton, CollectionChangeType> OnCollectionChanged => onCollectionChanged;
+        public RadioButtonItem? SelectedItem { get; private set; }
+        public UnityEvent<RadioButtonItem?, RadioButtonItem?> OnSelectedItemChanged => onSelectedItemChanged;
+        public UnityEvent<RadioButtonItem, CollectionChangeType> OnCollectionChanged => onCollectionChanged;
 
-        private readonly List<RadioButton> Buttons = new List<RadioButton>();
+        private readonly List<RadioButtonItem> Buttons = new List<RadioButtonItem>();
 
 
         /// <summary>
         /// Only add a button to the group
-        /// <para>If you want to set the group of a radio button, please set the <see cref="RadioButton.Group"/> or use the <see cref="RadioButtonGroupExtensions.Register"/></para>
+        /// <para>If you want to set the group of a radio button, please set the <see cref="RadioButtonItem.Group"/> or use the <see cref="RadioButtonGroupExtensions.Register"/></para>
         /// </summary>
-        internal void Add(RadioButton button)
+        internal void Add(RadioButtonItem button)
         {
             if (button == null || Buttons.Contains(button))
                 return;
@@ -72,9 +72,9 @@ namespace CyanStars.Utils.RadioButton
 
         /// <summary>
         /// Only remove a button from the group
-        /// <para>If you want to unset the group of a radio button, please set the <see cref="RadioButton.Group"/> to null or use the <see cref="RadioButtonGroupExtensions.Unregister"/></para>
+        /// <para>If you want to unset the group of a radio button, please set the <see cref="RadioButtonItem.Group"/> to null or use the <see cref="RadioButtonGroupExtensions.Unregister"/></para>
         /// </summary>
-        internal bool Remove(RadioButton button)
+        internal bool Remove(RadioButtonItem button)
         {
             if (button is null || !Buttons.Remove(button))
                 return false;
@@ -100,7 +100,7 @@ namespace CyanStars.Utils.RadioButton
 
             for (int i = 0; i < Buttons.Count; i++)
             {
-                RadioButton item = Buttons[i];
+                RadioButtonItem item = Buttons[i];
                 if (item.IsInteractable() && item.IsActive())
                 {
                     item.IsChecked = true;
@@ -109,7 +109,7 @@ namespace CyanStars.Utils.RadioButton
             }
         }
 
-        public bool TrySetIsChecked(RadioButton button, bool targetValue)
+        public bool TrySetIsChecked(RadioButtonItem button, bool targetValue)
         {
             if (button == null || !Buttons.Contains(button))
                 return false;
@@ -147,7 +147,7 @@ namespace CyanStars.Utils.RadioButton
             }
         }
 
-        public IEnumerator<RadioButton> GetEnumerator()
+        public IEnumerator<RadioButtonItem> GetEnumerator()
         {
             return Buttons.GetEnumerator();
         }
