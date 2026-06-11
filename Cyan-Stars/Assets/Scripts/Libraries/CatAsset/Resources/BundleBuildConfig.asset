@@ -216,12 +216,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/Button(PlayPauseButton)_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 8296
+    AssetsLength: 6525
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/ChartEditor/Button(PlayPauseButton).prefab
-      Length: 8296
+      Length: 6525
   - DirectoryName: BundleRes/Prefabs/ChartEditor
     BundleName: Button(Speed Element)_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/ChartEditor/Button(Speed Element)_prefab.bundle
@@ -559,12 +559,12 @@ MonoBehaviour:
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel_prefab.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 191060
+    AssetsLength: 197208
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/BundleRes/Prefabs/MapSelectionUI/MapSelectionPanel.prefab
-      Length: 191060
+      Length: 197208
   - DirectoryName: BundleRes/Prefabs/MapSelectionUI
     BundleName: StaffLabel_prefab.bundle
     BundleIdentifyName: BundleRes/Prefabs/MapSelectionUI/StaffLabel_prefab.bundle
@@ -958,14 +958,14 @@ MonoBehaviour:
     BundleIdentifyName: CysMultimediaAssets/Font/SourceHanSerifCN/Regular.bundle
     Group: Base
     IsRaw: 0
-    AssetsLength: 49267740
+    AssetsLength: 49268331
     CompressOption: 2
     EncryptOption: 1
     Assets:
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Regular/SourceHanSerifCN-Regular.otf
       Length: 11626108
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Regular/SourceHanSerifCN-Regular-Dynamic-SDF.asset
-      Length: 2124157
+      Length: 2124748
     - Name: Assets/CysMultimediaAssets/Font/SourceHanSerifCN/Regular/SourceHanSerifCN-Regular-Static-3500Chinese-SDF(FastPacking).asset
       Length: 35517475
   - DirectoryName: CysMultimediaAssets/Font/SourceHanSerifCN
