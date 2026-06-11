@@ -1,7 +1,10 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace CyanStars.Framework.UI
 {
@@ -11,7 +14,7 @@ namespace CyanStars.Framework.UI
     public class UIManager : BaseManager
     {
         [Header("UI相机")]
-        public Camera UICamera;
+        public Camera UICamera = null!;
 
         /// <summary>
         /// UI组深度间隔
@@ -23,7 +26,7 @@ namespace CyanStars.Framework.UI
         /// UI组列表
         /// </summary>
         [Header("UI组列表")]
-        public List<UIGroup> UIGroups;
+        public List<UIGroup> UIGroups = new List<UIGroup>();
 
         /// <summary>
         /// UI组名->UI组
@@ -43,6 +46,12 @@ namespace CyanStars.Framework.UI
         /// <inheritdoc />
         public override int Priority { get; }
 
+        /// <summary>
+        /// 当前的焦点 go
+        /// </summary>
+        public GameObject? SelectedGameObject { get; private set; }
+
+
         /// <inheritdoc />
         public override void OnInit()
         {
@@ -58,6 +67,13 @@ namespace CyanStars.Framework.UI
 
         public override void OnUpdate(float deltaTime)
         {
+            if (EventSystem.current == null)
+                return;
+
+            GameObject? currentSelected = EventSystem.current.currentSelectedGameObject;
+
+            if (SelectedGameObject != currentSelected)
+                SelectedGameObject = currentSelected;
         }
 
         /// <summary>
@@ -66,10 +82,11 @@ namespace CyanStars.Framework.UI
         public ValueTask<T> OpenUIPanelAsync<T>() where T : BaseUIPanel
         {
             Type type = typeof(T);
-            if (!InternalOpenUIPanel(type,out var uiGroup,out var uiData))
+            if (!InternalOpenUIPanel(type, out var uiGroup, out var uiData))
             {
                 return default;
             }
+
             return uiGroup.OpenUIPanelAsync<T>(uiData);
         }
 
@@ -78,14 +95,15 @@ namespace CyanStars.Framework.UI
         /// </summary>
         public ValueTask<BaseUIPanel> OpenUIPanelAsync(Type type)
         {
-            if (!InternalOpenUIPanel(type,out var uiGroup,out var uiData))
+            if (!InternalOpenUIPanel(type, out var uiGroup, out var uiData))
             {
                 return default;
             }
+
             return uiGroup.OpenUIPanelAsync(uiData);
         }
 
-        private bool InternalOpenUIPanel(Type type, out UIGroup uiGroup,out UIDataAttribute uiData)
+        private bool InternalOpenUIPanel(Type type, out UIGroup uiGroup, out UIDataAttribute uiData)
         {
             uiGroup = GetUIGroup(type, out uiData);
             bool uiPanelOpened = OpenedUIDict.TryGetValue(type, out int count);
@@ -104,7 +122,7 @@ namespace CyanStars.Framework.UI
         /// </summary>
         public void CloseUIPanel<T>() where T : BaseUIPanel
         {
-           CloseUIPanel(typeof(T));
+            CloseUIPanel(typeof(T));
         }
 
         /// <summary>
@@ -123,7 +141,7 @@ namespace CyanStars.Framework.UI
         public void CloseUIPanel(BaseUIPanel uiPanel)
         {
             Type type = uiPanel.GetType();
-            UIGroup uiGroup = GetUIGroup(type,out UIDataAttribute uiData);
+            UIGroup uiGroup = GetUIGroup(type, out UIDataAttribute uiData);
             uiGroup.CloseUIPanel(uiData, uiPanel);
 
             if (!OpenedUIDict.TryGetValue(type, out int count)) return;
