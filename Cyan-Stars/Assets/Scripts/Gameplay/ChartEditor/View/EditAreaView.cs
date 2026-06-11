@@ -492,7 +492,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             if (!Input.GetKeyDown(KeyCode.Space))
                 return;
 
-            if (ViewModel.OpenCanvasCount.CurrentValue >= 1)
+            if (ViewModel.OpenCanvasCount >= 1)
                 return;
 
             if (EventSystem.current.currentSelectedGameObject != null &&

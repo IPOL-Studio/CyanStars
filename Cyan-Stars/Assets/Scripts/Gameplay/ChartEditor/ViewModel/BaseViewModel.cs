@@ -28,9 +28,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public void NotifyCanvasVisibilityChanged(bool isOpen)
         {
             if (isOpen)
-                Model.OpenCanvasCount.Value++;
+                Model.OpenCanvasCount++;
             else
-                Model.OpenCanvasCount.Value--;
+                Model.OpenCanvasCount--;
         }
 
         public virtual void Dispose()
