@@ -115,11 +115,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .ToReadOnlyReactiveProperty()
                 .AddTo(this);
 
-            Observable.CombineLatest(
-                    ViewModel.IsTimelinePlaying,
-                    isTimelineReadyToPlay,
-                    (isPlaying, isReadyToPlay) => !isPlaying && isReadyToPlay
-                )
+            isTimelineReadyToPlay
                 .Subscribe(interactable =>
                 {
                     slider.interactable = interactable;
