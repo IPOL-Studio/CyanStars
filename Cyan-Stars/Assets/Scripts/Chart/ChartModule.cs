@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
+using CyanStars.Chart.Loading;
 using CyanStars.Framework;
 using CyanStars.Utils;
 using UnityEngine;
@@ -13,26 +14,15 @@ namespace CyanStars.Chart
     /// <summary>
     /// 谱包与谱面数据模块
     /// </summary>
-    /// <remarks>提供给音游流程和制谱器流程使用。注意制谱器流程需要存一份深拷贝的谱包+谱面副本用于编辑。</remarks>
+    /// <remarks>负责管理谱包列表、选中状态和谱面加载入口。注意制谱器流程需要存一份深拷贝的谱包+谱面副本用于编辑。</remarks>
     // ReSharper disable once ClassNeverInstantiated.Global // 由反射实例化
     public class ChartModule : BaseDataModule
     {
         /// <summary>
-        /// 索引文件的文件名，将会在目录中查找此文件
-        /// </summary>
-        public const string ChartPackFileName = "ChartPack.json";
-
-        /// <summary>
         /// 玩家谱包路径，位于用户数据
         /// </summary>
-        public string PlayerChartPacksFolderPath { get; } = PathUtil.Combine(Application.persistentDataPath, "ChartPacks");
-
-
-        /// <summary>
-        /// 谱面拓展轨道名称->轨道类型 映射表
-        /// </summary>
-        private readonly Dictionary<string, Type> TrackKeyToTypeMap = new();
-
+        public string PlayerChartPacksFolderPath { get; } =
+            PathUtil.Combine(Application.persistentDataPath, "ChartPacks");
 
         private readonly List<RuntimeChartPack> runtimeChartPacks = new();
 
@@ -70,12 +60,21 @@ namespace CyanStars.Chart
         /// </summary>
         public ChartData? ChartData { get; private set; }
 
+        /// <summary>
+        /// 当选中的谱包或谱面发生了变化，T1=新选中的谱包，T2=新选中的谱面下标（谱包或谱面为空时记为-1）
+        /// </summary>
+        public Action<RuntimeChartPack?, int>? OnSelectedChartChanged;
+
+        /// <summary>
+        /// 谱面拓展轨道名称->轨道类型 映射表
+        /// </summary>
+        private readonly Dictionary<string, Type> TrackKeyToTypeMap = new();
+
 
         public override void OnInit()
         {
             SetTrackKeyToTypeMap();
         }
-
 
         /// <summary>
         /// 通过反射注册 特效轨道键-类 映射关系
@@ -108,17 +107,17 @@ namespace CyanStars.Chart
             return TrackKeyToTypeMap.TryGetValue(key, out type);
         }
 
-
         /// <summary>
-        /// 选择一个谱包，并自动调整选定的谱面、音乐、难度
+        /// 选择一个谱包，并自动调整选定的音乐和谱面
         /// </summary>
         /// <param name="index">新的谱包下标</param>
         public void SelectChartPackData(int index)
         {
             CancelSelectChartData();
             SelectedChartPackIndex = index;
-            SelectedChartMetadataIndex = (RuntimeChartPacks[index].ChartPackData.ChartMetaDatas.Count >= 1) ? 0 : null;
-            SelectedMusicVersionIndex = (RuntimeChartPacks[index].ChartPackData.MusicVersionDatas.Count >= 1) ? 0 : null;
+            SelectedChartMetadataIndex = RuntimeChartPacks[index].ChartPackData.ChartMetaDatas.Count >= 1 ? 0 : null;
+            SelectedMusicVersionIndex = RuntimeChartPacks[index].ChartPackData.MusicVersionDatas.Count >= 1 ? 0 : null;
+            _ = SelectChartDataAsync(0); // TODO: 记住玩家上次在此谱包中选择的谱面
         }
 
         /// <summary>
@@ -140,6 +139,8 @@ namespace CyanStars.Chart
 
             SelectedChartMetadataIndex = index;
             await LoadChartDataAsync();
+
+            OnSelectedChartChanged?.Invoke(SelectedRuntimeChartPack, index);
         }
 
         /// <summary>
@@ -151,6 +152,7 @@ namespace CyanStars.Chart
             SelectedMusicVersionIndex = null;
             SelectedChartMetadataIndex = null;
             CancelSelectChartData();
+            OnSelectedChartChanged?.Invoke(SelectedRuntimeChartPack, 0);
         }
 
         /// <summary>
@@ -178,8 +180,7 @@ namespace CyanStars.Chart
 
             CancelSelectChartData();
 
-            // TODO：计算谱面哈希并校验/覆盖元数据内容
-            ChartData = await ChartLoadHelper.LoadChartDataAsync(SelectedRuntimeChartPack, (int)SelectedChartMetadataIndex);
+            ChartData = await ChartDataLoader.LoadAsync(SelectedRuntimeChartPack, (int)SelectedChartMetadataIndex);
         }
 
 
@@ -189,19 +190,7 @@ namespace CyanStars.Chart
         public async Task ReloadAllChartPacksAsync()
         {
             runtimeChartPacks.Clear();
-            runtimeChartPacks.AddRange(await ChartLoadHelper.ReloadAllChartPacksAsync(PlayerChartPacksFolderPath));
-        }
-
-        /// <summary>
-        /// !!! 测试方法 !!! 卸载全部谱包并直接加载一张谱包
-        /// </summary>
-        /// <param name="chartPackFilePath">谱包索引文件的绝对路径</param>
-        [Obsolete("仅用于 v0.2 制谱器测试，在搭建完选曲 UI 和加载逻辑后弃用此方法！")]
-        public async Task SetChartPackDataFromDisk(string chartPackFilePath)
-        {
-            CancelSelectChartPackData();
-            runtimeChartPacks.Clear();
-            runtimeChartPacks.Add(await ChartLoadHelper.AddChartPackDataFromDisk(chartPackFilePath));
+            runtimeChartPacks.AddRange(await ChartPackDataLoader.ReloadAllAsync(PlayerChartPacksFolderPath));
         }
 
         /// <summary>
@@ -211,7 +200,7 @@ namespace CyanStars.Chart
         /// <remarks>通过此方法增量加载的谱包视为玩家谱包</remarks>
         public async Task AddChartPackDataFromDisk(string chartPackFilePath)
         {
-            runtimeChartPacks.Add(await ChartLoadHelper.AddChartPackDataFromDisk(chartPackFilePath));
+            runtimeChartPacks.Add(await ChartPackDataLoader.AddFromDiskAsync(chartPackFilePath));
         }
 
         /// <summary>
@@ -221,7 +210,18 @@ namespace CyanStars.Chart
         public async Task ReloadChartPackDataFromDisk(int index)
         {
             runtimeChartPacks[index] =
-                await ChartLoadHelper.ReloadChartPackDataFromDisk(runtimeChartPacks[index].WorkspacePath);
+                await ChartPackDataLoader.ReloadFromDiskAsync(runtimeChartPacks[index].WorkspacePath);
+        }
+
+        /// <summary>
+        /// 清空所有谱包并加载一张谱包（仅用于测试）
+        /// </summary>
+        /// <param name="chartPackFilePath">谱包索引文件的绝对路径</param>
+        [Obsolete("仅用于测试，待选曲 UI 完善后删除")]
+        public async Task SetSingleChartPackFromDisk(string chartPackFilePath)
+        {
+            runtimeChartPacks.Clear();
+            runtimeChartPacks.Add(await ChartPackDataLoader.AddFromDiskAsync(chartPackFilePath));
         }
     }
 }
