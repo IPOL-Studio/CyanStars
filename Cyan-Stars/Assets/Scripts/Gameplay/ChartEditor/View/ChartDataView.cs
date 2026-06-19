@@ -35,9 +35,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private Toggle undefinedToggle = null!;
 
         [SerializeField]
-        private TMP_InputField levelField = null!;
-
-        [SerializeField]
         private TMP_InputField readyBeatField = null!;
 
 
@@ -72,9 +69,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                                 : unselectedToggleSprite;
                     }
                 )
-                .AddTo(this);
-            ViewModel.ChartLevelString
-                .Subscribe(text => levelField.text = text)
                 .AddTo(this);
             ViewModel.ReadyBeatCountString
                 .Subscribe(text => readyBeatField.text = text)
@@ -122,10 +116,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                             ViewModel.SetChartDifficulty(null);
                     }
                 )
-                .AddTo(this);
-            levelField
-                .OnEndEditAsObservable()
-                .Subscribe(ViewModel.SetChartLevelString)
                 .AddTo(this);
             readyBeatField
                 .OnEndEditAsObservable()
