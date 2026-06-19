@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CyanStars.Chart;
-using CyanStars.Framework;
+using CyanStars.Chart.TrackSystem;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -26,7 +26,7 @@ namespace CyanStars.Utils.JsonSerialization
                     $"A track data missing {nameof(ChartTrackData.TrackKey)} property in json.");
 
             string trackKey = keyToken.Value<string>();
-            if (!TryGetChartTrackType(trackKey, out Type trackType))
+            if (!TrackTypeRegistry.TryGetChartTrackType(trackKey, out Type trackType))
                 throw new KeyNotFoundException($"A track data with key {trackKey} not found in chart track type list.");
 
             if (!jo.TryGetValue(nameof(ChartTrackData.TrackData), out JToken trackToken))
@@ -37,14 +37,6 @@ namespace CyanStars.Utils.JsonSerialization
 
             IChartTrackData track = (IChartTrackData)serializer.Deserialize(trackToken.CreateReader(), trackType);
             return new ChartTrackData(trackKey, track);
-        }
-
-        private bool TryGetChartTrackType(string key, out Type type)
-        {
-            type = null;
-            ChartModule module = GameRoot.GetDataModule<ChartModule>();
-            return module is { } && module.TryGetChartTrackType(key, out type);
-
         }
     }
 }

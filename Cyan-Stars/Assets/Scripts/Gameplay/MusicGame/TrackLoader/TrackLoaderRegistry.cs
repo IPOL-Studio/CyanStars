@@ -1,17 +1,24 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using CyanStars.Framework;
-using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public class MusicGameTrackModule : BaseDataModule
+    /// <summary>
+    /// 轨道加载器注册表 — 管理 轨道数据类型 -> ITrackLoader 的映射
+    /// </summary>
+    public static class TrackLoaderRegistry
     {
-        private Dictionary<Type, ITrackLoader> chartTrackTypeLoader = new Dictionary<Type, ITrackLoader>();
+        private static readonly Dictionary<Type, ITrackLoader> ChartTrackTypeToLoader = new();
+        private static bool initialized;
 
-        public override void OnInit()
+        private static void Initialize()
         {
+            if (initialized) return;
+            initialized = true;
+
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies)
             {
@@ -30,14 +37,15 @@ namespace CyanStars.Gameplay.MusicGame
                         continue;
 
                     var trackLoader = (ITrackLoader)Activator.CreateInstance(type);
-                    this.chartTrackTypeLoader.Add(attr.ChartTrackDataType, trackLoader);
+                    ChartTrackTypeToLoader.Add(attr.ChartTrackDataType, trackLoader);
                 }
             }
-
-            Debug.Log($"TrackLoader count: {this.chartTrackTypeLoader.Count}");
         }
 
-        public bool TryGetTrackLoader(Type chartTrackType, out ITrackLoader trackLoader)
-            => this.chartTrackTypeLoader.TryGetValue(chartTrackType, out trackLoader);
+        public static bool TryGetTrackLoader(Type chartTrackType, out ITrackLoader trackLoader)
+        {
+            Initialize();
+            return ChartTrackTypeToLoader.TryGetValue(chartTrackType, out trackLoader);
+        }
     }
 }

@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using CyanStars.Chart.Loading;
 using CyanStars.Framework;
@@ -65,46 +64,9 @@ namespace CyanStars.Chart
         /// </summary>
         public Action<RuntimeChartPack?, int>? OnSelectedChartChanged;
 
-        /// <summary>
-        /// 谱面拓展轨道名称->轨道类型 映射表
-        /// </summary>
-        private readonly Dictionary<string, Type> TrackKeyToTypeMap = new();
-
 
         public override void OnInit()
         {
-            SetTrackKeyToTypeMap();
-        }
-
-        /// <summary>
-        /// 通过反射注册 特效轨道键-类 映射关系
-        /// </summary>
-        private void SetTrackKeyToTypeMap()
-        {
-            TrackKeyToTypeMap.Clear();
-
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-            foreach (Assembly assembly in assemblies)
-            {
-                foreach (var type in assembly.GetTypes())
-                {
-                    if (type.IsClass && !type.IsAbstract && typeof(IChartTrackData).IsAssignableFrom(type))
-                    {
-                        var customAttributes = type.GetCustomAttributes<ChartTrackAttribute>(false);
-
-                        foreach (var attribute in customAttributes)
-                        {
-                            TrackKeyToTypeMap.Add(attribute.TrackKey, type);
-                        }
-                    }
-                }
-            }
-        }
-
-        public bool TryGetChartTrackType(string key, out Type type)
-        {
-            return TrackKeyToTypeMap.TryGetValue(key, out type);
         }
 
         /// <summary>

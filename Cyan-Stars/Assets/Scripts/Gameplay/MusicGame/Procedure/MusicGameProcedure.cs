@@ -26,7 +26,6 @@ namespace CyanStars.Gameplay.MusicGame
         //  --- --- 音游数据模块 --- ---
         private readonly ChartModule ChartModule = GameRoot.GetDataModule<ChartModule>();
         private readonly MusicGamePlayingDataModule PlayingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
-        private readonly MusicGameTrackModule TrackModule = GameRoot.GetDataModule<MusicGameTrackModule>();
 
         //  --- --- 音游相关数据 --- ---
         private RuntimeChartPack runtimeChartPack;
@@ -395,7 +394,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             for (int i = 0; i < chartData.TrackDatas.Count; i++)
             {
-                if (TrackModule.TryGetTrackLoader(chartData.TrackDatas[i].TrackData.GetType(), out var trackLoader) &&
+                if (TrackLoaderRegistry.TryGetTrackLoader(chartData.TrackDatas[i].TrackData.GetType(), out var trackLoader) &&
                     trackLoader.IsEnabled)
                 {
                     trackLoader.LoadTrack(timeline, chartContext, chartData, i);
