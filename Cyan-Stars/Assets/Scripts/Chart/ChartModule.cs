@@ -127,11 +127,12 @@ namespace CyanStars.Chart
 
             SelectedChartPackIndex = index;
             var runtimeChartPack = index == null ? null : RuntimeChartPacks[index.Value];
-            OnSelectedChartPackChanged?.Invoke(runtimeChartPack);
 
             // TODO: 记住玩家上次在此谱包中选择的音乐和谱面
             PreSelectMusicVersion(index != null && runtimeChartPack?.ChartPackData.MusicVersionDatas.Count > 0 ? 0 : null);
             PreSelectChartData(index != null && runtimeChartPack?.ChartPackData.ChartMetaDatas.Count > 0 ? 0 : null);
+
+            OnSelectedChartPackChanged?.Invoke(runtimeChartPack);
         }
 
         /// <summary>
