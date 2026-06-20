@@ -80,6 +80,7 @@ namespace CyanStars.Chart
             SelectedChartMetadataIndex = RuntimeChartPacks[index].ChartPackData.ChartMetaDatas.Count >= 1 ? 0 : null;
             SelectedMusicVersionIndex = RuntimeChartPacks[index].ChartPackData.MusicVersionDatas.Count >= 1 ? 0 : null;
             _ = SelectChartDataAsync(0); // TODO: 记住玩家上次在此谱包中选择的谱面
+            OnSelectedChartChanged?.Invoke(SelectedRuntimeChartPack, 0);
         }
 
         /// <summary>

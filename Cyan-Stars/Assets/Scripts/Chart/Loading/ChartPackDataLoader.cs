@@ -93,9 +93,9 @@ namespace CyanStars.Chart.Loading
                 }
 
                 bool isInternal = i < internalPacksCount;
-                if (isInternal && !VerifyInternalChartPackDifficultiesCount(chartPackData))
+                if (isInternal && !VerifyInternalChartPackMetaData(chartPackData))
                 {
-                    Debug.LogWarning($"某个内置谱包难度计数不等于 4：{chartPackData.Title}，当前已允许加载，正式发布时应当修复");
+                    Debug.LogWarning($"某个内置谱包元数据不正确：{chartPackData.Title}，当前已允许加载，正式发布时应当修复");
                 }
 
                 ChartPackLevels levels = levelsList[i];
@@ -147,16 +147,16 @@ namespace CyanStars.Chart.Loading
         }
 
         /// <summary>
-        /// 校验谱包是否各个难度都有且仅有一张谱面，且不存在 null 难度谱面
+        /// 校验内置谱包下谱面是否合规
         /// </summary>
-        private static bool VerifyInternalChartPackDifficultiesCount(ChartPackData chartPackData)
+        /// <remarks>各个难度都有且仅有一张谱面，难度与下标一致，不存在 null 难度谱面</remarks>
+        private static bool VerifyInternalChartPackMetaData(ChartPackData chartPackData)
         {
-            int c0 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == ChartDifficulty.KuiXing);
-            int c1 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == ChartDifficulty.QiMing);
-            int c2 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == ChartDifficulty.TianShu);
-            int c3 = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == ChartDifficulty.WuYin);
-            int cn = chartPackData.ChartMetaDatas.Count(cmd => cmd.Difficulty == null);
-            return c0 == 1 && c1 == 1 && c2 == 1 && c3 == 1 && cn == 0;
+            return chartPackData.ChartMetaDatas.Count == 4 &&
+                   chartPackData.ChartMetaDatas[0].Difficulty == ChartDifficulty.KuiXing &&
+                   chartPackData.ChartMetaDatas[1].Difficulty == ChartDifficulty.QiMing &&
+                   chartPackData.ChartMetaDatas[2].Difficulty == ChartDifficulty.TianShu &&
+                   chartPackData.ChartMetaDatas[3].Difficulty == ChartDifficulty.WuYin;
         }
     }
 }
