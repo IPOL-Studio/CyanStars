@@ -231,6 +231,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             // 谱面
             runtimeChartPack = ChartModule.SelectedRuntimeChartPack;
+            await ChartModule.LoadChartDataAsync();
             chartData = ChartModule.ChartData;
             if (ChartModule.ChartData == null)
             {

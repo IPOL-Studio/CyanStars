@@ -99,7 +99,7 @@ namespace CyanStars
                                 int index = i;
                                 button.Button.onClick.AddListener(async () =>
                                     {
-                                        await chartModule.SelectChartDataAsync(index);
+                                        chartModule.PreSelectChartData(index);
                                         GameRoot.ChangeProcedure<ChartEditorProcedure>();
                                     }
                                 );

@@ -93,13 +93,13 @@ namespace CyanStars.Gameplay.ChartEditor
             else
             {
                 // 打开谱包和谱面
-                if (chartModule.SelectedChartMetadataIndex == null)
+                if (chartModule.SelectedChartIndex == null)
                     throw new Exception("加载了谱面，但没有正确指定元数据下标");
 
                 workspacePath = chartModule.SelectedRuntimeChartPack.WorkspacePath;
                 chartData = chartModule.ChartData;
                 chartPackData = chartModule.SelectedRuntimeChartPack.ChartPackData;
-                chartMetadataIndex = (int)chartModule.SelectedChartMetadataIndex;
+                chartMetadataIndex = (int)chartModule.SelectedChartIndex;
             }
 
             mvvmBindManager.StartBind(

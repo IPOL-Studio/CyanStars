@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using CatAsset.Runtime;
+using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Framework.FSM;
 using Gameplay.ChartEditor;
@@ -53,6 +54,9 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
             chartEditorDataModule.OnEnterChartEditorProcedure(ChartEditorSceneRoot.CommandStack);
 
             // 预热资源
+            var chartModule = GameRoot.GetDataModule<ChartModule>();
+            if (chartModule.SelectedChartPackIndex != null && chartModule.SelectedChartIndex != null)
+                await chartModule.LoadChartDataAsync();
             sceneRoot!.gameObject.SetActive(false);
             List<string> assetsToInit = ChartEditorAssetHelper.AllPaths;
             await GameRoot.Asset.BatchLoadAssetAsync(assetsToInit).BindTo(sceneRoot.gameObject);

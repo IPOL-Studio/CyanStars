@@ -43,10 +43,10 @@ namespace CyanStars.Chart
         public int? SelectedMusicVersionIndex { get; private set; }
 
         /// <summary>
-        /// 选中的谱面元数据下标
+        /// 选中的谱面下标
         /// </summary>
         /// <remarks>为 null 时将在制谱器中创建新谱面</remarks>
-        public int? SelectedChartMetadataIndex { get; private set; }
+        public int? SelectedChartIndex { get; private set; }
 
         /// <summary>
         /// 当前选中的谱包
@@ -60,92 +60,17 @@ namespace CyanStars.Chart
         public ChartData? ChartData { get; private set; }
 
         /// <summary>
-        /// 当选中的谱包或谱面发生了变化，T1=新选中的谱包，T2=新选中的谱面下标（谱包或谱面为空时记为-1）
+        /// 当前选中的谱包发生了变化
         /// </summary>
-        public Action<RuntimeChartPack?, int>? OnSelectedChartChanged;
+        public Action<RuntimeChartPack?>? OnSelectedChartPackChanged;
 
 
         public override void OnInit()
         {
         }
 
-        /// <summary>
-        /// 选择一个谱包，并自动调整选定的音乐和谱面
-        /// </summary>
-        /// <param name="index">新的谱包下标</param>
-        public void SelectChartPackData(int index)
-        {
-            CancelSelectChartData();
-            SelectedChartPackIndex = index;
-            SelectedChartMetadataIndex = RuntimeChartPacks[index].ChartPackData.ChartMetaDatas.Count >= 1 ? 0 : null;
-            SelectedMusicVersionIndex = RuntimeChartPacks[index].ChartPackData.MusicVersionDatas.Count >= 1 ? 0 : null;
-            _ = SelectChartDataAsync(0); // TODO: 记住玩家上次在此谱包中选择的谱面
-            OnSelectedChartChanged?.Invoke(SelectedRuntimeChartPack, 0);
-        }
 
-        /// <summary>
-        /// 根据下标选中谱面
-        /// </summary>
-        /// <param name="index">谱面下标</param>
-        public async Task SelectChartDataAsync(int index)
-        {
-            if (SelectedRuntimeChartPack == null)
-            {
-                Debug.LogError("尚未选择谱包，无法根据难度选择谱面。");
-                return;
-            }
-
-            if (index < 0 || index > SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas.Count - 1)
-            {
-                throw new IndexOutOfRangeException();
-            }
-
-            SelectedChartMetadataIndex = index;
-            await LoadChartDataAsync();
-
-            OnSelectedChartChanged?.Invoke(SelectedRuntimeChartPack, index);
-        }
-
-        /// <summary>
-        /// 取消选中的谱包、音乐、谱面，并卸载已加载的谱面
-        /// </summary>
-        public void CancelSelectChartPackData()
-        {
-            SelectedChartPackIndex = null;
-            SelectedMusicVersionIndex = null;
-            SelectedChartMetadataIndex = null;
-            CancelSelectChartData();
-            OnSelectedChartChanged?.Invoke(SelectedRuntimeChartPack, 0);
-        }
-
-        /// <summary>
-        /// 取消选中的谱面，并卸载已加载的谱面
-        /// </summary>
-        public void CancelSelectChartData()
-        {
-            ChartData = null;
-        }
-
-
-        private async Task LoadChartDataAsync()
-        {
-            if (SelectedRuntimeChartPack == null)
-            {
-                Debug.LogError("尚未选择谱包，无法加载谱面数据。");
-                return;
-            }
-
-            if (SelectedChartMetadataIndex == null)
-            {
-                Debug.LogError("尚未选择谱面，无法加载谱面数据。");
-                return;
-            }
-
-            CancelSelectChartData();
-
-            ChartData = await ChartDataLoader.LoadAsync(SelectedRuntimeChartPack, (int)SelectedChartMetadataIndex);
-        }
-
+        #region 谱包加载管理
 
         /// <summary>
         /// 清空已加载的谱包和谱面，并从磁盘重新加载全部谱包，包括内置和玩家谱包，不含谱面
@@ -185,6 +110,117 @@ namespace CyanStars.Chart
         {
             runtimeChartPacks.Clear();
             runtimeChartPacks.Add(await ChartPackDataLoader.AddFromDiskAsync(chartPackFilePath));
+        }
+
+        #endregion
+
+        #region 谱包、谱面、音乐版本选择
+
+        /// <summary>
+        /// 选择一个谱包，并自动调整选定的音乐和谱面
+        /// </summary>
+        /// <param name="index">新的谱包下标，为 null 时取消选择</param>
+        public void SelectChartPackData(int? index)
+        {
+            if (SelectedChartPackIndex == index)
+                return;
+
+            SelectedChartPackIndex = index;
+            var runtimeChartPack = index == null ? null : RuntimeChartPacks[index.Value];
+            OnSelectedChartPackChanged?.Invoke(runtimeChartPack);
+
+            // TODO: 记住玩家上次在此谱包中选择的音乐和谱面
+            PreSelectMusicVersion(index != null && runtimeChartPack?.ChartPackData.MusicVersionDatas.Count > 0 ? 0 : null);
+            PreSelectChartData(index != null && runtimeChartPack?.ChartPackData.ChartMetaDatas.Count > 0 ? 0 : null);
+        }
+
+        /// <summary>
+        /// 预选音乐版本，不加载
+        /// </summary>
+        /// <param name="index">音乐下标，为 null 时取消选择音乐</param>
+        public void PreSelectMusicVersion(int? index)
+        {
+            if (index == null)
+            {
+                SelectedMusicVersionIndex = index;
+                return;
+            }
+
+            if (SelectedRuntimeChartPack == null)
+            {
+                Debug.LogError("尚未选择谱包，无法根据选择音乐。");
+                return;
+            }
+
+            if (index != null && (index.Value < 0 || index.Value > SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas.Count - 1))
+                throw new IndexOutOfRangeException("预选音乐下标越界");
+
+            SelectedMusicVersionIndex = index;
+        }
+
+        /// <summary>
+        /// 根据下标预选谱面，不加载
+        /// </summary>
+        /// <param name="index">谱面下标，为 null 时取消选择</param>
+        public void PreSelectChartData(int? index)
+        {
+            if (index == null)
+            {
+                SelectedChartIndex = index;
+                return;
+            }
+
+            if (SelectedRuntimeChartPack == null)
+            {
+                Debug.LogError("尚未选择谱包，无法根据选择谱面。");
+                return;
+            }
+
+            if (index != null && (index.Value < 0 || index.Value > SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas.Count - 1))
+                throw new IndexOutOfRangeException("预选谱面下标越界");
+
+            SelectedChartIndex = index;
+        }
+
+        /// <summary>
+        /// 取消选中的谱包、音乐、谱面，并卸载已加载的谱面
+        /// </summary>
+        public void CancelSelectChartPackData()
+        {
+            SelectedChartPackIndex = null;
+            SelectedMusicVersionIndex = null;
+            CancelSelectChartData();
+        }
+
+        /// <summary>
+        /// 取消选中的谱面，并卸载已加载的谱面
+        /// </summary>
+        public void CancelSelectChartData()
+        {
+            SelectedChartIndex = null;
+            ChartData = null;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 加载预选的谱面
+        /// </summary>
+        public async Task LoadChartDataAsync()
+        {
+            if (SelectedRuntimeChartPack == null)
+            {
+                Debug.LogError("尚未选择谱包，无法加载谱面数据。");
+                return;
+            }
+
+            if (SelectedChartIndex == null)
+            {
+                Debug.LogError("尚未选择谱面，未加载谱面数据。");
+                return;
+            }
+
+            ChartData = await ChartDataLoader.LoadAsync(SelectedRuntimeChartPack, (int)SelectedChartIndex);
         }
     }
 }
