@@ -61,6 +61,7 @@ namespace CyanStars.Chart.Loading
                 levelsList.Add(new ChartPackLevels());
             }
 
+            // 批量加载以提高效率，后续单个加载时能直接快速完成
             using var batchAssetHandler = await GameRoot.Asset.BatchLoadAssetAsync(paths);
 
             var newPacks = new List<RuntimeChartPack>();
@@ -126,7 +127,7 @@ namespace CyanStars.Chart.Loading
         }
 
         /// <summary>
-        /// 从磁盘重载某个谱包的数据
+        /// 从磁盘重载某个玩家谱包的数据
         /// </summary>
         public static async Task<RuntimeChartPack> ReloadFromDiskAsync(string workspacePath)
         {
