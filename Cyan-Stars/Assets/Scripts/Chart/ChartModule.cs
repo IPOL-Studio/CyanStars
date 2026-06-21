@@ -153,7 +153,7 @@ namespace CyanStars.Chart
                 return;
             }
 
-            if (index != null && (index.Value < 0 || index.Value > SelectedRuntimeChartPack.ChartPackData.MusicVersionDatas.Count - 1))
+            if (index.Value < 0 || index.Value > SelectedRuntimeChartPack.ChartPackData.MusicVersionDatas.Count - 1)
                 throw new IndexOutOfRangeException("预选音乐下标越界");
 
             SelectedMusicVersionIndex = index;
@@ -177,7 +177,7 @@ namespace CyanStars.Chart
                 return;
             }
 
-            if (index != null && (index.Value < 0 || index.Value > SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas.Count - 1))
+            if (index.Value < 0 || index.Value > SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas.Count - 1)
                 throw new IndexOutOfRangeException("预选谱面下标越界");
 
             SelectedChartIndex = index;
