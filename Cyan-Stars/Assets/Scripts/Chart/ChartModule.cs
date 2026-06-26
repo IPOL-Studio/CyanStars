@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyanStars.Chart.Loading;
+using CyanStars.Chart.TrackSystem;
 using CyanStars.Framework;
 using CyanStars.Utils;
 using UnityEngine;
@@ -67,6 +68,7 @@ namespace CyanStars.Chart
 
         public override void OnInit()
         {
+            TrackTypeRegistry.Initialize();
         }
 
 

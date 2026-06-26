@@ -14,7 +14,7 @@ namespace CyanStars.Gameplay.MusicGame
         private static readonly Dictionary<Type, ITrackLoader> ChartTrackTypeToLoader = new();
         private static bool initialized;
 
-        private static void Initialize()
+        public static void Initialize()
         {
             if (initialized) return;
             initialized = true;
@@ -44,7 +44,6 @@ namespace CyanStars.Gameplay.MusicGame
 
         public static bool TryGetTrackLoader(Type chartTrackType, out ITrackLoader trackLoader)
         {
-            Initialize();
             return ChartTrackTypeToLoader.TryGetValue(chartTrackType, out trackLoader);
         }
     }

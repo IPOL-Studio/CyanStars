@@ -62,6 +62,8 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override async void OnEnter()
         {
+            TrackLoaderRegistry.Initialize();
+
             GameRoot.MainCamera.gameObject.SetActive(false);
             currentSceneInfo = SceneModule.CurrentScene;
 

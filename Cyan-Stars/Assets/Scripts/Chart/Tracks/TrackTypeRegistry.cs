@@ -14,7 +14,7 @@ namespace CyanStars.Chart.TrackSystem
         private static readonly Dictionary<string, Type> TrackKeyToTypeMap = new();
         private static bool initialized;
 
-        private static void Initialize()
+        public static void Initialize()
         {
             if (initialized)
                 return;
@@ -41,7 +41,6 @@ namespace CyanStars.Chart.TrackSystem
 
         public static bool TryGetChartTrackType(string key, out Type type)
         {
-            Initialize();
             return TrackKeyToTypeMap.TryGetValue(key, out type);
         }
     }
