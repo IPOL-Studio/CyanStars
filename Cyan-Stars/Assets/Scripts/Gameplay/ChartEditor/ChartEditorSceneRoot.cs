@@ -31,6 +31,9 @@ namespace CyanStars.Gameplay.ChartEditor
         [SerializeField]
         private ShortcutManager shortcutManager = null!;
 
+        [SerializeField]
+        private ChartEditorPlayerPrefsManager playerPrefsManager = null!;
+
 
         public static MvvmBindManager MvvmBindManager = null!;
         public static CommandStack CommandStack = null!;
@@ -109,7 +112,8 @@ namespace CyanStars.Gameplay.ChartEditor
                 chartData,
                 musicManager,
                 noteAudioManager,
-                shortcutManager
+                shortcutManager,
+                playerPrefsManager
             );
         }
 
