@@ -4,7 +4,7 @@ using CyanStars.Gameplay.ChartEditor.ViewModel;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
-    public class ChartEditorSettingView : BaseView<ChartEditorSettingViewModel>
+    public class ChartEditorSettingView : BasePopupView<ChartEditorSettingViewModel>
     {
     }
 }
