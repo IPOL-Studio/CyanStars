@@ -1,5 +1,6 @@
 #nullable enable
 
+using CyanStars.Utils.RadioButton;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -76,6 +77,11 @@ namespace CyanStars.Utils.SelectableUI
                 isKeepSelected = toggle.isOn;
                 toggle.onValueChanged.AddListener(OnToggleValueChanged);
             }
+            else if (selectable is RadioButtonItem radioButton)
+            {
+                isKeepSelected = radioButton.IsChecked;
+                radioButton.OnValueChanged.AddListener(OnRadioButtonValueChanged);
+            }
             else
             {
                 isKeepSelected = false;
@@ -91,6 +97,8 @@ namespace CyanStars.Utils.SelectableUI
         {
             if (selectable is Toggle toggle)
                 toggle.onValueChanged.RemoveListener(OnToggleValueChanged);
+            else if (selectable is RadioButtonItem radioButton)
+                radioButton.OnValueChanged.RemoveListener(OnRadioButtonValueChanged);
 
             isKeepSelected = false;
             isHovered = false;
@@ -139,6 +147,22 @@ namespace CyanStars.Utils.SelectableUI
 
             if (selectable is Toggle toggle) // 手动获取真实状态，以防被拦截修改时依然接收到错误的事件参数
                 value = toggle.isOn;
+
+            if (isKeepSelected == value)
+                return;
+            isKeepSelected = value;
+            EvaluateState();
+        }
+
+        /// <summary>
+        /// 当 selectable 是 radioButtonItem 时，外界改变 radioButton.IsChecked 时也会自动改变视觉效果
+        /// </summary>
+        private void OnRadioButtonValueChanged(bool _)
+        {
+            bool value = false;
+
+            if (selectable is RadioButtonItem radioButton) // 手动获取真实状态，以防被拦截修改时依然接收到错误的事件参数
+                value = radioButton.IsChecked;
 
             if (isKeepSelected == value)
                 return;
