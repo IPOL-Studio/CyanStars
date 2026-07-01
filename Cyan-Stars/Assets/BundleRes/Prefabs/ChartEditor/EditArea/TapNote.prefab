@@ -179,6 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b36931d9dde4481b35e6d862cbe289b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.EditAreaNoteView
+  blurImage: {fileID: 8787746688943001385}
   holdTailRect: {fileID: 0}
 --- !u!114 &1360554635577480223
 MonoBehaviour:

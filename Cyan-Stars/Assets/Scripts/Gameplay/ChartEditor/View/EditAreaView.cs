@@ -53,15 +53,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private RectTransform judgeLineRect = null!;
 
 
-        private readonly CancellationTokenSource Cts = new CancellationTokenSource();
+        private readonly CancellationTokenSource cts = new CancellationTokenSource();
         private static GameObjectPoolManager PoolManager => GameRoot.GameObjectPool;
 
         // 管理当前激活的节拍线：Key=节拍索引（含细分拍），Value=节拍线物体实例
         // 开始加载时会将 item 对应的 Value 设为 null 占位，加载完成后覆写为 gameObject
-        private readonly Dictionary<int, GameObject?> ActiveBeatLines = new Dictionary<int, GameObject?>();
+        private readonly Dictionary<int, GameObject?> activeBeatLines = new Dictionary<int, GameObject?>();
 
         // 管理当前激活的音符: Key=音符数据对象, Value=(ViewModel, View)
-        private readonly Dictionary<BaseChartNoteData, (EditAreaNoteViewModel vm, EditAreaNoteView view)?> ActiveNotes =
+        private readonly Dictionary<BaseChartNoteData, (EditAreaNoteViewModel vm, EditAreaNoteView view)?> activeNotes =
             new Dictionary<BaseChartNoteData, (EditAreaNoteViewModel, EditAreaNoteView)?>();
 
         // 防止拖拽/滚动 scrollRect 更新 time 后再做一次无意义的 scrollRect 位置更新
@@ -112,6 +112,19 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 })
                 .AddTo(this);
 
+            ViewModel.CompactNoteButtonArea
+                .Subscribe(value =>
+                {
+                    foreach (var kvp in activeNotes)
+                    {
+                        if (kvp.Value == null)
+                            continue;
+
+                        kvp.Value!.Value.view.SetBlurImageRaycastTarget(!value);
+                    }
+                })
+                .AddTo(this);
+
 
             // 1. 位置线逻辑
             ViewModel.PosLineCount.Subscribe(UpdatePosLines).AddTo(this);
@@ -156,7 +169,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async void UpdatePosLines(int count)
         {
-            if (Cts.IsCancellationRequested) return;
+            if (cts.IsCancellationRequested) return;
             int oldPosLineCount = posLinesFrameObject.transform.childCount - 1;
 
             var tasks = new List<Task>();
@@ -186,16 +199,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private void ForceRebuildBeatLines()
         {
-            foreach (var kvp in ActiveBeatLines)
+            foreach (var kvp in activeBeatLines)
                 if (kvp.Value != null)
                     PoolManager.ReleaseGameObject(ChartEditorAssetHelper.BeatLinePath, kvp.Value);
-            ActiveBeatLines.Clear();
+            activeBeatLines.Clear();
             UpdateBeatLinesVisibility();
         }
 
         private async void UpdateBeatLinesVisibility()
         {
-            if (Cts.IsCancellationRequested) return;
+            if (cts.IsCancellationRequested) return;
 
             // 计算 Content 底部为 0，向上增加
             // Viewport 可视区域在 Content 中的 Y 轴范围：
@@ -220,17 +233,17 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             // 回收
             List<int> toRemove = new List<int>();
-            foreach (var kvp in ActiveBeatLines)
+            foreach (var kvp in activeBeatLines)
             {
                 if (kvp.Key < minIndex || kvp.Key > maxIndex) toRemove.Add(kvp.Key);
             }
 
             foreach (int key in toRemove)
             {
-                if (ActiveBeatLines.TryGetValue(key, out var go))
+                if (activeBeatLines.TryGetValue(key, out var go))
                 {
                     if (go != null) PoolManager.ReleaseGameObject(ChartEditorAssetHelper.BeatLinePath, go);
-                    ActiveBeatLines.Remove(key);
+                    activeBeatLines.Remove(key);
                 }
             }
 
@@ -238,7 +251,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             var tasks = new List<Task>();
             for (int i = minIndex; i <= maxIndex; i++)
             {
-                if (ActiveBeatLines.TryAdd(i, null))
+                if (activeBeatLines.TryAdd(i, null))
                 {
                     tasks.Add(CreateBeatLine(i, beatLineDist, ViewModel.BeatAccuracy.CurrentValue));
                 }
@@ -249,18 +262,18 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async Task CreateBeatLine(int index, double distance, int accuracy)
         {
-            GameObject go = await PoolManager.GetGameObjectAsync(ChartEditorAssetHelper.BeatLinePath, beatLinesFrameRect, Cts.Token);
+            GameObject go = await PoolManager.GetGameObjectAsync(ChartEditorAssetHelper.BeatLinePath, beatLinesFrameRect, cts.Token);
             go.transform.localScale = Vector3.one;
 
-            if (Cts.Token.IsCancellationRequested || !ActiveBeatLines.ContainsKey(index))
+            if (cts.Token.IsCancellationRequested || !activeBeatLines.ContainsKey(index))
             {
                 PoolManager.ReleaseGameObject(ChartEditorAssetHelper.BeatLinePath, go);
                 return;
             }
 
-            if (ActiveBeatLines[index] is not null) PoolManager.ReleaseGameObject(ChartEditorAssetHelper.BeatLinePath, ActiveBeatLines[index]);
+            if (activeBeatLines[index] is not null) PoolManager.ReleaseGameObject(ChartEditorAssetHelper.BeatLinePath, activeBeatLines[index]);
 
-            ActiveBeatLines[index] = go;
+            activeBeatLines[index] = go;
             if (go.TryGetComponent<BeatLineItem>(out var item))
             {
                 // 手动设置位置，或者封装在 BeatLineItem 中
@@ -282,7 +295,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async void UpdateNotesVisibility()
         {
-            if (Cts.IsCancellationRequested)
+            if (cts.IsCancellationRequested)
                 return;
 
             float viewportHeight = viewportRect.rect.height;
@@ -330,7 +343,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             // 对比 diff，回收在本帧移出可视范围的 notes
             var toRemove = new List<BaseChartNoteData>();
-            foreach (var kvp in ActiveNotes)
+            foreach (var kvp in activeNotes)
             {
                 if (!visibleNotes.Contains(kvp.Key))
                 {
@@ -340,7 +353,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             foreach (var note in toRemove)
             {
-                if (ActiveNotes.TryGetValue(note, out var pair))
+                if (activeNotes.TryGetValue(note, out var pair))
                 {
                     if (pair != null)
                     {
@@ -349,7 +362,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                         PoolManager.ReleaseGameObject(GetPrefabPath(note.Type), view.gameObject);
                     }
 
-                    ActiveNotes.Remove(note);
+                    activeNotes.Remove(note);
                 }
             }
 
@@ -357,9 +370,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
             var tasks = new List<Task>();
             foreach (var note in visibleNotes)
             {
-                if (!ActiveNotes.ContainsKey(note))
+                if (!activeNotes.ContainsKey(note))
                 {
-                    ActiveNotes.Add(note, null); // 占位，防止重复创建
+                    activeNotes.Add(note, null); // 占位，防止重复创建
                     tasks.Add(CreateNoteObject(note));
                 }
             }
@@ -400,18 +413,18 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             string path = GetPrefabPath(note.Type);
 
-            GameObject go = await PoolManager.GetGameObjectAsync(path, notesFrameRect, Cts.Token);
+            GameObject go = await PoolManager.GetGameObjectAsync(path, notesFrameRect, cts.Token);
             go.transform.localScale = Vector3.one;
 
             // 双重检查：异步加载过程中可能已经不再需要显示该 Note，或者 View 被销毁
-            if (Cts.Token.IsCancellationRequested || !ActiveNotes.ContainsKey(note))
+            if (cts.Token.IsCancellationRequested || !activeNotes.ContainsKey(note))
             {
                 PoolManager.ReleaseGameObject(path, go);
                 return;
             }
 
             // 清理旧对象（理论上 ActiveNotes[note] 此时应为 null，作为防御性编程）
-            if (ActiveNotes[note] is { } oldPair)
+            if (activeNotes[note] is { } oldPair)
             {
                 oldPair.vm.Dispose();
                 PoolManager.ReleaseGameObject(path, oldPair.view.gameObject);
@@ -421,14 +434,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
             {
                 var vm = ViewModel.CreateNoteViewModel(note, judgeLineRect.anchoredPosition.y);
 
+                view.SetBlurImageRaycastTarget(!ViewModel.CompactNoteButtonArea.CurrentValue);
                 view.Bind(vm);
-                ActiveNotes[note] = (vm, view);
+                activeNotes[note] = (vm, view);
             }
             else
             {
                 Debug.LogError($"Prefab at {path} missing EditAreaNoteView component!");
                 PoolManager.ReleaseGameObject(path, go);
-                ActiveNotes.Remove(note);
+                activeNotes.Remove(note);
             }
         }
 
@@ -504,17 +518,17 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected void OnDestroy()
         {
-            Cts.Cancel();
-            Cts.Dispose();
+            cts.Cancel();
+            cts.Dispose();
 
             // 清理节拍线
-            foreach (var kvp in ActiveBeatLines)
+            foreach (var kvp in activeBeatLines)
                 if (kvp.Value is not null)
                     PoolManager.ReleaseGameObject(ChartEditorAssetHelper.BeatLinePath, kvp.Value);
-            ActiveBeatLines.Clear();
+            activeBeatLines.Clear();
 
             // 清理音符
-            foreach (var kvp in ActiveNotes)
+            foreach (var kvp in activeNotes)
             {
                 if (kvp.Value != null)
                 {
@@ -524,7 +538,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 }
             }
 
-            ActiveNotes.Clear();
+            activeNotes.Clear();
         }
     }
 }

@@ -14,7 +14,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     public class EditAreaNoteViewModel : BaseViewModel
     {
         private readonly BaseChartNoteData data;
-        private readonly EditAreaViewModel parentViewModel;
         private readonly float judgeLineYOffset;
 
         public readonly ReadOnlyReactiveProperty<Vector2> AnchoredPosition;
@@ -34,7 +33,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             : base(model)
         {
             this.data = data;
-            this.parentViewModel = parentViewModel;
             this.judgeLineYOffset = judgeLineYOffset;
 
             // 无论是缩放改变，还是当前 Note 数据改变，都重新获取当前的 Zoom 值并计算位置
