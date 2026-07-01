@@ -79,6 +79,8 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public readonly ReactiveProperty<double> BeatZoom = new ReactiveProperty<double>(1.0d);
 
         // 制谱器设置
+        public readonly ReactiveProperty<int> MusicVolume = new ReactiveProperty<int>(100);
+        public readonly ReactiveProperty<int> NoteVolume = new ReactiveProperty<int>(100);
         public readonly ReactiveProperty<bool> IsCompactNoteButtonArea = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> IsMultiBpmItemMode = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> IsMultiMusicItemMode = new ReactiveProperty<bool>(false);
@@ -92,9 +94,9 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         /// <param name="chartPackData">要修改的谱包数据，注意请先深拷贝一份</param>
         /// <param name="chartData">要修改的谱面数据，注意请先深拷贝一份</param>
         public ChartEditorModel(string workspacePath,
-                                int chartMetaDataIndex,
-                                ChartPackData chartPackData,
-                                ChartData chartData)
+            int chartMetaDataIndex,
+            ChartPackData chartPackData,
+            ChartData chartData)
         {
             WorkspacePath = workspacePath;
             ChartMetaDataIndex = chartMetaDataIndex;

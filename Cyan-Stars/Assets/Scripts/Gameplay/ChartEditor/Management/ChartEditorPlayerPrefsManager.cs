@@ -46,7 +46,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                 if (double.TryParse(PlayerPrefs.GetString(BeatZoomPrefName), out var zoomVal))
                     model.BeatZoom.Value = zoomVal;
 
-            // 使用 Skip(1)，跳过上文中的变化引起的二次保存
+            // 使用 Skip(1)，跳过首次订阅引起的初始化操作
             model.PosAccuracy
                 .Skip(1)
                 .Subscribe(val =>
