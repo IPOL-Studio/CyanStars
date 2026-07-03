@@ -15688,7 +15688,7 @@ GameObject:
   - component: {fileID: 899722264}
   - component: {fileID: 899722265}
   m_Layer: 5
-  m_Name: "\u66F2\u76EE\u540D\u79F0Frame"
+  m_Name: "\u7F29\u5C0FNote\u6309\u94AE\u5927\u5C0FFrame"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
