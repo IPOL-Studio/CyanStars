@@ -54,12 +54,15 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
             chartEditorDataModule.OnEnterChartEditorProcedure(ChartEditorSceneRoot.CommandStack);
 
             // 预热资源
+            sceneRoot!.gameObject.SetActive(false);
+
             var chartModule = GameRoot.GetDataModule<ChartModule>();
             if (chartModule.SelectedChartPackIndex != null && chartModule.SelectedChartIndex != null)
                 await chartModule.LoadChartDataAsync();
-            sceneRoot!.gameObject.SetActive(false);
+
             List<string> assetsToInit = ChartEditorAssetHelper.AllPaths;
             await GameRoot.Asset.BatchLoadAssetAsync(assetsToInit).BindTo(sceneRoot.gameObject);
+
             sceneRoot.gameObject.SetActive(true);
 
             // 初始化场景
