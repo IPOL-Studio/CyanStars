@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace CyanStars.Chart.TrackSystem
+namespace CyanStars.Chart.Tracks
 {
     /// <summary>
     /// 轨道类型注册表 — 管理 特效轨道键 -> 轨道数据类型 的映射

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CyanStars.Chart;
-using CyanStars.Chart.TrackSystem;
+using CyanStars.Chart.Tracks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

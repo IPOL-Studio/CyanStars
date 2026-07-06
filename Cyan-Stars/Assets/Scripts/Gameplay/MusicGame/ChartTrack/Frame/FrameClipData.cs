@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CyanStars.Chart;
+using CyanStars.Chart.Tracks.Frame;
 
 namespace CyanStars.Gameplay.MusicGame
 {

@@ -1,5 +1,6 @@
 using CyanStars.Framework.Timeline;
 using CyanStars.Chart;
+using CyanStars.Chart.Tracks;
 
 namespace CyanStars.Gameplay.MusicGame
 {

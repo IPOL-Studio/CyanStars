@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyanStars.Chart.Loading;
-using CyanStars.Chart.TrackSystem;
+using CyanStars.Chart.Tracks;
 using CyanStars.Framework;
 using CyanStars.Utils;
 using UnityEngine;
