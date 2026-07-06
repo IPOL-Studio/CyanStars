@@ -13,14 +13,12 @@ namespace CyanStars.Gameplay.ChartEditor.Model
     {
         public readonly ReactiveProperty<string> FilePath;
         public readonly ReactiveProperty<ChartDifficulty?> Difficulty;
-        public readonly ReactiveProperty<string> Level;
         public readonly ReactiveProperty<string> ChartHash;
 
         public ChartMetaDataEditorModel(ChartMetaData chartMetaData)
         {
             FilePath = new ReactiveProperty<string>(chartMetaData.FilePath);
             Difficulty = new ReactiveProperty<ChartDifficulty?>(chartMetaData.Difficulty);
-            Level = new ReactiveProperty<string>(chartMetaData.Level);
             ChartHash = new ReactiveProperty<string>(chartMetaData.ChartHash);
         }
 
@@ -32,9 +30,8 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         {
             var filePath = FilePath.CurrentValue;
             var difficulty = Difficulty.CurrentValue;
-            var level = Level.CurrentValue;
             var chartHash = ChartHash.CurrentValue;
-            return new ChartMetaData(filePath, difficulty, level, chartHash);
+            return new ChartMetaData(filePath, difficulty, chartHash);
         }
     }
 }

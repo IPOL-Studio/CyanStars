@@ -35,8 +35,6 @@ namespace CyanStars.Gameplay.MusicGame
             startButton.onClick.AddListener(async () =>
             {
                 ChartModule module = GameRoot.GetDataModule<ChartModule>();
-                // module.TrySelectChartPack(owner.CurrentSelectedMap.Index);
-                await module.SelectChartDataAsync(0); // TODO: 支持选择其他难度
                 GameRoot.ChangeProcedure<MusicGameProcedure>();
             });
 

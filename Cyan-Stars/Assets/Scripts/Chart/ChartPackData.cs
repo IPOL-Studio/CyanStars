@@ -8,7 +8,7 @@ using UnityEngine;
 namespace CyanStars.Chart
 {
     /// <summary>
-    /// 谱包文件数据结构（包含多个谱面，其中4个难度谱面各0或1个，未定义难度的谱面数量不限）
+    /// 谱包文件数据结构（包含多个谱面，其中内置谱包要求 4 个难度谱面各 1 个，不含未定义谱面；玩家谱面不做限制）
     /// </summary>
     public class ChartPackData
     {

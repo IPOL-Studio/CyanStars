@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CyanStars.Chart
+namespace CyanStars.Chart.Tracks.Frame
 {
     /// <summary>
     /// 谱面边框轨道基类

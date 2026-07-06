@@ -1,6 +1,6 @@
 using System;
 
-namespace CyanStars.Chart
+namespace CyanStars.Chart.Tracks
 {
     public class ChartTrackAttribute : Attribute
     {

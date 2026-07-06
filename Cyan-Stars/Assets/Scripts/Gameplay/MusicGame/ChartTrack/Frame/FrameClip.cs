@@ -1,6 +1,7 @@
 ﻿using System;
 using CyanStars.Framework.Timeline;
 using CyanStars.Chart;
+using CyanStars.Chart.Tracks.Frame;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame

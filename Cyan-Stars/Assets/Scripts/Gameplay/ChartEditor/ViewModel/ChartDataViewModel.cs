@@ -4,7 +4,6 @@ using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
-using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
@@ -14,7 +13,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private readonly ChartDataEditorModel ChartData;
 
         public readonly ReadOnlyReactiveProperty<ChartDifficulty?> ChartDifficulty;
-        public readonly ReadOnlyReactiveProperty<string> ChartLevelString;
         public readonly ReadOnlyReactiveProperty<string> ReadyBeatCountString;
 
 
@@ -28,10 +26,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
 
-            ChartLevelString = MetaData.Level
-                .ToReadOnlyReactiveProperty()
-                .AddTo(base.Disposables);
-
             ReadyBeatCountString = ChartData.ReadyBeat
                 .Select(beat => beat.ToString())
                 .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, ChartData.ReadyBeat.Value.ToString())
@@ -41,46 +35,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void SetChartDifficulty(ChartDifficulty? newDifficulty)
         {
-            var metaDatas = Model.ChartPackData.CurrentValue.ChartMetaDatas;
             var oldDifficulty = ChartDifficulty.CurrentValue;
 
             if (newDifficulty == oldDifficulty)
                 return;
 
-            // 如果 newDifficulty 不为 null，则不允许与谱包中其他谱面的难度重复
-            if (newDifficulty != null)
-            {
-                for (int i = 0; i < metaDatas.Count; i++)
-                {
-                    if (Model.ChartMetaDataIndex == i)
-                        continue;
-
-                    if (metaDatas[i].Difficulty.Value != newDifficulty)
-                        continue;
-
-                    Debug.LogWarning($"谱包有其他谱面已经使用了难度 {newDifficulty}，无法修改到目标难度！");
-                    MetaData.Difficulty.ForceNotify();
-                    return;
-                }
-            }
-
             CommandStack.ExecuteCommand(
                 () => MetaData.Difficulty.Value = newDifficulty,
                 () => MetaData.Difficulty.Value = oldDifficulty
-            );
-        }
-
-        public void SetChartLevelString(string newLevel)
-        {
-            var metaData = Model.ChartPackData.CurrentValue.ChartMetaDatas[Model.ChartMetaDataIndex];
-            var oldLevel = metaData.Level.Value;
-
-            if (newLevel == oldLevel)
-                return;
-
-            CommandStack.ExecuteCommand(
-                () => metaData.Level.Value = newLevel,
-                () => metaData.Level.Value = oldLevel
             );
         }
 

@@ -1,4 +1,6 @@
-﻿namespace CyanStars.Chart
+﻿using CyanStars.Chart.Tracks;
+
+namespace CyanStars.Chart
 {
     /// <summary>
     /// 谱面轨道数据拓展格式

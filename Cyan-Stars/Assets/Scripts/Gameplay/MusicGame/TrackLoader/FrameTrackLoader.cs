@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CyanStars.Framework;
 using CyanStars.Framework.Timeline;
 using CyanStars.Chart;
+using CyanStars.Chart.Tracks.Frame;
 
 namespace CyanStars.Gameplay.MusicGame
 {

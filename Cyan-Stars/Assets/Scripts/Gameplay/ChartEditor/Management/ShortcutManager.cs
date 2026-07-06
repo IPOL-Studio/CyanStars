@@ -10,6 +10,8 @@ namespace CyanStars.Gameplay.ChartEditor.Management
     /// </summary>
     public class ShortcutManager : MonoBehaviour
     {
+        private bool isInitialized = false;
+
         // Priority 小的快捷键会被优先检测和执行
         private static readonly Comparer<ShortcutDefinition> ShortcutComparer =
             Comparer<ShortcutDefinition>.Create((a, b) => a.Entry.Priority.CompareTo(b.Entry.Priority));
@@ -26,6 +28,8 @@ namespace CyanStars.Gameplay.ChartEditor.Management
             AddShortcut(ShortcutCommandRegistry.Redo, new ShortcutEntry(ShortcutModifiers.Ctrl | ShortcutModifiers.Shift, KeyCode.Z));
             AddShortcut(ShortcutCommandRegistry.Redo, new ShortcutEntry(ShortcutModifiers.Ctrl, KeyCode.Y));
             AddShortcut(ShortcutCommandRegistry.Save, new ShortcutEntry(ShortcutModifiers.Ctrl, KeyCode.S));
+
+            isInitialized = true;
         }
 
         private void AddShortcut(ShortcutCommand command, ShortcutEntry entry)
@@ -42,6 +46,9 @@ namespace CyanStars.Gameplay.ChartEditor.Management
 
         void Update()
         {
+            if (!isInitialized)
+                return;
+
             executedCommand.Clear();
             var pressedModifiers = GetPressedModifiers();
 

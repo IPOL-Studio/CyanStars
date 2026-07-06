@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyanStars.Framework;
-using CyanStars.Framework.UI;
 using CyanStars.Chart;
 using DG.Tweening;
 using TMPro;
@@ -33,7 +32,6 @@ namespace CyanStars.Gameplay.MusicGame
         private IPageElementAnimation[] animationElements;
         private Tween runningTween;
 
-        private MusicGamePlayingDataModule musicGamePlayingDataModule;
         private ChartModule chartModule;
         private List<MapItem> mapItems;
 
@@ -45,15 +43,11 @@ namespace CyanStars.Gameplay.MusicGame
 
             animationElements = GetComponentsInChildren<IPageElementAnimation>(true);
 
-            musicGamePlayingDataModule = GameRoot.GetDataModule<MusicGamePlayingDataModule>();
             chartModule = GameRoot.GetDataModule<ChartModule>();
             mapItems = new List<MapItem>();
 
             mapTitleText.text = ""; // 防止编辑器内的示例标题参与首次打开 UI 时的淡出动画
-            nextStepButton.onClick.AddListener(() =>
-            {
-                this.owner.ChangePage<StaffPage>();
-            });
+            nextStepButton.onClick.AddListener(this.owner.ChangePage<StaffPage>);
         }
 
         public async void OnEnter(MapSelectionPageChangeArgs args)
@@ -145,7 +139,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         private void OnSelectMap(MapItem mapItem)
         {
-            // 在 DataModule 中选中谱包
+            // 在谱包轮盘中选中谱包
             if (mapItem.Data == null)
                 throw new NullReferenceException(nameof(mapItem.Data));
             chartModule.SelectChartPackData(mapItem.Data.Index);

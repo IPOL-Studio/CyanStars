@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using CyanStars.Chart;
+using CyanStars.Chart.Loading;
 using CyanStars.Framework;
 using CyanStars.Framework.File;
 using CyanStars.Gameplay.ChartEditor.Model;
@@ -102,7 +103,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         /// <param name="chartPackDataEditorModel">谱包实例</param>
         /// <param name="chartDataEditorModel">谱面实例</param>
         /// <returns></returns>
-        public static bool SaveChartAndAssetsToDesk(string workspacePath,
+        public static bool SaveChartAndAssetsToDisk(string workspacePath,
                                                     int chartMetaDataIndex,
                                                     ChartPackDataEditorModel chartPackDataEditorModel,
                                                     ChartDataEditorModel chartDataEditorModel)
@@ -112,7 +113,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
 
             try
             {
-                string chartPackFilePath = PathUtil.Combine(workspacePath, ChartModule.ChartPackFileName);
+                string chartPackFilePath = PathUtil.Combine(workspacePath, ChartPackDataLoader.ChartPackFileName);
                 GameRoot.File.SerializationToJson(chartPackData, chartPackFilePath);
 
                 string chartFilePath = PathUtil.Combine(workspacePath, chartPackData.ChartMetaDatas[chartMetaDataIndex].FilePath);

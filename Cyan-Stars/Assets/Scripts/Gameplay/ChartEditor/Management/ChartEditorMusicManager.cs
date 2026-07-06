@@ -89,10 +89,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
 
         private void Update()
         {
-            if (!isInitialized)
-                throw new Exception("未完成初始化，请在 Update 前手动调用 Init() 并传入依赖！");
-
-            if (!model.IsTimelinePlaying.Value)
+            if (!isInitialized || !model.IsTimelinePlaying.Value)
                 return;
 
             // 音乐播完了 // TODO:待测试

@@ -31,20 +31,13 @@ namespace CyanStars.Chart
         /// <remarks>谱包索引文件所在的目录，基于此路径读取其中的谱面和资源文件</remarks>
         public readonly string WorkspacePath;
 
-        /// <summary>
-        /// 校验后可供游玩的难度，即有且仅有一个对应谱面的难度
-        /// </summary>
-        public readonly HashSet<ChartDifficulty> DifficultiesAbleToPlay;
 
-
-        public RuntimeChartPack(ChartPackData chartPackData, bool isInternal, ChartPackLevels levels,
-            string workspacePath, HashSet<ChartDifficulty> difficultiesAbleToPlay)
+        public RuntimeChartPack(ChartPackData chartPackData, bool isInternal, ChartPackLevels levels, string workspacePath)
         {
             ChartPackData = chartPackData;
             IsInternal = isInternal;
             Levels = levels;
             WorkspacePath = workspacePath;
-            DifficultiesAbleToPlay = difficultiesAbleToPlay;
         }
     }
 }

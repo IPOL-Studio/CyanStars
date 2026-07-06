@@ -1,4 +1,4 @@
-namespace CyanStars.Chart
+namespace CyanStars.Chart.Tracks
 {
     public interface IChartTrackData
     {

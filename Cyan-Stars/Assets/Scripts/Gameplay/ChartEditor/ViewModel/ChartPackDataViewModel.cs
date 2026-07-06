@@ -140,7 +140,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             GameRoot.File.OpenSaveFolderPathBrowser(targetParentPath =>
                 {
                     // 1. 先保存谱包谱面到玩家数据路径
-                    ChartEditorFileManager.SaveChartAndAssetsToDesk(Model.WorkspacePath, Model.ChartMetaDataIndex, Model.ChartPackData.CurrentValue, Model.ChartData.CurrentValue);
+                    ChartEditorFileManager.SaveChartAndAssetsToDisk(Model.WorkspacePath, Model.ChartMetaDataIndex, Model.ChartPackData.CurrentValue, Model.ChartData.CurrentValue);
 
                     // 2. 再将玩家数据路径的谱包文件夹复制到指定路径，如果已经存在同名文件夹，则添加 "(1)" 等后缀
                     DirectoryInfo sourceDirInfo = new DirectoryInfo(Model.WorkspacePath);

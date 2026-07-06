@@ -52,9 +52,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             base.CommandStack.Redo();
         }
 
-        public void SaveFileToDesk()
+        public void SaveFileToDisk()
         {
-            ChartEditorFileManager.SaveChartAndAssetsToDesk(
+            ChartEditorFileManager.SaveChartAndAssetsToDisk(
                 Model.WorkspacePath,
                 Model.ChartMetaDataIndex,
                 Model.ChartPackData.CurrentValue,
