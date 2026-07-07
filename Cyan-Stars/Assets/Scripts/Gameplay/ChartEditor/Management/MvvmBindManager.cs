@@ -54,6 +54,9 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         [SerializeField]
         private PopupView popupView = null!;
 
+        [SerializeField]
+        private ChartEditorSettingView settingView = null!;
+
 
         /// <summary>
         /// 创建 Model 、ViewModel 并启动绑定
@@ -108,6 +111,9 @@ namespace CyanStars.Gameplay.ChartEditor.Management
 
             var editAreaViewModel = new EditAreaViewModel(model).AddTo(Disposables);
             editAreaView.Bind(editAreaViewModel);
+
+            var settingViewModel = new ChartEditorSettingViewModel(model).AddTo(Disposables);
+            settingView.Bind(settingViewModel);
         }
 
         /// <summary>

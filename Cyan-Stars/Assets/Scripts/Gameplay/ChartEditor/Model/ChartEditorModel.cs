@@ -74,12 +74,15 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         // 当前打开的 Canvas 总数
         public int OpenCanvasCount = 0;
 
-        // 编辑器属性
+        // 制谱器属性
         public readonly ReactiveProperty<int> PosAccuracy = new ReactiveProperty<int>(4);
         public readonly ReactiveProperty<bool> PosMagnet = new ReactiveProperty<bool>(true);
         public readonly ReactiveProperty<int> BeatAccuracy = new ReactiveProperty<int>(2);
         public readonly ReactiveProperty<double> BeatZoom = new ReactiveProperty<double>(1.0d);
 
+        // 制谱器设置
+        // TODO: 预留在此添加制谱器设置字段
+        
 
         /// <summary>
         /// 构造函数

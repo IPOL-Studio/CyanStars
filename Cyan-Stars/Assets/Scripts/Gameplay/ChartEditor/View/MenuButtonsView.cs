@@ -50,6 +50,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private Button speedTemplateButton = null!; // TODO
 
         [SerializeField]
+        private Button chartEditorSettingButton = null!;
+
+        [SerializeField]
         private Button exitSimplificationModeButton = null!;
 
         [SerializeField]
@@ -70,6 +73,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         [SerializeField]
         private BpmGroupView bpmGroupView = null!;
+
+        [SerializeField]
+        private ChartEditorSettingView chartEditorSettingView = null!;
 
 
         private readonly ReactiveProperty<bool> FunctionCanvasVisibility = new ReactiveProperty<bool>(false);
@@ -168,6 +174,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(_ => bpmGroupView.SetCanvasVisibility(true))
                 .AddTo(this);
             // speedTemplateButton ...
+            chartEditorSettingButton
+                .OnClickAsObservable()
+                .Subscribe(_ => chartEditorSettingView.SetCanvasVisibility(true))
+                .AddTo(this);
 
             exitSimplificationModeButton
                 .OnClickAsObservable()
