@@ -6,6 +6,7 @@ using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
@@ -15,6 +16,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
     public class EditAreaNoteView : BaseView<EditAreaNoteViewModel>, IPointerDownHandler
     {
         private RectTransform rect = null!;
+
+        [SerializeField]
+        private Image blurImage = null!;
 
         [SerializeField]
         private RectTransform? holdTailRect; // 仅 Hold 音符需要赋值
@@ -43,6 +47,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     .AddTo(this);
             }
         }
+
+        public void SetBlurImageRaycastTarget(bool value) => blurImage.raycastTarget = value;
 
         public void OnPointerDown(PointerEventData eventData)
         {

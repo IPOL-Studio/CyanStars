@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using System;
 using CatAsset.Runtime;
 using CyanStars.Chart;
 using R3;
@@ -81,8 +80,8 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public readonly ReactiveProperty<double> BeatZoom = new ReactiveProperty<double>(1.0d);
 
         // 制谱器设置
-        // TODO: 预留在此添加制谱器设置字段
-        
+        public readonly ReactiveProperty<bool> CompactNoteButtonArea = new ReactiveProperty<bool>(false);
+
 
         /// <summary>
         /// 构造函数
