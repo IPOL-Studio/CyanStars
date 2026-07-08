@@ -78,7 +78,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             listVisibility = Observable.CombineLatest(
                     ViewModel.IsMultiBpmItemMode,
                     ViewModel.ChartPackData,
-                    (multiBpmItemMode, chartPackData) => !multiBpmItemMode || (chartPackData?.BpmGroup.Count ?? 0) == 0
+                    (isMultiBpmItemMode, chartPackData) => isMultiBpmItemMode || (chartPackData?.BpmGroup.Count ?? 0) == 0
                 )
                 .ToReadOnlyReactiveProperty()
                 .AddTo(this);
