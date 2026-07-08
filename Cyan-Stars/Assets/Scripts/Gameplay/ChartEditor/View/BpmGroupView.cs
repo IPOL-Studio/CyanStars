@@ -76,7 +76,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             deleteItemButtonSelectableStateObserver = deleteItemButton.GetComponent<SelectableStateObserver>();
 
             listVisibility = Observable.CombineLatest(
-                    ViewModel.MultiBpmItemMode,
+                    ViewModel.IsMultiBpmItemMode,
                     ViewModel.ChartPackData,
                     (multiBpmItemMode, chartPackData) => !multiBpmItemMode || (chartPackData?.BpmGroup.Count ?? 0) == 0
                 )

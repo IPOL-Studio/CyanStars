@@ -23,7 +23,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private const int AddOffsetStep = 10;
 
 
-        public ReadOnlyReactiveProperty<bool> MultiMusicItemMode => Model.MultiMusicItemMode;
+        public ReadOnlyReactiveProperty<bool> IsMultiMusicItemMode => Model.IsMultiMusicItemMode;
         public ReadOnlyReactiveProperty<ChartPackDataEditorModel> ChartPackData => Model.ChartPackData;
 
         public readonly ISynchronizedView<MusicVersionDataEditorModel, MusicVersionListItemViewModel> MusicListItems;

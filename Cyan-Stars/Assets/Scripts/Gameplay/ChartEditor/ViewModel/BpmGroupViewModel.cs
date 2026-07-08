@@ -16,7 +16,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly Observable<int> BpmGroupDataChangedSubject;
 
 
-        public ReadOnlyReactiveProperty<bool> MultiBpmItemMode => Model.MultiBpmItemMode;
+        public ReadOnlyReactiveProperty<bool> IsMultiBpmItemMode => Model.IsMultiBpmItemMode;
         public ReadOnlyReactiveProperty<ChartPackDataEditorModel> ChartPackData => Model.ChartPackData;
 
         public ObservableList<BpmGroupItem> BpmItems => Model.ChartPackData.CurrentValue.BpmGroup;

@@ -21,9 +21,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         public override void Bind(ChartEditorSettingViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
-            compactNoteButtonAreaButton.IsChecked = ViewModel.CompactNoteButtonArea.CurrentValue;
-            multiBpmItemButton.IsChecked = ViewModel.MultiBpmItemMode.CurrentValue;
-            multiMusicItemButton.IsChecked = ViewModel.MultiMusicItemMode.CurrentValue;
+            compactNoteButtonAreaButton.IsChecked = ViewModel.IsCompactNoteButtonArea.CurrentValue;
+            multiBpmItemButton.IsChecked = ViewModel.IsMultiBpmItemMode.CurrentValue;
+            multiMusicItemButton.IsChecked = ViewModel.IsMultiMusicItemMode.CurrentValue;
             compactNoteButtonAreaButton.OnValueChanged.AddListener(ViewModel.SetCompactNoteButtonArea);
             multiBpmItemButton.OnValueChanged.AddListener(ViewModel.SetMultiBpmItemMode);
             multiMusicItemButton.OnValueChanged.AddListener(ViewModel.SetMultiMusicItemMode);

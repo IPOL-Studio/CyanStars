@@ -83,7 +83,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             listVisibility = Observable
                 .CombineLatest(
-                    ViewModel.MultiMusicItemMode,
+                    ViewModel.IsMultiMusicItemMode,
                     ViewModel.ChartPackData
                         .Select(data => data.MusicVersions.ObserveCountChanged(notifyCurrentCount: true))
                         .Switch(),
