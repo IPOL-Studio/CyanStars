@@ -88,7 +88,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                         .Select(data => data.MusicVersions.ObserveCountChanged(notifyCurrentCount: true))
                         .Switch(),
                     ViewModel.SelectedMusicVersionData,
-                    (isMultiMusicItemMode, count, selectedData) => isMultiMusicItemMode || count != 1 || selectedData != null // TODO: 在没有设置音乐版本时展示更友好的提示
+                    (isMultiMusicItemMode, count, selectedData) => isMultiMusicItemMode || count != 1 || selectedData == null // TODO: 在没有设置音乐版本时展示更友好的提示
                 )
                 .ToReadOnlyReactiveProperty()
                 .AddTo(this);
