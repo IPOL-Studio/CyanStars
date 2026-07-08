@@ -16,7 +16,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly Observable<int> BpmGroupDataChangedSubject;
 
 
-        public ReadOnlyReactiveProperty<bool> IsSimplificationMode => Model.IsSimplificationMode;
+        public ReadOnlyReactiveProperty<bool> IsMultiBpmItemMode => Model.IsMultiBpmItemMode;
         public ReadOnlyReactiveProperty<ChartPackDataEditorModel> ChartPackData => Model.ChartPackData;
 
         public ObservableList<BpmGroupItem> BpmItems => Model.ChartPackData.CurrentValue.BpmGroup;
@@ -38,8 +38,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 throw new NotImplementedException();
 
             selectedBpmItem = new ReactiveProperty<BpmGroupItem?>(Model.ChartPackData.CurrentValue.BpmGroup[0]);
-
-            Model.IsSimplificationMode.ToReadOnlyReactiveProperty().AddTo(base.Disposables);
 
             SelectedBpmItemIndex = SelectedBpmItem
                 .Select(item => item != null

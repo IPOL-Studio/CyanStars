@@ -20,13 +20,13 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         ///     <para>参数为发生了变化的 bpmGroupItem 的 Index，代表需要刷新这个及后续 items</para>
         ///     <para>对列表元素的增删改不会触发此事件，而是由 ObservableList 处理</para>
         /// </remarks>
-        public readonly Subject<int> BpmGroupDataChangedSubject = new();
+        public readonly Subject<int> BpmGroupDataChangedSubject = new Subject<int>();
 
         /// <summary>
         /// 选中的音符的 Pos/BreakPos/JudgeBeat/EndJudgeBeat 发生了变化时手动触发
         /// </summary>
         /// <remarks>用于刷新 EditArea 界面更新</remarks>
-        public readonly Subject<BaseChartNoteData> SelectedNoteDataChangedSubject = new();
+        public readonly Subject<BaseChartNoteData> SelectedNoteDataChangedSubject = new Subject<BaseChartNoteData>();
 
         // == == 谱包和谱面数据 == ==
 
@@ -41,8 +41,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
 
         // == == 编辑器运行时数据 == ==
 
-        // 编辑模式
-        public readonly ReactiveProperty<bool> IsSimplificationMode = new ReactiveProperty<bool>(true);
+        // 编辑工具
         public readonly ReactiveProperty<EditToolType> SelectedEditTool = new ReactiveProperty<EditToolType>(EditToolType.Select);
 
         #region offset 说明
@@ -80,7 +79,9 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public readonly ReactiveProperty<double> BeatZoom = new ReactiveProperty<double>(1.0d);
 
         // 制谱器设置
-        public readonly ReactiveProperty<bool> CompactNoteButtonArea = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> IsCompactNoteButtonArea = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> IsMultiBpmItemMode = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> IsMultiMusicItemMode = new ReactiveProperty<bool>(false);
 
 
         /// <summary>

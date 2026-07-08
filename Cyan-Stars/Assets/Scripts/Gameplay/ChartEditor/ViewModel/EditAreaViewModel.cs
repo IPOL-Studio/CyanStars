@@ -36,7 +36,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public IReadOnlyList<HoldChartNoteData> HoldNotes => holdNotes; // 无序排列的 HoldNotes，用于全量遍历校验 holdNote 是否有位于可视范围内的部分
         public ReadOnlyReactiveProperty<bool> PosMagnetState => Model.PosMagnet;
         public ReadOnlyReactiveProperty<int> PosAccuracy => Model.PosAccuracy;
-        public ReadOnlyReactiveProperty<bool> CompactNoteButtonArea => Model.CompactNoteButtonArea;
+        public ReadOnlyReactiveProperty<bool> IsCompactNoteButtonArea => Model.IsCompactNoteButtonArea;
 
 
         public readonly ReadOnlyReactiveProperty<bool> CanPutNote;
