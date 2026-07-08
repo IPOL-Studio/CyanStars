@@ -13,15 +13,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
     public class ChartEditorSettingView : BasePopupView<ChartEditorSettingViewModel>
     {
         [SerializeField]
-        private RadioButtonItem isCompactNoteButtonAreaButton = null!;
-
-        [SerializeField]
-        private RadioButtonItem isMultiBpmItemButton = null!;
-
-        [SerializeField]
-        private RadioButtonItem isMultiMusicItemButton = null!;
-
-        [SerializeField]
         private AudioMixer audioMixer = null!;
 
         [SerializeField]
@@ -29,6 +20,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         [SerializeField]
         private TMP_InputField noteVolumeField = null!;
+
+        [SerializeField]
+        private RadioButtonItem isCompactNoteButtonAreaButton = null!;
+
+        [SerializeField]
+        private RadioButtonItem isMultiBpmItemButton = null!;
+
+        [SerializeField]
+        private RadioButtonItem isMultiMusicItemButton = null!;
 
 
         // AudioMixer 中的变量名
@@ -95,7 +95,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
             isMultiMusicItemButton.OnValueChanged.RemoveListener(ViewModel.SetMultiMusicItemMode);
             base.OnDestroy();
         }
-
 
         [Pure]
         private static float CalculateVolumeDb(int volumeInt)
