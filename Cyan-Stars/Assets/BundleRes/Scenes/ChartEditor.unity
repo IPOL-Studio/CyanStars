@@ -22736,9 +22736,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CyanStars::CyanStars.Gameplay.ChartEditor.View.ChartEditorSettingView
   closeCanvasButton: {fileID: 1278986571}
-  compactNoteButtonAreaButton: {fileID: 1413580225}
-  multiBpmItemButton: {fileID: 1320703400}
-  multiMusicItemButton: {fileID: 434106518}
+  isCompactNoteButtonAreaButton: {fileID: 1413580225}
+  isMultiBpmItemButton: {fileID: 1320703400}
+  isMultiMusicItemButton: {fileID: 434106518}
 --- !u!1001 &1286130100
 PrefabInstance:
   m_ObjectHideFlags: 0

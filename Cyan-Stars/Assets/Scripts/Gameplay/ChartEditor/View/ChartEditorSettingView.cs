@@ -9,31 +9,32 @@ namespace CyanStars.Gameplay.ChartEditor.View
     public class ChartEditorSettingView : BasePopupView<ChartEditorSettingViewModel>
     {
         [SerializeField]
-        private RadioButtonItem compactNoteButtonAreaButton = null!;
+        private RadioButtonItem isCompactNoteButtonAreaButton = null!;
 
         [SerializeField]
-        private RadioButtonItem multiBpmItemButton = null!;
+        private RadioButtonItem isMultiBpmItemButton = null!;
 
         [SerializeField]
-        private RadioButtonItem multiMusicItemButton = null!;
+        private RadioButtonItem isMultiMusicItemButton = null!;
 
 
         public override void Bind(ChartEditorSettingViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
-            compactNoteButtonAreaButton.IsChecked = ViewModel.IsCompactNoteButtonArea.CurrentValue;
-            multiBpmItemButton.IsChecked = ViewModel.IsMultiBpmItemMode.CurrentValue;
-            multiMusicItemButton.IsChecked = ViewModel.IsMultiMusicItemMode.CurrentValue;
-            compactNoteButtonAreaButton.OnValueChanged.AddListener(ViewModel.SetCompactNoteButtonArea);
-            multiBpmItemButton.OnValueChanged.AddListener(ViewModel.SetMultiBpmItemMode);
-            multiMusicItemButton.OnValueChanged.AddListener(ViewModel.SetMultiMusicItemMode);
+
+            isCompactNoteButtonAreaButton.IsChecked = ViewModel.IsCompactNoteButtonArea.CurrentValue;
+            isMultiBpmItemButton.IsChecked = ViewModel.IsMultiBpmItemMode.CurrentValue;
+            isMultiMusicItemButton.IsChecked = ViewModel.IsMultiMusicItemMode.CurrentValue;
+            isCompactNoteButtonAreaButton.OnValueChanged.AddListener(ViewModel.SetCompactNoteButtonArea);
+            isMultiBpmItemButton.OnValueChanged.AddListener(ViewModel.SetMultiBpmItemMode);
+            isMultiMusicItemButton.OnValueChanged.AddListener(ViewModel.SetMultiMusicItemMode);
         }
 
         protected override void OnDestroy()
         {
-            compactNoteButtonAreaButton.OnValueChanged.RemoveListener(ViewModel.SetCompactNoteButtonArea);
-            multiBpmItemButton.OnValueChanged.RemoveListener(ViewModel.SetMultiBpmItemMode);
-            multiMusicItemButton.OnValueChanged.RemoveListener(ViewModel.SetMultiMusicItemMode);
+            isCompactNoteButtonAreaButton.OnValueChanged.RemoveListener(ViewModel.SetCompactNoteButtonArea);
+            isMultiBpmItemButton.OnValueChanged.RemoveListener(ViewModel.SetMultiBpmItemMode);
+            isMultiMusicItemButton.OnValueChanged.RemoveListener(ViewModel.SetMultiMusicItemMode);
             base.OnDestroy();
         }
     }
