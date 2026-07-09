@@ -14,6 +14,8 @@ namespace CyanStars.Gameplay.ChartEditor.Management
     {
         private readonly CompositeDisposable Disposables = new CompositeDisposable();
 
+        [SerializeField]
+        private Background background = null!;
 
         [SerializeField]
         private ToolbarView toolbarView = null!;
@@ -75,12 +77,16 @@ namespace CyanStars.Gameplay.ChartEditor.Management
             ChartEditorModel model =
                 new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData);
 
-            // 根据 Mode 初始化一些 Manager
+            // 初始化一些 Manager
             musicManager.Init(model);
             chartEditorNoteAudioManager.Init(model);
             shortcutManager.Init();
             playerPrefsManager.Init(model);
 
+            // 初始化一些杂项脚本
+            background.Init(model);
+
+            // 实例化 VM 并与 V 绑定
             var toolbarViewModel = new ToolbarViewModel(model).AddTo(Disposables);
             toolbarView.Bind(toolbarViewModel);
 
@@ -122,14 +128,6 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         /// 退出制谱器时解除所有绑定，以释放内存
         /// </summary>
         /// <remarks>VM 通过 CatAsset 加载的资源也应该在此时由 VM 管理释放</remarks>
-        public void UnbindAll()
-        {
-            Disposables.Dispose();
-        }
-
-        private void OnDestroy()
-        {
-            UnbindAll();
-        }
+        private void OnDestroy() => Disposables.Dispose();
     }
 }

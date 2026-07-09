@@ -16837,6 +16837,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f9169d6a0ab460483dd62f67c4985db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  background: {fileID: 1117790746}
   toolbarView: {fileID: 679284245}
   menuButtonsView: {fileID: 1633411530}
   editorAttributeView: {fileID: 1037237909}
@@ -20866,6 +20867,7 @@ GameObject:
   - component: {fileID: 1117790743}
   - component: {fileID: 1117790745}
   - component: {fileID: 1117790744}
+  - component: {fileID: 1117790746}
   m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
@@ -20930,6 +20932,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1117790742}
   m_CullTransparentMesh: 1
+--- !u!114 &1117790746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1117790742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9090cdff15552e445b7361626bd6f373, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CyanStars::CyanStars.Background
 --- !u!1 &1122245070
 GameObject:
   m_ObjectHideFlags: 0
