@@ -16,6 +16,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         private const string PosMagnetPrefName = "ChartEditor_PosMagnet";
         private const string BeatAccuracyPrefName = "ChartEditor_BeatAccuracy";
         private const string BeatZoomPrefName = "ChartEditor_BeatZoom";
+        private const string PlaybackSpeedPrefName = "ChartEditor_PlaybackSpeed";
 
         private const string MusicVolumePrefName = "ChartEditor_MusicVolume";
         private const string NoteVolumePrefName = "ChartEditor_NoteVolume";
@@ -47,6 +48,9 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                 // PlayerPrefs 不支持 double，以 string 存储
                 if (double.TryParse(PlayerPrefs.GetString(BeatZoomPrefName), out var zoomVal))
                     model.BeatZoom.Value = zoomVal;
+            if (PlayerPrefs.HasKey(PlaybackSpeedPrefName))
+                if (double.TryParse(PlayerPrefs.GetString(PlaybackSpeedPrefName), out var speedVal))
+                    model.PlaybackSpeed.Value = speedVal;
 
             // 使用 Skip(1)，跳过首次订阅引起的初始化操作
             model.PosAccuracy
@@ -78,6 +82,14 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                 .Subscribe(val =>
                 {
                     PlayerPrefs.SetString(BeatZoomPrefName, val.ToString("G")); // "G" 保证常规精度
+                    PlayerPrefs.Save();
+                })
+                .AddTo(Disposables);
+            model.PlaybackSpeed
+                .Skip(1)
+                .Subscribe(val =>
+                {
+                    PlayerPrefs.SetString(PlaybackSpeedPrefName, val.ToString("G"));
                     PlayerPrefs.Save();
                 })
                 .AddTo(Disposables);
