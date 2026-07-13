@@ -80,6 +80,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
+            ViewModel.IsShowingAudioWave
+                .Subscribe(isShowing => audioWaveRawImage.enabled = isShowing)
+                .AddTo(this);
+
             ViewModel.IsTimelinePlaying
                 .Subscribe(isPlaying => scrollRect.vertical = !isPlaying) // 正在播放时完全禁止拖动/滚动 scrollRect
                 .AddTo(this);

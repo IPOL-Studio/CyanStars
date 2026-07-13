@@ -19,9 +19,10 @@ namespace CyanStars.Gameplay.ChartEditor.Management
 
         private const string MusicVolumePrefName = "ChartEditor_MusicVolume";
         private const string NoteVolumePrefName = "ChartEditor_NoteVolume";
-        private const string IsCompactNoteButtonAreaPrefName = "ChartEditor_IsCompactNoteButtonArea";
         private const string IsMultiBpmItemPrefName = "ChartEditor_IsMultiBpmItem";
         private const string IsMultiMusicItemPrefName = "ChartEditor_IsMultiMusicItem";
+        private const string IsCompactNoteButtonAreaPrefName = "ChartEditor_IsCompactNoteButtonArea";
+        private const string IsShowingAudioWavePrefName = "ChartEditor_IsShowingAudioWave";
 
         private readonly CompositeDisposable Disposables = new CompositeDisposable();
 
@@ -89,12 +90,14 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                 model.MusicVolume.Value = PlayerPrefs.GetInt(MusicVolumePrefName);
             if (PlayerPrefs.HasKey(BeatAccuracyPrefName))
                 model.BeatAccuracy.Value = PlayerPrefs.GetInt(BeatAccuracyPrefName);
-            if (PlayerPrefs.HasKey(IsCompactNoteButtonAreaPrefName))
-                model.IsCompactNoteButtonArea.Value = PlayerPrefs.GetInt(IsCompactNoteButtonAreaPrefName) == 1;
             if (PlayerPrefs.HasKey(IsMultiBpmItemPrefName))
                 model.IsMultiBpmItemMode.Value = PlayerPrefs.GetInt(IsMultiBpmItemPrefName) == 1;
             if (PlayerPrefs.HasKey(IsMultiMusicItemPrefName))
                 model.IsMultiMusicItemMode.Value = PlayerPrefs.GetInt(IsMultiMusicItemPrefName) == 1;
+            if (PlayerPrefs.HasKey(IsCompactNoteButtonAreaPrefName))
+                model.IsCompactNoteButtonArea.Value = PlayerPrefs.GetInt(IsCompactNoteButtonAreaPrefName) == 1;
+            if (PlayerPrefs.HasKey(IsShowingAudioWavePrefName))
+                model.IsShowingAudioWave.Value = PlayerPrefs.GetInt(IsShowingAudioWavePrefName) == 1;
 
             model.MusicVolume
                 .Skip(1)
@@ -112,14 +115,6 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                     PlayerPrefs.Save();
                 })
                 .AddTo(Disposables);
-            model.IsCompactNoteButtonArea
-                .Skip(1)
-                .Subscribe(val =>
-                {
-                    PlayerPrefs.SetInt(IsCompactNoteButtonAreaPrefName, val ? 1 : 0);
-                    PlayerPrefs.Save();
-                })
-                .AddTo(Disposables);
             model.IsMultiBpmItemMode
                 .Skip(1)
                 .Subscribe(val =>
@@ -133,6 +128,22 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                 .Subscribe(val =>
                 {
                     PlayerPrefs.SetInt(IsMultiMusicItemPrefName, val ? 1 : 0);
+                    PlayerPrefs.Save();
+                })
+                .AddTo(Disposables);
+            model.IsCompactNoteButtonArea
+                .Skip(1)
+                .Subscribe(val =>
+                {
+                    PlayerPrefs.SetInt(IsCompactNoteButtonAreaPrefName, val ? 1 : 0);
+                    PlayerPrefs.Save();
+                })
+                .AddTo(Disposables);
+            model.IsShowingAudioWave
+                .Skip(1)
+                .Subscribe(val =>
+                {
+                    PlayerPrefs.SetInt(IsShowingAudioWavePrefName, val ? 1 : 0);
                     PlayerPrefs.Save();
                 })
                 .AddTo(Disposables);

@@ -41,6 +41,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<bool> IsCompactNoteButtonArea => Model.IsCompactNoteButtonArea;
         public ReadOnlyReactiveProperty<AssetHandler<AudioClip?>?> AudioClipHandler => Model.AudioClipHandler;
 
+        public ReadOnlyReactiveProperty<bool> IsShowingAudioWave => Model.IsShowingAudioWave;
 
         public readonly ReadOnlyReactiveProperty<bool> CanPutNote;
 
