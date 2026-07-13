@@ -81,9 +81,10 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         // 制谱器设置
         public readonly ReactiveProperty<int> MusicVolume = new ReactiveProperty<int>(100);
         public readonly ReactiveProperty<int> NoteVolume = new ReactiveProperty<int>(100);
-        public readonly ReactiveProperty<bool> IsCompactNoteButtonArea = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> IsMultiBpmItemMode = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> IsMultiMusicItemMode = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> IsCompactNoteButtonArea = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> IsShowingAudioWave = new ReactiveProperty<bool>(false);
 
 
         /// <summary>

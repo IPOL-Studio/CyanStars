@@ -22,13 +22,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private TMP_InputField noteVolumeField = null!;
 
         [SerializeField]
-        private RadioButtonItem isCompactNoteButtonAreaButton = null!;
-
-        [SerializeField]
         private RadioButtonItem isMultiBpmItemButton = null!;
 
         [SerializeField]
         private RadioButtonItem isMultiMusicItemButton = null!;
+
+        [SerializeField]
+        private RadioButtonItem isCompactNoteButtonAreaButton = null!;
+
+        [SerializeField]
+        private RadioButtonItem isShowingAudioWave = null!;
 
 
         // AudioMixer 中的变量名
@@ -80,19 +83,23 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 })
                 .AddTo(this);
 
-            isCompactNoteButtonAreaButton.IsChecked = ViewModel.IsCompactNoteButtonArea.CurrentValue;
             isMultiBpmItemButton.IsChecked = ViewModel.IsMultiBpmItemMode.CurrentValue;
             isMultiMusicItemButton.IsChecked = ViewModel.IsMultiMusicItemMode.CurrentValue;
-            isCompactNoteButtonAreaButton.OnValueChanged.AddListener(ViewModel.SetCompactNoteButtonArea);
+            isCompactNoteButtonAreaButton.IsChecked = ViewModel.IsCompactNoteButtonArea.CurrentValue;
+            isShowingAudioWave.IsChecked = ViewModel.IsShowingAudioWave.CurrentValue;
+
             isMultiBpmItemButton.OnValueChanged.AddListener(ViewModel.SetMultiBpmItemMode);
             isMultiMusicItemButton.OnValueChanged.AddListener(ViewModel.SetMultiMusicItemMode);
+            isCompactNoteButtonAreaButton.OnValueChanged.AddListener(ViewModel.SetCompactNoteButtonArea);
+            isShowingAudioWave.OnValueChanged.AddListener(ViewModel.SetShowingAudioWave);
         }
 
         protected override void OnDestroy()
         {
-            isCompactNoteButtonAreaButton.OnValueChanged.RemoveListener(ViewModel.SetCompactNoteButtonArea);
             isMultiBpmItemButton.OnValueChanged.RemoveListener(ViewModel.SetMultiBpmItemMode);
             isMultiMusicItemButton.OnValueChanged.RemoveListener(ViewModel.SetMultiMusicItemMode);
+            isCompactNoteButtonAreaButton.OnValueChanged.RemoveListener(ViewModel.SetCompactNoteButtonArea);
+            isShowingAudioWave.OnValueChanged.RemoveListener(ViewModel.SetShowingAudioWave);
             base.OnDestroy();
         }
 

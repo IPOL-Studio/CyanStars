@@ -52,9 +52,17 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private RectTransform judgeLineRect = null!;
 
+        [SerializeField]
+        private RawImage audioWaveRawImage = null!;
+
+
+        private readonly AudioWaveformGenerator WaveformGenerator = new AudioWaveformGenerator();
+
+        private CancellationTokenSource? waveCts;
 
         private readonly CancellationTokenSource Cts = new CancellationTokenSource();
         private static GameObjectPoolManager PoolManager => GameRoot.GameObjectPool;
+
 
         // 管理当前激活的节拍线：Key=节拍索引（含细分拍），Value=节拍线物体实例
         // 开始加载时会将 item 对应的 Value 设为 null 占位，加载完成后覆写为 gameObject
@@ -71,6 +79,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
         public override void Bind(EditAreaViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
+
+            ViewModel.IsShowingAudioWave
+                .Subscribe(isShowing => audioWaveRawImage.enabled = isShowing)
+                .AddTo(this);
 
             ViewModel.IsTimelinePlaying
                 .Subscribe(isPlaying => scrollRect.vertical = !isPlaying) // 正在播放时完全禁止拖动/滚动 scrollRect
@@ -125,6 +137,25 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 })
                 .AddTo(this);
 
+            Observable.CombineLatest(
+                    ViewModel.AudioClipHandler,
+                    ViewModel.FirstMusicVersionItemOffset,
+                    ViewModel.TotalBeats,
+                    (handler, offset, _) => (handler, offset: offset ?? 0)
+                )
+                .ThrottleLastFrame(1)
+                .Subscribe(async t =>
+                {
+                    if (t.handler != null && t.handler.IsDoing)
+                        await t.handler;
+
+                    await RequestDrawAudioWaveAsync(t.handler?.Asset, t.offset);
+                })
+                .AddTo(this);
+
+            ViewModel.BeatZoom
+                .Subscribe(_ => RefreshFramesAnchor())
+                .AddTo(this);
 
             // 1. 位置线逻辑
             ViewModel.PosLineCount.Subscribe(UpdatePosLines).AddTo(this);
@@ -137,9 +168,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     (_, _, _) => true
                 )
                 .ThrottleLastFrame(1) // 避免同一帧多次刷新
-                .Subscribe(_ => ForceRebuildBeatLines()).AddTo(this);
+                .Subscribe(_ => RebuildBeatLines()).AddTo(this);
 
-            // 3. 滚动时刷新节拍线和音符，如果没在播放音乐则一并更新时间轴时间
+            // 3. 滚动时刷新节拍线和音符可见性，如果没在播放音乐则一并更新时间轴时间
             scrollRect.onValueChanged.AsObservable()
                 .Subscribe(_ =>
                 {
@@ -197,7 +228,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         #region BeatLines
 
-        private void ForceRebuildBeatLines()
+        private void RebuildBeatLines()
         {
             foreach (var kvp in ActiveBeatLines)
                 if (kvp.Value != null)
@@ -213,7 +244,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
             // 计算 Content 底部为 0，向上增加
             // Viewport 可视区域在 Content 中的 Y 轴范围：
             float viewportHeight = viewportRect.rect.height;
-            float contentHeight = contentRect.rect.height;
 
             // 当 verticalNormalizedPosition = 0 时，显示底部 (0 ~ viewportHeight)
             float scrollY = Mathf.Max(0, -contentRect.anchoredPosition.y);
@@ -299,7 +329,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 return;
 
             float viewportHeight = viewportRect.rect.height;
-            float contentHeight = contentRect.rect.height;
 
             float scrollY = Mathf.Max(0, -contentRect.anchoredPosition.y);
 
@@ -458,6 +487,51 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         #endregion
 
+        #region AudioWave
+
+        private async Task RequestDrawAudioWaveAsync(AudioClip? clip, int musicOffset)
+        {
+            RefreshFramesAnchor();
+
+            var rectTransform = (RectTransform)audioWaveRawImage.transform;
+            int uiHeight = Mathf.CeilToInt(rectTransform.rect.height);
+
+            if (uiHeight <= 0) return;
+
+            // 取消上一次未完成的绘制任务
+            waveCts?.Cancel();
+            waveCts?.Dispose();
+            waveCts = new CancellationTokenSource();
+            var token = waveCts.Token;
+
+            try
+            {
+                // 预计算
+                await WaveformGenerator.PrecomputeAsync(clip, musicOffset, token);
+
+                if (token.IsCancellationRequested)
+                    return;
+
+                // 生成纹理
+                Texture2D? waveTex = await WaveformGenerator.GenerateTextureAsync(uiHeight, token);
+
+                if (token.IsCancellationRequested)
+                    return;
+
+                audioWaveRawImage.texture = waveTex != null ? waveTex : null; // 无音频处理
+            }
+            catch (OperationCanceledException)
+            {
+                // 忽略取消异常
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[AudioWaveform] 生成波形图报错: {ex}");
+            }
+        }
+
+        #endregion
+
         #region Input
 
         public void OnPointerDown(PointerEventData eventData)
@@ -501,6 +575,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         #endregion
 
+        private void RefreshFramesAnchor()
+        {
+            // TODO: 目前仅供 AudioWave 使用，后续可考虑重构接入 BeatLinesFrame 和 NoteLinesFrame 以优化缩放时卡顿
+            var rectTransform = (RectTransform)audioWaveRawImage.transform;
+            double judgeLineY = judgeLineRect.anchoredPosition.y;
+            rectTransform.anchorMin = new Vector2(0.25f, (float)(judgeLineY / contentRect.rect.height));
+            rectTransform.anchorMax = new Vector2(0.75f, (contentRect.rect.height - viewportRect.rect.height + (float)judgeLineY) / contentRect.rect.height);
+        }
+
         private void Update()
         {
             if (!Input.GetKeyDown(KeyCode.Space))
@@ -520,6 +603,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             Cts.Cancel();
             Cts.Dispose();
+            waveCts?.Cancel();
+            waveCts?.Dispose();
 
             // 清理节拍线
             foreach (var kvp in ActiveBeatLines)
@@ -538,7 +623,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 }
             }
 
+            WaveformGenerator.Dispose();
+
             ActiveNotes.Clear();
         }
     }
+
 }

@@ -5,11 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using CatAsset.Runtime;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using ObservableCollections;
 using R3;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
@@ -37,9 +39,13 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<bool> PosMagnetState => Model.PosMagnet;
         public ReadOnlyReactiveProperty<int> PosAccuracy => Model.PosAccuracy;
         public ReadOnlyReactiveProperty<bool> IsCompactNoteButtonArea => Model.IsCompactNoteButtonArea;
+        public ReadOnlyReactiveProperty<AssetHandler<AudioClip?>?> AudioClipHandler => Model.AudioClipHandler;
 
+        public ReadOnlyReactiveProperty<bool> IsShowingAudioWave => Model.IsShowingAudioWave;
 
         public readonly ReadOnlyReactiveProperty<bool> CanPutNote;
+
+        public readonly ReadOnlyReactiveProperty<int?> FirstMusicVersionItemOffset;
 
 
         public EditAreaViewModel(ChartEditorModel model)
@@ -123,7 +129,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
 
-            ReadOnlyReactiveProperty<int?> firstMusicVersionItemOffset =
+            FirstMusicVersionItemOffset =
                 Model.ChartPackData.CurrentValue.MusicVersions
                     .ObserveChanged()
                     .Prepend((CollectionChangedEvent<MusicVersionDataEditorModel>)default)
@@ -150,7 +156,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 )
                 .Prepend(Unit.Default)
                 .CombineLatest(
-                    firstMusicVersionItemOffset,
+                    FirstMusicVersionItemOffset,
                     Model.AudioClipHandler,
                     (_, offset, handler) =>
                     {
