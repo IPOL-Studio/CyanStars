@@ -1,11 +1,13 @@
 ﻿#nullable enable
 
 using System;
+using System.Globalization;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using ObservableCollections;
 using R3;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.ChartEditor.View
@@ -13,6 +15,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
     public class EditorAttributeView : BaseView<EditorAttributeViewModel>
     {
         [Header("编辑器属性")]
+        [SerializeField]
+        private AudioMixer audioMixer = null!;
+
+        [SerializeField]
+        private AudioSource musicAudioSource = null!;
+
         [SerializeField]
         private Canvas editorAttributeCanvas = null!;
 
@@ -40,6 +48,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private Button zoomInButton = null!;
 
+        [SerializeField]
+        private TMP_InputField playbackSpeedField = null!;
+
+        [SerializeField]
+        private Button minusPlaybackSpeedButton = null!;
+
+        [SerializeField]
+        private Button addPlaybackSpeedButton = null!;
+
+
         [Header("进度条")]
         [SerializeField]
         private Slider slider = null!;
@@ -59,6 +77,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private Sprite pauseSprite = null!;
 
+
+        // AudioMixer 中的变量名
+        private const string MusicPitchName = "Music_PitchShifter_Pitch";
 
         private ReadOnlyReactiveProperty<bool> frameVisibility = null!;
         private ReadOnlyReactiveProperty<bool> isTimelineReadyToPlay = null!; // 已加载音乐 && bpm 组有至少 1 个 item && music 组有至少 1 个 item
@@ -90,6 +111,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
             ViewModel.BeatZoomString
                 .Subscribe(value => beatZoomField.text = value)
+                .AddTo(this);
+            ViewModel.PlaybackSpeed
+                .Subscribe(value =>
+                {
+                    playbackSpeedField.text = value.ToString(CultureInfo.InvariantCulture);
+                    musicAudioSource.pitch = (float)value;
+                    audioMixer.SetFloat(MusicPitchName, 1 / (float)value);
+                })
                 .AddTo(this);
 
             isTimelineReadyToPlay = Observable
@@ -166,6 +195,18 @@ namespace CyanStars.Gameplay.ChartEditor.View
             zoomInButton
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.ZoomIn())
+                .AddTo(this);
+            playbackSpeedField
+                .OnEndEditAsObservable()
+                .Subscribe(ViewModel.SetPlaybackSpeed)
+                .AddTo(this);
+            minusPlaybackSpeedButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.MinusPlaybackSpeed())
+                .AddTo(this);
+            addPlaybackSpeedButton
+                .OnClickAsObservable()
+                .Subscribe(_ => ViewModel.AddPlaybackSpeed())
                 .AddTo(this);
 
             slider

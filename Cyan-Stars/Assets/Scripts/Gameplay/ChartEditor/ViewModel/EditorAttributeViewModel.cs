@@ -14,12 +14,16 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     {
         private const int BeatAccuracyStep = 1;
         private const double ZoomStep = 0.1;
+        private const double PlaybackSpeedStep = 0.1;
 
         public ReadOnlyReactiveProperty<BaseChartNoteData?> SelectedNoteData => Model.SelectedNoteData;
+
+        // TODO: 将这堆 <string> 改为 <int> 或 <float>，由 View 负责转换
         public readonly ReadOnlyReactiveProperty<string> PosAccuracyString;
         public readonly ReadOnlyReactiveProperty<bool> PosMagnetState;
         public readonly ReadOnlyReactiveProperty<string> BeatAccuracyString;
         public readonly ReadOnlyReactiveProperty<string> BeatZoomString;
+        public readonly ReadOnlyReactiveProperty<double> PlaybackSpeed;
 
         public ReadOnlyReactiveProperty<bool> IsTimelinePlaying => Model.IsTimelinePlaying;
         public ReadOnlyReactiveProperty<int> CurrentTimelineTimeMs => Model.CurrentTimelineTimeMs;
@@ -46,6 +50,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             BeatZoomString = Model.BeatZoom
                 .Select(beatZoom => beatZoom.ToString("0.##", CultureInfo.InvariantCulture))
                 .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, Model.BeatZoom.Value.ToString("0.##", CultureInfo.InvariantCulture))
+                .AddTo(base.Disposables);
+            PlaybackSpeed = Model.PlaybackSpeed
+                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<double>.Instance)
                 .AddTo(base.Disposables);
         }
 
@@ -111,6 +118,30 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public void ZoomIn()
         {
             Model.BeatZoom.Value += ZoomStep;
+        }
+
+        public void SetPlaybackSpeed(string speedString)
+        {
+            if (!float.TryParse(speedString, out float speed) || speed <= 0)
+            {
+                Model.PlaybackSpeed.ForceNotify();
+                return;
+            }
+
+            Model.PlaybackSpeed.Value = speed;
+        }
+
+        public void MinusPlaybackSpeed()
+        {
+            if (PlaybackSpeed.CurrentValue <= PlaybackSpeedStep)
+                return;
+
+            Model.PlaybackSpeed.Value -= PlaybackSpeedStep;
+        }
+
+        public void AddPlaybackSpeed()
+        {
+            Model.PlaybackSpeed.Value += PlaybackSpeedStep;
         }
 
         public void SetTimeLineTime(int msTime)

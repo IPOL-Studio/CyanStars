@@ -32,8 +32,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
 
         // AudioMixer 中的变量名
-        private const string MusicVolumeName = "MusicVolume";
-        private const string NoteVolumeName = "NoteVolume";
+        private const string MusicVolumeName = "Music_Attenuation_Volume";
+        private const string NoteVolumeName = "Note_Attenuation_Volume";
 
 
         public override void Bind(ChartEditorSettingViewModel targetViewModel)

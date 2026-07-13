@@ -36,9 +36,11 @@ AudioMixerController:
   m_UpdateMode: 0
   m_ExposedParameters:
   - guid: 0688576c48f2a9440aa895faf54bd44f
-    name: MusicVolume
+    name: Music_Attenuation_Volume
+  - guid: c0a189447f5213b46b08f9843b0b8efa
+    name: Music_PitchShifter_Pitch
   - guid: 703ac0b9a776ccc4b8c7f8a5d26ab69b
-    name: NoteVolume
+    name: Note_Attenuation_Volume
   m_AudioMixerGroupViews:
   - guids:
     - 2fc9c2cbb67fbff41bde0b640f91b465
@@ -153,10 +155,33 @@ AudioMixerGroupController:
   m_Send: 00000000000000000000000000000000
   m_Effects:
   - {fileID: 3617758104156530008}
+  - {fileID: 4393120335147606386}
   m_UserColorIndex: 0
   m_Mute: 0
   m_Solo: 0
   m_BypassEffects: 0
+--- !u!244 &4393120335147606386
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: bca55e7a3562e144f9ee2d39d2aefd08
+  m_EffectName: Pitch Shifter
+  m_MixLevel: 6e169fdfa87676f489d60ebc8ce2ac27
+  m_Parameters:
+  - m_ParameterName: Pitch
+    m_GUID: c0a189447f5213b46b08f9843b0b8efa
+  - m_ParameterName: FFT size
+    m_GUID: 3b012e53acb6e524eb368bc6eddf2737
+  - m_ParameterName: Overlap
+    m_GUID: 298ec195da34be741b96ab8ea7fa5f41
+  - m_ParameterName: Max channels
+    m_GUID: a6354ae4ec235bf4d8584eaa454f2cec
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!244 &6146760653414648344
 AudioMixerEffectController:
   m_ObjectHideFlags: 3
