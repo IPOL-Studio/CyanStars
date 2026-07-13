@@ -53,16 +53,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private RectTransform judgeLineRect = null!;
 
         [SerializeField]
-        private RawImage audioWaveRaoImage = null!;
+        private RawImage audioWaveRawImage = null!;
 
 
-        private const float AudioWaveSamplesPerSecond = 10;
-        const int AudioWaveTextureWidthPixel = 32;
-        private readonly Color AudioWaveColor = new Color(1, 1, 1, 0.05f);
+        private readonly AudioWaveformGenerator WaveformGenerator = new AudioWaveformGenerator();
 
+        private CancellationTokenSource? waveCts;
 
         private readonly CancellationTokenSource Cts = new CancellationTokenSource();
         private static GameObjectPoolManager PoolManager => GameRoot.GameObjectPool;
+
 
         // 管理当前激活的节拍线：Key=节拍索引（含细分拍），Value=节拍线物体实例
         // 开始加载时会将 item 对应的 Value 设为 null 占位，加载完成后覆写为 gameObject
@@ -139,13 +139,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     ViewModel.TotalBeats,
                     (handler, offset, _) => (handler, offset: offset ?? 0)
                 )
-                .ThrottleLastFrame(1) // 避免同一帧多次刷新
+                .ThrottleLastFrame(1)
                 .Subscribe(async t =>
                 {
                     if (t.handler != null && t.handler.IsDoing)
                         await t.handler;
 
-                    DrawAudioWave(t.handler?.Asset, t.offset);
+                    await RequestDrawAudioWaveAsync(t.handler?.Asset, t.offset);
                 })
                 .AddTo(this);
 
@@ -485,111 +485,45 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         #region AudioWave
 
-        private void DrawAudioWave(AudioClip? clip, int musicOffset)
+        private async Task RequestDrawAudioWaveAsync(AudioClip? clip, int musicOffset)
         {
             RefreshFramesAnchor();
 
-            // 计算材质高度和缩放比例
-            var rectTransform = (RectTransform)audioWaveRaoImage.transform;
+            var rectTransform = (RectTransform)audioWaveRawImage.transform;
             int uiHeight = Mathf.CeilToInt(rectTransform.rect.height);
 
-            if (uiHeight <= 0)
-                return;
+            if (uiHeight <= 0) return;
 
-            int maxTexSize = Mathf.Min(SystemInfo.maxTextureSize, 8192);
-            int texHeight = Mathf.Clamp(uiHeight, 1, maxTexSize);
-            float scaleY = (float)uiHeight / texHeight;
-            Texture2D texture = new Texture2D(AudioWaveTextureWidthPixel, texHeight, TextureFormat.Alpha8, false);
+            // 取消上一次未完成的绘制任务
+            waveCts?.Cancel();
+            waveCts?.Dispose();
+            waveCts = new CancellationTokenSource();
+            var token = waveCts.Token;
 
-            // 背景填充透明色
-            Color[] pixels = new Color[AudioWaveTextureWidthPixel * texHeight];
-            for (int i = 0; i < pixels.Length; i++)
-                pixels[i] = Color.clear;
-
-            // 无音频时仅绘制透明背景
-            if (clip != null)
+            try
             {
-                // 获取总采样
-                float[] fullSamples = new float[clip.samples * clip.channels];
-                clip.GetData(fullSamples, 0);
+                // 预计算
+                await WaveformGenerator.PrecomputeAsync(clip, musicOffset, token);
 
-                // 计算降采样次数
-                float musicOffsetS = musicOffset / 1000f;
-                float timelineTotalTimeS = Mathf.Max(0, clip.length + musicOffsetS);
-                int samplesCount = (int)Math.Ceiling(timelineTotalTimeS * AudioWaveSamplesPerSecond);
-                float[] samples = new float[samplesCount];
+                if (token.IsCancellationRequested)
+                    return;
 
-                // 从总采样中降采样
-                for (int i = 0; i < samplesCount; i++)
-                {
-                    // 计算当前降采样点在时间轴上的起止时间
-                    float t0 = (float)i / samplesCount * timelineTotalTimeS;
-                    float t1 = (float)(i + 1) / samplesCount * timelineTotalTimeS;
+                // 生成纹理
+                Texture2D? waveTex = await WaveformGenerator.GenerateTextureAsync(uiHeight, token);
 
-                    // 转换为音频片段本地的起止时间
-                    float localT0 = t0 - musicOffsetS;
-                    float localT1 = t1 - musicOffsetS;
+                if (token.IsCancellationRequested)
+                    return;
 
-                    // 转换为对应的采样帧索引
-                    int frameStart = Mathf.Clamp(Mathf.FloorToInt(localT0 * clip.frequency), 0, clip.samples);
-                    int frameEnd = Mathf.Clamp(Mathf.FloorToInt(localT1 * clip.frequency), 0, clip.samples);
-
-                    // 如果有有效的重叠区间
-                    if (frameStart < frameEnd)
-                    {
-                        float maxAmplitude = 0f;
-                        for (int f = frameStart; f < frameEnd; f++)
-                        {
-                            int baseIndex = f * clip.channels;
-                            for (int ch = 0; ch < clip.channels; ch++)
-                            {
-                                float amplitude = Mathf.Abs(fullSamples[baseIndex + ch]);
-                                if (amplitude > maxAmplitude)
-                                {
-                                    maxAmplitude = amplitude;
-                                }
-                            }
-                        }
-                        samples[i] = maxAmplitude;
-                    }
-                    else
-                    {
-                        // 无重叠区间
-                        samples[i] = 0f;
-                    }
-                }
-
-                // 计算波形中心点和最大半宽
-                float centerX = (AudioWaveTextureWidthPixel - 1) / 2f;
-                float maxHalfWidth = AudioWaveTextureWidthPixel / 2f;
-
-                // 填充波形像素
-                for (int y = 0; y < texHeight; y++)
-                {
-                    // 将当前的纹理 Y 坐标归一化，并映射到 samples 数组对应的索引
-                    float t = texHeight > 1 ? (float)y / (texHeight - 1) : 0f;
-                    int sampleIndex = Mathf.Clamp(Mathf.RoundToInt(t * (samplesCount - 1)), 0, samplesCount - 1);
-                    float amplitude = samples[sampleIndex];
-
-                    // 根据振幅计算当前行波形的半宽
-                    float halfWidth = amplitude * maxHalfWidth;
-
-                    for (int x = 0; x < AudioWaveTextureWidthPixel; x++)
-                    {
-                        // 计算当前像素到中心线的距离
-                        float distanceToCenter = Mathf.Abs(x - centerX);
-
-                        if (distanceToCenter <= halfWidth)
-                        {
-                            pixels[y * AudioWaveTextureWidthPixel + x] = AudioWaveColor;
-                        }
-                    }
-                }
+                audioWaveRawImage.texture = waveTex != null ? waveTex : null; // 无音频处理
             }
-
-            texture.SetPixels(pixels);
-            texture.Apply();
-            audioWaveRaoImage.texture = texture;
+            catch (OperationCanceledException)
+            {
+                // 忽略取消异常
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[AudioWaveform] 生成波形图报错: {ex}");
+            }
         }
 
         #endregion
@@ -640,10 +574,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private void RefreshFramesAnchor()
         {
             // TODO: 目前仅供 AudioWave 使用，后续可考虑重构接入 BeatLinesFrame 和 NoteLinesFrame 以优化缩放时卡顿
-            var rectTransform = (RectTransform)audioWaveRaoImage.transform;
+            var rectTransform = (RectTransform)audioWaveRawImage.transform;
             double judgeLineY = judgeLineRect.anchoredPosition.y;
-            rectTransform.anchorMin = new Vector2(0, (float)(judgeLineY / contentRect.rect.height));
-            rectTransform.anchorMax = new Vector2(1, (contentRect.rect.height - viewportRect.rect.height + (float)judgeLineY) / contentRect.rect.height);
+            rectTransform.anchorMin = new Vector2(0.25f, (float)(judgeLineY / contentRect.rect.height));
+            rectTransform.anchorMax = new Vector2(0.75f, (contentRect.rect.height - viewportRect.rect.height + (float)judgeLineY) / contentRect.rect.height);
         }
 
         private void Update()
@@ -665,6 +599,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             Cts.Cancel();
             Cts.Dispose();
+            waveCts?.Cancel();
+            waveCts?.Dispose();
 
             // 清理节拍线
             foreach (var kvp in ActiveBeatLines)
@@ -682,6 +618,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     PoolManager.ReleaseGameObject(GetPrefabPath(kvp.Key.Type), view.gameObject);
                 }
             }
+
+            WaveformGenerator.Dispose();
 
             ActiveNotes.Clear();
         }
