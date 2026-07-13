@@ -45,7 +45,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<bool> CanPutNote;
 
         public readonly ReadOnlyReactiveProperty<int?> FirstMusicVersionItemOffset;
-        public IList<BpmGroupItem> BpmGroup => Model.ChartPackData.CurrentValue.BpmGroup;
 
 
         public EditAreaViewModel(ChartEditorModel model)

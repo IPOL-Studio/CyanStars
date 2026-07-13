@@ -56,7 +56,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private RawImage audioWaveRaoImage = null!;
 
 
+        private const float AudioWaveSamplesPerSecond = 10;
+        const int AudioWaveTextureWidthPixel = 32;
         private readonly Color AudioWaveColor = new Color(1, 1, 1, 0.05f);
+
 
         private readonly CancellationTokenSource Cts = new CancellationTokenSource();
         private static GameObjectPoolManager PoolManager => GameRoot.GameObjectPool;
@@ -486,114 +489,106 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             RefreshFramesAnchor();
 
+            // 计算材质高度和缩放比例
             var rectTransform = (RectTransform)audioWaveRaoImage.transform;
-
-            int uiWidth = Mathf.CeilToInt(rectTransform.rect.width);
             int uiHeight = Mathf.CeilToInt(rectTransform.rect.height);
 
-            // 防止宽高度异常导致报错
-            if (uiWidth <= 0 || uiHeight <= 0) return;
+            if (uiHeight <= 0)
+                return;
 
-            // 限制最大纹理尺寸
             int maxTexSize = Mathf.Min(SystemInfo.maxTextureSize, 8192);
-            int texWidth = Mathf.Clamp(uiWidth, 1, maxTexSize);
             int texHeight = Mathf.Clamp(uiHeight, 1, maxTexSize);
-
-            Texture2D texture = new Texture2D(texWidth, texHeight, TextureFormat.RGBA32, false);
-
-            // 计算 UI 实际尺寸 与 纹理贴图 之间的缩放比例
-            float scaleX = (float)uiWidth / texWidth;
             float scaleY = (float)uiHeight / texHeight;
+            Texture2D texture = new Texture2D(AudioWaveTextureWidthPixel, texHeight, TextureFormat.Alpha8, false);
 
             // 背景填充透明色
-            Color[] pixels = new Color[texWidth * texHeight];
+            Color[] pixels = new Color[AudioWaveTextureWidthPixel * texHeight];
             for (int i = 0; i < pixels.Length; i++)
                 pixels[i] = Color.clear;
 
-            // 波形纵轴需与时间轴布局保持一致：AudioWave 铺满 Content，
-            // 且节拍线/音符均以 “判定线高度 + 拍数 * 每拍像素” 的方式从 Content 底部排布，
-            // 因此像素 -> 拍 -> （经 Bpm 组换算）时间，才能与时间轴对齐。
-            var bpmGroup = ViewModel.BpmGroup;
-            double majorBeatDist = ViewModel.GetMajorBeatLineDistance();
-
-            // 无音频、缩放异常或 Bpm 组不合法时，仅绘制透明背景
-            if (clip != null
-                && majorBeatDist > 0
-                && bpmGroup.Count > 0
-                && BpmGroupHelper.Validate(bpmGroup) == BpmGroupHelper.BpmValidationStatus.Valid)
+            // 无音频时仅绘制透明背景
+            if (clip != null)
             {
-                // 获取数据
+                // 获取总采样
                 float[] fullSamples = new float[clip.samples * clip.channels];
                 clip.GetData(fullSamples, 0);
 
-                float offsetSeconds = musicOffset / 1000f;
-                int centerTexX = texWidth / 2;
+                // 计算降采样次数
+                float musicOffsetS = musicOffset / 1000f;
+                float timelineTotalTimeS = Mathf.Max(0, clip.length + musicOffsetS);
+                int samplesCount = (int)Math.Ceiling(timelineTotalTimeS * AudioWaveSamplesPerSecond);
+                float[] samples = new float[samplesCount];
 
-                // 搜索峰值，并按峰值拉伸填充像素
-                for (int y = 0; y < texHeight; y++)
+                // 从总采样中降采样
+                for (int i = 0; i < samplesCount; i++)
                 {
-                    // 1. 计算当前像素行 (y) 映射到 Content 上的高度范围，
-                    //    先换算为拍，再通过 Bpm 组求出对应的音频起止时间
-                    float uiYStart = y * scaleY;
-                    float uiYEnd = (y + 1) * scaleY;
+                    // 计算当前降采样点在时间轴上的起止时间
+                    float t0 = (float)i / samplesCount * timelineTotalTimeS;
+                    float t1 = (float)(i + 1) / samplesCount * timelineTotalTimeS;
 
-                    double judgeLineY = judgeLineRect.anchoredPosition.y;
-                    double beatStart = (uiYStart - judgeLineY) / majorBeatDist;
-                    double beatEnd = (uiYEnd - judgeLineY) / majorBeatDist;
+                    // 转换为音频片段本地的起止时间
+                    float localT0 = t0 - musicOffsetS;
+                    float localT1 = t1 - musicOffsetS;
 
-                    float startTime = (BpmGroupHelper.CalculateTime(bpmGroup, beatStart) / 1000f) - offsetSeconds;
-                    float endTime = (BpmGroupHelper.CalculateTime(bpmGroup, beatEnd) / 1000f) - offsetSeconds;
+                    // 转换为对应的采样帧索引
+                    int frameStart = Mathf.Clamp(Mathf.FloorToInt(localT0 * clip.frequency), 0, clip.samples);
+                    int frameEnd = Mathf.Clamp(Mathf.FloorToInt(localT1 * clip.frequency), 0, clip.samples);
 
-                    // 2. 转换为 AudioClip 的 sample 索引
-                    int startSample = Mathf.FloorToInt(startTime * clip.frequency);
-                    int endSample = Mathf.CeilToInt(endTime * clip.frequency);
-
-                    startSample = Mathf.Clamp(startSample, 0, clip.samples - 1);
-                    endSample = Mathf.Clamp(endSample, 0, clip.samples - 1);
-
-                    float maxPeak = 0f;
-
-                    // 3. 搜索当前时间片段内的峰值振幅
-                    if (startSample < endSample)
+                    // 如果有有效的重叠区间
+                    if (frameStart < frameEnd)
                     {
-                        int startIdx = startSample * clip.channels;
-                        int endIdx = endSample * clip.channels;
-                        endIdx = Mathf.Min(endIdx, fullSamples.Length);
-
-                        for (int i = startIdx; i < endIdx; i++)
+                        float maxAmplitude = 0f;
+                        for (int f = frameStart; f < frameEnd; f++)
                         {
-                            float absVal = Mathf.Abs(fullSamples[i]);
-                            if (absVal > maxPeak)
+                            int baseIndex = f * clip.channels;
+                            for (int ch = 0; ch < clip.channels; ch++)
                             {
-                                maxPeak = absVal;
+                                float amplitude = Mathf.Abs(fullSamples[baseIndex + ch]);
+                                if (amplitude > maxAmplitude)
+                                {
+                                    maxAmplitude = amplitude;
+                                }
                             }
                         }
+                        samples[i] = maxAmplitude;
                     }
-
-                    // 4. 按峰值拉伸并填充像素
-                    // 先算出 UI 上的波形宽度，再除以 scaleX 压缩为 Texture 里的像素宽度
-                    float uiWaveWidth = maxPeak * (uiWidth / 2f) * 0.5f; // 只填充 50%
-                    int texWaveWidth = Mathf.FloorToInt(uiWaveWidth / scaleX);
-
-                    int startX = Mathf.Clamp(centerTexX - texWaveWidth, 0, texWidth - 1);
-                    int endX = Mathf.Clamp(centerTexX + texWaveWidth, 0, texWidth - 1);
-
-                    // 写入一维颜色数组
-                    for (int x = startX; x <= endX; x++)
+                    else
                     {
-                        pixels[y * texWidth + x] = AudioWaveColor;
+                        // 无重叠区间
+                        samples[i] = 0f;
+                    }
+                }
+
+                // 计算波形中心点和最大半宽
+                float centerX = (AudioWaveTextureWidthPixel - 1) / 2f;
+                float maxHalfWidth = AudioWaveTextureWidthPixel / 2f;
+
+                // 填充波形像素
+                for (int y = 0; y < texHeight; y++)
+                {
+                    // 将当前的纹理 Y 坐标归一化，并映射到 samples 数组对应的索引
+                    float t = texHeight > 1 ? (float)y / (texHeight - 1) : 0f;
+                    int sampleIndex = Mathf.Clamp(Mathf.RoundToInt(t * (samplesCount - 1)), 0, samplesCount - 1);
+                    float amplitude = samples[sampleIndex];
+
+                    // 根据振幅计算当前行波形的半宽
+                    float halfWidth = amplitude * maxHalfWidth;
+
+                    for (int x = 0; x < AudioWaveTextureWidthPixel; x++)
+                    {
+                        // 计算当前像素到中心线的距离
+                        float distanceToCenter = Mathf.Abs(x - centerX);
+
+                        if (distanceToCenter <= halfWidth)
+                        {
+                            pixels[y * AudioWaveTextureWidthPixel + x] = AudioWaveColor;
+                        }
                     }
                 }
             }
 
-            // 绘制材质
             texture.SetPixels(pixels);
-            texture.Apply(); // 应用像素更改提交到 GPU
-
-            // 释放旧的 Texture
-            if (audioWaveRaoImage.texture != null)
-                Destroy(audioWaveRaoImage.texture);
-
+            texture.Apply();
             audioWaveRaoImage.texture = texture;
         }
 
@@ -642,6 +637,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         #endregion
 
+        private void RefreshFramesAnchor()
+        {
+            // TODO: 目前仅供 AudioWave 使用，后续可考虑重构接入 BeatLinesFrame 和 NoteLinesFrame 以优化缩放时卡顿
+            var rectTransform = (RectTransform)audioWaveRaoImage.transform;
+            double judgeLineY = judgeLineRect.anchoredPosition.y;
+            rectTransform.anchorMin = new Vector2(0, (float)(judgeLineY / contentRect.rect.height));
+            rectTransform.anchorMax = new Vector2(1, (contentRect.rect.height - viewportRect.rect.height + (float)judgeLineY) / contentRect.rect.height);
+        }
+
         private void Update()
         {
             if (!Input.GetKeyDown(KeyCode.Space))
@@ -655,15 +659,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 return; // 焦点位于输入框时拦截 Space 响应
 
             ViewModel.OnSpaceDown();
-        }
-
-        private void RefreshFramesAnchor()
-        {
-            // TODO: 目前仅供 AudioWave 使用，后续可考虑重构接入 BeatLinesFrame 和 NoteLinesFrame 以优化缩放时卡顿
-            var rectTransform = (RectTransform)audioWaveRaoImage.transform;
-            double judgeLineY = judgeLineRect.anchoredPosition.y;
-            rectTransform.anchorMin = new Vector2(0, (float)(judgeLineY / contentRect.rect.height));
-            rectTransform.anchorMax = new Vector2(1, (contentRect.rect.height - viewportRect.rect.height + (float)judgeLineY) / contentRect.rect.height);
         }
 
         protected void OnDestroy()
@@ -691,4 +686,5 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ActiveNotes.Clear();
         }
     }
+
 }
