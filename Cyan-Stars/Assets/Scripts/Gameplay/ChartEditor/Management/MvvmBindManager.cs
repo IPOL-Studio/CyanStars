@@ -83,9 +83,6 @@ namespace CyanStars.Gameplay.ChartEditor.Management
             shortcutManager.Init();
             playerPrefsManager.Init(model);
 
-            // 初始化一些杂项脚本
-            background.Init(model);
-
             // 实例化 VM 并与 V 绑定
             var toolbarViewModel = new ToolbarViewModel(model).AddTo(Disposables);
             toolbarView.Bind(toolbarViewModel);
