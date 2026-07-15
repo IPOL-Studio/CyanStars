@@ -163,6 +163,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .ThrottleLastFrame(1) // 避免同一帧多次刷新
                 .Subscribe(_ => UpdateNotesVisibility())
                 .AddTo(this);
+
+            GameRoot.Event.AddListener(Background.ClickEventName, OnBackgroundClick);
         }
 
         #region PosLines
@@ -460,6 +462,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         #region Input
 
+        private void OnBackgroundClick(object sender, EventArgs args)
+        {
+            ViewModel.CancelSelectNote();
+        }
+
         public void OnPointerDown(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Right || !ViewModel.CanPutNote.CurrentValue)
@@ -520,6 +527,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             Cts.Cancel();
             Cts.Dispose();
+
+            GameRoot.Event.RemoveListener(Background.ClickEventName, OnBackgroundClick);
 
             // 清理节拍线
             foreach (var kvp in ActiveBeatLines)

@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using CyanStars.Chart;
-using CyanStars.Framework;
-using CyanStars.Gameplay.ChartEditor;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using ObservableCollections;
@@ -177,8 +175,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .Select(_ => Model.ChartPackData.CurrentValue.MusicVersions.Count > 0 && Model.ChartPackData.CurrentValue.BpmGroup.Count > 0)
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
-
-            GameRoot.Event.AddListener(Background.ClickEventName, OnBackgroundClick);
         }
 
         /// <summary>
@@ -205,12 +201,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             if (Model.SelectedNoteData.CurrentValue != null)
                 Model.SelectedNoteData.Value = null;
-        }
-
-
-        private void OnBackgroundClick(object sender, EventArgs args)
-        {
-            CancelSelectNote();
         }
 
         /// <summary>
@@ -312,12 +302,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             }
 
             Model.IsTimelinePlaying.Value = !Model.IsTimelinePlaying.Value;
-        }
-
-        public override void Dispose()
-        {
-            GameRoot.Event.RemoveListener(Background.ClickEventName, OnBackgroundClick);
-            base.Dispose();
         }
     }
 }
