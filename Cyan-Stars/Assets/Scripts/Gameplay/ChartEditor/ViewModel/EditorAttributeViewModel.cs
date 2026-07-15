@@ -18,9 +18,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public ReadOnlyReactiveProperty<BaseChartNoteData?> SelectedNoteData => Model.SelectedNoteData;
 
-        public readonly ReadOnlyReactiveProperty<bool> IsAbleToMinusBeatAccuracy;
-        public readonly ReadOnlyReactiveProperty<bool> IsAbleToMinusBeatZoom;
-        public readonly ReadOnlyReactiveProperty<bool> IsAbleToMinusPlaybackSpeed;
+        public readonly ReadOnlyReactiveProperty<bool> CanMinusBeatAccuracy;
+        public readonly ReadOnlyReactiveProperty<bool> CanMinusBeatZoom;
+        public readonly ReadOnlyReactiveProperty<bool> CanMinusPlaybackSpeed;
 
         // TODO: 将这堆 <string> 改为 <int> 或 <float>，由 View 负责转换
         public readonly ReadOnlyReactiveProperty<string> PosAccuracyString;
@@ -39,15 +39,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public EditorAttributeViewModel(ChartEditorModel model)
             : base(model)
         {
-            IsAbleToMinusBeatAccuracy = Model.BeatAccuracy
+            CanMinusBeatAccuracy = Model.BeatAccuracy
                 .Select(beatAccuracy => beatAccuracy > BeatAccuracyStep)
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
-            IsAbleToMinusBeatZoom = Model.BeatZoom
+            CanMinusBeatZoom = Model.BeatZoom
                 .Select(beatZoom => beatZoom > BeatZoomStep)
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
-            IsAbleToMinusPlaybackSpeed = Model.PlaybackSpeed
+            CanMinusPlaybackSpeed = Model.PlaybackSpeed
                 .Select(playbackSpeed => playbackSpeed > PlaybackSpeedStep)
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);

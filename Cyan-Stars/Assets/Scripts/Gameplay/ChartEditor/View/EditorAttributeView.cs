@@ -92,7 +92,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
-            ViewModel.IsAbleToMinusBeatAccuracy
+            ViewModel.CanMinusBeatAccuracy
                 .Subscribe(able =>
                 {
                     if (minusBeatAccuracyButton.gameObject.TryGetComponent(out SelectableStateObserver observer))
@@ -101,7 +101,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                         minusBeatAccuracyButton.interactable = able;
                 })
                 .AddTo(this);
-            ViewModel.IsAbleToMinusBeatZoom
+            ViewModel.CanMinusBeatZoom
                 .Subscribe(able =>
                 {
                     if (zoomOutButton.gameObject.TryGetComponent(out SelectableStateObserver observer))
@@ -110,7 +110,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                         zoomOutButton.interactable = able;
                 })
                 .AddTo(this);
-            ViewModel.IsAbleToMinusPlaybackSpeed
+            ViewModel.CanMinusPlaybackSpeed
                 .Subscribe(able =>
                 {
                     if (minusPlaybackSpeedButton.gameObject.TryGetComponent(out SelectableStateObserver observer))
