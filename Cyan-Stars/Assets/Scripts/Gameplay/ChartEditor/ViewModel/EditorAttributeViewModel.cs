@@ -13,10 +13,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     public class EditorAttributeViewModel : BaseViewModel
     {
         private const int BeatAccuracyStep = 1;
-        private const double ZoomStep = 0.1;
+        private const double BeatZoomStep = 0.1;
         private const double PlaybackSpeedStep = 0.1;
 
         public ReadOnlyReactiveProperty<BaseChartNoteData?> SelectedNoteData => Model.SelectedNoteData;
+
+        public readonly ReadOnlyReactiveProperty<bool> IsAbleToMinusBeatAccuracy;
+        public readonly ReadOnlyReactiveProperty<bool> IsAbleToMinusBeatZoom;
+        public readonly ReadOnlyReactiveProperty<bool> IsAbleToMinusPlaybackSpeed;
 
         // TODO: 将这堆 <string> 改为 <int> 或 <float>，由 View 负责转换
         public readonly ReadOnlyReactiveProperty<string> PosAccuracyString;
@@ -35,6 +39,19 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public EditorAttributeViewModel(ChartEditorModel model)
             : base(model)
         {
+            IsAbleToMinusBeatAccuracy = Model.BeatAccuracy
+                .Select(beatAccuracy => beatAccuracy > BeatAccuracyStep)
+                .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
+            IsAbleToMinusBeatZoom = Model.BeatZoom
+                .Select(beatZoom => beatZoom > BeatZoomStep)
+                .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
+            IsAbleToMinusPlaybackSpeed = Model.PlaybackSpeed
+                .Select(playbackSpeed => playbackSpeed > PlaybackSpeedStep)
+                .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
+
             // TODO: 优化此处属性赋值，直接透传数据并由 View 自行组合和处理逻辑
             PosAccuracyString = Model.PosAccuracy
                 .Select(posAccuracy => posAccuracy.ToString())
@@ -109,20 +126,20 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void ZoomOut()
         {
-            if (Model.BeatZoom.Value <= ZoomStep)
+            if (Model.BeatZoom.Value <= BeatZoomStep)
                 return;
 
-            Model.BeatZoom.Value -= ZoomStep;
+            Model.BeatZoom.Value -= BeatZoomStep;
         }
 
         public void ZoomIn()
         {
-            Model.BeatZoom.Value += ZoomStep;
+            Model.BeatZoom.Value += BeatZoomStep;
         }
 
         public void SetPlaybackSpeed(string speedString)
         {
-            if (!float.TryParse(speedString, out float speed) || speed <= 0)
+            if (!double.TryParse(speedString, out double speed) || speed <= 0)
             {
                 Model.PlaybackSpeed.ForceNotify();
                 return;

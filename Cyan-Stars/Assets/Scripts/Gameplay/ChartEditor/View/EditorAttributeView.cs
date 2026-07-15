@@ -3,6 +3,7 @@
 using System;
 using System.Globalization;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using CyanStars.Utils.SelectableUI;
 using ObservableCollections;
 using R3;
 using TMPro;
@@ -90,6 +91,34 @@ namespace CyanStars.Gameplay.ChartEditor.View
         public override void Bind(EditorAttributeViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
+
+            ViewModel.IsAbleToMinusBeatAccuracy
+                .Subscribe(able =>
+                {
+                    if (minusBeatAccuracyButton.gameObject.TryGetComponent(out SelectableStateObserver observer))
+                        observer.SetInteractable(able);
+                    else
+                        minusBeatAccuracyButton.interactable = able;
+                })
+                .AddTo(this);
+            ViewModel.IsAbleToMinusBeatZoom
+                .Subscribe(able =>
+                {
+                    if (zoomOutButton.gameObject.TryGetComponent(out SelectableStateObserver observer))
+                        observer.SetInteractable(able);
+                    else
+                        zoomOutButton.interactable = able;
+                })
+                .AddTo(this);
+            ViewModel.IsAbleToMinusPlaybackSpeed
+                .Subscribe(able =>
+                {
+                    if (minusPlaybackSpeedButton.gameObject.TryGetComponent(out SelectableStateObserver observer))
+                        observer.SetInteractable(able);
+                    else
+                        minusPlaybackSpeedButton.interactable = able;
+                })
+                .AddTo(this);
 
             frameVisibility =
                 ViewModel.SelectedNoteData
