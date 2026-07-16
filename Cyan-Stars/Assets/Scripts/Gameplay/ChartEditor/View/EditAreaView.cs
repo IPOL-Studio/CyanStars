@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using CyanStars.Chart;
 using CyanStars.Framework;
@@ -53,7 +52,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private RectTransform judgeLineRect = null!;
 
 
-        private readonly CancellationTokenSource Cts = new CancellationTokenSource();
         private static GameObjectPoolManager PoolManager => GameRoot.GameObjectPool;
 
         // 管理当前激活的节拍线：Key=节拍索引（含细分拍），Value=节拍线物体实例
@@ -171,7 +169,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async void UpdatePosLines(int count)
         {
-            if (Cts.IsCancellationRequested) return;
+            if (destroyCancellationToken.IsCancellationRequested) return;
             int oldPosLineCount = posLinesFrameObject.transform.childCount - 1;
 
             var tasks = new List<Task>();
@@ -210,7 +208,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async void UpdateBeatLinesVisibility()
         {
-            if (Cts.IsCancellationRequested) return;
+            if (destroyCancellationToken.IsCancellationRequested) return;
 
             // 计算 Content 底部为 0，向上增加
             // Viewport 可视区域在 Content 中的 Y 轴范围：
@@ -264,10 +262,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async Task CreateBeatLine(int index, double distance, int accuracy)
         {
-            GameObject go = await PoolManager.GetGameObjectAsync(ChartEditorAssetHelper.BeatLinePath, beatLinesFrameRect, Cts.Token);
+            GameObject go = await PoolManager.GetGameObjectAsync(ChartEditorAssetHelper.BeatLinePath, beatLinesFrameRect, destroyCancellationToken);
             go.transform.localScale = Vector3.one;
 
-            if (Cts.Token.IsCancellationRequested || !ActiveBeatLines.ContainsKey(index))
+            if (destroyCancellationToken.IsCancellationRequested || !ActiveBeatLines.ContainsKey(index))
             {
                 PoolManager.ReleaseGameObject(ChartEditorAssetHelper.BeatLinePath, go);
                 return;
@@ -297,7 +295,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async void UpdateNotesVisibility()
         {
-            if (Cts.IsCancellationRequested)
+            if (destroyCancellationToken.IsCancellationRequested)
                 return;
 
             float viewportHeight = viewportRect.rect.height;
@@ -415,11 +413,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             string path = GetPrefabPath(note.Type);
 
-            GameObject go = await PoolManager.GetGameObjectAsync(path, notesFrameRect, Cts.Token);
+            GameObject go = await PoolManager.GetGameObjectAsync(path, notesFrameRect, destroyCancellationToken);
             go.transform.localScale = Vector3.one;
 
             // 双重检查：异步加载过程中可能已经不再需要显示该 Note，或者 View 被销毁
-            if (Cts.Token.IsCancellationRequested || !ActiveNotes.ContainsKey(note))
+            if (destroyCancellationToken.IsCancellationRequested || !ActiveNotes.ContainsKey(note))
             {
                 PoolManager.ReleaseGameObject(path, go);
                 return;
@@ -525,9 +523,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected void OnDestroy()
         {
-            Cts.Cancel();
-            Cts.Dispose();
-
             GameRoot.Event.RemoveListener(Background.ClickEventName, OnBackgroundClick);
 
             // 清理节拍线
