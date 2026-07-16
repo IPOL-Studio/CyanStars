@@ -137,9 +137,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             Model.BeatZoom.Value += BeatZoomStep;
         }
 
-        public void SetPlaybackSpeed(string speedString)
+        public void SetPlaybackSpeed(double speed)
         {
-            if (!double.TryParse(speedString, out double speed) || speed <= 0)
+            if (speed <= 0)
             {
                 Model.PlaybackSpeed.ForceNotify();
                 return;

@@ -227,7 +227,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
             playbackSpeedField
                 .OnEndEditAsObservable()
-                .Subscribe(ViewModel.SetPlaybackSpeed)
+                .Subscribe(speedString =>
+                {
+                    if (!double.TryParse(speedString, out var speed) || speed <= 0)
+                    {
+                        playbackSpeedField.text = ViewModel.PlaybackSpeed.CurrentValue.ToString(CultureInfo.InvariantCulture);
+                        return;
+                    }
+
+                    ViewModel.SetPlaybackSpeed(speed);
+                })
                 .AddTo(this);
             minusPlaybackSpeedButton
                 .OnClickAsObservable()
