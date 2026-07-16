@@ -15,9 +15,6 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         private readonly CompositeDisposable Disposables = new CompositeDisposable();
 
         [SerializeField]
-        private Background background = null!;
-
-        [SerializeField]
         private ToolbarView toolbarView = null!;
 
         [SerializeField]
