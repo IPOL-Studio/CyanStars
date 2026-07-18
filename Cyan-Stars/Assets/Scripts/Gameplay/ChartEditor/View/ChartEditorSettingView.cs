@@ -22,13 +22,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private TMP_InputField noteVolumeField = null!;
 
         [SerializeField]
-        private SettingCanvasRadioButtonItem isCompactNoteButtonAreaButton = null!;
+        private SwitchButton isCompactNoteButtonAreaButton = null!;
 
         [SerializeField]
-        private SettingCanvasRadioButtonItem isMultiBpmItemButton = null!;
+        private SwitchButton isMultiBpmItemButton = null!;
 
         [SerializeField]
-        private SettingCanvasRadioButtonItem isMultiMusicItemButton = null!;
+        private SwitchButton isMultiMusicItemButton = null!;
 
 
         // AudioMixer 中的变量名
@@ -81,37 +81,25 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
 
             ViewModel.IsCompactNoteButtonArea
-                .Subscribe(isOn =>
-                {
-                    isCompactNoteButtonAreaButton.RadioButton.IsChecked = isOn;
-                    isCompactNoteButtonAreaButton.SetIconSelectedSprite(isOn);
-                })
+                .Subscribe(isOn => isCompactNoteButtonAreaButton.IsChecked = isOn)
                 .AddTo(this);
             ViewModel.IsMultiBpmItemMode
-                .Subscribe(isOn =>
-                {
-                    isMultiBpmItemButton.RadioButton.IsChecked = isOn;
-                    isMultiBpmItemButton.SetIconSelectedSprite(isOn);
-                })
+                .Subscribe(isOn => isMultiBpmItemButton.IsChecked = isOn)
                 .AddTo(this);
             ViewModel.IsMultiMusicItemMode
-                .Subscribe(isOn =>
-                {
-                    isMultiMusicItemButton.RadioButton.IsChecked = isOn;
-                    isMultiMusicItemButton.SetIconSelectedSprite(isOn);
-                })
+                .Subscribe(isOn => isMultiMusicItemButton.IsChecked = isOn)
                 .AddTo(this);
 
-            isCompactNoteButtonAreaButton.RadioButton.OnValueChanged.AddListener(ViewModel.SetCompactNoteButtonArea);
-            isMultiBpmItemButton.RadioButton.OnValueChanged.AddListener(ViewModel.SetMultiBpmItemMode);
-            isMultiMusicItemButton.RadioButton.OnValueChanged.AddListener(ViewModel.SetMultiMusicItemMode);
+            isCompactNoteButtonAreaButton.OnValueChanged.AddListener(ViewModel.SetCompactNoteButtonArea);
+            isMultiBpmItemButton.OnValueChanged.AddListener(ViewModel.SetMultiBpmItemMode);
+            isMultiMusicItemButton.OnValueChanged.AddListener(ViewModel.SetMultiMusicItemMode);
         }
 
         protected override void OnDestroy()
         {
-            isCompactNoteButtonAreaButton.RadioButton.OnValueChanged.RemoveListener(ViewModel.SetCompactNoteButtonArea);
-            isMultiBpmItemButton.RadioButton.OnValueChanged.RemoveListener(ViewModel.SetMultiBpmItemMode);
-            isMultiMusicItemButton.RadioButton.OnValueChanged.RemoveListener(ViewModel.SetMultiMusicItemMode);
+            isCompactNoteButtonAreaButton.OnValueChanged.RemoveListener(ViewModel.SetCompactNoteButtonArea);
+            isMultiBpmItemButton.OnValueChanged.RemoveListener(ViewModel.SetMultiBpmItemMode);
+            isMultiMusicItemButton.OnValueChanged.RemoveListener(ViewModel.SetMultiMusicItemMode);
             base.OnDestroy();
         }
 
