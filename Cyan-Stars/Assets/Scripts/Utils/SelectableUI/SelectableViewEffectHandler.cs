@@ -37,28 +37,57 @@ namespace CyanStars.Utils.SelectableUI
 
         [Header("各状态配置")]
         [SerializeField]
-        private StateEffectConfig normal = new() { Scale = Vector3.one, TintColor = new Color(0.93f, 0.93f, 0.93f, 0.98f) };
+        private StateEffectConfig normal = new()
+        {
+            Scale = Vector3.one, TintColor = new Color(0.93f, 0.93f, 0.93f, 0.98f)
+        };
 
         [SerializeField]
-        private StateEffectConfig hover = new() { Scale = new Vector3(1.02f, 1.02f, 1.02f), TintColor = new Color(0.98f, 0.98f, 0.98f, 0.98f) };
+        private StateEffectConfig hover = new()
+        {
+            Scale = new Vector3(1.02f, 1.02f, 1.02f), TintColor = new Color(0.98f, 0.98f, 0.98f, 0.98f)
+        };
 
         [SerializeField]
-        private StateEffectConfig pressed = new() { Scale = new Vector3(0.98f, 0.98f, 0.98f), TintColor = new Color(0.62f, 0.62f, 0.62f, 0.98f) };
+        private StateEffectConfig pressed = new()
+        {
+            Scale = new Vector3(0.98f, 0.98f, 0.98f), TintColor = new Color(0.62f, 0.62f, 0.62f, 0.98f)
+        };
 
         [SerializeField]
-        private StateEffectConfig disabled = new() { Scale = Vector3.one, TintColor = new Color(0.33f, 0.33f, 0.33f, 0.98f) };
+        private StateEffectConfig disabled = new()
+        {
+            Scale = Vector3.one, TintColor = new Color(0.33f, 0.33f, 0.33f, 0.98f)
+        };
 
         [SerializeField]
-        private StateEffectConfig normalSelected = new() { Scale = Vector3.one, TintColor = new Color(0.27f, 0.47f, 0.82f, 0.98f) };
+        private StateEffectConfig normalSelected = new()
+        {
+            Scale = Vector3.one, TintColor = new Color(0.27f, 0.47f, 0.82f, 0.98f)
+        };
 
         [SerializeField]
-        private StateEffectConfig hoverSelected = new() { Scale = new Vector3(1.02f, 1.02f, 1.02f), TintColor = new Color(0.49f, 0.63f, 0.87f, 0.98f) };
+        private StateEffectConfig hoverSelected = new()
+        {
+            Scale = new Vector3(1.02f, 1.02f, 1.02f), TintColor = new Color(0.49f, 0.63f, 0.87f, 0.98f)
+        };
 
         [SerializeField]
-        private StateEffectConfig pressedSelected = new() { Scale = new Vector3(0.98f, 0.98f, 0.98f), TintColor = new Color(0.29f, 0.42f, 0.62f, 0.98f) };
+        private StateEffectConfig pressedSelected = new()
+        {
+            Scale = new Vector3(0.98f, 0.98f, 0.98f), TintColor = new Color(0.29f, 0.42f, 0.62f, 0.98f)
+        };
 
         [SerializeField]
-        private StateEffectConfig disabledSelected = new() { Scale = Vector3.one, TintColor = new Color(0.11f, 0.19f, 0.33f, 0.98f) };
+        private StateEffectConfig disabledSelected = new()
+        {
+            Scale = Vector3.one, TintColor = new Color(0.11f, 0.19f, 0.33f, 0.98f)
+        };
+
+        [SerializeField]
+        [Header("不改变色彩")]
+        [Tooltip("适用于已经包含复杂颜色的元素，只在悬浮/点击时改变明度，不改变色彩。")]
+        private bool isChangeBrightnessOnly = false;
 
 
         private Selectable selectable = null!;
@@ -92,13 +121,13 @@ namespace CyanStars.Utils.SelectableUI
             var targetConfig = state switch
             {
                 UIState.Normal => normal,
-                UIState.NormalSelected => normalSelected,
+                UIState.NormalSelected => isChangeBrightnessOnly ? normal : normalSelected,
                 UIState.Hover => hover,
-                UIState.HoverSelected => hoverSelected,
+                UIState.HoverSelected => isChangeBrightnessOnly ? hover : hoverSelected,
                 UIState.Pressed => pressed,
-                UIState.PressedSelected => pressedSelected,
+                UIState.PressedSelected => isChangeBrightnessOnly ? pressed : pressedSelected,
                 UIState.Disabled => disabled,
-                UIState.DisabledSelected => disabledSelected,
+                UIState.DisabledSelected => isChangeBrightnessOnly ? disabled : disabledSelected,
                 _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
             };
 
@@ -115,14 +144,12 @@ namespace CyanStars.Utils.SelectableUI
             if (instant)
             {
                 foreach (var rectTransform in rectTransformToChangeScale)
-                {
-                    rectTransform.localScale = config.Scale;
-                }
+                    if (rectTransform != null)
+                        rectTransform.localScale = config.Scale;
 
                 foreach (var graphic in graphicToChangeColor)
-                {
-                    if (graphic != null) graphic.color = config.TintColor;
-                }
+                    if (graphic != null)
+                        graphic.canvasRenderer.SetColor(config.TintColor);
 
                 return;
             }
@@ -152,9 +179,13 @@ namespace CyanStars.Utils.SelectableUI
             {
                 if (graphic != null)
                 {
-                    currentEffectSequence.Join(graphic
-                        .DOColor(config.TintColor, tweenDuration)
-                        .SetEase(tweenEase)
+                    currentEffectSequence.Join(
+                        DOTween.To(
+                            () => graphic.canvasRenderer.GetColor(),
+                            color => graphic.canvasRenderer.SetColor(color),
+                            config.TintColor,
+                            tweenDuration
+                        ).SetEase(tweenEase)
                     );
                 }
 #if UNITY_EDITOR

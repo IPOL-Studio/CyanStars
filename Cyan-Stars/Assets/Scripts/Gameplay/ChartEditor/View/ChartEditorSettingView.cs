@@ -22,13 +22,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private TMP_InputField noteVolumeField = null!;
 
         [SerializeField]
-        private RadioButtonItem isCompactNoteButtonAreaButton = null!;
+        private SwitchButton isCompactNoteButtonAreaButton = null!;
 
         [SerializeField]
-        private RadioButtonItem isMultiBpmItemButton = null!;
+        private SwitchButton isMultiBpmItemButton = null!;
 
         [SerializeField]
-        private RadioButtonItem isMultiMusicItemButton = null!;
+        private SwitchButton isMultiMusicItemButton = null!;
 
 
         // AudioMixer 中的变量名
@@ -80,9 +80,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 })
                 .AddTo(this);
 
-            isCompactNoteButtonAreaButton.IsChecked = ViewModel.IsCompactNoteButtonArea.CurrentValue;
-            isMultiBpmItemButton.IsChecked = ViewModel.IsMultiBpmItemMode.CurrentValue;
-            isMultiMusicItemButton.IsChecked = ViewModel.IsMultiMusicItemMode.CurrentValue;
+            ViewModel.IsCompactNoteButtonArea
+                .Subscribe(isOn => isCompactNoteButtonAreaButton.IsChecked = isOn)
+                .AddTo(this);
+            ViewModel.IsMultiBpmItemMode
+                .Subscribe(isOn => isMultiBpmItemButton.IsChecked = isOn)
+                .AddTo(this);
+            ViewModel.IsMultiMusicItemMode
+                .Subscribe(isOn => isMultiMusicItemButton.IsChecked = isOn)
+                .AddTo(this);
+
             isCompactNoteButtonAreaButton.OnValueChanged.AddListener(ViewModel.SetCompactNoteButtonArea);
             isMultiBpmItemButton.OnValueChanged.AddListener(ViewModel.SetMultiBpmItemMode);
             isMultiMusicItemButton.OnValueChanged.AddListener(ViewModel.SetMultiMusicItemMode);
