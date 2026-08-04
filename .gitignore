@@ -1,1 +1,12 @@
 /Cyan-Stars/.utmp
+
+# dotnet core external project files
+/NetCoreExternal/**/[Dd]ebug/
+/NetCoreExternal/**/[Dd]ebugPublic/
+/NetCoreExternal/**/[Rr]elease/
+/NetCoreExternal/**/x64/
+/NetCoreExternal/**/x86/
+/NetCoreExternal/**/bld/
+/NetCoreExternal/**/[Bb]in/
+/NetCoreExternal/**/[Oo]bj/
+/NetCoreExternal/**/[Ll]og/
