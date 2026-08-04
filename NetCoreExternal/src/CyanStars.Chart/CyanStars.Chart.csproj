@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SrcRoot>$(UnityProjectPath)/Scripts/Chart</SrcRoot>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(SrcRoot)/**/*.cs" />
+    <Compile Remove="$(SrcRoot)/ChartModule.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <!-- version locked by Unity package usage -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+
+</Project>

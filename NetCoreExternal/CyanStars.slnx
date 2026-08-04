@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CyanStars.Chart/CyanStars.Chart.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <UnityProjectPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../Cyan-Stars/Assets'))</UnityProjectPath>
+  </PropertyGroup>  
+</Project>
