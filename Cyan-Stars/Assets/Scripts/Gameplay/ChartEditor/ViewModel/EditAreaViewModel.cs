@@ -231,9 +231,31 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             }
 
             // 根据工具类型实例化对应的音符数据对象
+            BaseChartNoteData? noteData = CreateNoteData(currentTool, pos, beat);
+
+            if (noteData == null)
+                return;
+
+            var notesCollection = Model.ChartData.CurrentValue.Notes;
+
+            CommandStack.ExecuteCommand(
+                () => NoteListHelper.TryInsertItem(notesCollection, noteData),
+                () => notesCollection.Remove(noteData)
+            );
+        }
+
+        /// <summary>
+        /// 根据工具类型和位置创建对应的音符数据对象（不插入谱面数据）
+        /// </summary>
+        /// <param name="tool">当前工具</param>
+        /// <param name="pos">音符位置</param>
+        /// <param name="beat">音符节拍</param>
+        /// <returns>创建的音符数据；若该工具在当前位置无法创建音符（如选中非画笔工具、点击缝隙），返回 null</returns>
+        public BaseChartNoteData? CreateNoteData(EditToolType tool, float pos, Beat beat)
+        {
             BaseChartNoteData? noteData = null;
 
-            switch (currentTool)
+            switch (tool)
             {
                 case EditToolType.TapPen:
                     if (0 <= pos && pos <= 0.8f)
@@ -263,15 +285,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     break;
             }
 
-            if (noteData == null)
-                return;
-
-            var notesCollection = Model.ChartData.CurrentValue.Notes;
-
-            CommandStack.ExecuteCommand(
-                () => NoteListHelper.TryInsertItem(notesCollection, noteData),
-                () => notesCollection.Remove(noteData)
-            );
+            return noteData;
         }
 
         public void TryUpdateTimelineTime(float normalizedPositionY)

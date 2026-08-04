@@ -53,6 +53,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private float chartTracebackNotesAlpha = 0.4f;
 
         [SerializeField]
+        private RectTransform ghostNoteFrameRect = null!;
+
+        [SerializeField]
         private CustomScrollRect scrollRect = null!;
 
         [SerializeField]
@@ -75,6 +78,23 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         // 防止拖拽/滚动 scrollRect 更新 time 后再做一次无意义的 scrollRect 位置更新
         private bool isTimelineTimeChangeBySelf = false;
+
+        // == 悬停预览音符 ==
+        private const float PreviewNoteAlpha = 0.39f; // 预览音符的整体透明度
+
+        private GameObject? notePreviewObject;   // 已创建好的预览音符物体
+        private RectTransform? notePreviewRect;  // 预览音符物体的 RectTransform
+        private NoteType? notePreviewType;       // 当前期望的预览音符类型（null = 不显示预览）
+        private bool isNotePreviewLoading;       // 是否正在异步加载预览物体
+        private int notePreviewGeneration;       // 预览物体创建代次，用于丢弃过期的异步加载结果
+
+        // 预览音符各 Graphic 的原始状态（对象池不会重置组件状态，释放前需还原）
+        private readonly List<MaskableGraphic> NotePreviewGraphics = new List<MaskableGraphic>();
+        private readonly List<Color> NotePreviewGraphicColors = new List<Color>();
+        private readonly List<bool> NotePreviewGraphicRaycastTargets = new List<bool>();
+
+        private readonly PointerEventData HoverPointerData = new PointerEventData(null); // 悬停射线检测复用
+        private readonly List<RaycastResult> HoverRaycastResults = new List<RaycastResult>();
 
 
         public override void Bind(EditAreaViewModel targetViewModel)
@@ -649,6 +669,182 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         #endregion
 
+        #region NotePreview
+
+        /// <summary>
+        /// 当选中画笔工具且鼠标悬浮在编辑区时，在即将创建音符的位置显示半透明预览
+        /// </summary>
+        /// <remarks>
+        /// 与点击创建共用同一套计算（射线检测、CalculateNotePlacement、CreateNoteData），
+        /// 因此预览位置与真实点击创建的音符完全一致（轨道钳制、节拍吸附、位置吸附等）
+        /// </remarks>
+        private void UpdateNotePreview()
+        {
+            EditToolType tool = ViewModel.SelectedEditTool.CurrentValue;
+            bool isPenTool = tool is EditToolType.TapPen or EditToolType.DragPen or EditToolType.HoldPen or EditToolType.ClickPen or EditToolType.BreakPen;
+
+            if (!isPenTool || !ViewModel.CanPutNote.CurrentValue || EventSystem.current == null)
+            {
+                ReleaseNotePreview();
+                return;
+            }
+
+            // 与点击使用相同的光线检测：悬停在已有音符或其他 UI 上时，点击不会创建音符，因此不显示预览
+            HoverPointerData.position = Input.mousePosition;
+            HoverRaycastResults.Clear();
+            EventSystem.current.RaycastAll(HoverPointerData, HoverRaycastResults);
+
+            if (HoverRaycastResults.Count == 0)
+            {
+                ReleaseNotePreview();
+                return;
+            }
+
+            GameObject topmostHit = HoverRaycastResults[0].gameObject;
+            if (!topmostHit.transform.IsChildOf(transform) || topmostHit.GetComponentInParent<EditAreaNoteView>() != null)
+            {
+                ReleaseNotePreview();
+                return;
+            }
+
+            // 将屏幕坐标转换为 Content 内的局部坐标（与 OnPointerDown 一致）
+            // 由于 Content 的轴心是 (0.5, 0)，localPoint.y 即为距离底部的像素距离
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    contentRect,
+                    Input.mousePosition,
+                    null,
+                    out Vector2 localPoint
+                ))
+            {
+                ReleaseNotePreview();
+                return;
+            }
+
+            bool canPlace = EditAreaViewHelper.CalculateNotePlacement(
+                localPoint,
+                judgeLineRect.anchoredPosition.y,
+                ViewModel.PosMagnetState.CurrentValue,
+                ViewModel.PosAccuracy.CurrentValue,
+                ViewModel.BeatAccuracy.CurrentValue,
+                ViewModel.BeatZoom.CurrentValue,
+                out float pos,
+                out Beat beat
+            );
+
+            if (!canPlace)
+            {
+                ReleaseNotePreview();
+                return;
+            }
+
+            BaseChartNoteData? noteData = ViewModel.CreateNoteData(tool, pos, beat);
+            if (noteData == null)
+            {
+                ReleaseNotePreview();
+                return;
+            }
+
+            EnsureNotePreviewObject(noteData.Type);
+
+            if (notePreviewRect != null)
+            {
+                notePreviewRect.anchoredPosition = EditAreaViewHelper.CalculateNoteAnchoredPosition(
+                    noteData,
+                    judgeLineRect.anchoredPosition.y,
+                    ViewModel.BeatZoom.CurrentValue
+                );
+            }
+        }
+
+        /// <summary>
+        /// 确保存在指定类型的预览音符物体，类型变化时重建
+        /// </summary>
+        private void EnsureNotePreviewObject(NoteType type)
+        {
+            if (notePreviewType == type && (notePreviewObject != null || isNotePreviewLoading))
+                return;
+
+            ReleaseNotePreview();
+
+            notePreviewType = type;
+            isNotePreviewLoading = true;
+            int generation = ++notePreviewGeneration;
+            CreateNotePreviewObjectAsync(type, generation);
+        }
+
+        /// <summary>
+        /// 异步创建预览音符物体，并将各 Graphic 设为半透明且不拦截射线
+        /// </summary>
+        private async void CreateNotePreviewObjectAsync(NoteType type, int generation)
+        {
+            string path = GetPrefabPath(type);
+
+            GameObject go = await PoolManager.GetGameObjectAsync(path, ghostNoteFrameRect, destroyCancellationToken);
+            go.transform.localScale = Vector3.one;
+
+            // 双重检查：异步加载过程中预览类型或代次已变化，或 View 已销毁
+            if (destroyCancellationToken.IsCancellationRequested || notePreviewType != type || generation != notePreviewGeneration)
+            {
+                PoolManager.ReleaseGameObject(path, go);
+                return;
+            }
+
+            // 对象池不会重置组件状态，因此保存各 Graphic 的原始状态，再设为半透明并禁用射线拦截
+            // 还原逻辑见 ReleaseNotePreview
+            NotePreviewGraphics.Clear();
+            NotePreviewGraphicColors.Clear();
+            NotePreviewGraphicRaycastTargets.Clear();
+            foreach (var graphic in go.GetComponentsInChildren<MaskableGraphic>(true))
+            {
+                NotePreviewGraphics.Add(graphic);
+                NotePreviewGraphicColors.Add(graphic.color);
+                NotePreviewGraphicRaycastTargets.Add(graphic.raycastTarget);
+
+                Color color = graphic.color;
+                color.a *= PreviewNoteAlpha;
+                graphic.color = color;
+                graphic.raycastTarget = false;
+            }
+
+            notePreviewObject = go;
+            notePreviewRect = go.transform as RectTransform;
+            isNotePreviewLoading = false;
+        }
+
+        /// <summary>
+        /// 释放预览音符物体并复位预览状态
+        /// </summary>
+        private void ReleaseNotePreview()
+        {
+            if (notePreviewObject != null)
+            {
+                // 先还原各 Graphic 的透明度与射线拦截，再归还对象池
+                for (int i = 0; i < NotePreviewGraphics.Count; i++)
+                {
+                    // 防御：还原前对象被意外销毁的情况
+                    if (NotePreviewGraphics[i] != null)
+                    {
+                        NotePreviewGraphics[i].color = NotePreviewGraphicColors[i];
+                        NotePreviewGraphics[i].raycastTarget = NotePreviewGraphicRaycastTargets[i];
+                    }
+                }
+
+                NotePreviewGraphics.Clear();
+                NotePreviewGraphicColors.Clear();
+                NotePreviewGraphicRaycastTargets.Clear();
+
+                PoolManager.ReleaseGameObject(GetPrefabPath(notePreviewType!.Value), notePreviewObject);
+                notePreviewObject = null;
+                notePreviewRect = null;
+            }
+
+            notePreviewType = null;
+            isNotePreviewLoading = false;
+            notePreviewGeneration++;
+        }
+
+        #endregion
+
         #region Input
 
         private void OnBackgroundClick(object sender, EventArgs args)
@@ -699,6 +895,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private void Update()
         {
+            UpdateNotePreview();
+
             if (!Input.GetKeyDown(KeyCode.Space))
                 return;
 
@@ -715,6 +913,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
         protected void OnDestroy()
         {
             GameRoot.Event.RemoveListener(Background.ClickEventName, OnBackgroundClick);
+
+            // 清理预览音符
+            ReleaseNotePreview();
 
             // 清理节拍线
             foreach (var kvp in ActiveBeatLines)

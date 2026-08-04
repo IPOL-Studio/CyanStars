@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 using System;
 using CyanStars.Chart;
@@ -22,6 +22,12 @@ namespace CyanStars.Gameplay.ChartEditor
         private const float RightBreakNotePos = 2f;
 
         private const float CentralTrackWidth = CentralMax - CentralMin;
+
+        // 音符渲染相关常量
+        private const float NotePosScale = 802.5f;
+        private const float NotePosOffset = -321f;
+        private const float BreakLeftX = -468.8f;
+        private const float BreakRightX = 468.8f;
 
 
         /// <summary>
@@ -133,6 +139,46 @@ namespace CyanStars.Gameplay.ChartEditor
 
             int acc = beatAccuracy;
             return Beat.TryCreateBeat(subBeatIndex / acc, subBeatIndex % acc, acc, out beat);
+        }
+
+        /// <summary>
+        /// 计算音符在 Content 内的锚点位置
+        /// </summary>
+        /// <param name="data">音符数据</param>
+        /// <param name="judgeLineYOffset">以 Content 底部为 0，判定线的 y 坐标</param>
+        /// <param name="zoom">当前的编辑器内节拍缩放比例</param>
+        /// <param name="beatOffset">需要从音符节拍中减去的谱面回溯节拍偏移（普通音符传 0）</param>
+        /// <returns>以 Content 底部中心为原点的锚点坐标</returns>
+        public static Vector2 CalculateNoteAnchoredPosition(BaseChartNoteData data, float judgeLineYOffset, double zoom, double beatOffset = 0)
+        {
+            // 计算 X 轴
+            float xPos = 0;
+            switch (data.Type)
+            {
+                case NoteType.Tap:
+                case NoteType.Drag:
+                case NoteType.Click:
+                case NoteType.Hold:
+                    if (data is IChartNoteNormalPos normalNote)
+                    {
+                        xPos = normalNote.Pos * NotePosScale + NotePosOffset;
+                    }
+
+                    break;
+                case NoteType.Break:
+                    if (data is BreakChartNoteData breakNote)
+                    {
+                        xPos = breakNote.BreakNotePos == BreakNotePos.Left ? BreakLeftX : BreakRightX;
+                    }
+
+                    break;
+            }
+
+            // 计算 Y 轴 (JudgeLineOffset + (Beat - BeatOffset) * Interval * Zoom)
+            double beatInterval = DefaultMajorBeatLineInterval * zoom;
+            double yPos = judgeLineYOffset + ((data.JudgeBeat.ToDouble() - beatOffset) * beatInterval);
+
+            return new Vector2(xPos, (float)yPos);
         }
     }
 }
