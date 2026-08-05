@@ -53,7 +53,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private float chartTracebackNotesAlpha = 0.4f;
 
         [SerializeField]
-        private RectTransform ghostNoteFrameRect = null!;
+        private Previewer previewer = null!;
 
         [SerializeField]
         private CustomScrollRect scrollRect = null!;
@@ -79,21 +79,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         // 防止拖拽/滚动 scrollRect 更新 time 后再做一次无意义的 scrollRect 位置更新
         private bool isTimelineTimeChangeBySelf = false;
 
-        // == 悬停预览音符 ==
-        private const float PreviewNoteAlpha = 0.39f; // 预览音符的整体透明度
-
-        private GameObject? notePreviewObject;   // 已创建好的预览音符物体
-        private RectTransform? notePreviewRect;  // 预览音符物体的 RectTransform
-        private NoteType? notePreviewType;       // 当前期望的预览音符类型（null = 不显示预览）
-        private bool isNotePreviewLoading;       // 是否正在异步加载预览物体
-        private int notePreviewGeneration;       // 预览物体创建代次，用于丢弃过期的异步加载结果
-
-        // 预览音符各 Graphic 的原始状态（对象池不会重置组件状态，释放前需还原）
-        private readonly List<MaskableGraphic> NotePreviewGraphics = new List<MaskableGraphic>();
-        private readonly List<Color> NotePreviewGraphicColors = new List<Color>();
-        private readonly List<bool> NotePreviewGraphicRaycastTargets = new List<bool>();
-
-        private readonly PointerEventData HoverPointerData = new PointerEventData(null); // 悬停射线检测复用
+        // 悬停射线检测复用
+        private readonly PointerEventData HoverPointerData = new PointerEventData(null);
         private readonly List<RaycastResult> HoverRaycastResults = new List<RaycastResult>();
 
 
@@ -657,15 +644,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
         }
 
-        private static string GetPrefabPath(NoteType type) => type switch
-        {
-            NoteType.Tap => ChartEditorAssetHelper.TapNotePath,
-            NoteType.Drag => ChartEditorAssetHelper.DragNotePath,
-            NoteType.Hold => ChartEditorAssetHelper.HoldNotePath,
-            NoteType.Click => ChartEditorAssetHelper.ClickNotePath,
-            NoteType.Break => ChartEditorAssetHelper.BreakNotePath,
-            _ => throw new NotSupportedException()
-        };
+        private static string GetPrefabPath(NoteType type) => ChartEditorAssetHelper.GetNotePrefabPath(type);
 
         #endregion
 
@@ -685,7 +664,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             if (!isPenTool || !ViewModel.CanPutNote.CurrentValue || EventSystem.current == null)
             {
-                ReleaseNotePreview();
+                previewer.Hide();
                 return;
             }
 
@@ -696,14 +675,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             if (HoverRaycastResults.Count == 0)
             {
-                ReleaseNotePreview();
+                previewer.Hide();
                 return;
             }
 
             GameObject topmostHit = HoverRaycastResults[0].gameObject;
             if (!topmostHit.transform.IsChildOf(transform) || topmostHit.GetComponentInParent<EditAreaNoteView>() != null)
             {
-                ReleaseNotePreview();
+                previewer.Hide();
                 return;
             }
 
@@ -716,7 +695,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     out Vector2 localPoint
                 ))
             {
-                ReleaseNotePreview();
+                previewer.Hide();
                 return;
             }
 
@@ -733,114 +712,25 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             if (!canPlace)
             {
-                ReleaseNotePreview();
+                previewer.Hide();
                 return;
             }
 
             BaseChartNoteData? noteData = ViewModel.CreateNoteData(tool, pos, beat);
             if (noteData == null)
             {
-                ReleaseNotePreview();
+                previewer.Hide();
                 return;
             }
 
-            EnsureNotePreviewObject(noteData.Type);
-
-            if (notePreviewRect != null)
-            {
-                notePreviewRect.anchoredPosition = EditAreaViewHelper.CalculateNoteAnchoredPosition(
+            previewer.Show(
+                noteData.Type,
+                EditAreaViewHelper.CalculateNoteAnchoredPosition(
                     noteData,
                     judgeLineRect.anchoredPosition.y,
                     ViewModel.BeatZoom.CurrentValue
-                );
-            }
-        }
-
-        /// <summary>
-        /// 确保存在指定类型的预览音符物体，类型变化时重建
-        /// </summary>
-        private void EnsureNotePreviewObject(NoteType type)
-        {
-            if (notePreviewType == type && (notePreviewObject != null || isNotePreviewLoading))
-                return;
-
-            ReleaseNotePreview();
-
-            notePreviewType = type;
-            isNotePreviewLoading = true;
-            int generation = ++notePreviewGeneration;
-            CreateNotePreviewObjectAsync(type, generation);
-        }
-
-        /// <summary>
-        /// 异步创建预览音符物体，并将各 Graphic 设为半透明且不拦截射线
-        /// </summary>
-        private async void CreateNotePreviewObjectAsync(NoteType type, int generation)
-        {
-            string path = GetPrefabPath(type);
-
-            GameObject go = await PoolManager.GetGameObjectAsync(path, ghostNoteFrameRect, destroyCancellationToken);
-            go.transform.localScale = Vector3.one;
-
-            // 双重检查：异步加载过程中预览类型或代次已变化，或 View 已销毁
-            if (destroyCancellationToken.IsCancellationRequested || notePreviewType != type || generation != notePreviewGeneration)
-            {
-                PoolManager.ReleaseGameObject(path, go);
-                return;
-            }
-
-            // 对象池不会重置组件状态，因此保存各 Graphic 的原始状态，再设为半透明并禁用射线拦截
-            // 还原逻辑见 ReleaseNotePreview
-            NotePreviewGraphics.Clear();
-            NotePreviewGraphicColors.Clear();
-            NotePreviewGraphicRaycastTargets.Clear();
-            foreach (var graphic in go.GetComponentsInChildren<MaskableGraphic>(true))
-            {
-                NotePreviewGraphics.Add(graphic);
-                NotePreviewGraphicColors.Add(graphic.color);
-                NotePreviewGraphicRaycastTargets.Add(graphic.raycastTarget);
-
-                Color color = graphic.color;
-                color.a *= PreviewNoteAlpha;
-                graphic.color = color;
-                graphic.raycastTarget = false;
-            }
-
-            notePreviewObject = go;
-            notePreviewRect = go.transform as RectTransform;
-            isNotePreviewLoading = false;
-        }
-
-        /// <summary>
-        /// 释放预览音符物体并复位预览状态
-        /// </summary>
-        private void ReleaseNotePreview()
-        {
-            if (notePreviewObject != null)
-            {
-                // 先还原各 Graphic 的透明度与射线拦截，再归还对象池
-                for (int i = 0; i < NotePreviewGraphics.Count; i++)
-                {
-                    // 防御：还原前对象被意外销毁的情况
-                    if (NotePreviewGraphics[i] != null)
-                    {
-                        NotePreviewGraphics[i].color = NotePreviewGraphicColors[i];
-                        NotePreviewGraphics[i].raycastTarget = NotePreviewGraphicRaycastTargets[i];
-                    }
-                }
-
-                NotePreviewGraphics.Clear();
-                NotePreviewGraphicColors.Clear();
-                NotePreviewGraphicRaycastTargets.Clear();
-
-                PoolManager.ReleaseGameObject(GetPrefabPath(notePreviewType!.Value), notePreviewObject);
-                notePreviewObject = null;
-                notePreviewRect = null;
-            }
-
-            notePreviewType = null;
-            isNotePreviewLoading = false;
-            notePreviewGeneration++;
+                )
+            );
         }
 
         #endregion
@@ -913,9 +803,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
         protected void OnDestroy()
         {
             GameRoot.Event.RemoveListener(Background.ClickEventName, OnBackgroundClick);
-
-            // 清理预览音符
-            ReleaseNotePreview();
 
             // 清理节拍线
             foreach (var kvp in ActiveBeatLines)

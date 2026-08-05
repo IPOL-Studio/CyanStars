@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
+using CyanStars.Chart;
 
 namespace Gameplay.ChartEditor
 {
@@ -9,11 +10,12 @@ namespace Gameplay.ChartEditor
         // 制谱器内需要加载的资源
         public static readonly string PosLinePath;
         public static readonly string BeatLinePath;
-        public static readonly string TapNotePath;
-        public static readonly string HoldNotePath;
-        public static readonly string DragNotePath;
-        public static readonly string ClickNotePath;
-        public static readonly string BreakNotePath;
+
+        private static readonly string TapNotePath;
+        private static readonly string HoldNotePath;
+        private static readonly string DragNotePath;
+        private static readonly string ClickNotePath;
+        private static readonly string BreakNotePath;
 
         public static readonly List<string> AllPaths;
 
@@ -30,5 +32,18 @@ namespace Gameplay.ChartEditor
                 (BreakNotePath = "Assets/BundleRes/Prefabs/ChartEditor/EditArea/BreakNote.prefab")
             };
         }
+
+        /// <summary>
+        /// 获取音符类型对应的音符 prefab 路径
+        /// </summary>
+        public static string GetNotePrefabPath(NoteType type) => type switch
+        {
+            NoteType.Tap => TapNotePath,
+            NoteType.Drag => DragNotePath,
+            NoteType.Hold => HoldNotePath,
+            NoteType.Click => ClickNotePath,
+            NoteType.Break => BreakNotePath,
+            _ => throw new System.NotSupportedException()
+        };
     }
 }
