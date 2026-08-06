@@ -131,11 +131,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     canvasGroup.alpha = 0;
                     canvasGroup.blocksRaycasts = false;
 
+                    // 不显示 Hold 拖尾
+                    if (go.TryGetComponent<EditAreaNoteView>(out var noteView))
+                    {
+                        noteView.SetHoldLength(0);
+                    }
+
                     resultInstance = new PreviewInstance
                     {
-                        Go = go,
-                        Rect = (RectTransform)go.transform,
-                        CanvasGroup = canvasGroup
+                        Go = go, Rect = (RectTransform)go.transform, CanvasGroup = canvasGroup
                     };
 
                     return (type, instance: resultInstance);

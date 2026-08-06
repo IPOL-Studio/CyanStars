@@ -43,9 +43,19 @@ namespace CyanStars.Gameplay.ChartEditor.View
             if (holdTailRect != null)
             {
                 targetViewModel.HoldLength
-                    .Subscribe(length => holdTailRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, length))
+                    .Subscribe(SetHoldLength)
                     .AddTo(this);
             }
+        }
+
+        /// <summary>
+        /// 设置 Hold 音符拖尾的长度
+        /// </summary>
+        /// <param name="length">拖尾高度，传 0 可隐藏拖尾（供预览音符使用）</param>
+        public void SetHoldLength(float length)
+        {
+            if (holdTailRect != null)
+                holdTailRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, length);
         }
 
         public void SetBlurImageRaycastTarget(bool value) => blurImage.raycastTarget = value;
