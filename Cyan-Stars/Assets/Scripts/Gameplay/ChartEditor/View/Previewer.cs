@@ -1,11 +1,12 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using CyanStars.Chart;
 using CyanStars.Framework;
 using Gameplay.ChartEditor;
 using UnityEngine;
-using GameObjectPoolManager = CyanStars.Framework.GameObjectPool.GameObjectPoolManager;
 
 namespace CyanStars.Gameplay.ChartEditor.View
 {
@@ -17,30 +18,25 @@ namespace CyanStars.Gameplay.ChartEditor.View
     /// </remarks>
     public class Previewer : MonoBehaviour
     {
-        private const float DefaultPreviewAlpha = 0.39f;
-
         /// <summary>
         /// 预览音符的整体透明度
         /// </summary>
         [SerializeField]
-        private float previewAlpha = DefaultPreviewAlpha;
+        private float previewAlpha = 0.39f;
+
 
         private static readonly NoteType[] PreviewNoteTypes =
         {
             NoteType.Tap, NoteType.Drag, NoteType.Hold, NoteType.Click, NoteType.Break
         };
 
-        private static GameObjectPoolManager PoolManager => GameRoot.GameObjectPool;
-
         /// <summary>
         /// 各音符类型的预览实例
         /// </summary>
         private readonly Dictionary<NoteType, PreviewInstance> Instances = new Dictionary<NoteType, PreviewInstance>();
 
-        private bool allInstancesReady;   // 全部预览实例是否已创建完成
-        private NoteType? pendingType;    // 实例创建期间缓存的最新请求（null = 隐藏）
-        private Vector2 pendingPosition;
-        private NoteType? currentType;    // 当前显示的实例类型（null = 全部隐藏）
+        private bool allInstancesReady; // 全部预览实例是否已创建完成
+        private NoteType? currentType; // 当前显示的实例类型（null = 全部隐藏）
 
         private class PreviewInstance
         {
@@ -60,13 +56,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         /// <param name="anchoredPosition">以 GhostNoteFrame 底部中心（即 Content 底部中心）为原点的位置</param>
         public void Show(NoteType type, Vector2 anchoredPosition)
         {
-            pendingType = type;
-            pendingPosition = anchoredPosition;
-
             if (allInstancesReady)
-            {
-                ApplyState();
-            }
+                ApplyState(type, anchoredPosition);
         }
 
         /// <summary>
@@ -74,18 +65,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
         /// </summary>
         public void Hide()
         {
-            pendingType = null;
-
             if (allInstancesReady)
-            {
-                ApplyState();
-            }
+                ApplyState(null, Vector2.zero);
         }
 
         /// <summary>
         /// 按当前请求应用预览实例的显隐与位置
         /// </summary>
-        private void ApplyState()
+        private void ApplyState(NoteType? pendingType, Vector2 pendingPosition)
         {
             if (pendingType == currentType)
             {
@@ -115,46 +102,56 @@ namespace CyanStars.Gameplay.ChartEditor.View
         }
 
         /// <summary>
-        /// 为每种音符类型创建专用的预览实例（从对象池获取后不再归还）
+        /// 为每种音符类型创建专用的预览实例
         /// </summary>
         private async void CreateInstances()
         {
-            foreach (NoteType type in PreviewNoteTypes)
-            {
-                string path = ChartEditorAssetHelper.GetNotePrefabPath(type);
-
-                GameObject go = await PoolManager.GetGameObjectAsync(path, transform, destroyCancellationToken);
-                go.transform.localScale = Vector3.one;
-
-                if (destroyCancellationToken.IsCancellationRequested)
+            var tasks = PreviewNoteTypes
+                .Select(async type =>
                 {
-                    // View 已销毁，归还本次获取的对象
-                    PoolManager.ReleaseGameObject(path, go);
-                    return;
-                }
+                    string path = ChartEditorAssetHelper.GetNotePrefabPath(type);
+                    GameObject go = await GameRoot.GameObjectPool.GetGameObjectAsync(path, transform, destroyCancellationToken);
 
-                // 挂 CanvasGroup 控制整体透明度并禁用射线拦截
-                // 实例为预览专用（不归还对象池），组件状态无需还原
-                if (!go.TryGetComponent<CanvasGroup>(out var canvasGroup))
-                {
-                    canvasGroup = go.AddComponent<CanvasGroup>();
-                }
+                    PreviewInstance? resultInstance = null;
 
-                canvasGroup.enabled = true;
-                canvasGroup.alpha = previewAlpha;
-                canvasGroup.blocksRaycasts = false;
+                    if (destroyCancellationToken.IsCancellationRequested)
+                    {
+                        if (go != null)
+                            GameRoot.GameObjectPool.ReleaseGameObject(path, go);
+                        return (type, instance: resultInstance);
+                    }
 
-                var instance = new PreviewInstance
-                {
-                    Go = go,
-                    Rect = (RectTransform)go.transform
-                };
-                Instances[type] = instance;
-                go.SetActive(false);
-            }
+                    go.transform.localScale = Vector3.one;
+
+                    if (!go.TryGetComponent<CanvasGroup>(out var canvasGroup))
+                        canvasGroup = go.AddComponent<CanvasGroup>();
+
+                    canvasGroup.enabled = true;
+                    canvasGroup.alpha = previewAlpha;
+                    canvasGroup.blocksRaycasts = false;
+
+                    resultInstance = new PreviewInstance
+                    {
+                        Go = go, Rect = (RectTransform)go.transform
+                    };
+
+                    go.SetActive(false);
+
+                    return (type, instance: resultInstance);
+                })
+                .ToList();
+
+            var results = await Task.WhenAll(tasks);
+
+            if (destroyCancellationToken.IsCancellationRequested)
+                return;
+
+            foreach (var res in results)
+                if (res.instance != null)
+                    Instances[res.type] = res.instance;
 
             allInstancesReady = true;
-            ApplyState();
+            ApplyState(null, Vector2.zero);
         }
     }
 }

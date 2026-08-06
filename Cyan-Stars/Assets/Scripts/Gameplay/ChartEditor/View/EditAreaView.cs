@@ -399,7 +399,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     {
                         var (vm, view) = pair.Value;
                         vm.Dispose(); // 销毁 VM
-                        PoolManager.ReleaseGameObject(GetPrefabPath(note.Type), view.gameObject);
+                        string prefabPath = ChartEditorAssetHelper.GetNotePrefabPath(note.Type);
+                        PoolManager.ReleaseGameObject(prefabPath, view.gameObject);
                     }
 
                     ActiveNotes.Remove(note);
@@ -438,7 +439,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
                 var (vm, view) = kvp.Value.Value;
                 vm.Dispose(); // 销毁 VM
-                PoolManager.ReleaseGameObject(GetPrefabPath(kvp.Key.Type), view.gameObject);
+                PoolManager.ReleaseGameObject(ChartEditorAssetHelper.GetNotePrefabPath(kvp.Key.Type), view.gameObject);
             }
 
             ActiveChartTracebackNotes.Clear();
@@ -519,7 +520,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     {
                         var (vm, view) = pair.Value;
                         vm.Dispose(); // 销毁 VM
-                        PoolManager.ReleaseGameObject(GetPrefabPath(note.Type), view.gameObject);
+                        PoolManager.ReleaseGameObject(ChartEditorAssetHelper.GetNotePrefabPath(note.Type), view.gameObject);
                     }
 
                     ActiveChartTracebackNotes.Remove(note);
@@ -571,7 +572,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async Task CreateNoteObject(BaseChartNoteData note)
         {
-            string path = GetPrefabPath(note.Type);
+            string path = ChartEditorAssetHelper.GetNotePrefabPath(note.Type);
 
             GameObject go = await PoolManager.GetGameObjectAsync(path, notesFrameRect, destroyCancellationToken);
             go.transform.localScale = Vector3.one;
@@ -608,7 +609,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async Task CreateChartTracebackNoteObject(BaseChartNoteData note)
         {
-            string path = GetPrefabPath(note.Type);
+            string path = ChartEditorAssetHelper.GetNotePrefabPath(note.Type);
 
             GameObject go = await PoolManager.GetGameObjectAsync(path, chartTracebackNotesFrameRect, destroyCancellationToken);
             go.transform.localScale = Vector3.one;
@@ -644,8 +645,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
         }
 
-        private static string GetPrefabPath(NoteType type) => ChartEditorAssetHelper.GetNotePrefabPath(type);
-
         #endregion
 
         #region NotePreview
@@ -653,14 +652,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
         /// <summary>
         /// 当选中画笔工具且鼠标悬浮在编辑区时，在即将创建音符的位置显示半透明预览
         /// </summary>
-        /// <remarks>
-        /// 与点击创建共用同一套计算（射线检测、CalculateNotePlacement、CreateNoteData），
-        /// 因此预览位置与真实点击创建的音符完全一致（轨道钳制、节拍吸附、位置吸附等）
-        /// </remarks>
         private void UpdateNotePreview()
         {
             EditToolType tool = ViewModel.SelectedEditTool.CurrentValue;
-            bool isPenTool = tool is EditToolType.TapPen or EditToolType.DragPen or EditToolType.HoldPen or EditToolType.ClickPen or EditToolType.BreakPen;
+            bool isPenTool = tool is
+                EditToolType.TapPen or
+                EditToolType.DragPen or
+                EditToolType.HoldPen or
+                EditToolType.ClickPen or
+                EditToolType.BreakPen;
 
             if (!isPenTool || !ViewModel.CanPutNote.CurrentValue || EventSystem.current == null)
             {
@@ -668,7 +668,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 return;
             }
 
-            // 与点击使用相同的光线检测：悬停在已有音符或其他 UI 上时，点击不会创建音符，因此不显示预览
+            // 悬停在已有音符或其他 UI 上时，点击不会创建音符，因此不显示预览
             HoverPointerData.position = Input.mousePosition;
             HoverRaycastResults.Clear();
             EventSystem.current.RaycastAll(HoverPointerData, HoverRaycastResults);
@@ -817,7 +817,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 {
                     var (vm, view) = kvp.Value.Value;
                     vm.Dispose();
-                    PoolManager.ReleaseGameObject(GetPrefabPath(kvp.Key.Type), view.gameObject);
+                    string prefabPath = ChartEditorAssetHelper.GetNotePrefabPath(kvp.Key.Type);
+                    PoolManager.ReleaseGameObject(prefabPath, view.gameObject);
                 }
             }
 
@@ -830,7 +831,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 {
                     var (vm, view) = kvp.Value.Value;
                     vm.Dispose();
-                    PoolManager.ReleaseGameObject(GetPrefabPath(kvp.Key.Type), view.gameObject);
+                    PoolManager.ReleaseGameObject(ChartEditorAssetHelper.GetNotePrefabPath(kvp.Key.Type), view.gameObject);
                 }
             }
 
