@@ -42,6 +42,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             public GameObject Go = null!;
             public RectTransform Rect = null!;
+            public CanvasGroup CanvasGroup = null!;
         }
 
         private void Start()
@@ -88,7 +89,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             // 隐藏旧实例
             if (currentType is { } oldType && Instances.TryGetValue(oldType, out var oldInstance))
             {
-                oldInstance.Go.SetActive(false);
+                oldInstance.CanvasGroup.alpha = 0;
             }
 
             currentType = pendingType;
@@ -96,7 +97,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             // 显示新实例
             if (pendingType is { } newType && Instances.TryGetValue(newType, out var newInstance))
             {
-                newInstance.Go.SetActive(true);
+                newInstance.CanvasGroup.alpha = previewAlpha;
                 newInstance.Rect.anchoredPosition = pendingPosition;
             }
         }
@@ -127,15 +128,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
                         canvasGroup = go.AddComponent<CanvasGroup>();
 
                     canvasGroup.enabled = true;
-                    canvasGroup.alpha = previewAlpha;
+                    canvasGroup.alpha = 0;
                     canvasGroup.blocksRaycasts = false;
 
                     resultInstance = new PreviewInstance
                     {
-                        Go = go, Rect = (RectTransform)go.transform
+                        Go = go,
+                        Rect = (RectTransform)go.transform,
+                        CanvasGroup = canvasGroup
                     };
-
-                    go.SetActive(false);
 
                     return (type, instance: resultInstance);
                 })
