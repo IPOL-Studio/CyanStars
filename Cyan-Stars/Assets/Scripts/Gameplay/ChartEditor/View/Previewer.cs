@@ -59,6 +59,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
             CreateInstances();
         }
 
+        private void OnDestroy()
+        {
+            // 归还预览实例
+            foreach (var kvp in Instances)
+                GameRoot.GameObjectPool.ReleaseGameObject(ChartEditorAssetHelper.GetNotePrefabPath(kvp.Key), kvp.Value.Go);
+
+            Instances.Clear();
+        }
+
         /// <summary>
         /// 显示指定类型的预览音符
         /// </summary>
