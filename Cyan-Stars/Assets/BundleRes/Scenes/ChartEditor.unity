@@ -8428,10 +8428,10 @@ RectTransform:
   - {fileID: 978114220}
   m_Father: {fileID: 1514540015}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -717.50006}
-  m_SizeDelta: {x: 1205.0001, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 602.50006}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &442738496
 MonoBehaviour:
@@ -33716,8 +33716,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1704396782}
   - component: {fileID: 1704396783}
+  - component: {fileID: 1704396784}
   m_Layer: 5
-  m_Name: PrevierNoteFrame
+  m_Name: PreviewNoteFrame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33755,6 +33756,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CyanStars.Gameplay.ChartEditor.View.Previewer
   previewAlpha: 0.39
+--- !u!225 &1704396784
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1704396781}
+  m_Enabled: 1
+  m_Alpha: 0.39
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!114 &1709331786 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4154182905820757367, guid: 8917c4859c9b483428748460132aaa65, type: 3}

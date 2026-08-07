@@ -14,7 +14,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
     /// 悬停预览音符管理器
     /// </summary>
     /// <remarks>
-    /// 挂在 GhostNoteFrame 上。为每种音符类型持有专用的预览实例
+    /// 挂在 PreviewNoteFrame 上。为每种音符类型持有专用的预览实例
     /// </remarks>
     public class Previewer : MonoBehaviour
     {
@@ -42,6 +42,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             public GameObject Go = null!;
             public RectTransform Rect = null!;
+        }
+
+        private void Awake()
+        {
+            if (!TryGetComponent<CanvasGroup>(out var canvasGroup))
+                canvasGroup = gameObject.AddComponent<CanvasGroup>();
+
+            canvasGroup.enabled = true;
+            canvasGroup.alpha = previewAlpha;
+            canvasGroup.blocksRaycasts = false;
         }
 
         private void Start()
@@ -122,13 +132,6 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     }
 
                     go.transform.localScale = Vector3.one;
-
-                    if (!go.TryGetComponent<CanvasGroup>(out var canvasGroup))
-                        canvasGroup = go.AddComponent<CanvasGroup>();
-
-                    canvasGroup.enabled = true;
-                    canvasGroup.alpha = previewAlpha;
-                    canvasGroup.blocksRaycasts = false;
 
                     // 不显示 Hold 拖尾
                     if (go.TryGetComponent<EditAreaNoteView>(out var noteView))
