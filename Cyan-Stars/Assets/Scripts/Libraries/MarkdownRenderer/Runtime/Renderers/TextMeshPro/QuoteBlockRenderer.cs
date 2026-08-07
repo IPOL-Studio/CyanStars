@@ -7,16 +7,16 @@ using Markdig.Syntax;
 
 namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
 {
-    public class QuoteBlockRenderer : MarkdownObjectRenderer<TextMeshProRenderer, QuoteBlock>
-    {
-        protected override void Write(TextMeshProRenderer renderer, QuoteBlock obj)
-        {
-            renderer.Write("<indent=10%>");
-            renderer.Write("> ");
-            renderer.WriteChildren(obj);
-            renderer.Write("</indent>");
-        }
-    }
+    // public class QuoteBlockRenderer : MarkdownObjectRenderer<TextMeshProRenderer, QuoteBlock>
+    // {
+    //     protected override void Write(TextMeshProRenderer renderer, QuoteBlock obj)
+    //     {
+    //         renderer.Write("<indent=10%>");
+    //         renderer.Write("> ");
+    //         renderer.WriteChildren(obj);
+    //         renderer.Write("</indent>");
+    //     }
+    // }
 
     // public class ThematicBreakRenderer : MarkdownObjectRenderer<TextMeshProRenderer, ThematicBreakBlock>
     // {

@@ -22,8 +22,8 @@ namespace CyanStars.MarkdownRenderer.Renderers
                 new ListRenderer(),
                 new HeadingRenderer(),
                 new HtmlBlockRenderer(),
-                new ParagraphRenderer(),
-                new QuoteBlockRenderer()
+                new ParagraphRenderer()
+                //new QuoteBlockRenderer()
             );
 
             // Inline renderers
