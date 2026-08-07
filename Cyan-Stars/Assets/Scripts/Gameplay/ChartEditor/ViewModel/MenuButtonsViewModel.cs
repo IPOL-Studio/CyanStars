@@ -31,14 +31,23 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             base.CommandStack.Redo();
         }
 
+        /// <summary>
+        /// 是否存在未保存数据（透传命令栈的状态）
+        /// </summary>
+        public ReadOnlyReactiveProperty<bool> HasUnsavedChanges => CommandStack.HasUnsavedChanges;
+
         public void SaveFileToDisk()
         {
-            ChartEditorFileManager.SaveChartAndAssetsToDisk(
+            bool isSaveSuccess = ChartEditorFileManager.SaveChartAndAssetsToDisk(
                 Model.WorkspacePath,
                 Model.ChartMetaDataIndex,
                 Model.ChartPackData.CurrentValue,
                 Model.ChartData.CurrentValue
             );
+
+            // 只有保存成功才标记为已保存，失败保持未保存状态便于重试
+            if (isSaveSuccess)
+                CommandStack.MarkSaved();
         }
     }
 }

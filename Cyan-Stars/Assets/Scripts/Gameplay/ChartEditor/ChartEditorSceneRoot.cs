@@ -105,6 +105,11 @@ namespace CyanStars.Gameplay.ChartEditor
                 chartMetadataIndex = (int)chartModule.SelectedChartIndex;
             }
 
+            // 新建谱面从未保存过，标记为有未保存数据
+            // 判断条件与上方"新建谱面"分支一致：新建谱包或新建谱面
+            if (chartModule.SelectedRuntimeChartPack is null || chartModule.ChartData is null)
+                commandStack.MarkDirty();
+
             mvvmBindManager.StartBind(
                 workspacePath,
                 chartMetadataIndex,
