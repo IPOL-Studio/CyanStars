@@ -28,21 +28,18 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
         protected override void Write(TextMeshProRenderer renderer, HeadingBlock obj)
         {
             int index = obj.Level - 1;
+
             if ((uint)index >= (uint)HeadingTexts.Length)
             {
                 renderer.WriteLeafInline(obj);
             }
             else
-            {                
-                renderer.Write('<');
-                renderer.WriteRaw(HeadingTexts[index]);
-                renderer.WriteRaw('>');
-
+            {
+                renderer.Write(HeadingTexts[index]);
                 renderer.WriteLeafInline(obj);
-                renderer.WriteLine("</size>");
-
+                renderer.Write("</size>");
             }
-
+            
             renderer.EnsureLine();
         }
     }
