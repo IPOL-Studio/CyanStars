@@ -9,7 +9,7 @@ namespace CyanStars.MarkdownRenderer
     }
 
     [Serializable]
-    public class TextMeshProMarkdownConfig
+    public class TextMeshProMarkdownConfig : IEquatable<TextMeshProMarkdownConfig>
     {
         private static TextMeshProMarkdownConfig defaultConfig;
         public static TextMeshProMarkdownConfig DefaultConfig => defaultConfig ??= CreateDefault();
@@ -17,12 +17,15 @@ namespace CyanStars.MarkdownRenderer
         public Color CodeBlockBackgroundColor;
         public Color AtColor;
         public Color LinkColor;
+        public Color QuoteColor;
         public string LinkPrefix;
         public string UnorderedListMarker;
+        public string QuoteMarker;
 
-        public string CodeBlockBackgroundColorHex => ColorUtility.ToHtmlStringRGB(CodeBlockBackgroundColor);
-        public string AtColorHex => ColorUtility.ToHtmlStringRGB(AtColor);
-        public string LinkColorHex => ColorUtility.ToHtmlStringRGB(LinkColor);
+        public string CodeBlockBackgroundColorHex => ColorUtility.ToHtmlStringRGBA(CodeBlockBackgroundColor);
+        public string AtColorHex => ColorUtility.ToHtmlStringRGBA(AtColor);
+        public string LinkColorHex => ColorUtility.ToHtmlStringRGBA(LinkColor);
+        public string QuoteColorHex => ColorUtility.ToHtmlStringRGBA(QuoteColor);
 
         public TextMeshProMarkdownConfig()
         {
@@ -33,22 +36,35 @@ namespace CyanStars.MarkdownRenderer
             this.CodeBlockBackgroundColor = other.CodeBlockBackgroundColor;
             this.AtColor = other.AtColor;
             this.LinkColor = other.LinkColor;
+            this.QuoteColor = other.QuoteColor;
+            this.LinkPrefix = other.LinkPrefix;
             this.UnorderedListMarker = other.UnorderedListMarker;
-        }
-
-
-        private static Color ParseColor(string hex)
-        {
-            return ColorUtility.TryParseHtmlString(hex, out var color) ? color : default;
+            this.QuoteMarker = other.QuoteMarker;
         }
 
         private static TextMeshProMarkdownConfig CreateDefault() => new()
         {
-            CodeBlockBackgroundColor = new(r: 0.533f, g: 0.533f, b: 0.533f),
+            CodeBlockBackgroundColor = new(0.533f, 0.533f, 0.533f, 0.5f),
             AtColor                  = new(1, 0.841f, 0.078f, 0.87f),
             LinkColor                = new(1, 0.841f, 0.078f, 0.87f),
+            QuoteColor               = new(0.6f, 0.6f, 0.6f),
+            LinkPrefix               = "__md_link__",
             UnorderedListMarker      = "\u2011",
-            LinkPrefix               = "__md_link__"
+            QuoteMarker              = "\u258C"
         };
+
+        public bool Equals(TextMeshProMarkdownConfig other)
+        {
+            if (other == null) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            return CodeBlockBackgroundColor == other.CodeBlockBackgroundColor &&
+                   AtColor == other.AtColor &&
+                   LinkColor == other.LinkColor &&
+                   QuoteColor == other.QuoteColor &&
+                   LinkPrefix == other.LinkPrefix &&
+                   UnorderedListMarker == other.UnorderedListMarker &&
+                   QuoteMarker == other.QuoteMarker;
+        }
     }
 }

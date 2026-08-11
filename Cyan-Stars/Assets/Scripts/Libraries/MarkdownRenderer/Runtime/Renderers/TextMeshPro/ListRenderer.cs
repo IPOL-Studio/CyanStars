@@ -1,7 +1,3 @@
-// Copyright (c) Alexandre Mutel. All rights reserved.
-// This file is licensed under the BSD-Clause 2 license. 
-// See the license.txt file in the project root for more information.
-
 using Markdig.Renderers;
 using Markdig.Syntax;
 
@@ -9,13 +5,10 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
 {
     public class ListRenderer : MarkdownObjectRenderer<TextMeshProRenderer, ListBlock>
     {
-        private int nestingLevel;
-        private const string CloseTag = "</indent>";
-
         protected override void Write(TextMeshProRenderer renderer, ListBlock obj)
         {
             renderer.EnsureLine();
-            nestingLevel++;
+            renderer.PushNestingLevel();
             try
             {
                 if (obj.IsOrdered)
@@ -29,7 +22,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
             }
             finally
             {
-                nestingLevel--;
+                renderer.PopNestingLevel();
             }
         }
 
@@ -48,7 +41,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                 WriteListItem(renderer, item, $"{index++}.", 0);
             }
 
-            if (nestingLevel == 1)
+            if (renderer.NestingLevel == 1)
             {
                 renderer.EnsureLine();
             }
@@ -63,7 +56,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                 WriteListItem(renderer, item, unorderedListMarker, -0.5);
             }
 
-            if (nestingLevel == 1)
+            if (renderer.NestingLevel == 1)
             {
                 renderer.EnsureLine();
             }
@@ -71,31 +64,35 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
 
         private void WriteListItem(TextMeshProRenderer renderer, ListItemBlock item, string marker, double contentIndentOffset)
         {
-            renderer.Write("<indent=").Write((nestingLevel - 1).ToString()).Write("em>")
+            int depth = renderer.NestingLevel;
+            renderer.Write("<indent=").Write((depth - 1).ToString()).Write("em>")
                     .Write(marker)
                     .Write("</indent>")
-                    .Write("<indent=").Write((nestingLevel + contentIndentOffset).ToString()).Write("em>");
-            bool isIndentOpen = true;
+                    .Write("<indent=").Write((depth + contentIndentOffset).ToString()).Write("em>");
+            
+            bool isClosed = false;
 
             foreach (var block in item)
             {
-                if (block is ListBlock list)
+                if (block is ListBlock or QuoteBlock)
                 {
-                    renderer.Write(CloseTag);
-                    isIndentOpen = false;
+                    if (!isClosed)
+                    {
+                        renderer.Write("</indent>");
+                        isClosed = true;
+                    }
+
                     renderer.EnsureLine();
-                    renderer.Write(list);
+                    renderer.Write(block);
                     continue;
                 }
 
                 renderer.SkipNextEnsureLine = true;
                 renderer.Write(block);
+                renderer.Write("</indent>");
+                isClosed = true;
             }
 
-            if (isIndentOpen)
-            {
-                renderer.Write(CloseTag);
-            }
         }
     }
 

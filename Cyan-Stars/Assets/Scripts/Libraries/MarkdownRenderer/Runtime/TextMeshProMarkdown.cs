@@ -105,7 +105,7 @@ namespace CyanStars.MarkdownRenderer
         {
             var currentProvider = configProvider?.Value;
             var currentConfig = currentProvider?.Config ?? TextMeshProMarkdownConfig.DefaultConfig;
-            if (ReferenceEquals(currentProvider, observedConfigProvider) && ConfigEquals(currentConfig, observedConfig))
+            if (currentConfig.Equals(observedConfig))
             {
                 return;
             }
@@ -113,15 +113,6 @@ namespace CyanStars.MarkdownRenderer
             observedConfigProvider = currentProvider;
             observedConfig = new TextMeshProMarkdownConfig(currentConfig);
             SetDirty();
-
-            bool ConfigEquals(TextMeshProMarkdownConfig first, TextMeshProMarkdownConfig second)
-            {
-                return first != null && second != null &&
-                    first.CodeBlockBackgroundColor == second.CodeBlockBackgroundColor &&
-                    first.AtColor == second.AtColor &&
-                    first.LinkColor == second.LinkColor &&
-                    first.UnorderedListMarker == second.UnorderedListMarker;
-            }
         }
 #endif
 

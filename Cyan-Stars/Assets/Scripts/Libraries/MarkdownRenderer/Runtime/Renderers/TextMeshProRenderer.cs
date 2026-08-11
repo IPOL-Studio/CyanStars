@@ -15,6 +15,9 @@ namespace CyanStars.MarkdownRenderer.Renderers
 
         public bool SkipNextEnsureLine { get; set; }
 
+        public int NestingLevel { get; private set; }
+        public int QuoteLevel { get; set; }
+
         public TextMeshProRenderer(TextWriter writer) : base(writer)
         {
             // Block renderers
@@ -22,8 +25,8 @@ namespace CyanStars.MarkdownRenderer.Renderers
                 new ListRenderer(),
                 new HeadingRenderer(),
                 new HtmlBlockRenderer(),
-                new ParagraphRenderer()
-                //new QuoteBlockRenderer()
+                new ParagraphRenderer(),
+                new QuoteBlockRenderer()
             );
 
             // Inline renderers
@@ -64,6 +67,22 @@ namespace CyanStars.MarkdownRenderer.Renderers
             return true;
         }
 
-        public void ResetRecordedProps() => base.Reset();
+        public void PushNestingLevel() => NestingLevel++;
+
+        public void PopNestingLevel()
+        {
+            if (NestingLevel < 0)
+            {
+                throw new InvalidOperationException("Nesting level cannot be negative.");
+            }
+            NestingLevel--;
+        }
+
+        public void ResetRecordedProps()
+        {
+            NestingLevel = 0;
+            QuoteLevel = 0;
+            base.Reset();
+        }
     }
 }
