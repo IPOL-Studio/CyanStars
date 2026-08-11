@@ -45,7 +45,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
             foreach (ListItemBlock item in obj)
             {
                 renderer.EnsureLine();
-                WriteListItem(renderer, item, $"{index++}.");
+                WriteListItem(renderer, item, $"{index++}.", 0);
             }
 
             if (nestingLevel == 1)
@@ -60,7 +60,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
             foreach (ListItemBlock item in obj)
             {
                 renderer.EnsureLine();
-                WriteListItem(renderer, item, unorderedListMarker);
+                WriteListItem(renderer, item, unorderedListMarker, -0.5);
             }
 
             if (nestingLevel == 1)
@@ -69,12 +69,12 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
             }
         }
 
-        private void WriteListItem(TextMeshProRenderer renderer, ListItemBlock item, string marker)
+        private void WriteListItem(TextMeshProRenderer renderer, ListItemBlock item, string marker, double contentIndentOffset)
         {
             renderer.Write("<indent=").Write((nestingLevel - 1).ToString()).Write("em>")
                     .Write(marker)
                     .Write("</indent>")
-                    .Write("<indent=").Write((nestingLevel - 0.5).ToString()).Write("em>");
+                    .Write("<indent=").Write((nestingLevel + contentIndentOffset).ToString()).Write("em>");
             bool isIndentOpen = true;
 
             foreach (var block in item)
