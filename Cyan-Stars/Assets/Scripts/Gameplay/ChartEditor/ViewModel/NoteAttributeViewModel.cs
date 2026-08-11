@@ -5,6 +5,7 @@ using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
@@ -93,6 +94,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
+            if (Model.SelectedNoteData.CurrentValue.JudgeBeat == newJudgeBeat)
+                return;
+
             Beat oldJudgeBeat = Model.SelectedNoteData.CurrentValue.JudgeBeat;
             var note = Model.SelectedNoteData.CurrentValue;
             CommandStack.ExecuteCommand(
@@ -139,6 +143,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
+            if (note.EndJudgeBeat == newEndBeat)
+                return;
+
             Beat oldEndBeat = note.EndJudgeBeat;
             CommandStack.ExecuteCommand(
                 () =>
@@ -168,6 +175,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
+            if (Mathf.Approximately(((IChartNoteNormalPos)Model.SelectedNoteData.CurrentValue).Pos, newPosFloat))
+                return;
+
             float oldPosFloat = ((IChartNoteNormalPos)Model.SelectedNoteData.CurrentValue).Pos;
             var note = (IChartNoteNormalPos)Model.SelectedNoteData.CurrentValue;
             CommandStack.ExecuteCommand(
@@ -191,6 +201,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             if (Model.SelectedNoteData.CurrentValue.Type != NoteType.Break)
                 throw new Exception("SelectedNoteData is not break");
+
+            if (((BreakChartNoteData)Model.SelectedNoteData.CurrentValue).BreakNotePos == newBreakPos)
+                return;
 
             BreakNotePos oldBreakPos = ((BreakChartNoteData)Model.SelectedNoteData.CurrentValue).BreakNotePos;
             var note = (BreakChartNoteData)Model.SelectedNoteData.CurrentValue;

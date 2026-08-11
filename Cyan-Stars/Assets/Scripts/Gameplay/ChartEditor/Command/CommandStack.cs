@@ -1,7 +1,6 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
-using R3;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.Command
@@ -17,18 +16,6 @@ namespace CyanStars.Gameplay.ChartEditor.Command
         // 指向当前"最后一条已执行"的命令的索引
         // -1 表示没有任何命令被执行（初始状态或全部撤销）
         private int currentCommandIndex = -1;
-
-        // 干净边界：最近一次成功保存时的命令索引，与 currentCommandIndex 相等即代表无未保存数据
-        // 若边界落在被丢弃的历史中（保存后撤销再执行新命令），数据不可能再与磁盘一致，
-        // 此时置为 int.MinValue 使其不可达，直到下一次保存
-        private int cleanBoundaryIndex = -1;
-
-        private readonly ReactiveProperty<bool> hasUnsavedChanges = new ReactiveProperty<bool>(false);
-
-        /// <summary>
-        /// 是否存在未保存数据（订阅时立即推送当前值）
-        /// </summary>
-        public ReadOnlyReactiveProperty<bool> HasUnsavedChanges => hasUnsavedChanges;
 
         /// <summary>
         /// 执行新命令
@@ -49,12 +36,6 @@ namespace CyanStars.Gameplay.ChartEditor.Command
             CommandHistory.Add(command);
             currentCommandIndex++;
 
-            // 若干净边界落在被丢弃的历史中，数据不可能再与磁盘一致
-            if (cleanBoundaryIndex > currentCommandIndex)
-                cleanBoundaryIndex = int.MinValue;
-
-            UpdateUnsavedState();
-
             // TODO: 可选添加最大历史记录限制，防止内存溢出
         }
 
@@ -72,7 +53,6 @@ namespace CyanStars.Gameplay.ChartEditor.Command
 
             CommandHistory[currentCommandIndex].Undo();
             currentCommandIndex--;
-            UpdateUnsavedState();
         }
 
         /// <summary>
@@ -89,7 +69,6 @@ namespace CyanStars.Gameplay.ChartEditor.Command
 
             currentCommandIndex++;
             CommandHistory[currentCommandIndex].Execute();
-            UpdateUnsavedState();
         }
 
         /// <summary>
@@ -99,34 +78,6 @@ namespace CyanStars.Gameplay.ChartEditor.Command
         {
             CommandHistory.Clear();
             currentCommandIndex = -1;
-            cleanBoundaryIndex = -1;
-            UpdateUnsavedState();
-        }
-
-        /// <summary>
-        /// 标记当前数据为已保存（保存成功后调用）
-        /// </summary>
-        public void MarkSaved()
-        {
-            cleanBoundaryIndex = currentCommandIndex;
-            UpdateUnsavedState();
-        }
-
-        /// <summary>
-        /// 强制标记为有未保存数据（新建谱面等不经过命令栈的数据修改使用）
-        /// </summary>
-        public void MarkDirty()
-        {
-            cleanBoundaryIndex = int.MinValue;
-            UpdateUnsavedState();
-        }
-
-        /// <summary>
-        /// 根据命令位置与干净边界是否相等来重算未保存状态
-        /// </summary>
-        private void UpdateUnsavedState()
-        {
-            hasUnsavedChanges.Value = currentCommandIndex != cleanBoundaryIndex;
         }
     }
 }

@@ -14,6 +14,8 @@ namespace CyanStars.Gameplay.ChartEditor.Management
     {
         private readonly CompositeDisposable Disposables = new CompositeDisposable();
 
+        private ChartEditorDirtyServer dirtyServer = null!;
+
         [SerializeField]
         private ToolbarView toolbarView = null!;
 
@@ -62,17 +64,20 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         /// </summary>
         /// <remarks>注意：由于引用关系，制谱器会修改传入的谱包和谱面实例内的数据。请先深拷贝一个谱包和谱面，再调用制谱器初始化</remarks>
         public void StartBind(string workspacePath,
-                              int chartMetadataIndex,
-                              ChartPackData chartPackData,
-                              ChartData chartData,
-                              ChartEditorMusicManager musicManager,
-                              ChartEditorNoteAudioManager chartEditorNoteAudioManager,
-                              ShortcutManager shortcutManager,
-                              ChartEditorPlayerPrefsManager playerPrefsManager)
+            int chartMetadataIndex,
+            ChartPackData chartPackData,
+            ChartData chartData,
+            bool initialHasUnsavedChanges,
+            ChartEditorMusicManager musicManager,
+            ChartEditorNoteAudioManager chartEditorNoteAudioManager,
+            ShortcutManager shortcutManager,
+            ChartEditorPlayerPrefsManager playerPrefsManager)
         {
-            // TODO: 为 Model 实现 IDispose，以进一步管理生命周期
-            ChartEditorModel model =
+            var model =
                 new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData);
+
+            // 初始化脏状态服务，开始追踪未保存数据
+            dirtyServer = new ChartEditorDirtyServer(model, initialHasUnsavedChanges);
 
             // 初始化一些 Manager
             musicManager.Init(model);
@@ -84,7 +89,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
             var toolbarViewModel = new ToolbarViewModel(model).AddTo(Disposables);
             toolbarView.Bind(toolbarViewModel);
 
-            var menuButtonsViewModel = new MenuButtonsViewModel(model).AddTo(Disposables);
+            var menuButtonsViewModel = new MenuButtonsViewModel(model, dirtyServer).AddTo(Disposables);
             menuButtonsView.Bind(menuButtonsViewModel);
 
             var editorAttributeViewModel = new EditorAttributeViewModel(model).AddTo(Disposables);
@@ -122,6 +127,10 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         /// 退出制谱器时解除所有绑定，以释放内存
         /// </summary>
         /// <remarks>VM 通过 CatAsset 加载的资源也应该在此时由 VM 管理释放</remarks>
-        private void OnDestroy() => Disposables.Dispose();
+        private void OnDestroy()
+        {
+            Disposables.Dispose();
+            dirtyServer?.Dispose();
+        }
     }
 }
