@@ -7,12 +7,14 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro.Inlines
     {
         protected override void Write(TextMeshProRenderer renderer, CodeInline obj)
         {
-            renderer.Write('<');
+            renderer.WriteRaw('<');
             renderer.WriteRaw("mark=#");
             renderer.WriteRaw(renderer.Config.CodeBlockBackgroundColorHex);
-            renderer.Write('>');
+            renderer.WriteRaw('>');
+            renderer.WriteRaw("<noparse>");
             renderer.Write(obj.Content);
-            renderer.Write("</mark>");
+            renderer.WriteRaw("</noparse>");
+            renderer.WriteRaw("</mark>");
         }
     }
 }
