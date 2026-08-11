@@ -7,5 +7,10 @@ namespace CyanStars.MarkdownRenderer
         [SerializeField] private TextMeshProMarkdownConfig config = new(TextMeshProMarkdownConfig.DefaultConfig);
 
         public TextMeshProMarkdownConfig Config => config;
+
+            private void Reset()
+        {
+            config = new(TextMeshProMarkdownConfig.DefaultConfig);
+        }
     }
 }
