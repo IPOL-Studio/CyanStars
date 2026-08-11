@@ -17,6 +17,7 @@ namespace CyanStars.MarkdownRenderer
         public Color CodeBlockBackgroundColor;
         public Color AtColor;
         public Color LinkColor;
+        public string LinkPrefix;
         public string UnorderedListMarker;
 
         public string CodeBlockBackgroundColorHex => ColorUtility.ToHtmlStringRGB(CodeBlockBackgroundColor);
@@ -46,7 +47,8 @@ namespace CyanStars.MarkdownRenderer
             CodeBlockBackgroundColor = new(r: 0.533f, g: 0.533f, b: 0.533f),
             AtColor                  = new(1, 0.841f, 0.078f, 0.87f),
             LinkColor                = new(1, 0.841f, 0.078f, 0.87f),
-            UnorderedListMarker      = "\u2011"
+            UnorderedListMarker      = "\u2011",
+            LinkPrefix               = "__md_link__"
         };
     }
 }
