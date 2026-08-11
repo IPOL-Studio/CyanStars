@@ -30,6 +30,7 @@ namespace CyanStars.MarkdownRenderer.Renderers
             AddRenderers(
                 new CodeInlineRenderer(),
                 new EmphasisInlineRenderer(),
+                new LineBreakInlineRenderer(),
                 new LinkInlineRenderer(),
                 new LiteralInlineRenderer()
             );
