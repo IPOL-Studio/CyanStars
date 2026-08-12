@@ -23,6 +23,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                 }
 
                 var lineNestingLevelString = renderer.NestingLevel.ToString();
+                var contentNestingLevelString = contentNestingLevel.ToString();
 
                 for (int i = 0; i < obj.Count; i++)
                 {
@@ -48,11 +49,11 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                             // 引用块内的段落：内部换行时在新的一行重复输出 mark
                             // 基本上复制了 paragraph block inlines 的处理逻辑
                             // 如果 paragraph renderer 有更改，记得检查这里
-                            WriteParagraphInlines(renderer, paragraph, lineNestingLevelString, contentNestingLevel);
+                            WriteParagraphInlines(renderer, paragraph, lineNestingLevelString, contentNestingLevelString);
                         }
                         else
                         {
-                            renderer.PushTag("indent", contentNestingLevel.ToString(), valueSuffix: "em")
+                            renderer.PushTag("indent", contentNestingLevelString, valueSuffix: "em")
                                     .Write(block);
                             renderer.TryPopTag(out _);
                         }
@@ -102,9 +103,9 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
         }
 
         private void WriteParagraphInlines(TextMeshProRenderer renderer, ParagraphBlock paragraph,
-                                           string lineNestingLevelString, int contentNestingLevel)
+                                           string lineNestingLevelString, string contentNestingLevelString)
         {
-            renderer.PushTag("indent", contentNestingLevel.ToString(), valueSuffix: "em");
+            renderer.PushTag("indent", contentNestingLevelString, valueSuffix: "em");
 
             var root = paragraph.Inline;
             if (root != null)
@@ -130,7 +131,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                         renderer.PushTag("indent", lineNestingLevelString, valueSuffix: "em");
                         WriteQuoteMarker(renderer, renderer.QuoteLevel);
                         renderer.TryPopTag(out _);
-                        renderer.PushTag("indent", contentNestingLevel.ToString(), valueSuffix: "em");
+                        renderer.PushTag("indent", contentNestingLevelString, valueSuffix: "em");
                     }
                     else
                     {
