@@ -23,6 +23,11 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                 {
                     WriteUnorderedList(renderer, obj);
                 }
+
+                if (renderer.NestingLevel == 1)
+                {
+                    renderer.FinishBlock(true);
+                }
             }
             finally
             {
@@ -45,11 +50,6 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                 renderer.EnsureLine();
                 WriteListItem(renderer, item, $"{index++}.", 0);
             }
-
-            if (renderer.NestingLevel == 1)
-            {
-                renderer.EnsureLine();
-            }
         }
 
         private void WriteUnorderedList(TextMeshProRenderer renderer, ListBlock obj)
@@ -59,11 +59,6 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
             {
                 renderer.EnsureLine();
                 WriteListItem(renderer, item, unorderedListMarker, -0.5);
-            }
-
-            if (renderer.NestingLevel == 1)
-            {
-                renderer.EnsureLine();
             }
         }
 
