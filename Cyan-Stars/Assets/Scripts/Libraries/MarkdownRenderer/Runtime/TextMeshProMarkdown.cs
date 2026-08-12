@@ -144,6 +144,7 @@ namespace CyanStars.MarkdownRenderer
             renderer.ResetRecordedProps();
 
             renderer.Config = configProvider?.Value?.Config ?? TextMeshProMarkdownConfig.DefaultConfig;
+            renderer.ComputeConfig();
             renderer.Render(document);
             writer.Flush();
 

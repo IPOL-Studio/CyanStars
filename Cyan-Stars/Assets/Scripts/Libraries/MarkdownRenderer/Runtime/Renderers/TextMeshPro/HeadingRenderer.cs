@@ -15,32 +15,32 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
 {
     public class HeadingRenderer : MarkdownObjectRenderer<TextMeshProRenderer, HeadingBlock>
     {
-        private static readonly string[] HeadingTexts = new string[]
+        private static readonly string[] HeadingTextSizes = new string[]
         {
-            "<size=200%>",
-            "<size=150%>",
-            "<size=117%>",
-            "<size=100%>",
-            "<size=83%>",
-            "<size=67%>",
+            "200%",
+            "150%",
+            "117%",
+            "100%",
+            "83%",
+            "67%",
         };
 
         protected override void Write(TextMeshProRenderer renderer, HeadingBlock obj)
         {
             int index = obj.Level - 1;
 
-            if ((uint)index >= (uint)HeadingTexts.Length)
+            if ((uint)index >= (uint)HeadingTextSizes.Length)
             {
                 renderer.WriteLeafInline(obj);
             }
             else
             {
-                renderer.Write(HeadingTexts[index]);
-                renderer.WriteLeafInline(obj);
-                renderer.Write("</size>");
+                renderer.PushTag("size", HeadingTextSizes[index])
+                        .WriteLeafInline(obj)
+                        .TryPopTag(out _);
             }
-            
-            renderer.EnsureLine();
+
+            renderer.FinishBlock(true);
         }
     }
 

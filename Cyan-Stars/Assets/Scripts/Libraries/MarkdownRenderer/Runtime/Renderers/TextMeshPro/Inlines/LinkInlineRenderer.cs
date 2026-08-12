@@ -7,12 +7,10 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro.Inlines
     {
         protected override void Write(TextMeshProRenderer renderer, LinkInline obj)
         {
-            renderer.WriteRaw("<color=#");
-            renderer.WriteRaw(renderer.Config.LinkColorHex);
-            renderer.WriteRaw(">");
-            renderer.WriteRaw("<u>");
-            renderer.WriteRaw("<link=");
+            renderer.PushTag("color", renderer.Config.LinkColorHex, valuePrefix: "#")
+                    .PushTag("u");
 
+            renderer.WriteRaw("<link=");
             var linkPrefix = renderer.Config.LinkPrefix;
             if (!string.IsNullOrEmpty(linkPrefix) || !string.IsNullOrWhiteSpace(linkPrefix))
             {
@@ -23,8 +21,9 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro.Inlines
             renderer.WriteRaw(">");
             renderer.WriteChildren(obj);
             renderer.WriteRaw("</link>");
-            renderer.WriteRaw("</u>");
-            renderer.WriteRaw("</color>");
+
+            renderer.TryPopTag(out _);
+            renderer.TryPopTag(out _);
         }
     }
 }

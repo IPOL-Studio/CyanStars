@@ -8,13 +8,9 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro.Inlines
         protected override void Write(TextMeshProRenderer renderer, EmphasisInline obj)
         {
             string tag = obj.DelimiterCount == 2 ? "b" : "i";
-            renderer.Write('<');
-            renderer.WriteRaw(tag);
-            renderer.Write('>');
+            renderer.PushTag(tag);
             renderer.WriteChildren(obj);
-            renderer.Write("</");
-            renderer.WriteRaw(tag);
-            renderer.WriteRaw('>');
+            renderer.TryPopTag(out _);
         }
     }
 }

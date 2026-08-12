@@ -21,6 +21,7 @@ namespace CyanStars.MarkdownRenderer
         public string LinkPrefix;
         public string UnorderedListMarker;
         public string QuoteMarker;
+        [Range(0, 10)]public double BlockFakeMarginBottom;
 
         public string CodeBlockBackgroundColorHex => ColorUtility.ToHtmlStringRGBA(CodeBlockBackgroundColor);
         public string AtColorHex => ColorUtility.ToHtmlStringRGBA(AtColor);
@@ -40,6 +41,7 @@ namespace CyanStars.MarkdownRenderer
             this.LinkPrefix = other.LinkPrefix;
             this.UnorderedListMarker = other.UnorderedListMarker;
             this.QuoteMarker = other.QuoteMarker;
+            this.BlockFakeMarginBottom = other.BlockFakeMarginBottom;
         }
 
         private static TextMeshProMarkdownConfig CreateDefault() => new()
@@ -50,7 +52,8 @@ namespace CyanStars.MarkdownRenderer
             QuoteColor               = new(0.6f, 0.6f, 0.6f),
             LinkPrefix               = "__md_link__",
             UnorderedListMarker      = "\u2011",
-            QuoteMarker              = "\u258C"
+            QuoteMarker              = "\u258C",
+            BlockFakeMarginBottom    = 0.5,
         };
 
         public bool Equals(TextMeshProMarkdownConfig other)
@@ -64,7 +67,8 @@ namespace CyanStars.MarkdownRenderer
                    QuoteColor == other.QuoteColor &&
                    LinkPrefix == other.LinkPrefix &&
                    UnorderedListMarker == other.UnorderedListMarker &&
-                   QuoteMarker == other.QuoteMarker;
+                   QuoteMarker == other.QuoteMarker &&
+                   BlockFakeMarginBottom == other.BlockFakeMarginBottom;
         }
     }
 }

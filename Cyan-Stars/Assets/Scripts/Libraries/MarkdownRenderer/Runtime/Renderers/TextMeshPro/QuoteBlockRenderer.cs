@@ -11,7 +11,6 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
             renderer.EnsureLine();
 
             renderer.QuoteLevel++;
-            bool savedSkipNextEnsureLine = renderer.SkipNextEnsureLine;
 
             try
             {
@@ -20,15 +19,15 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
 
                 if (isFirstQuote)
                 {
-                    renderer.Write("<color=#").Write(renderer.Config.QuoteColorHex).Write(">");
+                    renderer.PushTag("color", renderer.Config.QuoteColorHex, valuePrefix: "#");
                 }
 
-                renderer.Write("<indent=").Write(renderer.NestingLevel.ToString()).Write("em>");
+                renderer.PushTag("indent", renderer.NestingLevel.ToString(), valueSuffix: "em");
                 for (int i = 0; i < renderer.QuoteLevel; i++)
                 {
                     renderer.Write(renderer.Config.QuoteMarker);
                 }
-                renderer.Write("</indent>");
+                renderer.TryPopTag(out _);
 
                 foreach (var block in obj)
                 {
@@ -38,17 +37,15 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                     }
                     else
                     {
-                        renderer.SkipNextEnsureLine = true;
-                        renderer.Write("<indent=").Write(totalDepth.ToString()).Write("em>")
+                        renderer.PushTag("indent", totalDepth.ToString(), valueSuffix: "em")
                                 .Write(block);
-                        renderer.Write("</indent>");
-                        renderer.SkipNextEnsureLine = savedSkipNextEnsureLine;
+                        renderer.TryPopTag(out _);
                     }
                 }
 
                 if (isFirstQuote)
                 {
-                    renderer.Write("</color>");
+                    renderer.TryPopTag(out _);
                 }
 
                 if (totalDepth == 1)
@@ -59,7 +56,6 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
             finally
             {
                 renderer.QuoteLevel--;
-                renderer.SkipNextEnsureLine = savedSkipNextEnsureLine;
             }
         }
     }

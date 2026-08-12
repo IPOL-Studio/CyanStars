@@ -8,7 +8,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
         protected override void Write(TextMeshProRenderer renderer, ParagraphBlock obj)
         {
             renderer.WriteLeafInline(obj);
-            renderer.TryEnsureLineIfNotSkip(true);
+            renderer.FinishBlock(!renderer.IsCompactParagraph);
         }
     }
 

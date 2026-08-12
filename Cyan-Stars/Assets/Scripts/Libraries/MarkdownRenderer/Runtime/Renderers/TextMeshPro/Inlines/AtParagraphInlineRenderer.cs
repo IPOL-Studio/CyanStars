@@ -7,11 +7,9 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro.Inlines
     {
         protected override void Write(TextMeshProRenderer renderer, AtParagraphInline obj)
         {
-            renderer.WriteRaw("<color=#");
-            renderer.WriteRaw(renderer.Config.AtColorHex);
-            renderer.WriteRaw(">");
+            renderer.PushTag("link", obj.Url, valuePrefix: renderer.Config.LinkPrefix);
             renderer.WriteChildren(obj);
-            renderer.WriteRaw("</color>");
+            renderer.TryPopTag(out _);
         }
     }
 }

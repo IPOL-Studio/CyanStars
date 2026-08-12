@@ -9,6 +9,10 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
         {
             renderer.EnsureLine();
             renderer.PushNestingLevel();
+
+            var compact = renderer.IsCompactParagraph;
+            renderer.IsCompactParagraph = !obj.IsLoose;
+
             try
             {
                 if (obj.IsOrdered)
@@ -22,6 +26,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
             }
             finally
             {
+                renderer.IsCompactParagraph = compact;
                 renderer.PopNestingLevel();
             }
         }
@@ -65,10 +70,10 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
         private void WriteListItem(TextMeshProRenderer renderer, ListItemBlock item, string marker, double contentIndentOffset)
         {
             int depth = renderer.NestingLevel;
-            renderer.Write("<indent=").Write((depth - 1).ToString()).Write("em>")
+            renderer.PushTag("indent", (depth - 1).ToString(), valueSuffix: "em")
                     .Write(marker)
-                    .Write("</indent>")
-                    .Write("<indent=").Write((depth + contentIndentOffset).ToString()).Write("em>");
+                    .TryPopTag(out _);
+            renderer.PushTag("indent", (depth + contentIndentOffset).ToString(), valueSuffix: "em");
             
             bool isClosed = false;
 
@@ -78,7 +83,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                 {
                     if (!isClosed)
                     {
-                        renderer.Write("</indent>");
+                        renderer.TryPopTag(out _);
                         isClosed = true;
                     }
 
@@ -87,9 +92,8 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                     continue;
                 }
 
-                renderer.SkipNextEnsureLine = true;
                 renderer.Write(block);
-                renderer.Write("</indent>");
+                renderer.TryPopTag(out _);
                 isClosed = true;
             }
 
