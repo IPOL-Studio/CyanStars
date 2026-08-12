@@ -22,7 +22,7 @@ namespace CyanStars.MarkdownRenderer
 
         private MarkdownPipeline pipeline;
 
-        [SerializeField, Multiline] private string text;
+        [SerializeField, TextArea(5, 10)] private string text;
         [SerializeField] private ObjectRef<ITextMeshProMarkdownConfigProvider> configProvider;
 
         private ITextMeshProMarkdownConfigProvider observedConfigProvider;
