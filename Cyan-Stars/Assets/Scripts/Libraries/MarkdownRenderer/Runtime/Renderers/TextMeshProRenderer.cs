@@ -75,26 +75,26 @@ namespace CyanStars.MarkdownRenderer.Renderers
             if (IsLastInContainer || tags.Count > 0)
                 return;
 
+            EnsureLine();
+
             if (!appendFakeMarginBottom)
             {
-                EnsureLine();
                 return;
             }
 
-            if (!string.IsNullOrEmpty(BlockFakeMarginBottom))
+            if (Config.FinishBlockBehavior == FinishBlockBehavior.FakeMargin &&
+                !string.IsNullOrEmpty(BlockFakeMarginBottom))
             {
-                EnsureFakeMarginBottom();
+                WriteFakeMarginBottom();
             }
-            else
+            else if (Config.FinishBlockBehavior == FinishBlockBehavior.EmptyLine)
             {
-                EnsureLine();
                 WriteLine();
             }
         }
 
-        private void EnsureFakeMarginBottom()
+        private void WriteFakeMarginBottom()
         {
-            EnsureLine();
             WriteRaw("<line-height=");
             WriteRaw(BlockFakeMarginBottom);
             WriteRaw("em>");

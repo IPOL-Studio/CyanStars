@@ -23,6 +23,7 @@ namespace CyanStars.MarkdownRenderer
         [Range(0,  2)] public double QuoteWidth;
         [Range(0, 10)] public double QuoteSpacing;
         [Range(0, 10)] public double BlockFakeMarginBottom;
+        public FinishBlockBehavior FinishBlockBehavior;
 
         public string CodeBlockBackgroundColorHex => ColorUtility.ToHtmlStringRGBA(CodeBlockBackgroundColor);
         public string AtColorHex => ColorUtility.ToHtmlStringRGBA(AtColor);
@@ -44,6 +45,7 @@ namespace CyanStars.MarkdownRenderer
             this.QuoteWidth = other.QuoteWidth;
             this.QuoteSpacing = other.QuoteSpacing;
             this.BlockFakeMarginBottom = other.BlockFakeMarginBottom;
+            this.FinishBlockBehavior = other.FinishBlockBehavior;
         }
 
         private static TextMeshProMarkdownConfig CreateDefault() => new()
@@ -57,6 +59,7 @@ namespace CyanStars.MarkdownRenderer
             QuoteWidth               = 1,
             QuoteSpacing             = 0.5,
             BlockFakeMarginBottom    = 0.5,
+            FinishBlockBehavior      = FinishBlockBehavior.FakeMargin
         };
 
         public bool Equals(TextMeshProMarkdownConfig other)
@@ -72,7 +75,15 @@ namespace CyanStars.MarkdownRenderer
                 && UnorderedListMarker == other.UnorderedListMarker
                 && QuoteWidth == other.QuoteWidth
                 && QuoteSpacing == other.QuoteSpacing
-                && BlockFakeMarginBottom == other.BlockFakeMarginBottom;
+                && BlockFakeMarginBottom == other.BlockFakeMarginBottom
+                && FinishBlockBehavior == other.FinishBlockBehavior;
         }
+    }
+
+    public enum FinishBlockBehavior
+    {
+        None,
+        FakeMargin,
+        EmptyLine
     }
 }
