@@ -21,6 +21,9 @@ namespace CyanStars.MarkdownRenderer.Renderers
 
         // computed properties form config
         public string? BlockFakeMarginBottom { get; private set; }
+        public string? QuoteSpacing { get; private set; }
+        public string? QuoteMarkerWidth { get; private set; }
+        public double HalfQuoteMarkerWidth { get; private set; }
 
         public readonly struct TmpTagItem
         {
@@ -72,13 +75,20 @@ namespace CyanStars.MarkdownRenderer.Renderers
             if (IsLastInContainer || tags.Count > 0)
                 return;
 
-            if (appendFakeMarginBottom && !string.IsNullOrEmpty(BlockFakeMarginBottom))
+            if (!appendFakeMarginBottom)
+            {
+                EnsureLine();
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(BlockFakeMarginBottom))
             {
                 EnsureFakeMarginBottom();
             }
             else
             {
                 EnsureLine();
+                WriteLine();
             }
         }
 
@@ -90,6 +100,19 @@ namespace CyanStars.MarkdownRenderer.Renderers
             WriteRaw("em>");
             WriteLine();
             WriteRaw("</line-height>");
+        }
+
+        internal TextMeshProRenderer EnsureSpacing(string size)
+        {
+            if (!base.previousWasLine)
+                return this;
+
+            WriteRaw("<line-height=");
+            WriteRaw(size);
+            WriteRaw(">");
+            WriteLine();
+            WriteRaw("</line-height>");
+            return this;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -163,11 +186,35 @@ namespace CyanStars.MarkdownRenderer.Renderers
             return success;
         }
 
+        public bool PopTag(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (!TryPopTag(out _))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public void ComputeConfig()
         {
             BlockFakeMarginBottom = Config.BlockFakeMarginBottom <= 0
                 ? string.Empty
-                : (Math.Round(Config.BlockFakeMarginBottom * 1000) / 1000.0).ToString();
+                : Config.BlockFakeMarginBottom.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+
+            QuoteSpacing = Config.QuoteSpacing <= 0
+                ? string.Empty
+                : Config.QuoteSpacing.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+
+            QuoteMarkerWidth = Config.QuoteWidth <= 0
+                ? string.Empty
+                : Config.QuoteWidth.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+
+            HalfQuoteMarkerWidth = Config.QuoteWidth <= 0 ? 0 : Config.QuoteWidth / 2.0;
+
+                //: (Math.Round(Config.BlockFakeMarginBottom * 1000) / 1000.0).ToString();
         }
     }
 }

@@ -19,10 +19,17 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
 
                 if (isFirstQuote)
                 {
+                    if (renderer.NestingLevel > 0)
+                    {
+                        // note: 当前只有 list 会修改全局 markdown 嵌套层级
+                        // 可以认定当前 quote block 是 list 的子项
+                        // 直接先给一点 Spacing 防止两个块元素靠得太近
+                        renderer.EnsureSpacing("6");
+                    }
+
                     renderer.PushTag("color", renderer.Config.QuoteColorHex, valuePrefix: "#");
                 }
 
-                var lineNestingLevelString = renderer.NestingLevel.ToString();
                 var contentNestingLevelString = contentNestingLevel.ToString();
 
                 for (int i = 0; i < obj.Count; i++)
@@ -40,16 +47,14 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                     }
                     else
                     {
-                        renderer.PushTag("indent", lineNestingLevelString, valueSuffix: "em");
-                        WriteQuoteMarker(renderer, renderer.QuoteLevel);
-                        renderer.TryPopTag(out _);
+                        WriteQuoteMarker(renderer, renderer.QuoteLevel, renderer.NestingLevel, false);
 
                         if (block is ParagraphBlock paragraph)
                         {
                             // 引用块内的段落：内部换行时在新的一行重复输出 mark
                             // 基本上复制了 paragraph block inlines 的处理逻辑
                             // 如果 paragraph renderer 有更改，记得检查这里
-                            WriteParagraphInlines(renderer, paragraph, lineNestingLevelString, contentNestingLevelString);
+                            WriteParagraphInlines(renderer, paragraph, renderer.NestingLevel, contentNestingLevelString);
                         }
                         else
                         {
@@ -59,7 +64,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                         }
                     }
 
-                    TryEnsureQuoteEmptyLine(renderer, obj, lineNestingLevelString, i);
+                    TryEnsureQuoteEmptyLine(renderer, obj, renderer.NestingLevel, i);
                 }
 
                 if (isFirstQuote)
@@ -79,31 +84,80 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
         }
 
         private void TryEnsureQuoteEmptyLine(TextMeshProRenderer renderer, QuoteBlock obj,
-                                             string lineNestingLevelString, int i)
+                                             int lineNestingLevel, int i)
         {
-            var block = obj[i];
-            if (i >= obj.Count - 1 || block is not ParagraphBlock || obj[i + 1] is not ParagraphBlock)
+            if (renderer.Config.QuoteSpacing <= 0)
             {
                 return;
             }
 
+            var block = obj[i];
+            if (i >= obj.Count - 1 || block is not ParagraphBlock)
+            {
+                return;
+            }
+
+            Block nextBlock = obj[i + 1];
+            if (nextBlock is not ParagraphBlock && nextBlock is not QuoteBlock)
+            {
+                return;
+            }
+
+            renderer.PushTag("line-height", renderer.QuoteSpacing, valueSuffix: "em");
             renderer.EnsureLine();
-            renderer.PushTag("indent", lineNestingLevelString, valueSuffix: "em");
-            WriteQuoteMarker(renderer, renderer.QuoteLevel);
-            renderer.TryPopTag(out _);
-            renderer.EnsureLine();
+
+            // 如果渲染空白的引用块(相邻引用块的间距部分)
+            // 就往空引用块的同一行输出一个透明字符
+            // 确保 TMP 不会丢弃通过空格渲染的引用块 mark 部分
+            if (renderer.Config.QuoteWidth > 0)
+            {
+                WriteQuoteMarker(renderer, renderer.QuoteLevel, lineNestingLevel, true);
+                renderer.PushTag("color", "#00000000");
+                renderer.Write('*');
+                renderer.PopTag(1);
+            }
+
+            renderer.PopTag(1);
+            renderer.WriteLine();
         }
 
-        private void WriteQuoteMarker(TextMeshProRenderer renderer, int count)
+        private void WriteQuoteMarker(TextMeshProRenderer renderer, int count, int lineNestingLevel, bool isBlankLine)
         {
+// <indent={count-width/2}em><mspace={width}em><mark={color}> </mark></mspace></indent>
+
+            if (renderer.Config.QuoteWidth <= 0)
+            {
+                return;
+            }
+
+            bool isOverrideSize = isBlankLine && renderer.Config.QuoteSpacing > 1;
+
             for (int i = 0; i < count; i++)
             {
-                renderer.Write(renderer.Config.QuoteMarker);
+                //renderer.Write(renderer.Config.QuoteMarker);
+
+                var indent = (i - renderer.HalfQuoteMarkerWidth + lineNestingLevel).ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+                renderer.PushTag("indent", indent, valueSuffix: "em")
+                        .PushTag("mspace", renderer.QuoteMarkerWidth, valueSuffix: "em");
+
+                if (isOverrideSize)
+                {
+                    renderer.PushTag("size", renderer.QuoteSpacing, valueSuffix: "em");
+                }
+
+                renderer.PushTag("mark", renderer.Config.QuoteColorHex, valuePrefix: "#")
+                        .WriteRaw(' ');
+                renderer.PopTag(isOverrideSize ? 4 : 3);
+
+                if (i < count - 1)
+                {
+                    renderer.WriteRaw(' ');
+                }
             }
         }
 
         private void WriteParagraphInlines(TextMeshProRenderer renderer, ParagraphBlock paragraph,
-                                           string lineNestingLevelString, string contentNestingLevelString)
+                                           int lineNestingLevel, string contentNestingLevelString)
         {
             renderer.PushTag("indent", contentNestingLevelString, valueSuffix: "em");
 
@@ -128,9 +182,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                         // 硬换行：新的一行重复输出 mark
                         renderer.TryPopTag(out _);
                         renderer.WriteLine();
-                        renderer.PushTag("indent", lineNestingLevelString, valueSuffix: "em");
-                        WriteQuoteMarker(renderer, renderer.QuoteLevel);
-                        renderer.TryPopTag(out _);
+                        WriteQuoteMarker(renderer, renderer.QuoteLevel, lineNestingLevel, false);
                         renderer.PushTag("indent", contentNestingLevelString, valueSuffix: "em");
                     }
                     else

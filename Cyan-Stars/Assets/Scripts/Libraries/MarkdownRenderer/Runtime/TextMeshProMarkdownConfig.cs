@@ -20,8 +20,9 @@ namespace CyanStars.MarkdownRenderer
         public Color QuoteColor;
         public string LinkPrefix;
         public string UnorderedListMarker;
-        public string QuoteMarker;
-        [Range(0, 10)]public double BlockFakeMarginBottom;
+        [Range(0,  2)] public double QuoteWidth;
+        [Range(0, 10)] public double QuoteSpacing;
+        [Range(0, 10)] public double BlockFakeMarginBottom;
 
         public string CodeBlockBackgroundColorHex => ColorUtility.ToHtmlStringRGBA(CodeBlockBackgroundColor);
         public string AtColorHex => ColorUtility.ToHtmlStringRGBA(AtColor);
@@ -40,7 +41,8 @@ namespace CyanStars.MarkdownRenderer
             this.QuoteColor = other.QuoteColor;
             this.LinkPrefix = other.LinkPrefix;
             this.UnorderedListMarker = other.UnorderedListMarker;
-            this.QuoteMarker = other.QuoteMarker;
+            this.QuoteWidth = other.QuoteWidth;
+            this.QuoteSpacing = other.QuoteSpacing;
             this.BlockFakeMarginBottom = other.BlockFakeMarginBottom;
         }
 
@@ -52,7 +54,8 @@ namespace CyanStars.MarkdownRenderer
             QuoteColor               = new(0.6f, 0.6f, 0.6f),
             LinkPrefix               = "__md_link__",
             UnorderedListMarker      = "\u2011",
-            QuoteMarker              = "\u258C",
+            QuoteWidth               = 1,
+            QuoteSpacing             = 0.5,
             BlockFakeMarginBottom    = 0.5,
         };
 
@@ -61,14 +64,15 @@ namespace CyanStars.MarkdownRenderer
             if (other == null) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return CodeBlockBackgroundColor == other.CodeBlockBackgroundColor &&
-                   AtColor == other.AtColor &&
-                   LinkColor == other.LinkColor &&
-                   QuoteColor == other.QuoteColor &&
-                   LinkPrefix == other.LinkPrefix &&
-                   UnorderedListMarker == other.UnorderedListMarker &&
-                   QuoteMarker == other.QuoteMarker &&
-                   BlockFakeMarginBottom == other.BlockFakeMarginBottom;
+            return CodeBlockBackgroundColor == other.CodeBlockBackgroundColor
+                && AtColor == other.AtColor
+                && LinkColor == other.LinkColor
+                && QuoteColor == other.QuoteColor
+                && LinkPrefix == other.LinkPrefix
+                && UnorderedListMarker == other.UnorderedListMarker
+                && QuoteWidth == other.QuoteWidth
+                && QuoteSpacing == other.QuoteSpacing
+                && BlockFakeMarginBottom == other.BlockFakeMarginBottom;
         }
     }
 }
