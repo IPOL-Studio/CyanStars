@@ -2,6 +2,7 @@
 
 using System.Diagnostics.Contracts;
 using CyanStars.Chart;
+using CyanStars.Gameplay.ChartEditor.Command;
 using R3;
 
 namespace CyanStars.Gameplay.ChartEditor.Model
@@ -12,13 +13,13 @@ namespace CyanStars.Gameplay.ChartEditor.Model
     public class ChartMetaDataEditorModel
     {
         public readonly ReactiveProperty<string> FilePath;
-        public readonly ReactiveProperty<ChartDifficulty?> Difficulty;
+        public readonly TrackedReactiveProperty<ChartDifficulty?> Difficulty;
         public readonly ReactiveProperty<string> ChartHash;
 
-        public ChartMetaDataEditorModel(ChartMetaData chartMetaData)
+        public ChartMetaDataEditorModel(ChartMetaData chartMetaData, CommandStack commandStack)
         {
             FilePath = new ReactiveProperty<string>(chartMetaData.FilePath);
-            Difficulty = new ReactiveProperty<ChartDifficulty?>(chartMetaData.Difficulty);
+            Difficulty = new TrackedReactiveProperty<ChartDifficulty?>(commandStack, chartMetaData.Difficulty);
             ChartHash = new ReactiveProperty<string>(chartMetaData.ChartHash);
         }
 

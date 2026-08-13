@@ -5,12 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using CyanStars.Chart;
 using CyanStars.Framework;
-using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Management;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Utils;
-using ObservableCollections;
 using R3;
 using UnityEngine;
 
@@ -76,14 +74,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void SetChartPackTitle(string newTitle)
         {
-            string oldTitle = Model.ChartPackData.CurrentValue.Title.Value;
-            if (newTitle == oldTitle)
-                return;
-
-            CommandStack.ExecuteCommand(
-                () => Model.ChartPackData.CurrentValue.Title.Value = newTitle,
-                () => Model.ChartPackData.CurrentValue.Title.Value = oldTitle
-            );
+            // Title 为 tracked 属性，等值赋值自动忽略，值变化则自动生成撤销命令
+            Model.ChartPackData.CurrentValue.Title.Value = newTitle;
         }
 
         public void SetPreviewStartBeat(Beat newBeat)
@@ -94,15 +86,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            var oldBeat = Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value;
-
-            if (newBeat == oldBeat)
-                return;
-
-            CommandStack.ExecuteCommand(
-                () => Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value = newBeat,
-                () => Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value = oldBeat
-            );
+            Model.ChartPackData.CurrentValue.MusicPreviewStartBeat.Value = newBeat;
         }
 
         public void SetPreviewEndBeat(Beat newBeat)
@@ -113,25 +97,13 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            var oldBeat = Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value;
-
-            if (newBeat == oldBeat)
-                return;
-
-            CommandStack.ExecuteCommand(
-                () => Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = newBeat,
-                () => Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = oldBeat
-            );
+            Model.ChartPackData.CurrentValue.MusicPreviewEndBeat.Value = newBeat;
         }
 
         public void UpdateInfo(string newText)
         {
             // TODO: 实时更新字段 + 一段时间停止输入或失焦时压入 CommandStack
-            var oldText = Model.ChartPackData.CurrentValue.ChartPackInfo.CurrentValue;
-            CommandStack.ExecuteCommand(
-                () => Model.ChartPackData.CurrentValue.ChartPackInfo.Value = newText,
-                () => Model.ChartPackData.CurrentValue.ChartPackInfo.Value = oldText
-            );
+            Model.ChartPackData.CurrentValue.ChartPackInfo.Value = newText;
         }
 
         public void ExportChartPack()

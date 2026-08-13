@@ -2,6 +2,7 @@
 
 using CatAsset.Runtime;
 using CyanStars.Chart;
+using CyanStars.Gameplay.ChartEditor.Command;
 using R3;
 using UnityEngine;
 
@@ -97,13 +98,14 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public ChartEditorModel(string workspacePath,
             int chartMetaDataIndex,
             ChartPackData chartPackData,
-            ChartData chartData)
+            ChartData chartData,
+            CommandStack commandStack)
         {
             WorkspacePath = workspacePath;
             ChartMetaDataIndex = chartMetaDataIndex;
 
-            ChartPackData = new ReactiveProperty<ChartPackDataEditorModel>(new ChartPackDataEditorModel(chartPackData));
-            ChartData = new ReactiveProperty<ChartDataEditorModel>(new ChartDataEditorModel(chartData));
+            ChartPackData = new ReactiveProperty<ChartPackDataEditorModel>(new ChartPackDataEditorModel(chartPackData, commandStack));
+            ChartData = new ReactiveProperty<ChartDataEditorModel>(new ChartDataEditorModel(chartData, commandStack));
         }
     }
 }
