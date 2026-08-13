@@ -351,8 +351,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             float newCropHeightPercent = newCropHeightPixel / coverPixelSize.y;
 
             // 实时更新 Model 数据以实现实时预览，不生成命令
+            bool changed = cropData.CropStartPositionPercent.Value != newCropStartPercent ||
+                           cropData.CropHeightPercent.Value != newCropHeightPercent;
             cropData.CropStartPositionPercent.Value = newCropStartPercent;
             cropData.CropHeightPercent.Value = newCropHeightPercent;
+
+            // 拖拽预览绕过命令栈直接写 Model，手动标记脏状态
+            if (changed)
+                CommandStack.MarkDirty();
         }
 
         /// <summary>
@@ -392,6 +398,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             {
                 Vector2 targetPercentPos = new Vector2(targetPixelPos.x / imgW, targetPixelPos.y / imgH);
                 cropData.CropStartPositionPercent.Value = targetPercentPos;
+
+                // 拖拽预览绕过命令栈直接写 Model，手动标记脏状态
+                CommandStack.MarkDirty();
             }
         }
 

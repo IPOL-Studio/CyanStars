@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using CyanStars.Chart;
+using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
@@ -13,8 +14,6 @@ namespace CyanStars.Gameplay.ChartEditor.Management
     public class MvvmBindManager : MonoBehaviour
     {
         private readonly CompositeDisposable Disposables = new CompositeDisposable();
-
-        private ChartEditorDirtyServer dirtyServer = null!;
 
         [SerializeField]
         private ToolbarView toolbarView = null!;
@@ -73,11 +72,13 @@ namespace CyanStars.Gameplay.ChartEditor.Management
             ShortcutManager shortcutManager,
             ChartEditorPlayerPrefsManager playerPrefsManager)
         {
+            var commandStack = GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack;
+
+            // 初始化命令栈，开始追踪未保存数据
+            commandStack.Init(initialHasUnsavedChanges);
+
             var model =
                 new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData);
-
-            // 初始化脏状态服务，开始追踪未保存数据
-            dirtyServer = new ChartEditorDirtyServer(model, initialHasUnsavedChanges);
 
             // 初始化一些 Manager
             musicManager.Init(model);
@@ -89,7 +90,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
             var toolbarViewModel = new ToolbarViewModel(model).AddTo(Disposables);
             toolbarView.Bind(toolbarViewModel);
 
-            var menuButtonsViewModel = new MenuButtonsViewModel(model, dirtyServer).AddTo(Disposables);
+            var menuButtonsViewModel = new MenuButtonsViewModel(model).AddTo(Disposables);
             menuButtonsView.Bind(menuButtonsViewModel);
 
             var editorAttributeViewModel = new EditorAttributeViewModel(model).AddTo(Disposables);
@@ -127,10 +128,6 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         /// 退出制谱器时解除所有绑定，以释放内存
         /// </summary>
         /// <remarks>VM 通过 CatAsset 加载的资源也应该在此时由 VM 管理释放</remarks>
-        private void OnDestroy()
-        {
-            Disposables.Dispose();
-            dirtyServer?.Dispose();
-        }
+        private void OnDestroy() => Disposables.Dispose();
     }
 }

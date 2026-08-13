@@ -96,9 +96,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
 
             var oldValue = selectedMusicVersionData.CurrentValue;
+            // 纯选中状态变化，不影响持久化数据，不参与脏判定
             CommandStack.ExecuteCommand(
                 () => selectedMusicVersionData.Value = musicVersionData,
-                () => selectedMusicVersionData.Value = oldValue
+                () => selectedMusicVersionData.Value = oldValue,
+                affectsSavedData: false
             );
         }
 

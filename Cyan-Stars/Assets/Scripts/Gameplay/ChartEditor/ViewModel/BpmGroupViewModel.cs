@@ -59,7 +59,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var oldItem = selectedBpmItem.Value;
             CommandStack.ExecuteCommand(
                 () => selectedBpmItem.Value = newItem,
-                () => selectedBpmItem.Value = oldItem
+                () => selectedBpmItem.Value = oldItem,
+                affectsSavedData: false
             );
         }
 

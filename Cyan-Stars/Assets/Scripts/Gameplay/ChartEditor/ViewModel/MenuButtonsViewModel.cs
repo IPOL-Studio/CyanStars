@@ -11,12 +11,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class MenuButtonsViewModel : BaseViewModel
     {
-        private readonly ChartEditorDirtyServer DirtyServer;
-
-        public MenuButtonsViewModel(ChartEditorModel model, ChartEditorDirtyServer dirtyServer)
+        public MenuButtonsViewModel(ChartEditorModel model)
             : base(model)
         {
-            DirtyServer = dirtyServer;
         }
 
         public void ExitChartEditor() => GameRoot.ChangeProcedure<MainHomeProcedure>();
@@ -27,7 +24,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         /// <summary>
         /// 是否存在未保存数据
         /// </summary>
-        public ReadOnlyReactiveProperty<bool> HasUnsavedChanges => DirtyServer.HasUnsavedChanges;
+        public ReadOnlyReactiveProperty<bool> HasUnsavedChanges => CommandStack.HasUnsavedChanges;
 
         public void SaveFileToDisk()
         {
@@ -40,7 +37,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             // 只有保存成功才标记为已保存，失败保持未保存状态便于重试
             if (isSaveSuccess)
-                DirtyServer.MarkSaved();
+                CommandStack.MarkSaved();
         }
     }
 }
