@@ -4,13 +4,13 @@ namespace CyanStars.MarkdownRenderer
 {
     public class TextMeshProMarkdownConfigBehaviour : MonoBehaviour, ITextMeshProMarkdownConfigProvider
     {
-        [SerializeField] private TextMeshProMarkdownConfig config = new(TextMeshProMarkdownConfig.DefaultConfig);
+        [SerializeField] private TextMeshProRenderConfig config = new(TextMeshProRenderConfig.DefaultConfig);
 
-        public TextMeshProMarkdownConfig Config => config;
+        public TextMeshProRenderConfig Config => config;
 
             private void Reset()
         {
-            config = new(TextMeshProMarkdownConfig.DefaultConfig);
+            config = new(TextMeshProRenderConfig.DefaultConfig);
         }
     }
 }

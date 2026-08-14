@@ -7,12 +7,13 @@ using Markdig.Renderers;
 using CyanStars.MarkdownRenderer.Renderers.TextMeshPro;
 using CyanStars.MarkdownRenderer.Renderers.TextMeshPro.Inlines;
 using System.Collections.Generic;
+using CyanStars.MarkdownRenderer.Utils;
 
 namespace CyanStars.MarkdownRenderer.Renderers
 {
     public class TextMeshProRenderer : TextRendererBase<TextMeshProRenderer>
     {
-        public TextMeshProMarkdownConfig Config { get; set; } = TextMeshProMarkdownConfig.DefaultConfig;
+        public TextMeshProRenderConfig Config { get; set; } = TextMeshProRenderConfig.DefaultConfig;
 
         public int NestingLevel { get; private set; }
         public int QuoteLevel { get; set; }
@@ -22,7 +23,7 @@ namespace CyanStars.MarkdownRenderer.Renderers
         // computed properties form config
         public string? BlockFakeMarginBottom { get; private set; }
         public string? QuoteSpacing { get; private set; }
-        public string? QuoteMarkerWidth { get; private set; }
+        public double QuoteMarkerWidth { get; private set; }
         public double HalfQuoteMarkerWidth { get; private set; }
 
         public readonly struct TmpTagItem
@@ -144,6 +145,8 @@ namespace CyanStars.MarkdownRenderer.Renderers
             base.Reset();
         }
 
+        public double GetIndentValue(double level) => level * Config.NestingIndent;
+
         public TextMeshProRenderer PushTag(string tagName, string? value = null,
                                            string? valuePrefix = null, string? valueSuffix = null,
                                            bool isWrite = true)
@@ -202,19 +205,14 @@ namespace CyanStars.MarkdownRenderer.Renderers
         {
             BlockFakeMarginBottom = Config.BlockFakeMarginBottom <= 0
                 ? string.Empty
-                : Config.BlockFakeMarginBottom.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+                : TextMeshProFormatUtils.FormatNumber(Config.BlockFakeMarginBottom);
 
             QuoteSpacing = Config.QuoteSpacing <= 0
                 ? string.Empty
-                : Config.QuoteSpacing.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+                : TextMeshProFormatUtils.FormatNumber(Config.QuoteSpacing);
 
-            QuoteMarkerWidth = Config.QuoteWidth <= 0
-                ? string.Empty
-                : Config.QuoteWidth.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
-
-            HalfQuoteMarkerWidth = Config.QuoteWidth <= 0 ? 0 : Config.QuoteWidth / 2.0;
-
-                //: (Math.Round(Config.BlockFakeMarginBottom * 1000) / 1000.0).ToString();
+            QuoteMarkerWidth = Config.QuoteWidth * Config.NestingIndent;
+            HalfQuoteMarkerWidth = QuoteMarkerWidth * 0.5;
         }
     }
 }

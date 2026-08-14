@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace CyanStars.MarkdownRenderer.Editor
 {
-    [CustomPropertyDrawer(typeof(TextMeshProMarkdownConfig))]
+    [CustomPropertyDrawer(typeof(TextMeshProRenderConfig))]
     public class TextMeshProMarkdownConfigDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)

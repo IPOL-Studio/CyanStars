@@ -1,3 +1,4 @@
+using CyanStars.MarkdownRenderer.Utils;
 using Markdig.Renderers;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
@@ -30,7 +31,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                     renderer.PushTag("color", renderer.Config.QuoteColorHex, valuePrefix: "#");
                 }
 
-                var contentNestingLevelString = contentNestingLevel.ToString();
+                var contentIndent = TextMeshProFormatUtils.FormatNumber(renderer.GetIndentValue(contentNestingLevel));
 
                 for (int i = 0; i < obj.Count; i++)
                 {
@@ -54,11 +55,11 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                             // 引用块内的段落：内部换行时在新的一行重复输出 mark
                             // 基本上复制了 paragraph block inlines 的处理逻辑
                             // 如果 paragraph renderer 有更改，记得检查这里
-                            WriteParagraphInlines(renderer, paragraph, renderer.NestingLevel, contentNestingLevelString);
+                            WriteParagraphInlines(renderer, paragraph, renderer.NestingLevel, contentIndent);
                         }
                         else
                         {
-                            renderer.PushTag("indent", contentNestingLevelString, valueSuffix: "em")
+                            renderer.PushTag("indent", contentIndent, valueSuffix: "em")
                                     .Write(block);
                             renderer.TryPopTag(out _);
                         }
@@ -123,7 +124,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
 
         private void WriteQuoteMarker(TextMeshProRenderer renderer, int count, int lineNestingLevel, bool isBlankLine)
         {
-// <indent={count-width/2}em><mspace={width}em><mark={color}> </mark></mspace></indent>
+// <indent={quoteLevel*indent-width/2}em><mspace={width}em><mark={color}> </mark></mspace></indent>
 
             if (renderer.Config.QuoteWidth <= 0)
             {
@@ -131,14 +132,13 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
             }
 
             bool isOverrideSize = isBlankLine && renderer.Config.QuoteSpacing > 1;
+            var nestingIndent = renderer.Config.NestingIndent;
 
             for (int i = 0; i < count; i++)
             {
-                //renderer.Write(renderer.Config.QuoteMarker);
-
-                var indent = (i - renderer.HalfQuoteMarkerWidth + lineNestingLevel).ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
-                renderer.PushTag("indent", indent, valueSuffix: "em")
-                        .PushTag("mspace", renderer.QuoteMarkerWidth, valueSuffix: "em");
+                var indent = i * nestingIndent - renderer.HalfQuoteMarkerWidth + renderer.GetIndentValue(lineNestingLevel);
+                renderer.PushTag("indent", TextMeshProFormatUtils.FormatNumber(indent), valueSuffix: "em")
+                        .PushTag("mspace", TextMeshProFormatUtils.FormatNumber(renderer.QuoteMarkerWidth), valueSuffix: "em");
 
                 if (isOverrideSize)
                 {
@@ -157,9 +157,9 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
         }
 
         private void WriteParagraphInlines(TextMeshProRenderer renderer, ParagraphBlock paragraph,
-                                           int lineNestingLevel, string contentNestingLevelString)
+                                           int lineNestingLevel, string contentIndent)
         {
-            renderer.PushTag("indent", contentNestingLevelString, valueSuffix: "em");
+            renderer.PushTag("indent", contentIndent, valueSuffix: "em");
 
             var root = paragraph.Inline;
             if (root != null)
@@ -183,7 +183,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                         renderer.TryPopTag(out _);
                         renderer.WriteLine();
                         WriteQuoteMarker(renderer, renderer.QuoteLevel, lineNestingLevel, false);
-                        renderer.PushTag("indent", contentNestingLevelString, valueSuffix: "em");
+                        renderer.PushTag("indent", contentIndent, valueSuffix: "em");
                     }
                     else
                     {

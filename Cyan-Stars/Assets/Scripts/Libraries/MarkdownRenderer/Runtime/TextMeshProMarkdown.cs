@@ -26,7 +26,7 @@ namespace CyanStars.MarkdownRenderer
         [SerializeField] private ObjectRef<ITextMeshProMarkdownConfigProvider> configProvider;
 
         private ITextMeshProMarkdownConfigProvider observedConfigProvider;
-        private TextMeshProMarkdownConfig observedConfig;
+        private TextMeshProRenderConfig observedConfig;
 
         public string Text
         {
@@ -104,14 +104,14 @@ namespace CyanStars.MarkdownRenderer
         private void DetectConfigChanges()
         {
             var currentProvider = configProvider?.Value;
-            var currentConfig = currentProvider?.Config ?? TextMeshProMarkdownConfig.DefaultConfig;
+            var currentConfig = currentProvider?.Config ?? TextMeshProRenderConfig.DefaultConfig;
             if (currentConfig.Equals(observedConfig))
             {
                 return;
             }
 
             observedConfigProvider = currentProvider;
-            observedConfig = new TextMeshProMarkdownConfig(currentConfig);
+            observedConfig = new TextMeshProRenderConfig(currentConfig);
             SetDirty();
         }
 #endif
@@ -143,7 +143,7 @@ namespace CyanStars.MarkdownRenderer
             writer.GetStringBuilder().Clear();
             renderer.ResetRecordedProps();
 
-            renderer.Config = configProvider?.Value?.Config ?? TextMeshProMarkdownConfig.DefaultConfig;
+            renderer.Config = configProvider?.Value?.Config ?? TextMeshProRenderConfig.DefaultConfig;
             renderer.ComputeConfig();
             renderer.Render(document);
             writer.Flush();

@@ -3,16 +3,11 @@ using UnityEngine;
 
 namespace CyanStars.MarkdownRenderer
 {
-    public interface ITextMeshProMarkdownConfigProvider
-    {
-        TextMeshProMarkdownConfig Config { get; }
-    }
-
     [Serializable]
-    public class TextMeshProMarkdownConfig : IEquatable<TextMeshProMarkdownConfig>
+    public class TextMeshProRenderConfig : IEquatable<TextMeshProRenderConfig>
     {
-        private static TextMeshProMarkdownConfig defaultConfig;
-        public static TextMeshProMarkdownConfig DefaultConfig => defaultConfig ??= CreateDefault();
+        private static TextMeshProRenderConfig defaultConfig;
+        public static TextMeshProRenderConfig DefaultConfig => defaultConfig ??= CreateDefault();
 
         public Color CodeBlockBackgroundColor;
         public Color AtColor;
@@ -20,9 +15,10 @@ namespace CyanStars.MarkdownRenderer
         public Color QuoteColor;
         public string LinkPrefix;
         public string UnorderedListMarker;
-        [Range(0,  2)] public double QuoteWidth;
-        [Range(0, 10)] public double QuoteSpacing;
-        [Range(0, 10)] public double BlockFakeMarginBottom;
+        [Range(0.1f, 4)] public double NestingIndent;
+        [Range(0,    2)] public double QuoteWidth;
+        [Range(0,   10)] public double QuoteSpacing;
+        [Range(0,   10)] public double BlockFakeMarginBottom;
         public FinishBlockBehavior FinishBlockBehavior;
 
         public string CodeBlockBackgroundColorHex => ColorUtility.ToHtmlStringRGBA(CodeBlockBackgroundColor);
@@ -30,11 +26,11 @@ namespace CyanStars.MarkdownRenderer
         public string LinkColorHex => ColorUtility.ToHtmlStringRGBA(LinkColor);
         public string QuoteColorHex => ColorUtility.ToHtmlStringRGBA(QuoteColor);
 
-        public TextMeshProMarkdownConfig()
+        public TextMeshProRenderConfig()
         {
         }
 
-        public TextMeshProMarkdownConfig(TextMeshProMarkdownConfig other)
+        public TextMeshProRenderConfig(TextMeshProRenderConfig other)
         {
             this.CodeBlockBackgroundColor = other.CodeBlockBackgroundColor;
             this.AtColor = other.AtColor;
@@ -42,13 +38,14 @@ namespace CyanStars.MarkdownRenderer
             this.QuoteColor = other.QuoteColor;
             this.LinkPrefix = other.LinkPrefix;
             this.UnorderedListMarker = other.UnorderedListMarker;
+            this.NestingIndent = other.NestingIndent;
             this.QuoteWidth = other.QuoteWidth;
             this.QuoteSpacing = other.QuoteSpacing;
             this.BlockFakeMarginBottom = other.BlockFakeMarginBottom;
             this.FinishBlockBehavior = other.FinishBlockBehavior;
         }
 
-        private static TextMeshProMarkdownConfig CreateDefault() => new()
+        private static TextMeshProRenderConfig CreateDefault() => new()
         {
             CodeBlockBackgroundColor = new(0.533f, 0.533f, 0.533f, 0.5f),
             AtColor                  = new(1, 0.841f, 0.078f, 0.87f),
@@ -56,13 +53,14 @@ namespace CyanStars.MarkdownRenderer
             QuoteColor               = new(0.6f, 0.6f, 0.6f),
             LinkPrefix               = "__md_link__",
             UnorderedListMarker      = "\u2011",
+            NestingIndent            = 1,
             QuoteWidth               = 1,
             QuoteSpacing             = 0.5,
             BlockFakeMarginBottom    = 0.5,
             FinishBlockBehavior      = FinishBlockBehavior.FakeMargin
         };
 
-        public bool Equals(TextMeshProMarkdownConfig other)
+        public bool Equals(TextMeshProRenderConfig other)
         {
             if (other == null) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -73,6 +71,7 @@ namespace CyanStars.MarkdownRenderer
                 && QuoteColor == other.QuoteColor
                 && LinkPrefix == other.LinkPrefix
                 && UnorderedListMarker == other.UnorderedListMarker
+                && NestingIndent == other.NestingIndent
                 && QuoteWidth == other.QuoteWidth
                 && QuoteSpacing == other.QuoteSpacing
                 && BlockFakeMarginBottom == other.BlockFakeMarginBottom

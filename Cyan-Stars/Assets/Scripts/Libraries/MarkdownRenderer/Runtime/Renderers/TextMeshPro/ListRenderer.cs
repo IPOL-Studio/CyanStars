@@ -1,3 +1,4 @@
+using CyanStars.MarkdownRenderer.Utils;
 using Markdig.Renderers;
 using Markdig.Syntax;
 
@@ -65,10 +66,13 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
         private void WriteListItem(TextMeshProRenderer renderer, ListItemBlock item, string marker, double contentIndentOffset)
         {
             int depth = renderer.NestingLevel;
-            renderer.PushTag("indent", (depth - 1).ToString(), valueSuffix: "em")
+            string markerIndent =  TextMeshProFormatUtils.FormatNumber(renderer.GetIndentValue(depth - 1));
+            string contentIndent = TextMeshProFormatUtils.FormatNumber(renderer.GetIndentValue(depth + contentIndentOffset));
+
+            renderer.PushTag("indent", markerIndent, valueSuffix: "em")
                     .Write(marker)
                     .TryPopTag(out _);
-            renderer.PushTag("indent", (depth + contentIndentOffset).ToString(), valueSuffix: "em");
+            renderer.PushTag("indent", contentIndent, valueSuffix: "em");
             
             bool isClosed = false;
 
