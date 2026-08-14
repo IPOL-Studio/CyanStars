@@ -1,3 +1,5 @@
+#nullable enable
+
 using CyanStars.MarkdownRenderer.Utils;
 using Markdig.Renderers;
 using Markdig.Syntax;
@@ -31,7 +33,8 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                     renderer.PushTag("color", renderer.Config.QuoteColorHex, valuePrefix: "#");
                 }
 
-                var contentIndent = TextMeshProFormatUtils.FormatNumber(renderer.GetIndentValue(contentNestingLevel));
+                var contentIndentValue = renderer.GetIndentValue(contentNestingLevel);
+                var contentIndent = contentIndentValue == 0 ? null : TextMeshProFormatUtils.FormatNumber(contentIndentValue);
 
                 for (int i = 0; i < obj.Count; i++)
                 {
@@ -57,11 +60,15 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                             // 如果 paragraph renderer 有更改，记得检查这里
                             WriteParagraphInlines(renderer, paragraph, renderer.NestingLevel, contentIndent);
                         }
-                        else
+                        else if (contentIndent is not null)
                         {
                             renderer.PushTag("indent", contentIndent, valueSuffix: "em")
                                     .Write(block);
                             renderer.TryPopTag(out _);
+                        }
+                        else
+                        {
+                            renderer.Write(block);
                         }
                     }
 
@@ -110,7 +117,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
             // 如果渲染空白的引用块(相邻引用块的间距部分)
             // 就往空引用块的同一行输出一个透明字符
             // 确保 TMP 不会丢弃通过空格渲染的引用块 mark 部分
-            if (renderer.Config.QuoteWidthRatio > 0)
+            if (renderer.Config.QuoteWidthRatio > 0  && renderer.Config.NestingIndent > 0)
             {
                 WriteQuoteMarker(renderer, renderer.QuoteLevel, lineNestingLevel, true);
                 renderer.PushTag("color", "#00000000");
@@ -126,7 +133,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
         {
 // <indent={quoteLevel*indent-width/2}em><mspace={width}em><mark={color}> </mark></mspace></indent>
 
-            if (renderer.Config.QuoteWidthRatio <= 0)
+            if (renderer.Config.QuoteWidthRatio <= 0 || renderer.Config.NestingIndent <= 0)
             {
                 return;
             }
@@ -157,14 +164,18 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
         }
 
         private void WriteParagraphInlines(TextMeshProRenderer renderer, ParagraphBlock paragraph,
-                                           int lineNestingLevel, string contentIndent)
+                                           int lineNestingLevel, string? contentIndent)
         {
-            renderer.PushTag("indent", contentIndent, valueSuffix: "em");
+            bool hasContentIndent = !string.IsNullOrEmpty(contentIndent);
+            if (hasContentIndent)
+            {
+                renderer.PushTag("indent", contentIndent, valueSuffix: "em");
+            }
 
             var root = paragraph.Inline;
             if (root != null)
             {
-                for (Inline child = root.FirstChild; child != null; child = child.NextSibling)
+                for (Inline? child = root.FirstChild; child != null; child = child.NextSibling)
                 {
                     if (child is LineBreakInline lineBreak)
                     {
@@ -180,10 +191,16 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                         }
 
                         // 硬换行：新的一行重复输出 mark
-                        renderer.TryPopTag(out _);
+                        if (hasContentIndent)
+                        {
+                            renderer.TryPopTag(out _);
+                        }
                         renderer.WriteLine();
                         WriteQuoteMarker(renderer, renderer.QuoteLevel, lineNestingLevel, false);
-                        renderer.PushTag("indent", contentIndent, valueSuffix: "em");
+                        if (hasContentIndent)
+                        {
+                            renderer.PushTag("indent", contentIndent, valueSuffix: "em");
+                        }
                     }
                     else
                     {
@@ -192,7 +209,10 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                 }
             }
 
-            renderer.TryPopTag(out _);
+            if (hasContentIndent)
+            {
+                renderer.TryPopTag(out _);
+            }
         }
     }
 

@@ -16,10 +16,10 @@ namespace CyanStars.MarkdownRenderer
         public string LinkPrefix;
         public string UnorderedListMarker;
         public float UnorderedListMarkerWidth;
-        [Range(0.1f, 4)] public float NestingIndent;
-        [Range(0,    1)] public float QuoteWidthRatio;
-        [Range(0,   10)] public float QuoteSpacing;
-        [Range(0,   10)] public float BlockFakeMarginBottom;
+        [Range(0,  4)] public float NestingIndent;
+        [Range(0,  1)] public float QuoteWidthRatio;
+        [Range(0, 10)] public float QuoteSpacing;
+        [Range(0, 10)] public float BlockFakeMarginBottom;
         public FinishBlockBehavior FinishBlockBehavior;
 
         public string CodeBlockBackgroundColorHex => ColorUtility.ToHtmlStringRGBA(CodeBlockBackgroundColor);
