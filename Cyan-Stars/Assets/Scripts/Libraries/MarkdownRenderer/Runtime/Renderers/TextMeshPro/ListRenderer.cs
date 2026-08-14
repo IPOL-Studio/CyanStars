@@ -1,3 +1,5 @@
+#nullable enable
+
 using CyanStars.MarkdownRenderer.Utils;
 using Markdig.Renderers;
 using Markdig.Syntax;
@@ -46,33 +48,44 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
             }
 
             int index = start;
+            var (markerIndent, contentIndent) = GetListItemIndents(renderer, 1f);
             foreach (ListItemBlock item in obj)
             {
                 renderer.EnsureLine();
-                WriteListItem(renderer, item, $"{index++}.", 0);
+                WriteListItem(renderer, item, $"{index++}.", markerIndent, contentIndent);
             }
         }
 
         private void WriteUnorderedList(TextMeshProRenderer renderer, ListBlock obj)
         {
             var unorderedListMarker = renderer.Config.UnorderedListMarker;
+            var (markerIndent, contentIndent) = GetListItemIndents(renderer, renderer.Config.UnorderedListMarkerWidth);
+
             foreach (ListItemBlock item in obj)
             {
                 renderer.EnsureLine();
-                WriteListItem(renderer, item, unorderedListMarker, -0.5f);
+                WriteListItem(renderer, item, unorderedListMarker, markerIndent, contentIndent);
             }
         }
 
-        private void WriteListItem(TextMeshProRenderer renderer, ListItemBlock item, string marker, float contentIndentOffset)
+        private void WriteListItem(TextMeshProRenderer renderer, ListItemBlock item, string marker, string? markerIndent, string? contentIndent)
         {
-            int depth = renderer.NestingLevel;
-            string markerIndent =  TextMeshProFormatUtils.FormatNumber(renderer.GetIndentValue(depth - 1));
-            string contentIndent = TextMeshProFormatUtils.FormatNumber(renderer.GetIndentValue(depth + contentIndentOffset));
+            if (markerIndent is not null)
+            {
+                renderer.PushTag("indent", markerIndent, valueSuffix: "em")
+                        .Write(marker)
+                        .TryPopTag(out _);
+            }
+            else
+            {
+                renderer.Write(marker);
+            }
 
-            renderer.PushTag("indent", markerIndent, valueSuffix: "em")
-                    .Write(marker)
-                    .TryPopTag(out _);
-            renderer.PushTag("indent", contentIndent, valueSuffix: "em");
+            if (contentIndent is not null)
+            {
+                renderer.PushTag("indent", contentIndent, valueSuffix: "em");
+            }
+
             
             bool isClosed = false;
 
@@ -82,7 +95,10 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                 {
                     if (!isClosed)
                     {
-                        renderer.TryPopTag(out _);
+                        if (contentIndent is not null)
+                        {
+                            renderer.TryPopTag(out _);
+                        }
                         isClosed = true;
                     }
 
@@ -92,10 +108,21 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                 }
 
                 renderer.Write(block);
-                renderer.TryPopTag(out _);
+                if (contentIndent is not null)
+                {
+                    renderer.TryPopTag(out _);
+                }
                 isClosed = true;
             }
+        }
 
+        private (string? markerIndent, string? contentIndent) GetListItemIndents(TextMeshProRenderer renderer, float contentIndentOffset)
+        {
+            var markerIndentValue = renderer.GetIndentValue(renderer.NestingLevel - 1);
+            var contentIndentValue = markerIndentValue + contentIndentOffset;
+            var markerIndent = markerIndentValue <= 0 ? null : TextMeshProFormatUtils.FormatNumber(markerIndentValue);
+            var contentIndent = contentIndentValue <= 0 ? null : TextMeshProFormatUtils.FormatNumber(contentIndentValue);
+            return (markerIndent, contentIndent);
         }
     }
 

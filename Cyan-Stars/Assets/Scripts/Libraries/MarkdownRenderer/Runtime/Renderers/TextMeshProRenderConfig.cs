@@ -15,6 +15,7 @@ namespace CyanStars.MarkdownRenderer
         public Color QuoteColor;
         public string LinkPrefix;
         public string UnorderedListMarker;
+        public float UnorderedListMarkerWidth;
         [Range(0.1f, 4)] public float NestingIndent;
         [Range(0,    1)] public float QuoteWidthRatio;
         [Range(0,   10)] public float QuoteSpacing;
@@ -38,6 +39,7 @@ namespace CyanStars.MarkdownRenderer
             this.QuoteColor = other.QuoteColor;
             this.LinkPrefix = other.LinkPrefix;
             this.UnorderedListMarker = other.UnorderedListMarker;
+            this.UnorderedListMarkerWidth = other.UnorderedListMarkerWidth;
             this.NestingIndent = other.NestingIndent;
             this.QuoteWidthRatio = other.QuoteWidthRatio;
             this.QuoteSpacing = other.QuoteSpacing;
@@ -53,6 +55,7 @@ namespace CyanStars.MarkdownRenderer
             QuoteColor               = new(0.6f, 0.6f, 0.6f),
             LinkPrefix               = "__md_link__",
             UnorderedListMarker      = "\u2011",
+            UnorderedListMarkerWidth = 0.5f,
             NestingIndent            = 1,
             QuoteWidthRatio          = 0.5f,
             QuoteSpacing             = 0.5f,
@@ -71,6 +74,7 @@ namespace CyanStars.MarkdownRenderer
                 && QuoteColor == other.QuoteColor
                 && LinkPrefix == other.LinkPrefix
                 && UnorderedListMarker == other.UnorderedListMarker
+                && UnorderedListMarkerWidth == other.UnorderedListMarkerWidth
                 && NestingIndent == other.NestingIndent
                 && QuoteWidthRatio == other.QuoteWidthRatio
                 && QuoteSpacing == other.QuoteSpacing
