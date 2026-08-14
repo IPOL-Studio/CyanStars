@@ -59,11 +59,11 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
             foreach (ListItemBlock item in obj)
             {
                 renderer.EnsureLine();
-                WriteListItem(renderer, item, unorderedListMarker, -0.5);
+                WriteListItem(renderer, item, unorderedListMarker, -0.5f);
             }
         }
 
-        private void WriteListItem(TextMeshProRenderer renderer, ListItemBlock item, string marker, double contentIndentOffset)
+        private void WriteListItem(TextMeshProRenderer renderer, ListItemBlock item, string marker, float contentIndentOffset)
         {
             int depth = renderer.NestingLevel;
             string markerIndent =  TextMeshProFormatUtils.FormatNumber(renderer.GetIndentValue(depth - 1));

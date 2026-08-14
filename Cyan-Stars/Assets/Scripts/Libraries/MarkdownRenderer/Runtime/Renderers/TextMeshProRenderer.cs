@@ -23,8 +23,8 @@ namespace CyanStars.MarkdownRenderer.Renderers
         // computed properties form config
         public string? BlockFakeMarginBottom { get; private set; }
         public string? QuoteSpacing { get; private set; }
-        public double QuoteMarkerWidth { get; private set; }
-        public double HalfQuoteMarkerWidth { get; private set; }
+        public float QuoteMarkerWidth { get; private set; }
+        public float HalfQuoteMarkerWidth { get; private set; }
 
         public readonly struct TmpTagItem
         {
@@ -145,7 +145,7 @@ namespace CyanStars.MarkdownRenderer.Renderers
             base.Reset();
         }
 
-        public double GetIndentValue(double level) => level * Config.NestingIndent;
+        public float GetIndentValue(float level) => level * Config.NestingIndent;
 
         public TextMeshProRenderer PushTag(string tagName, string? value = null,
                                            string? valuePrefix = null, string? valueSuffix = null,
@@ -212,7 +212,7 @@ namespace CyanStars.MarkdownRenderer.Renderers
                 : TextMeshProFormatUtils.FormatNumber(Config.QuoteSpacing);
 
             QuoteMarkerWidth = Config.QuoteWidth * Config.NestingIndent;
-            HalfQuoteMarkerWidth = QuoteMarkerWidth * 0.5;
+            HalfQuoteMarkerWidth = QuoteMarkerWidth * 0.5f;
         }
     }
 }

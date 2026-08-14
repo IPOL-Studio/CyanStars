@@ -15,10 +15,10 @@ namespace CyanStars.MarkdownRenderer
         public Color QuoteColor;
         public string LinkPrefix;
         public string UnorderedListMarker;
-        [Range(0.1f, 4)] public double NestingIndent;
-        [Range(0,    2)] public double QuoteWidth;
-        [Range(0,   10)] public double QuoteSpacing;
-        [Range(0,   10)] public double BlockFakeMarginBottom;
+        [Range(0.1f, 4)] public float NestingIndent;
+        [Range(0,    2)] public float QuoteWidth;
+        [Range(0,   10)] public float QuoteSpacing;
+        [Range(0,   10)] public float BlockFakeMarginBottom;
         public FinishBlockBehavior FinishBlockBehavior;
 
         public string CodeBlockBackgroundColorHex => ColorUtility.ToHtmlStringRGBA(CodeBlockBackgroundColor);
@@ -55,8 +55,8 @@ namespace CyanStars.MarkdownRenderer
             UnorderedListMarker      = "\u2011",
             NestingIndent            = 1,
             QuoteWidth               = 1,
-            QuoteSpacing             = 0.5,
-            BlockFakeMarginBottom    = 0.5,
+            QuoteSpacing             = 0.5f,
+            BlockFakeMarginBottom    = 0.5f,
             FinishBlockBehavior      = FinishBlockBehavior.FakeMargin
         };
 
