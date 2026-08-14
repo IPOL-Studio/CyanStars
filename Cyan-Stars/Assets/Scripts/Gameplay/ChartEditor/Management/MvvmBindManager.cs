@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using CyanStars.Chart;
+using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
@@ -61,17 +62,24 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         /// 创建 Model 、ViewModel 并启动绑定
         /// </summary>
         /// <remarks>注意：由于引用关系，制谱器会修改传入的谱包和谱面实例内的数据。请先深拷贝一个谱包和谱面，再调用制谱器初始化</remarks>
-        public void StartBind(string workspacePath,
-                              int chartMetadataIndex,
-                              ChartPackData chartPackData,
-                              ChartData chartData,
-                              ChartEditorMusicManager musicManager,
-                              ChartEditorNoteAudioManager chartEditorNoteAudioManager,
-                              ShortcutManager shortcutManager,
-                              ChartEditorPlayerPrefsManager playerPrefsManager)
+        public void StartBind(
+            string workspacePath,
+            int chartMetadataIndex,
+            ChartPackData chartPackData,
+            ChartData chartData,
+            bool initialHasUnsavedChanges,
+            ChartEditorMusicManager musicManager,
+            ChartEditorNoteAudioManager chartEditorNoteAudioManager,
+            ShortcutManager shortcutManager,
+            ChartEditorPlayerPrefsManager playerPrefsManager
+        )
         {
-            // TODO: 为 Model 实现 IDispose，以进一步管理生命周期
-            ChartEditorModel model =
+            var commandStack = GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack;
+
+            // 初始化命令栈，开始追踪未保存数据
+            commandStack.Init(initialHasUnsavedChanges);
+
+            var model =
                 new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData);
 
             // 初始化一些 Manager

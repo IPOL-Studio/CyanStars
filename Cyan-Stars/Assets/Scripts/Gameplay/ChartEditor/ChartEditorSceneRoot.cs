@@ -61,6 +61,9 @@ namespace CyanStars.Gameplay.ChartEditor
             ChartPackData chartPackData;
             ChartData chartData;
 
+            // 是否为新建谱面
+            bool isNewChart = false;
+
             if (chartModule.SelectedRuntimeChartPack is null)
             {
                 // 创建新谱包和谱面
@@ -77,6 +80,7 @@ namespace CyanStars.Gameplay.ChartEditor
                 chartPackData = new ChartPackData(randomName, bpmGroup: bpmGroup, chartMetaDatas: new List<ChartMetaData> { chartMetaData });
 
                 chartMetadataIndex = 0;
+                isNewChart = true;
             }
             else if (chartModule.ChartData is null)
             {
@@ -92,6 +96,7 @@ namespace CyanStars.Gameplay.ChartEditor
                 chartPackData.ChartMetaDatas.Add(chartMetaData);
 
                 chartMetadataIndex = chartPackData.ChartMetaDatas.Count - 1;
+                isNewChart = true;
             }
             else
             {
@@ -110,6 +115,7 @@ namespace CyanStars.Gameplay.ChartEditor
                 chartMetadataIndex,
                 chartPackData,
                 chartData,
+                isNewChart,
                 musicManager,
                 noteAudioManager,
                 shortcutManager,

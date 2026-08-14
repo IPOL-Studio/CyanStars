@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using CyanStars.Utils.SelectableUI;
 using DG.Tweening;
 using R3;
 using UnityEngine;
@@ -76,6 +77,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private readonly List<ShortcutCommand.ListenerDisposable> ShortcutListeners = new();
 
         private Canvas functionCanvas = null!;
+        private SelectableStateObserver? saveButtonSelectableStateObserver;
 
 
         private void OnEnable()
@@ -90,6 +92,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             base.Bind(targetViewModel);
 
             functionCanvas = functionCanvasGroup.GetComponent<Canvas>();
+            saveButtonSelectableStateObserver = saveButton.GetComponent<SelectableStateObserver>();
 
             FunctionCanvasVisibility
                 .Subscribe(isVisible =>
@@ -131,6 +134,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
             saveButton
                 .OnClickAsObservable()
                 .Subscribe(_ => OnSaveRequested())
+                .AddTo(this);
+            ViewModel.HasUnsavedChanges
+                .Subscribe(hasUnsavedChanges =>
+                {
+                    if (saveButtonSelectableStateObserver != null)
+                        saveButtonSelectableStateObserver.SetInteractable(hasUnsavedChanges);
+                    else
+                        saveButton.interactable = hasUnsavedChanges;
+                })
                 .AddTo(this);
             // testButton ...
             undoButton

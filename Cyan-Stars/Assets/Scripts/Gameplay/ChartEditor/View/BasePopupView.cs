@@ -80,7 +80,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             commandStack.ExecuteCommand(
                 () => CanvasVisibility.Value = visible,
-                () => CanvasVisibility.Value = !visible
+                () => CanvasVisibility.Value = !visible,
+                affectsSavedData: false
             );
         }
 

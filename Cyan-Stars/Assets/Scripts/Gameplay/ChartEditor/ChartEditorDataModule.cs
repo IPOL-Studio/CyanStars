@@ -10,7 +10,6 @@ namespace CyanStars.Gameplay.ChartEditor
     {
         public CommandStack CommandStack { get; private set; } = null!;
 
-
         public override void OnInit()
         {
         }
