@@ -110,7 +110,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
             // 如果渲染空白的引用块(相邻引用块的间距部分)
             // 就往空引用块的同一行输出一个透明字符
             // 确保 TMP 不会丢弃通过空格渲染的引用块 mark 部分
-            if (renderer.Config.QuoteWidth > 0)
+            if (renderer.Config.QuoteWidthRatio > 0)
             {
                 WriteQuoteMarker(renderer, renderer.QuoteLevel, lineNestingLevel, true);
                 renderer.PushTag("color", "#00000000");
@@ -126,7 +126,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
         {
 // <indent={quoteLevel*indent-width/2}em><mspace={width}em><mark={color}> </mark></mspace></indent>
 
-            if (renderer.Config.QuoteWidth <= 0)
+            if (renderer.Config.QuoteWidthRatio <= 0)
             {
                 return;
             }

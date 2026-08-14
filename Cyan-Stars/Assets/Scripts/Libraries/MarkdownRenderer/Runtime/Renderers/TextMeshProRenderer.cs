@@ -211,8 +211,8 @@ namespace CyanStars.MarkdownRenderer.Renderers
                 ? string.Empty
                 : TextMeshProFormatUtils.FormatNumber(Config.QuoteSpacing);
 
-            QuoteMarkerWidth = Config.QuoteWidth * Config.NestingIndent;
-            HalfQuoteMarkerWidth = QuoteMarkerWidth * 0.5f;
+            HalfQuoteMarkerWidth = Config.QuoteWidthRatio * Config.NestingIndent;
+            QuoteMarkerWidth = HalfQuoteMarkerWidth * 2f;
         }
     }
 }

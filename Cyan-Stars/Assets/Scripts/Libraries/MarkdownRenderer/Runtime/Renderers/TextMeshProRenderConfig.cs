@@ -16,7 +16,7 @@ namespace CyanStars.MarkdownRenderer
         public string LinkPrefix;
         public string UnorderedListMarker;
         [Range(0.1f, 4)] public float NestingIndent;
-        [Range(0,    2)] public float QuoteWidth;
+        [Range(0,    1)] public float QuoteWidthRatio;
         [Range(0,   10)] public float QuoteSpacing;
         [Range(0,   10)] public float BlockFakeMarginBottom;
         public FinishBlockBehavior FinishBlockBehavior;
@@ -39,7 +39,7 @@ namespace CyanStars.MarkdownRenderer
             this.LinkPrefix = other.LinkPrefix;
             this.UnorderedListMarker = other.UnorderedListMarker;
             this.NestingIndent = other.NestingIndent;
-            this.QuoteWidth = other.QuoteWidth;
+            this.QuoteWidthRatio = other.QuoteWidthRatio;
             this.QuoteSpacing = other.QuoteSpacing;
             this.BlockFakeMarginBottom = other.BlockFakeMarginBottom;
             this.FinishBlockBehavior = other.FinishBlockBehavior;
@@ -54,7 +54,7 @@ namespace CyanStars.MarkdownRenderer
             LinkPrefix               = "__md_link__",
             UnorderedListMarker      = "\u2011",
             NestingIndent            = 1,
-            QuoteWidth               = 1,
+            QuoteWidthRatio          = 0.5f,
             QuoteSpacing             = 0.5f,
             BlockFakeMarginBottom    = 0.5f,
             FinishBlockBehavior      = FinishBlockBehavior.FakeMargin
@@ -72,7 +72,7 @@ namespace CyanStars.MarkdownRenderer
                 && LinkPrefix == other.LinkPrefix
                 && UnorderedListMarker == other.UnorderedListMarker
                 && NestingIndent == other.NestingIndent
-                && QuoteWidth == other.QuoteWidth
+                && QuoteWidthRatio == other.QuoteWidthRatio
                 && QuoteSpacing == other.QuoteSpacing
                 && BlockFakeMarginBottom == other.BlockFakeMarginBottom
                 && FinishBlockBehavior == other.FinishBlockBehavior;
