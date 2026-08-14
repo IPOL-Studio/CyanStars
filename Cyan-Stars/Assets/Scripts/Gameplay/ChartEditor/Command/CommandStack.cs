@@ -82,15 +82,8 @@ namespace CyanStars.Gameplay.ChartEditor.Command
                 CommandHistory.RemoveRange(removeStartIndex, countToRemove);
             }
 
-            var entry = new CommandEntry(command, affectsSavedData);
-            CommandHistory.Add(entry);
-            currentCommandIndex++;
-
-            if (affectsSavedData)
-                lastAffectsEntry = entry;
-
-            // 超出历史上限时丢弃最旧的命令。若保存边界条目被丢弃，数据不可能再与磁盘一致，引用比较会保持脏状态直到下次保存
-            if (CommandHistory.Count > MaxHistoryCount)
+            // 若保存边界条目被丢弃，数据不可能再与磁盘一致，引用比较会保持脏状态直到下次保存
+            if (CommandHistory.Count >= MaxHistoryCount)
             {
                 // 被丢弃的最旧条目若正是当前 lastAffectsEntry，说明已无法回退到该状态，置空以保持脏状态
                 if (lastAffectsEntry == CommandHistory[0])
@@ -99,6 +92,13 @@ namespace CyanStars.Gameplay.ChartEditor.Command
                 CommandHistory.RemoveAt(0);
                 currentCommandIndex--;
             }
+
+            var entry = new CommandEntry(command, affectsSavedData);
+            CommandHistory.Add(entry);
+            currentCommandIndex++;
+
+            if (affectsSavedData)
+                lastAffectsEntry = entry;
 
             UpdateUnsavedState();
         }
