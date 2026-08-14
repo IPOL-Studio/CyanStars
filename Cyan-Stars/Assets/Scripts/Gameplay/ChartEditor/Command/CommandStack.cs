@@ -24,7 +24,8 @@ namespace CyanStars.Gameplay.ChartEditor.Command
             }
         }
 
-        private readonly List<CommandEntry> CommandHistory = new List<CommandEntry>();
+        // 预分配容量到历史上限，避免 List 默认从 4 items 开始反复扩容复制
+        private readonly List<CommandEntry> CommandHistory = new List<CommandEntry>(MaxHistoryCount);
 
         // 历史记录上限，超出后从最旧开始丢弃，防止内存溢出
         private const int MaxHistoryCount = 100;
@@ -35,6 +36,9 @@ namespace CyanStars.Gameplay.ChartEditor.Command
 
         // 保存边界：最近一次保存时数据状态对应的数据命令条目。
         private CommandEntry? savedDataEntry = null;
+
+        // 当前数据状态对应的最近一条 affects 命令条目（当前索引向下最近一条 affects 命令），无则为 null。
+        private CommandEntry? lastAffectsEntry = null;
 
         // 旁路修改（不经过命令栈的数据写入）置脏标记，MarkSaved 时清除
         private bool forcedDirty = false;
@@ -47,11 +51,6 @@ namespace CyanStars.Gameplay.ChartEditor.Command
         public ReadOnlyReactiveProperty<bool> HasUnsavedChanges => hasUnsavedChanges;
 
         /// <summary>
-        /// 是否正在回放命令（Execute/Undo/Redo，tracked 类型据此跳过命令记录，防止回放再生成命令）
-        /// </summary>
-        public bool IsReplaying { get; private set; } = false;
-
-        /// <summary>
         /// 每次进入制谱器会话时初始化
         /// </summary>
         /// <param name="initialHasUnsavedChanges">会话初始是否存在未保存数据（新建谱面为 true，加载已有谱面为 false）</param>
@@ -60,6 +59,7 @@ namespace CyanStars.Gameplay.ChartEditor.Command
             CommandHistory.Clear();
             currentCommandIndex = -1;
             savedDataEntry = null;
+            lastAffectsEntry = null;
             forcedDirty = initialHasUnsavedChanges;
             UpdateUnsavedState();
         }
@@ -72,15 +72,7 @@ namespace CyanStars.Gameplay.ChartEditor.Command
         public void ExecuteCommand(ICommand command, bool affectsSavedData = true)
         {
             // TODO: 用事件驱动以替换当前的命令调用，以避免 View/MonoBehaviour 的内存泄漏
-            IsReplaying = true;
-            try
-            {
-                command.Execute();
-            }
-            finally
-            {
-                IsReplaying = false;
-            }
+            command.Execute();
 
             // 如果当前索引不是在列表末尾，需要丢弃当前位置之后的所有旧历史
             if (currentCommandIndex < CommandHistory.Count - 1)
@@ -90,16 +82,22 @@ namespace CyanStars.Gameplay.ChartEditor.Command
                 CommandHistory.RemoveRange(removeStartIndex, countToRemove);
             }
 
-            CommandHistory.Add(new CommandEntry(command, affectsSavedData));
+            var entry = new CommandEntry(command, affectsSavedData);
+            CommandHistory.Add(entry);
             currentCommandIndex++;
 
-            // 超出历史上限时丢弃最旧的命令。
-            // 若保存边界条目被丢弃，数据不可能再与磁盘一致，引用比较会保持脏状态直到下次保存
+            if (affectsSavedData)
+                lastAffectsEntry = entry;
+
+            // 超出历史上限时丢弃最旧的命令。若保存边界条目被丢弃，数据不可能再与磁盘一致，引用比较会保持脏状态直到下次保存
             if (CommandHistory.Count > MaxHistoryCount)
             {
-                int overflowCount = CommandHistory.Count - MaxHistoryCount;
-                CommandHistory.RemoveRange(0, overflowCount);
-                currentCommandIndex -= overflowCount;
+                // 被丢弃的最旧条目若正是当前 lastAffectsEntry，说明已无法回退到该状态，置空以保持脏状态
+                if (lastAffectsEntry == CommandHistory[0])
+                    lastAffectsEntry = null;
+
+                CommandHistory.RemoveAt(0);
+                currentCommandIndex--;
             }
 
             UpdateUnsavedState();
@@ -117,15 +115,12 @@ namespace CyanStars.Gameplay.ChartEditor.Command
                 return;
             }
 
-            IsReplaying = true;
-            try
-            {
-                CommandHistory[currentCommandIndex].Command.Undo();
-            }
-            finally
-            {
-                IsReplaying = false;
-            }
+            var entryToUndo = CommandHistory[currentCommandIndex];
+            entryToUndo.Command.Undo();
+
+            // 撤销的是 affects 命令时，lastAffectsEntry 需要回退到上一条 affects 命令
+            if (entryToUndo.AffectsSavedData)
+                lastAffectsEntry = FindLastAffectsEntry(currentCommandIndex - 1);
 
             currentCommandIndex--;
             UpdateUnsavedState();
@@ -144,29 +139,14 @@ namespace CyanStars.Gameplay.ChartEditor.Command
             }
 
             currentCommandIndex++;
-            IsReplaying = true;
-            try
-            {
-                CommandHistory[currentCommandIndex].Command.Execute();
-            }
-            finally
-            {
-                IsReplaying = false;
-            }
+            var entryToRedo = CommandHistory[currentCommandIndex];
+            entryToRedo.Command.Execute();
+
+            if (entryToRedo.AffectsSavedData)
+                lastAffectsEntry = entryToRedo;
 
             UpdateUnsavedState();
         }
-
-        // /// <summary>
-        // /// 清空历史记录
-        // /// </summary>
-        // public void Clear()
-        // {
-        //     CommandHistory.Clear();
-        //     currentCommandIndex = -1;
-        //     savedDataEntry = null;
-        //     UpdateUnsavedState();
-        // }
 
         /// <summary>
         /// 标记当前数据为已保存（保存成功后调用）
@@ -174,7 +154,7 @@ namespace CyanStars.Gameplay.ChartEditor.Command
         public void MarkSaved()
         {
             forcedDirty = false;
-            savedDataEntry = GetCurrentDataEntry();
+            savedDataEntry = lastAffectsEntry;
             UpdateUnsavedState();
         }
 
@@ -188,11 +168,11 @@ namespace CyanStars.Gameplay.ChartEditor.Command
         }
 
         /// <summary>
-        /// 当前数据状态对应的最近一条数据命令条目（从当前索引向下找），无则为 null
+        /// 从 fromIndex 向前查找最近一条 affects 命令，无则返回 null
         /// </summary>
-        private CommandEntry? GetCurrentDataEntry()
+        private CommandEntry? FindLastAffectsEntry(int fromIndex)
         {
-            for (int i = currentCommandIndex; i >= 0; i--)
+            for (int i = fromIndex; i >= 0; i--)
             {
                 if (CommandHistory[i].AffectsSavedData)
                     return CommandHistory[i];
@@ -206,7 +186,7 @@ namespace CyanStars.Gameplay.ChartEditor.Command
         /// </summary>
         private void UpdateUnsavedState()
         {
-            hasUnsavedChanges.Value = forcedDirty || savedDataEntry != GetCurrentDataEntry();
+            hasUnsavedChanges.Value = forcedDirty || savedDataEntry != lastAffectsEntry;
         }
     }
 }
