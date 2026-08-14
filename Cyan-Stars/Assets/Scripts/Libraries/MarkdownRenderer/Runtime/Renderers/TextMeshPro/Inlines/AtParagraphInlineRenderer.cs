@@ -1,4 +1,4 @@
-using CyanStars.MarkdownRenderer.Parsers;
+using CyanStars.MarkdownRenderer.Extensions.AtParagraph;
 using Markdig.Renderers;
 
 namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro.Inlines
@@ -7,9 +7,11 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro.Inlines
     {
         protected override void Write(TextMeshProRenderer renderer, AtParagraphInline obj)
         {
-            renderer.PushTag("link", obj.Url, valuePrefix: renderer.Config.AtColorHex);
+            // TODO: 确定 at 条目的 link tag spec
+            renderer.PushTag("color", renderer.Config.LinkColorHex, valuePrefix: "#")
+                    .PushTag("u");
             renderer.WriteChildren(obj);
-            renderer.TryPopTag(out _);
+            renderer.PopTag(2);
         }
     }
 }

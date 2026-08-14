@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using CyanStars.MarkdownRenderer.Parsers;
+using CyanStars.MarkdownRenderer.Extensions.AtParagraph;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using UnityEngine;

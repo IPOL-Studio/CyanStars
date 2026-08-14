@@ -1,5 +1,5 @@
-using CyanStars.MarkdownRenderer.Parsers;
 using CyanStars.MarkdownRenderer.Renderers;
+using CyanStars.MarkdownRenderer.Extensions.AtParagraph;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Events;

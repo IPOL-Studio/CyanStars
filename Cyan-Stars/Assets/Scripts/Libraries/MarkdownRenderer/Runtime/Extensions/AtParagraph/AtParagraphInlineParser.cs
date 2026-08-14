@@ -1,27 +1,10 @@
-using CyanStars.MarkdownRenderer.Renderers;
-using CyanStars.MarkdownRenderer.Renderers.TextMeshPro.Inlines;
-using Markdig;
 using Markdig.Helpers;
 using Markdig.Parsers;
-using Markdig.Parsers.Inlines;
-using Markdig.Renderers;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 
-namespace CyanStars.MarkdownRenderer.Parsers
+namespace CyanStars.MarkdownRenderer.Extensions.AtParagraph
 {
-    public sealed class AtParagraphInline : LinkInline
-    {
-        public AtParagraphInline(string paragraph)
-        {
-            Paragraph = paragraph;
-            Label = "@" + paragraph;
-            Url = string.Empty;
-        }
-
-        public string Paragraph { get; }
-    }
-
     public sealed class AtParagraphInlineParser : InlineParser
     {
         public AtParagraphInlineParser()
@@ -68,27 +51,6 @@ namespace CyanStars.MarkdownRenderer.Parsers
             slice.Start = closingBracketIndex + 1;
             processor.Inline = inline;
             return true;
-        }
-    }
-
-    public sealed class AtParagraphExtension : IMarkdownExtension
-    {
-        public void Setup(MarkdownPipelineBuilder pipeline)
-        {
-            if (pipeline.InlineParsers.FindExact<AtParagraphInlineParser>() == null)
-            {
-                pipeline.InlineParsers.InsertBefore<LinkInlineParser>(new AtParagraphInlineParser());
-            }
-        }
-
-        public void Setup(MarkdownPipeline pipeline, IMarkdownRenderer renderer)
-        {
-            if (renderer is TextMeshProRenderer textMeshProRenderer &&
-                textMeshProRenderer.ObjectRenderers.FindExact<AtParagraphInlineRenderer>() == null &&
-                !textMeshProRenderer.ObjectRenderers.InsertBefore<LinkInlineRenderer>(new AtParagraphInlineRenderer()))
-            {
-                textMeshProRenderer.ObjectRenderers.Add(new AtParagraphInlineRenderer());
-            }
         }
     }
 }

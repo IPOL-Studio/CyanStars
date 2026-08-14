@@ -74,11 +74,11 @@ namespace CyanStars.MarkdownRenderer
                 && QuoteColor == other.QuoteColor
                 && LinkPrefix == other.LinkPrefix
                 && UnorderedListMarker == other.UnorderedListMarker
-                && UnorderedListMarkerWidth == other.UnorderedListMarkerWidth
-                && NestingIndent == other.NestingIndent
-                && QuoteWidthRatio == other.QuoteWidthRatio
-                && QuoteSpacing == other.QuoteSpacing
-                && BlockFakeMarginBottom == other.BlockFakeMarginBottom
+                && Mathf.Approximately(UnorderedListMarkerWidth, other.UnorderedListMarkerWidth)
+                && Mathf.Approximately(NestingIndent, other.NestingIndent)
+                && Mathf.Approximately(QuoteWidthRatio, other.QuoteWidthRatio)
+                && Mathf.Approximately(QuoteSpacing, other.QuoteSpacing)
+                && Mathf.Approximately(BlockFakeMarginBottom, other.BlockFakeMarginBottom)
                 && FinishBlockBehavior == other.FinishBlockBehavior;
         }
     }
