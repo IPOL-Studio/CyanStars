@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using CyanStars.Chart;
-using CyanStars.Gameplay.ChartEditor.Command;
 using ObservableCollections;
 using R3;
 
@@ -16,17 +15,17 @@ namespace CyanStars.Gameplay.ChartEditor.Model
     {
         private readonly MusicVersionData MusicVersionData;
 
-        public readonly TrackedReactiveProperty<string> VersionTitle;
+        public readonly ReactiveProperty<string> VersionTitle;
         public readonly ReactiveProperty<string> AudioFilePath;
-        public readonly TrackedReactiveProperty<int> Offset;
+        public readonly ReactiveProperty<int> Offset;
 
-        public MusicVersionDataEditorModel(MusicVersionData musicVersionData, CommandStack commandStack)
+        public MusicVersionDataEditorModel(MusicVersionData musicVersionData)
         {
             MusicVersionData = musicVersionData;
 
-            VersionTitle = new TrackedReactiveProperty<string>(commandStack, musicVersionData.VersionTitle);
+            VersionTitle = new ReactiveProperty<string>(musicVersionData.VersionTitle);
             AudioFilePath = new ReactiveProperty<string>(musicVersionData.AudioFilePath);
-            Offset = new TrackedReactiveProperty<int>(commandStack, musicVersionData.Offset);
+            Offset = new ReactiveProperty<int>(musicVersionData.Offset);
         }
 
         /// <summary>

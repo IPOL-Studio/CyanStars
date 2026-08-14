@@ -146,10 +146,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void OpenCoverBrowser()
         {
-            GameRoot.File.OpenLoadFilePathBrowser(SetCoverFilePath, title: "打开曲绘", filters: new[]
-            {
-                GameRoot.File.SpriteFilter
-            });
+            GameRoot.File.OpenLoadFilePathBrowser(SetCoverFilePath, title: "打开曲绘", filters: new[] { GameRoot.File.SpriteFilter });
         }
 
         private void SetCoverFilePath(string newOriginFilePath)
@@ -236,9 +233,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             Vector2? newCropStartPos = Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value;
             float? newCropHeight = Model.ChartPackData.CurrentValue.CropHeightPercent.Value;
 
-            if (Mathf.Approximately(newCropStartPos?.x ?? 0f, recordedCropStartPosPercent?.x ?? 0f) &&
-                Mathf.Approximately(newCropStartPos?.y ?? 0f, recordedCropStartPosPercent?.y ?? 0f) &&
-                Mathf.Approximately(newCropHeight ?? 0f, recordedCropHeightPercent ?? 0f))
+            if (newCropStartPos == recordedCropStartPosPercent && newCropHeight == recordedCropHeightPercent)
                 return;
 
             CommandStack.ExecuteCommand(
@@ -356,9 +351,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             float newCropHeightPercent = newCropHeightPixel / coverPixelSize.y;
 
             // 实时更新 Model 数据以实现实时预览，不生成命令
-            bool changed = !Mathf.Approximately(cropData.CropStartPositionPercent.Value?.x ?? 0f, newCropStartPercent.x) ||
-                !Mathf.Approximately(cropData.CropStartPositionPercent.Value?.y ?? 0f, newCropStartPercent.y) ||
-                !Mathf.Approximately(cropData.CropHeightPercent.Value ?? 0f, newCropHeightPercent);
+            bool changed = cropData.CropStartPositionPercent.Value != newCropStartPercent ||
+                           cropData.CropHeightPercent.Value != newCropHeightPercent;
             cropData.CropStartPositionPercent.Value = newCropStartPercent;
             cropData.CropHeightPercent.Value = newCropHeightPercent;
 
@@ -400,8 +394,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             targetPixelPos.x = Mathf.Clamp(targetPixelPos.x, 0f, maxX);
             targetPixelPos.y = Mathf.Clamp(targetPixelPos.y, 0f, maxY);
 
-            if (!Mathf.Approximately(targetPixelPos.x, currentStartPixel.x) ||
-                !Mathf.Approximately(targetPixelPos.y, currentStartPixel.y))
+            if (targetPixelPos != currentStartPixel)
             {
                 Vector2 targetPercentPos = new Vector2(targetPixelPos.x / imgW, targetPixelPos.y / imgH);
                 cropData.CropStartPositionPercent.Value = targetPercentPos;

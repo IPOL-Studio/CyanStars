@@ -3,7 +3,6 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using CyanStars.Chart;
-using CyanStars.Gameplay.ChartEditor.Command;
 using ObservableCollections;
 using R3;
 
@@ -16,16 +15,16 @@ namespace CyanStars.Gameplay.ChartEditor.Model
     {
         private readonly ChartData ChartData;
 
-        public readonly TrackedReactiveProperty<uint> ReadyBeat;
+        public readonly ReactiveProperty<uint> ReadyBeat;
         public readonly ObservableList<SpeedTemplateData> SpeedGroupDatas;
         public readonly ObservableList<BaseChartNoteData> Notes;
         public readonly ObservableList<ChartTrackData> TrackDatas;
 
-        public ChartDataEditorModel(ChartData chartData, CommandStack commandStack)
+        public ChartDataEditorModel(ChartData chartData)
         {
             ChartData = chartData;
 
-            ReadyBeat = new TrackedReactiveProperty<uint>(commandStack, chartData.ReadyBeat);
+            ReadyBeat = new ReactiveProperty<uint>(chartData.ReadyBeat);
             SpeedGroupDatas = new ObservableList<SpeedTemplateData>(chartData.SpeedGroupDatas);
             Notes = new ObservableList<BaseChartNoteData>(chartData.Notes);
             TrackDatas = new ObservableList<ChartTrackData>(chartData.TrackDatas);

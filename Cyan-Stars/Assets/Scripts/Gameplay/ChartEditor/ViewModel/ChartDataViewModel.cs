@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using CyanStars.Chart;
+using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
 
@@ -34,8 +35,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void SetChartDifficulty(ChartDifficulty? newDifficulty)
         {
-            // Difficulty 为 tracked 属性，等值赋值自动忽略，值变化则自动生成撤销命令
-            MetaData.Difficulty.Value = newDifficulty;
+            var oldDifficulty = ChartDifficulty.CurrentValue;
+
+            if (newDifficulty == oldDifficulty)
+                return;
+
+            CommandStack.ExecuteCommand(
+                () => MetaData.Difficulty.Value = newDifficulty,
+                () => MetaData.Difficulty.Value = oldDifficulty
+            );
         }
 
         public void SetReadyBeatCount(string newBeatCount)
@@ -46,7 +54,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
-            ChartData.ReadyBeat.Value = newBeatCountInt;
+            var oldBeatIntCount = ChartData.ReadyBeat.Value;
+            if (newBeatCountInt == oldBeatIntCount)
+                return;
+
+            CommandStack.ExecuteCommand(
+                () => ChartData.ReadyBeat.Value = newBeatCountInt,
+                () => ChartData.ReadyBeat.Value = oldBeatIntCount
+            );
         }
     }
 }

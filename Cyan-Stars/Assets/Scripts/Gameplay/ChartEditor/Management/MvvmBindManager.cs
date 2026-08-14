@@ -78,7 +78,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
             commandStack.Init(initialHasUnsavedChanges);
 
             var model =
-                new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData, commandStack);
+                new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData);
 
             // 初始化一些 Manager
             musicManager.Init(model);
