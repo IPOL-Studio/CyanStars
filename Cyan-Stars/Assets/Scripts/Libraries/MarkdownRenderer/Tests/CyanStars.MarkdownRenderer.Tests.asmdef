@@ -1,0 +1,16 @@
+{
+    "name": "CyanStars.MarkdownRenderer.Tests",
+    "rootNamespace": "CyanStars.MarkdownRenderer.Tests",
+    "references": [
+        "CyanStars.MarkdownRenderer"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
