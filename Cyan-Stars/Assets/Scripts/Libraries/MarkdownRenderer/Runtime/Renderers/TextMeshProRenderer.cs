@@ -23,8 +23,6 @@ namespace CyanStars.MarkdownRenderer.Renderers
         // computed properties form config
         public string? BlockFakeMarginBottom { get; private set; }
         public string? QuoteSpacing { get; private set; }
-        public float QuoteMarkerWidth { get; private set; }
-        public float HalfQuoteMarkerWidth { get; private set; }
 
         public readonly struct TmpTagItem
         {
@@ -210,9 +208,6 @@ namespace CyanStars.MarkdownRenderer.Renderers
             QuoteSpacing = Config.QuoteSpacing <= 0
                 ? string.Empty
                 : TextMeshProFormatUtils.FormatNumber(Config.QuoteSpacing);
-
-            HalfQuoteMarkerWidth = Config.QuoteWidthRatio * Config.NestingIndent;
-            QuoteMarkerWidth = HalfQuoteMarkerWidth * 2f;
         }
     }
 }

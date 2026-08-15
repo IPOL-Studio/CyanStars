@@ -17,7 +17,7 @@ namespace CyanStars.MarkdownRenderer
         public string UnorderedListMarker;
         public float UnorderedListMarkerWidth;
         [Range(0,  4)] public float NestingIndent;
-        [Range(0,  1)] public float QuoteWidthRatio;
+        [Range(0, 10)] public float QuoteBlockMargin;
         [Range(0, 10)] public float QuoteSpacing;
         [Range(0, 10)] public float BlockFakeMarginBottom;
         public FinishBlockBehavior FinishBlockBehavior;
@@ -41,7 +41,7 @@ namespace CyanStars.MarkdownRenderer
             this.UnorderedListMarker = other.UnorderedListMarker;
             this.UnorderedListMarkerWidth = other.UnorderedListMarkerWidth;
             this.NestingIndent = other.NestingIndent;
-            this.QuoteWidthRatio = other.QuoteWidthRatio;
+            this.QuoteBlockMargin = other.QuoteBlockMargin;
             this.QuoteSpacing = other.QuoteSpacing;
             this.BlockFakeMarginBottom = other.BlockFakeMarginBottom;
             this.FinishBlockBehavior = other.FinishBlockBehavior;
@@ -57,7 +57,7 @@ namespace CyanStars.MarkdownRenderer
             UnorderedListMarker      = "\u2011",
             UnorderedListMarkerWidth = 0.5f,
             NestingIndent            = 1,
-            QuoteWidthRatio          = 0.5f,
+            QuoteBlockMargin         = 0,
             QuoteSpacing             = 0.5f,
             BlockFakeMarginBottom    = 0.5f,
             FinishBlockBehavior      = FinishBlockBehavior.FakeMargin
@@ -76,7 +76,7 @@ namespace CyanStars.MarkdownRenderer
                 && UnorderedListMarker == other.UnorderedListMarker
                 && Mathf.Approximately(UnorderedListMarkerWidth, other.UnorderedListMarkerWidth)
                 && Mathf.Approximately(NestingIndent, other.NestingIndent)
-                && Mathf.Approximately(QuoteWidthRatio, other.QuoteWidthRatio)
+                && Mathf.Approximately(QuoteBlockMargin, other.QuoteBlockMargin)
                 && Mathf.Approximately(QuoteSpacing, other.QuoteSpacing)
                 && Mathf.Approximately(BlockFakeMarginBottom, other.BlockFakeMarginBottom)
                 && FinishBlockBehavior == other.FinishBlockBehavior;
