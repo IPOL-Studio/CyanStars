@@ -49,7 +49,7 @@ namespace CyanStars.MarkdownRenderer
 
         private static TextMeshProRenderConfig CreateDefault() => new()
         {
-            CodeBlockBackgroundColor = new(0.533f, 0.533f, 0.533f, 0.5f),
+            CodeBlockBackgroundColor = new(0.533f, 0.533f, 0.533f, 0.87f),
             AtColor                  = new(1, 0.841f, 0.078f, 0.87f),
             LinkColor                = new(1, 0.841f, 0.078f, 0.87f),
             QuoteColor               = new(0.6f, 0.6f, 0.6f),
