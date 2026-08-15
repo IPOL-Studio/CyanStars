@@ -209,6 +209,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             infoInputField
                 .OnValueChangedAsObservable()
+                .Skip(1) // 跳过订阅时立即推送的当前值，避免初始化时压入一条无变化命令
                 .Subscribe(text =>
                 {
                     if (infoInputFieldIsChangeFromView)
