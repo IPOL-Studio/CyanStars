@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 using System.Globalization;
 using CatAsset.Runtime;
@@ -27,6 +27,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public readonly ReadOnlyReactiveProperty<bool> PosMagnetState;
         public readonly ReadOnlyReactiveProperty<string> BeatAccuracyString;
         public readonly ReadOnlyReactiveProperty<string> BeatZoomString;
+        public readonly ReadOnlyReactiveProperty<string> ChartTracebackBeatString;
         public readonly ReadOnlyReactiveProperty<double> PlaybackSpeed;
 
         public ReadOnlyReactiveProperty<bool> IsTimelinePlaying => Model.IsTimelinePlaying;
@@ -34,6 +35,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<AssetHandler<AudioClip?>?> AudioClipHandler => Model.AudioClipHandler;
         public IReadOnlyObservableList<BpmGroupItem> BpmGroup => Model.ChartPackData.CurrentValue.BpmGroup;
         public IReadOnlyObservableList<MusicVersionDataEditorModel> MusicVersions => Model.ChartPackData.CurrentValue.MusicVersions;
+        public ReadOnlyReactiveProperty<bool> IsChartTracebackEnabled => Model.IsChartTracebackEnabled;
 
 
         public EditorAttributeViewModel(ChartEditorModel model)
@@ -70,6 +72,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
             PlaybackSpeed = Model.PlaybackSpeed
                 .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<double>.Instance)
+                .AddTo(base.Disposables);
+            ChartTracebackBeatString = Model.ChartTracebackBeatOffset
+                .Select(beat => beat.ToString("G", CultureInfo.InvariantCulture))
+                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<string>.Instance, Model.ChartTracebackBeatOffset.Value.ToString("G", CultureInfo.InvariantCulture))
                 .AddTo(base.Disposables);
         }
 
@@ -122,6 +128,18 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             }
 
             Model.BeatZoom.Value = zoom;
+        }
+
+        public void SetChartTracebackBeat(string beatString)
+        {
+            if (!float.TryParse(beatString, NumberStyles.Float, CultureInfo.InvariantCulture, out var beat)
+                || !float.IsFinite(beat))
+            {
+                Model.ChartTracebackBeatOffset.ForceNotify();
+                return;
+            }
+
+            Model.ChartTracebackBeatOffset.Value = beat;
         }
 
         public void ZoomOut()

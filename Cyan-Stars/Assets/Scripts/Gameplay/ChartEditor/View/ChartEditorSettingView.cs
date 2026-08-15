@@ -2,7 +2,6 @@
 
 using System.Diagnostics.Contracts;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
-using CyanStars.Utils.RadioButton;
 using UnityEngine;
 using R3;
 using TMPro;
@@ -20,6 +19,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         [SerializeField]
         private TMP_InputField noteVolumeField = null!;
+
+        [SerializeField]
+        private SwitchButton isChartTracebackEnabledButton = null!;
 
         [SerializeField]
         private SwitchButton isCompactNoteButtonAreaButton = null!;
@@ -80,6 +82,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 })
                 .AddTo(this);
 
+            ViewModel.IsChartTracebackEnabled
+                .Subscribe(isOn => isChartTracebackEnabledButton.IsChecked = isOn)
+                .AddTo(this);
             ViewModel.IsCompactNoteButtonArea
                 .Subscribe(isOn => isCompactNoteButtonAreaButton.IsChecked = isOn)
                 .AddTo(this);
@@ -90,6 +95,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(isOn => isMultiMusicItemButton.IsChecked = isOn)
                 .AddTo(this);
 
+            isChartTracebackEnabledButton.OnValueChanged.AddListener(ViewModel.SetChartTracebackEnabled);
             isCompactNoteButtonAreaButton.OnValueChanged.AddListener(ViewModel.SetCompactNoteButtonArea);
             isMultiBpmItemButton.OnValueChanged.AddListener(ViewModel.SetMultiBpmItemMode);
             isMultiMusicItemButton.OnValueChanged.AddListener(ViewModel.SetMultiMusicItemMode);
@@ -97,6 +103,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         protected override void OnDestroy()
         {
+            isChartTracebackEnabledButton.OnValueChanged.RemoveListener(ViewModel.SetChartTracebackEnabled);
             isCompactNoteButtonAreaButton.OnValueChanged.RemoveListener(ViewModel.SetCompactNoteButtonArea);
             isMultiBpmItemButton.OnValueChanged.RemoveListener(ViewModel.SetMultiBpmItemMode);
             isMultiMusicItemButton.OnValueChanged.RemoveListener(ViewModel.SetMultiMusicItemMode);

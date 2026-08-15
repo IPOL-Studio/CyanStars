@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 using System;
 using System.Globalization;
@@ -57,6 +57,12 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         [SerializeField]
         private Button addPlaybackSpeedButton = null!;
+
+        [SerializeField]
+        private GameObject chartTracebackBeatFrameObject = null!;
+
+        [SerializeField]
+        private TMP_InputField chartTracebackBeatField = null!;
 
 
         [Header("进度条")]
@@ -129,6 +135,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
             frameVisibility
                 .Subscribe(value => editorAttributeCanvas.enabled = value)
                 .AddTo(this);
+            ViewModel.IsChartTracebackEnabled
+                .Subscribe(value =>
+                {
+                    chartTracebackBeatField.interactable = value;
+                    if (chartTracebackBeatFrameObject != null)
+                        chartTracebackBeatFrameObject.SetActive(value);
+                })
+                .AddTo(this);
+
             ViewModel.PosAccuracyString
                 .Subscribe(value => posAccuracyField.text = value)
                 .AddTo(this);
@@ -148,6 +163,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     musicAudioSource.pitch = (float)value;
                     audioMixer.SetFloat(MusicPitchName, 1 / (float)value);
                 })
+                .AddTo(this);
+            ViewModel.ChartTracebackBeatString
+                .Subscribe(value => chartTracebackBeatField.text = value)
                 .AddTo(this);
 
             isTimelineReadyToPlay = Observable
@@ -245,6 +263,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
             addPlaybackSpeedButton
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.AddPlaybackSpeed())
+                .AddTo(this);
+            chartTracebackBeatField
+                .OnEndEditAsObservable()
+                .Subscribe(ViewModel.SetChartTracebackBeat)
                 .AddTo(this);
 
             slider

@@ -1,4 +1,4 @@
-﻿// TODO: 待重构
+// TODO: 待重构
 
 #nullable enable
 
@@ -15,6 +15,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     {
         private readonly BaseChartNoteData data;
         private readonly float judgeLineYOffset;
+        private readonly bool useChartTracebackBeatOffset;
 
         public readonly ReadOnlyReactiveProperty<Vector2> AnchoredPosition;
         public readonly ReadOnlyReactiveProperty<float> HoldLength; // 仅 Hold 有效
@@ -29,11 +30,13 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             ChartEditorModel model,
             BaseChartNoteData data,
             EditAreaViewModel parentViewModel,
-            float judgeLineYOffset)
+            float judgeLineYOffset,
+            bool useChartTracebackBeatOffset = false)
             : base(model)
         {
             this.data = data;
             this.judgeLineYOffset = judgeLineYOffset;
+            this.useChartTracebackBeatOffset = useChartTracebackBeatOffset;
 
             // 无论是缩放改变，还是当前 Note 数据改变，都重新获取当前的 Zoom 值并计算位置
             var dataChangedSignal = Model.SelectedNoteDataChangedSubject
@@ -41,7 +44,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .Select(_ => Unit.Default);
             var updateSignal = Observable.Merge(
                     parentViewModel.BeatZoom.Select(_ => Unit.Default),
-                    dataChangedSignal
+                    dataChangedSignal,
+                    parentViewModel.ChartTracebackBeatOffset.Select(_ => Unit.Default)
                 )
                 .Select(_ => parentViewModel.BeatZoom.CurrentValue);
 
@@ -90,10 +94,13 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     break;
             }
 
-            // 计算 Y 轴 (JudgeLineOffset + Beat * Interval * Zoom)
+            // 计算 Y 轴 (JudgeLineOffset + (JudgeBeat + ChartTracebackBeatOffset) * Interval * Zoom)
             // DefaultMajorBeatLineInterval * Zoom 即为每拍的像素距离
             double beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * zoom;
-            double yPos = judgeLineYOffset + (data.JudgeBeat.ToDouble() * beatInterval);
+            double judgeBeat = data.JudgeBeat.ToDouble();
+            if (useChartTracebackBeatOffset)
+                judgeBeat += Model.ChartTracebackBeatOffset.CurrentValue;
+            double yPos = judgeLineYOffset + (judgeBeat * beatInterval);
 
             return new Vector2(xPos, (float)yPos);
         }
@@ -101,8 +108,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private float CalculateHoldLength(double zoom, HoldChartNoteData holdData)
         {
             double beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * zoom;
-            double startY = judgeLineYOffset + (holdData.JudgeBeat.ToDouble() * beatInterval);
-            double endY = judgeLineYOffset + (holdData.EndJudgeBeat.ToDouble() * beatInterval);
+            double beatOffset = useChartTracebackBeatOffset ? Model.ChartTracebackBeatOffset.CurrentValue : 0;
+            double startY = judgeLineYOffset + ((holdData.JudgeBeat.ToDouble() + beatOffset) * beatInterval);
+            double endY = judgeLineYOffset + ((holdData.EndJudgeBeat.ToDouble() + beatOffset) * beatInterval);
 
             // 长度 = 结束位置 - 开始位置 - 头部微调
             return (float)Math.Max(0, endY - startY - 12.5f);
