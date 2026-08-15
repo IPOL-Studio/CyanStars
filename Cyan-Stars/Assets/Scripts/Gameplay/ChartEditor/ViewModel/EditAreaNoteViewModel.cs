@@ -94,12 +94,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     break;
             }
 
-            // 计算 Y 轴 (JudgeLineOffset + (JudgeBeat + ChartTracebackBeatOffset) * Interval * Zoom)
+            // 计算 Y 轴 (JudgeLineOffset + (JudgeBeat - ChartTracebackBeatOffset) * Interval * Zoom)
             // DefaultMajorBeatLineInterval * Zoom 即为每拍的像素距离
             double beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * zoom;
             double judgeBeat = data.JudgeBeat.ToDouble();
             if (useChartTracebackBeatOffset)
-                judgeBeat += Model.ChartTracebackBeatOffset.CurrentValue;
+                judgeBeat -= Model.ChartTracebackBeatOffset.CurrentValue;
             double yPos = judgeLineYOffset + (judgeBeat * beatInterval);
 
             return new Vector2(xPos, (float)yPos);
@@ -109,8 +109,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             double beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * zoom;
             double beatOffset = useChartTracebackBeatOffset ? Model.ChartTracebackBeatOffset.CurrentValue : 0;
-            double startY = judgeLineYOffset + ((holdData.JudgeBeat.ToDouble() + beatOffset) * beatInterval);
-            double endY = judgeLineYOffset + ((holdData.EndJudgeBeat.ToDouble() + beatOffset) * beatInterval);
+            double startY = judgeLineYOffset + ((holdData.JudgeBeat.ToDouble() - beatOffset) * beatInterval);
+            double endY = judgeLineYOffset + ((holdData.EndJudgeBeat.ToDouble() - beatOffset) * beatInterval);
 
             // 长度 = 结束位置 - 开始位置 - 头部微调
             return (float)Math.Max(0, endY - startY - 12.5f);

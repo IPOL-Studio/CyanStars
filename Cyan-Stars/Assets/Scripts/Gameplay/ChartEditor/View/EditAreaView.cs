@@ -49,6 +49,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private RectTransform chartTracebackNotesFrameRect = null!;
 
         [SerializeField]
+        [Range(0f, 1f)]
+        private float chartTracebackNotesAlpha = 0.4f;
+
+        [SerializeField]
         private CustomScrollRect scrollRect = null!;
 
         [SerializeField]
@@ -188,29 +192,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
             GameRoot.Event.AddListener(Background.ClickEventName, OnBackgroundClick);
         }
 
-        /// <summary>
-        /// 校正谱面回溯虚影层：
-        /// 1. 确保虚影层半透明且不接收射线，参考悬停虚影音符的实现。
-        /// 2. 确保虚影层位于主谱面音符层下方，避免挡住主音符的点击。
-        /// </summary>
         private void ConfigureChartTracebackLayer()
         {
-            if (chartTracebackNotesFrameRect == null)
-            {
-                Debug.LogWarning("尚未在场景中为 EditAreaView 配置 chartTracebackNotesFrameRect（谱面回溯虚影层）");
-                return;
-            }
-
-            if (!chartTracebackNotesFrameRect.TryGetComponent<CanvasGroup>(out var canvasGroup))
-                canvasGroup = chartTracebackNotesFrameRect.gameObject.AddComponent<CanvasGroup>();
-
-            canvasGroup.alpha = 0.4f;
-            canvasGroup.interactable = false;
-            canvasGroup.blocksRaycasts = false;
-
-            // 如果场景中虚影层被放在了 NotesFrame 之后，自动移到 NotesFrame 之前
-            if (chartTracebackNotesFrameRect.GetSiblingIndex() > notesFrameRect.GetSiblingIndex())
-                chartTracebackNotesFrameRect.SetSiblingIndex(notesFrameRect.GetSiblingIndex());
+            var canvasGroup = chartTracebackNotesFrameRect.GetComponent<CanvasGroup>();
+            canvasGroup.alpha = Mathf.Clamp01(chartTracebackNotesAlpha);
         }
 
         #region PosLines
@@ -476,10 +461,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
             double beatDist = ViewModel.GetMajorBeatLineDistance();
             float judgeLineY = judgeLineRect.anchoredPosition.y;
 
-            // 谱面回溯 beat = 主谱面 beat + offset，因此反过来换算可见范围
+            // 谱面回溯 beat = 主谱面 beat - offset，因此反过来换算可见范围
             double beatOffset = ViewModel.ChartTracebackBeatOffset.CurrentValue;
-            double minVisibleFBeatVal = (viewMinY - judgeLineY) / beatDist - beatOffset;
-            double maxVisibleFBeatVal = (viewMaxY - judgeLineY) / beatDist - beatOffset;
+            double minVisibleFBeatVal = (viewMinY - judgeLineY) / beatDist + beatOffset;
+            double maxVisibleFBeatVal = (viewMaxY - judgeLineY) / beatDist + beatOffset;
 
             var visibleNotes = new HashSet<BaseChartNoteData>();
 
