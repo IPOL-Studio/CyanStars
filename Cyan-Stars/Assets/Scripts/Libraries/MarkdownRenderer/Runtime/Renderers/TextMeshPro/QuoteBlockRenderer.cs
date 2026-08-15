@@ -71,7 +71,7 @@ namespace CyanStars.MarkdownRenderer.Renderers.TextMeshPro
                     renderer.TryPopTag(out _);
                 }
 
-                if (contentNestingLevel == 1)
+                if (contentNestingLevel == 0)
                 {
                     renderer.FinishBlock(true);
                 }
