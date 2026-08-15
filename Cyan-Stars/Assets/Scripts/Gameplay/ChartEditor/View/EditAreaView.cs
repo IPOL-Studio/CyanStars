@@ -1,4 +1,4 @@
-﻿// TODO: 待重构
+// TODO: 待重构
 
 #nullable enable
 
@@ -46,6 +46,13 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private RectTransform notesFrameRect = null!;
 
         [SerializeField]
+        private RectTransform chartTracebackNotesFrameRect = null!;
+
+        [SerializeField]
+        [Range(0f, 1f)]
+        private float chartTracebackNotesAlpha = 0.4f;
+
+        [SerializeField]
         private CustomScrollRect scrollRect = null!;
 
         [SerializeField]
@@ -62,6 +69,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private readonly Dictionary<BaseChartNoteData, (EditAreaNoteViewModel vm, EditAreaNoteView view)?> ActiveNotes =
             new Dictionary<BaseChartNoteData, (EditAreaNoteViewModel, EditAreaNoteView)?>();
 
+        // 管理当前激活的谱面回溯虚影音符: Key=音符数据对象, Value=(ViewModel, View)
+        private readonly Dictionary<BaseChartNoteData, (EditAreaNoteViewModel vm, EditAreaNoteView view)?> ActiveChartTracebackNotes =
+            new Dictionary<BaseChartNoteData, (EditAreaNoteViewModel, EditAreaNoteView)?>();
+
         // 防止拖拽/滚动 scrollRect 更新 time 后再做一次无意义的 scrollRect 位置更新
         private bool isTimelineTimeChangeBySelf = false;
 
@@ -69,6 +80,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         public override void Bind(EditAreaViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
+
+            ConfigureChartTracebackLayer();
 
             ViewModel.IsTimelinePlaying
                 .Subscribe(isPlaying => scrollRect.vertical = !isPlaying) // 正在播放时完全禁止拖动/滚动 scrollRect
@@ -107,6 +120,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     );
                     UpdateBeatLinesVisibility();
                     UpdateNotesVisibility();
+                    UpdateChartTracebackNotesVisibility();
                 })
                 .AddTo(this);
 
@@ -143,6 +157,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 {
                     UpdateBeatLinesVisibility();
                     UpdateNotesVisibility();
+                    UpdateChartTracebackNotesVisibility();
                     if (!ViewModel.IsTimelinePlaying.CurrentValue) // 正在播放时由 ChartEditorMusicManager 更新时间
                     {
                         isTimelineTimeChangeBySelf = true;
@@ -162,7 +177,25 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .Subscribe(_ => UpdateNotesVisibility())
                 .AddTo(this);
 
+            // 5. 谱面回溯虚影：开关、音符列表、缩放、选中音符的位置或节拍变化、回溯 beat 变化时刷新
+            Observable.Merge(
+                    ViewModel.Notes.ObserveChanged().Select(_ => Unit.Default),
+                    ViewModel.BeatZoom.Select(_ => Unit.Default),
+                    ViewModel.SelectedNoteDataChangedSubject.Select(_ => Unit.Default),
+                    ViewModel.ChartTracebackBeatOffset.Select(_ => Unit.Default),
+                    ViewModel.IsChartTracebackEnabled.Select(_ => Unit.Default)
+                )
+                .ThrottleLastFrame(1) // 避免同一帧多次刷新
+                .Subscribe(_ => UpdateChartTracebackNotesVisibility())
+                .AddTo(this);
+
             GameRoot.Event.AddListener(Background.ClickEventName, OnBackgroundClick);
+        }
+
+        private void ConfigureChartTracebackLayer()
+        {
+            var canvasGroup = chartTracebackNotesFrameRect.GetComponent<CanvasGroup>();
+            canvasGroup.alpha = Mathf.Clamp01(chartTracebackNotesAlpha);
         }
 
         #region PosLines
@@ -384,6 +417,126 @@ namespace CyanStars.Gameplay.ChartEditor.View
         }
 
         /// <summary>
+        /// 关闭谱面回溯时，清空所有已创建的谱面回溯虚影音符
+        /// </summary>
+        private void ClearChartTracebackNotes()
+        {
+            if (ActiveChartTracebackNotes.Count == 0)
+                return;
+
+            foreach (var kvp in ActiveChartTracebackNotes)
+            {
+                if (kvp.Value == null)
+                    continue;
+
+                var (vm, view) = kvp.Value.Value;
+                vm.Dispose(); // 销毁 VM
+                PoolManager.ReleaseGameObject(GetPrefabPath(kvp.Key.Type), view.gameObject);
+            }
+
+            ActiveChartTracebackNotes.Clear();
+        }
+
+        /// <summary>
+        /// 更新谱面回溯虚影音符的可见性。仅创建视窗附近的音符。
+        /// </summary>
+        private async void UpdateChartTracebackNotesVisibility()
+        {
+            if (destroyCancellationToken.IsCancellationRequested || chartTracebackNotesFrameRect == null)
+                return;
+
+            if (!ViewModel.IsChartTracebackEnabled.CurrentValue)
+            {
+                ClearChartTracebackNotes();
+                return;
+            }
+
+            float viewportHeight = viewportRect.rect.height;
+
+            float scrollY = Mathf.Max(0, -contentRect.anchoredPosition.y);
+
+            float viewMinY = scrollY - 100f;
+            float viewMaxY = scrollY + viewportHeight + 100f;
+
+            double beatDist = ViewModel.GetMajorBeatLineDistance();
+            float judgeLineY = judgeLineRect.anchoredPosition.y;
+
+            // 谱面回溯 beat = 主谱面 beat - offset，因此反过来换算可见范围
+            double beatOffset = ViewModel.ChartTracebackBeatOffset.CurrentValue;
+            double minVisibleFBeatVal = (viewMinY - judgeLineY) / beatDist + beatOffset;
+            double maxVisibleFBeatVal = (viewMaxY - judgeLineY) / beatDist + beatOffset;
+
+            var visibleNotes = new HashSet<BaseChartNoteData>();
+
+            var allNotes = ViewModel.Notes;
+            var holdNotes = ViewModel.HoldNotes;
+
+            // 常数偏移不会改变排序，二分仍然有效
+            int startIndex = FindLowerBound(allNotes, minVisibleFBeatVal);
+
+            for (int i = startIndex; i < allNotes.Count; i++)
+            {
+                var note = allNotes[i];
+
+                if (note.JudgeBeat.ToDouble() > maxVisibleFBeatVal)
+                    break;
+
+                visibleNotes.Add(note);
+            }
+
+            // 检查所有的 HoldNote，如果虚影任何部分位于可视范围内，也一并渲染
+            foreach (var holdNote in holdNotes)
+            {
+                if (holdNote.JudgeBeat.ToDouble() <= maxVisibleFBeatVal &&
+                    holdNote.EndJudgeBeat.ToDouble() >= minVisibleFBeatVal)
+                {
+                    visibleNotes.Add(holdNote);
+                }
+            }
+
+            // 对比 diff，回收在本帧移出可视范围的虚影 notes
+            var toRemove = new List<BaseChartNoteData>();
+            foreach (var kvp in ActiveChartTracebackNotes)
+            {
+                if (!visibleNotes.Contains(kvp.Key))
+                {
+                    toRemove.Add(kvp.Key);
+                }
+            }
+
+            foreach (var note in toRemove)
+            {
+                if (ActiveChartTracebackNotes.TryGetValue(note, out var pair))
+                {
+                    if (pair != null)
+                    {
+                        var (vm, view) = pair.Value;
+                        vm.Dispose(); // 销毁 VM
+                        PoolManager.ReleaseGameObject(GetPrefabPath(note.Type), view.gameObject);
+                    }
+
+                    ActiveChartTracebackNotes.Remove(note);
+                }
+            }
+
+            // 对比 diff，生成本帧新出现的虚影音符
+            var tasks = new List<Task>();
+            foreach (var note in visibleNotes)
+            {
+                if (!ActiveChartTracebackNotes.ContainsKey(note))
+                {
+                    ActiveChartTracebackNotes.Add(note, null); // 占位，防止重复创建
+                    tasks.Add(CreateChartTracebackNoteObject(note));
+                }
+            }
+
+            if (tasks.Count > 0)
+            {
+                await Task.WhenAll(tasks);
+            }
+        }
+
+        /// <summary>
         /// 二分查找：找到第一个 JudgeBeat.ToFloat() >= targetBeat 的索引
         /// </summary>
         private int FindLowerBound<T>(IReadOnlyList<T> list, double targetBeat) where T : BaseChartNoteData
@@ -443,6 +596,44 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 Debug.LogError($"Prefab at {path} missing EditAreaNoteView component!");
                 PoolManager.ReleaseGameObject(path, go);
                 ActiveNotes.Remove(note);
+            }
+        }
+
+        private async Task CreateChartTracebackNoteObject(BaseChartNoteData note)
+        {
+            string path = GetPrefabPath(note.Type);
+
+            GameObject go = await PoolManager.GetGameObjectAsync(path, chartTracebackNotesFrameRect, destroyCancellationToken);
+            go.transform.localScale = Vector3.one;
+
+            // 双重检查：异步加载过程中可能已经不再需要显示该虚影 Note，或者 View 被销毁
+            if (destroyCancellationToken.IsCancellationRequested || !ActiveChartTracebackNotes.ContainsKey(note))
+            {
+                PoolManager.ReleaseGameObject(path, go);
+                return;
+            }
+
+            // 清理旧对象（理论上 ActiveChartTracebackNotes[note] 此时应为 null，作为防御性编程）
+            if (ActiveChartTracebackNotes[note] is { } oldPair)
+            {
+                oldPair.vm.Dispose();
+                PoolManager.ReleaseGameObject(path, oldPair.view.gameObject);
+            }
+
+            if (go.TryGetComponent<EditAreaNoteView>(out var view))
+            {
+                var vm = ViewModel.CreateChartTracebackNoteViewModel(note, judgeLineRect.anchoredPosition.y);
+
+                // 虚影层不可交互，且由父级 CanvasGroup 统一半透明
+                view.SetBlurImageRaycastTarget(false);
+                view.Bind(vm);
+                ActiveChartTracebackNotes[note] = (vm, view);
+            }
+            else
+            {
+                Debug.LogError($"Prefab at {path} missing EditAreaNoteView component!");
+                PoolManager.ReleaseGameObject(path, go);
+                ActiveChartTracebackNotes.Remove(note);
             }
         }
 
@@ -543,6 +734,19 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
 
             ActiveNotes.Clear();
+
+            // 清理谱面回溯虚影音符
+            foreach (var kvp in ActiveChartTracebackNotes)
+            {
+                if (kvp.Value != null)
+                {
+                    var (vm, view) = kvp.Value.Value;
+                    vm.Dispose();
+                    PoolManager.ReleaseGameObject(GetPrefabPath(kvp.Key.Type), view.gameObject);
+                }
+            }
+
+            ActiveChartTracebackNotes.Clear();
         }
     }
 }

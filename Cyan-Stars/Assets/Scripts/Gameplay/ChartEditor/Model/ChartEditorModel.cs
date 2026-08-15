@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 using CatAsset.Runtime;
 using CyanStars.Chart;
@@ -78,10 +78,12 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public readonly ReactiveProperty<bool> PosMagnet = new ReactiveProperty<bool>(true);
         public readonly ReactiveProperty<int> BeatAccuracy = new ReactiveProperty<int>(2);
         public readonly ReactiveProperty<double> BeatZoom = new ReactiveProperty<double>(1.0d);
+        public readonly ReactiveProperty<float> ChartTracebackBeatOffset = new ReactiveProperty<float>(0f);
 
         // 制谱器设置
         public readonly ReactiveProperty<int> MusicVolume = new ReactiveProperty<int>(100);
         public readonly ReactiveProperty<int> NoteVolume = new ReactiveProperty<int>(100);
+        public readonly ReactiveProperty<bool> IsChartTracebackEnabled = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> IsCompactNoteButtonArea = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> IsMultiBpmItemMode = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> IsMultiMusicItemMode = new ReactiveProperty<bool>(false);

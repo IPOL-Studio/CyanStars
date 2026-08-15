@@ -1,4 +1,4 @@
-﻿// TODO: 待重构
+// TODO: 待重构
 
 #nullable enable
 
@@ -37,6 +37,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public ReadOnlyReactiveProperty<bool> PosMagnetState => Model.PosMagnet;
         public ReadOnlyReactiveProperty<int> PosAccuracy => Model.PosAccuracy;
         public ReadOnlyReactiveProperty<bool> IsCompactNoteButtonArea => Model.IsCompactNoteButtonArea;
+        public ReadOnlyReactiveProperty<bool> IsChartTracebackEnabled => Model.IsChartTracebackEnabled;
+        public ReadOnlyReactiveProperty<float> ChartTracebackBeatOffset => Model.ChartTracebackBeatOffset;
 
 
         public readonly ReadOnlyReactiveProperty<bool> CanPutNote;
@@ -184,6 +186,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         public EditAreaNoteViewModel CreateNoteViewModel(BaseChartNoteData noteData, float judgeLineYOffset)
         {
             return new EditAreaNoteViewModel(Model, noteData, this, judgeLineYOffset);
+        }
+
+        /// <summary>
+        /// 工厂方法：创建谱面回溯虚影音符的子 ViewModel
+        /// </summary>
+        public EditAreaNoteViewModel CreateChartTracebackNoteViewModel(BaseChartNoteData noteData, float judgeLineYOffset)
+        {
+            return new EditAreaNoteViewModel(Model, noteData, this, judgeLineYOffset, useChartTracebackBeatOffset: true);
         }
 
         /// <summary>

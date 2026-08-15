@@ -19,6 +19,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
 
         private const string MusicVolumePrefName = "ChartEditor_MusicVolume";
         private const string NoteVolumePrefName = "ChartEditor_NoteVolume";
+        private const string IsChartTracebackEnabledPrefName = "ChartEditor_IsChartTracebackEnabled";
         private const string IsCompactNoteButtonAreaPrefName = "ChartEditor_IsCompactNoteButtonArea";
         private const string IsMultiBpmItemPrefName = "ChartEditor_IsMultiBpmItem";
         private const string IsMultiMusicItemPrefName = "ChartEditor_IsMultiMusicItem";
@@ -89,6 +90,8 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                 model.MusicVolume.Value = PlayerPrefs.GetInt(MusicVolumePrefName);
             if (PlayerPrefs.HasKey(BeatAccuracyPrefName))
                 model.BeatAccuracy.Value = PlayerPrefs.GetInt(BeatAccuracyPrefName);
+            if (PlayerPrefs.HasKey(IsChartTracebackEnabledPrefName))
+                model.IsChartTracebackEnabled.Value = PlayerPrefs.GetInt(IsChartTracebackEnabledPrefName) == 1;
             if (PlayerPrefs.HasKey(IsCompactNoteButtonAreaPrefName))
                 model.IsCompactNoteButtonArea.Value = PlayerPrefs.GetInt(IsCompactNoteButtonAreaPrefName) == 1;
             if (PlayerPrefs.HasKey(IsMultiBpmItemPrefName))
@@ -109,6 +112,14 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                 .Subscribe(val =>
                 {
                     PlayerPrefs.SetInt(NoteVolumePrefName, val);
+                    PlayerPrefs.Save();
+                })
+                .AddTo(Disposables);
+            model.IsChartTracebackEnabled
+                .Skip(1)
+                .Subscribe(val =>
+                {
+                    PlayerPrefs.SetInt(IsChartTracebackEnabledPrefName, val ? 1 : 0);
                     PlayerPrefs.Save();
                 })
                 .AddTo(Disposables);
