@@ -44,11 +44,23 @@ namespace CyanStars.Gameplay.ChartEditor.Command
         private bool forcedDirty = false;
 
         private readonly ReactiveProperty<bool> hasUnsavedChanges = new ReactiveProperty<bool>(false);
+        private readonly ReactiveProperty<bool> canUndo = new ReactiveProperty<bool>(false);
+        private readonly ReactiveProperty<bool> canRedo = new ReactiveProperty<bool>(false);
 
         /// <summary>
         /// 是否存在未保存数据（订阅时立即推送当前值）
         /// </summary>
         public ReadOnlyReactiveProperty<bool> HasUnsavedChanges => hasUnsavedChanges;
+
+        /// <summary>
+        /// 当前是否可以撤销（订阅时立即推送当前值）
+        /// </summary>
+        public ReadOnlyReactiveProperty<bool> CanUndo => canUndo;
+
+        /// <summary>
+        /// 当前是否可以重做（订阅时立即推送当前值）
+        /// </summary>
+        public ReadOnlyReactiveProperty<bool> CanRedo => canRedo;
 
         /// <summary>
         /// 每次进入制谱器会话时初始化
@@ -62,6 +74,7 @@ namespace CyanStars.Gameplay.ChartEditor.Command
             lastAffectsEntry = null;
             forcedDirty = initialHasUnsavedChanges;
             UpdateUnsavedState();
+            UpdateUndoRedoState();
         }
 
         /// <summary>
@@ -101,6 +114,7 @@ namespace CyanStars.Gameplay.ChartEditor.Command
                 lastAffectsEntry = entry;
 
             UpdateUnsavedState();
+            UpdateUndoRedoState();
         }
 
         /// <summary>
@@ -124,6 +138,7 @@ namespace CyanStars.Gameplay.ChartEditor.Command
 
             currentCommandIndex--;
             UpdateUnsavedState();
+            UpdateUndoRedoState();
         }
 
         /// <summary>
@@ -146,6 +161,7 @@ namespace CyanStars.Gameplay.ChartEditor.Command
                 lastAffectsEntry = entryToRedo;
 
             UpdateUnsavedState();
+            UpdateUndoRedoState();
         }
 
         /// <summary>
@@ -187,6 +203,15 @@ namespace CyanStars.Gameplay.ChartEditor.Command
         private void UpdateUnsavedState()
         {
             hasUnsavedChanges.Value = forcedDirty || savedDataEntry != lastAffectsEntry;
+        }
+
+        /// <summary>
+        /// 根据当前命令索引与历史记录重算撤销/重做可用状态
+        /// </summary>
+        private void UpdateUndoRedoState()
+        {
+            canUndo.Value = currentCommandIndex >= 0;
+            canRedo.Value = currentCommandIndex < CommandHistory.Count - 1;
         }
     }
 }

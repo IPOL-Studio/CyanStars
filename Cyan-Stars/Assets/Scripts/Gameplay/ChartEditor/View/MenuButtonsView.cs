@@ -78,6 +78,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private Canvas functionCanvas = null!;
         private SelectableStateObserver? saveButtonSelectableStateObserver;
+        private SelectableStateObserver? undoButtonSelectableStateObserver;
+        private SelectableStateObserver? redoButtonSelectableStateObserver;
 
 
         private void OnEnable()
@@ -93,6 +95,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             functionCanvas = functionCanvasGroup.GetComponent<Canvas>();
             saveButtonSelectableStateObserver = saveButton.GetComponent<SelectableStateObserver>();
+            undoButtonSelectableStateObserver = undoButton.GetComponent<SelectableStateObserver>();
+            redoButtonSelectableStateObserver = redoButton.GetComponent<SelectableStateObserver>();
 
             FunctionCanvasVisibility
                 .Subscribe(isVisible =>
@@ -137,12 +141,15 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
             ViewModel.HasUnsavedChanges
                 .Subscribe(hasUnsavedChanges =>
-                {
-                    if (saveButtonSelectableStateObserver != null)
-                        saveButtonSelectableStateObserver.SetInteractable(hasUnsavedChanges);
-                    else
-                        saveButton.interactable = hasUnsavedChanges;
-                })
+                    SetButtonInteractable(saveButton, saveButtonSelectableStateObserver, hasUnsavedChanges))
+                .AddTo(this);
+            ViewModel.CanUndo
+                .Subscribe(canUndo =>
+                    SetButtonInteractable(undoButton, undoButtonSelectableStateObserver, canUndo))
+                .AddTo(this);
+            ViewModel.CanRedo
+                .Subscribe(canRedo =>
+                    SetButtonInteractable(redoButton, redoButtonSelectableStateObserver, canRedo))
                 .AddTo(this);
             // testButton ...
             undoButton
@@ -185,6 +192,14 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private void SetFunctionCanvasVisibility(bool visibility)
         {
             FunctionCanvasVisibility.Value = visibility;
+        }
+
+        private static void SetButtonInteractable(Button button, SelectableStateObserver? observer, bool interactable)
+        {
+            if (observer != null)
+                observer.SetInteractable(interactable);
+            else
+                button.interactable = interactable;
         }
 
         private void OnSaveRequested() => ViewModel.SaveFileToDisk();
