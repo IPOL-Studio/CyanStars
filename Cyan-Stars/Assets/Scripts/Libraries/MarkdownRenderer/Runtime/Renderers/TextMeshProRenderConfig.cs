@@ -52,7 +52,7 @@ namespace CyanStars.MarkdownRenderer
             CodeBlockBackgroundColor = new(0.533f, 0.533f, 0.533f, 0.87f),
             AtColor                  = new(1, 0.841f, 0.078f, 0.87f),
             LinkColor                = new(1, 0.841f, 0.078f, 0.87f),
-            QuoteColor               = new(0.6f, 0.6f, 0.6f),
+            QuoteColor               = new(0.6f, 0.6f, 0.6f, 0.87f),
             LinkPrefix               = "__md_link__",
             UnorderedListMarker      = "\u2011",
             UnorderedListMarkerWidth = 0.5f,
