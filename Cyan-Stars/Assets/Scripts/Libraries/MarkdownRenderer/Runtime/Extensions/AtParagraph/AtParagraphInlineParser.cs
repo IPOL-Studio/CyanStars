@@ -1,3 +1,5 @@
+#nullable enable
+
 using Markdig.Helpers;
 using Markdig.Parsers;
 using Markdig.Syntax;
@@ -14,43 +16,94 @@ namespace CyanStars.MarkdownRenderer.Extensions.AtParagraph
 
         public override bool Match(InlineProcessor processor, ref StringSlice slice)
         {
-            var start = slice.Start;
-            if (slice.CurrentChar != '[' || slice.PeekChar() != '@')
+            var copied = slice;
+            if (InternalMatch(processor, ref copied))
+            {
+                slice = copied;
+                return true;
+            }
+            return false;
+        }
+
+        private bool InternalMatch(InlineProcessor processor, ref StringSlice slice)
+        {
+            int openingBracketIndex = slice.Start;
+
+            if (slice.PeekCharExtra(1) != '@' ||
+                !LinkHelper.TryParseLabel(ref slice, out string? label, out SourceSpan labelSpan) ||
+                label.Length <= 1)
             {
                 return false;
             }
 
-            var closingBracketIndex = slice.Text.IndexOf(']', start + 2, slice.End - start - 1);
-            if (closingBracketIndex < 0 || closingBracketIndex == start + 2 ||
-                (closingBracketIndex < slice.End && (slice.Text[closingBracketIndex + 1] == '(' || slice.Text[closingBracketIndex + 1] == '[')))
+            var saved = slice;
+            if (slice.CurrentChar == '(' &&
+                LinkHelper.TryParseInlineLink(ref slice, out _, out _, out _, out _))
             {
                 return false;
             }
 
-            var paragraph = slice.Text.Substring(start + 2, closingBracketIndex - start - 2);
-            var sourceStart = processor.GetSourcePosition(start, out var line, out var column);
-            var sourceEnd = processor.GetSourcePosition(closingBracketIndex);
-            var labelStart = processor.GetSourcePosition(start + 1);
-
-            var inline = new AtParagraphInline(paragraph)
+            slice = saved;
+            if (IsStandardReferenceLink(processor, ref slice, label))
             {
-                IsClosed = true,
-                Span = new SourceSpan(sourceStart, sourceEnd),
+                return false;
+            }
+
+            slice = saved;
+            processor.GetSourcePosition(openingBracketIndex, out int line, out int column);
+            int endPosition = slice.Start - 1;
+
+            var inline = new AtParagraphInline
+            {
+                Label = label,
+                Paragraph = label.Substring(1),
+                Span = new SourceSpan(
+                    processor.GetSourcePosition(openingBracketIndex),
+                    processor.GetSourcePosition(endPosition)),
                 Line = line,
                 Column = column,
+                IsClosed = true,
             };
+
             inline.AppendChild(new LiteralInline
             {
-                Content = new StringSlice(slice.Text, start + 1, closingBracketIndex - 1),
-                IsClosed = true,
-                Span = new SourceSpan(labelStart, sourceEnd - 1),
+                Content = new StringSlice(label),
+                Span = new SourceSpan(
+                    processor.GetSourcePosition(labelSpan.Start),
+                    processor.GetSourcePosition(labelSpan.End)),
                 Line = line,
                 Column = column + 1,
+                IsClosed = true,
             });
 
-            slice.Start = closingBracketIndex + 1;
             processor.Inline = inline;
             return true;
+        }
+
+        private static bool IsStandardReferenceLink(InlineProcessor processor, ref StringSlice slice, string label)
+        {
+            if (slice.CurrentChar != '[')
+            {
+                return processor.Document.ContainsLinkReferenceDefinition(label);
+            }
+
+            var referenceSlice = slice;
+            if (!LinkHelper.TryParseLabel(ref referenceSlice, true, out string? referenceLabel, out _))
+            {
+                return processor.Document.ContainsLinkReferenceDefinition(label);
+            }
+
+            if (string.IsNullOrEmpty(referenceLabel))
+            {
+                return processor.Document.ContainsLinkReferenceDefinition(label);
+            }
+
+            if (processor.Document.ContainsLinkReferenceDefinition(referenceLabel))
+            {
+                return true;
+            }
+
+            return referenceLabel[0] != '@';
         }
     }
 }
