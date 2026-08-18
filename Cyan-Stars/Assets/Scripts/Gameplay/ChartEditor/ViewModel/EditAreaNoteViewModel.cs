@@ -1,84 +1,86 @@
-// TODO: 待重构
-
 #nullable enable
 
-using System;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
-using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class EditAreaNoteViewModel : BaseViewModel
     {
-        private readonly BaseChartNoteData Data;
-        private readonly float JudgeLineYOffset;
         private readonly bool useChartTracebackBeatOffset;
 
-        public readonly ReadOnlyReactiveProperty<Vector2> AnchoredPosition;
-        public readonly ReadOnlyReactiveProperty<float> HoldLength; // 仅 Hold 有效
+        /// <summary>
+        /// 音符数据
+        /// </summary>
+        public BaseChartNoteData Data { get; }
+
+        /// <summary>
+        /// 已应用谱面回溯偏移的判定拍
+        /// </summary>
+        public readonly ReadOnlyReactiveProperty<double> PositionBeat;
+
+        /// <summary>
+        /// 已应用谱面回溯偏移的结束拍（仅 Hold 有效；其余音符与 PositionBeat 相同）
+        /// </summary>
+        public readonly ReadOnlyReactiveProperty<double> PositionEndBeat;
+
+        /// <summary>
+        /// 布局无关的位置信息发生变化时触发
+        /// </summary>
+        public readonly Observable<Unit> PositionChanged;
 
         // 通过构造函数显式传递父级的 Model 和 CommandStack
         public EditAreaNoteViewModel(
             ChartEditorModel model,
             BaseChartNoteData data,
-            EditAreaViewModel parentViewModel,
-            float judgeLineYOffset,
             bool useChartTracebackBeatOffset = false)
             : base(model)
         {
             Data = data;
-            JudgeLineYOffset = judgeLineYOffset;
             this.useChartTracebackBeatOffset = useChartTracebackBeatOffset;
 
-            // 无论是缩放改变，还是当前 Note 数据改变，都重新获取当前的 Zoom 值并计算位置
+            // 选中音符的 Pos/BreakPos/JudgeBeat/EndJudgeBeat 变化时，重新计算位置
             var dataChangedSignal = Model.SelectedNoteDataChangedSubject
                 .Where(changedNote => changedNote == data)
                 .Select(_ => Unit.Default);
-            var updateSignal = Observable.Merge(
-                    parentViewModel.BeatZoom.Select(_ => Unit.Default),
-                    dataChangedSignal,
-                    parentViewModel.ChartTracebackBeatOffset.Select(_ => Unit.Default)
-                )
-                .Select(_ => parentViewModel.BeatZoom.CurrentValue);
 
-            // 当变化时，重新计算位置
-            AnchoredPosition = updateSignal
-                .Select(zoom => CalculatePosition(zoom))
+            // 初始值 + 音符数据变化 + 谱面回溯偏移变化。
+            // BeatZoom 等 view 布局变化不在此处处理，由 View 自行订阅。
+            PositionChanged = (useChartTracebackBeatOffset
+                    ? Observable.Merge(dataChangedSignal, Model.ChartTracebackBeatOffset.Select(_ => Unit.Default))
+                    : dataChangedSignal)
+                .Prepend(Unit.Default);
+
+            PositionBeat = PositionChanged
+                .Select(_ => GetPositionBeat())
                 .ToReadOnlyReactiveProperty()
                 .AddTo(Disposables);
 
-            // 如果是 Hold，需要根据缩放计算长度
-            if (data is HoldChartNoteData holdData)
-            {
-                HoldLength = updateSignal
-                    .Select(zoom => CalculateHoldLength(zoom, holdData))
-                    .ToReadOnlyReactiveProperty()
-                    .AddTo(Disposables);
-            }
-            else
-            {
-                HoldLength = Observable.Return(0f).ToReadOnlyReactiveProperty().AddTo(Disposables);
-            }
+            PositionEndBeat = PositionChanged
+                .Select(_ => GetPositionEndBeat())
+                .ToReadOnlyReactiveProperty()
+                .AddTo(Disposables);
         }
 
-        private Vector2 CalculatePosition(double zoom)
+        private double GetBeatOffset()
         {
-            double beatOffset = useChartTracebackBeatOffset ? Model.ChartTracebackBeatOffset.CurrentValue : 0;
-            return EditAreaViewHelper.CalculateNoteAnchoredPosition(Data, JudgeLineYOffset, zoom, beatOffset);
+            return useChartTracebackBeatOffset ? Model.ChartTracebackBeatOffset.CurrentValue : 0;
         }
 
-        private float CalculateHoldLength(double zoom, HoldChartNoteData holdData)
+        private double GetPositionBeat()
         {
-            double beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * zoom;
-            double beatOffset = useChartTracebackBeatOffset ? Model.ChartTracebackBeatOffset.CurrentValue : 0;
-            double startY = JudgeLineYOffset + ((holdData.JudgeBeat.ToDouble() - beatOffset) * beatInterval);
-            double endY = JudgeLineYOffset + ((holdData.EndJudgeBeat.ToDouble() - beatOffset) * beatInterval);
+            return Data.JudgeBeat.ToDouble() - GetBeatOffset();
+        }
 
-            // 长度 = 结束位置 - 开始位置 - 头部微调
-            return (float)Math.Max(0, endY - startY - 12.5f);
+        private double GetPositionEndBeat()
+        {
+            double endBeat = Data is HoldChartNoteData holdData
+                ? holdData.EndJudgeBeat.ToDouble()
+                : Data.JudgeBeat.ToDouble();
+
+            return endBeat - GetBeatOffset();
         }
 
         public void OnLeftKeyDown()

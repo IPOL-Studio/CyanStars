@@ -10465,6 +10465,10 @@ MonoBehaviour:
   previewer: {fileID: 1704396783}
   scrollRect: {fileID: 1746494796}
   judgeLineRect: {fileID: 2134614510}
+  notePosScale: 802.5
+  notePosOffset: -321
+  breakLeftX: -468.8
+  breakRightX: 468.8
 --- !u!1 &549145901
 GameObject:
   m_ObjectHideFlags: 0

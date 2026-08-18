@@ -183,17 +183,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         /// 工厂方法：创建音符的子 ViewModel
         /// 将 protected 的 Model 和 CommandStack 传递给子 VM
         /// </summary>
-        public EditAreaNoteViewModel CreateNoteViewModel(BaseChartNoteData noteData, float judgeLineYOffset)
+        public EditAreaNoteViewModel CreateNoteViewModel(BaseChartNoteData noteData)
         {
-            return new EditAreaNoteViewModel(Model, noteData, this, judgeLineYOffset);
+            return new EditAreaNoteViewModel(Model, noteData);
         }
 
         /// <summary>
         /// 工厂方法：创建谱面回溯虚影音符的子 ViewModel
         /// </summary>
-        public EditAreaNoteViewModel CreateChartTracebackNoteViewModel(BaseChartNoteData noteData, float judgeLineYOffset)
+        public EditAreaNoteViewModel CreateChartTracebackNoteViewModel(BaseChartNoteData noteData)
         {
-            return new EditAreaNoteViewModel(Model, noteData, this, judgeLineYOffset, useChartTracebackBeatOffset: true);
+            return new EditAreaNoteViewModel(Model, noteData, useChartTracebackBeatOffset: true);
         }
 
         /// <summary>
