@@ -1,7 +1,6 @@
-﻿// TODO: 待重构
-
 #nullable enable
 
+using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
 using UnityEngine;
@@ -36,16 +35,45 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
-            targetViewModel.AnchoredPosition
-                .Subscribe(pos => rect.anchoredPosition = pos)
+            var editAreaView = GetComponentInParent<EditAreaView>();
+            if (editAreaView == null)
+            {
+                Debug.LogError("EditAreaNoteView must be placed under an EditAreaView.");
+                return;
+            }
+
+            Observable.Merge(
+                    targetViewModel.PositionChanged,
+                    editAreaView.EditAreaViewModel.BeatZoom.Select(_ => Unit.Default)
+                )
+                .Subscribe(_ => ApplyPosition(editAreaView))
                 .AddTo(this);
 
-            if (holdTailRect != null)
+            ApplyPosition(editAreaView);
+        }
+
+        private void ApplyPosition(EditAreaView editAreaView)
+        {
+            double zoom = editAreaView.EditAreaViewModel.BeatZoom.CurrentValue;
+            double beat = ViewModel.PositionBeat.CurrentValue;
+            double endBeat = ViewModel.PositionEndBeat.CurrentValue;
+
+            rect.anchoredPosition = editAreaView.CalculateNoteAnchoredPosition(ViewModel.Data, beat, zoom);
+
+            if (holdTailRect != null && ViewModel.Data is HoldChartNoteData)
             {
-                targetViewModel.HoldLength
-                    .Subscribe(length => holdTailRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, length))
-                    .AddTo(this);
+                SetHoldLength(editAreaView.CalculateHoldLength(beat, endBeat, zoom));
             }
+        }
+
+        /// <summary>
+        /// 设置 Hold 音符拖尾的长度
+        /// </summary>
+        /// <param name="length">拖尾高度，传 0 可隐藏拖尾（供预览音符使用）</param>
+        public void SetHoldLength(float length)
+        {
+            if (holdTailRect != null)
+                holdTailRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, length);
         }
 
         public void SetBlurImageRaycastTarget(bool value) => blurImage.raycastTarget = value;

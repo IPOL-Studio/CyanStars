@@ -53,13 +53,39 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private float chartTracebackNotesAlpha = 0.4f;
 
         [SerializeField]
+        private Previewer previewer = null!;
+
+        [SerializeField]
         private CustomScrollRect scrollRect = null!;
 
         [SerializeField]
         private RectTransform judgeLineRect = null!;
 
+        [Header("Note Position Mapping")]
+        [SerializeField]
+        private float notePosScale = 802.5f;
+
+        [SerializeField]
+        private float notePosOffset = -321f;
+
+        [SerializeField]
+        private float breakLeftX = -468.8f;
+
+        [SerializeField]
+        private float breakRightX = 468.8f;
+
 
         private static GameObjectPoolManager PoolManager => GameRoot.GameObjectPool;
+
+        /// <summary>
+        /// 供本 View 动态创建的子 View（音符 View 等）读取绑定的 VM
+        /// </summary>
+        public EditAreaViewModel EditAreaViewModel => ViewModel;
+
+        /// <summary>
+        /// 以 Content 底部为 0，判定线的 y 坐标
+        /// </summary>
+        public float JudgeLineYOffset => judgeLineRect.anchoredPosition.y;
 
         // 管理当前激活的节拍线：Key=节拍索引（含细分拍），Value=节拍线物体实例
         // 开始加载时会将 item 对应的 Value 设为 null 占位，加载完成后覆写为 gameObject
@@ -75,6 +101,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         // 防止拖拽/滚动 scrollRect 更新 time 后再做一次无意义的 scrollRect 位置更新
         private bool isTimelineTimeChangeBySelf = false;
+
+        // 悬停射线检测复用
+        private readonly PointerEventData HoverPointerData = new PointerEventData(null);
+        private readonly List<RaycastResult> HoverRaycastResults = new List<RaycastResult>();
 
 
         public override void Bind(EditAreaViewModel targetViewModel)
@@ -392,7 +422,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     {
                         var (vm, view) = pair.Value;
                         vm.Dispose(); // 销毁 VM
-                        PoolManager.ReleaseGameObject(GetPrefabPath(note.Type), view.gameObject);
+                        string prefabPath = ChartEditorAssetHelper.GetNotePrefabPath(note.Type);
+                        PoolManager.ReleaseGameObject(prefabPath, view.gameObject);
                     }
 
                     ActiveNotes.Remove(note);
@@ -431,7 +462,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
                 var (vm, view) = kvp.Value.Value;
                 vm.Dispose(); // 销毁 VM
-                PoolManager.ReleaseGameObject(GetPrefabPath(kvp.Key.Type), view.gameObject);
+                PoolManager.ReleaseGameObject(ChartEditorAssetHelper.GetNotePrefabPath(kvp.Key.Type), view.gameObject);
             }
 
             ActiveChartTracebackNotes.Clear();
@@ -512,7 +543,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     {
                         var (vm, view) = pair.Value;
                         vm.Dispose(); // 销毁 VM
-                        PoolManager.ReleaseGameObject(GetPrefabPath(note.Type), view.gameObject);
+                        PoolManager.ReleaseGameObject(ChartEditorAssetHelper.GetNotePrefabPath(note.Type), view.gameObject);
                     }
 
                     ActiveChartTracebackNotes.Remove(note);
@@ -564,7 +595,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async Task CreateNoteObject(BaseChartNoteData note)
         {
-            string path = GetPrefabPath(note.Type);
+            string path = ChartEditorAssetHelper.GetNotePrefabPath(note.Type);
 
             GameObject go = await PoolManager.GetGameObjectAsync(path, notesFrameRect, destroyCancellationToken);
             go.transform.localScale = Vector3.one;
@@ -585,7 +616,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             if (go.TryGetComponent<EditAreaNoteView>(out var view))
             {
-                var vm = ViewModel.CreateNoteViewModel(note, judgeLineRect.anchoredPosition.y);
+                var vm = ViewModel.CreateNoteViewModel(note);
 
                 view.SetBlurImageRaycastTarget(!ViewModel.IsCompactNoteButtonArea.CurrentValue);
                 view.Bind(vm);
@@ -601,7 +632,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private async Task CreateChartTracebackNoteObject(BaseChartNoteData note)
         {
-            string path = GetPrefabPath(note.Type);
+            string path = ChartEditorAssetHelper.GetNotePrefabPath(note.Type);
 
             GameObject go = await PoolManager.GetGameObjectAsync(path, chartTracebackNotesFrameRect, destroyCancellationToken);
             go.transform.localScale = Vector3.one;
@@ -622,7 +653,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             if (go.TryGetComponent<EditAreaNoteView>(out var view))
             {
-                var vm = ViewModel.CreateChartTracebackNoteViewModel(note, judgeLineRect.anchoredPosition.y);
+                var vm = ViewModel.CreateChartTracebackNoteViewModel(note);
 
                 // 虚影层不可交互，且由父级 CanvasGroup 统一半透明
                 view.SetBlurImageRaycastTarget(false);
@@ -637,15 +668,154 @@ namespace CyanStars.Gameplay.ChartEditor.View
             }
         }
 
-        private static string GetPrefabPath(NoteType type) => type switch
+        #endregion
+
+        #region NotePositionMapping
+
+        /// <summary>
+        /// 计算音符在 Content 内的锚点位置
+        /// </summary>
+        /// <param name="data">音符数据</param>
+        /// <param name="beat">已应用谱面回溯偏移的判定拍</param>
+        /// <param name="zoom">当前的编辑器内节拍缩放比例</param>
+        /// <returns>以 Content 底部中心为原点的锚点坐标</returns>
+        public Vector2 CalculateNoteAnchoredPosition(BaseChartNoteData data, double beat, double zoom)
         {
-            NoteType.Tap => ChartEditorAssetHelper.TapNotePath,
-            NoteType.Drag => ChartEditorAssetHelper.DragNotePath,
-            NoteType.Hold => ChartEditorAssetHelper.HoldNotePath,
-            NoteType.Click => ChartEditorAssetHelper.ClickNotePath,
-            NoteType.Break => ChartEditorAssetHelper.BreakNotePath,
-            _ => throw new NotSupportedException()
-        };
+            // 计算 X 轴
+            float xPos = 0;
+            switch (data.Type)
+            {
+                case NoteType.Tap:
+                case NoteType.Drag:
+                case NoteType.Click:
+                case NoteType.Hold:
+                    if (data is IChartNoteNormalPos normalNote)
+                    {
+                        xPos = normalNote.Pos * notePosScale + notePosOffset;
+                    }
+
+                    break;
+                case NoteType.Break:
+                    if (data is BreakChartNoteData breakNote)
+                    {
+                        xPos = breakNote.BreakNotePos == BreakNotePos.Left ? breakLeftX : breakRightX;
+                    }
+
+                    break;
+            }
+
+            // 计算 Y 轴 (JudgeLineOffset + Beat * Interval * Zoom)
+            double beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * zoom;
+            double yPos = JudgeLineYOffset + beat * beatInterval;
+
+            return new Vector2(xPos, (float)yPos);
+        }
+
+        /// <summary>
+        /// 计算音符在 Content 内的锚点位置（重载：未应用谱面回溯偏移）
+        /// </summary>
+        public Vector2 CalculateNoteAnchoredPosition(BaseChartNoteData data, double zoom)
+        {
+            double beat = data.JudgeBeat.ToDouble();
+            return CalculateNoteAnchoredPosition(data, beat, zoom);
+        }
+
+        /// <summary>
+        /// 计算 Hold 音符拖尾长度
+        /// </summary>
+        public float CalculateHoldLength(double startBeat, double endBeat, double zoom)
+        {
+            double beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * zoom;
+            double startY = JudgeLineYOffset + startBeat * beatInterval;
+            double endY = JudgeLineYOffset + endBeat * beatInterval;
+
+            // 长度 = 结束位置 - 开始位置 - 头部微调
+            return (float)Math.Max(0, endY - startY - 12.5f);
+        }
+
+        #endregion
+
+        #region NotePreview
+
+        /// <summary>
+        /// 当选中画笔工具且鼠标悬浮在编辑区时，在即将创建音符的位置显示半透明预览
+        /// </summary>
+        private void UpdateNotePreview()
+        {
+            EditToolType tool = ViewModel.SelectedEditTool.CurrentValue;
+            bool isPenTool = tool is
+                EditToolType.TapPen or
+                EditToolType.DragPen or
+                EditToolType.HoldPen or
+                EditToolType.ClickPen or
+                EditToolType.BreakPen;
+
+            if (!isPenTool || !ViewModel.CanPutNote.CurrentValue || EventSystem.current == null)
+            {
+                previewer.Hide();
+                return;
+            }
+
+            // 悬停在已有音符或其他 UI 上时，点击不会创建音符，因此不显示预览
+            HoverPointerData.position = Input.mousePosition;
+            HoverRaycastResults.Clear();
+            EventSystem.current.RaycastAll(HoverPointerData, HoverRaycastResults);
+
+            if (HoverRaycastResults.Count == 0)
+            {
+                previewer.Hide();
+                return;
+            }
+
+            GameObject topmostHit = HoverRaycastResults[0].gameObject;
+            if (!topmostHit.transform.IsChildOf(transform) || topmostHit.GetComponentInParent<EditAreaNoteView>() != null)
+            {
+                previewer.Hide();
+                return;
+            }
+
+            // 将屏幕坐标转换为 Content 内的局部坐标（与 OnPointerDown 一致）
+            // 由于 Content 的轴心是 (0.5, 0)，localPoint.y 即为距离底部的像素距离
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    contentRect,
+                    Input.mousePosition,
+                    null,
+                    out Vector2 localPoint
+                ))
+            {
+                previewer.Hide();
+                return;
+            }
+
+            bool canPlace = EditAreaViewHelper.CalculateNotePlacement(
+                localPoint,
+                judgeLineRect.anchoredPosition.y,
+                ViewModel.PosMagnetState.CurrentValue,
+                ViewModel.PosAccuracy.CurrentValue,
+                ViewModel.BeatAccuracy.CurrentValue,
+                ViewModel.BeatZoom.CurrentValue,
+                out float pos,
+                out Beat beat
+            );
+
+            if (!canPlace)
+            {
+                previewer.Hide();
+                return;
+            }
+
+            BaseChartNoteData? noteData = ViewModel.CreateNoteData(tool, pos, beat);
+            if (noteData == null)
+            {
+                previewer.Hide();
+                return;
+            }
+
+            previewer.Show(
+                noteData.Type,
+                CalculateNoteAnchoredPosition(noteData, ViewModel.BeatZoom.CurrentValue)
+            );
+        }
 
         #endregion
 
@@ -699,6 +869,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private void Update()
         {
+            UpdateNotePreview();
+
             if (!Input.GetKeyDown(KeyCode.Space))
                 return;
 
@@ -729,7 +901,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 {
                     var (vm, view) = kvp.Value.Value;
                     vm.Dispose();
-                    PoolManager.ReleaseGameObject(GetPrefabPath(kvp.Key.Type), view.gameObject);
+                    string prefabPath = ChartEditorAssetHelper.GetNotePrefabPath(kvp.Key.Type);
+                    PoolManager.ReleaseGameObject(prefabPath, view.gameObject);
                 }
             }
 
@@ -742,7 +915,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 {
                     var (vm, view) = kvp.Value.Value;
                     vm.Dispose();
-                    PoolManager.ReleaseGameObject(GetPrefabPath(kvp.Key.Type), view.gameObject);
+                    PoolManager.ReleaseGameObject(ChartEditorAssetHelper.GetNotePrefabPath(kvp.Key.Type), view.gameObject);
                 }
             }
 

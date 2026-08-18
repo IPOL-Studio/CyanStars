@@ -1,154 +1,121 @@
-// TODO: 待重构
-
 #nullable enable
 
-using System;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
-using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
     public class EditAreaNoteViewModel : BaseViewModel
     {
-        private readonly BaseChartNoteData data;
-        private readonly float judgeLineYOffset;
         private readonly bool useChartTracebackBeatOffset;
 
-        public readonly ReadOnlyReactiveProperty<Vector2> AnchoredPosition;
-        public readonly ReadOnlyReactiveProperty<float> HoldLength; // 仅 Hold 有效
+        /// <summary>
+        /// 音符数据
+        /// </summary>
+        public BaseChartNoteData Data { get; }
 
-        private const float NotePosScale = 802.5f;
-        private const float NotePosOffset = -321f;
-        private const float BreakLeftX = -468.8f;
-        private const float BreakRightX = 468.8f;
+        /// <summary>
+        /// 已应用谱面回溯偏移的判定拍
+        /// </summary>
+        public readonly ReadOnlyReactiveProperty<double> PositionBeat;
+
+        /// <summary>
+        /// 已应用谱面回溯偏移的结束拍（仅 Hold 有效；其余音符与 PositionBeat 相同）
+        /// </summary>
+        public readonly ReadOnlyReactiveProperty<double> PositionEndBeat;
+
+        /// <summary>
+        /// 布局无关的位置信息发生变化时触发
+        /// </summary>
+        public readonly Observable<Unit> PositionChanged;
 
         // 通过构造函数显式传递父级的 Model 和 CommandStack
         public EditAreaNoteViewModel(
             ChartEditorModel model,
             BaseChartNoteData data,
-            EditAreaViewModel parentViewModel,
-            float judgeLineYOffset,
             bool useChartTracebackBeatOffset = false)
             : base(model)
         {
-            this.data = data;
-            this.judgeLineYOffset = judgeLineYOffset;
+            Data = data;
             this.useChartTracebackBeatOffset = useChartTracebackBeatOffset;
 
-            // 无论是缩放改变，还是当前 Note 数据改变，都重新获取当前的 Zoom 值并计算位置
+            // 选中音符的 Pos/BreakPos/JudgeBeat/EndJudgeBeat 变化时，重新计算位置
             var dataChangedSignal = Model.SelectedNoteDataChangedSubject
                 .Where(changedNote => changedNote == data)
                 .Select(_ => Unit.Default);
-            var updateSignal = Observable.Merge(
-                    parentViewModel.BeatZoom.Select(_ => Unit.Default),
-                    dataChangedSignal,
-                    parentViewModel.ChartTracebackBeatOffset.Select(_ => Unit.Default)
-                )
-                .Select(_ => parentViewModel.BeatZoom.CurrentValue);
 
-            // 当变化时，重新计算位置
-            AnchoredPosition = updateSignal
-                .Select(zoom => CalculatePosition(zoom))
+            // 初始值 + 音符数据变化 + 谱面回溯偏移变化。
+            // BeatZoom 等 view 布局变化不在此处处理，由 View 自行订阅。
+            PositionChanged = (useChartTracebackBeatOffset
+                    ? Observable.Merge(dataChangedSignal, Model.ChartTracebackBeatOffset.Select(_ => Unit.Default))
+                    : dataChangedSignal)
+                .Prepend(Unit.Default);
+
+            PositionBeat = PositionChanged
+                .Select(_ => GetPositionBeat())
                 .ToReadOnlyReactiveProperty()
                 .AddTo(Disposables);
 
-            // 如果是 Hold，需要根据缩放计算长度
-            if (data is HoldChartNoteData holdData)
-            {
-                HoldLength = updateSignal
-                    .Select(zoom => CalculateHoldLength(zoom, holdData))
-                    .ToReadOnlyReactiveProperty()
-                    .AddTo(Disposables);
-            }
-            else
-            {
-                HoldLength = Observable.Return(0f).ToReadOnlyReactiveProperty().AddTo(Disposables);
-            }
+            PositionEndBeat = PositionChanged
+                .Select(_ => GetPositionEndBeat())
+                .ToReadOnlyReactiveProperty()
+                .AddTo(Disposables);
         }
 
-        private Vector2 CalculatePosition(double zoom)
+        private double GetBeatOffset()
         {
-            // 计算 X 轴
-            float xPos = 0;
-            switch (data.Type)
-            {
-                case NoteType.Tap:
-                case NoteType.Drag:
-                case NoteType.Click:
-                case NoteType.Hold:
-                    if (data is IChartNoteNormalPos normalNote)
-                    {
-                        xPos = normalNote.Pos * NotePosScale + NotePosOffset;
-                    }
-
-                    break;
-                case NoteType.Break:
-                    if (data is BreakChartNoteData breakNote)
-                    {
-                        xPos = breakNote.BreakNotePos == BreakNotePos.Left ? BreakLeftX : BreakRightX;
-                    }
-
-                    break;
-            }
-
-            // 计算 Y 轴 (JudgeLineOffset + (JudgeBeat - ChartTracebackBeatOffset) * Interval * Zoom)
-            // DefaultMajorBeatLineInterval * Zoom 即为每拍的像素距离
-            double beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * zoom;
-            double judgeBeat = data.JudgeBeat.ToDouble();
-            if (useChartTracebackBeatOffset)
-                judgeBeat -= Model.ChartTracebackBeatOffset.CurrentValue;
-            double yPos = judgeLineYOffset + (judgeBeat * beatInterval);
-
-            return new Vector2(xPos, (float)yPos);
+            return useChartTracebackBeatOffset ? Model.ChartTracebackBeatOffset.CurrentValue : 0;
         }
 
-        private float CalculateHoldLength(double zoom, HoldChartNoteData holdData)
+        private double GetPositionBeat()
         {
-            double beatInterval = EditAreaViewModel.DefaultMajorBeatLineInterval * zoom;
-            double beatOffset = useChartTracebackBeatOffset ? Model.ChartTracebackBeatOffset.CurrentValue : 0;
-            double startY = judgeLineYOffset + ((holdData.JudgeBeat.ToDouble() - beatOffset) * beatInterval);
-            double endY = judgeLineYOffset + ((holdData.EndJudgeBeat.ToDouble() - beatOffset) * beatInterval);
+            return Data.JudgeBeat.ToDouble() - GetBeatOffset();
+        }
 
-            // 长度 = 结束位置 - 开始位置 - 头部微调
-            return (float)Math.Max(0, endY - startY - 12.5f);
+        private double GetPositionEndBeat()
+        {
+            double endBeat = Data is HoldChartNoteData holdData
+                ? holdData.EndJudgeBeat.ToDouble()
+                : Data.JudgeBeat.ToDouble();
+
+            return endBeat - GetBeatOffset();
         }
 
         public void OnLeftKeyDown()
         {
             if (Model.SelectedEditTool.CurrentValue == EditToolType.Eraser)
             {
-                if (Model.SelectedNoteData.Value == data)
+                if (Model.SelectedNoteData.Value == Data)
                 {
                     Model.SelectedNoteData.Value = null;
                 }
 
                 CommandStack.ExecuteCommand(
-                    () => Model.ChartData.CurrentValue.Notes.Remove(data),
-                    () => NoteListHelper.TryInsertItem(Model.ChartData.CurrentValue.Notes, data)
+                    () => Model.ChartData.CurrentValue.Notes.Remove(Data),
+                    () => NoteListHelper.TryInsertItem(Model.ChartData.CurrentValue.Notes, Data)
                 );
             }
             else
             {
-                if (Model.SelectedNoteData.Value != data)
+                if (Model.SelectedNoteData.Value != Data)
                 {
-                    Model.SelectedNoteData.Value = data;
+                    Model.SelectedNoteData.Value = Data;
                 }
             }
         }
 
         public void OnRightKeyDown()
         {
-            if (Model.SelectedNoteData.Value == data)
+            if (Model.SelectedNoteData.Value == Data)
             {
                 Model.SelectedNoteData.Value = null;
             }
 
             CommandStack.ExecuteCommand(
-                () => Model.ChartData.CurrentValue.Notes.Remove(data),
-                () => NoteListHelper.TryInsertItem(Model.ChartData.CurrentValue.Notes, data)
+                () => Model.ChartData.CurrentValue.Notes.Remove(Data),
+                () => NoteListHelper.TryInsertItem(Model.ChartData.CurrentValue.Notes, Data)
             );
         }
     }
