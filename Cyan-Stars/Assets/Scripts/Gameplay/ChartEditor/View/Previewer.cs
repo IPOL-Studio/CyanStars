@@ -16,6 +16,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
     /// <remarks>
     /// 挂在 PreviewNoteFrame 上。为每种音符类型持有专用的预览实例
     /// </remarks>
+    [RequireComponent(typeof(CanvasGroup))]
     public class Previewer : MonoBehaviour
     {
         /// <summary>
@@ -46,9 +47,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private void Awake()
         {
-            if (!TryGetComponent<CanvasGroup>(out var canvasGroup))
-                canvasGroup = gameObject.AddComponent<CanvasGroup>();
-
+            var canvasGroup = GetComponent<CanvasGroup>();
             canvasGroup.enabled = true;
             canvasGroup.alpha = previewAlpha;
             canvasGroup.blocksRaycasts = false;
