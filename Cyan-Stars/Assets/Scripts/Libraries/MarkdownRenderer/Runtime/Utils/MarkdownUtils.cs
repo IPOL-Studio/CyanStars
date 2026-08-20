@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using CyanStars.MarkdownRenderer.Extensions.AtParagraph;
+using CyanStars.MarkdownRenderer.Renderers;
 using Markdig;
 using Markdig.Syntax;
 
@@ -29,6 +30,11 @@ namespace CyanStars.MarkdownRenderer.Utils
             }
         }
 
+        public static MarkdownPipeline GetOrCreateDefaultPipeline(bool useCysExtension)
+        {
+            return useCysExtension ? CysExtensionDefaultPipeline : DefaultPipeline;
+        }
+
         public static string ToTextMeshPro(string markdownText, bool useCysExtension = false, TextMeshProRenderConfig? config = null)
         {
             if (string.IsNullOrEmpty(markdownText))
@@ -41,23 +47,24 @@ namespace CyanStars.MarkdownRenderer.Utils
                 return markdownText;
             }
 
-            var pipeline = useCysExtension ? CysExtensionDefaultPipeline : DefaultPipeline;
+            var pipeline = GetOrCreateDefaultPipeline(useCysExtension);
             var document = Markdown.Parse(markdownText, pipeline);
-            return ToTextMeshPro(document, useCysExtension, config, pipeline);
+            return ToTextMeshPro(document, config, pipeline);
         }
 
         public static string ToTextMeshPro(this MarkdownDocument document, bool useCysExtension = false, TextMeshProRenderConfig? config = null)
         {
             _ = document ?? throw new ArgumentNullException(nameof(document));
 
-            var pipeline = useCysExtension ? CysExtensionDefaultPipeline : DefaultPipeline;
-            return ToTextMeshPro(document, useCysExtension, config, pipeline);
+            var pipeline = GetOrCreateDefaultPipeline(useCysExtension);
+            return ToTextMeshPro(document, config, pipeline);
         }
 
-        private static string ToTextMeshPro(MarkdownDocument document, bool useCysExtension, TextMeshProRenderConfig? config, MarkdownPipeline pipeline)
+        private static string ToTextMeshPro(MarkdownDocument document, TextMeshProRenderConfig? config, MarkdownPipeline pipeline)
         {
-            using var rentedRenderer = RentTextMeshProRenderer(pipeline, useCysExtension);
-            var renderer = rentedRenderer.Renderer;
+            using var writer = new StringWriter();
+            var renderer = new TextMeshProRenderer(writer);
+            pipeline.Setup(renderer);
 
             renderer.Config = config ?? TextMeshProRenderConfig.DefaultConfig;
             renderer.ComputeConfig();
@@ -72,9 +79,9 @@ namespace CyanStars.MarkdownRenderer.Utils
             _ = document ?? throw new ArgumentNullException(nameof(document));
             _ = writer ?? throw new ArgumentNullException(nameof(writer));
 
-            var pipeline = useCysExtension ? CysExtensionDefaultPipeline : DefaultPipeline;
-            using var rentedRenderer = RentTextMeshProRenderer(pipeline, useCysExtension, writer);
-            var renderer = rentedRenderer.Renderer;
+            var pipeline = GetOrCreateDefaultPipeline(useCysExtension);
+            var renderer = new TextMeshProRenderer(writer);
+            pipeline.Setup(renderer);
 
             renderer.Config = config ?? TextMeshProRenderConfig.DefaultConfig;
             renderer.ComputeConfig();
@@ -90,7 +97,7 @@ namespace CyanStars.MarkdownRenderer.Utils
                 return null;
             }
 
-            var document = Markdown.Parse(markdownText, CysExtensionDefaultPipeline);
+            var document = Markdown.Parse(markdownText, GetOrCreateDefaultPipeline(true));
             return CollectCysAtInfo(document);
         }
 
@@ -110,37 +117,23 @@ namespace CyanStars.MarkdownRenderer.Utils
         /// 开足够大的 list 进来，不然还是可能付出扩容的开销
         /// <para> array 应该转成 span 用 <see cref="CollectCysAtInfoNonAlloc(MarkdownDocument, Span{AtInfo})"/> </para>
         /// </summary>
-        public static int CollectCysAtInfoNonAlloc(MarkdownDocument document, IList<AtInfo> list)
+        public static int CollectCysAtInfoNonAlloc(MarkdownDocument document, IList<AtInfo> list, bool isClearList = false)
         {
+            _ = document ?? throw new ArgumentNullException(nameof(document));
+            _ = list ?? throw new ArgumentNullException(nameof(list));
+
+            if (isClearList)
+            {
+                list.Clear();
+            }
+
             return CollectAtInfoUtils.CollectAtInfo(document, list);
         }
 
         public static int CollectCysAtInfoNonAlloc(MarkdownDocument document, Span<AtInfo> span)
         {
+            _ = document ?? throw new ArgumentNullException(nameof(document));
             return CollectAtInfoUtils.CollectAtInfo(document, span);
-        }
-    }
-
-    // renderer caches
-    static partial class MarkdownUtils
-    {
-        private static TextMeshProRendererCacheGroup defaultRendererCacheGroup = new();
-        private static TextMeshProRendererCacheGroup cysRendererCacheGroup = new();
-
-        private static RentedTextMeshProRenderer RentTextMeshProRenderer(MarkdownPipeline pipeline, bool useCysExtension, TextWriter? write = null)
-        {
-            ref var cacheGroup = ref (useCysExtension ? ref cysRendererCacheGroup : ref defaultRendererCacheGroup);
-            var isUseCustomWrite = write is not null;
-            ref var cache = ref cacheGroup.RefCache(isUseCustomWrite);
-            cache ??= new TextMeshProRendererCache(pipeline, isUseCustomWrite);
-
-            var renderer = cache.Get();
-            if (isUseCustomWrite)
-            {
-                renderer.Writer = write!;
-            }
-
-            return new RentedTextMeshProRenderer(cache, renderer);
         }
     }
 }
