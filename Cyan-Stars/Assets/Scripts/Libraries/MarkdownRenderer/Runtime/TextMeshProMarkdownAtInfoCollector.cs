@@ -30,9 +30,10 @@ namespace CyanStars.MarkdownRenderer
                 return;
             }
 
-            atInfoList.Clear();
-            MarkdownUtils.CollectCysAtInfoNonAlloc(document, atInfoList);
-            onAtInfoCollected.Invoke(atInfoList);
+            var res = MarkdownUtils.CollectCysAtInfoNonAlloc(document, atInfoList, true) <= 0
+                ? Array.Empty<AtInfo>()
+                : atInfoList.ToArray();
+            onAtInfoCollected.Invoke(res);
         }
     }
 }
