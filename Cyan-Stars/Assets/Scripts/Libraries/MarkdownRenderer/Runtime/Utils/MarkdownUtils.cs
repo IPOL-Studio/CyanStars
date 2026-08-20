@@ -12,10 +12,12 @@ namespace CyanStars.MarkdownRenderer.Utils
     public static partial class MarkdownUtils
     {
         private static MarkdownPipeline? defaultPipeline;
-        private static MarkdownPipeline DefaultPipeline => defaultPipeline ??=
-            new MarkdownPipelineBuilder().UseCjkFriendlyEmphasis().Build();
+
+        private static MarkdownPipeline DefaultPipeline =>
+            defaultPipeline ??= new MarkdownPipelineBuilder().UseCjkFriendlyEmphasis().Build();
 
         private static MarkdownPipeline? cysExtensionDefaultPipeline;
+
         private static MarkdownPipeline CysExtensionDefaultPipeline
         {
             get
@@ -90,23 +92,25 @@ namespace CyanStars.MarkdownRenderer.Utils
         }
 
 
-        public static IList<AtInfo>? CollectCysAtInfo(string markdownText)
+        public static IList<AtInfo> CollectCysAtInfo(string markdownText)
         {
-            if (string.IsNullOrEmpty(markdownText))
+            if (markdownText == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(markdownText));
+            }
+
+            if (markdownText == string.Empty)
+            {
+                return new List<AtInfo>();
             }
 
             var document = Markdown.Parse(markdownText, GetOrCreateDefaultPipeline(true));
             return CollectCysAtInfo(document);
         }
 
-        public static IList<AtInfo>? CollectCysAtInfo(MarkdownDocument document)
+        public static IList<AtInfo> CollectCysAtInfo(MarkdownDocument document)
         {
-            if (document is null)
-            {
-                return null;
-            }
+            _ = document ?? throw new ArgumentNullException(nameof(document));
 
             var atInfoList = new List<AtInfo>();
             CollectAtInfoUtils.CollectAtInfo(document, atInfoList);

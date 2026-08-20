@@ -44,6 +44,7 @@ namespace CyanStars.MarkdownRenderer
         [Space(5)]
         [SerializeField]
         private UnityEvent<MarkdownDocument> onDocumentParsed = new UnityEvent<MarkdownDocument>();
+
         public UnityEvent<MarkdownDocument> OnDocumentParsed => onDocumentParsed;
 
         protected override void Awake()
@@ -60,11 +61,6 @@ namespace CyanStars.MarkdownRenderer
             isDirty = true;
         }
 
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-        }
-
 #if UNITY_EDITOR
         protected override void OnValidate()
         {
@@ -76,8 +72,10 @@ namespace CyanStars.MarkdownRenderer
 
         private void CreateRequires()
         {
+            // 在编辑器环境下确保始终创建新 writer 对象，以防意外更改导致 renderer 状态残留
             var writer = new StringWriter(new StringBuilder(512));
             toTextMeshProRenderer ??= new TextMeshProRenderer(writer);
+            
             if (pipeline == null)
             {
                 var pipelineBuilder = new MarkdownPipelineBuilder().UseCjkFriendlyEmphasis();
@@ -136,7 +134,7 @@ namespace CyanStars.MarkdownRenderer
             var document = Markdown.Parse(text, pipeline);
             onDocumentParsed.Invoke(document);
 
-            var renderer = toTextMeshProRenderer;            
+            var renderer = toTextMeshProRenderer;
             pipeline.Setup(renderer);
 
             var writer = (StringWriter)toTextMeshProRenderer.Writer;
@@ -153,5 +151,4 @@ namespace CyanStars.MarkdownRenderer
             renderTarget.text = result;
         }
     }
-
 }
