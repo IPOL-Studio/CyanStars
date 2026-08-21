@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using CyanStars.MarkdownRenderer.Extensions.AtParagraph;
+using CyanStars.MarkdownRenderer.Extensions.StaffAt;
 using CyanStars.MarkdownRenderer.Renderers;
 using Markdig;
 using Markdig.Syntax;
@@ -25,7 +25,7 @@ namespace CyanStars.MarkdownRenderer.Utils
                 if (cysExtensionDefaultPipeline is null)
                 {
                     var builder = new MarkdownPipelineBuilder().UseCjkFriendlyEmphasis();
-                    builder.Extensions.Add(new AtParagraphExtension());
+                    builder.Extensions.Add(new StaffAtExtension());
                     cysExtensionDefaultPipeline = builder.Build();
                 }
                 return cysExtensionDefaultPipeline;

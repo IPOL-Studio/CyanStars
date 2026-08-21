@@ -3,13 +3,12 @@
 using Markdig.Helpers;
 using Markdig.Parsers;
 using Markdig.Syntax;
-using Markdig.Syntax.Inlines;
 
-namespace CyanStars.MarkdownRenderer.Extensions.AtParagraph
+namespace CyanStars.MarkdownRenderer.Extensions.StaffAt
 {
-    public sealed class AtParagraphInlineParser : InlineParser
+    public sealed class StaffAtInlineParser : InlineParser
     {
-        public AtParagraphInlineParser()
+        public StaffAtInlineParser()
         {
             OpeningCharacters = new[] { '[' };
         }
@@ -30,7 +29,7 @@ namespace CyanStars.MarkdownRenderer.Extensions.AtParagraph
             int openingBracketIndex = slice.Start;
 
             if (slice.PeekCharExtra(1) != '@' ||
-                !LinkHelper.TryParseLabel(ref slice, out string? label, out SourceSpan labelSpan) ||
+                !LinkHelper.TryParseLabel(ref slice, out string? label) ||
                 label.Length <= 1)
             {
                 return false;
@@ -53,10 +52,8 @@ namespace CyanStars.MarkdownRenderer.Extensions.AtParagraph
             processor.GetSourcePosition(openingBracketIndex, out int line, out int column);
             int endPosition = slice.Start - 1;
 
-            var inline = new AtParagraphInline
+            var inline = new StaffAtInline(new StringSlice(label))
             {
-                Label = label,
-                Paragraph = label.Substring(1),
                 Span = new SourceSpan(
                     processor.GetSourcePosition(openingBracketIndex),
                     processor.GetSourcePosition(endPosition)),
@@ -64,17 +61,6 @@ namespace CyanStars.MarkdownRenderer.Extensions.AtParagraph
                 Column = column,
                 IsClosed = true,
             };
-
-            inline.AppendChild(new LiteralInline
-            {
-                Content = new StringSlice(label),
-                Span = new SourceSpan(
-                    processor.GetSourcePosition(labelSpan.Start),
-                    processor.GetSourcePosition(labelSpan.End)),
-                Line = line,
-                Column = column + 1,
-                IsClosed = true,
-            });
 
             processor.Inline = inline;
             return true;
