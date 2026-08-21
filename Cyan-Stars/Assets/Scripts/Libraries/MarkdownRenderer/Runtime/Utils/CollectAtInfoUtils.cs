@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using CyanStars.MarkdownRenderer.Extensions.AtParagraph;
+using CyanStars.MarkdownRenderer.Extensions.StaffAt;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 
@@ -73,11 +73,11 @@ namespace CyanStars.MarkdownRenderer.Utils
         private static int CollectAtInfo(ContainerInline container, IList<AtInfo> atInfoList)
         {
             int count = 0;
-            foreach (var inline in container.FindDescendants<AtParagraphInline, LinkInline>())
+            foreach (var inline in container.FindDescendants<StaffAtInline, LinkInline>())
             {
-                if (inline is AtParagraphInline atParagraphInline)
+                if (inline is StaffAtInline StaffAtInline)
                 {
-                    atInfoList.Add((atParagraphInline.Paragraph.ToString(), atParagraphInline.Url));
+                    atInfoList.Add((StaffAtInline.Staff.ToString(), null));
                     count++;
                     continue;
                 }
@@ -94,11 +94,11 @@ namespace CyanStars.MarkdownRenderer.Utils
         private static int CollectAtInfo(ContainerInline container, Span<AtInfo> span)
         {
             int count = 0;
-            foreach (var inline in container.FindDescendants<AtParagraphInline, LinkInline>())
+            foreach (var inline in container.FindDescendants<StaffAtInline, LinkInline>())
             {
-                if (inline is AtParagraphInline atParagraphInline)
+                if (inline is StaffAtInline StaffAtInline)
                 {
-                    span[count] = (atParagraphInline.Paragraph.ToString(), atParagraphInline.Url);
+                    span[count] = (StaffAtInline.Staff.ToString(), null);
                     count++;
                 }
                 else if (((LinkInline)inline).TryGetAtInfo(out var info))

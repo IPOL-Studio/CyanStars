@@ -1,5 +1,5 @@
 using CyanStars.MarkdownRenderer.Renderers;
-using CyanStars.MarkdownRenderer.Extensions.AtParagraph;
+using CyanStars.MarkdownRenderer.Extensions.StaffAt;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
@@ -79,7 +79,7 @@ namespace CyanStars.MarkdownRenderer
             if (pipeline == null)
             {
                 var pipelineBuilder = new MarkdownPipelineBuilder().UseCjkFriendlyEmphasis();
-                pipelineBuilder.Extensions.Add(new AtParagraphExtension());
+                pipelineBuilder.Extensions.Add(new StaffAtExtension());
                 pipeline = pipelineBuilder.Build();
             }
         }
