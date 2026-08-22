@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyanStars.Framework;
 using CyanStars.Chart;
+using CyanStars.MarkdownRenderer.Utils;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -170,7 +171,13 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             string chartPackInfo = mapItem.Data.RuntimeChartPack.ChartPackData.ChartPackInfo;
-            HashSet<string> staffNames = ChartPackInfoHelper.ToStaffs(chartPackInfo);
+            HashSet<string> staffNames = new();
+
+            foreach (AtInfo atInfo in MarkdownUtils.CollectCysAtInfo(chartPackInfo))
+            {
+                staffNames.Add(atInfo.Content);
+            }
+
             owner.StarController.ResetAllStaffGroup(staffNames);
         }
     }
