@@ -745,7 +745,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CyanStars::CyanStars.ChartPackInfoPopup
   closePopupButton: {fileID: 1728638455343452706}
-  infoText: {fileID: 3142578377831822314}
+  infoTMPMarkdown: {fileID: 7743512686469982888}
 --- !u!1 &1272817708106903581
 GameObject:
   m_ObjectHideFlags: 0
@@ -5124,6 +5124,8 @@ GameObject:
   - component: {fileID: 2609384462153040281}
   - component: {fileID: 3142578377831822314}
   - component: {fileID: 8091976741325756718}
+  - component: {fileID: 7743512686469982888}
+  - component: {fileID: 376816032822809734}
   m_Layer: 5
   m_Name: "\u8BE6\u60C5Text (TMP)"
   m_TagString: Untagged
@@ -5264,6 +5266,49 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &7743512686469982888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8282228296818145593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb6290c451a5b3a4b956eebaeba56c51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CyanStars.MarkdownRenderer::CyanStars.MarkdownRenderer.TextMeshProMarkdown
+  text: 
+  configProvider:
+    value: {fileID: 376816032822809734}
+  onDocumentParsed:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &376816032822809734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8282228296818145593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 113584774ebb6f27aa836f931023d9cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CyanStars.MarkdownRenderer::CyanStars.MarkdownRenderer.TextMeshProMarkdownConfigBehaviour
+  config:
+    CodeBlockBackgroundColor: {r: 0.533, g: 0.533, b: 0.533, a: 0.87}
+    AtColor: {r: 0.95686275, g: 0.77254903, b: 0.29803923, a: 0.87}
+    LinkColor: {r: 0.11372549, g: 0.54901963, b: 0.92941177, a: 0.87}
+    QuoteColor: {r: 0.6, g: 0.6, b: 0.6, a: 0.87}
+    LinkPrefix: __md_link__
+    UnorderedListMarker: "\xB7"
+    UnorderedListMarkerWidth: 0.5
+    NestingIndent: 1
+    QuoteBlockMargin: 0
+    QuoteSpacing: 0.5
+    BlockFakeMarginBottom: 0.5
+    FinishBlockBehavior: 1
 --- !u!1 &8526230953276327969
 GameObject:
   m_ObjectHideFlags: 0

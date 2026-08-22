@@ -1,7 +1,6 @@
 #nullable enable
 
-using CyanStars.Chart;
-using TMPro;
+using CyanStars.MarkdownRenderer;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,9 +12,9 @@ namespace CyanStars
         private Button closePopupButton = null!;
 
         [SerializeField]
-        private TMP_Text infoText = null!;
+        private TextMeshProMarkdown infoTMPMarkdown = null!;
 
-        public void SetInfoRawText(string rawText) => infoText.text = ChartPackInfoHelper.ToTmpText(rawText);
+        public void SetInfoRawText(string rawText) => infoTMPMarkdown.Text = rawText;
 
         private void OnEnable() => closePopupButton.onClick.AddListener(ClosePopup);
         private void OnDisable() => closePopupButton.onClick.RemoveListener(ClosePopup);
