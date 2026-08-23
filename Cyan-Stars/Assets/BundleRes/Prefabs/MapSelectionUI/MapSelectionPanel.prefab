@@ -5126,6 +5126,7 @@ GameObject:
   - component: {fileID: 8091976741325756718}
   - component: {fileID: 7743512686469982888}
   - component: {fileID: 376816032822809734}
+  - component: {fileID: 2141244312871611626}
   m_Layer: 5
   m_Name: "\u8BE6\u60C5Text (TMP)"
   m_TagString: Untagged
@@ -5309,6 +5310,21 @@ MonoBehaviour:
     QuoteSpacing: 0.5
     BlockFakeMarginBottom: 0.5
     FinishBlockBehavior: 1
+--- !u!114 &2141244312871611626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8282228296818145593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7c9f0f9c3d44d83a0cc5473699e333d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CyanStars::CyanStars.Utils.TMPLinkHandler
+  openUrlPrefixes:
+  - __md_link__
+  fallbackAction: 0
 --- !u!1 &8526230953276327969
 GameObject:
   m_ObjectHideFlags: 0
