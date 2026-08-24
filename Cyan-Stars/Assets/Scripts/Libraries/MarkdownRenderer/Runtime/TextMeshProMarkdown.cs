@@ -59,6 +59,9 @@ namespace CyanStars.MarkdownRenderer
         {
             base.OnEnable();
             isDirty = true;
+
+            // 在 OnEnable 时立即构建一次，避免启用后、Update 之前残留一帧上次的旧文本造成闪烁
+            BuildTextMeshProRichText();
         }
 
 #if UNITY_EDITOR
@@ -75,7 +78,7 @@ namespace CyanStars.MarkdownRenderer
             // 在编辑器环境下确保始终创建新 writer 对象，以防意外更改导致 renderer 状态残留
             var writer = new StringWriter(new StringBuilder(512));
             toTextMeshProRenderer ??= new TextMeshProRenderer(writer);
-            
+
             if (pipeline == null)
             {
                 var pipelineBuilder = new MarkdownPipelineBuilder().UseCjkFriendlyEmphasis();

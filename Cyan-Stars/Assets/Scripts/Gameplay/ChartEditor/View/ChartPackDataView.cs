@@ -2,6 +2,7 @@
 
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
+using CyanStars.MarkdownRenderer;
 using R3;
 using TMPro;
 using UnityEngine;
@@ -43,7 +44,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private TMP_InputField infoInputField = null!;
 
         [SerializeField]
-        private TMP_Text infoPreviewText = null!;
+        private TextMeshProMarkdown infoPreviewTMPMarkdown = null!;
 
         [SerializeField]
         private Button exportChartPackButton = null!;
@@ -104,8 +105,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
             ViewModel.ChartPackInfo
                 .Subscribe(text =>
                 {
-                    infoPreviewText.gameObject.SetActive(!string.IsNullOrEmpty(text));
-                    infoPreviewText.text = ChartPackInfoHelper.ToTmpText(text);
+                    infoPreviewTMPMarkdown.gameObject.SetActive(!string.IsNullOrEmpty(text));
+                    infoPreviewTMPMarkdown.Text = text;
                 })
                 .AddTo(this);
 

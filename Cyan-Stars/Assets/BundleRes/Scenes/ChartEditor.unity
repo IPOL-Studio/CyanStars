@@ -752,9 +752,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u53EF\u5728\u6B64\u586B\u5199\u4F5C\u54C1\u7B80\u4ECB\u3001\u97F3\u4E50\u521B\u4F5C\u56E2\u961F\u3001\u6F14\u5531\u8005\u3001\u8C31\u5E08\u3001\u6E38\u620F\u66F2\u7ED8\u4F5C\u8005\u7B49\u4FE1\u606F\uFF0C\u53EF\u4F7F\u7528
-    [@User Name] \u6807\u8BB0\u4F5C\u8005 ID\u3002\n\u540E\u7EED\u8FD8\u5C06\u652F\u6301
-    Markdown \u8BED\u6CD5\u3002"
+  m_text: "\u53EF\u5728\u6B64\u586B\u5199\u4F5C\u54C1\u7B80\u4ECB\u3001\u97F3\u4E50\u521B\u4F5C\u56E2\u961F\u3001\u6F14\u5531\u8005\u3001\u8C31\u5E08\u3001\u6E38\u620F\u66F2\u7ED8\u4F5C\u8005\u7B49\u4FE1\u606F\u3002\n\u652F\u6301
+    Markdown \u8BED\u6CD5\u3002\n\u53EF\u4F7F\u7528 [@User Name](https://example.com)
+    \u6807\u8BB0\u4F5C\u8005 ID \u548C\u4E3B\u9875\uFF0C\u5176\u4E2D\u4E3B\u9875\u5B57\u6BB5\u53EF\u7701\u7565\u3002"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d17f214eb2e14e74c95fdc4e99b0187d, type: 2}
   m_sharedMaterial: {fileID: -7204877318828142287, guid: d17f214eb2e14e74c95fdc4e99b0187d, type: 2}
@@ -987,7 +987,7 @@ MonoBehaviour:
   coverPathText: {fileID: 1668466727}
   coverCropFrameObject: {fileID: 1514540014}
   infoInputField: {fileID: 318063048}
-  infoPreviewText: {fileID: 1488809783}
+  infoPreviewTMPMarkdown: {fileID: 1488809786}
   exportChartPackButton: {fileID: 1354379450}
 --- !u!1001 &43651018
 PrefabInstance:
@@ -12937,7 +12937,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 57909430}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.5651852
+  m_Size: 0.87777776
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -18152,10 +18152,6 @@ PrefabInstance:
     - target: {fileID: 994941279456320296, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Name
       value: "\u8C31\u5305\u4FE1\u606F\u5F39\u7A97Canvas"
-      objectReference: {fileID: 0}
-    - target: {fileID: 994941279456320301, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
-      propertyPath: m_Enabled
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 994941279456320303, guid: 21018f88cf8fd3d468929538bb4e0c4a, type: 3}
       propertyPath: m_Pivot.x
@@ -29105,8 +29101,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1488809782}
   - component: {fileID: 1488809784}
-  - component: {fileID: 1488809783}
   - component: {fileID: 1488809785}
+  - component: {fileID: 1488809783}
+  - component: {fileID: 1488809786}
+  - component: {fileID: 1488809787}
+  - component: {fileID: 1488809788}
   m_Layer: 5
   m_Name: InfoPreviewText (TMP)
   m_TagString: Untagged
@@ -29131,8 +29130,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 702.50006, y: -365.905}
-  m_SizeDelta: {x: 1205.0001, y: 182.33}
+  m_AnchoredPosition: {x: 702.50006, y: -358.47}
+  m_SizeDelta: {x: 1205.0001, y: 167.46}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1488809783
 MonoBehaviour:
@@ -29154,9 +29153,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "<size=+10>\u5728<b>\u4E0B\u9762</b>\u5BF9\u5185\u5BB9\u8FDB<b>\u6E32\u67D3\u9884\u89C8</b></size>\n\n
-    \xB7 \u4F5C\u66F2/\u7F16\u66F2\uFF1A<color=#66AAFF>@\u4F5C\u8005 1</color> <color=#66AAFF>@\u4F5C\u8005
-    2</color>\n \xB7 \u6DF7\u97F3\uFF1A<color=#66AAFF>@\u4F5C\u8005 3</color>"
+  m_text: "<size=200%>\u5728<b>\u4E0B\u9762</b>\u5BF9\u5185\u5BB9\u8FDB\u884C<b>\u6E32\u67D3\u9884\u89C8</b></size>\n<line-height=0.5em>\n</line-height>\u2011<indent=0.5em>\u4F5C\u66F2/\u7F16\u66F2\uFF1A<color=#FFD614DE><u>@\u4F5C\u8005
+    1</u></color> <color=#FFD614DE><u>@\u4F5C\u8005 2</u></color></indent>\n\u2011<indent=0.5em>\u6DF7\u97F3\uFF1A<color=#FFD614DE><u>@\u4F5C\u8005
+    3</u></color></indent>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d17f214eb2e14e74c95fdc4e99b0187d, type: 2}
   m_sharedMaterial: {fileID: -7204877318828142287, guid: d17f214eb2e14e74c95fdc4e99b0187d, type: 2}
@@ -29250,6 +29249,66 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &1488809786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1488809781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb6290c451a5b3a4b956eebaeba56c51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CyanStars.MarkdownRenderer::CyanStars.MarkdownRenderer.TextMeshProMarkdown
+  text: "# \u5728**\u4E0B\u9762**\u5BF9\u5185\u5BB9\u8FDB\u884C**\u6E32\u67D3\u9884\u89C8**\n\n-
+    \u4F5C\u66F2/\u7F16\u66F2\uFF1A[@\u4F5C\u8005 1] [@\u4F5C\u8005 2]\n- \u6DF7\u97F3\uFF1A[@\u4F5C\u8005
+    3]"
+  configProvider:
+    value: {fileID: 1488809787}
+  onDocumentParsed:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1488809787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1488809781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 113584774ebb6f27aa836f931023d9cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CyanStars.MarkdownRenderer::CyanStars.MarkdownRenderer.TextMeshProMarkdownConfigBehaviour
+  config:
+    CodeBlockBackgroundColor: {r: 0.533, g: 0.533, b: 0.533, a: 0.87}
+    AtColor: {r: 0.95686275, g: 0.77254903, b: 0.29803923, a: 0.87}
+    LinkColor: {r: 0.11372549, g: 0.54901963, b: 0.92941177, a: 0.87}
+    QuoteColor: {r: 0.6, g: 0.6, b: 0.6, a: 0.87}
+    LinkPrefix: __md_link__
+    UnorderedListMarker: "\xB7"
+    UnorderedListMarkerWidth: 0.5
+    NestingIndent: 1
+    QuoteBlockMargin: 0
+    QuoteSpacing: 0.5
+    BlockFakeMarginBottom: 0.5
+    FinishBlockBehavior: 1
+--- !u!114 &1488809788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1488809781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7c9f0f9c3d44d83a0cc5473699e333d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CyanStars::CyanStars.Utils.TMPLinkHandler
+  openHttpUrlPrefixes:
+  - __md_link__
+  fallbackAction: 0
 --- !u!1 &1491843468
 GameObject:
   m_ObjectHideFlags: 0
