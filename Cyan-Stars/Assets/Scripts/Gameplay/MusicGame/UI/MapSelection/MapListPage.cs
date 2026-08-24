@@ -36,6 +36,8 @@ namespace CyanStars.Gameplay.MusicGame
         private ChartModule chartModule;
         private List<MapItem> mapItems;
 
+        private readonly HashSet<string> staffNames = new();
+
 
         public void OnInit(MapSelectionPanel owner)
         {
@@ -171,7 +173,7 @@ namespace CyanStars.Gameplay.MusicGame
             }
 
             string chartPackInfo = mapItem.Data.RuntimeChartPack.ChartPackData.ChartPackInfo;
-            HashSet<string> staffNames = new();
+            staffNames.Clear();
 
             foreach (AtInfo atInfo in MarkdownUtils.CollectCysAtInfo(chartPackInfo))
             {

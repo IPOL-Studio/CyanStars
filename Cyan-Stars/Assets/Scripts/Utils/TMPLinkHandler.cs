@@ -16,12 +16,12 @@ namespace CyanStars.Utils
         /// <summary>
         /// 不处理该链接。
         /// </summary>
-        Null,
+        None,
 
         /// <summary>
-        /// 把整个 link 参数作为 URL 在浏览器中打开。
+        /// 把整个 link 参数作为 Http/Https URL 在浏览器中打开。
         /// </summary>
-        OpenUrl
+        OpenHttpUrl
     }
 
     /// <summary>
@@ -33,11 +33,11 @@ namespace CyanStars.Utils
     {
         [SerializeField]
         [Tooltip("link 参数以列表中任意前缀开头时，剥离该前缀后把剩余内容作为 URL 在浏览器中打开；空项会被忽略。")]
-        private List<string> openUrlPrefixes = new();
+        private List<string> openHttpUrlPrefixes = new();
 
         [SerializeField]
         [Tooltip("link 参数未匹配任何前缀时的兜底行为。")]
-        private FallbackActionType fallbackAction = FallbackActionType.Null;
+        private FallbackActionType fallbackAction = FallbackActionType.None;
 
         private TextMeshProUGUI textComponent = null!;
 
@@ -68,13 +68,33 @@ namespace CyanStars.Utils
             if (matchedPrefix != null)
             {
                 string url = linkId.Substring(matchedPrefix.Length);
-                if (!string.IsNullOrWhiteSpace(url))
-                    Application.OpenURL(url);
+                if (!string.IsNullOrWhiteSpace(url) && IsHttpUrl(url, out string validUrl1))
+                    Application.OpenURL(validUrl1);
                 return;
             }
 
-            if (fallbackAction == FallbackActionType.OpenUrl)
-                Application.OpenURL(linkId);
+            if (fallbackAction == FallbackActionType.OpenHttpUrl && IsHttpUrl(linkId, out string validUrl2))
+                Application.OpenURL(validUrl2);
+        }
+
+        /// <summary>
+        /// 校验传入的 URL 是否为 http:// 或 https:// 形式，规范 url 前后与中间的空格，返回规范化的 url
+        /// </summary>
+        private static bool IsHttpUrl(string url, out string validUrl)
+        {
+            validUrl = string.Empty;
+
+            if (!Uri.TryCreate(url.Trim(), UriKind.Absolute, out Uri? uri) || uri == null)
+                return false;
+
+            if ((uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps) ||
+                string.IsNullOrEmpty(uri.Host))
+            {
+                return false;
+            }
+
+            validUrl = uri.AbsoluteUri; // 空格会变成 %20，前后空格被去掉
+            return true;
         }
 
         /// <summary>
@@ -84,7 +104,7 @@ namespace CyanStars.Utils
         {
             string? matchedPrefix = null;
 
-            foreach (string prefix in openUrlPrefixes)
+            foreach (string prefix in openHttpUrlPrefixes)
             {
                 if (string.IsNullOrEmpty(prefix))
                     continue;

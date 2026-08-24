@@ -5322,7 +5322,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7c9f0f9c3d44d83a0cc5473699e333d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CyanStars::CyanStars.Utils.TMPLinkHandler
-  openUrlPrefixes:
+  openHttpUrlPrefixes:
   - __md_link__
   fallbackAction: 0
 --- !u!1 &8526230953276327969

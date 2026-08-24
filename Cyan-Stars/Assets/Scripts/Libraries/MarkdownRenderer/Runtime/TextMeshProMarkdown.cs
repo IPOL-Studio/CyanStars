@@ -59,6 +59,8 @@ namespace CyanStars.MarkdownRenderer
         {
             base.OnEnable();
             isDirty = true;
+
+            // 在 OnEnable 时立即构建一次，避免启用后、Update 之前残留一帧上次的旧文本造成闪烁
             BuildTextMeshProRichText();
         }
 
