@@ -16,7 +16,7 @@ namespace CyanStars.Utils
         /// <summary>
         /// 不处理该链接。
         /// </summary>
-        None,
+        Null,
 
         /// <summary>
         /// 把整个 link 参数作为 Http/Https URL 在浏览器中打开。
@@ -37,7 +37,7 @@ namespace CyanStars.Utils
 
         [SerializeField]
         [Tooltip("link 参数未匹配任何前缀时的兜底行为。")]
-        private FallbackActionType fallbackAction = FallbackActionType.None;
+        private FallbackActionType fallbackAction = FallbackActionType.Null;
 
         private TextMeshProUGUI textComponent = null!;
 
