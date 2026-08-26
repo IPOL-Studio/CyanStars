@@ -12,12 +12,14 @@ namespace CyanStars.Gameplay.ChartEditor.Model
     public class ChartMetaDataEditorModel
     {
         public readonly ReactiveProperty<string> FilePath;
+        public readonly ReactiveProperty<string> ChartTitle;
         public readonly ReactiveProperty<ChartDifficulty?> Difficulty;
         public readonly ReactiveProperty<string> ChartHash;
 
         public ChartMetaDataEditorModel(ChartMetaData chartMetaData)
         {
             FilePath = new ReactiveProperty<string>(chartMetaData.FilePath);
+            ChartTitle = new ReactiveProperty<string>(chartMetaData.ChartTitle);
             Difficulty = new ReactiveProperty<ChartDifficulty?>(chartMetaData.Difficulty);
             ChartHash = new ReactiveProperty<string>(chartMetaData.ChartHash);
         }

@@ -9,8 +9,20 @@ namespace CyanStars.Chart
         /// </summary>
         public string FilePath;
 
-        /// <summary>谱面难度</summary>
-        /// <remarks>为空时只在制谱器内可见，游戏内不加载</remarks>
+        /// <summary>
+        /// 谱面标题
+        /// </summary>
+        /// <remarks>
+        /// 内置谱约定为难度+定数，社区谱不做强制约定
+        /// </remarks>
+        public string ChartTitle;
+
+        /// <summary>
+        /// 谱面难度
+        /// </summary>
+        /// <remarks>
+        /// 为空时只在制谱器内可见，游戏内不加载
+        /// </remarks>
         public ChartDifficulty? Difficulty;
 
         /// <summary>

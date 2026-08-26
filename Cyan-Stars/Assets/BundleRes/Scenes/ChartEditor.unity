@@ -8091,8 +8091,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 896764713}
   - {fileID: 946339929}
+  - {fileID: 896764713}
   - {fileID: 763727233}
   m_Father: {fileID: 1108209278}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -18300,7 +18300,7 @@ GameObject:
   - component: {fileID: 946339929}
   - component: {fileID: 946339930}
   m_Layer: 5
-  m_Name: "\u8C31\u9762\u5B9A\u6570Frame"
+  m_Name: "\u8C31\u9762\u6807\u9898Frame"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21785,7 +21785,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u8C31\u9762\u5B9A\u6570"
+  m_text: "\u8C31\u9762\u6807\u9898"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5d14d235b5318bc49a0e892f337a7e87, type: 2}
   m_sharedMaterial: {fileID: 5463881750006113116, guid: 5d14d235b5318bc49a0e892f337a7e87, type: 2}
@@ -27964,6 +27964,7 @@ MonoBehaviour:
   closeCanvasButton: {fileID: 1403133578}
   selectedToggleSprite: {fileID: 21300000, guid: 41e29448b6c076042a17ab01d753e78e, type: 3}
   unselectedToggleSprite: {fileID: 21300000, guid: 1d0792bed21ff9341b4795cd90d39451, type: 3}
+  chartTitleField: {fileID: 0}
   kuiXingToggle: {fileID: 1518154088}
   qiMingToggle: {fileID: 647143056}
   tianShuToggle: {fileID: 1523947241}
@@ -37267,7 +37268,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u5EFA\u8BAE\u586B\u5199 1~20 \u4E4B\u95F4\u7684\u6574\u6570"
+  m_text: "\u53EF\u586B\u5199\u96BE\u5EA6/\u5B9A\u6570/\u6807\u9898"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d17f214eb2e14e74c95fdc4e99b0187d, type: 2}
   m_sharedMaterial: {fileID: -7204877318828142287, guid: d17f214eb2e14e74c95fdc4e99b0187d, type: 2}

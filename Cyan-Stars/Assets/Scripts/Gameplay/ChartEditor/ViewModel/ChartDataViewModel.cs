@@ -12,6 +12,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private readonly ChartMetaDataEditorModel MetaData;
         private readonly ChartDataEditorModel ChartData;
 
+        public readonly ReadOnlyReactiveProperty<string> ChartTitle;
         public readonly ReadOnlyReactiveProperty<ChartDifficulty?> ChartDifficulty;
         public readonly ReadOnlyReactiveProperty<string> ReadyBeatCountString;
 
@@ -22,6 +23,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             MetaData = Model.ChartPackData.CurrentValue.ChartMetaDatas[Model.ChartMetaDataIndex];
             ChartData = Model.ChartData.CurrentValue;
 
+            ChartTitle = MetaData.ChartTitle
+                .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
             ChartDifficulty = MetaData.Difficulty
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
@@ -32,6 +36,19 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
         }
 
+
+        public void SetChartTitle(string newTitle)
+        {
+            var oldTitle = ChartTitle.CurrentValue;
+
+            if (newTitle == oldTitle)
+                return;
+
+            CommandStack.ExecuteCommand(
+                () => MetaData.ChartTitle.Value = newTitle,
+                () => MetaData.ChartTitle.Value = oldTitle
+            );
+        }
 
         public void SetChartDifficulty(ChartDifficulty? newDifficulty)
         {

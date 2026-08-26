@@ -20,6 +20,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
 
         [SerializeField]
+        private TMP_InputField chartTitleField = null!;
+
+
+        [SerializeField]
         private Toggle kuiXingToggle = null!;
 
         [SerializeField]
@@ -41,6 +45,10 @@ namespace CyanStars.Gameplay.ChartEditor.View
         public override void Bind(ChartDataViewModel targetViewModel)
         {
             base.Bind(targetViewModel);
+
+            ViewModel.ChartTitle
+                .Subscribe(title => chartTitleField.text = title)
+                .AddTo(this);
 
             ViewModel.ChartDifficulty
                 .Subscribe(difficulty =>
@@ -72,6 +80,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .AddTo(this);
             ViewModel.ReadyBeatCountString
                 .Subscribe(text => readyBeatField.text = text)
+                .AddTo(this);
+
+            chartTitleField
+                .OnEndEditAsObservable()
+                .Subscribe(ViewModel.SetChartTitle)
                 .AddTo(this);
 
             kuiXingToggle
