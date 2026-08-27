@@ -1,9 +1,14 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using CyanStars.Chart;
 using CyanStars.Framework;
+using CyanStars.Framework.GameObjectPool;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,12 +24,6 @@ namespace CyanStars.Gameplay.MusicGame
     public class ChartCircularLayout : MonoBehaviour
     {
         [Header("依赖组件")]
-        [SerializeField]
-        private RectTransform scrollViewRect = null!;
-
-        [SerializeField]
-        private RectTransform viewportRect = null!;
-
         [SerializeField]
         private RectTransform contentRect = null!;
 
@@ -54,27 +53,21 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private const int BaseItemCount = 4;
 
-        private ChartModule? chartModule;
-
-        private ChartModule ChartModule =>
-            chartModule ??= GameRoot.GetDataModule<ChartModule>();
-
-        private RectTransform? selfRectTransform;
-
-        private RectTransform SelfRectTransform =>
-            selfRectTransform ??= (RectTransform)transform;
-
+        private readonly ChartModule ChartModule = GameRoot.GetDataModule<ChartModule>();
+        private readonly GameObjectPoolManager GameObjectPool = GameRoot.GameObjectPool;
         private readonly Dictionary<ChartMetaData, RectTransform> MetaDataToTransformDict = new();
 
         // 缓存 RectTransform 大小状态
         private Vector2 lastRectSize;
         private bool isDirty = false;
 
+        private CancellationTokenSource? cts;
+
 
         private void Start()
         {
-            BuildLayout(ChartModule.SelectedRuntimeChartPack);
-            ChartModule.OnSelectedChartPackChanged += RefreshChartLayout;
+            _ = BuildLayoutAsync(ChartModule.SelectedRuntimeChartPack);
+            ChartModule.OnSelectedChartPackChanged += RefreshChartLayoutAwait;
         }
 
         private void Update()
@@ -86,7 +79,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         private void OnDestroy()
         {
-            ChartModule.OnSelectedChartPackChanged -= RefreshChartLayout;
+            ChartModule.OnSelectedChartPackChanged -= RefreshChartLayoutAwait;
             ReleaseLayout();
         }
 
@@ -94,20 +87,24 @@ namespace CyanStars.Gameplay.MusicGame
         private void OnRectTransformDimensionsChange()
         {
             // 当 RectTransform 大小改变时，记录其大小，并设为脏数据
-            Vector2 currentSize = SelfRectTransform.rect.size;
+            Vector2 currentSize = ((RectTransform)transform).rect.size;
             if (!isDirty && currentSize != lastRectSize)
                 isDirty = true;
             lastRectSize = currentSize;
         }
 
-        private void RefreshChartLayout(RuntimeChartPack? runtimeChartPack)
+        private async void RefreshChartLayoutAwait(RuntimeChartPack? runtimeChartPack)
         {
             ReleaseLayout();
-            BuildLayout(runtimeChartPack);
+            await BuildLayoutAsync(runtimeChartPack);
         }
 
         private void ReleaseLayout()
         {
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = null;
+
             foreach (RectTransform itemRect in MetaDataToTransformDict.Values)
             {
                 if (itemRect == null)
@@ -115,27 +112,61 @@ namespace CyanStars.Gameplay.MusicGame
 
                 // 先禁用，确保本帧的自动布局不会再计算旧 item，随后延迟销毁
                 itemRect.gameObject.SetActive(false);
-                Destroy(itemRect.gameObject); // TODO: 使用对象池
+                GameObjectPool.ReleaseGameObject(itemPrefab, itemRect.gameObject);
             }
 
             MetaDataToTransformDict.Clear();
         }
 
-        private void BuildLayout(RuntimeChartPack? runtimeChartPack)
+        /// <summary>
+        /// 从对象池构建 Layout
+        /// </summary>
+        /// <remarks>
+        /// 若在创建过程中调用 <see cref="ReleaseLayout"/>，将会以 CTS 形式取消创建。
+        /// </remarks>
+        private async Task BuildLayoutAsync(RuntimeChartPack? runtimeChartPack)
         {
             if (runtimeChartPack == null)
                 return;
 
-            MetaDataToTransformDict.Clear();
+            cts = new();
 
             // 筛选出非空难度，实例化 go，填充到字典
+            var pendingTasks = new List<(ChartMetaData metaData, Task<GameObject> task)>();
             foreach (var chartMetaData in runtimeChartPack.ChartPackData.ChartMetaDatas)
             {
                 if (chartMetaData.Difficulty != null)
                 {
-                    GameObject item = Instantiate(itemPrefab, contentRect); // TODO: 使用对象池
-                    MetaDataToTransformDict[chartMetaData] = (RectTransform)item.transform;
+                    var task = GameObjectPool.GetGameObjectAsync(itemPrefab, contentRect, cts.Token);
+                    pendingTasks.Add((chartMetaData, task));
                 }
+            }
+
+            try
+            {
+                await Task.WhenAll(pendingTasks.Select(x => x.task));
+            }
+            catch (OperationCanceledException)
+            {
+#if UNITY_EDITOR
+                Debug.Log($"{nameof(ChartCircularLayout)}.{nameof(BuildLayoutAsync)}() 在创建时被释放，操作已取消。");
+#endif
+                foreach (var item in pendingTasks)
+                {
+                    if (item.task.Status != TaskStatus.RanToCompletion || item.task.Result == null)
+                        continue;
+                    item.task.Result.SetActive(false);
+                    GameObjectPool.ReleaseGameObject(itemPrefab, item.task.Result);
+                }
+                return;
+            }
+
+            MetaDataToTransformDict.Clear();
+
+            foreach (var item in pendingTasks)
+            {
+                var go = item.task.Result;
+                MetaDataToTransformDict[item.metaData] = (RectTransform)go.transform;
             }
 
             // 重新生成 item 后回到顶部，并应用布局
@@ -154,7 +185,7 @@ namespace CyanStars.Gameplay.MusicGame
             // Content 总高度、各 item 高度由代码接管
 
             isDirty = false;
-            lastRectSize = SelfRectTransform.rect.size;
+            lastRectSize = ((RectTransform)transform).rect.size;
 
             int itemCount = MetaDataToTransformDict.Count;
 
