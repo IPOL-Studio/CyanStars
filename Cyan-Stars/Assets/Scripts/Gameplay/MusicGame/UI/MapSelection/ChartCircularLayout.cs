@@ -66,7 +66,8 @@ namespace CyanStars.Gameplay.MusicGame
 
         private void Start()
         {
-            _ = BuildLayoutAsync(ChartModule.SelectedRuntimeChartPack);
+            cts = new();
+            _ = BuildLayoutAsync(ChartModule.SelectedRuntimeChartPack, cts.Token);
             ChartModule.OnSelectedChartPackChanged += RefreshChartLayoutAwait;
         }
 
@@ -96,14 +97,18 @@ namespace CyanStars.Gameplay.MusicGame
         private async void RefreshChartLayoutAwait(RuntimeChartPack? runtimeChartPack)
         {
             ReleaseLayout();
-            await BuildLayoutAsync(runtimeChartPack);
+            cts = new();
+            await BuildLayoutAsync(runtimeChartPack, cts.Token);
         }
 
         private void ReleaseLayout()
         {
-            cts?.Cancel();
-            cts?.Dispose();
-            cts = null;
+            if (cts != null)
+            {
+                cts.Cancel();
+                cts.Dispose();
+                cts = null;
+            }
 
             foreach (RectTransform itemRect in MetaDataToTransformDict.Values)
             {
@@ -121,15 +126,10 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 从对象池构建 Layout
         /// </summary>
-        /// <remarks>
-        /// 若在创建过程中调用 <see cref="ReleaseLayout"/>，将会以 CTS 形式取消创建。
-        /// </remarks>
-        private async Task BuildLayoutAsync(RuntimeChartPack? runtimeChartPack)
+        private async Task BuildLayoutAsync(RuntimeChartPack? runtimeChartPack, CancellationToken cancellationToken = default)
         {
             if (runtimeChartPack == null)
                 return;
-
-            cts = new();
 
             // 筛选出非空难度，实例化 go，填充到字典
             var pendingTasks = new List<(ChartMetaData metaData, Task<GameObject> task)>();
@@ -137,7 +137,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 if (chartMetaData.Difficulty != null)
                 {
-                    var task = GameObjectPool.GetGameObjectAsync(itemPrefab, contentRect, cts.Token);
+                    var task = GameObjectPool.GetGameObjectAsync(itemPrefab, contentRect, cancellationToken);
                     pendingTasks.Add((chartMetaData, task));
                 }
             }
