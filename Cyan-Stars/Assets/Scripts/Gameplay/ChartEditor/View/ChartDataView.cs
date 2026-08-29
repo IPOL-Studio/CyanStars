@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using System.Globalization;
 using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.ViewModel;
 using R3;
@@ -20,7 +21,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
 
         [SerializeField]
-        private TMP_InputField chartTitleField = null!;
+        private TMP_InputField overrideDifficultyTextField = null!;
 
 
         [SerializeField]
@@ -38,6 +39,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
         [SerializeField]
         private Toggle undefinedToggle = null!;
 
+
+        [SerializeField]
+        private TMP_InputField levelField = null!;
+
+
         [SerializeField]
         private TMP_InputField readyBeatField = null!;
 
@@ -46,8 +52,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             base.Bind(targetViewModel);
 
-            ViewModel.ChartTitle
-                .Subscribe(title => chartTitleField.text = title)
+            ViewModel.OverrideDifficultyText
+                .Subscribe(title => overrideDifficultyTextField.text = title)
                 .AddTo(this);
 
             ViewModel.ChartDifficulty
@@ -78,13 +84,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
                     }
                 )
                 .AddTo(this);
+            ViewModel.Level
+                .Subscribe(level => levelField.text = level.ToString(CultureInfo.InvariantCulture))
+                .AddTo(this);
             ViewModel.ReadyBeatCountString
                 .Subscribe(text => readyBeatField.text = text)
                 .AddTo(this);
 
-            chartTitleField
+            overrideDifficultyTextField
                 .OnEndEditAsObservable()
-                .Subscribe(ViewModel.SetChartTitle)
+                .Subscribe(ViewModel.SetOverrideDifficultyText)
                 .AddTo(this);
 
             kuiXingToggle
@@ -129,6 +138,18 @@ namespace CyanStars.Gameplay.ChartEditor.View
                             ViewModel.SetChartDifficulty(null);
                     }
                 )
+                .AddTo(this);
+            levelField.OnEndEditAsObservable()
+                .Subscribe(levelString =>
+                {
+                    if (!float.TryParse(levelString, out float level))
+                    {
+                        levelField.text = ViewModel.Level.CurrentValue.ToString(CultureInfo.InvariantCulture);
+                        return;
+                    }
+
+                    ViewModel.SetLevel(level);
+                })
                 .AddTo(this);
             readyBeatField
                 .OnEndEditAsObservable()

@@ -10,12 +10,12 @@ namespace CyanStars.Chart
         public string FilePath;
 
         /// <summary>
-        /// 谱面标题
+        /// 谱面难度区域文本覆写
         /// </summary>
         /// <remarks>
-        /// 内置谱约定为难度+定数，社区谱不做强制约定
+        /// 此字段为空时将以 难度+"Lv"+(int)定数 生成文本，非空时直接作为文本。内置谱约定此字段为空。
         /// </remarks>
-        public string ChartTitle;
+        public string OverrideDifficultyText;
 
         /// <summary>
         /// 谱面难度
@@ -24,6 +24,14 @@ namespace CyanStars.Chart
         /// 为空时只在制谱器内可见，游戏内不加载
         /// </remarks>
         public ChartDifficulty? Difficulty;
+
+        /// <summary>
+        /// 谱面定数
+        /// </summary>
+        /// <remarks>
+        /// 此字段除生成难度 Text 外暂无意义：内置谱在 SO 中配置定数，社区谱定数暂不参与玩家数据计算
+        /// </remarks>
+        public float Level;
 
         /// <summary>
         /// 提供的谱面哈希，用于和缓存哈希对比并展示历史成绩
