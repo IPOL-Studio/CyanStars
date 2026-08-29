@@ -4,6 +4,7 @@ using CyanStars.Chart;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
+using UnityEngine;
 
 namespace CyanStars.Gameplay.ChartEditor.ViewModel
 {
@@ -12,7 +13,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private readonly ChartMetaDataEditorModel MetaData;
         private readonly ChartDataEditorModel ChartData;
 
+        public readonly ReadOnlyReactiveProperty<string> OverrideDifficultyText;
         public readonly ReadOnlyReactiveProperty<ChartDifficulty?> ChartDifficulty;
+        public readonly ReadOnlyReactiveProperty<float> Level;
         public readonly ReadOnlyReactiveProperty<string> ReadyBeatCountString;
 
 
@@ -22,8 +25,14 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             MetaData = Model.ChartPackData.CurrentValue.ChartMetaDatas[Model.ChartMetaDataIndex];
             ChartData = Model.ChartData.CurrentValue;
 
+            OverrideDifficultyText = MetaData.OverrideDifficultyText
+                .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
             ChartDifficulty = MetaData.Difficulty
                 .ToReadOnlyReactiveProperty()
+                .AddTo(base.Disposables);
+            Level = MetaData.Level
+                .ToReadOnlyReactiveProperty(ForceUpdateEqualityComparer<float>.Instance)
                 .AddTo(base.Disposables);
 
             ReadyBeatCountString = ChartData.ReadyBeat
@@ -32,6 +41,19 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
         }
 
+
+        public void SetOverrideDifficultyText(string newText)
+        {
+            var oldText = OverrideDifficultyText.CurrentValue;
+
+            if (newText == oldText)
+                return;
+
+            CommandStack.ExecuteCommand(
+                () => MetaData.OverrideDifficultyText.Value = newText,
+                () => MetaData.OverrideDifficultyText.Value = oldText
+            );
+        }
 
         public void SetChartDifficulty(ChartDifficulty? newDifficulty)
         {
@@ -43,6 +65,25 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             CommandStack.ExecuteCommand(
                 () => MetaData.Difficulty.Value = newDifficulty,
                 () => MetaData.Difficulty.Value = oldDifficulty
+            );
+        }
+
+        public void SetLevel(float newLevel)
+        {
+            var oldLevel = Level.CurrentValue;
+
+            if (!Mathf.Approximately(oldLevel, newLevel))
+                return;
+
+            if (0 < newLevel)
+            {
+                MetaData.Level.ForceNotify();
+                return;
+            }
+
+            CommandStack.ExecuteCommand(
+                () => MetaData.Level.Value = newLevel,
+                () => MetaData.Level.Value = oldLevel
             );
         }
 
