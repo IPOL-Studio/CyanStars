@@ -20,23 +20,16 @@ namespace CyanStars.Chart
         public readonly bool IsInternal;
 
         /// <summary>
-        /// 谱包各个难度的定数，用于计算玩家实力
-        /// </summary>
-        /// <remarks>社区谱包此值无意义</remarks>
-        public readonly ChartPackLevels Levels;
-
-        /// <summary>
         /// 谱包工作区的绝对路径
         /// </summary>
         /// <remarks>谱包索引文件所在的目录，基于此路径读取其中的谱面和资源文件</remarks>
         public readonly string WorkspacePath;
 
 
-        public RuntimeChartPack(ChartPackData chartPackData, bool isInternal, ChartPackLevels levels, string workspacePath)
+        public RuntimeChartPack(ChartPackData chartPackData, bool isInternal, string workspacePath)
         {
             ChartPackData = chartPackData;
             IsInternal = isInternal;
-            Levels = levels;
             WorkspacePath = workspacePath;
         }
     }
