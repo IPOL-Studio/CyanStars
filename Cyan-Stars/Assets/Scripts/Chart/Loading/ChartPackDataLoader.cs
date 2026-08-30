@@ -36,14 +36,12 @@ namespace CyanStars.Chart.Loading
         public static async Task<List<RuntimeChartPack>> ReloadAllAsync(string playerChartPacksFolderPath)
         {
             var paths = new List<string>();
-            var levelsList = new List<ChartPackLevels>();
 
             using var internalListHandler = await GameRoot.Asset.LoadAssetAsync<InternalChartPackListSO>(InternalChartPackListFilePath);
             InternalChartPackListSO internalChartPackListSO = internalListHandler.Asset;
-            foreach (var item in internalChartPackListSO.InternalChartPacks)
+            foreach (var path in internalChartPackListSO.ChartPackFilePaths)
             {
-                paths.Add(item.ChartPackFilePath);
-                levelsList.Add(item.Levels);
+                paths.Add(path);
             }
 
             int internalPacksCount = paths.Count;
@@ -58,7 +56,6 @@ namespace CyanStars.Chart.Loading
             foreach (var path in playerChartPaths)
             {
                 paths.Add(path.Replace('\\', '/'));
-                levelsList.Add(new ChartPackLevels());
             }
 
             // 批量加载以提高效率，后续单个加载时能直接快速完成
@@ -99,8 +96,7 @@ namespace CyanStars.Chart.Loading
                     Debug.LogWarning($"某个内置谱包元数据不正确：{chartPackData.Title}，当前已允许加载，正式发布时应当修复");
                 }
 
-                ChartPackLevels levels = levelsList[i];
-                newPacks.Add(new RuntimeChartPack(chartPackData, isInternal, levels, workspacePath));
+                newPacks.Add(new RuntimeChartPack(chartPackData, isInternal, workspacePath));
             }
 
             return newPacks;
@@ -121,7 +117,6 @@ namespace CyanStars.Chart.Loading
             return new RuntimeChartPack(
                 chartPackData,
                 false,
-                new ChartPackLevels(),
                 Path.GetDirectoryName(chartPackFilePath)
             );
         }
@@ -142,7 +137,6 @@ namespace CyanStars.Chart.Loading
             return new RuntimeChartPack(
                 chartPackData,
                 false,
-                new ChartPackLevels(),
                 Path.GetDirectoryName(chartPackFilePath)
             );
         }
