@@ -18,6 +18,7 @@ namespace CyanStars.Gameplay.MusicGame
     /// 谱面列表的纵向 ScrollView 布局。
     /// 以 4 个 item 恰好铺满玩家 Canvas 高度作为基准，结合 Canvas 高度与 item 高度/间距高度比反推 item 高度和间距；
     /// item 不足 4 个时向上对齐（缺失的 item 表现为末尾空缺），item 多于 4 个时继续向下追加并撑高 Content。
+    /// 滚动 Content 时，会通过 <see cref="ChartItem"/> 调整每个 item 内子物体的横向位置，使它们在屏幕上呈“)”形状。
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(RectTransform))]
@@ -29,6 +30,10 @@ namespace CyanStars.Gameplay.MusicGame
 
         [SerializeField]
         private VerticalLayoutGroup contentVerticalLayoutGroup = null!;
+
+        [Tooltip("承载 Content 的 ScrollRect，用于监听滚动并更新弧形横坐标")]
+        [SerializeField]
+        private ScrollRect scrollRect = null!;
 
 
         [Header("配置参数")]
@@ -57,7 +62,7 @@ namespace CyanStars.Gameplay.MusicGame
         private ChartModule ChartModule => chartModule ??= GameRoot.GetDataModule<ChartModule>();
 
         private readonly GameObjectPoolManager GameObjectPool = GameRoot.GameObjectPool;
-        private readonly Dictionary<ChartMetaData, RectTransform> MetaDataToTransformDict = new();
+        private readonly Dictionary<ChartMetaData, ChartItem> MetaDataToChartItemDict = new();
 
         // 缓存 RectTransform 大小状态
         private Vector2 lastRectSize;
@@ -71,6 +76,7 @@ namespace CyanStars.Gameplay.MusicGame
             cts = new();
             _ = BuildLayoutAsync(ChartModule.SelectedRuntimeChartPack, cts.Token);
             ChartModule.OnSelectedChartPackChanged += RefreshChartLayoutAwait;
+            scrollRect.onValueChanged.AddListener(OnScrollValueChanged);
         }
 
         private void Update()
@@ -82,6 +88,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         private void OnDestroy()
         {
+            scrollRect.onValueChanged.RemoveListener(OnScrollValueChanged);
             ChartModule.OnSelectedChartPackChanged -= RefreshChartLayoutAwait;
         }
 
@@ -111,17 +118,14 @@ namespace CyanStars.Gameplay.MusicGame
                 cts = null;
             }
 
-            foreach (RectTransform itemRect in MetaDataToTransformDict.Values)
+            foreach (ChartItem chartItem in MetaDataToChartItemDict.Values)
             {
-                if (itemRect == null)
-                    continue;
-
                 // 先禁用，确保本帧的自动布局不会再计算旧 item，随后延迟销毁
-                itemRect.gameObject.SetActive(false);
-                GameObjectPool.ReleaseGameObject(itemPrefab, itemRect.gameObject);
+                chartItem.gameObject.SetActive(false);
+                GameObjectPool.ReleaseGameObject(itemPrefab, chartItem.gameObject);
             }
 
-            MetaDataToTransformDict.Clear();
+            MetaDataToChartItemDict.Clear();
         }
 
         /// <summary>
@@ -164,12 +168,12 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
-            MetaDataToTransformDict.Clear();
+            MetaDataToChartItemDict.Clear();
 
             foreach (var item in pendingTasks)
             {
                 var go = item.task.Result;
-                MetaDataToTransformDict[item.metaData] = (RectTransform)go.transform;
+                MetaDataToChartItemDict[item.metaData] = go.GetComponent<ChartItem>()!;
             }
 
             // 重新生成 item 后回到顶部，并应用布局
@@ -190,7 +194,7 @@ namespace CyanStars.Gameplay.MusicGame
             isDirty = false;
             lastRectSize = ((RectTransform)transform).rect.size;
 
-            int itemCount = MetaDataToTransformDict.Count;
+            int itemCount = MetaDataToChartItemDict.Count;
 
             CalculateHeight(out float itemHeight, out float itemGapHeight);
 
@@ -207,11 +211,9 @@ namespace CyanStars.Gameplay.MusicGame
             contentVerticalLayoutGroup.childForceExpandHeight = false;
 
             // 各 item 高度由代码接管
-            foreach (RectTransform itemRect in MetaDataToTransformDict.Values)
+            foreach (ChartItem chartItem in MetaDataToChartItemDict.Values)
             {
-                if (itemRect == null)
-                    continue;
-
+                RectTransform itemRect = (RectTransform)chartItem.transform;
                 itemRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, itemHeight);
             }
 
@@ -236,6 +238,45 @@ namespace CyanStars.Gameplay.MusicGame
                 contentRect.anchoredPosition = Vector2.zero;
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
+
+            UpdateChartItemHorizontalLayout();
+        }
+
+        private void OnScrollValueChanged(Vector2 value)
+        {
+            UpdateChartItemHorizontalLayout();
+        }
+
+        /// <summary>
+        /// 根据每个 item 在当前视口中的纵向位置，更新其 ChartItem 的横向归一化坐标，
+        /// 使所有 item 的子物体在屏幕上形成“)”形状。
+        /// </summary>
+        private void UpdateChartItemHorizontalLayout()
+        {
+            RectTransform selfRect = (RectTransform)transform;
+            float halfViewportHeight = selfRect.rect.height * 0.5f;
+
+            foreach (ChartItem chartItem in MetaDataToChartItemDict.Values)
+            {
+                RectTransform itemRect = (RectTransform)chartItem.transform;
+                Vector3 worldCenter = itemRect.TransformPoint(itemRect.rect.center);
+                Vector3 localCenter = selfRect.InverseTransformPoint(worldCenter);
+
+                chartItem.SetXPos(CalculateHorizontalNormalized(localCenter.y, halfViewportHeight));
+            }
+        }
+
+        /// <summary>
+        /// 将视口纵向位置映射为横向归一化坐标，形成三角函数“)”曲线。
+        /// </summary>
+        /// <param name="localY">item 中心在视口本地坐标系中的 y。</param>
+        /// <param name="halfViewportHeight">视口高度的一半。</param>
+        /// <returns>横向归一化坐标，0 为左边缘，1 为右边缘。</returns>
+        [Pure]
+        private static float CalculateHorizontalNormalized(float localY, float halfViewportHeight)
+        {
+            float normalizedY = Mathf.Clamp(localY / halfViewportHeight, -1f, 1f);
+            return Mathf.Cos(normalizedY * Mathf.PI * 0.5f);
         }
 
 
