@@ -83,7 +83,6 @@ namespace CyanStars.Gameplay.MusicGame
         private void OnDestroy()
         {
             ChartModule.OnSelectedChartPackChanged -= RefreshChartLayoutAwait;
-            ReleaseLayout();
         }
 
 
