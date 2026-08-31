@@ -53,7 +53,9 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private const int BaseItemCount = 4;
 
-        private readonly ChartModule ChartModule = GameRoot.GetDataModule<ChartModule>();
+        private ChartModule? chartModule;
+        private ChartModule ChartModule => chartModule ??= GameRoot.GetDataModule<ChartModule>();
+
         private readonly GameObjectPoolManager GameObjectPool = GameRoot.GameObjectPool;
         private readonly Dictionary<ChartMetaData, RectTransform> MetaDataToTransformDict = new();
 
