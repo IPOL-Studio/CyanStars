@@ -132,7 +132,9 @@ namespace CyanStars.Gameplay.MusicGame
             if (runtimeChartPack == null)
                 return;
 
-            // 筛选出非空难度，实例化 go，填充到字典
+            // 筛选出非空难度，实例化 go，以元组形式填充到列表
+            // 采用列表而非字典以保持顺序
+            // 采用局部变量 pendingTasks 牺牲少量 GC 性能来避免异步竟态
             var pendingTasks = new List<(ChartMetaData metaData, Task<GameObject> task)>();
             foreach (var chartMetaData in runtimeChartPack.ChartPackData.ChartMetaDatas)
             {
