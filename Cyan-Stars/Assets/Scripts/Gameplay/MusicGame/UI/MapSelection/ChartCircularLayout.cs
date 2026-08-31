@@ -34,11 +34,11 @@ namespace CyanStars.Gameplay.MusicGame
         [Header("配置参数")]
         [Tooltip("上边距（px）")]
         [SerializeField]
-        private float topMargin = 40f;
+        private float topMargin = 100f;
 
         [Tooltip("下边距（px）")]
         [SerializeField]
-        private float bottomMargin = 40f;
+        private float bottomMargin = 100f;
 
         [Tooltip("item 高度与 item 间距高度之比")]
         [SerializeField, Min(0.01f)]

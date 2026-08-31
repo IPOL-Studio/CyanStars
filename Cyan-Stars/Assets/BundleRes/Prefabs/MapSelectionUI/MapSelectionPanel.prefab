@@ -684,8 +684,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1600, y: 0}
-  m_SizeDelta: {x: 800, y: 0}
+  m_AnchoredPosition: {x: 1300, y: 0}
+  m_SizeDelta: {x: 650, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8429021108896516992
 MonoBehaviour:
@@ -699,13 +699,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3709f36100bf33540baa2cb17ab7cb33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CyanStars::CyanStars.Gameplay.MusicGame.ChartCircularLayout
-  scrollViewRect: {fileID: 3103881643900694413}
-  viewportRect: {fileID: 3749027040870025903}
   contentRect: {fileID: 2943818938201438500}
   contentVerticalLayoutGroup: {fileID: 6570388557406665474}
-  topMargin: 200
-  bottomMargin: 200
-  itemHeightToSpacingHeightRatio: 1.2
+  topMargin: 100
+  bottomMargin: 100
+  itemHeightToSpacingHeightRatio: 2
   itemPrefab: {fileID: 4994763827563346318, guid: b05dc9c0efeb71946b3ed06dd02bc2c2, type: 3}
 --- !u!1 &1140783367378899508
 GameObject:
