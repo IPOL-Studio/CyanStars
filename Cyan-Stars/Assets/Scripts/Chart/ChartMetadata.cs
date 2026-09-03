@@ -45,10 +45,18 @@ namespace CyanStars.Chart
         /// 构造函数
         /// </summary>
         [JsonConstructor]
-        public ChartMetaData(string filePath, ChartDifficulty? difficulty = null, string chartHash = null)
+        public ChartMetaData(
+            string filePath,
+            string overrideDifficultyText = "",
+            ChartDifficulty? difficulty = null,
+            float level = 0,
+            string chartHash = null
+        )
         {
             FilePath = filePath;
+            OverrideDifficultyText = overrideDifficultyText;
             Difficulty = difficulty;
+            Level = level;
             ChartHash = chartHash;
         }
     }

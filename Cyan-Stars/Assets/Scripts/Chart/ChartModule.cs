@@ -65,6 +65,11 @@ namespace CyanStars.Chart
         /// </summary>
         public Action<RuntimeChartPack?>? OnSelectedChartPackChanged;
 
+        /// <summary>
+        /// 当前预选的谱面发生了变化
+        /// </summary>
+        public Action<int?>? OnSelectedChartChanged;
+
 
         public override void OnInit()
         {
@@ -131,9 +136,9 @@ namespace CyanStars.Chart
             var runtimeChartPack = index == null ? null : RuntimeChartPacks[index.Value];
 
             // TODO: 记住玩家上次在此谱包中选择的音乐和谱面
+            // 有顺序依赖，勿调换此处顺序
             PreSelectMusicVersion(index != null && runtimeChartPack?.ChartPackData.MusicVersionDatas.Count > 0 ? 0 : null);
             PreSelectChartData(index != null && runtimeChartPack?.ChartPackData.ChartMetaDatas.Count > 0 ? 0 : null);
-
             OnSelectedChartPackChanged?.Invoke(runtimeChartPack);
         }
 
@@ -170,6 +175,7 @@ namespace CyanStars.Chart
             if (index == null)
             {
                 SelectedChartIndex = index;
+                OnSelectedChartChanged?.Invoke(index);
                 return;
             }
 
@@ -183,6 +189,7 @@ namespace CyanStars.Chart
                 throw new IndexOutOfRangeException("预选谱面下标越界");
 
             SelectedChartIndex = index;
+            OnSelectedChartChanged?.Invoke(index);
         }
 
         /// <summary>
@@ -202,6 +209,7 @@ namespace CyanStars.Chart
         {
             SelectedChartIndex = null;
             ChartData = null;
+            OnSelectedChartChanged?.Invoke(null);
         }
 
         #endregion

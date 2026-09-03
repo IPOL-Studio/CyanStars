@@ -32,8 +32,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1910761775628556215}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.333}
-  m_AnchorMax: {x: 1, y: 0.666}
+  m_AnchorMin: {x: 0, y: 0.33}
+  m_AnchorMax: {x: 1, y: 0.67}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -147,9 +147,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3788069240463979091}
   - component: {fileID: 881616191914777870}
-  - component: {fileID: 5808854446398648573}
+  - component: {fileID: 2936246323919903019}
   m_Layer: 5
-  m_Name: RawImage
+  m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -172,7 +172,7 @@ RectTransform:
   m_AnchorMin: {x: -0.666, y: -0.666}
   m_AnchorMax: {x: 1.666, y: 1.666}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -0.000029563904, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &881616191914777870
 CanvasRenderer:
@@ -182,7 +182,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2642438391483647742}
   m_CullTransparentMesh: 1
---- !u!114 &5808854446398648573
+--- !u!114 &2936246323919903019
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -191,9 +191,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 2642438391483647742}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RawImage
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -202,13 +202,16 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 3acedc9c22ea418458ab821f880e7682, type: 3}
-  m_UVRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
+  m_Sprite: {fileID: 21300000, guid: c2353d7c5b80b7a40b09105787baa98b, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &4734965173429766858
 GameObject:
   m_ObjectHideFlags: 0
@@ -219,6 +222,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1910761775628556215}
   - component: {fileID: 3592225787261374936}
+  - component: {fileID: 5679434723712479581}
   m_Layer: 5
   m_Name: GameObject
   m_TagString: Untagged
@@ -261,6 +265,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.AspectRatioFitter
   m_AspectMode: 3
   m_AspectRatio: 1
+--- !u!114 &5679434723712479581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4734965173429766858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 2936246323919903019}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &4994763827563346318
 GameObject:
   m_ObjectHideFlags: 0
@@ -311,3 +359,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CyanStars::CyanStars.Gameplay.MusicGame.ChartItem
   childRect: {fileID: 1910761775628556215}
+  chartImage: {fileID: 2936246323919903019}
+  chartText: {fileID: 3901329722070060886}
+  button: {fileID: 5679434723712479581}
+  kuiXingUnselectedSprite: {fileID: 21300000, guid: c2353d7c5b80b7a40b09105787baa98b, type: 3}
+  kuiXingSelectedSprite: {fileID: 21300000, guid: 60930e7eef6b29b44a6cbb68347dda56, type: 3}
+  qiMingUnselectedSprite: {fileID: 21300000, guid: de2182076898b184eb1059a018d75cda, type: 3}
+  qiMingSelectedSprite: {fileID: 21300000, guid: b3cab055d230bd947a37f3035e0cfa73, type: 3}
+  tianShuUnselectedSprite: {fileID: 21300000, guid: 0c99f47cc997d0d4b9eb89192942ce96, type: 3}
+  tianShuSelectedSprite: {fileID: 21300000, guid: 242652b7a642bb64697cc84a1945d854, type: 3}
+  wuYinUnselectedSprite: {fileID: 21300000, guid: 2b04f567001395b4497a1137d3cc3b51, type: 3}
+  wuYinSelectedSprite: {fileID: 21300000, guid: 720f0c1dff6e8884495d09f80151ba4f, type: 3}

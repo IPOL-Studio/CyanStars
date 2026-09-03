@@ -70,12 +70,19 @@ namespace CyanStars.Gameplay.MusicGame
 
         private CancellationTokenSource? cts;
 
+        /// <summary>
+        /// 当前正在构建/显示的谱包，用于判断谱面选中事件是否仍属于当前列表。
+        /// </summary>
+        private RuntimeChartPack? currentRuntimeChartPack;
+
 
         private void Start()
         {
             cts = new();
             _ = BuildLayoutAsync(ChartModule.SelectedRuntimeChartPack, cts.Token);
+
             ChartModule.OnSelectedChartPackChanged += RefreshChartLayoutAwait;
+            ChartModule.OnSelectedChartChanged += RefreshChartSelection;
             scrollRect.onValueChanged.AddListener(OnScrollValueChanged);
         }
 
@@ -89,6 +96,7 @@ namespace CyanStars.Gameplay.MusicGame
         private void OnDestroy()
         {
             scrollRect.onValueChanged.RemoveListener(OnScrollValueChanged);
+            ChartModule.OnSelectedChartChanged -= RefreshChartSelection;
             ChartModule.OnSelectedChartPackChanged -= RefreshChartLayoutAwait;
         }
 
@@ -120,6 +128,8 @@ namespace CyanStars.Gameplay.MusicGame
 
             foreach (ChartItem chartItem in MetaDataToChartItemDict.Values)
             {
+                chartItem.OnClicked -= OnChartItemClicked;
+
                 // 先禁用，确保本帧的自动布局不会再计算旧 item，随后延迟销毁
                 chartItem.gameObject.SetActive(false);
                 GameObjectPool.ReleaseGameObject(itemPrefab, chartItem.gameObject);
@@ -129,23 +139,52 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         /// <summary>
+        /// Chart item 被点击后，把点击的谱面预选到 ChartModule。
+        /// </summary>
+        private void OnChartItemClicked(ChartItem chartItem)
+        {
+            ChartModule.PreSelectChartData(chartItem.ChartIndex);
+        }
+
+        /// <summary>
+        /// 根据 ChartModule 的谱面选中下标刷新各 item 的选中状态。
+        /// </summary>
+        /// <param name="selectedChartIndex">ChartModule 中选中的谱面下标，为 null 时取消选中。</param>
+        private void RefreshChartSelection(int? selectedChartIndex)
+        {
+            // 谱包切换时会先触发谱面选中事件、再触发谱包切换事件。
+            // 此时当前列表属于旧谱包，跳过刷新，等待随后按新谱包重建布局。
+            if (currentRuntimeChartPack != ChartModule.SelectedRuntimeChartPack)
+                return;
+
+            foreach (ChartItem chartItem in MetaDataToChartItemDict.Values)
+            {
+                chartItem.SetSprite(chartItem.ChartIndex == selectedChartIndex);
+            }
+        }
+
+        /// <summary>
         /// 从对象池构建 Layout
         /// </summary>
         private async Task BuildLayoutAsync(RuntimeChartPack? runtimeChartPack, CancellationToken cancellationToken = default)
         {
+            currentRuntimeChartPack = runtimeChartPack;
+
             if (runtimeChartPack == null)
                 return;
 
             // 筛选出非空难度，实例化 go，以元组形式填充到列表
             // 采用列表而非字典以保持顺序
             // 采用局部变量 pendingTasks 牺牲少量 GC 性能来避免异步竟态
-            var pendingTasks = new List<(ChartMetaData metaData, Task<GameObject> task)>();
-            foreach (var chartMetaData in runtimeChartPack.ChartPackData.ChartMetaDatas)
+            // 保留原始下标，用于对齐 ChartModule.SelectedChartIndex
+            var pendingTasks = new List<(int chartIndex, ChartMetaData metaData, Task<GameObject> task)>();
+            for (int chartIndex = 0; chartIndex < runtimeChartPack.ChartPackData.ChartMetaDatas.Count; chartIndex++)
             {
+                var chartMetaData = runtimeChartPack.ChartPackData.ChartMetaDatas[chartIndex];
                 if (chartMetaData.Difficulty != null)
                 {
                     var task = GameObjectPool.GetGameObjectAsync(itemPrefab, contentRect, cancellationToken);
-                    pendingTasks.Add((chartMetaData, task));
+                    pendingTasks.Add((chartIndex, chartMetaData, task));
                 }
             }
 
@@ -173,7 +212,32 @@ namespace CyanStars.Gameplay.MusicGame
             foreach (var item in pendingTasks)
             {
                 var go = item.task.Result;
-                MetaDataToChartItemDict[item.metaData] = go.GetComponent<ChartItem>()!;
+                var chartItem = go.GetComponent<ChartItem>();
+                ChartDifficulty difficulty = (ChartDifficulty)item.metaData.Difficulty!;
+
+                string text;
+                if (string.IsNullOrEmpty(item.metaData.OverrideDifficultyText))
+                {
+                    var difficultyText = difficulty switch
+                    {
+                        ChartDifficulty.KuiXing => "窥星",
+                        ChartDifficulty.QiMing => "启明",
+                        ChartDifficulty.TianShu => "天枢",
+                        ChartDifficulty.WuYin => "无垠",
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+                    var level = item.metaData.Level;
+                    text = $"{difficultyText} Lv.{level}";
+                }
+                else
+                {
+                    text = item.metaData.OverrideDifficultyText;
+                }
+
+                chartItem.Init(text, difficulty, item.chartIndex, ChartModule.SelectedChartIndex == item.chartIndex);
+                chartItem.OnClicked += OnChartItemClicked;
+
+                MetaDataToChartItemDict[item.metaData] = chartItem;
             }
 
             // 重新生成 item 后回到顶部，并应用布局
