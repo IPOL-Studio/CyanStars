@@ -18,7 +18,7 @@ namespace CyanStars.Gameplay.MusicGame
     /// 谱面列表的纵向 ScrollView 布局。
     /// 以 4 个 item 恰好铺满玩家 Canvas 高度作为基准，结合 Canvas 高度与 item 高度/间距高度比反推 item 高度和间距；
     /// item 不足 4 个时向上对齐（缺失的 item 表现为末尾空缺），item 多于 4 个时继续向下追加并撑高 Content。
-    /// 滚动 Content 时，会通过 <see cref="ChartItem"/> 调整每个 item 内子物体的横向位置，使它们在屏幕上呈“)”形状。
+    /// 滚动 Content 时，会通过 <see cref="ChartItem"/> 调整每个 item 内子物体的横向位置，
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(RectTransform))]
@@ -34,6 +34,10 @@ namespace CyanStars.Gameplay.MusicGame
         [Tooltip("承载 Content 的 ScrollRect，用于监听滚动并更新弧形横坐标")]
         [SerializeField]
         private ScrollRect scrollRect = null!;
+
+        [Tooltip("谱包轮盘，复用其椭圆参数计算谱面 item 的横向位置")]
+        [SerializeField]
+        private ChartPackCircularLayout circularLayout = null!;
 
 
         [Header("配置参数")]
@@ -312,8 +316,8 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         /// <summary>
-        /// 根据每个 item 在当前视口中的纵向位置，更新其 ChartItem 的横向归一化坐标，
-        /// 使所有 item 的子物体在屏幕上形成“)”形状。
+        /// 根据每个 item 在当前视口中的纵向位置，更新其 ChartItem 的横向归一化坐标。
+        /// 纵向位置先按视口半高归一化，再由 CircularLayoutCalculator 反推椭圆角度并取右半椭圆横坐标，
         /// </summary>
         private void UpdateChartItemHorizontalLayout()
         {
@@ -326,21 +330,13 @@ namespace CyanStars.Gameplay.MusicGame
                 Vector3 worldCenter = itemRect.TransformPoint(itemRect.rect.center);
                 Vector3 localCenter = selfRect.InverseTransformPoint(worldCenter);
 
-                chartItem.SetXPos(CalculateHorizontalNormalized(localCenter.y, halfViewportHeight));
+                float normalizedY = halfViewportHeight > 0f ? localCenter.y / halfViewportHeight : 0f;
+                chartItem.SetXPos(CircularLayoutCalculator.CalculateRightEllipseNormalizedX(
+                    normalizedY,
+                    circularLayout.Radius,
+                    circularLayout.ScaleX
+                ));
             }
-        }
-
-        /// <summary>
-        /// 将视口纵向位置映射为横向归一化坐标，形成三角函数“)”曲线。
-        /// </summary>
-        /// <param name="localY">item 中心在视口本地坐标系中的 y。</param>
-        /// <param name="halfViewportHeight">视口高度的一半。</param>
-        /// <returns>横向归一化坐标，0 为左边缘，1 为右边缘。</returns>
-        [Pure]
-        private static float CalculateHorizontalNormalized(float localY, float halfViewportHeight)
-        {
-            float normalizedY = Mathf.Clamp(localY / halfViewportHeight, -1f, 1f);
-            return Mathf.Cos(normalizedY * Mathf.PI * 0.5f);
         }
 
 

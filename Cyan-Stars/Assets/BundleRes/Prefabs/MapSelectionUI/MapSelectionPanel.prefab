@@ -702,6 +702,7 @@ MonoBehaviour:
   contentRect: {fileID: 2943818938201438500}
   contentVerticalLayoutGroup: {fileID: 6570388557406665474}
   scrollRect: {fileID: 2888535466478046119}
+  circularLayout: {fileID: 9033637718569037611}
   topMargin: 100
   bottomMargin: 100
   itemHeightToSpacingHeightRatio: 2
@@ -3465,7 +3466,7 @@ GameObject:
   - component: {fileID: 1559451895784456421}
   - component: {fileID: 1069564652605141252}
   m_Layer: 5
-  m_Name: CircularLayout
+  m_Name: ChartPackCircularLayout
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
