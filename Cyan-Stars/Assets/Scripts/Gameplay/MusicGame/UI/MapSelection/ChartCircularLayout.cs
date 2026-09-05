@@ -316,21 +316,44 @@ namespace CyanStars.Gameplay.MusicGame
         }
 
         /// <summary>
-        /// 根据每个 item 在当前视口中的纵向位置，更新其 ChartItem 的横向归一化坐标。
-        /// 纵向位置先按视口半高归一化，再由 CircularLayoutCalculator 反推椭圆角度并取右半椭圆横坐标，
+        /// 根据每个 item 在当前视口中的可见区域，更新其 ChartItem 的横向归一化坐标。
+        /// item 部分滚出视口时，使用 item 与视口的可见交集的中心点作为纵向坐标，
+        /// 避免用屏幕外的 item 完整中心点导致可见部分显示位置错误。
+        /// 纵向坐标按视口半高归一化后，交由 CircularLayoutCalculator 反推椭圆角度并取右半椭圆横坐标。
         /// </summary>
         private void UpdateChartItemHorizontalLayout()
         {
             RectTransform selfRect = (RectTransform)transform;
             float halfViewportHeight = selfRect.rect.height * 0.5f;
+            float viewportMinY = selfRect.rect.yMin;
+            float viewportMaxY = selfRect.rect.yMax;
 
             foreach (ChartItem chartItem in MetaDataToChartItemDict.Values)
             {
                 RectTransform itemRect = (RectTransform)chartItem.transform;
-                Vector3 worldCenter = itemRect.TransformPoint(itemRect.rect.center);
-                Vector3 localCenter = selfRect.InverseTransformPoint(worldCenter);
 
-                float normalizedY = halfViewportHeight > 0f ? localCenter.y / halfViewportHeight : 0f;
+                // 将 item 上下边转换到视口局部坐标系，计算 item 与视口的纵向可见交集
+                Vector3 itemMinWorld = itemRect.TransformPoint(new Vector3(0f, itemRect.rect.yMin, 0f));
+                Vector3 itemMaxWorld = itemRect.TransformPoint(new Vector3(0f, itemRect.rect.yMax, 0f));
+                float itemMinY = selfRect.InverseTransformPoint(itemMinWorld).y;
+                float itemMaxY = selfRect.InverseTransformPoint(itemMaxWorld).y;
+
+                float visibleMinY = Mathf.Max(itemMinY, viewportMinY);
+                float visibleMaxY = Mathf.Min(itemMaxY, viewportMaxY);
+
+                // 可见交集存在时取交集中心；item 完全在视口外时退化为按最近视口边缘计算
+                float layoutY;
+                if (visibleMinY < visibleMaxY)
+                {
+                    layoutY = (visibleMinY + visibleMaxY) * 0.5f;
+                }
+                else
+                {
+                    float itemCenterY = (itemMinY + itemMaxY) * 0.5f;
+                    layoutY = Mathf.Clamp(itemCenterY, viewportMinY, viewportMaxY);
+                }
+
+                float normalizedY = halfViewportHeight > 0f ? layoutY / halfViewportHeight : 0f;
                 chartItem.SetXPos(CircularLayoutCalculator.CalculateRightEllipseNormalizedX(
                     normalizedY,
                     circularLayout.Radius,
