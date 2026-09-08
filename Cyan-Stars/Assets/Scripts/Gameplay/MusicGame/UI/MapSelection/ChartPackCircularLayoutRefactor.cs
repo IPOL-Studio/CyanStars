@@ -29,7 +29,7 @@ namespace CyanStars.Gameplay.MusicGame
         private bool isLoading = false;
         private readonly List<Task> TasksCache = new();
         private readonly Dictionary<BaseUIItem, int> ChartPackItemToIndexCache = new();
-        private readonly Dictionary<BaseUIItem, AssetHandler<Sprite?>> ChartPackItemToCoverHandlerCache = new();
+        private readonly Dictionary<BaseUIItem, AssetHandler<Texture2D?>> ChartPackItemToCoverHandlerCache = new();
 
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace CyanStars.Gameplay.MusicGame
             public MapItemData Data;
             public BaseUIItem? CompletedItem;
             public Task<BaseUIItem>? ItemTask;
-            public Task<AssetHandler<Sprite?>?>? CoverTask;
+            public Task<AssetHandler<Texture2D?>?>? CoverTask;
         }
 
         public async Task RebuildItemsAsync(MapItemData[] datas)
@@ -85,7 +85,7 @@ namespace CyanStars.Gameplay.MusicGame
                     }
 
                     // 创建 Cover Assets 加载任务
-                    Task<AssetHandler<Sprite?>?> coverTask = LoadCoverAssetAsync(data);
+                    Task<AssetHandler<Texture2D?>?> coverTask = LoadCoverAssetAsync(data);
                     TasksCache.Add(coverTask);
 
                     contexts[i] = new LoadContext
@@ -101,7 +101,7 @@ namespace CyanStars.Gameplay.MusicGame
                 foreach (var context in contexts)
                 {
                     BaseUIItem item = context.CompletedItem ?? context.ItemTask!.Result;
-                    AssetHandler<Sprite?>? coverHandler = context.CoverTask!.Result;
+                    AssetHandler<Texture2D?>? coverHandler = context.CoverTask!.Result;
 
                     InitializeChartPackItem(context.Data, item, coverHandler);
                     CacheChartPackItem(context.Data, item, coverHandler);
@@ -125,7 +125,7 @@ namespace CyanStars.Gameplay.MusicGame
         /// <summary>
         /// 创建单个谱包封面的加载任务。
         /// </summary>
-        private static async Task<AssetHandler<Sprite?>?> LoadCoverAssetAsync(MapItemData data)
+        private static async Task<AssetHandler<Texture2D?>?> LoadCoverAssetAsync(MapItemData data)
         {
             RuntimeChartPack? runtimeChartPack = data.RuntimeChartPack;
             if (runtimeChartPack == null)
@@ -136,7 +136,7 @@ namespace CyanStars.Gameplay.MusicGame
                 return null;
 
             string fullCoverFilePath = PathUtil.Combine(runtimeChartPack.WorkspacePath, coverFilePath);
-            return await GameRoot.Asset.LoadAssetAsync<Sprite?>(fullCoverFilePath);
+            return await GameRoot.Asset.LoadAssetAsync<Texture2D?>(fullCoverFilePath);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace CyanStars.Gameplay.MusicGame
         private void InitializeChartPackItem(
             MapItemData data,
             BaseUIItem item,
-            AssetHandler<Sprite?>? coverHandler)
+            AssetHandler<Texture2D?>? coverHandler)
         {
             if (item is not ChartPackItem chartPackItem)
             {
@@ -169,7 +169,7 @@ namespace CyanStars.Gameplay.MusicGame
         private void CacheChartPackItem(
             MapItemData data,
             BaseUIItem item,
-            AssetHandler<Sprite?>? coverHandler)
+            AssetHandler<Texture2D?>? coverHandler)
         {
             ChartPackItemToIndexCache[item] = data.Index;
 

@@ -15,7 +15,7 @@ namespace CyanStars
         private Button button = null!;
 
         [SerializeField]
-        private Image coverImage = null!;
+        private RawImage coverImage = null!;
 
         [SerializeField]
         private TMP_Text titleText = null!;
@@ -24,9 +24,9 @@ namespace CyanStars
         /// <summary>
         /// 从对象池获取此物体后立刻调用此方法来初始化和绑定
         /// </summary>
-        public void Init(Sprite coverSprite, string titleString, UnityAction clickedAction)
+        public void Init(Texture2D? coverTexture, string titleString, UnityAction clickedAction)
         {
-            coverImage.sprite = coverSprite;
+            coverImage.texture = coverTexture;
             titleText.text = titleString;
             button.onClick.AddListener(clickedAction);
         }
