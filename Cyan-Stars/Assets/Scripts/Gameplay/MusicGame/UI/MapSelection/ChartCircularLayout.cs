@@ -279,6 +279,7 @@ namespace CyanStars.Gameplay.MusicGame
             {
                 RectTransform itemRect = (RectTransform)chartItem.transform;
                 itemRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, itemHeight);
+                LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)chartItem.transform);
             }
 
             // Content 高度（由于需要在整个区域接收指针输入，必须手动设置高度，不能依赖 Unity Content Size Fitter）：
@@ -303,6 +304,8 @@ namespace CyanStars.Gameplay.MusicGame
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
 
+            Canvas.ForceUpdateCanvases();
+
             UpdateChartItemHorizontalLayout();
         }
 
@@ -319,11 +322,14 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void UpdateChartItemHorizontalLayout()
         {
-            RectTransform selfRect = (RectTransform)transform;
+            RectTransform viewportRect = scrollRect.viewport != null
+                ? scrollRect.viewport
+                : (RectTransform)scrollRect.transform;
+
             foreach (ChartItem chartItem in MetaDataToChartItemDict.Values)
             {
                 RectTransform itemRect = (RectTransform)chartItem.transform;
-                CircularLayoutHelper.SetItemXPos(itemRect, (RectTransform)scrollRect.transform);
+                CircularLayoutHelper.SetItemXPos(itemRect, viewportRect, chartItem.SubItemWidth);
             }
         }
 
