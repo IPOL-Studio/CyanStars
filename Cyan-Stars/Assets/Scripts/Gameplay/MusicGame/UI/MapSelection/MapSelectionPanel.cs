@@ -37,22 +37,25 @@ namespace CyanStars.Gameplay.MusicGame
         private float pageRatio;
         private Tween? starTween;
 
-        public MapItemData CurrentSelectedMap { get; set; } = null!;
-
-
         protected override void OnCreate()
         {
             // 查找、初始化、注册选曲页子页面组件
-            var pages = this.GetComponentsInChildren<IMapSelectionPage>(true);
+            var pages = GetComponentsInChildren<IMapSelectionPage>(true);
             foreach (var page in pages)
             {
-                page.OnInit(this);
+                page.OnInit(StarController);
+
+                if (page is MapListPage mapListPage)
+                {
+                    mapListPage.OnNextStepRequested += ChangePage<StaffPage>;
+                }
+
                 PageDict.Add(page.GetType(), page);
                 ((Component)page).gameObject.SetActive(false);
             }
 
             // 绑定各个组件回调
-            autoModeToggle.onValueChanged.AddListener((isOn) =>
+            autoModeToggle.onValueChanged.AddListener(isOn =>
                 GameRoot.GetDataModule<MusicGamePlayingDataModule>().IsAutoMode = isOn
             );
             backButton.onClick.AddListener(() =>
@@ -78,9 +81,6 @@ namespace CyanStars.Gameplay.MusicGame
                 chartModule.SelectChartPackData(0);
             if (chartModule.SelectedChartPackIndex >= chartModule.RuntimeChartPacks.Count)
                 chartModule.SelectChartPackData(chartModule.RuntimeChartPacks.Count - 1);
-            CurrentSelectedMap =
-                MapItemData.Create((int)chartModule.SelectedChartPackIndex!, chartModule.SelectedRuntimeChartPack!);
-
 
             pageRatio = 0;
             PageStack.Clear();
@@ -101,7 +101,10 @@ namespace CyanStars.Gameplay.MusicGame
                 starTween = null;
             }
 
-            var args = new MapSelectionPageChangeArgs() { FadeTime = 0f };
+            var args = new MapSelectionPageChangeArgs
+            {
+                FadeTime = 0f
+            };
             while (PageStack.Count > 0)
             {
                 var page = PageStack.Pop();
@@ -111,15 +114,20 @@ namespace CyanStars.Gameplay.MusicGame
             base.OnClose();
         }
 
-        public void ChangePage<T>() where T : IMapSelectionPage
+        private void ChangePage<T>() where T : IMapSelectionPage
         {
             if (!PageDict.TryGetValue(typeof(T), out IMapSelectionPage page))
             {
+#if UNITY_EDITOR
                 Debug.LogWarning("page can not be null");
+#endif
                 return;
             }
 
-            var args = new MapSelectionPageChangeArgs() { FadeTime = 1.2f, AnimationEase = Ease.OutQuart };
+            var args = new MapSelectionPageChangeArgs
+            {
+                FadeTime = 1.2f, AnimationEase = Ease.OutQuart
+            };
 
             var currentPage = PageStack.Count > 0 ? PageStack.Peek() : null;
 
@@ -140,7 +148,10 @@ namespace CyanStars.Gameplay.MusicGame
 
         private void BackToPrePage()
         {
-            var args = new MapSelectionPageChangeArgs() { FadeTime = 1.2f, AnimationEase = Ease.OutQuart };
+            var args = new MapSelectionPageChangeArgs
+            {
+                FadeTime = 1.2f, AnimationEase = Ease.OutQuart
+            };
 
             if (starTween?.IsPlaying() ?? false)
                 starTween.Kill(false);
@@ -154,21 +165,20 @@ namespace CyanStars.Gameplay.MusicGame
             PageStack.Peek().OnEnter(args);
         }
 
-        public bool IsActive<T>() where T : IMapSelectionPage
-        {
-            return PageStack.Count > 0 && PageStack.Peek().GetType() == typeof(T);
-        }
-
         private void OpenInfoPopup()
         {
-            chartPackInfoPopup.SetInfoRawText(CurrentSelectedMap.RuntimeChartPack.ChartPackData.ChartPackInfo);
+            ChartModule chartModule = GameRoot.GetDataModule<ChartModule>();
+            if (chartModule.SelectedRuntimeChartPack == null)
+                return;
+
+            chartPackInfoPopup.SetInfoRawText(chartModule.SelectedRuntimeChartPack.ChartPackData.ChartPackInfo);
             chartPackInfoPopup.gameObject.SetActive(true);
         }
     }
 
     public interface IMapSelectionPage
     {
-        void OnInit(MapSelectionPanel owner);
+        void OnInit(StarController starController);
         void OnEnter(MapSelectionPageChangeArgs args);
         void OnExit(MapSelectionPageChangeArgs args);
     }

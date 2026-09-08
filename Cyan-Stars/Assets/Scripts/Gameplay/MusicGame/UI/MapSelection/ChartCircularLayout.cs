@@ -35,10 +35,6 @@ namespace CyanStars.Gameplay.MusicGame
         [SerializeField]
         private ScrollRect scrollRect = null!;
 
-        [Tooltip("谱包轮盘，复用其椭圆参数计算谱面 item 的横向位置")]
-        [SerializeField]
-        private ChartPackCircularLayout circularLayout = null!;
-
 
         [Header("配置参数")]
         [Tooltip("上边距（px）")]
@@ -354,11 +350,7 @@ namespace CyanStars.Gameplay.MusicGame
                 }
 
                 float normalizedY = halfViewportHeight > 0f ? layoutY / halfViewportHeight : 0f;
-                chartItem.SetXPos(CircularLayoutCalculator.CalculateRightEllipseNormalizedX(
-                    normalizedY,
-                    circularLayout.Radius,
-                    circularLayout.ScaleX
-                ));
+                chartItem.SetXPos(0); // TODO: 计算 xPos
             }
         }
 

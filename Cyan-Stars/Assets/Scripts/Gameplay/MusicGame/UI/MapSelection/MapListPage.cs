@@ -1,8 +1,10 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CyanStars.Framework;
 using CyanStars.Chart;
+using CyanStars.Framework;
 using CyanStars.MarkdownRenderer.Utils;
 using DG.Tweening;
 using TMPro;
@@ -15,42 +17,49 @@ namespace CyanStars.Gameplay.MusicGame
     public class MapListPage : MonoBehaviour, IMapSelectionPage
     {
         [SerializeField]
-        private GameObject mapItemTemplate;
+        private ChartPackCircularLayoutRefactor chartPackCircularLayoutRefactor = null!;
 
         [SerializeField]
-        private ChartPackCircularLayout circularMapList;
+        private Button nextStepButton = null!;
 
         [SerializeField]
-        private Button nextStepButton;
-
-        [SerializeField]
-        private TextMeshProUGUI mapTitleText;
+        private TextMeshProUGUI mapTitleText = null!;
 
 
-        private MapSelectionPanel owner;
-        private CanvasGroup canvasGroup;
+        public event Action? OnNextStepRequested;
 
-        private IPageElementAnimation[] animationElements;
-        private Tween runningTween;
+        private CanvasGroup canvasGroup = null!;
+        private StarController starController = null!;
 
-        private ChartModule chartModule;
-        private List<MapItem> mapItems;
+        private IPageElementAnimation[] animationElements = null!;
+        private Tween? runningTween;
 
-        private readonly HashSet<string> staffNames = new();
+        private ChartModule chartModule = null!;
+        private readonly HashSet<string> StaffNames = new();
+
+        private int? selectedChartPackIndex;
 
 
-        public void OnInit(MapSelectionPanel owner)
+        public void OnInit(StarController controller)
         {
-            this.owner = owner;
+            starController = controller;
             canvasGroup = GetComponent<CanvasGroup>();
 
             animationElements = GetComponentsInChildren<IPageElementAnimation>(true);
 
             chartModule = GameRoot.GetDataModule<ChartModule>();
-            mapItems = new List<MapItem>();
 
             mapTitleText.text = ""; // 防止编辑器内的示例标题参与首次打开 UI 时的淡出动画
-            nextStepButton.onClick.AddListener(this.owner.ChangePage<StaffPage>);
+            nextStepButton.onClick.AddListener(() => OnNextStepRequested?.Invoke());
+            chartPackCircularLayoutRefactor.OnChartPackItemClicked += OnChartPackItemClicked;
+        }
+
+        private void OnDestroy()
+        {
+            if (chartPackCircularLayoutRefactor != null)
+            {
+                chartPackCircularLayoutRefactor.OnChartPackItemClicked -= OnChartPackItemClicked;
+            }
         }
 
         public async void OnEnter(MapSelectionPageChangeArgs args)
@@ -63,12 +72,14 @@ namespace CyanStars.Gameplay.MusicGame
             canvasGroup.alpha = 0;
             gameObject.SetActive(true);
 
-            ClearMapItems();
-            circularMapList.ResetItems();
+            selectedChartPackIndex = null;
             await RefreshMusicList();
 
+            if (chartModule.RuntimeChartPacks.Count > 0)
+            {
+                SelectChartPack(chartModule.SelectedChartPackIndex ?? 0);
+            }
 
-            OnSelectMap(mapItems[this.owner.CurrentSelectedMap.Index] as MapItem);
             runningTween = canvasGroup.DOFade(1, args.FadeTime)
                 .SetEase(args.AnimationEase)
                 .OnKill(() => runningTween = null);
@@ -97,90 +108,77 @@ namespace CyanStars.Gameplay.MusicGame
                 .SetEase(args.AnimationEase)
                 .OnComplete(() =>
                 {
-                    ClearMapItems();
                     gameObject.SetActive(false);
                 })
                 .OnKill(() => runningTween = null);
         }
 
         /// <summary>
-        /// 清理旧的谱面项，解绑事件并销毁/回收物体
-        /// </summary>
-        private void ClearMapItems()
-        {
-            if (mapItems == null)
-                return;
-
-            for (int i = mapItems.Count - 1; i >= 0; i--)
-            {
-                var item = mapItems[i];
-                item.OnSelect -= OnSelectMap;
-                GameRoot.UI.ReleaseUIItem(item);
-            }
-
-            mapItems.Clear();
-        }
-
-        /// <summary>
-        /// 刷新谱面列表
+        /// 刷新谱包列表
         /// </summary>
         private async Task RefreshMusicList()
         {
             IReadOnlyList<RuntimeChartPack> chartPacks = chartModule.RuntimeChartPacks;
-
+            MapItemData[] chartPackItemData = new MapItemData[chartPacks.Count];
             for (int i = 0; i < chartPacks.Count; i++)
             {
-                RuntimeChartPack runtimeChartPack = chartPacks[i];
-                MapItemData data = MapItemData.Create(i, runtimeChartPack);
-                MapItem mapItem = await GameRoot.UI.GetUIItemAsync<MapItem>(mapItemTemplate, circularMapList.transform);
-                await mapItem.Init(data);
-                circularMapList.AddItem(mapItem);
-                mapItems.Add(mapItem);
-                mapItem.OnSelect += OnSelectMap;
+                chartPackItemData[i] = MapItemData.Create(i, chartPacks[i]);
             }
+
+            await chartPackCircularLayoutRefactor.RebuildItemsAsync(chartPackItemData);
         }
 
-        private void OnSelectMap(MapItem mapItem)
+        private void OnChartPackItemClicked(int index)
         {
-            // 在谱包轮盘中选中谱包
-            if (mapItem.Data == null)
-                throw new NullReferenceException(nameof(mapItem.Data));
-            chartModule.SelectChartPackData(mapItem.Data.Index);
+            SelectChartPack(index);
+        }
 
-            // 将选中的谱面移到圆环中央，即使当前已经选中也执行
-            circularMapList.MoveToItemAt(mapItem.Data!.Index);
-
-            if (owner.CurrentSelectedMap == mapItem.Data)
-            {
+        private void SelectChartPack(int index)
+        {
+            if (index < 0 || index >= chartModule.RuntimeChartPacks.Count)
                 return;
-            }
 
-            owner.CurrentSelectedMap = mapItem.Data;
+            // 同一个谱包重复点击无需重复刷新标题和 Staff
+            if (selectedChartPackIndex == index)
+                return;
 
-            Debug.Log("当前选中:" + mapItem.Data.RuntimeChartPack!.ChartPackData.Title);
+            chartModule.SelectChartPackData(index);
+            selectedChartPackIndex = index;
 
-            // 标题和Staff信息渐变动画
+            RuntimeChartPack runtimeChartPack = chartModule.RuntimeChartPacks[index];
+            UpdateMapTitle(runtimeChartPack);
+            UpdateStaff(runtimeChartPack);
+        }
+
+        /// <summary>
+        /// 更新标题和 Staff 信息渐变动画
+        /// </summary>
+        private void UpdateMapTitle(RuntimeChartPack runtimeChartPack)
+        {
+            string title = runtimeChartPack.ChartPackData.Title;
             mapTitleText.DOFade(0, 0.2f).OnComplete(() =>
             {
-                mapTitleText.text = mapItem.Data.RuntimeChartPack.ChartPackData.Title;
+                mapTitleText.text = title;
                 mapTitleText.DOFade(1, 0.2f);
             });
+        }
 
+        private void UpdateStaff(RuntimeChartPack runtimeChartPack)
+        {
             if (chartModule.SelectedMusicVersionIndex == null)
             {
                 Debug.LogWarning("没有设置音乐版本");
                 return;
             }
 
-            string chartPackInfo = mapItem.Data.RuntimeChartPack.ChartPackData.ChartPackInfo;
-            staffNames.Clear();
+            StaffNames.Clear();
 
-            foreach (AtInfo atInfo in MarkdownUtils.CollectCysAtInfo(chartPackInfo))
+            foreach (AtInfo atInfo in MarkdownUtils.CollectCysAtInfo(runtimeChartPack.ChartPackData.ChartPackInfo))
             {
-                staffNames.Add(atInfo.Content);
+                StaffNames.Add(atInfo.Content);
             }
 
-            owner.StarController.ResetAllStaffGroup(staffNames);
+            starController.ResetAllStaffGroup(StaffNames);
         }
     }
 }

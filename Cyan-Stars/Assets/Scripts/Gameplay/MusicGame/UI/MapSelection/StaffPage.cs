@@ -1,6 +1,5 @@
 using System.Collections;
 using CyanStars.Framework;
-using CyanStars.Chart;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,18 +22,17 @@ namespace CyanStars.Gameplay.MusicGame
         private CanvasGroup canvasGroup;
         private Tween runningTween;
 
-        private MapSelectionPanel owner;
+        private StarController starController;
 
         private Coroutine staffCarouseCor;
 
 
-        public void OnInit(MapSelectionPanel owner)
+        public void OnInit(StarController controller)
         {
-            this.owner = owner;
+            starController = controller;
 
-            startButton.onClick.AddListener(async () =>
+            startButton.onClick.AddListener(() =>
             {
-                ChartModule module = GameRoot.GetDataModule<ChartModule>();
                 GameRoot.ChangeProcedure<MusicGameProcedure>();
             });
 
@@ -70,7 +68,7 @@ namespace CyanStars.Gameplay.MusicGame
             if (staffCarouseCor != null)
             {
                 StopCoroutine(staffCarouseCor);
-                owner.StarController.ResetShowingGroup();
+                starController.ResetShowingGroup();
                 staffCarouseCor = null;
             }
 
@@ -87,12 +85,12 @@ namespace CyanStars.Gameplay.MusicGame
         {
             while (true)
             {
-                owner.StarController.ShowNextStaffGroup();
+                starController.ShowNextStaffGroup();
 
                 if (staffGroupKeepTime <= 0)
                     staffGroupKeepTime = 3f;
 
-                if (lastStaffGroupKeepTime != staffGroupKeepTime || staffCarouseInterval == null)
+                if (!Mathf.Approximately(lastStaffGroupKeepTime, staffGroupKeepTime) || staffCarouseInterval == null)
                 {
                     lastStaffGroupKeepTime = staffGroupKeepTime;
                     staffCarouseInterval = new WaitForSeconds(staffGroupKeepTime);
