@@ -54,7 +54,6 @@ namespace CyanStars.Gameplay.MusicGame
             isLoading = true;
             TasksCache.Clear();
 
-            // 预分配数组，避免中间集合的堆内存分配与冗余循环
             LoadContext[] contexts = new LoadContext[datas.Length];
 
             try
