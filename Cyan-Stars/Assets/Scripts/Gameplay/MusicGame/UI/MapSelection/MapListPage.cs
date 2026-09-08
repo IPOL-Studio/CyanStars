@@ -17,7 +17,7 @@ namespace CyanStars.Gameplay.MusicGame
     public class MapListPage : MonoBehaviour, IMapSelectionPage
     {
         [SerializeField]
-        private ChartPackCircularLayoutRefactor chartPackCircularLayoutRefactor = null!;
+        private ChartPackCircularLayout chartPackCircularLayout = null!;
 
         [SerializeField]
         private Button nextStepButton = null!;
@@ -51,14 +51,14 @@ namespace CyanStars.Gameplay.MusicGame
 
             mapTitleText.text = ""; // 防止编辑器内的示例标题参与首次打开 UI 时的淡出动画
             nextStepButton.onClick.AddListener(() => OnNextStepRequested?.Invoke());
-            chartPackCircularLayoutRefactor.OnChartPackItemClicked += OnChartPackItemClicked;
+            chartPackCircularLayout.OnChartPackItemClicked += OnChartPackItemClicked;
         }
 
         private void OnDestroy()
         {
-            if (chartPackCircularLayoutRefactor != null)
+            if (chartPackCircularLayout != null)
             {
-                chartPackCircularLayoutRefactor.OnChartPackItemClicked -= OnChartPackItemClicked;
+                chartPackCircularLayout.OnChartPackItemClicked -= OnChartPackItemClicked;
             }
         }
 
@@ -125,7 +125,7 @@ namespace CyanStars.Gameplay.MusicGame
                 chartPackItemData[i] = MapItemData.Create(i, chartPacks[i]);
             }
 
-            await chartPackCircularLayoutRefactor.RebuildItemsAsync(chartPackItemData);
+            await chartPackCircularLayout.RebuildItemsAsync(chartPackItemData);
         }
 
         private void OnChartPackItemClicked(int index)

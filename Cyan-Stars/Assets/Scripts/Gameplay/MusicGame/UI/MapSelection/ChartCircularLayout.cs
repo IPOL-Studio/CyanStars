@@ -314,12 +314,6 @@ namespace CyanStars.Gameplay.MusicGame
             UpdateChartItemHorizontalLayout();
         }
 
-        /// <summary>
-        /// 根据每个 item 在当前视口中的可见区域，更新其 ChartItem 的横向归一化坐标。
-        /// item 部分滚出视口时，使用 item 与视口的可见交集的中心点作为纵向坐标，
-        /// 避免用屏幕外的 item 完整中心点导致可见部分显示位置错误。
-        /// 纵向坐标按视口半高归一化后，交由 CircularLayoutHelper 反推椭圆角度并取右半椭圆横坐标。
-        /// </summary>
         private void UpdateChartItemHorizontalLayout()
         {
             RectTransform viewportRect = scrollRect.viewport != null

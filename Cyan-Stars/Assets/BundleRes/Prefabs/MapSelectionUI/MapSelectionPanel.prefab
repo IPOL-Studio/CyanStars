@@ -1053,8 +1053,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7213547291496103495}
   - component: {fileID: 150937087443766404}
-  - component: {fileID: 143608747815001115}
-  - component: {fileID: 8295284721234122699}
   m_Layer: 5
   m_Name: Viewport
   m_TagString: Untagged
@@ -1090,49 +1088,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1666260160342083242}
   m_CullTransparentMesh: 1
---- !u!114 &143608747815001115
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1666260160342083242}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!114 &8295284721234122699
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1666260160342083242}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Mask
-  m_ShowMaskGraphic: 0
 --- !u!1 &1880130541852345056
 GameObject:
   m_ObjectHideFlags: 0
@@ -1425,7 +1380,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1460,7 +1415,7 @@ MonoBehaviour:
     m_Top: 620
     m_Bottom: 620
   m_ChildAlignment: 0
-  m_Spacing: 60
+  m_Spacing: 100
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -1870,7 +1825,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 289.75162}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3228962939596442925
@@ -2005,7 +1960,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
+  m_fontSize: 55.65
   m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2192,8 +2147,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -174}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 518, y: -174}
+  m_SizeDelta: {x: 1036, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3966465432295803747
 MonoBehaviour:
@@ -2668,7 +2623,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04473cc2cce273041b62447247a2701c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chartPackCircularLayoutRefactor: {fileID: 2940052800967232776}
+  chartPackCircularLayout: {fileID: 2940052800967232776}
   nextStepButton: {fileID: 8229265427151361241}
   mapTitleText: {fileID: 4034409258918203107}
 --- !u!1 &4876028859582809338
@@ -3377,8 +3332,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2926405019053317646}
   m_HandleRect: {fileID: 860111353162997801}
   m_Direction: 2
-  m_Value: 0.47004738
-  m_Size: 0
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5010,8 +4965,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 400, y: 0}
-  m_SizeDelta: {x: 800, y: 0}
+  m_AnchoredPosition: {x: 600, y: 0}
+  m_SizeDelta: {x: 700, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2940052800967232776
 MonoBehaviour:
@@ -5024,7 +4979,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bafbc721cc9a70b4f8050119ed8e2f07, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: CyanStars::CyanStars.Gameplay.MusicGame.ChartPackCircularLayoutRefactor
+  m_EditorClassIdentifier: CyanStars::CyanStars.Gameplay.MusicGame.ChartPackCircularLayout
   scrollRect: {fileID: 4944967265312759115}
   contentRect: {fileID: 2053854511581581663}
   chartPackItemTemplate: {fileID: 1269236551390821713, guid: 1554cda44880c1347b5992b3b6bb0b2e, type: 3}
@@ -6000,7 +5955,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ScrollRect
   m_Content: {fileID: 2053854511581581663}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
   m_Elasticity: 0.1
@@ -6035,7 +5990,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 44.5
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_overflowMode
@@ -6212,7 +6167,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 44.5
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_overflowMode
@@ -6389,7 +6344,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 36.15
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_overflowMode

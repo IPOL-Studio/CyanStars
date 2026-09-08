@@ -38,6 +38,12 @@ namespace CyanStars
         }
 
 
+        /// <summary>
+        /// 实际按钮的宽度，用于环形布局计算横向可移动范围。
+        /// </summary>
+        public float SubItemWidth => ((RectTransform)button.transform).rect.width;
+
+
         public void SetButtonXPos(float xPosRatio)
         {
             if (xPosRatio < 0 || 1 < xPosRatio)

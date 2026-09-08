@@ -14,8 +14,16 @@ using UnityEngine.UI;
 
 namespace CyanStars.Gameplay.MusicGame
 {
-    public class ChartPackCircularLayoutRefactor : MonoBehaviour
+    /// <summary>
+    /// 谱包列表的纵向 ScrollView 布局。
+    /// item 的高度与 Content 高度由既有的自动布局（VerticalLayoutGroup + ContentSizeFitter）负责；
+    /// 滚动 Content 时，会通过 <see cref="ChartPackItem"/> 调整每个 item 的横向位置，形成环形滚动效果。
+    /// </summary>
+    [DisallowMultipleComponent]
+    [RequireComponent(typeof(RectTransform))]
+    public class ChartPackCircularLayout : MonoBehaviour
     {
+        [Header("依赖组件")]
         [SerializeField]
         private ScrollRect scrollRect = null!;
 
@@ -30,6 +38,11 @@ namespace CyanStars.Gameplay.MusicGame
         private readonly List<Task> TasksCache = new();
         private readonly Dictionary<BaseUIItem, int> ChartPackItemToIndexCache = new();
         private readonly Dictionary<BaseUIItem, AssetHandler<Texture2D?>> ChartPackItemToCoverHandlerCache = new();
+        private readonly Dictionary<BaseUIItem, MapItemData> ChartPackItemToDataCache = new();
+
+        // 缓存 RectTransform 大小状态
+        private Vector2 lastRectSize;
+        private bool isDirty = false;
 
 
         /// <summary>
@@ -45,6 +58,35 @@ namespace CyanStars.Gameplay.MusicGame
             public Task<BaseUIItem>? ItemTask;
             public Task<AssetHandler<Texture2D?>?>? CoverTask;
         }
+
+
+        private void Start()
+        {
+            scrollRect.onValueChanged.AddListener(OnScrollValueChanged);
+        }
+
+        private void Update()
+        {
+            // 玩家屏幕高度变化后，在帧末统一重新计算布局，避免在尺寸变化回调中直接改布局
+            if (isDirty)
+                ApplyLayout(false);
+        }
+
+        private void OnDestroy()
+        {
+            if (scrollRect != null)
+                scrollRect.onValueChanged.RemoveListener(OnScrollValueChanged);
+        }
+
+        private void OnRectTransformDimensionsChange()
+        {
+            // 当 RectTransform 大小改变时，记录其大小，并设为脏数据
+            Vector2 currentSize = ((RectTransform)transform).rect.size;
+            if (!isDirty && currentSize != lastRectSize)
+                isDirty = true;
+            lastRectSize = currentSize;
+        }
+
 
         public async Task RebuildItemsAsync(MapItemData[] datas)
         {
@@ -105,6 +147,10 @@ namespace CyanStars.Gameplay.MusicGame
                     InitializeChartPackItem(context.Data, item, coverHandler);
                     CacheChartPackItem(context.Data, item, coverHandler);
                 }
+
+                // 重新生成 item 后回到顶部，并应用布局
+                contentRect.anchoredPosition = Vector2.zero;
+                ApplyLayout(true);
             }
             catch
             {
@@ -112,6 +158,7 @@ namespace CyanStars.Gameplay.MusicGame
                 ReleaseAcquiredResources(contexts);
                 ChartPackItemToIndexCache.Clear();
                 ChartPackItemToCoverHandlerCache.Clear();
+                ChartPackItemToDataCache.Clear();
                 throw;
             }
             finally
@@ -171,6 +218,7 @@ namespace CyanStars.Gameplay.MusicGame
             AssetHandler<Texture2D?>? coverHandler)
         {
             ChartPackItemToIndexCache[item] = data.Index;
+            ChartPackItemToDataCache[item] = data;
 
             if (coverHandler != null)
             {
@@ -183,7 +231,20 @@ namespace CyanStars.Gameplay.MusicGame
         /// </summary>
         private void ReleaseChartPackItems()
         {
-            GameRoot.UI.ReleaseUIItems(ChartPackItemToIndexCache.Keys.ToList());
+            List<BaseUIItem> items = ChartPackItemToIndexCache.Keys.ToList();
+            foreach (BaseUIItem item in items)
+            {
+                // 先禁用，确保本帧的自动布局不会再计算旧 item，随后由 UI 对象池回收
+                item.gameObject.SetActive(false);
+            }
+
+            GameRoot.UI.ReleaseUIItems(items);
+
+            foreach (BaseUIItem item in ChartPackItemToDataCache.Keys)
+            {
+                if (ChartPackItemToDataCache.TryGetValue(item, out MapItemData? data))
+                    ReferencePool.Release(data);
+            }
 
             foreach (var t in ChartPackItemToCoverHandlerCache.Values)
             {
@@ -192,6 +253,7 @@ namespace CyanStars.Gameplay.MusicGame
 
             ChartPackItemToCoverHandlerCache.Clear();
             ChartPackItemToIndexCache.Clear();
+            ChartPackItemToDataCache.Clear();
         }
 
         /// <summary>
@@ -208,12 +270,58 @@ namespace CyanStars.Gameplay.MusicGame
 
                 if (context.CoverTask != null && context.CoverTask.IsCompletedSuccessfully && context.CoverTask.Result != null)
                     context.CoverTask.Result.Unload();
+
+                if (context.Data != null)
+                    ReferencePool.Release(context.Data);
             }
         }
 
         private void NotifyChartPackItemClicked(int index)
         {
             OnChartPackItemClicked?.Invoke(index);
+        }
+
+        /// <summary>
+        /// 应用当前布局：让 Content 按既有自动布局重新计算尺寸，并刷新环形横向位置。
+        /// </summary>
+        /// <param name="resetScrollPosition">是否把 Content 滚动位置重置回顶部。</param>
+        private void ApplyLayout(bool resetScrollPosition)
+        {
+            isDirty = false;
+            lastRectSize = ((RectTransform)transform).rect.size;
+
+            if (resetScrollPosition)
+                contentRect.anchoredPosition = Vector2.zero;
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
+
+            Canvas.ForceUpdateCanvases();
+
+            UpdateChartItemHorizontalLayout();
+        }
+
+        private void OnScrollValueChanged(Vector2 value)
+        {
+            UpdateChartItemHorizontalLayout();
+        }
+
+        private void UpdateChartItemHorizontalLayout()
+        {
+            if (ChartPackItemToIndexCache.Count == 0)
+                return;
+
+            RectTransform viewportRect = scrollRect.viewport != null
+                ? scrollRect.viewport
+                : (RectTransform)scrollRect.transform;
+
+            foreach (BaseUIItem item in ChartPackItemToIndexCache.Keys)
+            {
+                if (item is not ChartPackItem chartPackItem)
+                    continue;
+
+                RectTransform itemRect = (RectTransform)chartPackItem.transform;
+                CircularLayoutHelper.SetItemXPos(itemRect, viewportRect, chartPackItem.SubItemWidth);
+            }
         }
     }
 }
