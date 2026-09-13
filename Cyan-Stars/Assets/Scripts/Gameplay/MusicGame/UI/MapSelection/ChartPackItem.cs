@@ -24,9 +24,10 @@ namespace CyanStars
         /// <summary>
         /// 从对象池获取此物体后立刻调用此方法来初始化和绑定
         /// </summary>
-        public void Init(Texture2D? coverTexture, string titleString, UnityAction clickedAction)
+        public void Init(Texture2D? coverTexture, Rect coverRect, string titleString, UnityAction clickedAction)
         {
             coverImage.texture = coverTexture;
+            coverImage.uvRect = coverRect;
             titleText.text = titleString;
             button.onClick.AddListener(clickedAction);
         }

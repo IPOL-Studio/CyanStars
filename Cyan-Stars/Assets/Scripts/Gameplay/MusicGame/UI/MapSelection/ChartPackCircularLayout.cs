@@ -201,9 +201,20 @@ namespace CyanStars.Gameplay.MusicGame
                 return;
             }
 
+            // 1:4 裁剪曲绘
+            Texture2D coverTexture = coverHandler?.Asset ?? new Texture2D(1, 1);
+            float x = data.RuntimeChartPack?.ChartPackData.CropStartPositionPercent?.x ?? 0;
+            float y = data.RuntimeChartPack?.ChartPackData.CropStartPositionPercent?.y ?? 0;
+            float h = data.RuntimeChartPack?.ChartPackData.CropHeightPercent ?? 1;
+            float hPixel = coverTexture.height * h;
+            float wPixel = 4 * hPixel;
+            float w = wPixel / coverTexture.width;
+            Rect coverRect = new Rect(x, y, w, h);
+
             string title = data.RuntimeChartPack?.ChartPackData.Title ?? string.Empty;
             chartPackItem.Init(
-                coverHandler?.Asset!,
+                coverTexture,
+                coverRect,
                 title,
                 () => NotifyChartPackItemClicked(data.Index)
             );
@@ -324,4 +335,5 @@ namespace CyanStars.Gameplay.MusicGame
             }
         }
     }
+
 }
