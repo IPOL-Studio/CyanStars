@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace CyanStars.Gameplay.MusicGame
@@ -7,6 +6,5 @@ namespace CyanStars.Gameplay.MusicGame
     {
         public bool WillDestroy;
         public float DestroyTime;
-        public List<ParticleSystem> ParticleSystemList;
     }
 }
