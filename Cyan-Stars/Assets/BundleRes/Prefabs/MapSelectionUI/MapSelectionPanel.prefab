@@ -1686,7 +1686,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc27d4e74a66dac46a9380f40f4585ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RelativeExitTargetPos: {x: -400, y: 0}
+  relativeExitTargetPos: {x: 0, y: 0}
 --- !u!1 &2573173409167468350
 GameObject:
   m_ObjectHideFlags: 0
@@ -1825,7 +1825,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 138.75006}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3228962939596442925
@@ -1960,7 +1960,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 55.65
+  m_fontSize: 18
   m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2147,8 +2147,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 518, y: -174}
-  m_SizeDelta: {x: 1036, y: 0}
+  m_AnchoredPosition: {x: 0, y: -174}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3966465432295803747
 MonoBehaviour:
@@ -3332,8 +3332,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2926405019053317646}
   m_HandleRect: {fileID: 860111353162997801}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 1
+  m_Value: 0.5998557
+  m_Size: 0
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4980,6 +4980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bafbc721cc9a70b4f8050119ed8e2f07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CyanStars::CyanStars.Gameplay.MusicGame.ChartPackCircularLayout
+  relativeExitTargetPos: {x: -400, y: 0}
   scrollRect: {fileID: 4944967265312759115}
   contentRect: {fileID: 2053854511581581663}
   chartPackItemTemplate: {fileID: 1269236551390821713, guid: 1554cda44880c1347b5992b3b6bb0b2e, type: 3}
@@ -5990,7 +5991,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_fontSize
-      value: 44.5
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_overflowMode
@@ -6167,7 +6168,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_fontSize
-      value: 44.5
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_overflowMode
@@ -6344,7 +6345,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_fontSize
-      value: 36.15
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 2267842852582037851, guid: 5a80a8497a848f7448e263506e7997b4, type: 3}
       propertyPath: m_overflowMode

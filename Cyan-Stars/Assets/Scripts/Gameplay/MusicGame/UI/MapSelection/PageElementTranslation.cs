@@ -5,16 +5,16 @@ namespace CyanStars.Gameplay.MusicGame
 {
     public class PageElementTranslation : MonoBehaviour, IPageElementAnimation
     {
-        private Vector2 defaultPos;
-        private RectTransform rectTransform;
-
-        public Vector2 RelativeExitTargetPos;
+        [SerializeField]
+        private Vector2 relativeExitTargetPos;
 
         private Tween runningTween;
+        private RectTransform rectTransform;
+        private Vector2 defaultPos;
 
         private void Awake()
         {
-            rectTransform = transform as RectTransform;
+            rectTransform = (RectTransform)transform;
             defaultPos = rectTransform.anchoredPosition;
         }
 
@@ -23,7 +23,7 @@ namespace CyanStars.Gameplay.MusicGame
             if (runningTween?.IsPlaying() ?? false)
                 runningTween.Kill();
 
-            rectTransform.anchoredPosition = defaultPos + RelativeExitTargetPos;
+            rectTransform.anchoredPosition = defaultPos + relativeExitTargetPos;
             runningTween = rectTransform.DOAnchorPos(defaultPos, args.FadeTime).SetEase(args.AnimationEase);
         }
 
@@ -33,7 +33,7 @@ namespace CyanStars.Gameplay.MusicGame
                 runningTween.Kill();
 
             rectTransform.anchoredPosition = defaultPos;
-            runningTween = rectTransform.DOAnchorPos(defaultPos + RelativeExitTargetPos, args.FadeTime).SetEase(args.AnimationEase);
+            runningTween = rectTransform.DOAnchorPos(defaultPos + relativeExitTargetPos, args.FadeTime).SetEase(args.AnimationEase);
         }
     }
 }

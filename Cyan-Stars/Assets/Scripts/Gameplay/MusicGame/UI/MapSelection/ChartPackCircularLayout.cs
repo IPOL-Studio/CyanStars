@@ -9,6 +9,7 @@ using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Framework.UI;
 using CyanStars.Utils;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,8 +22,11 @@ namespace CyanStars.Gameplay.MusicGame
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(RectTransform))]
-    public class ChartPackCircularLayout : MonoBehaviour
+    public class ChartPackCircularLayout : MonoBehaviour, IPageElementAnimation
     {
+        [SerializeField]
+        private Vector2 relativeExitTargetPos;
+
         [Header("依赖组件")]
         [SerializeField]
         private ScrollRect scrollRect = null!;
@@ -33,6 +37,9 @@ namespace CyanStars.Gameplay.MusicGame
         [SerializeField]
         private GameObject chartPackItemTemplate = null!;
 
+        private Tween? runningTween;
+        private RectTransform rectTransform = null!;
+        private Vector2 defaultPos;
 
         private bool isLoading = false;
         private readonly List<Task> TasksCache = new();
@@ -59,6 +66,12 @@ namespace CyanStars.Gameplay.MusicGame
             public Task<AssetHandler<Texture2D?>?>? CoverTask;
         }
 
+
+        private void Awake()
+        {
+            rectTransform = (RectTransform)transform;
+            defaultPos = rectTransform.anchoredPosition;
+        }
 
         private void Start()
         {
@@ -334,6 +347,23 @@ namespace CyanStars.Gameplay.MusicGame
                 CircularLayoutHelper.SetItemXPos(itemRect, viewportRect, chartPackItem.SubItemWidth);
             }
         }
-    }
 
+        public void OnEnter(MapSelectionPageChangeArgs args)
+        {
+            if (runningTween?.IsPlaying() ?? false)
+                runningTween.Kill();
+
+            rectTransform.anchoredPosition = defaultPos + relativeExitTargetPos;
+            runningTween = rectTransform.DOAnchorPos(defaultPos, args.FadeTime).SetEase(args.AnimationEase);
+        }
+
+        public void OnExit(MapSelectionPageChangeArgs args)
+        {
+            if (runningTween?.IsPlaying() ?? false)
+                runningTween.Kill();
+
+            rectTransform.anchoredPosition = defaultPos;
+            runningTween = rectTransform.DOAnchorPos(defaultPos + relativeExitTargetPos, args.FadeTime).SetEase(args.AnimationEase);
+        }
+    }
 }
