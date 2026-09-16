@@ -17,14 +17,18 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
         private const string ScenePath = "Assets/BundleRes/Scenes/ChartEditor.unity";
         private const string SceneRootName = "SceneRoot";
 
-        private SceneHandler chartEditorSceneHandler;
+        private SceneHandler chartEditorSceneHandler = null!;
 
 
         public override async void OnEnter()
         {
+            // 关闭主相机避免重复渲染
+            GameRoot.MainCamera.gameObject.SetActive(false);
+
             // 打开场景并检查制谱器 SceneRoot 状态
             chartEditorSceneHandler = await GameRoot.Asset.LoadSceneAsync(ScenePath);
             Scene chartEditorScene = chartEditorSceneHandler.Scene;
+            SceneManager.SetActiveScene(chartEditorScene);
 
             ChartEditorSceneRoot? sceneRoot = null;
             int foundCount = 0;
@@ -75,6 +79,9 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
 
         public override void OnExit()
         {
+            // 恢复主相机
+            GameRoot.MainCamera.gameObject.SetActive(true);
+
             ChartEditorDataModule chartEditorDataModule = GameRoot.GetDataModule<ChartEditorDataModule>();
             chartEditorDataModule.OnExitChartEditorProcedure();
             GameRoot.Asset.UnloadScene(chartEditorSceneHandler);
