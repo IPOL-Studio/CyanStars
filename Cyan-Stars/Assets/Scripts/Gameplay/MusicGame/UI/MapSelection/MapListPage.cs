@@ -18,7 +18,7 @@ namespace CyanStars.Gameplay.MusicGame
         private GameObject mapItemTemplate;
 
         [SerializeField]
-        private CircularLayout circularMapList;
+        private ChartPackCircularLayout circularMapList;
 
         [SerializeField]
         private Button nextStepButton;
