@@ -31,6 +31,7 @@
   <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=bpm/@EntryIndexedValue">bpm</s:String>
   <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=GO/@EntryIndexedValue">GO</s:String>
   <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=SO/@EntryIndexedValue">SO</s:String>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=cystmp/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Gitee/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Netease/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=neteasecloudmusic/@EntryIndexedValue">True</s:Boolean>

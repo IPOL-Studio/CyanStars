@@ -1,7 +1,11 @@
 #nullable enable
 
+using System;
+using System.Diagnostics.Contracts;
 using CatAsset.Runtime;
 using CyanStars.Chart;
+using CyanStars.Framework.File;
+using CyanStars.Utils;
 using R3;
 using UnityEngine;
 
@@ -10,7 +14,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
     /// <summary>
     /// 制谱器主 Model 层
     /// </summary>
-    public class ChartEditorModel
+    public class ChartEditorModel : IDisposable
     {
         // == == 事件触发器 == ==
         /// <summary>
@@ -37,6 +41,12 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         // 当前正在编辑的谱包和谱面内容
         public readonly ReadOnlyReactiveProperty<ChartPackDataEditorModel> ChartPackData;
         public readonly ReadOnlyReactiveProperty<ChartDataEditorModel> ChartData;
+
+        /// <summary>
+        /// 本次编辑会话的缓存区：导入的曲绘、音频先暂存在这里，保存时才写进工作区
+        /// </summary>
+        /// <remarks>归本 Model 独占，<see cref="Dispose"/> 时丢弃，不会影响下一次编辑</remarks>
+        public readonly TempFileStore AssetStore;
 
 
         // == == 编辑器运行时数据 == ==
@@ -104,8 +114,57 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             WorkspacePath = workspacePath;
             ChartMetaDataIndex = chartMetaDataIndex;
 
+            // 接手工作区时清掉上次崩溃残留的写盘临时文件（.cystmp），它们会被导出时的整目录复制一起带走
+            FileWriteTransaction.DeleteLeftoverTempFiles(WorkspacePath);
+
             ChartPackData = new ReactiveProperty<ChartPackDataEditorModel>(new ChartPackDataEditorModel(chartPackData));
             ChartData = new ReactiveProperty<ChartDataEditorModel>(new ChartDataEditorModel(chartData));
+
+            AssetStore = TempFileStore.CreateInTempCache("ChartEditor");
+        }
+
+        /// <summary>
+        /// 工作区里的某个绝对路径是否仍被当前谱包数据引用（曲绘、任一音乐版本的音频）
+        /// </summary>
+        /// <param name="targetAbsolutePath">工作区里的资源绝对路径</param>
+        /// <param name="excludeMusicVersion">不计入引用的音乐版本：它刚被改写或刚被删除</param>
+        /// <remarks>
+        /// 从缓存区删除暂存文件之前必须先调用它：路径仍被引用时，暂存副本可能是该路径唯一的内容提供者。
+        /// 引用关系以 <see cref="ChartPackDataEditorModel.GetAssetRelativePaths"/> 为准，这里只做绝对路径换算。
+        /// </remarks>
+        [Pure]
+        public bool IsAssetReferenced(string targetAbsolutePath, MusicVersionDataEditorModel? excludeMusicVersion = null)
+        {
+            if (string.IsNullOrEmpty(targetAbsolutePath))
+                return false;
+
+            foreach (string relativePath in ChartPackData.CurrentValue.GetAssetRelativePaths(excludeMusicVersion))
+            {
+                if (PathUtil.PathEquals(PathUtil.Combine(WorkspacePath, relativePath), targetAbsolutePath))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 结束本次编辑会话：卸载资源句柄、丢弃缓存区，未保存到工作区的导入文件一并删掉
+        /// </summary>
+        /// <remarks>丢弃缓存区前必须先卸载资源句柄：暂存副本随后会被删除。</remarks>
+        public void Dispose()
+        {
+            UnloadAssetHandlers();
+            AssetStore.Discard();
+        }
+
+        /// <summary>
+        /// 卸载本次会话加载的音乐资源
+        /// </summary>
+        /// <remarks>曲绘由 <c>ChartPackDataCoverViewModel</c> 自己卸载</remarks>
+        private void UnloadAssetHandlers()
+        {
+            AudioClipHandler.CurrentValue?.Unload();
+            AudioClipHandler.Value = null;
         }
     }
 }

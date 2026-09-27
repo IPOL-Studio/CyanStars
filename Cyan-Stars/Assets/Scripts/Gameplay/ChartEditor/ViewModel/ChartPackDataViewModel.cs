@@ -142,10 +142,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // TODO: 将导出的文件打包为一个专有后缀名的文件
             GameRoot.File.OpenSaveFolderPathBrowser(targetParentPath =>
                 {
-                    // 1. 先保存谱包谱面到玩家数据路径
-                    ChartEditorFileManager.SaveChartAndAssetsToDisk(Model.WorkspacePath, Model.ChartMetaDataIndex, Model.ChartPackData.CurrentValue, Model.ChartData.CurrentValue);
-
-                    // 2. 再将玩家数据路径的谱包文件夹复制到指定路径，如果已经存在同名文件夹，则添加 "(1)" 等后缀
+                    // 1. 先校验导出目标。校验必须排在写盘之前，避免中止导出时工作区已被改写
                     DirectoryInfo sourceDirInfo = new DirectoryInfo(Model.WorkspacePath);
                     string folderName = sourceDirInfo.Name;
                     string destPath = PathUtil.Combine(targetParentPath, folderName);
@@ -163,7 +160,23 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                         return;
                     }
 
-                    // 如果目标路径已存在，则循环尝试添加 (n) 后缀
+                    // 2. 再把当前谱包保存到玩家数据路径，保存失败则取消导出
+                    if (!ChartEditorSaver.SaveChartAndAssetsToDisk(
+                            Model.WorkspacePath,
+                            Model.ChartMetaDataIndex,
+                            Model.ChartPackData.CurrentValue,
+                            Model.ChartData.CurrentValue,
+                            Model.AssetStore))
+                    {
+                        PopupView.Show("无法导出谱包",
+                            "保存谱包数据失败，已取消导出。具体原因见日志。",
+                            true,
+                            new Dictionary<string, Action?> { ["确定"] = null }
+                        );
+                        return;
+                    }
+
+                    // 3. 最后把工作区复制到指定路径，已存在同名文件夹时依次添加 "(1)" 等后缀
                     if (Directory.Exists(destPath))
                     {
                         int counter = 1;
@@ -176,7 +189,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                         }
                     }
 
-                    // 创建最终确定的目标文件夹，并递归复制内容
                     Directory.CreateDirectory(destPath);
                     RecursiveCopy(sourceDirInfo, new DirectoryInfo(destPath), 0);
                 },

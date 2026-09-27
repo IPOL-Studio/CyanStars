@@ -3,27 +3,24 @@
 using UnityEngine;
 using SimpleFileBrowser;
 using System;
-using System.Globalization;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using CatAsset.Runtime;
 using CyanStars.Utils;
-using CyanStars.Utils.JsonSerialization;
-using Newtonsoft.Json;
 
 namespace CyanStars.Framework.File
 {
     /// <summary>
-    /// 文件管理器，用于在运行时处理 外部数据 ←---→ 用户数据
+    /// 文件管理器：文件（夹）选择对话框与外部文件读写
     /// </summary>
     /// <remarks>
-    /// <para>提供统一的文件和文件夹选择对话框功能，基于 Unity Simple File Browser 实现</para>
-    /// <para>提供对玩家文件的资源文件读写，.json 文件反序列化和序列化功能，其中读和反序列化操作将传给 AssetManager 实现</para>
-    /// <para>提供 读取外部文件-复制到缓存区-复制到用户数据 功能，可根据 GUID 获取文件当前路径</para>
+    /// <para>选中的「文件」和读取用的「文件夹」返回的是可直接交给 <see cref="System.IO"/> 的普通绝对路径：安卓上通过 SAF 选中的内容会先复制进 <see cref="Staging"/> 再返回，不带 <c>content://</c> 或 <c>file://</c> 这类 scheme。</para>
+    /// <para>保存目标文件夹是写入目标，不会复制到缓存区，返回系统给出的路径，安卓上可能仍是 <c>content://</c>；需要暂存文件时不要用本类，应为每个作用域建一个 <see cref="TempFileStore"/>。</para>
     /// </remarks>
     public class FileManager : BaseManager
     {
+        /// <summary>
+        /// 安卓 SAF 的 content URI 前缀
+        /// </summary>
+        private const string ContentUriPrefix = "content://";
+
         [SerializeField]
         private UISkin fileBrowserSkin = null!;
 
@@ -31,8 +28,11 @@ namespace CyanStars.Framework.File
         public override int Priority { get; }
 
 
-        private static string TempFolderPath =>
-            PathUtil.Combine(Application.temporaryCachePath, nameof(FileManager));
+        /// <summary>
+        /// 文件对话框使用的缓存区
+        /// </summary>
+        /// <remarks>玩家选中的文件会先复制到这里，再由各作用域自己的 <see cref="TempFileStore"/> 接手</remarks>
+        public TempFileStore Staging { get; private set; } = null!;
 
 
         public readonly FileBrowser.Filter ChartFilter = new FileBrowser.Filter("谱面文件", ".json");
@@ -42,8 +42,10 @@ namespace CyanStars.Framework.File
 
         public override void OnInit()
         {
-            // 删除上次游戏的临时文件
-            DeleteTempSessionFolder();
+            // 清理上次运行残留的缓存区
+            TempFileStore.DeleteAllTempCaches();
+
+            Staging = TempFileStore.CreateInTempCache("FileBrowser");
 
             // 设置颜色主题
             FileBrowser.Skin = fileBrowserSkin;
@@ -62,56 +64,141 @@ namespace CyanStars.Framework.File
         {
         }
 
-
-        private void DeleteTempSessionFolder()
+        /// <summary>
+        /// 销毁时丢弃自己的缓存区
+        /// </summary>
+        /// <remarks>只清理本作用域，其它作用域由各自负责 <see cref="TempFileStore.Discard"/>；上次运行的残留由 <see cref="OnInit"/> 清理。</remarks>
+        public void OnDestroy()
         {
-            // 清理旧的缓存路径
-            if (Directory.Exists(Application.temporaryCachePath))
-            {
-                try
-                {
-                    Directory.Delete(Application.temporaryCachePath, true);
-                    Debug.Log($"已清除缓存文件夹：{Application.temporaryCachePath}");
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning($"在删除缓存文件夹时捕获了异常：{e.Message}");
-                }
-            }
+            Staging.Discard();
         }
 
+
+        #region --- 外部文件（含安卓 content: // 路径）的静态工具方法 ---
+
+        /// <summary>
+        /// 文件是否存在（支持普通路径和安卓 content:// 路径）
+        /// </summary>
+        public static bool FileExists(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return false;
+
+            return FileBrowserHelpers.FileExists(path);
+        }
+
+        /// <summary>
+        /// 文件夹是否存在（支持普通路径和安卓 content:// 路径）
+        /// </summary>
+        public static bool FolderExists(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return false;
+
+            return FileBrowserHelpers.DirectoryExists(path);
+        }
+
+        /// <summary>
+        /// 取文件（夹）名（支持普通路径和安卓 content:// 路径）
+        /// </summary>
+        public static string GetFileName(string path)
+        {
+            return string.IsNullOrEmpty(path) ? "" : FileBrowserHelpers.GetFilename(path);
+        }
+
+        /// <summary>
+        /// 复制文件（夹），不做任何覆盖检查，失败时抛出异常
+        /// </summary>
+        /// <param name="sourcePath">源文件（夹）绝对路径，可以是普通路径或安卓 content:// 路径</param>
+        /// <param name="destinationPath">目标文件（夹）绝对路径</param>
+        /// <param name="isFolder">源路径是否为文件夹</param>
+        internal static void CopyFileOrFolderUnchecked(string sourcePath, string destinationPath, bool isFolder)
+        {
+            if (isFolder)
+            {
+                FileBrowserHelpers.CopyDirectory(sourcePath, destinationPath);
+                return;
+            }
+
+            FileBrowserHelpers.CopyFile(sourcePath, destinationPath);
+        }
+
+        /// <summary>
+        /// 复制文件（夹）
+        /// </summary>
+        /// <param name="sourcePath">源文件（夹）绝对路径，可以是普通路径或安卓 content:// 路径</param>
+        /// <param name="destinationPath">目标文件（夹）绝对路径</param>
+        /// <param name="isFolder">源路径是否为文件夹</param>
+        /// <param name="overwrite">允许覆盖目标路径原有的文件（夹）</param>
+        /// <returns>是否复制成功</returns>
+        /// <remarks>底层复制是覆盖式的，不允许覆盖时由本方法先检查目标是否存在</remarks>
+        public static bool CopyFileOrFolder(
+            string sourcePath,
+            string destinationPath,
+            bool isFolder,
+            bool overwrite
+        )
+        {
+            if (!overwrite)
+            {
+                bool destinationExists = isFolder
+                    ? FileBrowserHelpers.DirectoryExists(destinationPath)
+                    : FileBrowserHelpers.FileExists(destinationPath);
+
+                if (destinationExists)
+                {
+                    Debug.LogWarning($"目标路径已存在，按要求不覆盖：{destinationPath}");
+                    return false;
+                }
+            }
+
+            try
+            {
+                CopyFileOrFolderUnchecked(sourcePath, destinationPath, isFolder);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"复制文件（夹）时出错：{e.Message}");
+                return false;
+            }
+
+            return true;
+        }
+
+        #endregion
 
         #region --- FileBrowser API 用于在运行时向玩家打开文件管理器 UI  ---
 
         /// <summary>
         /// 获取单个文件的路径
         /// </summary>
-        /// <param name="onSuccess">成功获取的回调</param>
+        /// <param name="onSuccess">成功获取的回调，参数为普通绝对路径</param>
         /// <param name="onCancel">玩家取消的回调</param>
         /// <param name="title">窗口标题</param>
         /// <param name="showAllFilesFilter">是否允许玩家选择任意后缀的文件</param>
         /// <param name="filters">依据后缀筛选文件</param>
         /// <param name="defaultFilter">默认筛选后缀名</param>
-        public void OpenLoadFilePathBrowser(Action<string>? onSuccess,
-                                            Action? onCancel = null,
-                                            string title = "打开文件",
-                                            bool showAllFilesFilter = false,
-                                            FileBrowser.Filter[]? filters = null,
-                                            string? defaultFilter = null)
+        public void OpenLoadFilePathBrowser(
+            Action<string>? onSuccess,
+            Action? onCancel = null,
+            string title = "打开文件",
+            bool showAllFilesFilter = false,
+            FileBrowser.Filter[]? filters = null,
+            string? defaultFilter = null
+        )
         {
             if (IsBrowserOpen()) return;
 
             FileBrowser.OnSuccess successWrapper = (paths) =>
             {
-                if (paths.Length > 0)
-                {
-                    string path = paths[0];
+                if (paths.Length == 0)
+                    return;
 
-                    if (path.StartsWith("content://"))
-                        path = CopyContentFileToAppData(paths[0]); // TODO: 改为异步任务执行，目前没想好怎么在复制的时候展示 UI 交互，干脆先整个同步卡着
+                // TODO: 改为异步任务执行；复制期间没法展示 UI 交互，暂时同步等待
+                if (!TryResolvePlainPaths(paths, "文件", out string[] resolvedPaths))
+                    return;
 
-                    onSuccess?.Invoke(path);
-                }
+                onSuccess?.Invoke(resolvedPaths[0]);
             };
 
             FileBrowser.OnCancel? cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
@@ -125,24 +212,33 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 获取多个文件的路径
         /// </summary>
-        /// <param name="onSuccess">成功获取的回调，参数为文件路径数组</param>
+        /// <param name="onSuccess">成功获取的回调，参数为普通绝对路径数组</param>
         /// <param name="onCancel">玩家取消的回调</param>
         /// <param name="title">窗口标题</param>
         /// <param name="showAllFilesFilter">是否允许玩家选择任意后缀的文件</param>
         /// <param name="filters">依据后缀筛选文件</param>
         /// <param name="defaultFilter">默认筛选后缀名</param>
-        public void OpenLoadFilePathsBrowser(Action<string[]>? onSuccess,
-                                             Action? onCancel = null,
-                                             string title = "打开文件",
-                                             bool showAllFilesFilter = false,
-                                             FileBrowser.Filter[]? filters = null,
-                                             string? defaultFilter = null)
+        public void OpenLoadFilePathsBrowser(
+            Action<string[]>? onSuccess,
+            Action? onCancel = null,
+            string title = "打开文件",
+            bool showAllFilesFilter = false,
+            FileBrowser.Filter[]? filters = null,
+            string? defaultFilter = null
+        )
         {
             if (IsBrowserOpen()) return;
 
             FileBrowser.OnSuccess successWrapper = (paths) =>
             {
-                onSuccess?.Invoke(paths);
+                if (paths.Length == 0)
+                    return;
+
+                // 与单选入口保持一致，批量选择同样转换 content:// 路径
+                if (!TryResolvePlainPaths(paths, "文件", out string[] resolvedPaths))
+                    return;
+
+                onSuccess?.Invoke(resolvedPaths);
             };
 
             FileBrowser.OnCancel? cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
@@ -156,26 +252,26 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 获取要加载的文件夹路径
         /// </summary>
-        /// <param name="onSuccess">成功获取的回调</param>
+        /// <param name="onSuccess">成功获取的回调，参数为普通绝对路径</param>
         /// <param name="onCancel">玩家取消的回调</param>
         /// <param name="title">窗口标题</param>
-        public void OpenLoadFolderPathBrowser(Action<string>? onSuccess,
-                                              Action? onCancel = null,
-                                              string title = "打开文件夹")
+        public void OpenLoadFolderPathBrowser(
+            Action<string>? onSuccess,
+            Action? onCancel = null,
+            string title = "打开文件夹"
+        )
         {
             if (IsBrowserOpen()) return;
 
             FileBrowser.OnSuccess successWrapper = (paths) =>
             {
-                if (paths.Length > 0)
-                {
-                    string path = paths[0];
+                if (paths.Length == 0)
+                    return;
 
-                    if (path.StartsWith("content://"))
-                        path = CopyContentFolderToAppData(path);
+                if (!TryResolvePlainPaths(paths, "文件夹", out string[] resolvedPaths))
+                    return;
 
-                    onSuccess?.Invoke(path);
-                }
+                onSuccess?.Invoke(resolvedPaths[0]);
             };
 
             FileBrowser.OnCancel? cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
@@ -187,21 +283,24 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 获取要保存到的文件夹路径
         /// </summary>
-        /// <param name="onSuccess">成功获取的回调</param>
+        /// <param name="onSuccess">成功获取的回调，参数为归一化后的文件夹路径</param>
         /// <param name="onCancel">玩家取消的回调</param>
         /// <param name="title">窗口标题</param>
-        public void OpenSaveFolderPathBrowser(Action<string>? onSuccess,
-                                              Action? onCancel = null,
-                                              string title = "保存到文件夹")
+        /// <remarks>返回值只过一遍 <see cref="PathUtil.Normalize"/>，不会复制到缓存区，安卓上可能仍是 <c>content://</c>。</remarks>
+        public void OpenSaveFolderPathBrowser(
+            Action<string>? onSuccess,
+            Action? onCancel = null,
+            string title = "保存到文件夹"
+        )
         {
             if (IsBrowserOpen()) return;
 
             FileBrowser.OnSuccess successWrapper = (paths) =>
             {
-                if (paths.Length > 0)
-                {
-                    onSuccess?.Invoke(paths[0]);
-                }
+                if (paths.Length == 0)
+                    return;
+
+                onSuccess?.Invoke(PathUtil.Normalize(paths[0]));
             };
 
             FileBrowser.OnCancel? cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
@@ -226,39 +325,73 @@ namespace CyanStars.Framework.File
 
 
         /// <summary>
-        /// 将安卓的 content:// 文件复制到 TempFolderPath，并返回复制后的文件的 file://
+        /// 把对话框返回的一批路径统一成普通绝对路径，若是安卓文件则先复制再返回可读写文件路径
         /// </summary>
-        private string CopyContentFileToAppData(string contentUri)
+        /// <param name="paths">对话框返回的路径</param>
+        /// <param name="description">日志里用的操作对象描述，例如「文件」「文件夹」</param>
+        /// <param name="resolvedPaths">解析结果；失败时为空数组</param>
+        /// <returns>是否全部解析成功</returns>
+        /// <remarks>不做部分成功：任一路径解析失败就整批放弃，返回 false 并只记日志，不回调调用方。</remarks>
+        private bool TryResolvePlainPaths(string[] paths, string description, out string[] resolvedPaths)
+        {
+            try
+            {
+                var resolved = new string[paths.Length];
+                for (int i = 0; i < paths.Length; i++)
+                    resolved[i] = ResolvePlainPath(paths[i]);
+
+                resolvedPaths = resolved;
+                return true;
+            }
+            catch (Exception e)
+            {
+                resolvedPaths = Array.Empty<string>();
+                Debug.LogError($"处理玩家选中的{description}时出错，已放弃本次选择：{e.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 把文件对话框返回的路径统一成普通绝对路径，若是安卓文件则先复制再返回可读写文件路径
+        /// </summary>
+        /// <param name="path">对话框返回的路径，可能是普通路径、content:// 或 file:// 路径</param>
+        /// <returns>可直接交给 <see cref="System.IO"/> 使用的普通绝对路径</returns>
+        /// <exception cref="Exception">复制到缓存区失败</exception>
+        /// <remarks>
+        /// <para>安卓上从 SAF 选中的内容是 <c>content://</c> 路径，会先复制进缓存区再返回；其它路径过一遍 <see cref="PathUtil.Normalize"/> 后原样返回，不产出 <c>file://</c> 路径。</para>
+        /// <para>本方法会抛异常，调用方应改用 <see cref="TryResolvePlainPaths"/>。</para>
+        /// </remarks>
+        private string ResolvePlainPath(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                throw new ArgumentException("文件对话框返回了空路径。", nameof(path));
+
+            if (path.StartsWith(ContentUriPrefix, StringComparison.Ordinal))
+                return FileExists(path)
+                    ? CopyContentFileToStaging(path)
+                    : CopyContentFolderToStaging(path);
+
+            return PathUtil.Normalize(path);
+        }
+
+        /// <summary>
+        /// 把安卓的 content:// 文件复制到缓存区，返回复制后的普通绝对路径
+        /// </summary>
+        private string CopyContentFileToStaging(string contentUri)
         {
             // 检查 uri 合法性
-            if (string.IsNullOrEmpty(contentUri) || !contentUri.StartsWith("content://"))
+            if (!IsContentUri(contentUri))
                 throw new ArgumentException($"传入的路径不是 contentUri：{contentUri}", nameof(contentUri));
 
             try
             {
-                // 获取文件名
-                string fileName = FileBrowserHelpers.GetFilename(contentUri);
-                if (string.IsNullOrEmpty(fileName))
-                    throw new Exception("无法获取文件名，可能是暂不支持此操作");
-
-                // 拼接并创建目标路径
-                string destinationPath = PathUtil.Combine(TempFolderPath, fileName);
-                if (!Directory.Exists(TempFolderPath))
-                    Directory.CreateDirectory(TempFolderPath);
-
-                // 如果目标文件已存在，先删除它（避免覆盖报错）
-                if (System.IO.File.Exists(destinationPath))
-                    System.IO.File.Delete(destinationPath);
-
-                // 使用 FileBrowserHelpers 进行拷贝
-                FileBrowserHelpers.CopyFile(contentUri, destinationPath);
+                string destinationPath = Staging.CopyInFile(contentUri);
 
                 // 检查是否拷贝成功
-                if (!System.IO.File.Exists(destinationPath))
+                if (!FileExists(destinationPath))
                     throw new Exception("文件复制失败，目标文件未生成。");
 
-
-                return "file://" + destinationPath;
+                return destinationPath;
             }
             catch (Exception e)
             {
@@ -268,37 +401,20 @@ namespace CyanStars.Framework.File
         }
 
         /// <summary>
-        /// 将安卓的 content:// 路径复制到 TempFolderPath，并返回复制后的路径
+        /// 把安卓的 content:// 文件夹复制到缓存区，返回复制后的普通绝对路径
         /// </summary>
-        private string CopyContentFolderToAppData(string contentUri)
+        private string CopyContentFolderToStaging(string contentUri)
         {
             // 检查 uri 合法性
-            if (string.IsNullOrEmpty(contentUri) || !contentUri.StartsWith("content://"))
+            if (!IsContentUri(contentUri))
                 throw new ArgumentException($"传入的路径不是有效的 contentUri：{contentUri}", nameof(contentUri));
 
             try
             {
-                // 获取文件夹名称
-                string folderName = FileBrowserHelpers.GetFilename(contentUri);
-                if (string.IsNullOrEmpty(folderName))
-                    throw new Exception("无法获取文件夹名，可能是暂不支持此操作");
-
-                // 拼接目标路径
-                string destinationFolderPath = PathUtil.Combine(TempFolderPath, folderName);
-
-                // 确保父目录存在
-                if (!Directory.Exists(TempFolderPath))
-                    Directory.CreateDirectory(TempFolderPath);
-
-                // 如果目标文件夹已存在，先删除它
-                if (Directory.Exists(destinationFolderPath))
-                    Directory.Delete(destinationFolderPath, true);
-
-                // 使用 FileBrowserHelpers 进行文件夹拷贝
-                FileBrowserHelpers.CopyDirectory(contentUri, destinationFolderPath);
+                string destinationFolderPath = Staging.CopyInFolder(contentUri);
 
                 // 检查是否拷贝成功
-                if (!Directory.Exists(destinationFolderPath))
+                if (!FolderExists(destinationFolderPath))
                     throw new Exception("文件夹复制失败，目标目录未生成。");
 
                 return destinationFolderPath;
@@ -310,86 +426,12 @@ namespace CyanStars.Framework.File
             }
         }
 
-        #endregion
-
-        #region --- Serialization API 用于在运行时读写 .json 文件 ---
-
-        /// <summary>
-        /// 从指定的绝对路径加载资源（如图片、文本、音频等）
-        /// </summary>
-        /// <typeparam name="T">要加载的资源类型，如 Texture2D, TextAsset, AudioClip 等</typeparam>
-        /// <param name="absolutePath">文件的完整绝对路径</param>
-        /// <param name="target">资源加载后要绑定的游戏对象，用于自动管理生命周期</param>
-        /// <param name="priority">加载任务的优先级</param>
-        /// <returns>加载完成的资源，如果失败则为 null</returns>
-        public async Task<T> LoadAssetFromPathAsync<T>(string absolutePath, CancellationToken cancellationToken = default,
-                                                       TaskPriority priority = TaskPriority.Middle) where T : class
+        private static bool IsContentUri(string path)
         {
-            if (string.IsNullOrEmpty(absolutePath))
-            {
-                Debug.LogError("LoadAssetFromPathAsync Error: Provided path is null or empty.");
-                return null;
-            }
-
-            if (!System.IO.File.Exists(absolutePath))
-            {
-                Debug.LogError($"LoadAssetFromPathAsync Error: File does not exist at path: {absolutePath}");
-                return null;
-            }
-
-            try
-            {
-                // 直接将绝对路径传递给 CatAsset。CatAsset 会将其作为外部原生资源处理。
-                // CatAsset 内部会负责读取文件的 byte[] 并根据类型 T 进行转换。
-                return (await CatAssetManager.LoadAssetAsync<T>(absolutePath, cancellationToken, priority)).Asset;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Failed to load asset from path '{absolutePath}' using CatAsset. Exception: {e}");
-                return null;
-            }
-        }
-
-
-        /// <summary>
-        /// 序列化对象为 Json 文件
-        /// </summary>
-        /// <param name="obj">要序列化的对象</param>
-        /// <param name="filePath">保存到的路径和文件全名</param>
-        /// <returns>是否成功序列化</returns>
-        public bool SerializationToJson(object obj, string filePath)
-        {
-            try
-            {
-                // 设置序列化格式参数
-                JsonSerializerSettings settings = new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.None,
-                    Formatting = Formatting.Indented,
-                    Culture = CultureInfo.InvariantCulture,
-                    DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                    Converters = JsonConverters.Converters
-                };
-
-                // 如果目录不存在，创建目录
-                string directory = Path.GetDirectoryName(filePath);
-                if (!string.IsNullOrEmpty(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
-
-                string json = JsonConvert.SerializeObject(obj, settings);
-                System.IO.File.WriteAllText(filePath, json);
-                Debug.Log($"序列化完成，文件路径：{filePath}");
-                return true;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"序列化时出现异常：{e}");
-                return false;
-            }
+            return path.StartsWith(ContentUriPrefix, StringComparison.Ordinal);
         }
 
         #endregion
+
     }
 }
