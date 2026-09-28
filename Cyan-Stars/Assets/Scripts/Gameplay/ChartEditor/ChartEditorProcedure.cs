@@ -22,55 +22,69 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
 
         public override async void OnEnter()
         {
-            // 关闭主相机避免重复渲染
-            GameRoot.MainCamera.gameObject.SetActive(false);
+            // 关闭启动场景的主相机，避免其与制谱器场景的相机重复渲染
+            GameRoot.MainCamera?.gameObject.SetActive(false);
 
-            // 打开场景并检查制谱器 SceneRoot 状态
-            chartEditorSceneHandler = await GameRoot.Asset.LoadSceneAsync(ScenePath);
-            Scene chartEditorScene = chartEditorSceneHandler.Scene;
-            SceneManager.SetActiveScene(chartEditorScene);
-
-            ChartEditorSceneRoot? sceneRoot = null;
-            int foundCount = 0;
-            foreach (var rootGameObject in chartEditorScene.GetRootGameObjects())
+            try
             {
-                if (rootGameObject.name != SceneRootName)
+                // 打开场景并检查制谱器 SceneRoot 状态
+                chartEditorSceneHandler = await GameRoot.Asset.LoadSceneAsync(ScenePath);
+                if (!chartEditorSceneHandler.IsValid || !chartEditorSceneHandler.IsSuccess)
                 {
-                    continue;
+                    throw new Exception($"制谱器场景加载失败：{chartEditorSceneHandler.Error}");
                 }
 
-                sceneRoot = rootGameObject.GetComponent<ChartEditorSceneRoot>();
-                if (sceneRoot == null)
+                Scene chartEditorScene = chartEditorSceneHandler.Scene;
+
+                ChartEditorSceneRoot? sceneRoot = null;
+                int foundCount = 0;
+                foreach (var rootGameObject in chartEditorScene.GetRootGameObjects())
                 {
-                    throw new ArgumentNullException(nameof(sceneRoot), "在制谱器中找到了 SceneRoot，但未挂载 ChartEditorSceneRoot 类，请检查！");
+                    if (rootGameObject.name != SceneRootName)
+                    {
+                        continue;
+                    }
+
+                    sceneRoot = rootGameObject.GetComponent<ChartEditorSceneRoot>();
+                    if (sceneRoot == null)
+                    {
+                        throw new ArgumentNullException(nameof(sceneRoot), "在制谱器中找到了 SceneRoot，但未挂载 ChartEditorSceneRoot 类，请检查！");
+                    }
+
+                    foundCount++;
                 }
 
-                foundCount++;
-            }
+                if (foundCount != 1)
+                {
+                    throw new Exception("未找到制谱器 SceneRoot 或找到了多个！");
+                }
 
-            if (foundCount != 1)
+                // 更新制谱器 DataModule 相关数据
+                ChartEditorDataModule chartEditorDataModule = GameRoot.GetDataModule<ChartEditorDataModule>();
+                chartEditorDataModule.OnEnterChartEditorProcedure(ChartEditorSceneRoot.CommandStack);
+
+                // 预热资源
+                sceneRoot!.gameObject.SetActive(false);
+
+                var chartModule = GameRoot.GetDataModule<ChartModule>();
+                if (chartModule.SelectedChartPackIndex != null && chartModule.SelectedChartIndex != null)
+                    await chartModule.LoadChartDataAsync();
+
+                List<string> assetsToInit = ChartEditorAssetHelper.AllPaths;
+                await GameRoot.Asset.BatchLoadAssetAsync(assetsToInit).BindTo(sceneRoot.gameObject);
+
+                sceneRoot.gameObject.SetActive(true);
+
+                // 初始化场景
+                sceneRoot.InitSceneRoot();
+            }
+            catch
             {
-                throw new Exception("未找到制谱器 SceneRoot 或找到了多个！");
+                // 初始化中断时主相机仍处于关闭状态，若直接抛出异常，流程不会走到 OnExit，玩家无法恢复画面
+                // 因此先恢复主相机再重新抛出
+                GameRoot.MainCamera?.gameObject.SetActive(true);
+                throw;
             }
-
-            // 更新制谱器 DataModule 相关数据
-            ChartEditorDataModule chartEditorDataModule = GameRoot.GetDataModule<ChartEditorDataModule>();
-            chartEditorDataModule.OnEnterChartEditorProcedure(ChartEditorSceneRoot.CommandStack);
-
-            // 预热资源
-            sceneRoot!.gameObject.SetActive(false);
-
-            var chartModule = GameRoot.GetDataModule<ChartModule>();
-            if (chartModule.SelectedChartPackIndex != null && chartModule.SelectedChartIndex != null)
-                await chartModule.LoadChartDataAsync();
-
-            List<string> assetsToInit = ChartEditorAssetHelper.AllPaths;
-            await GameRoot.Asset.BatchLoadAssetAsync(assetsToInit).BindTo(sceneRoot.gameObject);
-
-            sceneRoot.gameObject.SetActive(true);
-
-            // 初始化场景
-            sceneRoot.InitSceneRoot();
         }
 
         public override void OnUpdate(float deltaTime)
@@ -79,8 +93,9 @@ namespace CyanStars.Gameplay.ChartEditor.Procedure
 
         public override void OnExit()
         {
-            // 恢复主相机
-            GameRoot.MainCamera.gameObject.SetActive(true);
+            // 恢复主相机与背景模糊状态
+            GameRoot.MainCamera?.gameObject.SetActive(true);
+            ChartEditorPopupBlur.Reset();
 
             ChartEditorDataModule chartEditorDataModule = GameRoot.GetDataModule<ChartEditorDataModule>();
             chartEditorDataModule.OnExitChartEditorProcedure();

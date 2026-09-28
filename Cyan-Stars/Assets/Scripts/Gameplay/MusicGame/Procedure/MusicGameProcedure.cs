@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CatAsset.Runtime;
+using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.FSM;
 using CyanStars.Framework.Logging;
 using CyanStars.Framework.Timeline;
 using CyanStars.Gameplay.Base;
-using CyanStars.Chart;
 using CyanStars.Gameplay.MusicGame.UI.ScoreSettlement;
 using CyanStars.Graphics.Band;
 using CyanStars.Utils;
@@ -64,7 +64,7 @@ namespace CyanStars.Gameplay.MusicGame
         {
             TrackLoaderRegistry.Initialize();
 
-            GameRoot.MainCamera.gameObject.SetActive(false);
+            GameRoot.MainCamera?.gameObject.SetActive(false);
             currentSceneInfo = SceneModule.CurrentScene;
 
             //监听事件
@@ -97,7 +97,7 @@ namespace CyanStars.Gameplay.MusicGame
 
         public override void OnExit()
         {
-            GameRoot.MainCamera.gameObject.SetActive(true);
+            GameRoot.MainCamera?.gameObject.SetActive(true);
 
             sceneRoot = null;
             sceneCameraTrans = null;

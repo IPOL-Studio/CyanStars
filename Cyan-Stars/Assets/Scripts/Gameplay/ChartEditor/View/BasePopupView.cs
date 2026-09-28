@@ -26,6 +26,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
         private CommandStack commandStack = null!;
 
         private ChartEditorPopupEffectController? effectController;
+        private ChartEditorPopupBlurMask? blurMask;
         private CancellationTokenSource? cts;
         private readonly ReactiveProperty<bool> CanvasVisibility = new(false);
 
@@ -34,12 +35,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
         {
             canvas = GetComponent<Canvas>();
             TryGetComponent<ChartEditorPopupEffectController>(out effectController);
+            blurMask = gameObject.AddComponent<ChartEditorPopupBlurMask>();
         }
 
         protected virtual void OnDestroy()
         {
             if (CanvasVisibility.CurrentValue) // 如果销毁时弹窗出于打开状态，先发送关闭通知。之后如果改用对象池需要再次验证逻辑，目前无问题
+            {
                 ViewModel.NotifyCanvasVisibilityChanged(false);
+                SetBlurVisible(false);
+            }
 
             cts?.Cancel();
             cts?.Dispose();
@@ -94,6 +99,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             canvas.enabled = true;
 
+            // 弹窗打开时同步模糊面板范围内的背景
+            SetBlurVisible(true);
+
             if (effectController != null)
             {
                 try
@@ -113,6 +121,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
             cts?.Dispose();
             cts = new CancellationTokenSource();
 
+            // 与关闭动画同时恢复背景清晰
+            SetBlurVisible(false);
+
             if (effectController != null)
             {
                 try
@@ -129,6 +140,18 @@ namespace CyanStars.Gameplay.ChartEditor.View
             {
                 canvas.enabled = false;
             }
+        }
+
+
+        /// <summary>
+        /// 开关面板范围内的背景模糊
+        /// </summary>
+        private void SetBlurVisible(bool visible)
+        {
+            if (blurMask != null)
+                blurMask.SetVisible(visible);
+
+            ChartEditorPopupBlur.NotifyPopupVisibilityChanged(visible);
         }
     }
 }

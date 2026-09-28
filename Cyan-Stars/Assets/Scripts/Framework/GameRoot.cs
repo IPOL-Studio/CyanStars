@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEngine;
-using CyanStars.Framework.UI;
-using CyanStars.Framework.FSM;
 using CyanStars.Framework.Asset;
 using CyanStars.Framework.Audio;
 using CyanStars.Framework.Event;
 using CyanStars.Framework.File;
+using CyanStars.Framework.FSM;
 using CyanStars.Framework.GameObjectPool;
 using CyanStars.Framework.Logging;
 using CyanStars.Framework.Timer;
-
+using CyanStars.Framework.UI;
+using UnityEngine;
 
 namespace CyanStars.Framework
 {
@@ -32,7 +31,7 @@ namespace CyanStars.Framework
             new Dictionary<Type, BaseDataModule>();
 
         /// <summary>
-        /// 主相机
+        /// 启动场景的主相机，在音游、制谱器等流程中会被临时关闭，退出流程时再打开
         /// </summary>
         public static Camera MainCamera { get; private set; }
 

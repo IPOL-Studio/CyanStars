@@ -767,8 +767,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 return;
             }
 
-            GameObject topmostHit = HoverRaycastResults[0].gameObject;
-            if (!topmostHit.transform.IsChildOf(transform) || topmostHit.GetComponentInParent<EditAreaNoteView>() != null)
+            RaycastResult topmostHit = HoverRaycastResults[0];
+            if (!topmostHit.gameObject.transform.IsChildOf(transform) ||
+                topmostHit.gameObject.GetComponentInParent<EditAreaNoteView>() != null)
             {
                 previewer.Hide();
                 return;
@@ -776,10 +777,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
             // 将屏幕坐标转换为 Content 内的局部坐标（与 OnPointerDown 一致）
             // 由于 Content 的轴心是 (0.5, 0)，localPoint.y 即为距离底部的像素距离
+            // 主 Canvas 是 ScreenSpaceCamera 模式，传入的相机必须与该 Canvas 实际使用的相机一致，否则换算结果会与点击落点产生偏差
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     contentRect,
                     Input.mousePosition,
-                    null,
+                    topmostHit.module != null ? topmostHit.module.eventCamera : null,
                     out Vector2 localPoint
                 ))
             {
