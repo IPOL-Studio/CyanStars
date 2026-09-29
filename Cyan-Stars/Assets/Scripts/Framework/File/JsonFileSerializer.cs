@@ -12,7 +12,7 @@ namespace CyanStars.Framework.File
     /// Json 序列化工具
     /// </summary>
     /// <remarks>
-    /// <para>只负责对象 ↔ 字符串，写盘请配合 <see cref="FileWriteTransaction"/> 使用。</para>
+    /// <para>只负责对象 ↔ 字符串，落盘由调用方直接覆盖写入目标文件。</para>
     /// </remarks>
     public static class JsonFileSerializer
     {

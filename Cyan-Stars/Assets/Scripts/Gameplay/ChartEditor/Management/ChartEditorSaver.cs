@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using CyanStars.Chart;
 using CyanStars.Chart.Loading;
 using CyanStars.Framework.File;
@@ -15,8 +16,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
     /// 把制谱器里编辑中的数据写进磁盘
     /// </summary>
     /// <remarks>
-    /// 保存顺序：两份 json 先序列化到内存 → 资源文件写进工作区 → 最后提交元数据，
-    /// 且谱面必须排在谱包之前：谱包里的 <c>ChartMetaDatas</c> 引用着谱面文件，
+    /// 谱面必须排在谱包之前写入：谱包的 <c>ChartMetaDatas</c> 引用着谱面文件，
     /// 新建谱面时该文件在磁盘上还不存在。
     /// </remarks>
     public static class ChartEditorSaver
@@ -37,7 +37,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
             ChartDataEditorModel chartDataEditorModel,
             TempFileStore assetStore)
         {
-            // 1. 先把两份 json 都序列化到内存，任何一份失败都不会动磁盘上的文件
+            // 先序列化到内存，任何一份失败都不会改动磁盘上的文件
             string chartPackFilePath;
             string chartFilePath;
             string chartPackJson;
@@ -64,11 +64,10 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                 return false;
             }
 
-            // 2. 把资源文件写进工作区。落盘范围以当前谱包引用的资源为准：
-            //    缓存区里已被删除或已撤销的历史残留不写回磁盘
+            // 落盘范围以当前谱包引用的资源为准：缓存区里已删除或已撤销的历史残留不写回磁盘
             HashSet<string> assetAbsolutePaths = GetAssetAbsolutePaths(workspacePath, chartPackDataEditorModel);
 
-            // 先报告「谱包引用了、但磁盘上和缓存区里都没有」的资源。这里只报错、不中止保存
+            // 缺失的资源只报错，不中止保存
             foreach (string missingPath in assetStore.CollectMissingTargets(assetAbsolutePaths))
                 Debug.LogError($"谱包引用了资源 {missingPath}，但它既不在磁盘上、也不在本次会话的缓存区里。");
 
@@ -78,23 +77,21 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                 return false;
             }
 
-            // 3. 最后提交元数据
-            //    由于谱包的 ChartMetaDatas 引用着谱面文件，因此先写谱面
-            var transaction = new FileWriteTransaction();
-            bool allPrepared =
-                transaction.TryWriteText(chartFilePath, chartJson) &
-                transaction.TryWriteText(chartPackFilePath, chartPackJson);
-
-            if (!allPrepared)
+            // TODO: 定期在后台把整个谱包工作区备份到临时文件路径
+            // 覆盖旧文件，不产生临时文件或备份；谱面被谱包引用，因此先写谱面
+            try
             {
-                transaction.Abort();
-                Debug.LogError("准备谱包或谱面内容失败，已跳过保存");
-                return false;
+                string? chartDirectory = System.IO.Path.GetDirectoryName(chartFilePath);
+                if (!string.IsNullOrEmpty(chartDirectory))
+                    System.IO.Directory.CreateDirectory(chartDirectory);
+
+                // 固定写无 BOM 的 UTF-8，不用平台默认编码
+                System.IO.File.WriteAllText(chartFilePath, chartJson, new UTF8Encoding(false));
+                System.IO.File.WriteAllText(chartPackFilePath, chartPackJson, new UTF8Encoding(false));
             }
-
-            if (!transaction.CommitAll())
+            catch (Exception e)
             {
-                Debug.LogError("谱包或谱面写入失败。");
+                Debug.LogError($"写入谱包或谱面时出现异常：{e}");
                 return false;
             }
 

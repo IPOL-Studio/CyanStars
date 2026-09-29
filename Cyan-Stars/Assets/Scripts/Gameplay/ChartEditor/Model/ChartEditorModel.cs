@@ -114,9 +114,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             WorkspacePath = workspacePath;
             ChartMetaDataIndex = chartMetaDataIndex;
 
-            // 接手工作区时清掉上次崩溃残留的写盘临时文件（.cystmp），它们会被导出时的整目录复制一起带走
-            FileWriteTransaction.DeleteLeftoverTempFiles(WorkspacePath);
-
             ChartPackData = new ReactiveProperty<ChartPackDataEditorModel>(new ChartPackDataEditorModel(chartPackData));
             ChartData = new ReactiveProperty<ChartDataEditorModel>(new ChartDataEditorModel(chartData));
 
