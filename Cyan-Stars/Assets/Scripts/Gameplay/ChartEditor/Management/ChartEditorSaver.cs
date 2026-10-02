@@ -61,7 +61,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                 return false;
             }
 
-            // 落盘范围以当前谱包引用的资源为准：缓存区里已删除或已撤销的历史残留不写回磁盘
+            // 落盘范围以当前谱包引用的资源为准，历史记录引用的数据不写回磁盘
             HashSet<string> assetAbsolutePaths = GetAssetAbsolutePaths(workspacePath, chartPackDataEditorModel);
 
             // 缺失的资源只报错，不中止保存
