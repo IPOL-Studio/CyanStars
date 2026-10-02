@@ -144,15 +144,15 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         /// </summary>
         public void Dispose()
         {
-            UnloadAssetHandlers();
+            // 曲绘由 ChartPackDataCoverViewModel 自己卸载
+            UnloadAudioAssetHandlers();
             AssetStore.Discard();
         }
 
         /// <summary>
         /// 卸载本次会话加载的音乐资源
         /// </summary>
-        /// <remarks>曲绘由 <c>ChartPackDataCoverViewModel</c> 自己卸载</remarks>
-        private void UnloadAssetHandlers()
+        private void UnloadAudioAssetHandlers()
         {
             AudioClipHandler.CurrentValue?.Unload();
             AudioClipHandler.Value = null;
