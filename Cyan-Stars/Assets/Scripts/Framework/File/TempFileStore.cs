@@ -44,7 +44,7 @@ namespace CyanStars.Framework.File
         /// </summary>
         /// <param name="scopeName">作用域名，用于辨认文件夹，将会附加随机后缀以保证唯一</param>
         /// <exception cref="ArgumentNullException">scopeName 为空</exception>
-        /// <remarks>缓存区文件夹懒创建，构造函数本身不写入磁盘；作用域结束时用 <see cref="Discard"/> 删掉它</remarks>
+        /// <remarks>缓存区文件夹懒创建，构造函数本身不写入磁盘；作用域结束时用 <see cref="Discard"/> 删除文件夹</remarks>
         public TempFileStore(string scopeName)
         {
             if (string.IsNullOrEmpty(scopeName))
@@ -99,12 +99,12 @@ namespace CyanStars.Framework.File
         /// 修改句柄要保存到的目标路径
         /// </summary>
         /// <param name="stagedFileHandle">本缓存区创建的句柄</param>
-        /// <param name="targetFilePath">绝对目标路径（含后缀名），传 null 或空字符串表示解除映射</param>
+        /// <param name="targetFilePath">绝对目标路径（含后缀名），传 null 或空字符串表示解绑</param>
         /// <returns>是否已经按传入的路径完成映射</returns>
         /// <remarks>
         /// <para>一个目标路径同时只能由一个句柄占用：目标路径已被别的句柄占用时本次调用不生效、返回 false，
-        /// 调用方须先把原占用者 <c>Retarget(旧句柄, null)</c> 摘下来。</para>
-        /// <para>同一句柄从旧路径改指新路径时会自动从旧路径摘下，不必先经 null 中转。</para>
+        /// 调用方须先把原占用者 <c>Retarget(旧句柄实例, null)</c> 解绑。</para>
+        /// <para>同一句柄从旧路径改指新路径时会自动从旧路径解绑，不必先经 null 中转。</para>
         /// </remarks>
         public bool Retarget(IReadonlyStagedFileHandle stagedFileHandle, string? targetFilePath)
         {
@@ -190,9 +190,6 @@ namespace CyanStars.Framework.File
         /// </summary>
         /// <param name="liveTargetPaths">当前仍然有效的目标路径集合</param>
         /// <returns>保存后仍然没有内容的目标路径，顺序不保证</returns>
-        /// <remarks>
-        /// 只做诊断，不修改任何状态；查到缺失后是否中止保存由调用方决定。
-        /// </remarks>
         public List<string> CollectMissingTargets(HashSet<string> liveTargetPaths)
         {
             if (liveTargetPaths == null)
@@ -208,7 +205,7 @@ namespace CyanStars.Framework.File
 
                 IReadonlyStagedFileHandle? handle = FindByTargetPath(targetPath);
 
-                // 句柄存在还不够，暂存副本本身可能已经不在了
+                // 要求句柄和暂存副本均存在
                 if (handle != null && handle.State == StagedFileState.Staged &&
                     FileManager.IsFileExists(handle.StagedFilePath))
                 {
@@ -282,20 +279,18 @@ namespace CyanStars.Framework.File
         }
 
         /// <summary>
-        /// 把外部文件复制进缓存区文件夹，并返回复制后的路径
+        /// 把外部文件复制进缓存区文件夹，并返回复制后的路径，不登记为句柄
         /// </summary>
         /// <param name="sourcePath">源文件绝对路径，可以是普通路径或安卓 content:// 路径</param>
-        /// <remarks>返回的路径不登记成句柄。</remarks>
         public string CopyInFile(string sourcePath)
         {
             return CopyIn(sourcePath, false);
         }
 
         /// <summary>
-        /// 把外部文件夹复制进缓存区文件夹，并返回复制后的路径
+        /// 把外部文件夹复制进缓存区文件夹，并返回复制后的路径，不登记为句柄
         /// </summary>
         /// <param name="sourcePath">源文件夹绝对路径，可以是普通路径或安卓 content:// 路径</param>
-        /// <remarks>返回的路径不登记成句柄。</remarks>
         public string CopyInFolder(string sourcePath)
         {
             return CopyIn(sourcePath, true);
@@ -358,7 +353,6 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 在文件夹中生成一个未被占用的路径，格式为 [文件名].[7位GUID].[拓展名]
         /// </summary>
-        /// <remarks>不检查生成的路径是否已存在。</remarks>
         private static string CreateUniqueFilePath(string folderPath, string originFileName)
         {
             string fileNameWithoutExt = Path.GetFileNameWithoutExtension(originFileName);
