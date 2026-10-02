@@ -135,7 +135,7 @@ namespace CyanStars.Framework.File
                 if (file.TargetFilePath != null)
                     TargetPathToFileMap.Remove(file.TargetFilePath);
 
-                file.MarkDetached();
+                file.Detach();
                 return true;
             }
 
@@ -273,7 +273,7 @@ namespace CyanStars.Framework.File
         public void Discard()
         {
             foreach (StagedFileHandle file in StagedPathToFileMap.Values)
-                file.MarkReleased();
+                file.Release();
 
             StagedPathToFileMap.Clear();
             TargetPathToFileMap.Clear();

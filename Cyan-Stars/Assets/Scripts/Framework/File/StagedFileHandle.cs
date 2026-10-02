@@ -10,9 +10,9 @@ namespace CyanStars.Framework.File
     /// 缓存区里的一份暂存文件句柄
     /// </summary>
     /// <remarks>
-    /// <para>由 <see cref="TempFileStore"/> 创建并改写，业务代码通过 <see cref="IReadonlyStagedFileHandle"/> 只读访问</para>
-    /// <para>创建后 <see cref="StagedFilePath"/> 和 <see cref="OriginFilePath"/> 不再变化，
-    /// 只有 <see cref="TargetFilePath"/> 会由 <see cref="TempFileStore.Retarget"/> 改写</para>
+    /// <para>由 <see cref="TempFileStore"/> 创建并改写，可通过 <see cref="IReadonlyStagedFileHandle"/> 只读访问</para>
+    /// <para>创建后 <see cref="StagedFilePath"/> 和 <see cref="OriginFilePath"/> 不再变化</para>
+    /// <para><see cref="TargetFilePath"/> 可由 <see cref="TempFileStore.Retarget"/> 改写</para>
     /// </remarks>
     internal sealed class StagedFileHandle : IReadonlyStagedFileHandle
     {
@@ -40,7 +40,7 @@ namespace CyanStars.Framework.File
             if (string.IsNullOrEmpty(originFilePath) || !FileManager.IsFileExists(originFilePath))
             {
                 State = StagedFileState.Released;
-                Debug.LogWarning($"外部文件不存在：{originFilePath}");
+                Debug.LogError($"外部文件不存在：{originFilePath}");
                 throw new FileNotFoundException($"外部文件不存在：{originFilePath}", originFilePath);
             }
 
@@ -52,16 +52,14 @@ namespace CyanStars.Framework.File
             catch (Exception e)
             {
                 State = StagedFileState.Released;
-                Debug.LogWarning($"复制文件到缓存区失败：{e.Message}");
+                Debug.LogError($"复制文件到缓存区失败：{e.Message}");
                 throw;
             }
         }
 
-
         /// <summary>
-        /// 设置目标路径
+        /// 更新目标路径
         /// </summary>
-        /// <remarks>由 <see cref="TempFileStore"/> 调用，需同步映射表</remarks>
         internal void SetTargetFilePath(string targetFilePath)
         {
             if (State == StagedFileState.Released)
@@ -71,10 +69,9 @@ namespace CyanStars.Framework.File
         }
 
         /// <summary>
-        /// 解除目标路径映射，暂存副本保留
+        /// 解除目标路径映射，暂存副本仍然保留
         /// </summary>
-        /// <remarks>由 <see cref="TempFileStore"/> 调用，需同步映射表</remarks>
-        internal void MarkDetached()
+        internal void Detach()
         {
             if (State == StagedFileState.Released)
                 return;
@@ -82,7 +79,10 @@ namespace CyanStars.Framework.File
             TargetFilePath = null;
         }
 
-        internal void MarkReleased()
+        /// <summary>
+        /// 释放暂存副本，不再使用
+        /// </summary>
+        internal void Release()
         {
             State = StagedFileState.Released;
             TargetFilePath = null;
