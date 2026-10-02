@@ -142,7 +142,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // TODO: 将导出的文件打包为一个专有后缀名的文件
             GameRoot.File.OpenSaveFolderPathBrowser(targetParentPath =>
                 {
-                    // 1. 先校验导出目标。校验必须排在写盘之前，避免中止导出时工作区已被改写
+                    // 1. 先在内存中固定和校验导出的目标数据
                     DirectoryInfo sourceDirInfo = new DirectoryInfo(Model.WorkspacePath);
                     string folderName = sourceDirInfo.Name;
                     string destPath = PathUtil.Combine(targetParentPath, folderName);
@@ -155,7 +155,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                         PopupView.Show("无法导出谱包",
                             "不能导出到游戏数据目录内部，请选一个其他路径",
                             true,
-                            new Dictionary<string, Action?> { ["确定"] = null }
+                            new Dictionary<string, Action?>
+                            {
+                                ["确定"] = null
+                            }
                         );
                         return;
                     }
@@ -171,7 +174,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                         PopupView.Show("无法导出谱包",
                             "保存谱包数据失败，已取消导出。具体原因见日志。",
                             true,
-                            new Dictionary<string, Action?> { ["确定"] = null }
+                            new Dictionary<string, Action?>
+                            {
+                                ["确定"] = null
+                            }
                         );
                         return;
                     }
