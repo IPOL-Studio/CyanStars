@@ -282,9 +282,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 {
                     targetMusicVersion.AudioFilePath.Value = newTargetRelativePath;
 
-                    // 执行：旧句柄与目标路径解绑，新句柄指向目标路径
-                    if (oldStagedFile != null &&
-                        !Model.IsAssetReferenced(oldTargetAbsolutePath, targetMusicVersion))
+                    // 执行：若移除此音乐版本时，音频文件还被别的音乐版本使用，则不解绑句柄
+                    if (oldStagedFile != null && !Model.IsAssetReferenced(oldTargetAbsolutePath))
                     {
                         Model.AssetStore.Retarget(oldStagedFile, null);
                     }
@@ -371,7 +370,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 {
                     Model.ChartPackData.CurrentValue.MusicVersions.RemoveAt(selectedIndex);
 
-                    // 执行：克隆版本时会共享音频路径。如果此路径仍被其它版本引用，则不能解绑
+                    // 执行：若移除此音乐版本时，音频文件还被别的音乐版本使用，则不解绑句柄
                     if (stagedAudioFile != null && !Model.IsAssetReferenced(audioAbsolutePath))
                         Model.AssetStore.Retarget(stagedAudioFile, null);
 

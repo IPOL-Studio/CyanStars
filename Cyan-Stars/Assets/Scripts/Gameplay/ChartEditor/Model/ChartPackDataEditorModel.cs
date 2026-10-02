@@ -52,14 +52,13 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         /// <summary>
         /// 取当前谱包引用的所有资源文件的相对路径（曲绘、各音乐版本的音频）
         /// </summary>
-        /// <param name="excludeMusicVersion">不计入引用的音乐版本：它刚被改写或刚被删除</param>
         /// <returns>相对于工作区的路径，例如 <c>Assets/Cover.png</c></returns>
         /// <remarks>
         /// 保存时以它为准决定落盘哪些暂存文件，从缓存区摘掉暂存文件之前也以它为准确认目标路径不再被引用
         /// （克隆的音乐版本会共享音频路径）
         /// </remarks>
         [Pure]
-        public List<string> GetAssetRelativePaths(MusicVersionDataEditorModel? excludeMusicVersion = null)
+        public List<string> GetAssetRelativePaths()
         {
             var paths = new List<string>();
 
@@ -69,9 +68,6 @@ namespace CyanStars.Gameplay.ChartEditor.Model
 
             foreach (MusicVersionDataEditorModel musicVersion in MusicVersions)
             {
-                if (ReferenceEquals(musicVersion, excludeMusicVersion))
-                    continue;
-
                 string audioFilePath = musicVersion.AudioFilePath.CurrentValue;
                 if (string.IsNullOrEmpty(audioFilePath))
                     continue;
