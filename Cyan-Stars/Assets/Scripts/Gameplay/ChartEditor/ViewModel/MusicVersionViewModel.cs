@@ -213,7 +213,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // 2. 记下旧音频路径，撤销时要还回去
             // 3. 把新音频复制进缓存区，并指向新地址
 
-            var newTargetRelativePath = PathUtil.Combine(ChartPackDataLoader.ChartPackAssetsFolder, FileManager.GetFileName(newOriginFilePath));
+            var newTargetRelativePath = PathUtil.Combine(ChartPackDataLoader.ChartPackAssetsFolder, FileManager.GetFileOrFolderName(newOriginFilePath));
 
             foreach (var musicVersionData in Model.ChartPackData.CurrentValue.MusicVersions)
             {

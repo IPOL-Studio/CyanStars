@@ -37,7 +37,7 @@ namespace CyanStars.Framework.File
             OriginFilePath = originFilePath;
             StagedFilePath = stagedFilePath;
 
-            if (string.IsNullOrEmpty(originFilePath) || !FileManager.FileExists(originFilePath))
+            if (string.IsNullOrEmpty(originFilePath) || !FileManager.IsFileExists(originFilePath))
             {
                 State = StagedFileState.Released;
                 Debug.LogWarning($"外部文件不存在：{originFilePath}");

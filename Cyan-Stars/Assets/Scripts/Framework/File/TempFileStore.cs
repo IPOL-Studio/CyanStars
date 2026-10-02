@@ -12,6 +12,7 @@ namespace CyanStars.Framework.File
     /// 暂存作用域：把一批文件暂存在独占的缓存区文件夹里，并维护 暂存路径 → 句柄、目标路径 → 句柄 两张映射表
     /// </summary>
     /// <remarks>
+    /// <para>子缓存区生命周期为 Store 的生命周期；整个缓存区生命周期为 FileManager 的生命周期，即一次游戏会话</para>
     /// <para>让一个句柄改指到已被其它句柄占用的路径之前，必须先把原占用者 <c>Retarget(原占用者, null)</c> 解绑。</para>
     /// <para>落盘时必须传入当前仍然有效的目标路径集合（见 <see cref="ApplyAll"/> 的 <c>liveTargetPaths</c> 参数），否则已删除或已撤销的陈旧句柄会被一并写回磁盘。</para>
     /// </remarks>
@@ -21,7 +22,7 @@ namespace CyanStars.Framework.File
         /// 所有暂存作用域文件夹的根目录
         /// </summary>
         private static string StagingRootPath =>
-            PathUtil.Combine(Application.temporaryCachePath, nameof(TempFileStore));
+            PathUtil.Combine(Application.temporaryCachePath, "TempFileStore");
 
         // 暂存路径 → 句柄，保证齐全
         private readonly Dictionary<string, StagedFileHandle> StagedPathToFileMap =
@@ -33,44 +34,33 @@ namespace CyanStars.Framework.File
 
 
         /// <summary>
-        /// 缓存区文件夹绝对路径，按需创建
+        /// 缓存区子文件夹绝对路径，磁盘文件夹懒创建
         /// </summary>
-        public string FolderPath { get; }
+        private readonly string FolderPath;
 
 
         /// <summary>
         /// 在应用临时缓存目录下创建一个归本作用域独占的缓存区
         /// </summary>
-        /// <param name="scopeName">作用域名，只用于辨认文件夹，将会附加随机后缀以保证唯一</param>
-        public static TempFileStore CreateInTempCache(string scopeName)
+        /// <param name="scopeName">作用域名，用于辨认文件夹，将会附加随机后缀以保证唯一</param>
+        /// <exception cref="ArgumentNullException">scopeName 为空</exception>
+        /// <remarks>缓存区文件夹懒创建，构造函数本身不写入磁盘；作用域结束时用 <see cref="Discard"/> 删掉它</remarks>
+        public TempFileStore(string scopeName)
         {
             if (string.IsNullOrEmpty(scopeName))
                 throw new ArgumentNullException(nameof(scopeName));
 
-            return new TempFileStore(PathUtil.Combine(StagingRootPath, $"{scopeName}.{CreateShortGuid()}"));
+            FolderPath = PathUtil.Combine(StagingRootPath, $"{scopeName}.{CreateShortGuid()}");
         }
 
+
         /// <summary>
-        /// 删除根目录下所有缓存区，用于清理上次运行残留的文件
+        /// 删除文件缓存区，用于清理上次运行残留的文件
         /// </summary>
         public static void DeleteAllTempCaches()
         {
             DeleteFolderIfExists(StagingRootPath, "缓存区根目录");
         }
-
-        /// <summary>
-        /// 实例化缓存区
-        /// </summary>
-        /// <param name="folderPath">缓存区文件夹绝对路径，由 <see cref="CreateInTempCache"/> 保证落在暂存根目录下</param>
-        /// <exception cref="ArgumentNullException">folderPath 为空</exception>
-        private TempFileStore(string folderPath)
-        {
-            if (string.IsNullOrEmpty(folderPath))
-                throw new ArgumentNullException(nameof(folderPath));
-
-            FolderPath = PathUtil.Normalize(folderPath);
-        }
-
 
         /// <summary>
         /// 把外部文件复制进缓存区，并返回句柄
@@ -88,9 +78,10 @@ namespace CyanStars.Framework.File
             if (string.IsNullOrEmpty(originFilePath))
                 throw new ArgumentNullException(nameof(originFilePath));
 
-            Directory.CreateDirectory(FolderPath);
+            if (!Directory.Exists(FolderPath))
+                Directory.CreateDirectory(FolderPath);
 
-            string fileName = FileManager.GetFileName(originFilePath);
+            string fileName = FileManager.GetFileOrFolderName(originFilePath);
             if (string.IsNullOrEmpty(fileName))
                 throw new Exception($"无法获取文件名，可能是暂不支持此操作：{originFilePath}");
 
@@ -129,7 +120,10 @@ namespace CyanStars.Framework.File
                 return false;
             }
 
-            targetFilePath = NormalizePath(targetFilePath);
+            // 空字符串按 null 处理；比较和存表都统一用归一化后的写法
+            targetFilePath = string.IsNullOrEmpty(targetFilePath)
+                ? null
+                : PathUtil.Normalize(targetFilePath);
 
             // 目标路径未变，直接返回成功，不修改映射表
             if (PathUtil.PathEquals(file.TargetFilePath, targetFilePath))
@@ -149,8 +143,8 @@ namespace CyanStars.Framework.File
                 !ReferenceEquals(owner, file))
             {
                 Debug.LogError($"目标路径 {targetFilePath} 已被暂存文件 {owner.StagedFilePath} 占用，" +
-                               $"拒绝让 {file.StagedFilePath} 抢占。" +
-                               "请先把原来的占用者 Retarget 到 null。");
+                    $"拒绝让 {file.StagedFilePath} 抢占。" +
+                    "请先把原来的占用者 Retarget 到 null。");
                 return false;
             }
 
@@ -209,14 +203,14 @@ namespace CyanStars.Framework.File
             foreach (string targetPath in liveTargetPaths)
             {
                 // 磁盘上已有这个文件，本次不需要写它
-                if (FileManager.FileExists(targetPath))
+                if (FileManager.IsFileExists(targetPath))
                     continue;
 
                 IReadonlyStagedFileHandle? handle = FindByTargetPath(targetPath);
 
                 // 句柄存在还不够，暂存副本本身可能已经不在了
                 if (handle != null && handle.State == StagedFileState.Staged &&
-                    FileManager.FileExists(handle.StagedFilePath))
+                    FileManager.IsFileExists(handle.StagedFilePath))
                 {
                     continue;
                 }
@@ -256,7 +250,7 @@ namespace CyanStars.Framework.File
                 {
                     // 不属于当前数据的历史残留，通常由漏掉 Retarget 造成
                     Debug.LogWarning($"暂存文件 {file.StagedFilePath} 指向的 {file.TargetFilePath} " +
-                                     "已不被当前数据引用，本次跳过写入。");
+                        "已不被当前数据引用，本次跳过写入。");
                     continue;
                 }
 
@@ -284,14 +278,8 @@ namespace CyanStars.Framework.File
             StagedPathToFileMap.Clear();
             TargetPathToFileMap.Clear();
 
-            DeleteFolderIfExists(FolderPath, "缓存区文件夹");
+            DeleteFolderIfExists(FolderPath, "缓存区子文件夹");
         }
-
-        public void Dispose()
-        {
-            Discard();
-        }
-
 
         /// <summary>
         /// 把外部文件复制进缓存区文件夹，并返回复制后的路径
@@ -313,6 +301,12 @@ namespace CyanStars.Framework.File
             return CopyIn(sourcePath, true);
         }
 
+        public void Dispose()
+        {
+            Discard();
+        }
+
+
         private string CopyIn(string sourcePath, bool isFolder)
         {
             if (string.IsNullOrEmpty(sourcePath))
@@ -320,7 +314,7 @@ namespace CyanStars.Framework.File
 
             Directory.CreateDirectory(FolderPath);
 
-            string fileName = FileManager.GetFileName(sourcePath);
+            string fileName = FileManager.GetFileOrFolderName(sourcePath);
             if (string.IsNullOrEmpty(fileName))
                 throw new Exception($"无法获取文件（夹）名：{sourcePath}");
 
@@ -359,14 +353,6 @@ namespace CyanStars.Framework.File
                 Debug.LogError($"保存暂存文件到 {targetFilePath} 时出错：{e.Message}");
                 return false;
             }
-        }
-
-        /// <summary>
-        /// 空字符串按 null 处理
-        /// </summary>
-        private static string? NormalizePath(string? path)
-        {
-            return string.IsNullOrEmpty(path) ? null : PathUtil.Normalize(path);
         }
 
         /// <summary>

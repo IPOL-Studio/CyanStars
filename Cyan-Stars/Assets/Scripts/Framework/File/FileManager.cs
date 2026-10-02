@@ -11,7 +11,7 @@ namespace CyanStars.Framework.File
     /// 文件管理器：文件（夹）选择对话框与外部文件读写
     /// </summary>
     /// <remarks>
-    /// <para>选中的「文件」和读取用的「文件夹」返回的是可直接交给 <see cref="System.IO"/> 的普通绝对路径：安卓上通过 SAF 选中的内容会先复制进 <see cref="Staging"/> 再返回，不带 <c>content://</c> 或 <c>file://</c> 这类 scheme。</para>
+    /// <para>选中的「文件」和读取用的「文件夹」返回的是可直接交给 <see cref="System.IO"/> 的普通绝对路径：安卓上通过 SAF 选中的内容会先复制进 <see cref="fileManagerStaging"/> 再返回，不带 <c>content://</c> 或 <c>file://</c> 这类 scheme。</para>
     /// <para>保存目标文件夹是写入目标，不会复制到缓存区，返回系统给出的路径，安卓上可能仍是 <c>content://</c>；需要暂存文件时不要用本类，应为每个作用域建一个 <see cref="TempFileStore"/>。</para>
     /// </remarks>
     public class FileManager : BaseManager
@@ -29,10 +29,10 @@ namespace CyanStars.Framework.File
 
 
         /// <summary>
-        /// 文件对话框使用的缓存区
+        /// FileManager 使用的缓存区
         /// </summary>
         /// <remarks>玩家选中的文件会先复制到这里，再由各作用域自己的 <see cref="TempFileStore"/> 接手</remarks>
-        public TempFileStore Staging { get; private set; } = null!;
+        private TempFileStore fileManagerStaging = null!;
 
 
         public readonly FileBrowser.Filter ChartFilter = new FileBrowser.Filter("谱面文件", ".json");
@@ -45,9 +45,10 @@ namespace CyanStars.Framework.File
             // 清理上次运行残留的缓存区
             TempFileStore.DeleteAllTempCaches();
 
-            Staging = TempFileStore.CreateInTempCache("FileBrowser");
+            // 创建缓存区作用域
+            fileManagerStaging = new TempFileStore(nameof(FileManager));
 
-            // 设置颜色主题
+            // 设置文件选择器弹窗的颜色主题
             FileBrowser.Skin = fileBrowserSkin;
 
             // 显示所有后缀的文件，包括默认排除的 .lnk 和 .tmp
@@ -65,21 +66,21 @@ namespace CyanStars.Framework.File
         }
 
         /// <summary>
-        /// 销毁时丢弃自己的缓存区
+        /// 销毁时丢弃整个缓存区
         /// </summary>
-        /// <remarks>只清理本作用域，其它作用域由各自负责 <see cref="TempFileStore.Discard"/>；上次运行的残留由 <see cref="OnInit"/> 清理。</remarks>
         public void OnDestroy()
         {
-            Staging.Discard();
+            fileManagerStaging.Discard();
+            TempFileStore.DeleteAllTempCaches();
         }
 
 
-        #region --- 外部文件（含安卓 content: // 路径）的静态工具方法 ---
+        #region --- 外部文件（含安卓 content: 路径）的静态工具方法 ---
 
         /// <summary>
         /// 文件是否存在（支持普通路径和安卓 content:// 路径）
         /// </summary>
-        public static bool FileExists(string path)
+        public static bool IsFileExists(string path)
         {
             if (string.IsNullOrEmpty(path))
                 return false;
@@ -90,7 +91,7 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 文件夹是否存在（支持普通路径和安卓 content:// 路径）
         /// </summary>
-        public static bool FolderExists(string path)
+        public static bool IsFolderExists(string path)
         {
             if (string.IsNullOrEmpty(path))
                 return false;
@@ -101,7 +102,7 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 取文件（夹）名（支持普通路径和安卓 content:// 路径）
         /// </summary>
-        public static string GetFileName(string path)
+        public static string GetFileOrFolderName(string path)
         {
             return string.IsNullOrEmpty(path) ? "" : FileBrowserHelpers.GetFilename(path);
         }
@@ -170,7 +171,7 @@ namespace CyanStars.Framework.File
         #region --- FileBrowser API 用于在运行时向玩家打开文件管理器 UI  ---
 
         /// <summary>
-        /// 获取单个文件的路径
+        /// 获取单个文件的路径，安卓文件会先复制进缓存区，然后返回缓存区文件路径
         /// </summary>
         /// <param name="onSuccess">成功获取的回调，参数为普通绝对路径</param>
         /// <param name="onCancel">玩家取消的回调</param>
@@ -194,7 +195,7 @@ namespace CyanStars.Framework.File
                 if (paths.Length == 0)
                     return;
 
-                // TODO: 改为异步任务执行；复制期间没法展示 UI 交互，暂时同步等待
+                // TODO: 改为异步任务执行
                 if (!TryResolvePlainPaths(paths, "文件", out string[] resolvedPaths))
                     return;
 
@@ -210,7 +211,7 @@ namespace CyanStars.Framework.File
         }
 
         /// <summary>
-        /// 获取多个文件的路径
+        /// 获取多个文件的路径，安卓文件会先复制进缓存区，然后返回缓存区文件路径
         /// </summary>
         /// <param name="onSuccess">成功获取的回调，参数为普通绝对路径数组</param>
         /// <param name="onCancel">玩家取消的回调</param>
@@ -250,7 +251,7 @@ namespace CyanStars.Framework.File
         }
 
         /// <summary>
-        /// 获取要加载的文件夹路径
+        /// 获取要加载的文件夹路径，安卓文件会先复制进缓存区，然后返回缓存区文件路径
         /// </summary>
         /// <param name="onSuccess">成功获取的回调，参数为普通绝对路径</param>
         /// <param name="onCancel">玩家取消的回调</param>
@@ -325,7 +326,7 @@ namespace CyanStars.Framework.File
 
 
         /// <summary>
-        /// 把对话框返回的一批路径统一成普通绝对路径，若是安卓文件则先复制再返回可读写文件路径
+        /// 把文件对话框返回的文件（夹）路径统一成普通绝对路径；若是安卓 content:// 路径则先复制到缓存区，再返回缓存区可读写的路径
         /// </summary>
         /// <param name="paths">对话框返回的路径</param>
         /// <param name="description">日志里用的操作对象描述，例如「文件」「文件夹」</param>
@@ -352,7 +353,7 @@ namespace CyanStars.Framework.File
         }
 
         /// <summary>
-        /// 把文件对话框返回的路径统一成普通绝对路径，若是安卓文件则先复制再返回可读写文件路径
+        /// 把文件对话框返回的文件（夹）路径统一成普通绝对路径；若是安卓 content:// 路径则先复制到缓存区，再返回缓存区可读写的路径
         /// </summary>
         /// <param name="path">对话框返回的路径，可能是普通路径、content:// 或 file:// 路径</param>
         /// <returns>可直接交给 <see cref="System.IO"/> 使用的普通绝对路径</returns>
@@ -364,14 +365,17 @@ namespace CyanStars.Framework.File
         private string ResolvePlainPath(string path)
         {
             if (string.IsNullOrEmpty(path))
-                throw new ArgumentException("文件对话框返回了空路径。", nameof(path));
+                throw new ArgumentException("传入路径为空", nameof(path));
 
-            if (path.StartsWith(ContentUriPrefix, StringComparison.Ordinal))
-                return FileExists(path)
-                    ? CopyContentFileToStaging(path)
-                    : CopyContentFolderToStaging(path);
+            if (!IsContentUri(path))
+                return PathUtil.Normalize(path);
 
-            return PathUtil.Normalize(path);
+            if (IsFileExists(path))
+                return CopyContentFileToStaging(path);
+            if (IsFolderExists(path))
+                return CopyContentFolderToStaging(path);
+
+            throw new ArgumentException("传入路径不指向任何文件或文件夹");
         }
 
         /// <summary>
@@ -385,10 +389,10 @@ namespace CyanStars.Framework.File
 
             try
             {
-                string destinationPath = Staging.CopyInFile(contentUri);
+                string destinationPath = fileManagerStaging.CopyInFile(contentUri);
 
                 // 检查是否拷贝成功
-                if (!FileExists(destinationPath))
+                if (!IsFileExists(destinationPath))
                     throw new Exception("文件复制失败，目标文件未生成。");
 
                 return destinationPath;
@@ -411,10 +415,10 @@ namespace CyanStars.Framework.File
 
             try
             {
-                string destinationFolderPath = Staging.CopyInFolder(contentUri);
+                string destinationFolderPath = fileManagerStaging.CopyInFolder(contentUri);
 
                 // 检查是否拷贝成功
-                if (!FolderExists(destinationFolderPath))
+                if (!IsFolderExists(destinationFolderPath))
                     throw new Exception("文件夹复制失败，目标目录未生成。");
 
                 return destinationFolderPath;

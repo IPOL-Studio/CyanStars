@@ -117,7 +117,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             ChartPackData = new ReactiveProperty<ChartPackDataEditorModel>(new ChartPackDataEditorModel(chartPackData));
             ChartData = new ReactiveProperty<ChartDataEditorModel>(new ChartDataEditorModel(chartData));
 
-            AssetStore = TempFileStore.CreateInTempCache("ChartEditor");
+            AssetStore = new TempFileStore("ChartEditor");
         }
 
         /// <summary>
