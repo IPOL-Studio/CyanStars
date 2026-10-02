@@ -10,8 +10,10 @@ namespace CyanStars.Utils
     /// 路径拼接、归一化与比较工具
     /// </summary>
     /// <remarks>
-    /// <para>把路径当字符串使用（拼接、作字典键、放进集合）时应走本类：比较前会先 <see cref="Normalize"/>，大小写按当前平台的文件系统规则。</para>
-    /// <para><see cref="Combine(string, string)"/> 用于替代 <see cref="Path.Combine(string, string)"/>，返回值统一为正斜杠写法。</para>
+    /// <para>把路径当字符串使用（拼接、作字典键、放进集合）时应走本类：
+    /// 比较前会先 <see cref="Normalize"/>，大小写按当前平台的文件系统规则。</para>
+    /// <para><see cref="Combine(string, string)"/> 用于替代 <see cref="Path.Combine(string, string)"/>，
+    /// 返回值统一为适用于 Unity 的正斜杠写法。</para>
     /// </remarks>
     public static class PathUtil
     {
@@ -20,43 +22,42 @@ namespace CyanStars.Utils
         /// </summary>
         /// <remarks>Windows 与 macOS 下不区分大小写比较，Android 下区分大小写；
         /// 用例如 <c>new HashSet&lt;string&gt;(PathUtil.PathComparer)</c></remarks>
-        public static IEqualityComparer<string> PathComparer { get; } = PathSemanticComparer.Instance;
+        public static readonly IEqualityComparer<string> PathComparer = PathSemanticComparer.Instance;
 
         /// <summary>
         /// 按路径语义比较两个路径，允许 null
         /// </summary>
-        /// <remarks>两个 null 视为相同；<see cref="IEqualityComparer{T}.Equals"/> 的形参声明为非 null，直接传可空实参会报 CS8604 警告</remarks>
         public static bool PathEquals(string? path1, string? path2)
         {
             return PathSemanticComparer.Instance.Equals(path1, path2);
         }
 
-        /// <summary>
-        /// 判断 path 是否等于 root 或位于 root 之内，按路径语义比较
-        /// </summary>
-        /// <param name="path">待判断的绝对路径</param>
-        /// <param name="root">根目录的绝对路径</param>
-        /// <remarks>比较前双方都会先过一遍 <see cref="Normalize"/>，调用方需传入绝对路径
-        /// （必要时先 <see cref="Path.GetFullPath(string)"/> 消掉相对路径和 <c>..</c>）。
-        /// 前缀比较带分隔符边界，<c>C:/data</c> 不会匹配 <c>C:/database</c>。</remarks>
-        public static bool IsSubPathOf(string path, string root)
-        {
-            if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(root))
-                return false;
-
-            string normalizedPath = Normalize(path);
-            string normalizedRoot = Normalize(root);
-
-            if (string.Equals(normalizedPath, normalizedRoot, PathSemanticComparer.Comparison))
-                return true;
-
-            // root 本身以分隔符结尾时（如 "C:/"）不再补分隔符
-            string prefix = normalizedRoot.EndsWith("/", StringComparison.Ordinal)
-                ? normalizedRoot
-                : normalizedRoot + "/";
-
-            return normalizedPath.StartsWith(prefix, PathSemanticComparer.Comparison);
-        }
+        // /// <summary>
+        // /// 判断 path 是否等于 root 或位于 root 之内，按路径语义比较
+        // /// </summary>
+        // /// <param name="path">待判断的绝对路径</param>
+        // /// <param name="root">根目录的绝对路径</param>
+        // /// <remarks>比较前双方都会先过一遍 <see cref="Normalize"/>，调用方需传入绝对路径
+        // /// （必要时先 <see cref="Path.GetFullPath(string)"/> 消掉相对路径和 <c>..</c>）。
+        // /// 前缀比较带分隔符边界，<c>C:/data</c> 不会匹配 <c>C:/database</c>。</remarks>
+        // public static bool IsSubPathOf(string path, string root)
+        // {
+        //     if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(root))
+        //         return false;
+        //
+        //     string normalizedPath = Normalize(path);
+        //     string normalizedRoot = Normalize(root);
+        //
+        //     if (string.Equals(normalizedPath, normalizedRoot, PathSemanticComparer.Comparison))
+        //         return true;
+        //
+        //     // root 本身以分隔符结尾时（如 "C:/"）不再补分隔符
+        //     string prefix = normalizedRoot.EndsWith("/", StringComparison.Ordinal)
+        //         ? normalizedRoot
+        //         : normalizedRoot + "/";
+        //
+        //     return normalizedPath.StartsWith(prefix, PathSemanticComparer.Comparison);
+        // }
 
         /// <summary>
         /// 拼接两个路径，并把结果归一化
@@ -93,8 +94,8 @@ namespace CyanStars.Utils
 
             string normalized = path.Replace('\\', '/');
 
-            // 保留 "C:/"、"/" 这类根路径
-            while (normalized.Length > 1 && normalized[normalized.Length - 1] == '/' &&
+            // 删除路径末尾的斜杠，但保留 "C:/"、"/" 这类根路径
+            while (normalized.Length > 1 && normalized[^1] == '/' &&
                    !(normalized.Length == 3 && normalized[1] == ':'))
             {
                 normalized = normalized[..^1];
@@ -104,6 +105,9 @@ namespace CyanStars.Utils
         }
 
 
+        /// <summary>
+        /// 路径语义比较器，处理不同平台的正反斜杠、路径末斜杠、大小写敏感性的路径
+        /// </summary>
         private sealed class PathSemanticComparer : IEqualityComparer<string>
         {
             /// <summary>
@@ -117,12 +121,12 @@ namespace CyanStars.Utils
             /// <summary>
             /// 取当前平台的大小写比较规则
             /// </summary>
+            /// <remarks>Windows/macOS 不区分大小写，其他平台如 Android/Linux 则区分大小写</remarks>
             private static StringComparison ResolveComparison()
             {
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
                 return StringComparison.OrdinalIgnoreCase;
 #else
-                // Android 区分大小写；编辑器可能运行在 Windows / macOS 上
                 return UnityEngine.Application.platform == UnityEngine.RuntimePlatform.WindowsEditor ||
                        UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXEditor
                     ? StringComparison.OrdinalIgnoreCase
