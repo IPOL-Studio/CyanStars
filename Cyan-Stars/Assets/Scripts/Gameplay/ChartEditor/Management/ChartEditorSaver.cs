@@ -100,9 +100,6 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         /// 把谱包引用的资源相对路径换算成工作区里的绝对路径
         /// </summary>
         /// <returns>绝对路径集合，交给 <see cref="TempFileStore.ApplyAll"/> 决定落盘哪些暂存文件</returns>
-        /// <remarks>
-        /// 相对路径 → 绝对路径必须与其它调用方写法一致，否则暂存文件找不到自己的目标路径
-        /// </remarks>
         private static HashSet<string> GetAssetAbsolutePaths(
             string workspacePath,
             ChartPackDataEditorModel chartPackDataEditorModel
