@@ -126,7 +126,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (Model.ChartPackData.CurrentValue.MusicVersions.Count > 0 &&
                 !string.IsNullOrEmpty(Model.ChartPackData.CurrentValue.MusicVersions[0].AudioFilePath.CurrentValue))
             {
-                // 有缓存副本就读缓存副本，否则读谱包资源文件夹里的文件
+                // 如果能根据 targetPath 找到暂存文件句柄，则优先加载句柄指向的缓存文件，否则加载谱包资源文件夹内的文件。
                 string musicFilePath = PathUtil.Combine(Model.WorkspacePath, Model.ChartPackData.CurrentValue.MusicVersions[0].AudioFilePath.CurrentValue);
                 musicFilePath = Model.AssetStore.ResolveLatest(musicFilePath);
 
@@ -188,32 +188,39 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             GameRoot.File.OpenLoadFilePathBrowser(
                 newOriginFilePath => ImportMusicFile(targetMusicVersion, newOriginFilePath),
                 title: "选择音乐文件",
-                filters: new[] { GameRoot.File.AudioFilter });
+                filters: new[]
+                {
+                    GameRoot.File.AudioFilter
+                });
         }
 
         /// <summary>
         /// 把外部音频文件导入到指定音乐版本
         /// </summary>
-        /// <param name="targetMusicVersion">导入到哪个版本，由 <see cref="ImportAudioFile"/> 在打开对话框前锁定</param>
+        /// <param name="targetMusicVersion">导入到哪个版本</param>
         /// <param name="newOriginFilePath">外部音频文件路径</param>
         private void ImportMusicFile(MusicVersionDataEditorModel targetMusicVersion, string newOriginFilePath)
         {
             // 对话框期间该版本可能已经被删掉了
+            // FileBrowser 通常会实时检测文件存在状态并从对话框中删除文件避免选中，此处仅作为防御措施
             if (!Model.ChartPackData.CurrentValue.MusicVersions.Contains(targetMusicVersion))
             {
                 PopupView.Show("无法导入音乐",
                     "目标音乐版本已被删除，请重新选择要导入的版本。",
                     true,
-                    new Dictionary<string, Action?> { ["确定"] = null }
+                    new Dictionary<string, Action?>
+                    {
+                        ["确定"] = null
+                    }
                 );
                 return;
             }
 
-            // 1. 校验文件名是否和其他版本重复
-            // 2. 记下旧音频路径，撤销时要还回去
-            // 3. 把新音频复制进缓存区，并指向新地址
-
-            var newTargetRelativePath = PathUtil.Combine(ChartPackDataLoader.ChartPackAssetsFolder, FileManager.GetFileOrFolderName(newOriginFilePath));
+            // 校验文件名是否和其他版本重复
+            string newTargetRelativePath = PathUtil.Combine(
+                ChartPackDataLoader.ChartPackAssetsFolder,
+                FileManager.GetFileOrFolderName(newOriginFilePath)
+            );
 
             foreach (var musicVersionData in Model.ChartPackData.CurrentValue.MusicVersions)
             {
@@ -221,30 +228,36 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     continue;
 
                 // 按路径语义比较：同名文件的路径写法可能不同，但在磁盘上是同一个文件
-                if (PathUtil.PathComparer.Equals(musicVersionData.AudioFilePath.CurrentValue, newTargetRelativePath))
-                {
-                    PopupView.Show("无法导入音乐",
-                        "选中的音乐文件文件名与其他音乐版本文件名重复，请重命名后再次导入",
-                        true,
-                        new Dictionary<string, Action?> { ["确定"] = null }
-                    );
-                    return;
-                }
+                if (!PathUtil.PathComparer.Equals(
+                        musicVersionData.AudioFilePath.CurrentValue,
+                        newTargetRelativePath
+                    ))
+                    continue;
+
+                PopupView.Show("无法导入音乐",
+                    "选中的音乐文件文件名与其他音乐版本文件名重复，请重命名后再次导入",
+                    true,
+                    new Dictionary<string, Action?>
+                    {
+                        ["确定"] = null
+                    }
+                );
+                return;
             }
 
+            // 记录旧音频路径，以用于撤销操作
             var oldTargetRelativePath = targetMusicVersion.AudioFilePath.CurrentValue;
             if (string.IsNullOrEmpty(oldTargetRelativePath))
                 oldTargetRelativePath = "";
-
             var oldTargetAbsolutePath = oldTargetRelativePath != ""
                 ? PathUtil.Combine(Model.WorkspacePath, oldTargetRelativePath)
                 : "";
-            var newTargetAbsolutePath = PathUtil.Combine(Model.WorkspacePath, newTargetRelativePath);
 
+            var newTargetAbsolutePath = PathUtil.Combine(Model.WorkspacePath, newTargetRelativePath);
             IReadonlyStagedFileHandle? oldStagedFile = Model.AssetStore.FindByTargetPath(oldTargetAbsolutePath);
 
-            // 先只复制到缓存区、不指定目标路径，免得新暂存文件立刻把旧的顶掉。
-            // 复制可能失败（选中的文件已失效、磁盘满等），异常必须在这里收住：再往外就是对话框回调
+            // 只复制到缓存区，暂不指定目标路径以避免顶替旧文件
+            // 复制有可能失败，在此处消费异常
             IReadonlyStagedFileHandle newStagedFileHandle;
             try
             {
@@ -252,12 +265,15 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             }
             catch (Exception e)
             {
-                Debug.LogError($"把音乐复制进缓存区时失败：{e.Message}");
+                Debug.LogError($"复制音乐到缓存区时出现异常：{e.Message}");
 
                 PopupView.Show("无法导入音乐",
                     "选中的音乐文件无法复制到缓存区，具体原因见日志。",
                     true,
-                    new Dictionary<string, Action?> { ["确定"] = null }
+                    new Dictionary<string, Action?>
+                    {
+                        ["确定"] = null
+                    }
                 );
                 return;
             }
@@ -266,10 +282,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 {
                     targetMusicVersion.AudioFilePath.Value = newTargetRelativePath;
 
-                    // 换指向：新句柄指到新路径；旧句柄是否摘掉取决于旧路径是否仍被引用。
-                    // 判断必须在改完 AudioFilePath 之后、且排除目标版本自身：同名重导时旧路径的引用者正是它，
-                    // 此时旧句柄必须让位；而克隆版本会共享音频路径，旧路径仍被引用时不能摘，
-                    // 否则该路径在保存时没有内容可写
+                    // 执行：旧句柄与目标路径解绑，新句柄指向目标路径
                     if (oldStagedFile != null &&
                         !Model.IsAssetReferenced(oldTargetAbsolutePath, targetMusicVersion))
                     {
@@ -349,7 +362,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var oldData = SelectedMusicVersionData.CurrentValue;
             int selectedIndex = Model.ChartPackData.CurrentValue.MusicVersions.IndexOf(oldData);
 
-            // 该版本的音频可能来自本次会话导入，删除时要把它的暂存句柄从缓存区映射上摘掉
+            // 该版本的音频可能来自本次会话导入，删除音频时需要一并检查和解绑就句柄指向
             IReadonlyStagedFileHandle? stagedAudioFile = FindStagedAudioFile(oldData);
             string audioAbsolutePath = GetAbsoluteAudioFilePath(oldData);
 
@@ -358,7 +371,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 {
                     Model.ChartPackData.CurrentValue.MusicVersions.RemoveAt(selectedIndex);
 
-                    // 克隆版本会共享音频路径：路径仍被其它版本引用时不能摘映射，否则保存时该路径没有内容可写
+                    // 执行：克隆版本时会共享音频路径。如果此路径仍被其它版本引用，则不能解绑
                     if (stagedAudioFile != null && !Model.IsAssetReferenced(audioAbsolutePath))
                         Model.AssetStore.Retarget(stagedAudioFile, null);
 
@@ -368,7 +381,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 {
                     Model.ChartPackData.CurrentValue.MusicVersions.Insert(selectedIndex, oldData);
 
-                    // 恢复删除前那条「音频路径 → 暂存副本」的映射
+                    // 撤销：恢复删除前的映射
                     if (stagedAudioFile != null && !string.IsNullOrEmpty(audioAbsolutePath))
                         Model.AssetStore.Retarget(stagedAudioFile, audioAbsolutePath);
 
@@ -384,7 +397,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private IReadonlyStagedFileHandle? FindStagedAudioFile(MusicVersionDataEditorModel musicVersionData)
         {
             string absolutePath = GetAbsoluteAudioFilePath(musicVersionData);
-
             return string.IsNullOrEmpty(absolutePath) ? null : Model.AssetStore.FindByTargetPath(absolutePath);
         }
 
@@ -395,7 +407,6 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private string GetAbsoluteAudioFilePath(MusicVersionDataEditorModel musicVersionData)
         {
             string relativePath = musicVersionData.AudioFilePath.CurrentValue;
-
             return string.IsNullOrEmpty(relativePath)
                 ? ""
                 : PathUtil.Combine(Model.WorkspacePath, relativePath);
