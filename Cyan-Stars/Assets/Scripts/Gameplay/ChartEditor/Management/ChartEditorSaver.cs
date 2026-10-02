@@ -15,10 +15,6 @@ namespace CyanStars.Gameplay.ChartEditor.Management
     /// <summary>
     /// 把制谱器里编辑中的数据写进磁盘
     /// </summary>
-    /// <remarks>
-    /// 谱面必须排在谱包之前写入：谱包的 <c>ChartMetaDatas</c> 引用着谱面文件，
-    /// 新建谱面时该文件在磁盘上还不存在。
-    /// </remarks>
     public static class ChartEditorSaver
     {
         /// <summary>
@@ -30,14 +26,15 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         /// <param name="chartDataEditorModel">谱面实例</param>
         /// <param name="assetStore">本次编辑会话的缓存区，里面的暂存文件会被写进工作区</param>
         /// <returns>是否全部保存成功</returns>
-        /// <remarks>保存后缓存区里的句柄和映射不变，撤销/重做仍指向同一份暂存副本</remarks>
-        public static bool SaveChartAndAssetsToDisk(string workspacePath,
+        public static bool SaveChartAndAssetsToDisk(
+            string workspacePath,
             int chartMetaDataIndex,
             ChartPackDataEditorModel chartPackDataEditorModel,
             ChartDataEditorModel chartDataEditorModel,
-            TempFileStore assetStore)
+            TempFileStore assetStore
+        )
         {
-            // 先序列化到内存，任何一份失败都不会改动磁盘上的文件
+            // 先在内存中校验，确保文件能够正确序列化
             string chartPackFilePath;
             string chartFilePath;
             string chartPackJson;
@@ -51,8 +48,8 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                 chartPackFilePath = PathUtil.Combine(workspacePath, ChartPackDataLoader.ChartPackFileName);
                 chartFilePath = PathUtil.Combine(workspacePath, chartPackData.ChartMetaDatas[chartMetaDataIndex].FilePath);
 
-                if (!JsonFileSerializer.TrySerialize(chartPackData, out chartPackJson) ||
-                    !JsonFileSerializer.TrySerialize(chartData, out chartJson))
+                if (!JsonSerializer.TrySerialize(chartPackData, out chartPackJson) ||
+                    !JsonSerializer.TrySerialize(chartData, out chartJson))
                 {
                     Debug.LogError("谱包或谱面序列化失败，已跳过保存");
                     return false;

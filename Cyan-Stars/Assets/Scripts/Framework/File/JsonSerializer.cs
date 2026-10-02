@@ -12,9 +12,10 @@ namespace CyanStars.Framework.File
     /// Json 序列化工具
     /// </summary>
     /// <remarks>
-    /// <para>只负责对象 ↔ 字符串，落盘由调用方直接覆盖写入目标文件。</para>
+    /// <para>用于将实例转换为</para>
+    /// <para>从字符串转换为实例时可用 <see cref="GameRoot.Asset"/>，并指定实例类型和自定义解析器</para>
     /// </remarks>
-    public static class JsonFileSerializer
+    public static class JsonSerializer
     {
         /// <summary>
         /// 序列化格式参数
