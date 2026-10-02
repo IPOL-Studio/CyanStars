@@ -11,8 +11,11 @@ namespace CyanStars.Framework.File
     /// 文件管理器：文件（夹）选择对话框与外部文件读写
     /// </summary>
     /// <remarks>
-    /// <para>选中的「文件」和读取用的「文件夹」返回的是可直接交给 <see cref="System.IO"/> 的普通绝对路径：安卓上通过 SAF 选中的内容会先复制进 <see cref="fileManagerStaging"/> 再返回，不带 <c>content://</c> 或 <c>file://</c> 这类 scheme。</para>
-    /// <para>保存目标文件夹是写入目标，不会复制到缓存区，返回系统给出的路径，安卓上可能仍是 <c>content://</c>；需要暂存文件时不要用本类，应为每个作用域建一个 <see cref="TempFileStore"/>。</para>
+    /// <para>选中的「文件」和读取用的「文件夹」返回的是可直接交给 <see cref="System.IO"/> 的普通绝对路径：
+    /// 安卓上通过 SAF 选中的内容会先复制进 <see cref="fileManagerStaging"/> 再返回，
+    /// 不带 <c>content://</c> 或 <c>file://</c> 等前缀。</para>
+    /// <para>保存目标文件夹是写入目标，不会复制到缓存区，返回系统给出的路径，在安卓上可能仍是 <c>content://</c>；
+    /// 需要暂存文件时不要用本类，应为每个作用域建一个 <see cref="TempFileStore"/>。</para>
     /// </remarks>
     public class FileManager : BaseManager
     {
@@ -132,7 +135,6 @@ namespace CyanStars.Framework.File
         /// <param name="isFolder">源路径是否为文件夹</param>
         /// <param name="overwrite">允许覆盖目标路径原有的文件（夹）</param>
         /// <returns>是否复制成功</returns>
-        /// <remarks>底层复制是覆盖式的，不允许覆盖时由本方法先检查目标是否存在</remarks>
         public static bool CopyFileOrFolder(
             string sourcePath,
             string destinationPath,
@@ -287,7 +289,8 @@ namespace CyanStars.Framework.File
         /// <param name="onSuccess">成功获取的回调，参数为归一化后的文件夹路径</param>
         /// <param name="onCancel">玩家取消的回调</param>
         /// <param name="title">窗口标题</param>
-        /// <remarks>返回值只过一遍 <see cref="PathUtil.Normalize"/>，不会复制到缓存区，安卓上可能仍是 <c>content://</c>。</remarks>
+        /// <remarks>解析保存路径是，只经过 <see cref="PathUtil.Normalize"/> 处理，
+        /// 不会复制到缓存区，因此安卓上可能仍返回 <c>content://</c>。</remarks>
         public void OpenSaveFolderPathBrowser(
             Action<string>? onSuccess,
             Action? onCancel = null,
@@ -332,7 +335,6 @@ namespace CyanStars.Framework.File
         /// <param name="description">日志里用的操作对象描述，例如「文件」「文件夹」</param>
         /// <param name="resolvedPaths">解析结果；失败时为空数组</param>
         /// <returns>是否全部解析成功</returns>
-        /// <remarks>不做部分成功：任一路径解析失败就整批放弃，返回 false 并只记日志，不回调调用方。</remarks>
         private bool TryResolvePlainPaths(string[] paths, string description, out string[] resolvedPaths)
         {
             try
