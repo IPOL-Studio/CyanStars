@@ -25,6 +25,9 @@ namespace CyanStars.Gameplay.ChartEditor.View
     public class EditAreaView : BaseView<EditAreaViewModel>, IPointerDownHandler
     {
         [SerializeField]
+        private Camera uiCamera = null!;
+
+        [SerializeField]
         private Image centerTrackHighlightImage = null!;
 
         [SerializeField]
@@ -779,7 +782,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     contentRect,
                     Input.mousePosition,
-                    null,
+                    uiCamera,
                     out Vector2 localPoint
                 ))
             {
