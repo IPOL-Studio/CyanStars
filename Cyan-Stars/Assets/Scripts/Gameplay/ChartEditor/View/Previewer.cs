@@ -141,10 +141,11 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
                     go.transform.localScale = Vector3.one;
 
-                    // 不显示 Hold 拖尾
+                    // 不显示 Hold 拖尾，且预览音符不参与射线检测
                     if (go.TryGetComponent<EditAreaNoteView>(out var noteView))
                     {
                         noteView.SetHoldLength(0);
+                        noteView.SetBlurImageRaycastTarget(false);
                     }
 
                     resultInstance = new PreviewInstance
