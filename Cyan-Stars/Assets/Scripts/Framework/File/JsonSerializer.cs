@@ -11,10 +11,6 @@ namespace CyanStars.Framework.File
     /// <summary>
     /// Json 序列化工具
     /// </summary>
-    /// <remarks>
-    /// <para>用于将实例转换为</para>
-    /// <para>从字符串转换为实例时可用 <see cref="GameRoot.Asset"/>，并指定实例类型和自定义解析器</para>
-    /// </remarks>
     public static class JsonSerializer
     {
         /// <summary>
@@ -29,9 +25,8 @@ namespace CyanStars.Framework.File
             Converters = JsonConverters.Converters
         };
 
-
         /// <summary>
-        /// 序列化对象为 json 字符串
+        /// 序列化对象到 json 字符串
         /// </summary>
         /// <param name="obj">要序列化的对象</param>
         /// <param name="json">序列化结果，失败时为空字符串</param>
