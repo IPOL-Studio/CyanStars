@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace CyanStars.Utils
@@ -25,39 +26,53 @@ namespace CyanStars.Utils
         public static readonly IEqualityComparer<string> PathComparer = PathSemanticComparer.Instance;
 
         /// <summary>
-        /// 按路径语义比较两个路径，允许 null
+        /// 按路径语义比较两个路径，允许 null 互相比较
         /// </summary>
         public static bool PathEquals(string? path1, string? path2)
         {
             return PathSemanticComparer.Instance.Equals(path1, path2);
         }
 
-        // /// <summary>
-        // /// 判断 path 是否等于 root 或位于 root 之内，按路径语义比较
-        // /// </summary>
-        // /// <param name="path">待判断的绝对路径</param>
-        // /// <param name="root">根目录的绝对路径</param>
-        // /// <remarks>比较前双方都会先过一遍 <see cref="Normalize"/>，调用方需传入绝对路径
-        // /// （必要时先 <see cref="Path.GetFullPath(string)"/> 消掉相对路径和 <c>..</c>）。
-        // /// 前缀比较带分隔符边界，<c>C:/data</c> 不会匹配 <c>C:/database</c>。</remarks>
-        // public static bool IsSubPathOf(string path, string root)
-        // {
-        //     if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(root))
-        //         return false;
-        //
-        //     string normalizedPath = Normalize(path);
-        //     string normalizedRoot = Normalize(root);
-        //
-        //     if (string.Equals(normalizedPath, normalizedRoot, PathSemanticComparer.Comparison))
-        //         return true;
-        //
-        //     // root 本身以分隔符结尾时（如 "C:/"）不再补分隔符
-        //     string prefix = normalizedRoot.EndsWith("/", StringComparison.Ordinal)
-        //         ? normalizedRoot
-        //         : normalizedRoot + "/";
-        //
-        //     return normalizedPath.StartsWith(prefix, PathSemanticComparer.Comparison);
-        // }
+        /// <summary>
+        /// 按路径语义判断 path 是否等于 root 或位于 root 之内
+        /// </summary>
+        /// <param name="path">待判断的绝对路径</param>
+        /// <param name="root">根目录的绝对路径</param>
+        /// <remarks>
+        /// <para>本地路径会先折叠 "." 与 ".." 分段；无法折叠的路径（如 <c>content://</c>）按原样比较。</para>
+        /// <para>调用方可使用 <see cref="Path.GetFullPath(string)"/> 获取绝对路径。</para>
+        /// </remarks>
+        public static bool IsSubPathOf(string? path, string? root)
+        {
+            if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(root))
+                return false;
+
+            string normalizedPath = Normalize(Canonicalize(path));
+            string normalizedRoot = Normalize(Canonicalize(root));
+
+            if (string.Equals(normalizedPath, normalizedRoot, PathSemanticComparer.Comparison))
+                return true;
+
+            // root 本身以分隔符结尾时（如 "C:/"）不再补分隔符
+            string prefix = normalizedRoot.EndsWith("/", StringComparison.Ordinal)
+                ? normalizedRoot
+                : normalizedRoot + "/";
+
+            return normalizedPath.StartsWith(prefix, PathSemanticComparer.Comparison);
+        }
+
+        /// <summary>
+        /// 取路径的最后一段（文件名或文件夹名），兼容正反斜杠
+        /// </summary>
+        /// <param name="path">路径，可以为相对路径或绝对路径</param>
+        /// <returns>最后一段；路径为空时返回空字符串</returns>
+        public static string GetName(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return "";
+
+            return Path.GetFileName(Normalize(path));
+        }
 
         /// <summary>
         /// 拼接两个路径，并把结果归一化
@@ -84,17 +99,16 @@ namespace CyanStars.Utils
         }
 
         /// <summary>
-        /// 归一化路径：分隔符统一为正斜杠，去掉末尾多余的分隔符
+        /// 归一化路径：分隔符统一为正斜杠，若不是根路径，一并去掉末尾多余的分隔符
         /// </summary>
-        /// <remarks>不做大小写归一化，大小写规则由调用方处理</remarks>
-        public static string Normalize(string path)
+        [return: NotNullIfNotNull("path")]
+        public static string? Normalize(string? path)
         {
             if (string.IsNullOrEmpty(path))
                 return path;
 
             string normalized = path.Replace('\\', '/');
 
-            // 删除路径末尾的斜杠，但保留 "C:/"、"/" 这类根路径
             while (normalized.Length > 1 && normalized[^1] == '/' &&
                    !(normalized.Length == 3 && normalized[1] == ':'))
             {
@@ -102,6 +116,27 @@ namespace CyanStars.Utils
             }
 
             return normalized;
+        }
+
+
+        /// <summary>
+        /// 折叠本地路径里的 "." 与 ".." 分段
+        /// </summary>
+        /// <returns>折叠后的路径；非本地路径或无法解析时原样返回</returns>
+        private static string Canonicalize(string path)
+        {
+            if (path.Contains("://"))
+                return path;
+
+            try
+            {
+                return Path.GetFullPath(path);
+            }
+            catch (Exception)
+            {
+                // 路径不合法（如 Windows 下的非法字符）时保持原样
+                return path;
+            }
         }
 
 
@@ -127,10 +162,7 @@ namespace CyanStars.Utils
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX || UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
                 return StringComparison.OrdinalIgnoreCase;
 #else
-                return UnityEngine.Application.platform == UnityEngine.RuntimePlatform.WindowsEditor ||
-                       UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXEditor
-                    ? StringComparison.OrdinalIgnoreCase
-                    : StringComparison.Ordinal;
+                return StringComparison.Ordinal;
 #endif
             }
 
