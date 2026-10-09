@@ -38,13 +38,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void SaveFileToDisk()
         {
-            bool isSaveSuccess = ChartEditorSaver.SaveChartAndAssetsToDisk(
-                Model.WorkspacePath,
-                Model.ChartMetaDataIndex,
-                Model.ChartPackData.CurrentValue,
-                Model.ChartData.CurrentValue,
-                Model.AssetStore
-            );
+            bool isSaveSuccess = ChartEditorSaver.SaveChartAndAssetsToDisk(Model);
 
             // 只有保存成功才标记为已保存，失败保持未保存状态便于重试
             if (isSaveSuccess)

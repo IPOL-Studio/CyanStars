@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using CyanStars.Chart;
 using CyanStars.Chart.Loading;
 using CyanStars.Framework.File;
@@ -15,25 +14,28 @@ namespace CyanStars.Gameplay.ChartEditor.Management
     /// <summary>
     /// 把制谱器里编辑中的数据写进磁盘
     /// </summary>
+    /// <remarks>
+    /// <para>谱包、谱面在内存里序列化并校验通过后，统一经 <see cref="PlatformFilePortal"/> 落盘，
+    /// 本类不再自己调用 <see cref="System.IO"/> 写文件</para>
+    /// <para>只有本次会话导入或改过的资源才有句柄；没有句柄的资源说明它没有被改过，
+    /// 磁盘上的旧文件继续有效，不必重写</para>
+    /// </remarks>
     public static class ChartEditorSaver
     {
+        private const string ChartPackFileName = ChartPackDataLoader.ChartPackFileName;
+
+
         /// <summary>
         /// 把谱包、谱面、资源文件覆盖保存到磁盘
         /// </summary>
-        /// <param name="workspacePath">工作区绝对路径（谱包索引文件所在目录）</param>
-        /// <param name="chartMetaDataIndex">谱面文件在谱包元数据里的下标</param>
-        /// <param name="chartPackDataEditorModel">谱包实例</param>
-        /// <param name="chartDataEditorModel">谱面实例</param>
-        /// <param name="assetStore">本次编辑会话的缓存区，里面的暂存文件会被写进工作区</param>
+        /// <param name="editorModel">编辑会话 Model</param>
         /// <returns>是否全部保存成功</returns>
-        public static bool SaveChartAndAssetsToDisk(
-            string workspacePath,
-            int chartMetaDataIndex,
-            ChartPackDataEditorModel chartPackDataEditorModel,
-            ChartDataEditorModel chartDataEditorModel,
-            TempFileStore assetStore
-        )
+        /// <remarks>资源缺失或写失败时不写谱包和谱面：避免元数据指向一份没有内容的资源</remarks>
+        public static bool SaveChartAndAssetsToDisk(ChartEditorModel editorModel)
         {
+            ChartPackDataEditorModel chartPackDataEditorModel = editorModel.ChartPackData.CurrentValue;
+            ChartDataEditorModel chartDataEditorModel = editorModel.ChartData.CurrentValue;
+
             // 先在内存中校验，确保文件能够正确序列化
             string chartPackFilePath;
             string chartFilePath;
@@ -45,8 +47,8 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                 ChartPackData chartPackData = chartPackDataEditorModel.ToChartPackData();
                 ChartData chartData = chartDataEditorModel.ToChartData();
 
-                chartPackFilePath = PathUtil.Combine(workspacePath, ChartPackDataLoader.ChartPackFileName);
-                chartFilePath = PathUtil.Combine(workspacePath, chartPackData.ChartMetaDatas[chartMetaDataIndex].FilePath);
+                chartPackFilePath = PathUtil.Combine(editorModel.WorkspacePath, ChartPackFileName);
+                chartFilePath = editorModel.GetAssetAbsolutePath(chartPackData.ChartMetaDatas[editorModel.ChartMetaDataIndex].FilePath);
 
                 if (!JsonSerializer.TrySerialize(chartPackData, out chartPackJson) ||
                     !JsonSerializer.TrySerialize(chartData, out chartJson))
@@ -61,36 +63,27 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                 return false;
             }
 
-            // 落盘范围以当前谱包引用的资源为准，历史记录引用的数据不写回磁盘
-            HashSet<string> assetAbsolutePaths = GetAssetAbsolutePaths(workspacePath, chartPackDataEditorModel);
+            HashSet<string> assetAbsolutePaths = GetAssetAbsolutePaths(editorModel, chartPackDataEditorModel);
 
-            // 缺失的资源只报错，不中止保存
-            foreach (string missingPath in assetStore.CollectMissingTargets(assetAbsolutePaths))
-                Debug.LogError($"谱包引用了资源 {missingPath}，但它既不在磁盘上、也不在本次会话的缓存区里。");
+            List<string> missingAssets = CollectMissingAssets(editorModel, assetAbsolutePaths);
+            if (missingAssets.Count > 0)
+            {
+                foreach (string missingPath in missingAssets)
+                    Debug.LogError($"谱包引用了资源 {missingPath}，但它既不在磁盘上、也不是本次会话导入的，已跳过保存。");
 
-            if (!assetStore.ApplyAll(assetAbsolutePaths))
+                return false;
+            }
+
+            if (!PlatformFilePortal.TrySaveAll(editorModel.GetAllAssetHandles(), true))
             {
                 Debug.LogError("保存资源文件失败，已跳过谱包谱面的写入");
                 return false;
             }
 
             // TODO: 定期在后台把整个谱包工作区备份到临时文件路径
-            // 覆盖旧文件，不产生临时文件或备份；谱面被谱包引用，因此先写谱面
-            try
-            {
-                string? chartDirectory = System.IO.Path.GetDirectoryName(chartFilePath);
-                if (!string.IsNullOrEmpty(chartDirectory))
-                    System.IO.Directory.CreateDirectory(chartDirectory);
-
-                // 固定写无 BOM 的 UTF-8，不用平台默认编码
-                System.IO.File.WriteAllText(chartFilePath, chartJson, new UTF8Encoding(false));
-                System.IO.File.WriteAllText(chartPackFilePath, chartPackJson, new UTF8Encoding(false));
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"写入谱包或谱面时出现异常：{e}");
+            // 谱面被谱包引用，因此先写谱面
+            if (!TryWriteJsonFile(chartFilePath, chartJson) || !TryWriteJsonFile(chartPackFilePath, chartPackJson))
                 return false;
-            }
 
             Debug.Log("已保存谱面。");
             return true;
@@ -99,18 +92,50 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         /// <summary>
         /// 把谱包引用的资源相对路径换算成工作区里的绝对路径
         /// </summary>
-        /// <returns>绝对路径集合，交给 <see cref="TempFileStore.ApplyAll"/> 决定落盘哪些暂存文件</returns>
         private static HashSet<string> GetAssetAbsolutePaths(
-            string workspacePath,
+            ChartEditorModel editorModel,
             ChartPackDataEditorModel chartPackDataEditorModel
         )
         {
             var absolutePaths = new HashSet<string>(PathUtil.PathComparer);
 
             foreach (string relativePath in chartPackDataEditorModel.GetAssetRelativePaths())
-                absolutePaths.Add(PathUtil.Combine(workspacePath, relativePath));
+                absolutePaths.Add(editorModel.GetAssetAbsolutePath(relativePath));
 
             return absolutePaths;
+        }
+
+        /// <summary>
+        /// 找出「当前数据仍然引用、但磁盘上没有、也没有句柄」的资源
+        /// </summary>
+        /// <returns>缺少内容的资源路径，顺序不保证</returns>
+        /// <remarks>本次会话没有导入、也没有改过的资源不需要句柄：磁盘上的旧文件就是它的内容</remarks>
+        private static List<string> CollectMissingAssets(
+            ChartEditorModel editorModel,
+            HashSet<string> assetAbsolutePaths
+        )
+        {
+            var missingAssets = new List<string>();
+
+            foreach (string assetAbsolutePath in assetAbsolutePaths)
+            {
+                if (FileManager.IsFileExists(assetAbsolutePath) ||
+                    editorModel.FindAssetHandle(assetAbsolutePath) != null)
+                    continue;
+
+                missingAssets.Add(assetAbsolutePath);
+            }
+
+            return missingAssets;
+        }
+
+        /// <summary>
+        /// 把序列化好的 json 写进目标路径
+        /// </summary>
+        /// <returns>是否写入成功</returns>
+        private static bool TryWriteJsonFile(string targetFilePath, string json)
+        {
+            return PlatformFilePortal.TryWriteTextToPath(targetFilePath, json);
         }
     }
 }

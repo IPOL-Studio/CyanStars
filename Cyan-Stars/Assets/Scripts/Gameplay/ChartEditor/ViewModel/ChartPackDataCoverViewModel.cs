@@ -129,16 +129,27 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (string.IsNullOrEmpty(targetAbsolutePath))
                 return null;
 
+            // TODO: 当前依赖 CatAsset 取消后不恢复续体的行为；若该行为变化，需在 await 后补充取消检查
             var cts = new CancellationTokenSource();
             coverLoadCts = cts;
 
-            string readablePath = Model.AssetStore.ResolveLatest(targetAbsolutePath);
-            AssetHandler<Sprite?> handler = await GameRoot.Asset.LoadAssetAsync<Sprite?>(readablePath, cts.Token);
+            try
+            {
+                string readablePath = Model.ResolveAssetReadablePath(targetAbsolutePath);
+                AssetHandler<Sprite?> handler = await GameRoot.Asset.LoadAssetAsync<Sprite?>(readablePath, cts.Token);
 
-            // 本次加载已经完成且没有被取消
-            coverLoadCts = null;
-            CoverSpriteHandler.Value = handler;
-            return handler.Asset;
+                // 本次加载已经完成且没有被取消
+                CoverSpriteHandler.Value = handler;
+                return handler.Asset;
+            }
+            finally
+            {
+                // 加载被取消时续体不会恢复，coverLoadCts 已由取消方复位
+                if (ReferenceEquals(coverLoadCts, cts))
+                    coverLoadCts = null;
+
+                cts.Dispose();
+            }
         }
 
         /// <summary>
@@ -174,46 +185,43 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void OpenCoverBrowser()
         {
-            GameRoot.File.OpenLoadFilePathBrowser(SetCoverFilePath, title: "打开曲绘", filters: new[]
-            {
-                GameRoot.File.SpriteFilter
-            });
+            GameRoot.File.OpenLoadFileHandleBrowser(
+                SetCoverFile,
+                title: "打开曲绘",
+                filters: new[]
+                {
+                    GameRoot.File.SpriteFilter
+                },
+                cacheKind: FileCacheKind.ChartEditor
+            );
         }
 
-        private void SetCoverFilePath(string newOriginFilePath)
+        /// <summary>
+        /// 把玩家选中的曲绘导入为谱包的曲绘
+        /// </summary>
+        /// <param name="coverFileHandle">选中文件的句柄，句柄的生命周期转交给本方法</param>
+        /// <remarks>
+        /// <para>曲绘文件名固定为 Assets/Cover.png：导入时把新句柄指到它，保存时覆盖旧文件</para>
+        /// <para>旧曲绘若是本次会话导入的，会先解绑再让新句柄占用目标路径，撤销时再换回来</para>
+        /// </remarks>
+        private void SetCoverFile(FileHandle coverFileHandle)
         {
-            // 曲绘文件名固定为 Assets/Cover.png；导入新曲绘时把暂存句柄指到它，保存时覆盖旧文件
-
             var newTargetRelativePath = PathUtil.Combine(ChartPackDataLoader.ChartPackAssetsFolder, CoverFileName); // Assets/Cover.png
 
             var oldTargetRelativePath = Model.ChartPackData.CurrentValue.CoverFilePath.CurrentValue;
-            if (string.IsNullOrEmpty(oldTargetRelativePath))
+            if (oldTargetRelativePath == null)
                 oldTargetRelativePath = "";
 
-            var oldTargetAbsolutePath = oldTargetRelativePath != ""
-                ? PathUtil.Combine(Model.WorkspacePath, oldTargetRelativePath)
-                : "";
+            var oldTargetAbsolutePath = Model.GetAssetAbsolutePath(oldTargetRelativePath);
+            var newTargetAbsolutePath = Model.GetAssetAbsolutePath(newTargetRelativePath);
 
-            var newTargetAbsolutePath = PathUtil.Combine(Model.WorkspacePath, newTargetRelativePath);
-
-            // 记下旧曲绘路径用于撤销
-            IReadonlyStagedFileHandle? oldStagedFile = Model.AssetStore.FindByTargetPath(oldTargetAbsolutePath);
-            Vector2? oldCropStartPosPercent = Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value;
-            float? oldCropHeightPercent = Model.ChartPackData.CurrentValue.CropHeightPercent.Value;
-
-            // 只复制到缓存区，暂不指定目标路径以避免顶替旧文件
-            // 复制有可能失败，在此处消费异常
-            IReadonlyStagedFileHandle newStagedFileHandle;
-            try
+            // 提前校验保存目标，失败则不修改任何数据
+            if (!PlatformFilePortal.TrySetSaveTarget(coverFileHandle, newTargetAbsolutePath))
             {
-                newStagedFileHandle = Model.AssetStore.Stage(newOriginFilePath);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"把曲绘复制进缓存区时失败：{e.Message}");
+                PlatformFilePortal.TryReleaseFile(coverFileHandle);
 
                 PopupView.Show("无法导入曲绘",
-                    "选中的图片无法复制到缓存区，具体原因见日志。",
+                    "无法把选中的图片保存到谱包工作区，请检查日志。",
                     true,
                     new Dictionary<string, Action?>
                     {
@@ -223,18 +231,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 return;
             }
 
+            // 旧曲绘的句柄先解绑，稍后由新句柄占用目标路径，撤销时再换回来
+            FileHandle? oldAssetHandle = Model.DetachAssetHandle(oldTargetAbsolutePath);
+            Vector2? oldCropStartPosPercent = Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value;
+            float? oldCropHeightPercent = Model.ChartPackData.CurrentValue.CropHeightPercent.Value;
+
+            // TODO: 下列异步 lambda 在 await 之后抛出的异常无人接管，后续考虑改造成可等待的命令
             CommandStack.ExecuteCommand(
                 async () =>
                 {
-                    // 执行：解绑旧句柄目标路线，为新句柄更新路径
-                    if (oldStagedFile != null)
-                    {
-                        Model.AssetStore.Retarget(oldStagedFile, null);
-                    }
+                    Model.AddAssetHandle(newTargetAbsolutePath, coverFileHandle);
 
-                    Model.AssetStore.Retarget(newStagedFileHandle, newTargetAbsolutePath);
-
-                    // 加载图片、更新谱包引用地址、更新裁剪信息
                     Model.ChartPackData.CurrentValue.CoverFilePath.Value = newTargetRelativePath;
                     Sprite? sprite = await ReplaceCoverSpriteAsync(newTargetAbsolutePath);
 
@@ -252,15 +259,11 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 },
                 async () =>
                 {
-                    // 撤销：新的和目标路径解绑，旧的指回旧路径
-                    Model.AssetStore.Retarget(newStagedFileHandle, null);
+                    Model.DetachAssetHandle(newTargetAbsolutePath);
 
-                    if (oldStagedFile != null)
-                    {
-                        Model.AssetStore.Retarget(oldStagedFile, oldTargetAbsolutePath);
-                    }
+                    if (oldAssetHandle != null)
+                        Model.ReattachAssetHandle(oldTargetAbsolutePath, oldAssetHandle);
 
-                    // 加载图片、更新谱包引用地址、更新裁剪信息
                     Model.ChartPackData.CurrentValue.CoverFilePath.Value = oldTargetRelativePath;
                     await ReplaceCoverSpriteAsync(string.IsNullOrEmpty(oldTargetAbsolutePath) ? null : oldTargetAbsolutePath);
 
