@@ -75,24 +75,19 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 清理上一次运行残留的会话目录，并占用本次会话的目录
         /// </summary>
-        /// <returns>本次会话的目录是否已经建好并占用</returns>
         /// <remarks>
-        /// <para>重复调用不会重复清理；失败时不记录完成标记，之后调用会重试</para>
+        /// <para>重复调用不会重复清理；初始化失败会直接抛出异常</para>
         /// <para>只清理应用临时数据目录下、带会话前缀、且 <c>.session_lock</c> 没有被任何实例独占打开的目录；
         /// 独占打开成功的目录属于另一个仍在运行的实例，将会保留</para>
         /// </remarks>
-        public static bool Init()
+        public static void Init()
         {
             if (isInitialized)
-                return true;
+                return;
 
             DeleteLeftoverSessionFolders();
-
-            if (!CreateSessionFolder())
-                return false;
-
+            CreateSessionFolder();
             isInitialized = true;
-            return true;
         }
 
         /// <summary>
@@ -181,25 +176,15 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 建好会话目录并独占打开占用标记
         /// </summary>
-        /// <returns>是否建好并占用</returns>
-        private static bool CreateSessionFolder()
+        private static void CreateSessionFolder()
         {
-            try
-            {
-                // 目录名带本次会话的 GUID，正常不会有同名目录留下来，这里只是先清干净再建
-                DeleteFolderIfExists(SessionFolderPath);
+            // 目录名带本次会话的 GUID，正常不会有同名目录留下来，这里只是先清干净再建
+            DeleteFolderIfExists(SessionFolderPath);
 
-                Directory.CreateDirectory(SessionFolderPath);
-                SetHiddenAttribute(SessionFolderPath);
+            Directory.CreateDirectory(SessionFolderPath);
+            SetHiddenAttribute(SessionFolderPath);
 
-                AcquireSessionLock();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"创建会话临时目录 {SessionFolderPath} 时出错：{e.Message}");
-                return false;
-            }
+            AcquireSessionLock();
         }
 
         /// <summary>

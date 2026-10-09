@@ -28,8 +28,7 @@ namespace CyanStars.Framework.File
 
         public override void OnInit()
         {
-            if (!PlatformFilePortal.Init())
-                Debug.LogError("文件门户初始化失败，本次会话的文件读写功能将不可用，具体原因见前文日志。");
+            PlatformFilePortal.Init();
 
             FileBrowser.Skin = fileBrowserSkin;
             FileBrowser.SetExcludedExtensions();

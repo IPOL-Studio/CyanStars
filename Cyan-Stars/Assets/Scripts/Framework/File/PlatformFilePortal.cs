@@ -35,11 +35,10 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 初始化门户：清理上次运行残留的会话临时目录，并占用本次会话的目录
         /// </summary>
-        /// <returns>本次会话的缓存目录是否已经建好并占用</returns>
-        public static bool Init()
+        public static void Init()
         {
             pathProvider = CreatePathProvider();
-            return GameSessionTempFolder.Init();
+            GameSessionTempFolder.Init();
         }
 
         /// <summary>
