@@ -1,13 +1,10 @@
 #nullable enable
 
 using System;
-using System.Collections.Generic;
-using CatAsset.Runtime;
 using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Procedure;
 using CyanStars.Utils;
-using SimpleFileBrowser;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -71,13 +68,26 @@ namespace CyanStars
 
             importChartPackButton.onClick.AddListener(() =>
                 {
-                    GameRoot.File.OpenLoadFilePathBrowser(async (path) =>
+                    // TODO: 移动端短期改为选择文件夹并整体复制谱包（SAF 目录），长期改用 .cyscp 单文件格式导入
+                    if (Application.platform == RuntimePlatform.Android)
+                    {
+                        Debug.LogWarning("暂不支持在安卓平台导入外部谱包。");
+                        chartPackFilePathText.text = "暂不支持在安卓平台导入外部谱包";
+                        return;
+                    }
+
+                    GameRoot.File.OpenLoadFolderPathBrowser(async sourceFolderPath =>
                         {
-                            path = path.Replace('\\', '/');
+                            // 整个谱包目录复制进玩家谱包目录，之后的编辑都针对这份导入副本
+                            if (!ChartModule.TryCopyChartPackToPlayerFolder(sourceFolderPath, out string chartPackFilePath))
+                            {
+                                chartPackFilePathText.text = "复制谱包到玩家数据目录失败，具体原因见日志";
+                                return;
+                            }
 
                             // 加载谱包并选中
-                            chartPackFilePathText.text = path;
-                            await chartModule.SetSingleChartPackFromDisk(path);
+                            chartPackFilePathText.text = chartPackFilePath;
+                            await chartModule.SetSingleChartPackFromDisk(chartPackFilePath);
                             chartModule.SelectChartPackData(0);
 
                             // 清空旧谱面列表，生成新谱面列表
@@ -110,9 +120,7 @@ namespace CyanStars
                             newChartButton.gameObject.SetActive(true);
                         },
                         null,
-                        "打开谱包索引文件",
-                        false,
-                        new[] { new FileBrowser.Filter("谱包索引文件", ".json") }
+                        "选择谱包文件夹"
                     );
                 }
             );

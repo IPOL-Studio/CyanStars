@@ -64,7 +64,7 @@ namespace CyanStars.Gameplay.ChartEditor
                 // 创建新谱包和谱面
                 string randomName = CreateRandomName();
 
-                workspacePath = PathUtil.Combine(chartModule.PlayerChartPacksFolderPath, randomName);
+                workspacePath = PathUtil.Combine(ChartModule.PlayerChartPacksFolderPath, randomName);
 
                 chartData = new ChartData();
 
