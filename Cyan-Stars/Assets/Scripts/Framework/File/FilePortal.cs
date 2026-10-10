@@ -15,39 +15,53 @@ namespace CyanStars.Framework.File
     /// 文件读写业务门户：把每一份参与读写的文件封装成 <see cref="FileHandle"/>，并负责它在磁盘上的搬运
     /// </summary>
     /// <remarks>
+    /// <para>由 <see cref="FileManager"/> 在初始化时创建并注入平台环境，生命周期与 <see cref="FileManager"/> 一致。</para>
     /// <para>缓存路径不能作为加载来源和保存目标，两者都必须是玩家选中的外部位置或应用数据目录。</para>
     /// <para>游戏会在结束和下次启动时清理临时文件，但仍建议业务逻辑自行管理文件句柄或路径的生命周期，
-    /// 以实现即用即弃，并避免重复单次会话内复用时路径名冲突。</para>
+    /// 以实现即用即弃，并避免单次会话内复用时路径名冲突。</para>
     /// <para>注意：即使进程存活时，游戏可能在磁盘空间不足等极端情况下清理掉 <see cref="GameSessionTempFolder"/> 下的临时文件，
     /// 建议业务逻辑对此提供降级回退。</para>
     /// </remarks>
-    public static class PlatformFilePortal
+    public sealed class FilePortal
     {
         // TODO: 文件操作依赖于 SFB 插件，后续考虑改用其他独立插件或自有实现
 
         private static readonly UTF8Encoding Utf8NoBom = new UTF8Encoding(false);
 
         /// <summary>
-        /// 路径提供者，初始化时按编译和运行环境挑选唯一一个实例
+        /// 当前平台环境，由 FileManager 在创建本门户时注入
         /// </summary>
-        private static IPathProvider? pathProvider;
+        public IPlatformEnvironment Environment { get; }
+
+        /// <summary>
+        /// 本次游戏会话的临时目录
+        /// </summary>
+        private readonly GameSessionTempFolder sessionTempFolder;
+
+
+        public FilePortal(IPlatformEnvironment environment)
+        {
+            Environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            sessionTempFolder = new GameSessionTempFolder(environment.TemporaryCacheRoot);
+        }
+
 
         /// <summary>
         /// 初始化门户：清理上次运行残留的会话临时目录，并占用本次会话的目录
         /// </summary>
-        public static void Init()
+        /// <remarks>初始化失败会直接抛出异常</remarks>
+        public void Init()
         {
-            pathProvider = CreatePathProvider();
-            GameSessionTempFolder.Init();
+            sessionTempFolder.Init();
         }
 
         /// <summary>
         /// 结束文件门户并删除本次会话的临时目录
         /// </summary>
         /// <remarks>已经保存到目标位置的文件不受影响；删除失败只告警，残留目录会在下次启动时清理</remarks>
-        public static void Shutdown()
+        public void Shutdown()
         {
-            GameSessionTempFolder.DeleteSessionFolder();
+            sessionTempFolder.DeleteSessionFolder();
         }
 
 
@@ -57,14 +71,14 @@ namespace CyanStars.Framework.File
         /// 加载一份已有的文件（夹）并创建句柄
         /// </summary>
         /// <param name="pathUri">外部路径，可以是普通绝对路径或安卓 <c>content://</c> 路径</param>
-        /// <param name="cacheKind">放在会话临时目录的哪一层缓存下</param>
+        /// <param name="cacheScope">缓存作用域标识，决定缓存副本放在会话临时目录的哪个子目录下，由业务侧自定义</param>
         /// <returns>失败时返回 null</returns>
         /// <remarks>
         /// <para>内容一律复制进会话缓存：外部原文件之后的变动不影响本次会话，安卓 SAF 选中的
         /// <c>content://</c> 路径也因此可以交给 <see cref="System.IO"/> 处理</para>
         /// <para>加载路径不能位于会话缓存内</para>
         /// </remarks>
-        public static FileHandle? TryLoadFile(string pathUri, FileCacheKind cacheKind)
+        public FileHandle? TryLoadFile(string pathUri, string cacheScope)
         {
             if (string.IsNullOrEmpty(pathUri))
             {
@@ -72,7 +86,7 @@ namespace CyanStars.Framework.File
                 return null;
             }
 
-            if (GameSessionTempFolder.IsInsideSessionFolder(pathUri))
+            if (sessionTempFolder.IsInsideSessionFolder(pathUri))
             {
                 Debug.LogError($"加载路径不能位于会话缓存内：{pathUri}");
                 return null;
@@ -82,7 +96,7 @@ namespace CyanStars.Framework.File
 
             if (FileBrowserHelpers.DirectoryExists(pathUri))
             {
-                string? cacheFolderPath = TryCopyInFolderToCache(pathUri, cacheKind, out entryName);
+                string? cacheFolderPath = TryCopyInFolderToCache(pathUri, cacheScope, out entryName);
                 return cacheFolderPath == null ? null : new FileHandle(pathUri, entryName, cacheFolderPath);
             }
 
@@ -92,7 +106,7 @@ namespace CyanStars.Framework.File
                 return null;
             }
 
-            string? cacheFilePath = TryCopyInFileToCache(pathUri, cacheKind, out entryName);
+            string? cacheFilePath = TryCopyInFileToCache(pathUri, cacheScope, out entryName);
             return cacheFilePath == null ? null : new FileHandle(pathUri, entryName, cacheFilePath);
         }
 
@@ -110,7 +124,7 @@ namespace CyanStars.Framework.File
         /// <para>保存路径不能位于会话缓存内</para>
         /// <para>保存路径也不能等于或位于可读写路径之内，否则保存时会自我嵌套，这里提前拒绝</para>
         /// </remarks>
-        public static bool TrySetSaveTarget(FileHandle fileHandle, string? targetPath)
+        public bool TrySetSaveTarget(FileHandle fileHandle, string? targetPath)
         {
             if (fileHandle.State != FileHandleState.Available)
             {
@@ -126,7 +140,7 @@ namespace CyanStars.Framework.File
 
             string normalizedTargetPath = PathUtil.Normalize(targetPath);
 
-            if (GameSessionTempFolder.IsInsideSessionFolder(normalizedTargetPath))
+            if (sessionTempFolder.IsInsideSessionFolder(normalizedTargetPath))
             {
                 Debug.LogError($"保存路径不能位于会话缓存内：{normalizedTargetPath}");
                 return false;
@@ -146,13 +160,9 @@ namespace CyanStars.Framework.File
         /// 获取常用文件夹在当前平台上的路径
         /// </summary>
         /// <returns>该文件夹在当前平台上不可用时返回 null</returns>
-        /// <exception cref="InvalidOperationException">门户尚未初始化</exception>
-        public static string? GetCommonFolderPath(CommonFolders folder)
+        public string? GetCommonFolderPath(CommonFolders folder)
         {
-            if (pathProvider == null)
-                throw new InvalidOperationException("文件门户尚未初始化，无法获取常用文件夹路径。");
-
-            return pathProvider.GetCommonFolderPath(folder);
+            return Environment.GetCommonFolderPath(folder);
         }
 
         #endregion
@@ -163,7 +173,7 @@ namespace CyanStars.Framework.File
         /// 判断句柄当前是否可以读取
         /// </summary>
         /// <remarks>句柄已释放、或者临时缓存被系统清理掉时返回 false</remarks>
-        public static bool IsHandleReadable(FileHandle? fileHandle)
+        public bool IsHandleReadable(FileHandle? fileHandle)
         {
             if (fileHandle == null || fileHandle.State == FileHandleState.Released)
                 return false;
@@ -181,7 +191,7 @@ namespace CyanStars.Framework.File
         /// <remarks>
         /// <para>尚未指定目标路径、句柄已释放、内容已经不在了都算失败，具体原因见日志</para>
         /// </remarks>
-        public static bool TrySaveToTarget(FileHandle fileHandle, bool overwrite = false)
+        public bool TrySaveToTarget(FileHandle fileHandle, bool overwrite = false)
         {
             if (fileHandle.State != FileHandleState.Available)
             {
@@ -211,7 +221,7 @@ namespace CyanStars.Framework.File
         /// <param name="overwrite">允许覆盖目标路径原有的文件</param>
         /// <returns>是否全部保存成功</returns>
         /// <remarks>任一项失败都不中断其余项；调用方应自行决定要不要在失败后再写引用这些资源的元数据文件</remarks>
-        public static bool TrySaveAll(IEnumerable<FileHandle> fileHandles, bool overwrite = false)
+        public bool TrySaveAll(IEnumerable<FileHandle> fileHandles, bool overwrite = false)
         {
             if (fileHandles == null)
                 throw new ArgumentNullException(nameof(fileHandles));
@@ -235,7 +245,7 @@ namespace CyanStars.Framework.File
         /// <para>已经释放过的句柄直接返回 false，不会重复删除</para>
         /// <para>句柄不持有外部文件，释放时只删除它的缓存副本</para>
         /// </remarks>
-        public static bool TryReleaseFile(FileHandle fileHandle)
+        public bool TryReleaseFile(FileHandle fileHandle)
         {
             if (fileHandle == null)
                 throw new ArgumentNullException(nameof(fileHandle));
@@ -253,7 +263,7 @@ namespace CyanStars.Framework.File
         /// 批量释放句柄
         /// </summary>
         /// <returns>成功释放的句柄数量</returns>
-        public static int TryReleaseAll(IEnumerable<FileHandle> fileHandles)
+        public int TryReleaseAll(IEnumerable<FileHandle> fileHandles)
         {
             if (fileHandles == null)
                 throw new ArgumentNullException(nameof(fileHandles));
@@ -269,6 +279,16 @@ namespace CyanStars.Framework.File
             return releasedCount;
         }
 
+        /// <summary>
+        /// 删除某个缓存作用域的文件夹（只在它已经是空文件夹时删除）
+        /// </summary>
+        /// <param name="cacheScope">缓存作用域标识</param>
+        /// <remarks>业务侧在用完一个缓存作用域后用它收尾；文件夹里还有别的缓存文件时什么都不做</remarks>
+        public void ClearCacheScopeIfEmpty(string cacheScope)
+        {
+            sessionTempFolder.DeleteCacheFolderIfEmpty(cacheScope);
+        }
+
         #endregion
 
         #region --- 文本写入 ---
@@ -282,7 +302,7 @@ namespace CyanStars.Framework.File
         /// <remarks>
         /// <para>目标路径不能位于会话缓存内</para>
         /// </remarks>
-        public static bool TryWriteTextToPath(string targetPath, string text)
+        public bool TryWriteTextToPath(string targetPath, string text)
         {
             if (string.IsNullOrEmpty(targetPath))
             {
@@ -290,7 +310,7 @@ namespace CyanStars.Framework.File
                 return false;
             }
 
-            if (GameSessionTempFolder.IsInsideSessionFolder(targetPath))
+            if (sessionTempFolder.IsInsideSessionFolder(targetPath))
             {
                 Debug.LogError($"目标路径不能位于会话缓存内：{targetPath}");
                 return false;
@@ -299,7 +319,7 @@ namespace CyanStars.Framework.File
             // TODO: 改为先写同目录临时文件再替换，避免写入中断在目标路径留下损坏文件
             try
             {
-                if (RequiresStorageAccessFramework(targetPath))
+                if (Environment.RequiresStorageAccessFramework(targetPath))
                 {
                     FileBrowserHelpers.WriteTextToFile(targetPath, text);
                     return true;
@@ -324,42 +344,13 @@ namespace CyanStars.Framework.File
 
 
         /// <summary>
-        /// 按编译和运行环境创建路径提供者
-        /// </summary>
-        private static IPathProvider CreatePathProvider()
-        {
-#if UNITY_ANDROID && !UNITY_EDITOR
-            // Simple File Browser 会在运行时判断安卓 10+ 是否必须走 SAF
-            if (FileBrowserHelpers.ShouldUseSAF)
-                return new AndroidPathProvider();
-#endif
-            return new DiskPathProvider();
-        }
-
-        /// <summary>
-        /// 判断某个路径在当前平台上是否只能通过 Storage Access Framework 读写
-        /// </summary>
-        /// <remarks>
-        /// <para>安卓 10 及以后访问外部存储必须走 SAF，此时 Simple File Browser 会把非根路径当成 SAF 路径处理</para>
-        /// <para>编辑器与其它平台上永远返回 false，路径直接交给 <see cref="System.IO"/> 处理</para>
-        /// </remarks>
-        private static bool RequiresStorageAccessFramework(string path)
-        {
-#if !UNITY_EDITOR && UNITY_ANDROID
-            return FileBrowserHelpers.ShouldUseSAFForPath(path);
-#else
-            return false;
-#endif
-        }
-
-        /// <summary>
         /// 把句柄当前可读位置的内容覆盖写进目标路径
         /// </summary>
         /// <remarks>
         /// <para>目标路径的文件夹不存在时会创建</para>
         /// <para>目录句柄且目标已存在时，先删除目标目录再复制，避免新旧内容混合</para>
         /// </remarks>
-        private static bool CopyEntryToTarget(FileHandle handle, bool overwrite)
+        private bool CopyEntryToTarget(FileHandle handle, bool overwrite)
         {
             string readablePath = handle.ReadablePath;
             string targetPath = handle.TargetPath!;
@@ -382,7 +373,7 @@ namespace CyanStars.Framework.File
 
                     FileBrowserHelpers.CopyDirectory(readablePath, targetPath);
                 }
-                else if (RequiresStorageAccessFramework(targetPath))
+                else if (Environment.RequiresStorageAccessFramework(targetPath))
                 {
                     if (!overwrite && FileBrowserHelpers.FileExists(targetPath))
                     {
@@ -420,15 +411,15 @@ namespace CyanStars.Framework.File
         /// 把外部文件复制进会话缓存
         /// </summary>
         /// <param name="sourcePath">外部文件路径</param>
-        /// <param name="cacheKind">放在会话临时目录的哪一层缓存下</param>
+        /// <param name="cacheScope">缓存作用域标识</param>
         /// <param name="entryName">来源文件名称；复制失败时为空字符串</param>
         /// <returns>缓存文件路径；失败时返回 null</returns>
-        private static string? TryCopyInFileToCache(string sourcePath, FileCacheKind cacheKind, out string entryName)
+        private string? TryCopyInFileToCache(string sourcePath, string cacheScope, out string entryName)
         {
             try
             {
                 entryName = GetEntryName(sourcePath);
-                string cacheFilePath = CreateUniqueCachePath(cacheKind, entryName);
+                string cacheFilePath = CreateUniqueCachePath(cacheScope, entryName);
                 FileBrowserHelpers.CopyFile(sourcePath, cacheFilePath);
 
                 return cacheFilePath;
@@ -445,15 +436,15 @@ namespace CyanStars.Framework.File
         /// 把外部文件夹整体复制进会话缓存
         /// </summary>
         /// <param name="sourcePath">外部文件夹路径</param>
-        /// <param name="cacheKind">放在会话临时目录的哪一层缓存下</param>
+        /// <param name="cacheScope">缓存作用域标识</param>
         /// <param name="entryName">来源文件夹名称；复制失败时为空字符串</param>
         /// <returns>缓存文件夹路径；失败时返回 null</returns>
-        private static string? TryCopyInFolderToCache(string sourcePath, FileCacheKind cacheKind, out string entryName)
+        private string? TryCopyInFolderToCache(string sourcePath, string cacheScope, out string entryName)
         {
             try
             {
                 entryName = GetEntryName(sourcePath);
-                string cacheFolderPath = CreateUniqueCachePath(cacheKind, entryName);
+                string cacheFolderPath = CreateUniqueCachePath(cacheScope, entryName);
                 FileBrowserHelpers.CopyDirectory(sourcePath, cacheFolderPath);
 
                 return cacheFolderPath;
@@ -469,17 +460,17 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 在缓存文件夹里生成一个未被占用的路径
         /// </summary>
-        /// <param name="cacheKind">缓存文件夹枚举</param>
+        /// <param name="cacheScope">缓存作用域标识</param>
         /// <param name="fileName">原始文件名</param>
         /// <remarks>同名时依次追加 (1)、(2) 等后缀</remarks>
-        private static string CreateUniqueCachePath(FileCacheKind cacheKind, string fileName)
+        private string CreateUniqueCachePath(string cacheScope, string fileName)
         {
-            string cacheFolderPath = GameSessionTempFolder.EnsureCacheFolder(cacheKind);
+            string cacheFolderPath = sessionTempFolder.EnsureCacheFolder(cacheScope);
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
             string extension = Path.GetExtension(fileName);
 
             if (string.IsNullOrEmpty(fileNameWithoutExtension))
-                fileNameWithoutExtension = "未命名文件";
+                fileNameWithoutExtension = "untitled";
 
             string candidatePath = PathUtil.Combine(cacheFolderPath, fileNameWithoutExtension + extension);
 

@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Linq;
 using CyanStars.Utils;
 using SimpleFileBrowser;
 using UnityEngine;
@@ -8,27 +9,44 @@ using UnityEngine;
 namespace CyanStars.Framework.File
 {
     /// <summary>
-    /// 文件管理器：向玩家打开文件（夹）选择对话框
+    /// 文件管理器：向玩家打开文件（夹）选择对话框，并持有平台环境与文件门户
     /// </summary>
-    /// <remarks>选中的文件复制进缓存并创建句柄；选中的文件夹只返回归一化后的路径</remarks>
+    /// <remarks>
+    /// <para>初始化时按编译和运行环境创建唯一一个 <see cref="IPlatformEnvironment"/> 实现并注入 <see cref="FilePortal"/>，
+    /// 业务逻辑经 <see cref="Environment"/> 与 <see cref="Portal"/> 获取平台路径能力和文件读写能力</para>
+    /// <para>选中的文件复制进缓存并创建句柄；选中的文件夹只返回归一化后的路径</para>
+    /// </remarks>
     public class FileManager : BaseManager
     {
+        /// <summary>
+        /// 默认缓存作用域：与具体业务无关的跨平台文件缓存，生命周期同游戏进程
+        /// </summary>
+        private const string DefaultCacheScope = "CrossPlatform";
+
+
         [SerializeField]
         private UISkin fileBrowserSkin = null!;
+
+
+        /// <summary>
+        /// 当前平台环境
+        /// </summary>
+        public IPlatformEnvironment Environment { get; private set; } = null!;
+
+        /// <summary>
+        /// 文件读写业务门户
+        /// </summary>
+        public FilePortal Portal { get; private set; } = null!;
 
 
         public override int Priority { get; }
 
 
-        // TODO: 业务逻辑与文件选择器插件混用过滤器，后续考虑分离成自有过滤器
-        public readonly FileBrowser.Filter ChartFilter = new FileBrowser.Filter("谱面文件", ".json");
-        public readonly FileBrowser.Filter SpriteFilter = new FileBrowser.Filter("图片", ".png");
-        public readonly FileBrowser.Filter AudioFilter = new FileBrowser.Filter("音频", ".ogg");
-
-
         public override void OnInit()
         {
-            PlatformFilePortal.Init();
+            Environment = CreatePlatformEnvironment();
+            Portal = new FilePortal(Environment);
+            Portal.Init();
 
             FileBrowser.Skin = fileBrowserSkin;
             FileBrowser.SetExcludedExtensions();
@@ -44,11 +62,11 @@ namespace CyanStars.Framework.File
         }
 
         /// <summary>
-        /// 退出游戏时删除本次会话的临时目录
+        /// 退出游戏时结束文件门户并删除本次会话的临时目录
         /// </summary>
-        public void OnDestroy()
+        private void OnDestroy()
         {
-            PlatformFilePortal.Shutdown();
+            Portal?.Shutdown();
         }
 
 
@@ -96,16 +114,16 @@ namespace CyanStars.Framework.File
         /// <param name="title">弹窗标题</param>
         /// <param name="showAllFilesFilter">是否允许玩家选择任意后缀的文件</param>
         /// <param name="filters">依据后缀筛选文件</param>
-        /// <param name="defaultFilter">默认后缀过滤器</param>
-        /// <param name="cacheKind">需要复制进缓存时放在哪一层缓存下</param>
+        /// <param name="defaultFilter">默认后缀过滤器的显示名</param>
+        /// <param name="cacheScope">缓存作用域标识，决定缓存副本放在会话临时目录的哪个子目录下</param>
         public void OpenLoadFileHandleBrowser(
             Action<FileHandle>? onSuccess,
             Action? onCancel = null,
             string title = "打开文件",
             bool showAllFilesFilter = false,
-            FileBrowser.Filter[]? filters = null,
+            FileTypeFilter[]? filters = null,
             string? defaultFilter = null,
-            FileCacheKind cacheKind = FileCacheKind.CrossPlatform
+            string cacheScope = DefaultCacheScope
         )
         {
             if (IsBrowserOpen()) return;
@@ -115,7 +133,7 @@ namespace CyanStars.Framework.File
                 if (paths.Length == 0)
                     return;
 
-                FileHandle? fileHandle = PlatformFilePortal.TryLoadFile(paths[0], cacheKind);
+                FileHandle? fileHandle = Portal.TryLoadFile(paths[0], cacheScope);
                 if (fileHandle == null)
                 {
                     Debug.LogError($"无法加载玩家选中的文件，已放弃本次选择：{paths[0]}");
@@ -128,7 +146,7 @@ namespace CyanStars.Framework.File
 
             FileBrowser.OnCancel? cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
 
-            FileBrowser.SetFilters(showAllFilesFilter, filters);
+            FileBrowser.SetFilters(showAllFilesFilter, ConvertFilters(filters));
             FileBrowser.SetDefaultFilter(defaultFilter);
             FileBrowser.ShowLoadDialog(successWrapper, cancelWrapper,
                 FileBrowser.PickMode.Files, false, null, null, title, "选择");
@@ -189,6 +207,30 @@ namespace CyanStars.Framework.File
 
         #endregion
 
+
+        /// <summary>
+        /// 按编译和运行环境创建平台环境
+        /// </summary>
+        private static IPlatformEnvironment CreatePlatformEnvironment()
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            // Simple File Browser 会在运行时判断安卓 10+ 是否必须走 SAF
+            if (FileBrowserHelpers.ShouldUseSAF)
+                return new AndroidSafPlatformEnvironment();
+#endif
+            return new DiskPlatformEnvironment();
+        }
+
+        /// <summary>
+        /// 把自有过滤器转换为文件对话框插件的过滤器
+        /// </summary>
+        private static FileBrowser.Filter[]? ConvertFilters(FileTypeFilter[]? filters)
+        {
+            return filters
+                ?.Select(filter => new FileBrowser.Filter(filter.DisplayName, filter.Extensions))
+                .ToArray();
+        }
+
         /// <summary>
         /// 检查文件浏览器是否已经打开，并打印警告
         /// </summary>
@@ -209,9 +251,9 @@ namespace CyanStars.Framework.File
         /// <param name="folder">常用文件夹枚举实例</param>
         /// <param name="displayName">侧边栏显示的名称</param>
         /// <remarks>当前平台上没有这个文件夹时只打日志，不影响其它入口</remarks>
-        private static void AddQuickLink(CommonFolders folder, string displayName)
+        private void AddQuickLink(CommonFolders folder, string displayName)
         {
-            string? folderPath = PlatformFilePortal.GetCommonFolderPath(folder);
+            string? folderPath = Portal.GetCommonFolderPath(folder);
             if (string.IsNullOrEmpty(folderPath))
             {
                 Debug.LogWarning($"当前平台上没有可用的常用文件夹，已跳过侧边栏入口：{folder}");

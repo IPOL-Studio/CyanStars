@@ -15,9 +15,10 @@ namespace CyanStars.Framework.File
     /// <remarks>
     /// <para>目录名固定为 <c>GameSession_{GUID}</c>，随游戏进程懒创建、退出时删除</para>
     /// <para>目录里的 <c>.session_lock</c> 由当前实例独占打开并一直持有到会话结束：
-    /// 若此文件被占，则视为有一个多开副本在运行，不刪除对应的文件夹。</para>
+    /// 若此文件被占，则视为有一个多开副本在运行，不删除对应的文件夹。</para>
+    /// <para>缓存按用途分目录隔离，用途标识（缓存作用域）由业务侧自定义，框架不枚举业务场景</para>
     /// </remarks>
-    public static class GameSessionTempFolder
+    public sealed class GameSessionTempFolder
     {
         /// <summary>
         /// 会话目录的固定前缀
@@ -29,47 +30,41 @@ namespace CyanStars.Framework.File
         /// </summary>
         private const string SessionLockFileName = ".session_lock";
 
-        /// <summary>
-        /// 跨平台文件缓存的文件夹名
-        /// </summary>
-        private const string CrossPlatformCacheFolderName = "跨平台文件缓存";
 
         /// <summary>
-        /// 制谱器可撤销文件缓存的文件夹名
+        /// 应用临时数据目录的绝对路径
         /// </summary>
-        private const string ChartEditorCacheFolderName = "制谱器可撤销文件缓存";
-
+        private readonly string temporaryCacheRoot;
 
         /// <summary>
         /// 本次游戏会话的临时目录绝对路径
         /// </summary>
-        public static string SessionFolderPath { get; } = PathUtil.Combine(
-            Application.temporaryCachePath,
-            $"{SessionFolderPrefix}{Guid.NewGuid():N}"
-        );
-
-        /// <summary>
-        /// 跨平台文件缓存的绝对路径
-        /// </summary>
-        public static string CrossPlatformCachePath { get; } =
-            PathUtil.Combine(SessionFolderPath, CrossPlatformCacheFolderName);
-
-        /// <summary>
-        /// 制谱器可撤销文件缓存的绝对路径
-        /// </summary>
-        public static string ChartEditorCachePath { get; } =
-            PathUtil.Combine(SessionFolderPath, ChartEditorCacheFolderName);
+        public string SessionFolderPath { get; }
 
         /// <summary>
         /// 本进程是否已经建好会话目录
         /// </summary>
-        private static bool isInitialized;
+        private bool isInitialized;
 
         /// <summary>
         /// 本次会话持有的占用标记文件流
         /// </summary>
         /// <remarks>独占打开期间别的实例打不开这个文件，以此证明本次会话的目录还在使用</remarks>
-        private static FileStream? sessionLockStream;
+        private FileStream? sessionLockStream;
+
+
+        /// <summary>
+        /// 创建会话临时目录对象
+        /// </summary>
+        /// <param name="temporaryCacheRoot">应用临时数据目录的绝对路径，由平台环境提供</param>
+        public GameSessionTempFolder(string temporaryCacheRoot)
+        {
+            this.temporaryCacheRoot = temporaryCacheRoot;
+            SessionFolderPath = PathUtil.Combine(
+                temporaryCacheRoot,
+                $"{SessionFolderPrefix}{Guid.NewGuid():N}"
+            );
+        }
 
 
         /// <summary>
@@ -80,7 +75,7 @@ namespace CyanStars.Framework.File
         /// <para>只清理应用临时数据目录下、带会话前缀、且 <c>.session_lock</c> 没有被任何实例独占打开的目录；
         /// 独占打开成功的目录属于另一个仍在运行的实例，将会保留</para>
         /// </remarks>
-        public static void Init()
+        public void Init()
         {
             if (isInitialized)
                 return;
@@ -98,32 +93,32 @@ namespace CyanStars.Framework.File
         /// <para>会话缓存既不能作为加载来源，也不能作为保存目标，相关判断统一走这里</para>
         /// <para><c>content://</c> 这类不是本地文件系统的路径不会命中会话目录，返回 false</para>
         /// </remarks>
-        public static bool IsInsideSessionFolder(string path)
+        public bool IsInsideSessionFolder(string path)
         {
             return PathUtil.IsSubPathOf(path, SessionFolderPath);
         }
 
         /// <summary>
-        /// 取会话内某个缓存文件夹的路径
+        /// 取会话内某个缓存作用域的文件夹路径
         /// </summary>
+        /// <param name="cacheScope">缓存作用域标识，由业务侧自定义，直接作为子文件夹名</param>
         /// <returns>缓存文件夹的绝对路径，可能尚未创建</returns>
-        public static string GetCacheFolderPath(FileCacheKind folder)
+        public string GetCacheFolderPath(string cacheScope)
         {
-            return folder switch
-            {
-                FileCacheKind.CrossPlatform => CrossPlatformCachePath,
-                FileCacheKind.ChartEditor => ChartEditorCachePath,
-                _ => throw new ArgumentOutOfRangeException(nameof(folder), folder, null)
-            };
+            if (string.IsNullOrEmpty(cacheScope))
+                throw new ArgumentException("缓存作用域标识为空", nameof(cacheScope));
+
+            return PathUtil.Combine(SessionFolderPath, cacheScope);
         }
 
         /// <summary>
-        /// 确保缓存文件夹存在，并记住它已经被使用
+        /// 确保缓存文件夹存在
         /// </summary>
+        /// <param name="cacheScope">缓存作用域标识</param>
         /// <returns>缓存文件夹的绝对路径</returns>
-        public static string EnsureCacheFolder(FileCacheKind folder)
+        public string EnsureCacheFolder(string cacheScope)
         {
-            string folderPath = GetCacheFolderPath(folder);
+            string folderPath = GetCacheFolderPath(cacheScope);
 
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
@@ -134,10 +129,11 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 删除缓存文件夹（只在它已经是空文件夹时删除）
         /// </summary>
+        /// <param name="cacheScope">缓存作用域标识</param>
         /// <remarks>句柄全部释放后用它收尾；文件夹里还有别的缓存文件时什么都不做</remarks>
-        public static void DeleteCacheFolderIfEmpty(FileCacheKind folder)
+        public void DeleteCacheFolderIfEmpty(string cacheScope)
         {
-            string folderPath = GetCacheFolderPath(folder);
+            string folderPath = GetCacheFolderPath(cacheScope);
 
             try
             {
@@ -159,7 +155,7 @@ namespace CyanStars.Framework.File
         /// 删除整个会话目录，游戏进程正常退出时调用
         /// </summary>
         /// <remarks>删除失败只告警：残留目录会在下一次游戏会话开始时被清理掉；删除后可以在同一进程内再次 <see cref="Init"/></remarks>
-        public static void DeleteSessionFolder()
+        public void DeleteSessionFolder()
         {
             isInitialized = false;
 
@@ -176,7 +172,7 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 建好会话目录并独占打开占用标记
         /// </summary>
-        private static void CreateSessionFolder()
+        private void CreateSessionFolder()
         {
             // 目录名带本次会话的 GUID，正常不会有同名目录留下来，这里只是先清干净再建
             DeleteFolderIfExists(SessionFolderPath);
@@ -196,7 +192,7 @@ namespace CyanStars.Framework.File
         /// <para>进程异常退出时文件流随进程一起消失，标记文件会留在磁盘上但不再被独占，
         /// 下一次启动就能把这个残留目录清理掉</para>
         /// </remarks>
-        private static void AcquireSessionLock()
+        private void AcquireSessionLock()
         {
             string lockFilePath = PathUtil.Combine(SessionFolderPath, SessionLockFileName);
 
@@ -213,7 +209,7 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 放开占用标记
         /// </summary>
-        private static void ReleaseSessionLock()
+        private void ReleaseSessionLock()
         {
             if (sessionLockStream == null)
                 return;
@@ -235,19 +231,17 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 删除应用临时数据目录下所有未被占用的残留会话目录
         /// </summary>
-        private static void DeleteLeftoverSessionFolders()
+        private void DeleteLeftoverSessionFolders()
         {
             // TODO: 多开时另一实例可能处于「目录已建、占用标记尚未持有」的窗口，这里会误删它的目录；
             // 后续在临时根目录加全局清理互斥锁
-            string tempRootPath = Application.temporaryCachePath;
-
-            if (!Directory.Exists(tempRootPath))
+            if (!Directory.Exists(temporaryCacheRoot))
                 return;
 
             string[] candidates;
             try
             {
-                candidates = Directory.GetDirectories(tempRootPath, SessionFolderPrefix + "*", SearchOption.TopDirectoryOnly);
+                candidates = Directory.GetDirectories(temporaryCacheRoot, SessionFolderPrefix + "*", SearchOption.TopDirectoryOnly);
             }
             catch (Exception e)
             {

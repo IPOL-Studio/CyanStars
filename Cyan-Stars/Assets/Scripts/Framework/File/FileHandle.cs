@@ -27,7 +27,7 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 当前可读写的路径：会话缓存里的一份副本
         /// </summary>
-        public string ReadablePath { get; private set; }
+        public string ReadablePath { get; }
 
         /// <summary>
         /// 保存时要写到的目标路径（可能是普通绝对路径或安卓 <c>content://</c> 路径）
@@ -55,11 +55,9 @@ namespace CyanStars.Framework.File
         /// 更新目标路径
         /// </summary>
         /// <param name="targetPath">传 null 表示解除目标路径</param>
+        /// <remarks>只做状态迁移，可用性与路径合法性校验由 <see cref="FilePortal"/> 统一负责</remarks>
         internal void SetTargetPath(string? targetPath)
         {
-            if (State == FileHandleState.Released)
-                return;
-
             TargetPath = targetPath;
         }
 
