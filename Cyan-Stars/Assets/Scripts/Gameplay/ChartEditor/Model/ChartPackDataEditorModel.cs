@@ -1,8 +1,10 @@
 #nullable enable
 
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using CyanStars.Chart;
+using CyanStars.Utils;
 using ObservableCollections;
 using R3;
 using UnityEngine;
@@ -45,6 +47,31 @@ namespace CyanStars.Gameplay.ChartEditor.Model
                 chartPackData.ChartMetaDatas
                     .Select(static d => new ChartMetaDataEditorModel(d))
             );
+        }
+
+        /// <summary>
+        /// 获取当前谱包引用的所有资源文件的相对路径（曲绘、各音乐版本的音频）
+        /// </summary>
+        /// <returns>相对于工作区的路径，例如 <c>Assets/Cover.png</c></returns>
+        [Pure]
+        public List<string> GetAssetRelativePaths()
+        {
+            var paths = new List<string>();
+
+            string? coverFilePath = CoverFilePath.CurrentValue;
+            if (!string.IsNullOrEmpty(coverFilePath))
+                paths.Add(PathUtil.Normalize(coverFilePath));
+
+            foreach (MusicVersionDataEditorModel musicVersion in MusicVersions)
+            {
+                string audioFilePath = musicVersion.AudioFilePath.CurrentValue;
+                if (string.IsNullOrEmpty(audioFilePath))
+                    continue;
+
+                paths.Add(PathUtil.Normalize(audioFilePath));
+            }
+
+            return paths;
         }
 
         /// <summary>

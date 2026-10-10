@@ -2,10 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using CyanStars.Chart.Loading;
 using CyanStars.Chart.Tracks;
 using CyanStars.Framework;
+using CyanStars.Framework.File;
 using CyanStars.Utils;
 using UnityEngine;
 
@@ -19,10 +21,14 @@ namespace CyanStars.Chart
     public class ChartModule : BaseDataModule
     {
         /// <summary>
-        /// 玩家谱包路径，位于用户数据
+        /// 玩家谱包文件夹名
         /// </summary>
-        public string PlayerChartPacksFolderPath { get; } =
-            PathUtil.Combine(Application.persistentDataPath, "ChartPacks");
+        public const string ChartPacksFolderName = "ChartPacks";
+
+        /// <summary>
+        /// 玩家谱包路径：平台环境提供的持久化数据目录下的谱包文件夹
+        /// </summary>
+        public string PlayerChartPacksFolderPath { get; private set; } = null!;
 
         private readonly List<RuntimeChartPack> runtimeChartPacks = new();
 
@@ -69,6 +75,12 @@ namespace CyanStars.Chart
         public override void OnInit()
         {
             TrackTypeRegistry.Initialize();
+
+            PlayerChartPacksFolderPath = PathUtil.Combine(
+                GameRoot.File.Environment.PersistentDataRoot,
+                ChartPacksFolderName
+            );
+            Directory.CreateDirectory(PlayerChartPacksFolderPath);
         }
 
 
@@ -91,6 +103,53 @@ namespace CyanStars.Chart
         public async Task AddChartPackDataFromDisk(string chartPackFilePath)
         {
             runtimeChartPacks.Add(await ChartPackDataLoader.AddFromDiskAsync(chartPackFilePath));
+        }
+
+        /// <summary>
+        /// 把外部谱包目录复制进玩家谱包目录
+        /// </summary>
+        /// <param name="sourceFolderPath">外部谱包目录的绝对路径（谱包索引文件所在目录），仅支持普通本地路径</param>
+        /// <param name="copiedChartPackFilePath">复制后的谱包索引文件绝对路径；源目录已在玩家谱包目录内时即源索引文件路径</param>
+        /// <returns>是否复制成功</returns>
+        /// <remarks>已存在同名谱包目录时依次追加 (1)、(2) 等后缀</remarks>
+        public bool TryCopyChartPackToPlayerFolder(string sourceFolderPath, out string copiedChartPackFilePath)
+        {
+            copiedChartPackFilePath = "";
+
+            if (string.IsNullOrEmpty(sourceFolderPath) || !Directory.Exists(sourceFolderPath))
+            {
+                Debug.LogError($"要导入的谱包目录不存在：{sourceFolderPath}");
+                return false;
+            }
+
+            string sourceChartPackFilePath = PathUtil.Combine(sourceFolderPath, ChartPackDataLoader.ChartPackFileName);
+            if (!File.Exists(sourceChartPackFilePath))
+            {
+                Debug.LogError($"要导入的谱包目录里没有 {ChartPackDataLoader.ChartPackFileName}：{sourceFolderPath}");
+                return false;
+            }
+
+            // 已经在玩家谱包目录内的谱包不再复制
+            if (PathUtil.IsSubPathOf(sourceFolderPath, PlayerChartPacksFolderPath))
+            {
+                copiedChartPackFilePath = sourceChartPackFilePath;
+                return true;
+            }
+
+            string sourceFolderName = PathUtil.GetName(sourceFolderPath);
+            if (string.IsNullOrEmpty(sourceFolderName))
+            {
+                Debug.LogError($"无法获取谱包目录的名称：{sourceFolderPath}");
+                return false;
+            }
+
+            string targetFolderPath = PathUtil.Combine(PlayerChartPacksFolderPath, sourceFolderName);
+
+            if (!FolderUtil.TryCopyFolder(sourceFolderPath, targetFolderPath, out string copiedFolderPath))
+                return false;
+
+            copiedChartPackFilePath = PathUtil.Combine(copiedFolderPath, ChartPackDataLoader.ChartPackFileName);
+            return true;
         }
 
         /// <summary>

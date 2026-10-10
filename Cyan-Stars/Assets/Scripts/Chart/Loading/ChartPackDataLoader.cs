@@ -20,9 +20,15 @@ namespace CyanStars.Chart.Loading
     public static class ChartPackDataLoader
     {
         /// <summary>
-        /// 索引文件的文件名
+        /// 谱包索引文件的文件名
         /// </summary>
         public const string ChartPackFileName = "ChartPack.json";
+
+        /// <summary>
+        /// 谱包内存放曲绘、音频等资源文件的文件夹名
+        /// </summary>
+        /// <remarks>谱包数据里的 <c>CoverFilePath</c>、<c>AudioFilePath</c> 是以本文件夹开头的、相对于工作区的路径</remarks>
+        public const string ChartPackAssetsFolder = "Assets";
 
         /// <summary>
         /// 内置谱包 SO 文件路径

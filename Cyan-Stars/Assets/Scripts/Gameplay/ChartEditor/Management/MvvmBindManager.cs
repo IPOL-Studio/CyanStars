@@ -15,6 +15,9 @@ namespace CyanStars.Gameplay.ChartEditor.Management
     {
         private readonly CompositeDisposable Disposables = new CompositeDisposable();
 
+        // 本次编辑会话的 Model
+        private ChartEditorModel? model;
+
         [SerializeField]
         private ToolbarView toolbarView = null!;
 
@@ -79,7 +82,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
             // 初始化命令栈，开始追踪未保存数据
             commandStack.Init(initialHasUnsavedChanges);
 
-            var model =
+            model =
                 new ChartEditorModel(workspacePath, chartMetadataIndex, chartPackData, chartData);
 
             // 初始化一些 Manager
@@ -130,6 +133,13 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         /// 退出制谱器时解除所有绑定，以释放内存
         /// </summary>
         /// <remarks>VM 通过 CatAsset 加载的资源也应该在此时由 VM 管理释放</remarks>
-        private void OnDestroy() => Disposables.Dispose();
+        private void OnDestroy()
+        {
+            // 先解除绑定让 VM 停止访问 Model，再结束编辑会话
+            Disposables.Dispose();
+
+            model?.Dispose();
+            model = null;
+        }
     }
 }

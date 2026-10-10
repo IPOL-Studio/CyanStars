@@ -26,9 +26,6 @@ namespace CyanStars.Gameplay.ChartEditor
         private ChartEditorNoteAudioManager noteAudioManager = null!;
 
         [SerializeField]
-        private ChartEditorFileManager fileManager = null!;
-
-        [SerializeField]
         private ShortcutManager shortcutManager = null!;
 
         [SerializeField]
@@ -39,7 +36,6 @@ namespace CyanStars.Gameplay.ChartEditor
         public static CommandStack CommandStack = null!;
         public static ChartEditorMusicManager MusicManager = null!;
         public static ChartEditorNoteAudioManager NoteAudioManager = null!;
-        public static ChartEditorFileManager FileManager = null!;
 
 
         private void Awake()
@@ -47,7 +43,6 @@ namespace CyanStars.Gameplay.ChartEditor
             MvvmBindManager = mvvmBindManager;
             CommandStack = commandStack;
             MusicManager = musicManager;
-            FileManager = fileManager;
             NoteAudioManager = noteAudioManager;
         }
 
