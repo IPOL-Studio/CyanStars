@@ -26,10 +26,9 @@ namespace CyanStars.Chart
         public const string ChartPacksFolderName = "ChartPacks";
 
         /// <summary>
-        /// 玩家谱包路径，位于用户数据
+        /// 玩家谱包路径：平台环境提供的持久化数据目录下的谱包文件夹
         /// </summary>
-        public static string PlayerChartPacksFolderPath =>
-            PathUtil.Combine(Application.persistentDataPath, ChartPacksFolderName);
+        public string PlayerChartPacksFolderPath { get; private set; } = null!;
 
         private readonly List<RuntimeChartPack> runtimeChartPacks = new();
 
@@ -76,6 +75,11 @@ namespace CyanStars.Chart
         public override void OnInit()
         {
             TrackTypeRegistry.Initialize();
+
+            PlayerChartPacksFolderPath = PathUtil.Combine(
+                GameRoot.File.Environment.PersistentDataRoot,
+                ChartPacksFolderName
+            );
             Directory.CreateDirectory(PlayerChartPacksFolderPath);
         }
 
@@ -108,7 +112,7 @@ namespace CyanStars.Chart
         /// <param name="copiedChartPackFilePath">复制后的谱包索引文件绝对路径；源目录已在玩家谱包目录内时即源索引文件路径</param>
         /// <returns>是否复制成功</returns>
         /// <remarks>已存在同名谱包目录时依次追加 (1)、(2) 等后缀</remarks>
-        public static bool TryCopyChartPackToPlayerFolder(string sourceFolderPath, out string copiedChartPackFilePath)
+        public bool TryCopyChartPackToPlayerFolder(string sourceFolderPath, out string copiedChartPackFilePath)
         {
             copiedChartPackFilePath = "";
 
