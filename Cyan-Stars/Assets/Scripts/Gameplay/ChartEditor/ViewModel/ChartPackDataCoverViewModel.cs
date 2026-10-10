@@ -190,9 +190,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 title: "打开曲绘",
                 filters: new[]
                 {
-                    GameRoot.File.SpriteFilter
+                    ChartEditorFileFilters.Sprite
                 },
-                cacheKind: FileCacheKind.ChartEditor
+                cacheScope: ChartEditorModel.AssetCacheScope
             );
         }
 
@@ -216,9 +216,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var newTargetAbsolutePath = Model.GetAssetAbsolutePath(newTargetRelativePath);
 
             // 提前校验保存目标，失败则不修改任何数据
-            if (!PlatformFilePortal.TrySetSaveTarget(coverFileHandle, newTargetAbsolutePath))
+            if (!GameRoot.File.Portal.TrySetSaveTarget(coverFileHandle, newTargetAbsolutePath))
             {
-                PlatformFilePortal.TryReleaseFile(coverFileHandle);
+                GameRoot.File.Portal.TryReleaseFile(coverFileHandle);
 
                 PopupView.Show("无法导入曲绘",
                     "无法把选中的图片保存到谱包工作区，请检查日志。",

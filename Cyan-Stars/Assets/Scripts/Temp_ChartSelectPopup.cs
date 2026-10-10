@@ -69,17 +69,17 @@ namespace CyanStars
             importChartPackButton.onClick.AddListener(() =>
                 {
                     // TODO: 移动端短期改为选择文件夹并整体复制谱包（SAF 目录），长期改用 .cyscp 单文件格式导入
-                    if (Application.platform == RuntimePlatform.Android)
+                    if (!GameRoot.File.Environment.CanImportExternalFolder)
                     {
-                        Debug.LogWarning("暂不支持在安卓平台导入外部谱包。");
-                        chartPackFilePathText.text = "暂不支持在安卓平台导入外部谱包";
+                        Debug.LogWarning("当前平台不支持导入外部谱包。");
+                        chartPackFilePathText.text = "当前平台不支持导入外部谱包";
                         return;
                     }
 
                     GameRoot.File.OpenLoadFolderPathBrowser(async sourceFolderPath =>
                         {
                             // 整个谱包目录复制进玩家谱包目录，之后的编辑都针对这份导入副本
-                            if (!ChartModule.TryCopyChartPackToPlayerFolder(sourceFolderPath, out string chartPackFilePath))
+                            if (!chartModule.TryCopyChartPackToPlayerFolder(sourceFolderPath, out string chartPackFilePath))
                             {
                                 chartPackFilePathText.text = "复制谱包到玩家数据目录失败，具体原因见日志";
                                 return;

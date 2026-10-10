@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using CatAsset.Runtime;
 using CyanStars.Chart;
+using CyanStars.Framework;
 using CyanStars.Framework.File;
 using CyanStars.Utils;
 using R3;
@@ -17,6 +18,13 @@ namespace CyanStars.Gameplay.ChartEditor.Model
     /// </summary>
     public class ChartEditorModel : IDisposable
     {
+        /// <summary>
+        /// 制谱器资源缓存的缓存作用域标识
+        /// </summary>
+        /// <remarks>本次编辑会话导入的文件都复制到这个作用域下，生命周期为每次进入和退出制谱器期间</remarks>
+        public const string AssetCacheScope = "ChartEditor";
+
+
         // == == 事件触发器 == ==
         /// <summary>
         /// BpmGroup 中既有元素的 StartBeat 或 Bpm 发生了变化时手动触发
@@ -169,7 +177,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
 
             FileHandle? assetHandle = FindAssetHandle(absolutePath);
 
-            return assetHandle != null && PlatformFilePortal.IsHandleReadable(assetHandle)
+            return assetHandle != null && GameRoot.File.Portal.IsHandleReadable(assetHandle)
                 ? assetHandle.ReadablePath
                 : absolutePath;
         }
@@ -284,13 +292,23 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             // 曲绘由 ChartPackDataCoverViewModel 自己卸载
             UnloadAudioAssetHandlers();
 
-            PlatformFilePortal.TryReleaseAll(DetachedAssetHandles);
-            PlatformFilePortal.TryReleaseAll(AssetHandles.Values);
+            ReleaseAssetHandles();
+        }
+
+        /// <summary>
+        /// 释放本次会话的全部句柄，并在缓存文件夹空了之后收尾
+        /// </summary>
+        private void ReleaseAssetHandles()
+        {
+            FilePortal portal = GameRoot.File.Portal;
+
+            portal.TryReleaseAll(DetachedAssetHandles);
+            portal.TryReleaseAll(AssetHandles.Values);
 
             DetachedAssetHandles.Clear();
             AssetHandles.Clear();
 
-            GameSessionTempFolder.DeleteCacheFolderIfEmpty(FileCacheKind.ChartEditor);
+            portal.ClearCacheScopeIfEmpty(AssetCacheScope);
         }
 
         /// <summary>

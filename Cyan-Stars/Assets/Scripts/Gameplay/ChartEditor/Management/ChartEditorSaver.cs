@@ -15,7 +15,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
     /// 把制谱器里编辑中的数据写进磁盘
     /// </summary>
     /// <remarks>
-    /// <para>谱包、谱面在内存里序列化并校验通过后，统一经 <see cref="PlatformFilePortal"/> 落盘，
+    /// <para>谱包、谱面在内存里序列化并校验通过后，统一经 <see cref="FilePortal"/> 落盘，
     /// 本类不再自己调用 <see cref="System.IO"/> 写文件</para>
     /// <para>只有本次会话导入或改过的资源才有句柄；没有句柄的资源说明它没有被改过，
     /// 磁盘上的旧文件继续有效，不必重写</para>
@@ -29,9 +29,10 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         /// 把谱包、谱面、资源文件覆盖保存到磁盘
         /// </summary>
         /// <param name="editorModel">编辑会话 Model</param>
+        /// <param name="portal">文件门户</param>
         /// <returns>是否全部保存成功</returns>
         /// <remarks>资源缺失或写失败时不写谱包和谱面：避免元数据指向一份没有内容的资源</remarks>
-        public static bool SaveChartAndAssetsToDisk(ChartEditorModel editorModel)
+        public static bool SaveChartAndAssetsToDisk(ChartEditorModel editorModel, FilePortal portal)
         {
             ChartPackDataEditorModel chartPackDataEditorModel = editorModel.ChartPackData.CurrentValue;
             ChartDataEditorModel chartDataEditorModel = editorModel.ChartData.CurrentValue;
@@ -74,7 +75,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
                 return false;
             }
 
-            if (!PlatformFilePortal.TrySaveAll(editorModel.GetAllAssetHandles(), true))
+            if (!portal.TrySaveAll(editorModel.GetAllAssetHandles(), true))
             {
                 Debug.LogError("保存资源文件失败，已跳过谱包谱面的写入");
                 return false;
@@ -82,7 +83,7 @@ namespace CyanStars.Gameplay.ChartEditor.Management
 
             // TODO: 定期在后台把整个谱包工作区备份到临时文件路径
             // 谱面被谱包引用，因此先写谱面
-            if (!TryWriteJsonFile(chartFilePath, chartJson) || !TryWriteJsonFile(chartPackFilePath, chartPackJson))
+            if (!TryWriteJsonFile(portal, chartFilePath, chartJson) || !TryWriteJsonFile(portal, chartPackFilePath, chartPackJson))
                 return false;
 
             Debug.Log("已保存谱面。");
@@ -133,9 +134,9 @@ namespace CyanStars.Gameplay.ChartEditor.Management
         /// 把序列化好的 json 写进目标路径
         /// </summary>
         /// <returns>是否写入成功</returns>
-        private static bool TryWriteJsonFile(string targetFilePath, string json)
+        private static bool TryWriteJsonFile(FilePortal portal, string targetFilePath, string json)
         {
-            return PlatformFilePortal.TryWriteTextToPath(targetFilePath, json);
+            return portal.TryWriteTextToPath(targetFilePath, json);
         }
     }
 }

@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Framework.File;
@@ -138,10 +137,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void ExportChartPack()
         {
-            if (Application.platform == RuntimePlatform.Android)
+            if (!GameRoot.File.Environment.CanExportFolder)
             {
                 PopupView.Show("无法导出谱包",
-                    "暂不支持在安卓平台导出谱包。",
+                    "当前平台不支持导出谱包。",
                     true,
                     new Dictionary<string, Action?>
                     {
@@ -173,9 +172,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     }
 
                     // 防止有人把谱包导出到应用数据路径（尤其是要导出的谱包内）下，然后用无限递归炸掉程序（以及磁盘空间和资源管理器）
-                    Uri parentUri = new Uri(Path.GetFullPath(Application.persistentDataPath));
-                    Uri targetUri = new Uri(Path.GetFullPath(targetParentPath));
-                    if (parentUri.IsBaseOf(targetUri))
+                    if (PathUtil.IsSubPathOf(targetParentPath, GameRoot.File.Environment.PersistentDataRoot))
                     {
                         PopupView.Show("无法导出谱包",
                             "不能导出到游戏数据目录内部，请选一个其他路径",
@@ -189,7 +186,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     }
 
                     // 2. 再把当前谱包保存到玩家数据路径，保存失败则取消导出
-                    if (!ChartEditorSaver.SaveChartAndAssetsToDisk(Model))
+                    if (!ChartEditorSaver.SaveChartAndAssetsToDisk(Model, GameRoot.File.Portal))
                     {
                         PopupView.Show("无法导出谱包",
                             "保存谱包数据失败，已取消导出。具体原因见日志。",

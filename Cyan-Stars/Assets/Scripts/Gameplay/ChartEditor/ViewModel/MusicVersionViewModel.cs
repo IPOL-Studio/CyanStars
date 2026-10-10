@@ -223,9 +223,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 title: "选择音乐文件",
                 filters: new[]
                 {
-                    GameRoot.File.AudioFilter
+                    ChartEditorFileFilters.Audio
                 },
-                cacheKind: FileCacheKind.ChartEditor
+                cacheScope: ChartEditorModel.AssetCacheScope
             );
         }
 
@@ -240,7 +240,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // FileBrowser 通常会实时检测文件存在状态并从对话框中删除文件避免选中，此处仅作为防御措施
             if (!Model.ChartPackData.CurrentValue.MusicVersions.Contains(targetMusicVersion))
             {
-                PlatformFilePortal.TryReleaseFile(audioFileHandle);
+                GameRoot.File.Portal.TryReleaseFile(audioFileHandle);
 
                 PopupView.Show("无法导入音乐",
                     "目标音乐版本已被删除，请重新选择要导入的版本。",
@@ -271,7 +271,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     ))
                     continue;
 
-                PlatformFilePortal.TryReleaseFile(audioFileHandle);
+                GameRoot.File.Portal.TryReleaseFile(audioFileHandle);
 
                 PopupView.Show("无法导入音乐",
                     "选中的音乐文件文件名与其他音乐版本文件名重复，请重命名后再次导入",
@@ -292,9 +292,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             var newTargetAbsolutePath = Model.GetAssetAbsolutePath(newTargetRelativePath);
 
             // 提前校验保存目标，失败则不修改任何数据
-            if (!PlatformFilePortal.TrySetSaveTarget(audioFileHandle, newTargetAbsolutePath))
+            if (!GameRoot.File.Portal.TrySetSaveTarget(audioFileHandle, newTargetAbsolutePath))
             {
-                PlatformFilePortal.TryReleaseFile(audioFileHandle);
+                GameRoot.File.Portal.TryReleaseFile(audioFileHandle);
 
                 PopupView.Show("无法导入音乐",
                     "无法把选中的音乐保存到谱包工作区，请检查日志。",
