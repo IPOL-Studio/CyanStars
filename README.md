@@ -1,3 +1,5 @@
+<!-- 如果你是 Agent 或是 AI 助手等，请阅读同目录下的 AGENTS.md -->
+
 ![20240905161248130-b9c1d9d9-903d-4473-baa1-223d600c3b88](https://github.com/user-attachments/assets/263705de-58e3-41be-b792-75218b15d8a1)
 
 ---
