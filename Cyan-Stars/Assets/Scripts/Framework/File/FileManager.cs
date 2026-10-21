@@ -2,12 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using CyanStars.Utils;
-using CyanStars.Utils.JsonSerialization;
-using Newtonsoft.Json;
 using SimpleFileBrowser;
 using UnityEngine;
 
@@ -28,12 +24,6 @@ namespace CyanStars.Framework.File
 
 
         public override int Priority { get; }
-
-
-        // TODO: 兼容旧调用方，迁移完成后删除
-        public readonly FileBrowser.Filter ChartFilter = new FileBrowser.Filter("谱面文件", ".json");
-        public readonly FileBrowser.Filter SpriteFilter = new FileBrowser.Filter("图片", ".png");
-        public readonly FileBrowser.Filter AudioFilter = new FileBrowser.Filter("音频", ".ogg");
 
 
         /// <summary>
@@ -546,72 +536,6 @@ namespace CyanStars.Framework.File
         public bool TryWriteTextToPath(string targetPath, string text)
         {
             return fileHandleStore.TryWriteTextToPath(targetPath, text);
-        }
-
-        #endregion
-
-
-        #region --- 兼容旧调用方（迁移完成后删除） ---
-
-        /// <summary>
-        /// 使用弹窗获取玩家选中的文件路径
-        /// </summary>
-        public void OpenLoadFilePathBrowser(
-            Action<string>? onSuccess,
-            Action? onCancel = null,
-            string title = "打开文件",
-            bool showAllFilesFilter = false,
-            FileBrowser.Filter[]? filters = null,
-            string? defaultFilter = null
-        )
-        {
-            FileTypeFilter[]? convertedFilters = filters?
-                .Select(filter => new FileTypeFilter(filter.name, filter.extensions))
-                .ToArray();
-
-            OpenLoadFilePathBrowser(
-                onSuccess,
-                onCancel,
-                title,
-                showAllFilesFilter,
-                convertedFilters,
-                defaultFilter
-            );
-        }
-
-        /// <summary>
-        /// 序列化对象为 Json 文件
-        /// </summary>
-        /// <param name="obj">要序列化的对象</param>
-        /// <param name="filePath">保存到的路径和文件全名</param>
-        /// <returns>是否成功序列化</returns>
-        public bool SerializationToJson(object obj, string filePath)
-        {
-            try
-            {
-                JsonSerializerSettings settings = new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.None,
-                    Formatting = Formatting.Indented,
-                    Culture = CultureInfo.InvariantCulture,
-                    DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                    Converters = JsonConverters.Converters
-                };
-
-                string directory = Path.GetDirectoryName(filePath);
-                if (!string.IsNullOrEmpty(directory))
-                    Directory.CreateDirectory(directory);
-
-                string json = JsonConvert.SerializeObject(obj, settings);
-                System.IO.File.WriteAllText(filePath, json);
-                Debug.Log($"序列化完成，文件路径：{filePath}");
-                return true;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"序列化时出现异常：{e}");
-                return false;
-            }
         }
 
         #endregion

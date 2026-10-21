@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using CyanStars.Chart;
 using CyanStars.Framework;
+using CyanStars.Framework.File;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Management;
 using CyanStars.Utils;
@@ -26,9 +27,6 @@ namespace CyanStars.Gameplay.ChartEditor
         private ChartEditorNoteAudioManager noteAudioManager = null!;
 
         [SerializeField]
-        private ChartEditorFileManager fileManager = null!;
-
-        [SerializeField]
         private ShortcutManager shortcutManager = null!;
 
         [SerializeField]
@@ -39,7 +37,6 @@ namespace CyanStars.Gameplay.ChartEditor
         public static CommandStack CommandStack = null!;
         public static ChartEditorMusicManager MusicManager = null!;
         public static ChartEditorNoteAudioManager NoteAudioManager = null!;
-        public static ChartEditorFileManager FileManager = null!;
 
 
         private void Awake()
@@ -47,7 +44,6 @@ namespace CyanStars.Gameplay.ChartEditor
             MvvmBindManager = mvvmBindManager;
             CommandStack = commandStack;
             MusicManager = musicManager;
-            FileManager = fileManager;
             NoteAudioManager = noteAudioManager;
         }
 
@@ -69,7 +65,8 @@ namespace CyanStars.Gameplay.ChartEditor
                 // 创建新谱包和谱面
                 string randomName = CreateRandomName();
 
-                workspacePath = PathUtil.Combine(chartModule.PlayerChartPacksFolderPath, randomName);
+                workspacePath = PathUtil.Combine(
+                    GameRoot.File.GetAppPath(AppPathKind.PlayerChartPacks), randomName);
 
                 chartData = new ChartData();
 
