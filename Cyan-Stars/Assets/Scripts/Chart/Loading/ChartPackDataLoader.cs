@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using CatAsset.Runtime;
 using CyanStars.Framework;
@@ -20,9 +19,15 @@ namespace CyanStars.Chart.Loading
     public static class ChartPackDataLoader
     {
         /// <summary>
-        /// 索引文件的文件名
+        /// 谱包索引文件的文件名
         /// </summary>
         public const string ChartPackFileName = "ChartPack.json";
+
+        /// <summary>
+        /// 谱包内存放曲绘、音频等资源文件的文件夹名
+        /// </summary>
+        /// <remarks>谱包数据里的 <c>CoverFilePath</c>、<c>AudioFilePath</c> 是以本文件夹开头的、相对于工作区的路径</remarks>
+        public const string ChartPackAssetsFolder = "Assets";
 
         /// <summary>
         /// 内置谱包 SO 文件路径
@@ -55,7 +60,7 @@ namespace CyanStars.Chart.Loading
                 Directory.EnumerateFiles(playerChartPacksFolderPath, ChartPackFileName, SearchOption.AllDirectories);
             foreach (var path in playerChartPaths)
             {
-                paths.Add(path.Replace('\\', '/'));
+                paths.Add(PathUtil.Normalize(path));
             }
 
             // 批量加载以提高效率，后续单个加载时能直接快速完成
@@ -117,7 +122,7 @@ namespace CyanStars.Chart.Loading
             return new RuntimeChartPack(
                 chartPackData,
                 false,
-                Path.GetDirectoryName(chartPackFilePath)
+                GetWorkspacePath(chartPackFilePath)
             );
         }
 
@@ -137,8 +142,21 @@ namespace CyanStars.Chart.Loading
             return new RuntimeChartPack(
                 chartPackData,
                 false,
-                Path.GetDirectoryName(chartPackFilePath)
+                GetWorkspacePath(chartPackFilePath)
             );
+        }
+
+        /// <summary>
+        /// 取谱包索引文件所在的工作区目录
+        /// </summary>
+        /// <exception cref="ArgumentException">路径里取不到目录（如传入了文件名）</exception>
+        private static string GetWorkspacePath(string chartPackFilePath)
+        {
+            string? workspacePath = Path.GetDirectoryName(PathUtil.Normalize(chartPackFilePath));
+            if (string.IsNullOrEmpty(workspacePath))
+                throw new ArgumentException($"无法获取谱包的工作区目录：{chartPackFilePath}", nameof(chartPackFilePath));
+
+            return workspacePath;
         }
 
         /// <summary>

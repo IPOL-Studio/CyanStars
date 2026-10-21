@@ -1,13 +1,9 @@
 #nullable enable
 
 using System;
-using System.Collections.Generic;
-using CatAsset.Runtime;
 using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Gameplay.ChartEditor.Procedure;
-using CyanStars.Utils;
-using SimpleFileBrowser;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -71,14 +67,28 @@ namespace CyanStars
 
             importChartPackButton.onClick.AddListener(() =>
                 {
-                    GameRoot.File.OpenLoadFilePathBrowser(async (path) =>
+                    // TODO: 移动端短期改为选择文件夹并整体复制谱包（SAF 目录），长期改用 .cyscp 单文件格式导入
+                    if (!GameRoot.File.Environment.CanImportExternalFolder)
+                    {
+                        Debug.LogWarning("当前平台不支持导入外部谱包。");
+                        chartPackFilePathText.text = "当前平台不支持导入外部谱包";
+                        return;
+                    }
+
+                    GameRoot.File.OpenLoadFolderPathBrowser(async sourceFolderPath =>
                         {
-                            path = path.Replace('\\', '/');
+                            // 整个谱包目录复制进玩家谱包目录，之后的编辑都针对这份导入副本
+                            if (!chartModule.TryCopyChartPackToPlayerFolder(sourceFolderPath, out string chartPackFilePath))
+                            {
+                                chartPackFilePathText.text = "复制谱包到玩家数据目录失败，具体原因见日志";
+                                return;
+                            }
 
                             // 加载谱包并选中
-                            chartPackFilePathText.text = path;
-                            await chartModule.SetSingleChartPackFromDisk(path);
+                            await chartModule.SetSingleChartPackFromDisk(chartPackFilePath);
                             chartModule.SelectChartPackData(0);
+                            // 谱包已在前面加载并选中，取不到说明流程出错，让它直接崩溃
+                            chartPackFilePathText.text = chartModule.SelectedRuntimeChartPack!.ChartPackData.Title;
 
                             // 清空旧谱面列表，生成新谱面列表
                             for (int i = chartsFrame.transform.childCount - 2; i >= 0; i--)
@@ -88,8 +98,6 @@ namespace CyanStars
 
                             for (int i = 0; i < chartModule.SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas.Count; i++)
                             {
-                                string chartFilePath = PathUtil.Combine(chartModule.SelectedRuntimeChartPack.WorkspacePath, chartModule.SelectedRuntimeChartPack.ChartPackData.ChartMetaDatas[i].FilePath);
-
                                 GameObject newButtonObject = Instantiate(chartButtonObjectPrefab, chartsFrame.transform);
                                 newButtonObject.transform.SetSiblingIndex(chartsFrame.transform.childCount - 2);
                                 Temp_ChartButton button = newButtonObject.GetComponent<Temp_ChartButton>();
@@ -110,9 +118,7 @@ namespace CyanStars
                             newChartButton.gameObject.SetActive(true);
                         },
                         null,
-                        "打开谱包索引文件",
-                        false,
-                        new[] { new FileBrowser.Filter("谱包索引文件", ".json") }
+                        "选择谱包文件夹"
                     );
                 }
             );

@@ -2,10 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using CyanStars.Chart.Loading;
 using CyanStars.Chart.Tracks;
 using CyanStars.Framework;
+using CyanStars.Framework.File;
 using CyanStars.Utils;
 using UnityEngine;
 
@@ -18,12 +20,6 @@ namespace CyanStars.Chart
     // ReSharper disable once ClassNeverInstantiated.Global // 由反射实例化
     public class ChartModule : BaseDataModule
     {
-        /// <summary>
-        /// 玩家谱包路径，位于用户数据
-        /// </summary>
-        public string PlayerChartPacksFolderPath { get; } =
-            PathUtil.Combine(Application.persistentDataPath, "ChartPacks");
-
         private readonly List<RuntimeChartPack> runtimeChartPacks = new();
 
         /// <summary>
@@ -69,6 +65,16 @@ namespace CyanStars.Chart
         public override void OnInit()
         {
             TrackTypeRegistry.Initialize();
+
+            string chartPacksFolderPath = GameRoot.File.GetAppPath(AppPathKind.PlayerChartPacks);
+            try
+            {
+                Directory.CreateDirectory(chartPacksFolderPath);
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException($"无法创建玩家谱包目录：{chartPacksFolderPath}", e);
+            }
         }
 
 
@@ -80,7 +86,8 @@ namespace CyanStars.Chart
         public async Task ReloadAllChartPacksAsync()
         {
             runtimeChartPacks.Clear();
-            runtimeChartPacks.AddRange(await ChartPackDataLoader.ReloadAllAsync(PlayerChartPacksFolderPath));
+            runtimeChartPacks.AddRange(await ChartPackDataLoader.ReloadAllAsync(
+                GameRoot.File.GetAppPath(AppPathKind.PlayerChartPacks)));
         }
 
         /// <summary>
@@ -91,6 +98,56 @@ namespace CyanStars.Chart
         public async Task AddChartPackDataFromDisk(string chartPackFilePath)
         {
             runtimeChartPacks.Add(await ChartPackDataLoader.AddFromDiskAsync(chartPackFilePath));
+        }
+
+        /// <summary>
+        /// 把外部谱包目录复制进玩家谱包目录
+        /// </summary>
+        /// <param name="sourceFolderPath">外部谱包目录的绝对路径（谱包索引文件所在目录），仅支持普通本地路径</param>
+        /// <param name="copiedChartPackFilePath">复制后的谱包索引文件绝对路径</param>
+        /// <returns>是否复制成功</returns>
+        /// <remarks>
+        /// <para>已存在同名谱包目录时依次追加 (1)、(2) 等后缀</para>
+        /// <para>不允许导入已在玩家谱包目录的谱包</para>
+        /// </remarks>
+        public bool TryCopyChartPackToPlayerFolder(string sourceFolderPath, out string copiedChartPackFilePath)
+        {
+            copiedChartPackFilePath = "";
+
+            if (string.IsNullOrEmpty(sourceFolderPath) || !Directory.Exists(sourceFolderPath))
+            {
+                Debug.LogError($"要导入的谱包目录不存在：{sourceFolderPath}");
+                return false;
+            }
+
+            string sourceChartPackFilePath = PathUtil.Combine(sourceFolderPath, ChartPackDataLoader.ChartPackFileName);
+            if (!File.Exists(sourceChartPackFilePath))
+            {
+                Debug.LogError($"要导入的谱包目录里没有 {ChartPackDataLoader.ChartPackFileName}：{sourceFolderPath}");
+                return false;
+            }
+
+            if (PathUtil.IsSubPathOf(sourceFolderPath, GameRoot.File.GetAppPath(AppPathKind.PlayerChartPacks)))
+            {
+                Debug.LogError($"不允许导入已在内部路径的谱包 {sourceFolderPath}");
+                return false;
+            }
+
+            string sourceFolderName = PathUtil.GetName(sourceFolderPath);
+            if (string.IsNullOrEmpty(sourceFolderName))
+            {
+                Debug.LogError($"无法获取谱包目录的名称：{sourceFolderPath}");
+                return false;
+            }
+
+            string targetFolderPath = PathUtil.Combine(
+                GameRoot.File.GetAppPath(AppPathKind.PlayerChartPacks), sourceFolderName);
+
+            if (!FolderUtil.TryCopyFolder(sourceFolderPath, targetFolderPath, out string copiedFolderPath))
+                return false;
+
+            copiedChartPackFilePath = PathUtil.Combine(copiedFolderPath, ChartPackDataLoader.ChartPackFileName);
+            return true;
         }
 
         /// <summary>
