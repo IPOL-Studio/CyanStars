@@ -75,7 +75,7 @@ namespace CyanStars
                         return;
                     }
 
-                    GameRoot.File.OpenLoadFolderPathBrowser(async sourceFolderPath =>
+                    bool dialogOpened = GameRoot.File.TryOpenLoadFolderPathBrowser(async sourceFolderPath =>
                         {
                             // 整个谱包目录复制进玩家谱包目录，之后的编辑都针对这份导入副本
                             if (!chartModule.TryCopyChartPackToPlayerFolder(sourceFolderPath, out string chartPackFilePath))
@@ -120,6 +120,9 @@ namespace CyanStars
                         null,
                         "选择谱包文件夹"
                     );
+
+                    if (!dialogOpened)
+                        chartPackFilePathText.text = "无法打开文件夹选择对话框";
                 }
             );
 

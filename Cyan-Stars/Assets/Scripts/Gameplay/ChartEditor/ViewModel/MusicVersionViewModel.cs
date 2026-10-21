@@ -238,14 +238,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (targetMusicVersion == null)
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下导入音乐。");
 
-            GameRoot.File.OpenLoadFilePathBrowser(
-                audioFilePath => ImportMusicFile(targetMusicVersion, audioFilePath),
-                title: "选择音乐文件",
-                filters: new[]
-                {
-                    ChartEditorFileFilters.Audio
-                }
-            );
+            if (!GameRoot.File.TryOpenLoadFilePathBrowser(
+                    audioFilePath => ImportMusicFile(targetMusicVersion, audioFilePath),
+                    title: "选择音乐文件",
+                    filters: new[]
+                    {
+                        ChartEditorFileFilters.Audio
+                    }
+                ))
+            {
+                PopupView.ShowError("无法导入音乐", "无法打开文件选择对话框，请稍后重试。");
+            }
         }
 
         /// <summary>

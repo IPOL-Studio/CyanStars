@@ -189,14 +189,17 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void OpenCoverBrowser()
         {
-            GameRoot.File.OpenLoadFilePathBrowser(
-                SetCoverFile,
-                title: "打开曲绘",
-                filters: new[]
-                {
-                    ChartEditorFileFilters.Sprite
-                }
-            );
+            if (!GameRoot.File.TryOpenLoadFilePathBrowser(
+                    SetCoverFile,
+                    title: "打开曲绘",
+                    filters: new[]
+                    {
+                        ChartEditorFileFilters.Sprite
+                    }
+                ))
+            {
+                PopupView.ShowError("无法导入曲绘", "无法打开文件选择对话框，请稍后重试。");
+            }
         }
 
         /// <summary>

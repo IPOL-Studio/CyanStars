@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using CyanStars.Utils;
 using SimpleFileBrowser;
 using UnityEngine;
@@ -37,6 +36,11 @@ namespace CyanStars.Framework.File
         private AppPathManager appPathManager = null!;
 
         /// <summary>
+        /// 文件对话框服务，只服务于本管理器
+        /// </summary>
+        private FileDialogService fileDialogService = null!;
+
+        /// <summary>
         /// 当前平台环境
         /// </summary>
         public IPlatformEnvironment Environment { get; private set; } = null!;
@@ -67,12 +71,8 @@ namespace CyanStars.Framework.File
 
             appPathManager = new AppPathManager(Environment, CanCustomizeAppPaths, sessionFolderName);
             fileHandleStore = CreateFileHandleStore(sessionFolderName);
-
-            // 设置颜色主题，在文件弹窗中显示所有后缀的文件，包括默认排除的 .lnk 和 .tmp，添加快捷链接
-            FileBrowser.Skin = fileBrowserSkin;
-            FileBrowser.SetExcludedExtensions();
-            AddQuickLink(CommonFolders.Downloads, "下载");
-            AddQuickLink(CommonFolders.Desktop, "桌面");
+            fileDialogService = new FileDialogService(Environment);
+            fileDialogService.Initialize(fileBrowserSkin);
 
             Debug.Log("FileManager Initialized.");
         }
@@ -276,7 +276,7 @@ namespace CyanStars.Framework.File
         #region --- 文件（夹）路径对话框 ---
 
         /// <summary>
-        /// 使用弹窗获取玩家选中的文件路径
+        /// 打开文件选择对话框
         /// </summary>
         /// <param name="onSuccess">成功获取的回调，参数为归一化后的玩家选中的文件路径</param>
         /// <param name="onCancel">取消时的回调</param>
@@ -284,156 +284,53 @@ namespace CyanStars.Framework.File
         /// <param name="showAllFilesFilter">是否允许玩家选择任意后缀的文件</param>
         /// <param name="filters">依据后缀筛选文件</param>
         /// <param name="defaultFilter">默认后缀过滤器的显示名</param>
-        public void OpenLoadFilePathBrowser(
+        /// <returns>是否成功打开；已有对话框打开时返回 false，并触发 <paramref name="onCancel"/></returns>
+        public bool TryOpenLoadFilePathBrowser(
             Action<string>? onSuccess,
             Action? onCancel = null,
             string title = "打开文件",
             bool showAllFilesFilter = false,
             FileTypeFilter[]? filters = null,
-            string? defaultFilter = null
-        )
+            string? defaultFilter = null)
         {
-            if (IsBrowserOpen())
-                return;
-
-            FileBrowser.OnSuccess successWrapper = paths =>
-            {
-                if (paths.Length == 0)
-                    return;
-
-                onSuccess?.Invoke(PathUtil.Normalize(paths[0]));
-            };
-
-            FileBrowser.OnCancel? cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
-
-            FileBrowser.SetFilters(showAllFilesFilter, ConvertFilters(filters));
-            FileBrowser.SetDefaultFilter(defaultFilter);
-            FileBrowser.ShowLoadDialog(
-                successWrapper,
-                cancelWrapper,
-                FileBrowser.PickMode.Files,
-                false,
-                null,
-                null,
+            return fileDialogService.TryOpenLoadFilePathBrowser(
+                onSuccess,
+                onCancel,
                 title,
-                "选择"
+                showAllFilesFilter,
+                filters,
+                defaultFilter
             );
         }
 
         /// <summary>
-        /// 使用弹窗获取要读取的文件夹路径
+        /// 打开文件夹选择对话框
         /// </summary>
         /// <param name="onSuccess">成功获取的回调，参数为归一化后的玩家选中的文件夹路径</param>
         /// <param name="onCancel">取消后的回调</param>
         /// <param name="title">弹窗标题</param>
-        public void OpenLoadFolderPathBrowser(
+        /// <returns>是否成功打开；已有对话框打开时返回 false，并触发 <paramref name="onCancel"/></returns>
+        public bool TryOpenLoadFolderPathBrowser(
             Action<string>? onSuccess,
             Action? onCancel = null,
-            string title = "打开文件夹"
-        )
+            string title = "打开文件夹")
         {
-            if (IsBrowserOpen())
-                return;
-
-            FileBrowser.OnSuccess successWrapper = (paths) =>
-            {
-                if (paths.Length == 0)
-                    return;
-
-                onSuccess?.Invoke(PathUtil.Normalize(paths[0]));
-            };
-
-            FileBrowser.OnCancel? cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
-
-            FileBrowser.ShowLoadDialog(
-                successWrapper,
-                cancelWrapper,
-                FileBrowser.PickMode.Folders,
-                false,
-                null,
-                null,
-                title,
-                "选择"
-            );
+            return fileDialogService.TryOpenLoadFolderPathBrowser(onSuccess, onCancel, title);
         }
 
         /// <summary>
-        /// 使用弹窗获取要保存的文件夹路径
+        /// 打开文件夹保存对话框
         /// </summary>
         /// <param name="onSuccess">成功获取的回调，参数为归一化后的文件夹路径</param>
         /// <param name="onCancel">取消后的回调</param>
         /// <param name="title">弹窗标题</param>
-        public void OpenSaveFolderPathBrowser(
+        /// <returns>是否成功打开；已有对话框打开时返回 false，并触发 <paramref name="onCancel"/></returns>
+        public bool TryOpenSaveFolderPathBrowser(
             Action<string>? onSuccess,
             Action? onCancel = null,
-            string title = "保存到"
-        )
+            string title = "保存到")
         {
-            if (IsBrowserOpen())
-                return;
-
-            FileBrowser.OnSuccess successWrapper = (paths) =>
-            {
-                if (paths.Length == 0)
-                    return;
-
-                onSuccess?.Invoke(PathUtil.Normalize(paths[0]));
-            };
-
-            FileBrowser.OnCancel? cancelWrapper = onCancel != null ? new FileBrowser.OnCancel(onCancel) : null;
-
-            FileBrowser.ShowSaveDialog(
-                successWrapper,
-                cancelWrapper,
-                FileBrowser.PickMode.Folders,
-                false,
-                null,
-                null,
-                title,
-                "选择"
-            );
-        }
-
-        /// <summary>
-        /// 检查文件浏览器是否已经打开，并打印警告
-        /// </summary>
-        private bool IsBrowserOpen()
-        {
-            if (FileBrowser.IsOpen)
-            {
-                Debug.LogWarning("无法打开新的文件对话框，因为已有对话框处于打开状态。");
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// 把常用文件夹加进文件对话框的侧边栏
-        /// </summary>
-        /// <param name="folder">常用文件夹枚举实例</param>
-        /// <param name="displayName">侧边栏显示的名称</param>
-        /// <remarks>当前平台上没有这个文件夹时只打日志，不影响其它入口</remarks>
-        private void AddQuickLink(CommonFolders folder, string displayName)
-        {
-            string? folderPath = Environment.GetCommonFolderPath(folder);
-            if (string.IsNullOrEmpty(folderPath))
-            {
-                Debug.LogWarning($"当前平台上没有可用的常用文件夹，已跳过侧边栏入口：{folder}");
-                return;
-            }
-
-            FileBrowser.AddQuickLink(displayName, folderPath, null);
-        }
-
-        /// <summary>
-        /// 把自有过滤器转换为文件对话框插件的过滤器
-        /// </summary>
-        private static FileBrowser.Filter[]? ConvertFilters(FileTypeFilter[]? filters)
-        {
-            return filters
-                ?.Select(filter => new FileBrowser.Filter(filter.DisplayName, filter.Extensions))
-                .ToArray();
+            return fileDialogService.TryOpenSaveFolderPathBrowser(onSuccess, onCancel, title);
         }
 
         #endregion

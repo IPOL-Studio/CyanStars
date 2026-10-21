@@ -136,7 +136,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             }
 
             // TODO: 将导出的文件打包为一个专有后缀名的文件
-            GameRoot.File.OpenSaveFolderPathBrowser(ExportChartPackTo, null, "导出到");
+            if (!GameRoot.File.TryOpenSaveFolderPathBrowser(ExportChartPackTo, null, "导出到"))
+                PopupView.ShowError("无法导出谱包", "无法打开文件夹选择对话框，请稍后重试。");
         }
 
         /// <summary>
