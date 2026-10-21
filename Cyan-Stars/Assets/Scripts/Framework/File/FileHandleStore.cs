@@ -375,19 +375,11 @@ namespace CyanStars.Framework.File
             {
                 if (FileBrowserHelpers.DirectoryExists(readablePath))
                 {
-                    if (FileBrowserHelpers.DirectoryExists(targetPath))
-                    {
-                        if (!overwrite)
-                        {
-                            Debug.LogWarning($"目标路径已存在，按要求不覆盖：{targetPath}");
-                            return false;
-                        }
+                    FolderCopyMode mode = overwrite
+                        ? FolderCopyMode.ReplaceExisting
+                        : FolderCopyMode.FailIfExists;
 
-                        // 覆盖按替换语义处理：先删除旧目录，避免新旧内容混合
-                        FileBrowserHelpers.DeleteDirectory(targetPath);
-                    }
-
-                    FileBrowserHelpers.CopyDirectory(readablePath, targetPath);
+                    return FolderUtil.TryCopyFolder(Environment, readablePath, targetPath, mode, out _);
                 }
                 else if (Environment.RequiresStorageAccessFramework(targetPath))
                 {
@@ -458,10 +450,21 @@ namespace CyanStars.Framework.File
             try
             {
                 entryName = GetEntryName(sourcePath);
-                string cacheFolderPath = CreateUniqueCachePath(cacheScope, entryName);
-                FileBrowserHelpers.CopyDirectory(sourcePath, cacheFolderPath);
+                string cacheFolderPath = SessionTempFolder.EnsureCacheFolder(cacheScope);
+                string targetPath = PathUtil.Combine(cacheFolderPath, entryName);
 
-                return cacheFolderPath;
+                if (!FolderUtil.TryCopyFolder(
+                        Environment,
+                        sourcePath,
+                        targetPath,
+                        FolderCopyMode.UniqueName,
+                        out string copiedFolderPath))
+                {
+                    entryName = "";
+                    return null;
+                }
+
+                return copiedFolderPath;
             }
             catch (Exception e)
             {

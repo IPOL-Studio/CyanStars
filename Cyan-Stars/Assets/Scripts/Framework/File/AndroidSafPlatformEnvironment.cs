@@ -15,8 +15,8 @@ namespace CyanStars.Framework.File
     /// 安卓启用 Storage Access Framework 时的平台环境
     /// </summary>
     /// <remarks>
-    /// <para>安卓 10 及以后只能通过 SAF 访问外部存储，因此常用文件夹给的是 <c>content://</c> 路径，
-    /// 外部文件夹的整目录导入导出不可用；应用数据目录仍是普通绝对路径</para>
+    /// <para>安卓 10 及以后只能通过 SAF 访问外部存储，因此常用文件夹给的是 <c>content://</c> 路径；
+    /// 应用数据目录仍是普通绝对路径</para>
     /// </remarks>
     public sealed class AndroidSafPlatformEnvironment : IPlatformEnvironment
     {
@@ -26,7 +26,7 @@ namespace CyanStars.Framework.File
 
         public string? GameInstallRoot => null;
 
-        // SAF 选中的目录是 content:// 路径，无法按普通路径做整目录复制
+        // TODO: SAF 目录的复制已接入 FolderUtil，待真机验证权限与重名处理后开放
         public bool CanImportExternalFolder => false;
 
         public bool CanExportFolder => false;

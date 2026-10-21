@@ -79,6 +79,51 @@ namespace CyanStars.Test.EditMode
         }
 
         [Test]
+        public void TryCopyFolderFailIfExistsRejectsExistingTarget()
+        {
+            string sourcePath = Path.Combine(rootPath, "source");
+            Directory.CreateDirectory(sourcePath);
+            File.WriteAllText(Path.Combine(sourcePath, "a.txt"), "A");
+
+            string targetPath = Path.Combine(rootPath, "target");
+            Directory.CreateDirectory(targetPath);
+            File.WriteAllText(Path.Combine(targetPath, "stale.txt"), "stale");
+
+            LogAssert.Expect(LogType.Warning, $"目标路径已存在，按要求不覆盖：{targetPath}");
+            Assert.IsFalse(FolderUtil.TryCopyFolder(
+                null,
+                sourcePath,
+                targetPath,
+                FolderCopyMode.FailIfExists,
+                out string copiedFolderPath));
+            Assert.AreEqual("", copiedFolderPath);
+            Assert.IsTrue(File.Exists(Path.Combine(targetPath, "stale.txt")));
+            Assert.IsFalse(File.Exists(Path.Combine(targetPath, "a.txt")));
+        }
+
+        [Test]
+        public void TryCopyFolderReplaceExistingReplacesContent()
+        {
+            string sourcePath = Path.Combine(rootPath, "source");
+            Directory.CreateDirectory(sourcePath);
+            File.WriteAllText(Path.Combine(sourcePath, "fresh.txt"), "fresh");
+
+            string targetPath = Path.Combine(rootPath, "target");
+            Directory.CreateDirectory(targetPath);
+            File.WriteAllText(Path.Combine(targetPath, "stale.txt"), "stale");
+
+            Assert.IsTrue(FolderUtil.TryCopyFolder(
+                null,
+                sourcePath,
+                targetPath,
+                FolderCopyMode.ReplaceExisting,
+                out string copiedFolderPath));
+            Assert.IsTrue(PathUtil.PathEquals(targetPath, copiedFolderPath));
+            Assert.IsTrue(File.Exists(Path.Combine(targetPath, "fresh.txt")));
+            Assert.IsFalse(File.Exists(Path.Combine(targetPath, "stale.txt")));
+        }
+
+        [Test]
         public void TryCopyFolderRejectsTargetInsideSource()
         {
             string sourcePath = Path.Combine(rootPath, "source");
@@ -113,20 +158,19 @@ namespace CyanStars.Test.EditMode
         }
 
         [Test]
-        public void TryCopyFolderCleansUpWhenCopyFails()
+        public void TryCopyFolderSkipsTargetOccupiedByFile()
         {
             string sourcePath = Path.Combine(rootPath, "source");
             Directory.CreateDirectory(sourcePath);
             File.WriteAllText(Path.Combine(sourcePath, "a.txt"), "A");
 
-            // 目标位置被同名文件占用，创建目录会失败
+            // 目标名被同名文件占用时，也要追加序号后缀而不是失败
             string targetPath = Path.Combine(rootPath, "occupied");
             File.WriteAllText(targetPath, "blocker");
 
-            LogAssert.Expect(LogType.Error,
-                new Regex($"{Regex.Escape($"把文件夹 {sourcePath} 复制到 {targetPath} 时出错：")}.*"));
-            Assert.IsFalse(FolderUtil.TryCopyFolder(sourcePath, targetPath, out string copiedFolderPath));
-            Assert.AreEqual("", copiedFolderPath);
+            Assert.IsTrue(FolderUtil.TryCopyFolder(sourcePath, targetPath, out string copiedFolderPath));
+            Assert.IsTrue(PathUtil.PathEquals(targetPath + " (1)", copiedFolderPath));
+            Assert.AreEqual("A", File.ReadAllText(Path.Combine(copiedFolderPath, "a.txt")));
             Assert.AreEqual("blocker", File.ReadAllText(targetPath));
         }
 
