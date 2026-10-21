@@ -1,5 +1,6 @@
 #nullable enable
 
+using CyanStars.Framework.File;
 using UnityEngine;
 
 #if !UNITY_EDITOR
@@ -15,14 +16,21 @@ namespace CyanStars.Framework
     public static class ApplicationRestart
     {
         /// <summary>
-        /// 退出当前进程，并在 1 秒后重新拉起游戏；编辑器下只退出播放模式，需要手动重新进入
+        /// 退出当前进程，并在支持自动重启的平台上重新拉起游戏；编辑器下只退出播放模式
         /// </summary>
-        public static void Restart()
+        /// <param name="environment">当前平台环境</param>
+        public static void Restart(IPlatformEnvironment environment)
         {
+            if (environment == null || !environment.CanRestartApplication)
+            {
+                Debug.LogError("当前平台不支持自动重启，请手动重新打开游戏。");
+                return;
+            }
+
 #if UNITY_EDITOR
             Debug.Log("编辑器下无法自动重启，已退出播放模式，请手动重新进入播放。");
             UnityEditor.EditorApplication.isPlaying = false;
-#else
+#elif UNITY_STANDALONE_WIN
             try
             {
                 string? executablePath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
@@ -55,6 +63,8 @@ namespace CyanStars.Framework
             }
 
             Application.Quit();
+#else
+            Debug.LogError("当前平台不支持自动重启，请手动重新打开游戏。");
 #endif
         }
     }
