@@ -124,6 +124,58 @@ namespace CyanStars.Test.EditMode
         }
 
         [Test]
+        public void FolderTransferPolicyValidatesDirectionAndManagedArea()
+        {
+            string managedRoot = Path.Combine(rootPath, "managed");
+            string externalRoot = Path.Combine(rootPath, "external");
+            Directory.CreateDirectory(managedRoot);
+            Directory.CreateDirectory(externalRoot);
+
+            bool IsManaged(string path) => PathUtil.IsSubPathOf(path, managedRoot);
+
+            string managedPath = Path.Combine(managedRoot, "pack");
+            string externalPath = Path.Combine(externalRoot, "pack");
+
+            Assert.IsTrue(FolderTransferPolicy.TryValidate(
+                externalPath,
+                managedPath,
+                FolderTransferDirection.Import,
+                IsManaged,
+                out string error), error);
+            Assert.IsTrue(FolderTransferPolicy.TryValidate(
+                managedPath,
+                externalPath,
+                FolderTransferDirection.Export,
+                IsManaged,
+                out error), error);
+
+            Assert.IsFalse(FolderTransferPolicy.TryValidate(
+                managedPath,
+                managedPath,
+                FolderTransferDirection.Import,
+                IsManaged,
+                out _));
+            Assert.IsFalse(FolderTransferPolicy.TryValidate(
+                externalPath,
+                externalPath,
+                FolderTransferDirection.Export,
+                IsManaged,
+                out _));
+            Assert.IsFalse(FolderTransferPolicy.TryValidate(
+                externalPath,
+                managedPath,
+                FolderTransferDirection.Export,
+                IsManaged,
+                out _));
+            Assert.IsFalse(FolderTransferPolicy.TryValidate(
+                managedPath,
+                Path.Combine(managedPath, "sub"),
+                FolderTransferDirection.Export,
+                IsManaged,
+                out _));
+        }
+
+        [Test]
         public void TryCopyFolderRejectsTargetInsideSource()
         {
             string sourcePath = Path.Combine(rootPath, "source");

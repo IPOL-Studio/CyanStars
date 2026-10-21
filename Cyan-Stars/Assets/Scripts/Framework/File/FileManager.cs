@@ -9,13 +9,10 @@ using UnityEngine;
 namespace CyanStars.Framework.File
 {
     /// <summary>
-    /// 文件管理器：业务层的文件读写门户，提供文件（夹）选择对话框与文件句柄读写能力
+    /// 文件交互入口：处理外部文件（夹）的选择、导入导出、应用路径解析与会话缓存句柄
     /// </summary>
-    /// <remarks>
-    /// <para>初始化时按编译和运行环境创建唯一一个 <see cref="IPlatformEnvironment"/> 实现，并创建内部的
-    /// <see cref="AppPathManager"/> 解析应用路径、<see cref="FileHandleStore"/> 负责文件搬运；
-    /// 业务逻辑经 <see cref="Environment"/> 获取平台路径能力，经本类的公开方法读写文件，不直接接触内部存储实现</para>
-    /// </remarks>
+    /// <remarks>应用自有目录由 <see cref="GetAppPath"/> 解析，保证为本地路径；
+    /// 外部路径可能为 <c>content://</c>，相关读写应经本类完成</remarks>
     public class FileManager : BaseManager
     {
         [SerializeField]
@@ -160,14 +157,26 @@ namespace CyanStars.Framework.File
         }
 
         /// <summary>
-        /// 路径是否位于应用管理的目录之内（持久化数据目录或任一应用路径下）
+        /// 校验文件夹导入或导出的源路径与目标路径
         /// </summary>
-        /// <remarks>
-        /// 为防止递归等问题，FileManager 读取和写入时不能操作这些路径。
-        /// </remarks>
-        public bool IsPathInManagedArea(string path)
+        /// <param name="sourceFolderPath">源文件夹绝对路径</param>
+        /// <param name="targetFolderPath">目标文件夹绝对路径</param>
+        /// <param name="direction">导入或导出</param>
+        /// <param name="error">失败原因；校验通过时为空字符串</param>
+        /// <returns>路径组合是否符合方向要求</returns>
+        public bool TryValidateFolderTransfer(
+            string sourceFolderPath,
+            string targetFolderPath,
+            FolderTransferDirection direction,
+            out string error)
         {
-            return appPathManager.IsPathInManagedArea(path);
+            return FolderTransferPolicy.TryValidate(
+                sourceFolderPath,
+                targetFolderPath,
+                direction,
+                appPathManager.IsPathInManagedArea,
+                out error
+            );
         }
 
         // TODO: 后续实装路径迁移功能
@@ -302,6 +311,98 @@ namespace CyanStars.Framework.File
             string title = "保存到")
         {
             return fileDialogService.TryOpenSaveFolderPathBrowser(onSuccess, onCancel, title);
+        }
+
+        #endregion
+
+        #region --- 外部文件夹导入导出 ---
+
+        /// <summary>
+        /// 将外部文件夹复制到应用自有目录
+        /// </summary>
+        /// <param name="sourceFolderPath">外部文件夹路径，可以是本地绝对路径或安卓 <c>content://</c> 路径</param>
+        /// <param name="targetFolderPath">目标绝对路径；目标已存在时追加序号后缀</param>
+        /// <param name="copiedFolderPath">实际复制到的路径；失败时为空字符串</param>
+        /// <param name="error">平台不支持或路径校验失败时的原因；复制阶段失败时为空字符串，原因见日志</param>
+        /// <returns>是否复制成功</returns>
+        /// <remarks>平台不支持导入或路径组合不符合导入要求时返回 false，并记录原因</remarks>
+        public bool TryImportFolder(
+            string sourceFolderPath,
+            string targetFolderPath,
+            out string copiedFolderPath,
+            out string error)
+        {
+            copiedFolderPath = "";
+            error = "";
+
+            if (!Environment.CanImportExternalFolder)
+            {
+                error = "当前平台不支持导入外部文件夹。";
+                Debug.LogWarning(error);
+                return false;
+            }
+
+            if (!TryValidateFolderTransfer(
+                    sourceFolderPath,
+                    targetFolderPath,
+                    FolderTransferDirection.Import,
+                    out error))
+            {
+                Debug.LogError(error);
+                return false;
+            }
+
+            return FolderUtil.TryCopyFolder(
+                Environment,
+                sourceFolderPath,
+                targetFolderPath,
+                FolderCopyMode.UniqueName,
+                out copiedFolderPath
+            );
+        }
+
+        /// <summary>
+        /// 将应用自有目录的文件夹复制到外部位置
+        /// </summary>
+        /// <param name="sourceFolderPath">应用自有目录内的源绝对路径</param>
+        /// <param name="targetFolderPath">外部目标绝对路径；目标已存在时追加序号后缀</param>
+        /// <param name="copiedFolderPath">实际复制到的路径；失败时为空字符串</param>
+        /// <param name="error">平台不支持或路径校验失败时的原因；复制阶段失败时为空字符串，原因见日志</param>
+        /// <returns>是否复制成功</returns>
+        /// <remarks>平台不支持导出或路径组合不符合导出要求时返回 false，并记录原因</remarks>
+        public bool TryExportFolder(
+            string sourceFolderPath,
+            string targetFolderPath,
+            out string copiedFolderPath,
+            out string error)
+        {
+            copiedFolderPath = "";
+            error = "";
+
+            if (!Environment.CanExportFolder)
+            {
+                error = "当前平台不支持导出文件夹。";
+                Debug.LogWarning(error);
+                return false;
+            }
+
+            if (!TryValidateFolderTransfer(
+                    sourceFolderPath,
+                    targetFolderPath,
+                    FolderTransferDirection.Export,
+                    out error))
+            {
+                Debug.LogError(error);
+                return false;
+            }
+
+            return FolderUtil.TryCopyFolder(
+                Environment,
+                sourceFolderPath,
+                targetFolderPath,
+                FolderCopyMode.UniqueName,
+                out copiedFolderPath
+            );
         }
 
         #endregion

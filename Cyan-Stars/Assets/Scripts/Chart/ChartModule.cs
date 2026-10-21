@@ -108,7 +108,7 @@ namespace CyanStars.Chart
         /// <returns>是否复制成功</returns>
         /// <remarks>
         /// <para>已存在同名谱包目录时依次追加 (1)、(2) 等后缀</para>
-        /// <para>不允许导入已在玩家谱包目录的谱包</para>
+        /// <para>不允许导入已位于游戏数据目录内的谱包</para>
         /// </remarks>
         public bool TryCopyChartPackToPlayerFolder(string sourceFolderPath, out string copiedChartPackFilePath)
         {
@@ -127,12 +127,6 @@ namespace CyanStars.Chart
                 return false;
             }
 
-            if (PathUtil.IsSubPathOf(sourceFolderPath, GameRoot.File.GetAppPath(AppPathKind.PlayerChartPacks)))
-            {
-                Debug.LogError($"不允许导入已在内部路径的谱包 {sourceFolderPath}");
-                return false;
-            }
-
             string sourceFolderName = PathUtil.GetName(sourceFolderPath);
             if (string.IsNullOrEmpty(sourceFolderName))
             {
@@ -143,7 +137,8 @@ namespace CyanStars.Chart
             string targetFolderPath = PathUtil.Combine(
                 GameRoot.File.GetAppPath(AppPathKind.PlayerChartPacks), sourceFolderName);
 
-            if (!FolderUtil.TryCopyFolder(sourceFolderPath, targetFolderPath, out string copiedFolderPath))
+            // 导入的方向性校验由 FileManager 统一完成，失败原因见日志
+            if (!GameRoot.File.TryImportFolder(sourceFolderPath, targetFolderPath, out string copiedFolderPath, out _))
                 return false;
 
             copiedChartPackFilePath = PathUtil.Combine(copiedFolderPath, ChartPackDataLoader.ChartPackFileName);

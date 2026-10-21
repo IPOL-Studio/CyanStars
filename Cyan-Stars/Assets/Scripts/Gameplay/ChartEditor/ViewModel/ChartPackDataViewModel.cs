@@ -149,17 +149,13 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             string folderName = PathUtil.GetName(Model.WorkspacePath);
             string destPath = PathUtil.Combine(targetParentPath, folderName);
 
-            // 防止导出到工作区内部时递归复制自我嵌套
-            if (PathUtil.IsSubPathOf(destPath, Model.WorkspacePath))
+            if (!GameRoot.File.TryValidateFolderTransfer(
+                    Model.WorkspacePath,
+                    destPath,
+                    FolderTransferDirection.Export,
+                    out string error))
             {
-                PopupView.ShowError("无法导出谱包", "不能把谱包导出到它自己的工作区内部，请选一个其他路径");
-                return;
-            }
-
-            // 防止导出到游戏管理的目录
-            if (GameRoot.File.IsPathInManagedArea(targetParentPath))
-            {
-                PopupView.ShowError("无法导出谱包", "不能导出到游戏数据目录内部，请选一个其他路径");
+                PopupView.ShowError("无法导出谱包", error);
                 return;
             }
 
@@ -174,9 +170,12 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             CommandStack.MarkSaved();
 
             // 3. 最后把工作区复制到指定路径，已存在同名文件夹时依次添加 "(1)" 等后缀
-            if (!FolderUtil.TryCopyFolder(Model.WorkspacePath, destPath, out _))
+            if (!GameRoot.File.TryExportFolder(Model.WorkspacePath, destPath, out _, out string exportError))
             {
-                PopupView.ShowError("无法导出谱包", "复制谱包文件失败，具体原因见日志。");
+                // 校验类失败有明确原因；复制阶段失败的原因见日志
+                PopupView.ShowError(
+                    "无法导出谱包",
+                    string.IsNullOrEmpty(exportError) ? "复制谱包文件失败，具体原因见日志。" : exportError);
             }
         }
     }
