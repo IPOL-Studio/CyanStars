@@ -24,10 +24,16 @@ namespace CyanStars.Framework.File
 
         public string TemporaryCacheRoot => PathUtil.Normalize(Application.temporaryCachePath);
 
+        public string? GameInstallRoot => null;
+
         // SAF 选中的目录是 content:// 路径，无法按普通路径做整目录复制
         public bool CanImportExternalFolder => false;
 
         public bool CanExportFolder => false;
+
+        public bool CanCustomizeAppPaths => false;
+
+        public bool CanRestartApplication => false;
 
 
         public string? GetCommonFolderPath(CommonFolders folder)

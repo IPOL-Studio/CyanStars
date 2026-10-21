@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using CyanStars.Utils;
 using UnityEngine;
@@ -41,7 +40,7 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 当前平台是否允许修改自定义路径
         /// </summary>
-        private readonly bool CanCustomize;
+        private bool CanCustomize => Environment.CanCustomizeAppPaths;
 
         /// <summary>
         /// 当前平台的应用数据目录
@@ -72,10 +71,9 @@ namespace CyanStars.Framework.File
             PathUtil.Combine(GetAppPath(AppPathKind.TemporaryCacheRoot), SessionFolderName);
 
 
-        internal AppPathManager(IPlatformEnvironment environment, bool canCustomize, string sessionFolderName)
+        internal AppPathManager(IPlatformEnvironment environment, string sessionFolderName)
         {
             Environment = environment ?? throw new ArgumentNullException(nameof(environment));
-            CanCustomize = canCustomize;
 
             if (string.IsNullOrEmpty(sessionFolderName))
                 throw new ArgumentException("会话临时目录名为空", nameof(sessionFolderName));
@@ -382,21 +380,12 @@ namespace CyanStars.Framework.File
                 kind,
                 path,
                 Environment.PersistentDataRoot,
-                GetGameInstallRoot(),
+                Environment.GameInstallRoot,
                 SessionFolderPath,
                 otherPaths,
                 out normalizedPath,
                 out error
             );
-        }
-
-        /// <summary>
-        /// 游戏安装根目录（Data 目录的上一级），编辑器下为工程根目录
-        /// </summary>
-        private static string? GetGameInstallRoot()
-        {
-            string? parentPath = Path.GetDirectoryName(PathUtil.Normalize(Application.dataPath));
-            return string.IsNullOrEmpty(parentPath) ? null : PathUtil.Normalize(parentPath);
         }
     }
 }

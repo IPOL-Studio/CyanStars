@@ -20,9 +20,42 @@ namespace CyanStars.Framework.File
 
         public string TemporaryCacheRoot => PathUtil.Normalize(Application.temporaryCachePath);
 
+        public string? GameInstallRoot
+        {
+            get
+            {
+                string? parentPath = Path.GetDirectoryName(PathUtil.Normalize(Application.dataPath));
+                return string.IsNullOrEmpty(parentPath) ? null : PathUtil.Normalize(parentPath);
+            }
+        }
+
         public bool CanImportExternalFolder => true;
 
         public bool CanExportFolder => true;
+
+        public bool CanCustomizeAppPaths
+        {
+            get
+            {
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
+
+        public bool CanRestartApplication
+        {
+            get
+            {
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
 
 
         public string? GetCommonFolderPath(CommonFolders folder)

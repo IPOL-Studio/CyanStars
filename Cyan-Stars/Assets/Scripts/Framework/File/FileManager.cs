@@ -45,31 +45,15 @@ namespace CyanStars.Framework.File
         /// </summary>
         public IPlatformEnvironment Environment { get; private set; } = null!;
 
-        /// <summary>
-        /// 当前平台是否允许玩家修改应用路径
-        /// </summary>
-        public static bool CanCustomizeAppPaths
-        {
-            get
-            {
-#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
-                return true;
-#else
-                return false;
-#endif
-            }
-        }
-
-
         public override void OnInit()
         {
-            Environment = CreatePlatformEnvironment();
+            Environment = PlatformEnvironmentFactory.Create();
 
             // 会话临时目录名在创建 AppPathManager 与 FileHandleStore 前生成并共享给两者：
             // AppPathManager 校验路径时排除它，FileHandleStore 实际占用它，临时目录回退后两边仍指向同一目录
             string sessionFolderName = GameSessionTempFolder.GenerateSessionFolderName();
 
-            appPathManager = new AppPathManager(Environment, CanCustomizeAppPaths, sessionFolderName);
+            appPathManager = new AppPathManager(Environment, sessionFolderName);
             fileHandleStore = CreateFileHandleStore(sessionFolderName);
             fileDialogService = new FileDialogService(Environment);
             fileDialogService.Initialize(fileBrowserSkin);
@@ -87,19 +71,6 @@ namespace CyanStars.Framework.File
             fileHandleStore.Shutdown();
         }
 
-
-        /// <summary>
-        /// 按编译和运行环境创建平台环境
-        /// </summary>
-        private static IPlatformEnvironment CreatePlatformEnvironment()
-        {
-#if UNITY_ANDROID && !UNITY_EDITOR
-            // Simple File Browser 会在运行时判断安卓 10+ 是否必须走 SAF
-            if (FileBrowserHelpers.ShouldUseSAF)
-                return new AndroidSafPlatformEnvironment();
-#endif
-            return new DiskPlatformEnvironment();
-        }
 
         /// <summary>
         /// 按应用路径创建句柄存储；自定义临时目录初始化失败时回退到默认目录重试

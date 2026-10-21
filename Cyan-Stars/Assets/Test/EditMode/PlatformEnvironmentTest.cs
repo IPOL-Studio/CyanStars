@@ -20,6 +20,13 @@ namespace CyanStars.Test.EditMode
 
             Assert.IsTrue(environment.CanImportExternalFolder);
             Assert.IsTrue(environment.CanExportFolder);
+            Assert.IsNotNull(environment.GameInstallRoot);
+            Assert.IsTrue(environment.CanRestartApplication);
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+            Assert.IsTrue(environment.CanCustomizeAppPaths);
+#else
+            Assert.IsFalse(environment.CanCustomizeAppPaths);
+#endif
             AssertNormalizedPath(environment.PersistentDataRoot);
             AssertNormalizedPath(environment.TemporaryCacheRoot);
             Assert.IsFalse(environment.RequiresStorageAccessFramework("C:/any/path.txt"));
@@ -40,9 +47,12 @@ namespace CyanStars.Test.EditMode
         {
             var environment = new AndroidSafPlatformEnvironment();
 
-            // SAF 下无法按普通路径做整目录导入导出
+            // 当前实现未开放 SAF 整目录导入导出
             Assert.IsFalse(environment.CanImportExternalFolder);
             Assert.IsFalse(environment.CanExportFolder);
+            Assert.IsNull(environment.GameInstallRoot);
+            Assert.IsFalse(environment.CanCustomizeAppPaths);
+            Assert.IsFalse(environment.CanRestartApplication);
             AssertNormalizedPath(environment.PersistentDataRoot);
             AssertNormalizedPath(environment.TemporaryCacheRoot);
 

@@ -403,9 +403,15 @@ namespace CyanStars.Test.EditMode
 
             public string TemporaryCacheRoot { get; }
 
+            public string? GameInstallRoot => null;
+
             public bool CanImportExternalFolder => true;
 
             public bool CanExportFolder => true;
+
+            public bool CanCustomizeAppPaths => false;
+
+            public bool CanRestartApplication => false;
 
             public string? GetCommonFolderPath(CommonFolders folder)
             {
