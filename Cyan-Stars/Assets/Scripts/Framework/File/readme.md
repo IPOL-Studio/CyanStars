@@ -2,12 +2,12 @@
 
 ## 平台环境
 
-FileManager 在初始化时按编译和运行环境创建唯一一个 IPlatformEnvironment 实现，并注入内部的 FileHandleStore：
+FileManager 初始化时经 PlatformEnvironmentFactory 创建唯一一个 IPlatformEnvironment 实现，并注入内部的 FileHandleStore：
 
 - DiskPlatformEnvironment：编辑器、桌面端、未启用 SAF 的安卓
-- AndroidSafPlatformEnvironment：启用 SAF 的安卓，外部存储走 content:// 路径
+- AndroidSafPlatformEnvironment：启用 SAF 的安卓，外部存储走 content:// 路径；整目录导入导出暂未开放
 
-业务逻辑需要平台默认路径（持久化数据目录、临时数据目录、常用文件夹）或能力（能否导入导出外部文件夹、路径是否必须走 SAF）时，统一经 `GameRoot.File.Environment` 获取，不直接访问 Application 的路径与平台属性。应用自己管理、允许玩家迁移的目录则统一经 `GameRoot.File.GetAppPath` 获取。
+业务逻辑需要平台默认路径（持久化数据目录、临时数据目录、常用文件夹）或平台能力（导入导出、SAF 判定、应用目录迁移、自动重启）时，统一经 `GameRoot.File.Environment` 获取，不直接访问 Application 的路径与平台属性。应用自己管理、允许玩家迁移的目录则统一经 `GameRoot.File.GetAppPath` 获取，该接口返回本地绝对路径。
 
 FileManager 按需注册常用文件夹到弹窗侧边栏。
 
@@ -23,7 +23,7 @@ FileManager 按需注册常用文件夹到弹窗侧边栏。
 
 启动时，如果保存的路径不可用（例如移动硬盘未连接、目录没有权限），本次运行会回退到默认路径，并通过 `HasUnavailableAppPaths` / `GetUnavailableAppPaths()` 暴露原因。
 
-修改路径只写配置，不改变本次运行已经打开的路径和文件句柄，需要重启游戏后生效。`GameRoot.File.TrySetAppPath` 返回 `AppPathChangeResult.RequiresRestart`；`ApplicationRestart.Restart()` 用于拉起新进程并退出当前进程。切换目录时不会自动移动旧目录中的内容，需要玩家自行迁移。
+修改路径只写配置，不改变本次运行已经打开的路径和文件句柄，需要重启游戏后生效。`GameRoot.File.TrySetAppPath` 返回 `AppPathChangeResult.RequiresRestart`；`ApplicationRestart.Restart(GameRoot.File.Environment)` 用于拉起新进程并退出当前进程。切换目录时不会自动移动旧目录中的内容，需要玩家自行迁移。
 
 设置界面尚未开放，目前配置只能手动编辑 `Settings/AppPaths.json`。
 
@@ -38,9 +38,17 @@ FileManager 按需注册常用文件夹到弹窗侧边栏。
 
 ## FileManager
 
-FileManager 是业务层的文件读写门户：持有平台环境，提供文件（夹）选择对话框与文件句柄读写方法；内部的 FileHandleStore 负责文件在磁盘上的搬运，并在每次游戏会话开始时，清除未被多开占用且残余的应用临时数据。
+FileManager 是业务层与外部文件系统之间的边界：持有平台环境，提供文件（夹）选择对话框、外部文件夹导入导出、应用路径解析与文件句柄读写方法；内部的 FileHandleStore 负责文件复制与句柄生命周期，并在每次游戏会话开始时清除上次运行残留且未被多开占用的应用临时数据。
 
-文件对话框的过滤器使用框架自有的 FileTypeFilter（显示名 + 后缀），业务侧不引用文件对话框插件的类型。
+文件对话框的过滤器使用框架自有的 FileTypeFilter（显示名 + 后缀），业务侧不引用文件对话框插件的类型。对话框展示与快捷入口由内部的 FileDialogService 负责；已有对话框打开时，打开方法返回 false 并触发 onCancel。
+
+### 应用自有目录
+
+`GameRoot.File.GetAppPath(kind)` 返回应用自有目录，保证为本地绝对路径；业务侧取得路径后可以直接使用 `System.IO` 读写，不需要创建文件句柄。
+
+外部路径可能为普通绝对路径或安卓 `content://` 路径，不得交给 `System.IO`。需要在外部位置与应用自有目录之间复制文件夹时，使用 `GameRoot.File.TryImportFolder` 或 `GameRoot.File.TryExportFolder`。
+
+导入要求来源位于应用自有目录之外、目标位于其中；导出相反。业务侧可先调用 `GameRoot.File.TryValidateFolderTransfer` 获取失败原因。
 
 ## 文件句柄
 
@@ -56,7 +64,7 @@ FileHandle 字段：
 
 ## 文件读写
 
-FileManager 将每个处理的文件封装为 FileHandle，业务侧统一经 `GameRoot.File` 调用：
+FileManager 将每个处理的外部文件（夹）封装为 FileHandle，业务侧统一经 `GameRoot.File` 调用：
 
 - public FileHandle? 加载文件（夹）并创建文件句柄(string pathUri, string cacheScope)  # 内容复制进缓存；加载路径不能位于会话缓存下
 - public bool 修改句柄保存位置(FileHandle fileHandle, string? targetPath)              # 保存路径不能位于会话缓存下，也不能等于或位于可读写路径之内
@@ -68,10 +76,13 @@ FileHandleStore 是 FileManager 的内部实现，不面向业务逻辑。
 
 ## 整目录复制
 
-FolderUtil 提供不走句柄的整目录复制，仅支持普通本地路径。
+FolderUtil 是框架内部的整目录复制工具，由 FileManager 与 FileHandleStore 使用，不面向业务逻辑。本地路径使用 `System.IO`，SAF 路径由 `FileBrowserHelpers` 处理。
 
-- public bool 复制文件夹到目标位置(string sourceFolderPath, string targetFolderPath, out string copiedFolderPath)
-  # 目标已存在时依次追加 (1)、(2) 等后缀；目标等于或位于源之内时拒绝；失败时清理未复制完成的目录
+- `UniqueName`：目标已存在时依次追加 (1)、(2) 等后缀
+- `ReplaceExisting`：目标已存在时先删除再复制；复制失败时旧内容不会恢复
+- `FailIfExists`：目标已存在时拒绝
+- 目标等于或位于源之内时拒绝
+- 失败时清理未复制完成的目录
 
 ## 跨平台外部文件读写流程
 
