@@ -206,10 +206,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.AddOffset())
                 .AddTo(this);
-            testOffsetButton
-                .OnClickAsObservable()
-                .Subscribe(_ => ViewModel.TestOffset())
-                .AddTo(this);
+            // TODO: 试听偏移功能尚未实现，先禁用按钮，避免点击后抛出异常
+            testOffsetButton.interactable = false;
             deleteItemButton
                 .OnClickAsObservable()
                 .Subscribe(_ => ViewModel.DeleteItem())

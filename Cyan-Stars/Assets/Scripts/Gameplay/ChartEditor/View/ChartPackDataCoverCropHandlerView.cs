@@ -19,6 +19,8 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         private RectTransform selfRect = null!;
 
+        private ChartPackDataCoverViewModel.CropDragSnapshot? dragSnapshot;
+
 
         public override void Bind(ChartPackDataCoverViewModel targetViewModel)
         {
@@ -57,12 +59,16 @@ namespace CyanStars.Gameplay.ChartEditor.View
 
         public void OnBeginDrag(PointerEventData _)
         {
-            ViewModel?.RecordCropData();
+            dragSnapshot = ViewModel?.BeginCropDrag();
         }
 
         public void OnEndDrag(PointerEventData _)
         {
-            ViewModel?.CommitCropData();
+            if (ViewModel == null || dragSnapshot is not { } snapshot)
+                return;
+
+            dragSnapshot = null;
+            ViewModel.CommitCropDrag(snapshot);
         }
     }
 }

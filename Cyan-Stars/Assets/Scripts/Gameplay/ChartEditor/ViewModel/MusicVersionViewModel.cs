@@ -1,14 +1,12 @@
-﻿#nullable enable
+#nullable enable
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using CatAsset.Runtime;
 using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Framework.File;
 using CyanStars.Gameplay.ChartEditor.Command;
-using CyanStars.Gameplay.ChartEditor.Management;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.View;
 using CyanStars.Utils;
@@ -23,10 +21,27 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         private const int AddOffsetStep = 10;
 
 
+        /// <summary>
+        /// 是否有音乐正在加载：加载完成前拒绝新的加载请求
+        /// </summary>
+        private bool isAudioLoading;
+
+        /// <summary>
+        /// 本 ViewModel 是否已经结束生命周期，用于丢弃退出后的异步加载结果
+        /// </summary>
+        private bool isDisposed;
+
+
         public ReadOnlyReactiveProperty<bool> IsMultiMusicItemMode => Model.IsMultiMusicItemMode;
         public ReadOnlyReactiveProperty<ChartPackDataEditorModel> ChartPackData => Model.ChartPackData;
 
         public readonly ISynchronizedView<MusicVersionDataEditorModel, MusicVersionListItemViewModel> MusicListItems;
+
+        /// <summary>
+        /// 列表项 ViewModel，按对应的数据项索引，用于在数据出列时释放它的订阅
+        /// </summary>
+        private readonly Dictionary<MusicVersionDataEditorModel, MusicVersionListItemViewModel> ListItemViewModels =
+            new Dictionary<MusicVersionDataEditorModel, MusicVersionListItemViewModel>();
 
         private readonly ReactiveProperty<MusicVersionDataEditorModel?> selectedMusicVersionData;
         public ReadOnlyReactiveProperty<MusicVersionDataEditorModel?> SelectedMusicVersionData => selectedMusicVersionData;
@@ -49,7 +64,23 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             // 初始化 MusicListItems
             MusicListItems = Model.ChartPackData.CurrentValue.MusicVersions
-                .CreateView(data => new MusicVersionListItemViewModel(model, this, data))
+                .CreateView(data =>
+                {
+                    var listItemViewModel = new MusicVersionListItemViewModel(model, this, data);
+                    ListItemViewModels.Add(data, listItemViewModel);
+                    return listItemViewModel;
+                })
+                .AddTo(base.Disposables);
+
+            // CreateView 不会在数据出列时释放子 ViewModel，这里手动释放，避免订阅残留到会话结束
+            Model.ChartPackData.CurrentValue.MusicVersions
+                .ObserveRemove()
+                .Subscribe(removeEvent =>
+                    {
+                        if (ListItemViewModels.Remove(removeEvent.Value, out MusicVersionListItemViewModel? listItemViewModel))
+                            listItemViewModel.Dispose();
+                    }
+                )
                 .AddTo(base.Disposables);
 
             Model.ChartPackData // 元素数量变化时更新选中的元素
@@ -114,10 +145,19 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         }
 
         /// <summary>
-        /// 在关闭 Canvas 时调用，加载首个音乐版本的 Audio
+        /// 加载首个音乐版本的音频，作为制谱器内播放的音乐
         /// </summary>
+        /// <remarks>进入制谱器、以及关闭音乐版本弹窗时调用</remarks>
         public void LoadAudio()
         {
+            // 当前采用拒绝并发的降级方案：在途加载完成前忽略新的加载请求
+            // TODO: 改用 cts 支持取消和打断在途加载
+            if (isAudioLoading)
+            {
+                Debug.LogWarning("上一份音乐尚未加载完成，已忽略本次加载请求。");
+                return;
+            }
+
             // 停止正在播放的音乐
             if (Model.IsTimelinePlaying.CurrentValue)
                 Model.IsTimelinePlaying.Value = false;
@@ -127,13 +167,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             if (Model.ChartPackData.CurrentValue.MusicVersions.Count > 0 &&
                 !string.IsNullOrEmpty(Model.ChartPackData.CurrentValue.MusicVersions[0].AudioFilePath.CurrentValue))
             {
-                // 如果能根据 targetPath 找到暂存文件句柄，则优先加载句柄指向的缓存文件，否则加载谱包资源文件夹内的文件。
-                string musicFilePath = PathUtil.Combine(Model.WorkspacePath, Model.ChartPackData.CurrentValue.MusicVersions[0].AudioFilePath.CurrentValue);
-                var handler = ChartEditorFileManager.GetHandlerByTargetPath(musicFilePath);
-                if (handler != null)
-                {
-                    musicFilePath = handler.TempFilePath;
-                }
+                string musicFilePath = Model.ResolveAssetReadablePath(Model.ChartPackData.CurrentValue.MusicVersions[0].AudioFilePath.CurrentValue);
 
                 LoadAudio(musicFilePath);
                 Debug.Log($"已加载音乐：{musicFilePath}");
@@ -151,158 +185,188 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         /// <param name="audioFilePath">新音乐文件的绝对路径，路径为 null 将仅卸载原有的音乐并卸载 handler，路径无效将产生一个包含 null 的 handler 实例</param>
         private async void LoadAudio(string? audioFilePath)
         {
-            // TODO: 只在真的实际发生了变化时重新加载
-            Model.IsTimelinePlaying.Value = false;
-
-            if (Model.AudioClipHandler.CurrentValue != null)
+            isAudioLoading = true;
+            try
             {
-                Model.AudioClipHandler.CurrentValue.Unload();
+                // TODO: 只在真的实际发生了变化时重新加载
+                Model.IsTimelinePlaying.Value = false;
+
+                Model.AudioClipHandler.CurrentValue?.Unload();
                 Model.AudioClipHandler.Value = null;
-            }
 
-            if (audioFilePath != null)
+                if (audioFilePath != null)
+                {
+                    AssetHandler<AudioClip?>? handler = await GameRoot.Asset.LoadAssetAsync<AudioClip?>(audioFilePath);
+
+                    if (isDisposed)
+                    {
+                        // 加载期间退出了制谱器，直接卸载，避免句柄泄漏
+                        handler.Unload();
+                        return;
+                    }
+
+                    Model.AudioClipHandler.Value = handler;
+                    if (handler.Asset == null)
+                        Debug.LogWarning("加载音乐失败！");
+                }
+            }
+            finally
             {
-                AssetHandler<AudioClip?>? handler = await GameRoot.Asset.LoadAssetAsync<AudioClip?>(audioFilePath);
-                Model.AudioClipHandler.Value = handler;
-                if (handler.Asset == null)
-                    Debug.LogWarning("加载音乐失败！");
+                isAudioLoading = false;
             }
         }
 
         public void SetTitle(string newTitle)
         {
-            if (SelectedMusicVersionData.CurrentValue == null)
+            MusicVersionDataEditorModel? targetMusicVersion = SelectedMusicVersionData.CurrentValue;
+            if (targetMusicVersion == null)
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下设置标题。");
 
-            var oldTitle = SelectedMusicVersionData.CurrentValue!.VersionTitle.Value;
+            var oldTitle = targetMusicVersion.VersionTitle.Value;
             if (oldTitle == newTitle)
                 return;
             CommandStack.ExecuteCommand(
-                () => SelectedMusicVersionData.CurrentValue!.VersionTitle.Value = newTitle,
-                () => SelectedMusicVersionData.CurrentValue!.VersionTitle.Value = oldTitle
+                () => targetMusicVersion.VersionTitle.Value = newTitle,
+                () => targetMusicVersion.VersionTitle.Value = oldTitle
             );
         }
 
         public void ImportAudioFile()
         {
+            // 打开对话框时先锁定导入目标版本：对话框是异步的，期间玩家可能切换选中项，撤销会作用到别的版本上
+            MusicVersionDataEditorModel? targetMusicVersion = selectedMusicVersionData.CurrentValue;
+            if (targetMusicVersion == null)
+                throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下导入音乐。");
+
             GameRoot.File.OpenLoadFilePathBrowser(
-                ImportMusicFile,
+                audioFilePath => ImportMusicFile(targetMusicVersion, audioFilePath),
                 title: "选择音乐文件",
-                filters: new[] { GameRoot.File.AudioFilter });
+                filters: new[]
+                {
+                    ChartEditorFileFilters.Audio
+                }
+            );
         }
 
-        private void ImportMusicFile(string newOriginFilePath)
+        /// <summary>
+        /// 把外部音频文件导入到指定音乐版本
+        /// </summary>
+        /// <param name="targetMusicVersion">导入到哪个版本</param>
+        /// <param name="audioFilePath">选中音频文件的路径</param>
+        private void ImportMusicFile(MusicVersionDataEditorModel targetMusicVersion, string audioFilePath)
         {
-            if (selectedMusicVersionData.CurrentValue == null)
-                throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下设置音频文件路径。");
+            // 文件对话框的回调可能晚于编辑会话结束才到达
+            if (Model.IsDisposed)
+                return;
 
-            // 1. 校验要导入的音频文件名是否与其他版本文件名重复
-            // 2. 如有旧缓存文件，记录其指向的目标地址以便撤销，然后将其置空
-            // 3. 导入并暂存新音乐，将其指向新地址
-            // 4. 记录并修改音乐版本数据内引用的地址
-
-            var newTargetRelativePath = PathUtil.Combine(ChartEditorFileManager.ChartPackAssetsFolderName, Path.GetFileName(newOriginFilePath));
-
-            foreach (var musicVersionData in Model.ChartPackData.CurrentValue.MusicVersions)
+            // 对话框期间该版本可能已经被删掉了
+            // FileBrowser 通常会实时检测文件存在状态并从对话框中删除文件避免选中，此处仅作为防御措施
+            if (!Model.ChartPackData.CurrentValue.MusicVersions.Contains(targetMusicVersion))
             {
-                if (musicVersionData == selectedMusicVersionData.CurrentValue)
-                    continue;
-
-                if (musicVersionData.AudioFilePath.CurrentValue == newTargetRelativePath)
-                {
-                    PopupView.Show("无法导入音乐",
-                        "选中的音乐文件文件名与其他音乐版本文件名重复，请重命名后再次导入",
-                        true,
-                        new Dictionary<string, Action?> { ["确定"] = null }
-                    );
-                    return;
-                }
+                PopupView.ShowError("无法导入音乐", "目标音乐版本已被删除，请重新选择要导入的版本。");
+                return;
             }
 
-            var oldTargetRelativePath = selectedMusicVersionData.CurrentValue.AudioFilePath.CurrentValue;
-            if (string.IsNullOrEmpty(oldTargetRelativePath))
-                oldTargetRelativePath = "";
+            if (!Model.TryImportAsset(audioFilePath, null, out FileHandle? audioFileHandle, out string newTargetRelativePath))
+            {
+                PopupView.ShowError("无法导入音乐", "无法读取选中的音乐文件，或音乐无法保存到谱包工作区，请检查日志。");
+                return;
+            }
 
-            var oldTargetAbsolutePath = oldTargetRelativePath != ""
-                ? PathUtil.Combine(Model.WorkspacePath, oldTargetRelativePath)
-                : "";
-            var newTargetAbsolutePath = PathUtil.Combine(Model.WorkspacePath, newTargetRelativePath);
+            FileHandle newAudioHandle = audioFileHandle!;
 
-            IReadonlyTempFileHandler? oldHandler = ChartEditorFileManager.GetHandlerByTargetPath(oldTargetAbsolutePath);
+            // 校验文件名是否和其他版本重复
+            foreach (var musicVersionData in Model.ChartPackData.CurrentValue.MusicVersions)
+            {
+                if (ReferenceEquals(musicVersionData, targetMusicVersion))
+                    continue;
 
-            // 仅复制文件到缓存区，暂不声明目标路径以防止自动顶替旧句柄目标路径。
-            IReadonlyTempFileHandler newHandler = ChartEditorFileManager.TempFile(newOriginFilePath, null);
+                // 按路径语义比较：同名文件的路径写法可能不同，但在磁盘上是同一个文件
+                if (!PathUtil.PathComparer.Equals(
+                        musicVersionData.AudioFilePath.CurrentValue,
+                        newTargetRelativePath
+                    ))
+                    continue;
+
+                Model.DiscardAsset(newAudioHandle);
+
+                PopupView.ShowError("无法导入音乐", "选中的音乐文件文件名与其他音乐版本文件名重复，请重命名后再次导入");
+                return;
+            }
+
+            var oldTargetRelativePath = targetMusicVersion.AudioFilePath.CurrentValue;
+            var oldTargetAbsolutePath = Model.GetAssetAbsolutePath(oldTargetRelativePath);
+
+            var newTargetAbsolutePath = Model.GetAssetAbsolutePath(newTargetRelativePath);
+
+            // 捕获旧句柄：同名导入顶替自身或撤销时，要用它把旧内容换回来
+            FileHandle? oldAssetHandle = Model.FindAssetHandle(oldTargetAbsolutePath);
 
             CommandStack.ExecuteCommand(() =>
                 {
-                    selectedMusicVersionData.CurrentValue.AudioFilePath.Value = newTargetRelativePath;
+                    targetMusicVersion.AudioFilePath.Value = newTargetRelativePath;
 
-                    if (oldHandler != null)
-                    {
-                        ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, null);
-                    }
+                    Model.AddAssetHandle(newTargetAbsolutePath, newAudioHandle);
 
-                    ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, newTargetAbsolutePath);
+                    // 旧音频若已经不被任何音乐版本引用，就解绑它的句柄；句柄本身保留到会话结束，撤销时还要用
+                    if (!Model.IsAssetReferenced(oldTargetAbsolutePath))
+                        Model.DetachAssetHandle(oldTargetAbsolutePath);
                 },
                 () =>
                 {
-                    selectedMusicVersionData.CurrentValue.AudioFilePath.Value = oldTargetRelativePath;
+                    targetMusicVersion.AudioFilePath.Value = oldTargetRelativePath;
 
-                    ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, null);
+                    Model.DetachAssetHandle(newTargetAbsolutePath);
 
-                    if (oldHandler != null)
-                    {
-                        ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, oldTargetAbsolutePath);
-                    }
+                    if (oldAssetHandle != null)
+                        Model.ReattachAssetHandle(oldTargetAbsolutePath, oldAssetHandle);
                 }
             );
         }
 
         public void MinusOffset()
         {
-            if (SelectedMusicVersionData.CurrentValue == null)
+            MusicVersionDataEditorModel? targetMusicVersion = SelectedMusicVersionData.CurrentValue;
+            if (targetMusicVersion == null)
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下设置偏移量。");
 
             CommandStack.ExecuteCommand(
-                () => SelectedMusicVersionData.CurrentValue!.Offset.Value -= AddOffsetStep,
-                () => SelectedMusicVersionData.CurrentValue!.Offset.Value += AddOffsetStep
+                () => targetMusicVersion.Offset.Value -= AddOffsetStep,
+                () => targetMusicVersion.Offset.Value += AddOffsetStep
             );
         }
 
         public void SetOffset(string text)
         {
-            if (SelectedMusicVersionData.CurrentValue == null)
+            MusicVersionDataEditorModel? targetMusicVersion = SelectedMusicVersionData.CurrentValue;
+            if (targetMusicVersion == null)
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下设置偏移量。");
 
             if (!int.TryParse(text, out int newValue))
             {
-                SelectedMusicVersionData.CurrentValue?.Offset.ForceNotify();
+                targetMusicVersion.Offset.ForceNotify();
                 return;
             }
 
-            int oldValue = SelectedMusicVersionData.CurrentValue!.Offset.Value;
+            int oldValue = targetMusicVersion.Offset.Value;
             if (oldValue == newValue)
                 return;
             CommandStack.ExecuteCommand(
-                () => SelectedMusicVersionData.CurrentValue!.Offset.Value = newValue,
-                () => SelectedMusicVersionData.CurrentValue!.Offset.Value = oldValue
+                () => targetMusicVersion.Offset.Value = newValue,
+                () => targetMusicVersion.Offset.Value = oldValue
             );
         }
 
         public void AddOffset()
         {
-            if (SelectedMusicVersionData.CurrentValue == null)
+            MusicVersionDataEditorModel? targetMusicVersion = SelectedMusicVersionData.CurrentValue;
+            if (targetMusicVersion == null)
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下设置偏移量。");
 
             CommandStack.ExecuteCommand(
-                () => SelectedMusicVersionData.CurrentValue!.Offset.Value += AddOffsetStep,
-                () => SelectedMusicVersionData.CurrentValue!.Offset.Value -= AddOffsetStep
+                () => targetMusicVersion.Offset.Value += AddOffsetStep,
+                () => targetMusicVersion.Offset.Value -= AddOffsetStep
             );
-        }
-
-        public void TestOffset()
-        {
-            throw new NotImplementedException();
         }
 
 
@@ -313,23 +377,47 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             var oldData = SelectedMusicVersionData.CurrentValue;
             int selectedIndex = Model.ChartPackData.CurrentValue.MusicVersions.IndexOf(oldData);
+
+            // 该版本的音频可能来自本次会话的导入，删除时要一并解除它对句柄的占用
+            string audioAbsolutePath = GetAbsoluteAudioFilePath(oldData);
+            FileHandle? audioAssetHandle = Model.FindAssetHandle(audioAbsolutePath);
+
             CommandStack.ExecuteCommand(
                 () =>
                 {
                     Model.ChartPackData.CurrentValue.MusicVersions.RemoveAt(selectedIndex);
+
+                    if (!string.IsNullOrEmpty(audioAbsolutePath) && !Model.IsAssetReferenced(audioAbsolutePath))
+                        Model.DetachAssetHandle(audioAbsolutePath);
+
                     selectedMusicVersionData.Value = null;
                 },
                 () =>
                 {
                     Model.ChartPackData.CurrentValue.MusicVersions.Insert(selectedIndex, oldData);
+
+                    // 句柄在会话结束前都还留着缓存副本，撤销时可以取回来
+                    if (audioAssetHandle != null)
+                        Model.ReattachAssetHandle(audioAbsolutePath, audioAssetHandle);
+
                     selectedMusicVersionData.Value = Model.ChartPackData.CurrentValue.MusicVersions[selectedIndex];
                 }
             );
         }
 
+        /// <summary>
+        /// 取某个音乐版本的音频在工作区里的绝对路径
+        /// </summary>
+        /// <returns>没有指定音频时返回空字符串</returns>
+        private string GetAbsoluteAudioFilePath(MusicVersionDataEditorModel musicVersionData)
+        {
+            return Model.GetAssetAbsolutePath(musicVersionData.AudioFilePath.CurrentValue);
+        }
+
         public void CloneItem()
         {
-            if (SelectedMusicVersionData.CurrentValue == null)
+            MusicVersionDataEditorModel? sourceMusicVersion = SelectedMusicVersionData.CurrentValue;
+            if (sourceMusicVersion == null)
                 throw new InvalidOperationException("按设计，不允许在没有选中音乐版本数据的情况下克隆版本。");
 
             int clonedItemIndex = Model.ChartPackData.CurrentValue.MusicVersions.Count;
@@ -339,9 +427,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 {
                     var deepClonedData = new MusicVersionDataEditorModel(
                         new MusicVersionData(
-                            SelectedMusicVersionData.CurrentValue.VersionTitle.Value,
-                            SelectedMusicVersionData.CurrentValue.AudioFilePath.Value,
-                            SelectedMusicVersionData.CurrentValue.Offset.Value
+                            sourceMusicVersion.VersionTitle.Value,
+                            sourceMusicVersion.AudioFilePath.Value,
+                            sourceMusicVersion.Offset.Value
                         )
                     );
 
@@ -397,6 +485,18 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 () => Model.ChartPackData.CurrentValue.MusicVersions.Move(oldIndex, 0),
                 () => Model.ChartPackData.CurrentValue.MusicVersions.Move(0, oldIndex)
             );
+        }
+
+        public override void Dispose()
+        {
+            isDisposed = true;
+
+            // 释放仍在列表里的子 ViewModel
+            foreach (MusicVersionListItemViewModel listItemViewModel in ListItemViewModels.Values)
+                listItemViewModel.Dispose();
+
+            ListItemViewModels.Clear();
+            base.Dispose();
         }
     }
 }

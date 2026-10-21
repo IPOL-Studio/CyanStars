@@ -1,14 +1,14 @@
 ﻿#nullable enable
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using CatAsset.Runtime;
 using CyanStars.Framework;
 using CyanStars.Framework.File;
 using CyanStars.Gameplay.ChartEditor.Command;
-using CyanStars.Gameplay.ChartEditor.Management;
 using CyanStars.Gameplay.ChartEditor.Model;
-using CyanStars.Utils;
+using CyanStars.Gameplay.ChartEditor.View;
 using R3;
 using UnityEngine;
 
@@ -18,9 +18,18 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
     {
         private const string CoverFileName = "Cover.png";
 
+        /// <summary>
+        /// 曲绘裁剪框的宽高比
+        /// </summary>
+        private const float CropAspectRatio = 4f;
 
-        private Vector2? recordedCropStartPosPercent;
-        private float? recordedCropHeightPercent;
+
+        private CancellationTokenSource? coverLoadCts;
+
+        /// <summary>
+        /// 本 ViewModel 是否已经结束生命周期，用于丢弃退出后的异步加载结果
+        /// </summary>
+        private bool isDisposed;
 
 
         private readonly ReactiveProperty<AssetHandler<Sprite?>?> CoverSpriteHandler;
@@ -38,18 +47,19 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
         {
             // API 触发 --> FilePath 更新 & CoverSprite 卸载和异步加载 --> CoverFrame 可见性更新 --> ImageFrame 宽高比更新 --> 计算裁剪区域位置和大小 --> CoverRectTransform 位置更新 --> RectMask 边距更新
 
-            CoverSpriteHandler = new ReactiveProperty<AssetHandler<Sprite?>?>();
+            CoverSpriteHandler = new ReactiveProperty<AssetHandler<Sprite?>?>().AddTo(base.Disposables);
 
             // 绑定曲绘路径、裁剪等 Model 属性
-            // 由于可以撤销重做，故不足以根据路径变化事件来判断是否需要重置裁剪位置和高度。考虑到异步加载的问题，在导入新图时由 API 一并刷新图像、裁剪位置和高度。
+            // 由于可以撤销重做，故不足以根据路径变化事件来判断是否需要重置裁剪位置和高度。
+            // 考虑到异步加载的问题，在导入新图时由 API 一并刷新图像、裁剪位置和高度。
             // 此处在初始化时仅一次性加载图像，不做绑定。
             ReadOnlyReactiveProperty<string?> filePath = Model.ChartPackData
                 .Select(data => data.CoverFilePath.AsObservable())
                 .Switch()
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
-            if (filePath.CurrentValue != null)
-                _ = LoadCoverSpriteAsync();
+            if (!string.IsNullOrEmpty(filePath.CurrentValue))
+                _ = ReplaceCoverSpriteAsync(filePath.CurrentValue);
 
             // 绑定图像、显示比例等 UI 显示相关属性
             CoverSprite = CoverSpriteHandler
@@ -58,8 +68,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(base.Disposables);
             ImageFrameAspectRatio = CoverSprite
                 .Select(sprite =>
-                    sprite != null && sprite.texture.height != 0
-                        ? (float)sprite.texture.width / sprite.texture.height
+                    sprite != null && sprite.rect.height != 0
+                        ? sprite.rect.width / sprite.rect.height
                         : 1.0f)
                 .ToReadOnlyReactiveProperty()
                 .AddTo(base.Disposables);
@@ -93,7 +103,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                             return Vector2.zero;
 
                         return new Vector2(
-                            Mathf.Clamp01(startPercent.Value.x + heightPercent.Value * sprite.texture.height * 4 / sprite.texture.width),
+                            Mathf.Clamp01(startPercent.Value.x + heightPercent.Value * sprite.rect.height * CropAspectRatio / sprite.rect.width),
                             Mathf.Clamp01(startPercent.Value.y + heightPercent.Value)
                         );
                     }
@@ -102,138 +112,185 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 .AddTo(Disposables);
         }
 
-        private async Task LoadCoverSpriteAsync()
+        /// <summary>
+        /// 按谱包里记录的相对路径换上曲绘
+        /// </summary>
+        /// <param name="coverRelativePath">谱包数据里的相对路径；传空字符串只卸载不加载</param>
+        /// <returns>本次加载出来的图片；路径为空、加载失败时为 null</returns>
+        private async Task<Sprite?> ReplaceCoverSpriteAsync(string coverRelativePath)
         {
-            // 卸载旧的封面图
-            if (CoverSpriteHandler.CurrentValue != null)
-            {
-                CoverSpriteHandler.CurrentValue.Unload();
-                CoverSpriteHandler.Value = null;
-            }
+            UnloadCoverSprite();
 
-            // 如果能根据 targetPath 找到暂存文件句柄，则优先加载句柄指向的缓存文件，否则加载谱包资源文件夹内的文件。
-            if (!string.IsNullOrEmpty(Model.ChartPackData.CurrentValue.CoverFilePath.CurrentValue))
+            if (string.IsNullOrEmpty(coverRelativePath))
+                return null;
+
+            // TODO: 当前依赖 CatAsset 取消后不恢复续体的行为；若该行为变化，需在 await 后补充取消检查
+            var cts = new CancellationTokenSource();
+            coverLoadCts = cts;
+
+            try
             {
-                string coverFilePath = PathUtil.Combine(Model.WorkspacePath, Model.ChartPackData.CurrentValue.CoverFilePath.CurrentValue);
-                var handler = ChartEditorFileManager.GetHandlerByTargetPath(coverFilePath);
-                if (handler != null)
+                string readablePath = Model.ResolveAssetReadablePath(coverRelativePath);
+                AssetHandler<Sprite?> handler = await GameRoot.Asset.LoadAssetAsync<Sprite?>(readablePath, cts.Token);
+
+                if (isDisposed)
                 {
-                    coverFilePath = handler.TempFilePath;
+                    // 加载期间退出了制谱器，直接卸载，避免把结果写进已经销毁的 ViewModel
+                    handler.Unload();
+                    return null;
                 }
 
-                CoverSpriteHandler.Value =
-                    await GameRoot.Asset.LoadAssetAsync<Sprite?>(coverFilePath);
+                // 本次加载已经完成且没有被取消
+                CoverSpriteHandler.Value = handler;
+                return handler.Asset;
             }
+            finally
+            {
+                // 加载被取消时续体不会恢复，coverLoadCts 已由取消方复位
+                if (ReferenceEquals(coverLoadCts, cts))
+                    coverLoadCts = null;
+
+                cts.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// 卸载当前正在显示的曲绘，并取消在途加载
+        /// </summary>
+        private void UnloadCoverSprite()
+        {
+            CancellationTokenSource? cts = coverLoadCts;
+            coverLoadCts = null;
+            cts?.Cancel();
+
+            CoverSpriteHandler.CurrentValue?.Unload();
+            CoverSpriteHandler.Value = null;
         }
 
         private void GetDefaultCoverCropData(Sprite sprite, out Vector2 startPosPercent, out float heightPercent)
         {
-            float aspectRatio = (float)sprite.texture.width / sprite.texture.height;
-            if (aspectRatio >= 4.0f)
+            float imageWidth = sprite.rect.width;
+            float imageHeight = sprite.rect.height;
+
+            if (imageWidth / imageHeight >= CropAspectRatio)
             {
                 // 宽图，左右裁剪
                 heightPercent = 1;
-                startPosPercent = new Vector2((sprite.texture.width - sprite.texture.height * 4) / 2.0f / sprite.texture.width, 0.0f);
+                startPosPercent = new Vector2((imageWidth - imageHeight * CropAspectRatio) / 2.0f / imageWidth, 0.0f);
             }
             else
             {
                 // 高图，上下裁剪
-                heightPercent = sprite.texture.width / 4.0f / sprite.texture.height;
-                startPosPercent = new Vector2(0.0f, (sprite.texture.height - sprite.texture.width / 4f) / 2.0f / sprite.texture.height);
+                heightPercent = imageWidth / CropAspectRatio / imageHeight;
+                startPosPercent = new Vector2(0.0f, (imageHeight - imageWidth / CropAspectRatio) / 2.0f / imageHeight);
             }
         }
 
 
         public void OpenCoverBrowser()
         {
-            GameRoot.File.OpenLoadFilePathBrowser(SetCoverFilePath, title: "打开曲绘", filters: new[] { GameRoot.File.SpriteFilter });
+            GameRoot.File.OpenLoadFilePathBrowser(
+                SetCoverFile,
+                title: "打开曲绘",
+                filters: new[]
+                {
+                    ChartEditorFileFilters.Sprite
+                }
+            );
         }
 
-        private void SetCoverFilePath(string newOriginFilePath)
+        /// <summary>
+        /// 把玩家选中的曲绘导入为谱包的曲绘
+        /// </summary>
+        /// <param name="coverFilePath">选中文件的路径</param>
+        /// <remarks>
+        /// <para>曲绘文件名固定为 Assets/Cover.png：导入时把新句柄指到它，保存时覆盖旧文件</para>
+        /// <para>旧曲绘若是本次会话导入的，会在命令里先解绑再让新句柄占用目标路径，撤销时再换回来</para>
+        /// </remarks>
+        private void SetCoverFile(string coverFilePath)
         {
-            // 1. 如有旧缓存文件，记录其裁剪信息，然后将旧缓存文件的目标路径清空
-            // 2. 导入并暂存新曲绘，指向目标地址，曲绘文件名固定为 "Covet.png"，如有旧文件，在保存时覆盖之
+            // 文件对话框的回调可能晚于编辑会话结束才到达
+            if (Model.IsDisposed)
+                return;
 
-            var newTargetRelativePath = PathUtil.Combine(ChartEditorFileManager.ChartPackAssetsFolderName, CoverFileName); // Assets/Cover.png
+            if (!Model.TryImportAsset(coverFilePath, CoverFileName, out FileHandle? coverFileHandle, out string newTargetRelativePath))
+            {
+                PopupView.ShowError("无法导入曲绘", "无法读取选中的图片，或图片无法保存到谱包工作区，请检查日志。");
+                return;
+            }
 
-            var oldTargetRelativePath = Model.ChartPackData.CurrentValue.CoverFilePath.CurrentValue;
-            if (string.IsNullOrEmpty(oldTargetRelativePath))
-                oldTargetRelativePath = "";
+            FileHandle newCoverHandle = coverFileHandle!;
 
-            var oldTargetAbsolutePath = oldTargetRelativePath != ""
-                ? PathUtil.Combine(Model.WorkspacePath, oldTargetRelativePath)
-                : "";
+            var oldTargetRelativePath = Model.ChartPackData.CurrentValue.CoverFilePath.CurrentValue ?? "";
 
-            var newTargetAbsolutePath = PathUtil.Combine(Model.WorkspacePath, newTargetRelativePath);
+            var oldTargetAbsolutePath = Model.GetAssetAbsolutePath(oldTargetRelativePath);
+            var newTargetAbsolutePath = Model.GetAssetAbsolutePath(newTargetRelativePath);
 
-
-            // 记录旧曲绘信息
-            IReadonlyTempFileHandler? oldHandler = ChartEditorFileManager.GetHandlerByTargetPath(oldTargetAbsolutePath);
             Vector2? oldCropStartPosPercent = Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value;
             float? oldCropHeightPercent = Model.ChartPackData.CurrentValue.CropHeightPercent.Value;
 
+            // 旧曲绘的句柄在命令执行时解绑：重做时撤销可能已经把旧句柄换回来了
+            FileHandle? oldAssetHandle = null;
 
-            // 仅复制文件到缓存区，暂不声明目标路径以防止自动顶替旧句柄目标路径。
-            IReadonlyTempFileHandler newHandler = ChartEditorFileManager.TempFile(newOriginFilePath, null);
-
+            // TODO: 下列异步 lambda 在 await 之后抛出的异常无人接管，后续考虑改造成可等待的命令
             CommandStack.ExecuteCommand(
                 async () =>
                 {
-                    // 更新句柄以在保存时正确复制文件
-                    if (oldHandler != null)
-                    {
-                        ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, null);
-                    }
+                    oldAssetHandle = Model.DetachAssetHandle(oldTargetAbsolutePath);
+                    Model.AddAssetHandle(newTargetAbsolutePath, newCoverHandle);
 
-                    ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, newTargetAbsolutePath);
-
-                    // 加载图片、更新谱包引用地址、更新裁剪信息
                     Model.ChartPackData.CurrentValue.CoverFilePath.Value = newTargetRelativePath;
-                    await LoadCoverSpriteAsync();
-                    if (CoverSpriteHandler.Value?.Asset == null)
+                    Sprite? sprite = await ReplaceCoverSpriteAsync(newTargetRelativePath);
+
+                    if (sprite == null)
                     {
-                        // 加载图片失败？
                         Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value = null;
                         Model.ChartPackData.CurrentValue.CropHeightPercent.Value = null;
                     }
                     else
                     {
-                        GetDefaultCoverCropData(CoverSpriteHandler.Value.Asset, out Vector2 newCropStartPos, out float newCropHeight);
+                        GetDefaultCoverCropData(sprite, out Vector2 newCropStartPos, out float newCropHeight);
                         Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value = newCropStartPos;
                         Model.ChartPackData.CurrentValue.CropHeightPercent.Value = newCropHeight;
                     }
                 },
                 async () =>
                 {
-                    // 更新句柄以在保存时正确复制文件
-                    ChartEditorFileManager.UpdateTargetFilePath(newHandler as TempFileHandler, null);
+                    Model.DetachAssetHandle(newTargetAbsolutePath);
 
-                    if (oldHandler != null)
-                    {
-                        ChartEditorFileManager.UpdateTargetFilePath(oldHandler as TempFileHandler, oldTargetAbsolutePath);
-                    }
+                    if (oldAssetHandle != null)
+                        Model.ReattachAssetHandle(oldTargetAbsolutePath, oldAssetHandle);
 
-                    // 加载图片、更新谱包引用地址、更新裁剪信息
                     Model.ChartPackData.CurrentValue.CoverFilePath.Value = oldTargetRelativePath;
-                    await LoadCoverSpriteAsync();
+                    await ReplaceCoverSpriteAsync(oldTargetRelativePath);
+
                     Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value = oldCropStartPosPercent;
                     Model.ChartPackData.CurrentValue.CropHeightPercent.Value = oldCropHeightPercent;
                 }
             );
         }
 
-        public void RecordCropData()
+        /// <summary>
+        /// 记录拖拽开始时的裁剪数据，拖拽结束后传给 <see cref="CommitCropDrag"/>
+        /// </summary>
+        public CropDragSnapshot BeginCropDrag()
         {
-            recordedCropStartPosPercent = Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value;
-            recordedCropHeightPercent = Model.ChartPackData.CurrentValue.CropHeightPercent.Value;
+            return new CropDragSnapshot(
+                Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value,
+                Model.ChartPackData.CurrentValue.CropHeightPercent.Value
+            );
         }
 
-        public void CommitCropData()
+        /// <summary>
+        /// 拖拽结束：用开始时的快照与当前值生成一条可撤销的命令
+        /// </summary>
+        /// <param name="snapshot">拖拽开始时由 <see cref="BeginCropDrag"/> 取得的快照</param>
+        public void CommitCropDrag(CropDragSnapshot snapshot)
         {
             Vector2? newCropStartPos = Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value;
             float? newCropHeight = Model.ChartPackData.CurrentValue.CropHeightPercent.Value;
 
-            if (newCropStartPos == recordedCropStartPosPercent && newCropHeight == recordedCropHeightPercent)
+            if (newCropStartPos == snapshot.StartPosPercent && newCropHeight == snapshot.HeightPercent)
                 return;
 
             CommandStack.ExecuteCommand(
@@ -244,8 +301,8 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                 },
                 () =>
                 {
-                    Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value = recordedCropStartPosPercent;
-                    Model.ChartPackData.CurrentValue.CropHeightPercent.Value = recordedCropHeightPercent;
+                    Model.ChartPackData.CurrentValue.CropStartPositionPercent.Value = snapshot.StartPosPercent;
+                    Model.ChartPackData.CurrentValue.CropHeightPercent.Value = snapshot.HeightPercent;
                 }
             );
         }
@@ -276,7 +333,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             float currentStartX = currentStartPercent.x * coverPixelSize.x;
             float currentStartY = currentStartPercent.y * coverPixelSize.y;
             float currentHeight = currentHeightPercent * coverPixelSize.y;
-            float currentWidth = currentHeight * 4.0f;
+            float currentWidth = currentHeight * CropAspectRatio;
 
             Vector2 newCropStartPixel;
             float newCropHeightPixel;
@@ -297,10 +354,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     float dx = Mathf.Max(0, pivot.x - mousePixelPos.x);
                     float dy = Mathf.Max(0, mousePixelPos.y - pivot.y);
 
-                    float maxH = Mathf.Min(pivot.x / 4.0f, coverPixelSize.y - pivot.y);
+                    float maxH = Mathf.Min(pivot.x / CropAspectRatio, coverPixelSize.y - pivot.y);
 
-                    newCropHeightPixel = Mathf.Clamp(Mathf.Max(dx / 4.0f, dy), 0, maxH);
-                    newCropStartPixel = new Vector2(pivot.x - newCropHeightPixel * 4.0f, pivot.y);
+                    newCropHeightPixel = Mathf.Clamp(Mathf.Max(dx / CropAspectRatio, dy), 0, maxH);
+                    newCropStartPixel = new Vector2(pivot.x - newCropHeightPixel * CropAspectRatio, pivot.y);
                     break;
                 }
                 case CoverCropHandlerType.LeftBottom:
@@ -310,10 +367,10 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     float dx = Mathf.Max(0, pivot.x - mousePixelPos.x);
                     float dy = Mathf.Max(0, pivot.y - mousePixelPos.y);
 
-                    float maxH = Mathf.Min(pivot.x / 4.0f, pivot.y);
+                    float maxH = Mathf.Min(pivot.x / CropAspectRatio, pivot.y);
 
-                    newCropHeightPixel = Mathf.Clamp(Mathf.Max(dx / 4.0f, dy), 0, maxH);
-                    newCropStartPixel = new Vector2(pivot.x - newCropHeightPixel * 4.0f, pivot.y - newCropHeightPixel);
+                    newCropHeightPixel = Mathf.Clamp(Mathf.Max(dx / CropAspectRatio, dy), 0, maxH);
+                    newCropStartPixel = new Vector2(pivot.x - newCropHeightPixel * CropAspectRatio, pivot.y - newCropHeightPixel);
                     break;
                 }
                 case CoverCropHandlerType.RightTop:
@@ -323,9 +380,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     float dx = Mathf.Max(0, mousePixelPos.x - pivot.x);
                     float dy = Mathf.Max(0, mousePixelPos.y - pivot.y);
 
-                    float maxH = Mathf.Min((coverPixelSize.x - pivot.x) / 4.0f, coverPixelSize.y - pivot.y);
+                    float maxH = Mathf.Min((coverPixelSize.x - pivot.x) / CropAspectRatio, coverPixelSize.y - pivot.y);
 
-                    newCropHeightPixel = Mathf.Clamp(Mathf.Max(dx / 4.0f, dy), 0, maxH);
+                    newCropHeightPixel = Mathf.Clamp(Mathf.Max(dx / CropAspectRatio, dy), 0, maxH);
                     newCropStartPixel = pivot;
                     break;
                 }
@@ -336,9 +393,9 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
                     float dx = Mathf.Max(0, mousePixelPos.x - pivot.x);
                     float dy = Mathf.Max(0, pivot.y - mousePixelPos.y);
 
-                    float maxH = Mathf.Min((coverPixelSize.x - pivot.x) / 4.0f, pivot.y);
+                    float maxH = Mathf.Min((coverPixelSize.x - pivot.x) / CropAspectRatio, pivot.y);
 
-                    newCropHeightPixel = Mathf.Clamp(Mathf.Max(dx / 4.0f, dy), 0, maxH);
+                    newCropHeightPixel = Mathf.Clamp(Mathf.Max(dx / CropAspectRatio, dy), 0, maxH);
                     newCropStartPixel = new Vector2(pivot.x, pivot.y - newCropHeightPixel);
                     break;
                 }
@@ -352,7 +409,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
             // 实时更新 Model 数据以实现实时预览，不生成命令
             bool changed = cropData.CropStartPositionPercent.Value != newCropStartPercent ||
-                           cropData.CropHeightPercent.Value != newCropHeightPercent;
+                cropData.CropHeightPercent.Value != newCropHeightPercent;
             cropData.CropStartPositionPercent.Value = newCropStartPercent;
             cropData.CropHeightPercent.Value = newCropHeightPercent;
 
@@ -382,7 +439,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
             // 将比例转为像素
             Vector2 currentStartPixel = new Vector2(currentStartPercent.x * imgW, currentStartPercent.y * imgH);
             float currentHeightPixel = currentHeightPercent * imgH;
-            float currentWidthPixel = currentHeightPixel * 4.0f;
+            float currentWidthPixel = currentHeightPixel * CropAspectRatio;
 
             // 计算像素偏移
             Vector2 deltaPixel = new Vector2(deltaRatio.x * imgW, deltaRatio.y * imgH);
@@ -406,8 +463,27 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public override void Dispose()
         {
-            CoverSpriteHandler.CurrentValue?.Unload();
+            isDisposed = true;
+
+            // 取消在途加载并卸载当前曲绘：被取消的加载不会恢复执行，因而不会再碰已经销毁的 VM
+            UnloadCoverSprite();
             base.Dispose();
+        }
+
+
+        /// <summary>
+        /// 一次裁剪拖拽开始时的快照，拖拽结束后用它生成撤销命令
+        /// </summary>
+        public readonly struct CropDragSnapshot
+        {
+            public readonly Vector2? StartPosPercent;
+            public readonly float? HeightPercent;
+
+            public CropDragSnapshot(Vector2? startPosPercent, float? heightPercent)
+            {
+                StartPosPercent = startPosPercent;
+                HeightPercent = heightPercent;
+            }
         }
     }
 

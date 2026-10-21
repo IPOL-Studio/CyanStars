@@ -54,6 +54,7 @@ namespace CyanStars.Gameplay.ChartEditor.View
             commandStack = GameRoot.GetDataModule<ChartEditorDataModule>().CommandStack;
 
             CanvasVisibility
+                .Skip(1) // 避免在 Bind 时误触发 CloseCanvas 加载音乐的副作用；MvvmBindManager 会主动在进入制谱器时显式加载。
                 .Subscribe(visible =>
                 {
                     if (visible)
