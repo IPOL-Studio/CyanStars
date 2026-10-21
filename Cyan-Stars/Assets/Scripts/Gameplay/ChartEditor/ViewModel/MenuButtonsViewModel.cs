@@ -2,7 +2,6 @@
 
 using CyanStars.Framework;
 using CyanStars.Gameplay.Base;
-using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Management;
 using CyanStars.Gameplay.ChartEditor.Model;
 using R3;
@@ -38,12 +37,7 @@ namespace CyanStars.Gameplay.ChartEditor.ViewModel
 
         public void SaveFileToDisk()
         {
-            bool isSaveSuccess = ChartEditorFileManager.SaveChartAndAssetsToDisk(
-                Model.WorkspacePath,
-                Model.ChartMetaDataIndex,
-                Model.ChartPackData.CurrentValue,
-                Model.ChartData.CurrentValue
-            );
+            bool isSaveSuccess = ChartEditorSaver.SaveChartAndAssetsToDisk(Model, GameRoot.File);
 
             // 只有保存成功才标记为已保存，失败保持未保存状态便于重试
             if (isSaveSuccess)
