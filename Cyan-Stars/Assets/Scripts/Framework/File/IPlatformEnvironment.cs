@@ -16,49 +16,49 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 应用持久化数据目录
         /// </summary>
-        string PersistentDataRoot { get; }
+        public string PersistentDataRoot { get; }
 
         /// <summary>
         /// 应用临时数据目录
         /// </summary>
-        string TemporaryCacheRoot { get; }
+        public string TemporaryCacheRoot { get; }
 
         /// <summary>
         /// 游戏安装根目录；无法取得时返回 null
         /// </summary>
-        string? GameInstallRoot { get; }
+        public string? GameInstallRoot { get; }
 
         /// <summary>
         /// 当前实现是否支持从外部文件夹导入内容到应用内
         /// </summary>
-        bool CanImportExternalFolder { get; }
+        public bool CanImportExternalFolder { get; }
 
         /// <summary>
         /// 当前实现是否支持把应用内内容导出到外部文件夹
         /// </summary>
-        bool CanExportFolder { get; }
+        public bool CanExportFolder { get; }
 
         /// <summary>
         /// 当前平台是否允许玩家修改应用自有目录
         /// </summary>
-        bool CanCustomizeAppPaths { get; }
+        public bool CanCustomizeAppPaths { get; }
 
         /// <summary>
         /// 当前平台是否支持自动重启游戏
         /// </summary>
-        bool CanRestartApplication { get; }
+        public bool CanRestartApplication { get; }
 
         /// <summary>
         /// 取常用文件夹在当前平台上的路径
         /// </summary>
         /// <param name="folder">要获取的常用文件夹</param>
         /// <returns>路径；该文件夹在当前平台上不可用时返回 null</returns>
-        string? GetCommonFolderPath(CommonFolders folder);
+        public string? GetCommonFolderPath(CommonFolders folder);
 
         /// <summary>
         /// 判断某个路径在当前平台上是否只能通过 Storage Access Framework 读写
         /// </summary>
         /// <param name="path">待判断的路径</param>
-        bool RequiresStorageAccessFramework(string path);
+        public bool RequiresStorageAccessFramework(string path);
     }
 }
