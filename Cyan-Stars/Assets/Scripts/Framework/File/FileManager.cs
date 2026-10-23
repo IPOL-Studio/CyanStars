@@ -23,24 +23,26 @@ namespace CyanStars.Framework.File
 
 
         /// <summary>
-        /// 文件句柄存储引擎，只服务于本管理器
+        /// 当前平台环境
+        /// </summary>
+        public IPlatformEnvironment Environment { get; private set; } = null!;
+
+
+        /// <summary>
+        /// 文件句柄存储引擎
         /// </summary>
         private FileHandleStore fileHandleStore = null!;
 
         /// <summary>
-        /// 应用路径管理器，只服务于本管理器
+        /// 应用路径管理器
         /// </summary>
         private AppPathManager appPathManager = null!;
 
         /// <summary>
-        /// 文件对话框服务，只服务于本管理器
+        /// 文件对话框服务
         /// </summary>
         private FileDialogService fileDialogService = null!;
 
-        /// <summary>
-        /// 当前平台环境
-        /// </summary>
-        public IPlatformEnvironment Environment { get; private set; } = null!;
 
         public override void OnInit()
         {

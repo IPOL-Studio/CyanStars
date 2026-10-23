@@ -11,23 +11,23 @@ namespace CyanStars.Framework.File
         /// <summary>
         /// 生命周期状态
         /// </summary>
-        public FileHandleState State { get; private set; } = FileHandleState.Available;
+        public FileHandleState State { get; private set; }
 
         /// <summary>
         /// 来源路径：加载句柄时传入的原始路径
         /// </summary>
-        public string SourcePath { get; }
+        public readonly string SourcePath;
 
         /// <summary>
         /// 来源文件（夹）的名称
         /// </summary>
         /// <remarks>缓存副本可能带防重名后缀，业务侧要用名字作目标路径时以本属性为准</remarks>
-        public string EntryName { get; }
+        public readonly string EntryName;
 
         /// <summary>
         /// 当前可读写的路径：会话缓存里的一份副本
         /// </summary>
-        public string ReadablePath { get; }
+        public readonly string ReadablePath;
 
         /// <summary>
         /// 保存时要写到的目标路径（可能是普通绝对路径或安卓 <c>content://</c> 路径）
@@ -46,9 +46,11 @@ namespace CyanStars.Framework.File
         /// <param name="readablePath">会话缓存里的可读写路径</param>
         internal FileHandle(string sourcePath, string entryName, string readablePath)
         {
+            State = FileHandleState.Available;
             SourcePath = sourcePath;
             EntryName = entryName;
             ReadablePath = readablePath;
+            TargetPath = null;
         }
 
         /// <summary>
