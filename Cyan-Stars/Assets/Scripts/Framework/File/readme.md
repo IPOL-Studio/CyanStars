@@ -2,14 +2,14 @@
 
 ## 平台环境
 
-FileManager 初始化时经 PlatformEnvironmentFactory 创建唯一一个 IPlatformEnvironment 实现，并注入内部的 FileHandleStore：
+FileManager 初始化时经 PlatformEnvironmentFactory 创建唯一一个 IPlatformEnvironment 实现，并注入内部的 FileHandleService：
 
 - DiskPlatformEnvironment：编辑器、桌面端、未启用 SAF 的安卓
 - AndroidSafPlatformEnvironment：启用 SAF 的安卓，外部存储走 content:// 路径；整目录导入导出暂未开放
 
-业务逻辑需要平台默认路径（持久化数据目录、临时数据目录、常用文件夹）或平台能力（导入导出、SAF 判定、应用目录迁移、自动重启）时，统一经 `GameRoot.File.Environment` 获取，不直接访问 Application 的路径与平台属性。应用自己管理、允许玩家迁移的目录则统一经 `GameRoot.File.GetAppPath` 获取，该接口返回本地绝对路径。
+业务逻辑需要平台默认路径（持久化数据目录、临时数据目录、常用文件夹）或平台能力（导入导出、本地路径判定、应用目录迁移、自动重启）时，统一经 `GameRoot.File.Environment` 获取，不直接访问 Application 的路径与平台属性。应用自己管理、允许玩家迁移的目录则统一经 `GameRoot.File.GetAppPath` 获取，该接口返回本地绝对路径。
 
-FileManager 按需注册常用文件夹到弹窗侧边栏。
+平台环境返回当前平台实际可用的常用文件夹列表，FileManager 将这些文件夹注册到弹窗侧边栏。`IPlatformEnvironment.IsLocalPath` 只表达路径能否直接交给 `System.IO`，SAF 等具体平台机制由对应实现内部处理。
 
 ## 应用路径设置
 
@@ -27,6 +27,17 @@ FileManager 按需注册常用文件夹到弹窗侧边栏。
 
 设置界面尚未开放，目前配置只能手动编辑 `Settings/AppPaths.json`。
 
+## 会话暂存的设计目的
+
+文件句柄面向需要暂存外部内容的场景，不是普通文件读取的零开销别名。当前主要用于制谱器资源导入：
+
+- 将安卓 SAF 的 `content://` 资源转换为可供 `System.IO` 和 CatAsset 读取的本地路径。
+- 保存前不修改来源文件和谱包工作区；取消编辑时释放句柄即可丢弃尚未保存的内容。
+- 本次编辑会话使用固定的暂存副本，来源文件后续的移动、删除或内容变化不影响预览。
+- 撤销、重做可以在句柄生命周期内继续引用同一副本，无需重新导入来源文件。
+
+`TryStageFile` 对普通本地路径和 `content://` 路径采用相同语义，都会先复制完整文件（夹）。该操作会产生读写时间和磁盘空间开销；暂存副本不是持久存储，业务必须在用完后释放句柄。
+
 ## 应用临时数据目录结构
 
 在磁盘空间不足等极端情况下，临时文件可能会在运行时清理，需要在每次读取前检查文件（夹）确实存在。业务逻辑应当自行管理各文件句柄的生命周期。
@@ -36,9 +47,11 @@ FileManager 按需注册常用文件夹到弹窗侧边栏。
         - 各缓存作用域子目录        # 作用域标识由业务侧自定义并作为子目录名，框架不枚举业务场景
     - 预留用于其他目的的临时文件
 
+会话目录用于隔离不同游戏实例的暂存内容。`.session_lock` 由持有该目录的进程独占打开，避免启动清理误删仍在运行的其他实例；进程异常退出后，下一次启动可以清理其残留目录。
+
 ## FileManager
 
-FileManager 是业务层与外部文件系统之间的边界：持有平台环境，提供文件（夹）选择对话框、外部文件夹导入导出、应用路径解析与文件句柄读写方法；内部的 FileHandleStore 负责文件复制与句柄生命周期，并在每次游戏会话开始时清除上次运行残留且未被多开占用的应用临时数据。
+FileManager 是业务层与外部文件系统之间的边界：持有平台环境，提供文件（夹）选择对话框、外部文件夹导入导出、应用路径解析与文件句柄读写方法；内部的 FileHandleService 负责文件复制与句柄生命周期，并在每次游戏会话开始时清除上次运行残留且未被多开占用的应用临时数据。
 
 文件对话框的过滤器使用框架自有的 FileTypeFilter（显示名 + 后缀），业务侧不引用文件对话框插件的类型。对话框展示与快捷入口由内部的 FileDialogService 负责；已有对话框打开时，打开方法返回 false 并触发 onCancel。
 
@@ -52,7 +65,7 @@ FileManager 是业务层与外部文件系统之间的边界：持有平台环�
 
 ## 文件句柄
 
-FileHandle 的可读写路径始终指向会话缓存里的一份副本：加载外部文件（夹）时，先复制到缓存，再创建句柄。
+FileHandle 的可读写路径始终指向会话缓存里的一份副本。暂存外部文件（夹）时，先复制到缓存，再创建句柄，不直接引用来源文件。
 
 FileHandle 字段：
 
@@ -66,17 +79,17 @@ FileHandle 字段：
 
 FileManager 将每个处理的外部文件（夹）封装为 FileHandle，业务侧统一经 `GameRoot.File` 调用：
 
-- public FileHandle? 加载文件（夹）并创建文件句柄(string pathUri, string cacheScope)  # 内容复制进缓存；加载路径不能位于会话缓存下
+- public FileHandle? TryStageFile(string pathUri, string cacheScope)                        # 内容复制进缓存；来源路径不能位于会话缓存下
 - public bool 修改句柄保存位置(FileHandle fileHandle, string? targetPath)              # 保存路径不能位于会话缓存下，也不能等于或位于可读写路径之内
 - public bool 保存文件到句柄指定位置(FileHandle fileHandle, bool overwrite = false)     # 目标为已存在的目录时按替换语义先删除再复制
 - public bool 释放句柄并删除缓存副本(FileHandle fileHandle)
 - public void 清理空的缓存作用域(string cacheScope)                                     # 业务侧用完一个缓存作用域后收尾
 
-FileHandleStore 是 FileManager 的内部实现，不面向业务逻辑。
+FileHandleService 是 FileManager 的内部实现，不面向业务逻辑。
 
 ## 整目录复制
 
-FolderUtil 是框架内部的整目录复制工具，由 FileManager 与 FileHandleStore 使用，不面向业务逻辑。本地路径使用 `System.IO`，SAF 路径由 `FileBrowserHelpers` 处理。
+FolderUtil 是框架内部的整目录复制工具，由 FileManager 与 FileHandleService 使用，不面向业务逻辑。本地路径使用 `System.IO`，SAF 路径由 `FileBrowserHelpers` 处理。
 
 - `UniqueName`：目标已存在时依次追加 (1)、(2) 等后缀
 - `ReplaceExisting`：目标已存在时先删除再复制；复制失败时旧内容不会恢复
