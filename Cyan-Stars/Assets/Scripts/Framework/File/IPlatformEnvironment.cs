@@ -8,7 +8,7 @@ namespace CyanStars.Framework.File
     /// 平台环境：向框架和业务提供当前平台的存储路径与文件能力
     /// </summary>
     /// <remarks>
-    /// <para>由 <see cref="PlatformEnvironmentFactory"/> 按编译和运行环境创建唯一一个实现实例，并注入 <see cref="FileHandleStore"/></para>
+    /// <para>由 <see cref="PlatformEnvironmentFactory"/> 按编译和运行环境创建唯一一个实现实例，并注入 <see cref="FileHandleService"/></para>
     /// <para>业务逻辑需要平台相关的路径或能力时，应通过本接口获取，而不是直接访问 <c>UnityEngine.Application</c> 的路径与平台属性</para>
     /// <para>本接口提供的是平台默认路径；允许玩家迁移的应用目录由 <see cref="FileManager.GetAppPath"/> 解析</para>
     /// <para>返回的路径可能是普通绝对路径，也可能是 <c>content://</c> 路径</para>

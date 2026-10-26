@@ -57,7 +57,7 @@ namespace CyanStars.Framework.File
         /// 更新目标路径
         /// </summary>
         /// <param name="targetPath">传 null 表示解除目标路径</param>
-        /// <remarks>只做状态迁移，可用性与路径合法性校验由 <see cref="FileHandleStore"/> 统一负责</remarks>
+        /// <remarks>只做状态迁移，可用性与路径合法性校验由 <see cref="FileHandleService"/> 统一负责</remarks>
         internal void SetTargetPath(string? targetPath)
         {
             TargetPath = targetPath;

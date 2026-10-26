@@ -29,9 +29,9 @@ namespace CyanStars.Framework.File
 
 
         /// <summary>
-        /// 文件句柄存储引擎
+        /// 文件句柄服务
         /// </summary>
-        private FileHandleStore fileHandleStore = null!;
+        private FileHandleService fileHandleService = null!;
 
         /// <summary>
         /// 应用路径管理器
@@ -48,12 +48,12 @@ namespace CyanStars.Framework.File
         {
             Environment = PlatformEnvironmentFactory.Create();
 
-            // 会话临时目录名在创建 AppPathManager 与 FileHandleStore 前生成并共享给两者：
-            // AppPathManager 校验路径时排除它，FileHandleStore 实际占用它，临时目录回退后两边仍指向同一目录
+            // 会话临时目录名在创建 AppPathManager 与 FileHandleService 前生成并共享给两者：
+            // AppPathManager 校验路径时排除它，FileHandleService 实际占用它，临时目录回退后两边仍指向同一目录
             string sessionFolderName = GameSessionTempFolder.GenerateSessionFolderName();
 
             appPathManager = new AppPathManager(Environment, sessionFolderName);
-            fileHandleStore = CreateFileHandleStore(sessionFolderName);
+            fileHandleService = CreateFileHandleService(sessionFolderName);
             fileDialogService = new FileDialogService(Environment);
             fileDialogService.Initialize(fileBrowserSkin);
 
@@ -66,24 +66,24 @@ namespace CyanStars.Framework.File
 
         private void OnDestroy()
         {
-            // 退出游戏时结束存储引擎并删除本次会话的临时目录
-            fileHandleStore.Shutdown();
+            // 退出游戏时关闭文件句柄服务并删除本次会话的临时目录
+            fileHandleService.Shutdown();
         }
 
 
         /// <summary>
-        /// 按应用路径创建句柄存储；自定义临时目录初始化失败时回退到默认目录重试
+        /// 按应用路径创建文件句柄服务；自定义临时目录初始化失败时回退到默认目录重试
         /// </summary>
         /// <param name="sessionFolderName">本次会话的临时目录名，与 AppPathManager 共享</param>
-        private FileHandleStore CreateFileHandleStore(string sessionFolderName)
+        private FileHandleService CreateFileHandleService(string sessionFolderName)
         {
             string temporaryRoot = GetAppPath(AppPathKind.TemporaryCacheRoot);
-            var store = new FileHandleStore(Environment, temporaryRoot, sessionFolderName);
+            var service = new FileHandleService(Environment, temporaryRoot, sessionFolderName);
 
             try
             {
-                store.Init();
-                return store;
+                service.Init();
+                return service;
             }
             catch (Exception e)
             {
@@ -97,19 +97,19 @@ namespace CyanStars.Framework.File
 
                 try
                 {
-                    store.Shutdown();
+                    service.Shutdown();
                 }
                 catch (Exception f)
                 {
-                    Debug.LogError($"结束存储引擎时出错：{f}");
+                    Debug.LogError($"关闭文件句柄服务时出错：{f}");
                     throw;
                 }
 
                 appPathManager.MarkTemporaryRootFallback(e.Message);
 
-                store = new FileHandleStore(Environment, defaultTemporaryRoot, sessionFolderName);
-                store.Init();
-                return store;
+                service = new FileHandleService(Environment, defaultTemporaryRoot, sessionFolderName);
+                service.Init();
+                return service;
             }
         }
 
@@ -412,15 +412,15 @@ namespace CyanStars.Framework.File
         #region --- 文件句柄读写 ---
 
         /// <summary>
-        /// 加载、固定一份已有的文件（夹）并创建句柄
+        /// 暂存一份已有的文件（夹）并创建句柄
         /// </summary>
         /// <param name="pathUri">外部路径，可以是普通绝对路径或安卓 <c>content://</c> 路径</param>
         /// <param name="cacheScope">缓存作用域标识，决定缓存副本放在会话临时目录的哪个子目录下，由业务侧自定义</param>
         /// <returns>文件句柄；失败时返回 null</returns>
-        /// <remarks>内容一律复制进会话缓存，加载路径不能位于会话缓存内</remarks>
-        public FileHandle? TryLoadFile(string pathUri, string cacheScope)
+        /// <remarks>内容一律复制进会话缓存，来源路径不能位于会话缓存内</remarks>
+        public FileHandle? TryStageFile(string pathUri, string cacheScope)
         {
-            return fileHandleStore.TryLoadFile(pathUri, cacheScope);
+            return fileHandleService.TryStageFile(pathUri, cacheScope);
         }
 
         /// <summary>
@@ -431,7 +431,7 @@ namespace CyanStars.Framework.File
         /// <returns>是否已经按传入的路径完成设置</returns>
         public bool TrySetSaveTarget(FileHandle fileHandle, string? targetPath)
         {
-            return fileHandleStore.TrySetSaveTarget(fileHandle, targetPath);
+            return fileHandleService.TrySetSaveTarget(fileHandle, targetPath);
         }
 
         /// <summary>
@@ -441,7 +441,7 @@ namespace CyanStars.Framework.File
         /// <remarks>句柄已释放、或者临时缓存被系统清理掉时返回 false</remarks>
         public bool IsHandleReadable(FileHandle? fileHandle)
         {
-            return fileHandleStore.IsHandleReadable(fileHandle);
+            return fileHandleService.IsHandleReadable(fileHandle);
         }
 
         /// <summary>
@@ -452,7 +452,7 @@ namespace CyanStars.Framework.File
         /// <returns>是否保存成功</returns>
         public bool TrySaveToTarget(FileHandle fileHandle, bool overwrite = false)
         {
-            return fileHandleStore.TrySaveToTarget(fileHandle, overwrite);
+            return fileHandleService.TrySaveToTarget(fileHandle, overwrite);
         }
 
         /// <summary>
@@ -464,7 +464,7 @@ namespace CyanStars.Framework.File
         /// <remarks>任一项失败都不中断其余项；调用方应自行决定要不要在失败后再写引用这些资源的元数据文件</remarks>
         public bool TrySaveAll(IEnumerable<FileHandle> fileHandles, bool overwrite = false)
         {
-            return fileHandleStore.TrySaveAll(fileHandles, overwrite);
+            return fileHandleService.TrySaveAll(fileHandles, overwrite);
         }
 
         /// <summary>
@@ -474,7 +474,7 @@ namespace CyanStars.Framework.File
         /// <returns>是否释放成功；已经释放过的句柄返回 false</returns>
         public bool TryReleaseFile(FileHandle fileHandle)
         {
-            return fileHandleStore.TryReleaseFile(fileHandle);
+            return fileHandleService.TryReleaseFile(fileHandle);
         }
 
         /// <summary>
@@ -484,7 +484,7 @@ namespace CyanStars.Framework.File
         /// <returns>成功释放的句柄数量</returns>
         public int TryReleaseAll(IEnumerable<FileHandle> fileHandles)
         {
-            return fileHandleStore.TryReleaseAll(fileHandles);
+            return fileHandleService.TryReleaseAll(fileHandles);
         }
 
         /// <summary>
@@ -494,7 +494,7 @@ namespace CyanStars.Framework.File
         /// <remarks>业务侧在用完一个缓存作用域后用它收尾；文件夹里还有别的缓存文件时什么都不做</remarks>
         public void ClearCacheScopeIfEmpty(string cacheScope)
         {
-            fileHandleStore.ClearCacheScopeIfEmpty(cacheScope);
+            fileHandleService.ClearCacheScopeIfEmpty(cacheScope);
         }
 
         /// <summary>
@@ -506,7 +506,7 @@ namespace CyanStars.Framework.File
         /// <remarks>目标路径不能位于会话缓存内</remarks>
         public bool TryWriteTextToPath(string targetPath, string text)
         {
-            return fileHandleStore.TryWriteTextToPath(targetPath, text);
+            return fileHandleService.TryWriteTextToPath(targetPath, text);
         }
 
         #endregion

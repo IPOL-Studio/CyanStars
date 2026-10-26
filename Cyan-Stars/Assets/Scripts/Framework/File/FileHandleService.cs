@@ -12,7 +12,7 @@ using IOFile = System.IO.File;
 namespace CyanStars.Framework.File
 {
     /// <summary>
-    /// 文件句柄存储引擎：把每一份参与读写的文件封装成 <see cref="FileHandle"/>，并负责它在磁盘上的搬运
+    /// 文件句柄服务：将外部文件（夹）暂存为会话副本，并管理句柄的保存与释放
     /// </summary>
     /// <remarks>
     /// <para>缓存路径不能作为加载来源和保存目标，两者都必须是玩家选中的外部位置或应用数据目录。</para>
@@ -21,14 +21,14 @@ namespace CyanStars.Framework.File
     /// <para>注意：即使进程存活时，游戏可能在磁盘空间不足等极端情况下清理掉 <see cref="GameSessionTempFolder"/> 下的临时文件，
     /// 建议业务逻辑对此提供降级回退。</para>
     /// </remarks>
-    internal sealed class FileHandleStore
+    internal sealed class FileHandleService
     {
         // TODO: 文件操作依赖于 SFB 插件，后续考虑改用其他独立插件或自有实现
 
         private static readonly UTF8Encoding Utf8NoBom = new UTF8Encoding(false);
 
         /// <summary>
-        /// 当前平台环境，由 FileManager 在创建本引擎时注入
+        /// 当前平台环境
         /// </summary>
         public IPlatformEnvironment Environment { get; }
 
@@ -41,17 +41,17 @@ namespace CyanStars.Framework.File
         public string SessionFolderPath => SessionTempFolder.SessionFolderPath;
 
 
-        public FileHandleStore(IPlatformEnvironment environment)
+        public FileHandleService(IPlatformEnvironment environment)
             : this(environment, GetTemporaryCacheRoot(environment))
         {
         }
 
-        public FileHandleStore(IPlatformEnvironment environment, string temporaryCacheRoot)
+        public FileHandleService(IPlatformEnvironment environment, string temporaryCacheRoot)
             : this(environment, temporaryCacheRoot, GameSessionTempFolder.GenerateSessionFolderName())
         {
         }
 
-        public FileHandleStore(IPlatformEnvironment environment, string temporaryCacheRoot, string sessionFolderName)
+        public FileHandleService(IPlatformEnvironment environment, string temporaryCacheRoot, string sessionFolderName)
         {
             if (environment == null)
                 throw new ArgumentNullException(nameof(environment));
@@ -83,7 +83,7 @@ namespace CyanStars.Framework.File
         }
 
         /// <summary>
-        /// 结束存储引擎并删除本次会话的临时目录
+        /// 结束会话并删除本次会话的临时目录
         /// </summary>
         /// <remarks>已经保存到目标位置的文件不受影响；删除失败只告警，残留目录会在下次启动时清理</remarks>
         public void Shutdown()
@@ -92,20 +92,20 @@ namespace CyanStars.Framework.File
         }
 
 
-        #region --- 加载句柄 ---
+        #region --- 暂存句柄 ---
 
         /// <summary>
-        /// 加载、固定一份已有的文件（夹）并创建句柄
+        /// 暂存一份已有的文件（夹）并创建句柄
         /// </summary>
         /// <param name="pathUri">外部路径，可以是普通绝对路径或安卓 <c>content://</c> 路径</param>
         /// <param name="cacheScope">缓存作用域标识，决定缓存副本放在会话临时目录的哪个子目录下，由业务侧自定义</param>
-        /// <returns>失败时返回 null</returns>
+        /// <returns>文件句柄；失败时返回 null</returns>
         /// <remarks>
         /// <para>内容一律复制进会话缓存：外部原文件之后的变动不影响本次会话，安卓 SAF 选中的
-        /// <c>content://</c> 路径也因此可以交给 <see cref="System.IO"/> 处理</para>
-        /// <para>加载路径不能位于会话缓存内</para>
+        /// <c>content://</c> 路径也因此可以交给 <c>System.IO</c> 处理</para>
+        /// <para>来源路径不能位于会话缓存内</para>
         /// </remarks>
-        public FileHandle? TryLoadFile(string pathUri, string cacheScope)
+        public FileHandle? TryStageFile(string pathUri, string cacheScope)
         {
             if (string.IsNullOrEmpty(pathUri))
             {

@@ -225,7 +225,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
 
             FileManager fileManager = GameRoot.File;
 
-            FileHandle? handle = fileManager.TryLoadFile(sourcePath, AssetCacheScope);
+            FileHandle? handle = fileManager.TryStageFile(sourcePath, AssetCacheScope);
             if (handle == null)
                 return false;
 
