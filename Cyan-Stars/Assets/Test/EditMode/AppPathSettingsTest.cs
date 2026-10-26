@@ -90,6 +90,7 @@ namespace CyanStars.Test.EditMode
 
             Assert.AreEqual(PathUtil.Normalize(Path.GetFullPath(candidatePath)), normalizedPath);
             Assert.IsTrue(Directory.Exists(normalizedPath));
+            Assert.IsEmpty(Directory.GetFiles(normalizedPath, ".cys_write_test_*"));
         }
 
         [Test]
