@@ -1,5 +1,7 @@
 #nullable enable
 
+using System.Collections.Generic;
+
 namespace CyanStars.Framework.File
 {
     /// <summary>
@@ -49,16 +51,16 @@ namespace CyanStars.Framework.File
         public bool CanRestartApplication { get; }
 
         /// <summary>
-        /// 取常用文件夹在当前平台上的路径
+        /// 取当前平台实际可用的常用文件夹
         /// </summary>
-        /// <param name="folder">要获取的常用文件夹</param>
-        /// <returns>路径；该文件夹在当前平台上不可用时返回 null</returns>
-        public string? GetCommonFolderPath(CommonFolders folder);
+        /// <returns>常用文件夹列表；没有可用文件夹时返回空列表</returns>
+        public IReadOnlyList<PlatformFolder> GetCommonFolders();
 
         /// <summary>
-        /// 判断某个路径在当前平台上是否只能通过 Storage Access Framework 读写
+        /// 判断路径是否可以直接通过 <c>System.IO</c> 读写
         /// </summary>
         /// <param name="path">待判断的路径</param>
-        public bool RequiresStorageAccessFramework(string path);
+        /// <returns>普通本地路径返回 true；需要经平台外部存储接口访问的路径返回 false</returns>
+        public bool IsLocalPath(string path);
     }
 }

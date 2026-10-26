@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -413,14 +414,14 @@ namespace CyanStars.Test.EditMode
 
             public bool CanRestartApplication => false;
 
-            public string? GetCommonFolderPath(CommonFolders folder)
+            public IReadOnlyList<PlatformFolder> GetCommonFolders()
             {
-                return null;
+                return Array.Empty<PlatformFolder>();
             }
 
-            public bool RequiresStorageAccessFramework(string path)
+            public bool IsLocalPath(string path)
             {
-                return false;
+                return true;
             }
         }
     }

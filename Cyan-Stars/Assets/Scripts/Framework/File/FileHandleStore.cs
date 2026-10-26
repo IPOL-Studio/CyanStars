@@ -337,7 +337,7 @@ namespace CyanStars.Framework.File
 
             try
             {
-                if (Environment.RequiresStorageAccessFramework(targetPath))
+                if (!Environment.IsLocalPath(targetPath))
                 {
                     FileBrowserHelpers.WriteTextToFile(targetPath, text);
                     return true;
@@ -381,7 +381,7 @@ namespace CyanStars.Framework.File
 
                     return FolderUtil.TryCopyFolder(Environment, readablePath, targetPath, mode, out _);
                 }
-                else if (Environment.RequiresStorageAccessFramework(targetPath))
+                else if (!Environment.IsLocalPath(targetPath))
                 {
                     if (!overwrite && FileBrowserHelpers.FileExists(targetPath))
                     {

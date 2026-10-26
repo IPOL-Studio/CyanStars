@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using CyanStars.Utils;
 using UnityEngine;
@@ -58,19 +59,24 @@ namespace CyanStars.Framework.File
         }
 
 
-        public string? GetCommonFolderPath(CommonFolders folder)
+        public IReadOnlyList<PlatformFolder> GetCommonFolders()
         {
-            return folder switch
-            {
-                CommonFolders.Downloads => GetDownloadsFolderPath(),
-                CommonFolders.Desktop => GetDesktopFolderPath(),
-                _ => throw new ArgumentOutOfRangeException(nameof(folder), folder, null)
-            };
+            var folders = new List<PlatformFolder>();
+
+            string? downloadsFolderPath = GetDownloadsFolderPath();
+            if (downloadsFolderPath != null)
+                folders.Add(new PlatformFolder("下载", downloadsFolderPath));
+
+            string? desktopFolderPath = GetDesktopFolderPath();
+            if (desktopFolderPath != null)
+                folders.Add(new PlatformFolder("桌面", desktopFolderPath));
+
+            return folders;
         }
 
-        public bool RequiresStorageAccessFramework(string path)
+        public bool IsLocalPath(string path)
         {
-            return false;
+            return true;
         }
 
 

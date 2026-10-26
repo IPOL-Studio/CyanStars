@@ -1,6 +1,6 @@
 #nullable enable
 
-using System;
+using System.Collections.Generic;
 using CyanStars.Utils;
 using UnityEngine;
 
@@ -20,6 +20,9 @@ namespace CyanStars.Framework.File
     /// </remarks>
     public sealed class AndroidSafPlatformEnvironment : IPlatformEnvironment
     {
+        private const string DownloadsFolderPath = "content://com.android.externalstorage.documents/root/downloads";
+
+
         public string PersistentDataRoot => PathUtil.Normalize(Application.persistentDataPath);
 
         public string TemporaryCacheRoot => PathUtil.Normalize(Application.temporaryCachePath);
@@ -36,25 +39,19 @@ namespace CyanStars.Framework.File
         public bool CanRestartApplication => false;
 
 
-        public string? GetCommonFolderPath(CommonFolders folder)
+        public IReadOnlyList<PlatformFolder> GetCommonFolders()
         {
-            return folder switch
-            {
-                // 系统下载目录的根，Simple File Browser 会把它当作 SAF 入口打开
-                CommonFolders.Downloads => "content://com.android.externalstorage.documents/root/downloads",
-                CommonFolders.Desktop => null,
-                _ => throw new ArgumentOutOfRangeException(nameof(folder), folder, null)
-            };
+            // 系统下载目录的根，Simple File Browser 会把它当作 SAF 入口打开
+            return new[] { new PlatformFolder("下载", DownloadsFolderPath) };
         }
 
-        public bool RequiresStorageAccessFramework(string path)
+        public bool IsLocalPath(string path)
         {
 #if !UNITY_EDITOR && UNITY_ANDROID
-            // Simple File Browser 会在运行时判断具体路径是否必须走 SAF
-            return FileBrowserHelpers.ShouldUseSAFForPath(path);
+            return !FileBrowserHelpers.ShouldUseSAFForPath(path);
 #else
             // 本实现只会在安卓真机启用 SAF 时被选用，其它环境不会走到这里
-            return false;
+            return true;
 #endif
         }
     }

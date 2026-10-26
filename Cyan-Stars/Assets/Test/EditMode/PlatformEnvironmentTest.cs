@@ -1,6 +1,6 @@
 #nullable enable
 
-using System;
+using System.Collections.Generic;
 using System.IO;
 using CyanStars.Framework.File;
 using CyanStars.Utils;
@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace CyanStars.Test.EditMode
 {
     /// <summary>
-    /// 测试两个 IPlatformEnvironment 实现的路径归一化、常用文件夹与 SAF 判定
+    /// 测试两个 IPlatformEnvironment 实现的路径归一化、常用文件夹与本地路径判定
     /// </summary>
     public class PlatformEnvironmentTest
     {
@@ -29,7 +29,7 @@ namespace CyanStars.Test.EditMode
 #endif
             AssertNormalizedPath(environment.PersistentDataRoot);
             AssertNormalizedPath(environment.TemporaryCacheRoot);
-            Assert.IsFalse(environment.RequiresStorageAccessFramework("C:/any/path.txt"));
+            Assert.IsTrue(environment.IsLocalPath("C:/any/path.txt"));
         }
 
         [Test]
@@ -37,9 +37,14 @@ namespace CyanStars.Test.EditMode
         {
             var environment = new DiskPlatformEnvironment();
 
-            AssertCommonFolder(environment.GetCommonFolderPath(CommonFolders.Downloads));
-            AssertCommonFolder(environment.GetCommonFolderPath(CommonFolders.Desktop));
-            Assert.Throws<ArgumentOutOfRangeException>(() => environment.GetCommonFolderPath((CommonFolders)(-1)));
+            IReadOnlyList<PlatformFolder> folders = environment.GetCommonFolders();
+
+            Assert.IsNotNull(folders);
+            foreach (PlatformFolder folder in folders)
+            {
+                Assert.IsNotEmpty(folder.DisplayName);
+                AssertCommonFolder(folder.Path);
+            }
         }
 
         [Test]
@@ -56,14 +61,15 @@ namespace CyanStars.Test.EditMode
             AssertNormalizedPath(environment.PersistentDataRoot);
             AssertNormalizedPath(environment.TemporaryCacheRoot);
 
+            IReadOnlyList<PlatformFolder> folders = environment.GetCommonFolders();
+            Assert.AreEqual(1, folders.Count);
+            Assert.AreEqual("下载", folders[0].DisplayName);
             Assert.AreEqual(
                 "content://com.android.externalstorage.documents/root/downloads",
-                environment.GetCommonFolderPath(CommonFolders.Downloads));
-            Assert.IsNull(environment.GetCommonFolderPath(CommonFolders.Desktop));
-            Assert.Throws<ArgumentOutOfRangeException>(() => environment.GetCommonFolderPath((CommonFolders)(-1)));
+                folders[0].Path);
 
             // 编辑器下不启用 SAF
-            Assert.IsFalse(environment.RequiresStorageAccessFramework("content://com.test/folder"));
+            Assert.IsTrue(environment.IsLocalPath("content://com.test/folder"));
         }
 
 
@@ -77,13 +83,10 @@ namespace CyanStars.Test.EditMode
         }
 
         /// <summary>
-        /// 断言常用文件夹路径可用：要么返回 null，要么是存在的已归一化目录
+        /// 断言常用文件夹路径为已归一化的现有目录
         /// </summary>
-        private static void AssertCommonFolder(string? folderPath)
+        private static void AssertCommonFolder(string folderPath)
         {
-            if (folderPath == null)
-                return;
-
             Assert.AreEqual(PathUtil.Normalize(folderPath), folderPath);
             Assert.IsTrue(Directory.Exists(folderPath));
         }

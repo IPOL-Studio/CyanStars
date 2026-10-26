@@ -29,8 +29,11 @@ namespace CyanStars.Framework.File
         {
             FileBrowser.Skin = skin;
             FileBrowser.SetExcludedExtensions();
-            AddQuickLink(CommonFolders.Downloads, "下载");
-            AddQuickLink(CommonFolders.Desktop, "桌面");
+
+            foreach (PlatformFolder folder in Environment.GetCommonFolders())
+            {
+                FileBrowser.AddQuickLink(folder.DisplayName, folder.Path, null);
+            }
         }
 
         /// <summary>
@@ -160,24 +163,6 @@ namespace CyanStars.Framework.File
 
             onCancel?.Invoke();
             return false;
-        }
-
-        /// <summary>
-        /// 把常用文件夹加进文件对话框的侧边栏
-        /// </summary>
-        /// <param name="folder">常用文件夹枚举实例</param>
-        /// <param name="displayName">侧边栏显示的名称</param>
-        /// <remarks>当前平台上没有这个文件夹时只打日志，不影响其它入口</remarks>
-        private void AddQuickLink(CommonFolders folder, string displayName)
-        {
-            string? folderPath = Environment.GetCommonFolderPath(folder);
-            if (string.IsNullOrEmpty(folderPath))
-            {
-                Debug.LogWarning($"当前平台上没有可用的常用文件夹，已跳过侧边栏入口：{folder}");
-                return;
-            }
-
-            FileBrowser.AddQuickLink(displayName, folderPath, null);
         }
 
         /// <summary>

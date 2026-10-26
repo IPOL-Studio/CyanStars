@@ -73,7 +73,7 @@ namespace CyanStars.Framework.File
             }
 
             bool targetUsesSaf = environment != null &&
-                environment.RequiresStorageAccessFramework(targetFolderPath);
+                !environment.IsLocalPath(targetFolderPath);
 
             if (targetUsesSaf)
                 return TryCopyFolderToSafTarget(sourceFolderPath, targetFolderPath, mode, out copiedFolderPath);
@@ -134,7 +134,7 @@ namespace CyanStars.Framework.File
                     Directory.Delete(resolvedTargetPath, true);
 
                 bool sourceUsesSaf = environment != null &&
-                    environment.RequiresStorageAccessFramework(sourceFolderPath);
+                    !environment.IsLocalPath(sourceFolderPath);
 
                 if (sourceUsesSaf)
                     FileBrowserHelpers.CopyDirectory(sourceFolderPath, resolvedTargetPath);
