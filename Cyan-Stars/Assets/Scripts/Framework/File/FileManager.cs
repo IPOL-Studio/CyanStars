@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using CyanStars.Framework.File.AppPaths;
+using CyanStars.Framework.File.Content;
 using CyanStars.Framework.File.Dialog;
 using CyanStars.Framework.File.Platform;
 using CyanStars.Framework.File.Staging;
@@ -14,7 +15,7 @@ using UnityEngine;
 namespace CyanStars.Framework.File
 {
     /// <summary>
-    /// 文件交互入口：处理外部文件（夹）的选择、导入导出、应用路径解析与会话缓存句柄
+    /// 文件交互入口：处理外部文件（夹）的选择、文本读写、导入导出、应用路径解析与会话缓存句柄
     /// </summary>
     /// <remarks>应用自有目录由 <see cref="GetAppPath"/> 解析，保证为本地路径；
     /// 外部路径可能为 <c>content://</c>，相关读写应经本类完成</remarks>
@@ -414,7 +415,35 @@ namespace CyanStars.Framework.File
 
         #endregion
 
-        #region --- 文件句柄读写 ---
+        #region --- 文件内容读写 ---
+
+        /// <summary>
+        /// 尝试读取文件文本，不创建会话暂存副本
+        /// </summary>
+        /// <param name="sourcePath">来源路径，可以是普通绝对路径或安卓 <c>content://</c> 路径</param>
+        /// <param name="text">读取到的文本；失败时为空字符串</param>
+        /// <returns>是否读取成功</returns>
+        /// <remarks>普通本地路径直接读取；安卓 SAF 路径由 Simple File Browser 处理</remarks>
+        public bool TryReadTextFromPath(string sourcePath, out string text)
+        {
+            return FileContentService.TryReadTextFromPath(sourcePath, out text);
+        }
+
+        /// <summary>
+        /// 尝试向文件中写入文本
+        /// </summary>
+        /// <param name="targetPath">目标路径，可以是普通绝对路径或安卓 <c>content://</c> 路径</param>
+        /// <param name="text">要写入的内容</param>
+        /// <returns>是否写入成功</returns>
+        /// <remarks>目标路径不能位于会话缓存内</remarks>
+        public bool TryWriteTextToPath(string targetPath, string text)
+        {
+            return fileHandleService.TryWriteTextToPath(targetPath, text);
+        }
+
+        #endregion
+
+        #region --- 会话暂存句柄 ---
 
         /// <summary>
         /// 暂存一份已有的文件（夹）并创建句柄
@@ -500,18 +529,6 @@ namespace CyanStars.Framework.File
         public void ClearCacheScopeIfEmpty(string cacheScope)
         {
             fileHandleService.ClearCacheScopeIfEmpty(cacheScope);
-        }
-
-        /// <summary>
-        /// 尝试向文件中写入文本
-        /// </summary>
-        /// <param name="targetPath">目标路径，可以是普通绝对路径或安卓 <c>content://</c> 路径</param>
-        /// <param name="text">要写入的内容</param>
-        /// <returns>是否写入成功</returns>
-        /// <remarks>目标路径不能位于会话缓存内</remarks>
-        public bool TryWriteTextToPath(string targetPath, string text)
-        {
-            return fileHandleService.TryWriteTextToPath(targetPath, text);
         }
 
         #endregion

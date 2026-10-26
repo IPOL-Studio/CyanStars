@@ -51,7 +51,7 @@ FileManager 初始化时经 PlatformEnvironmentFactory 创建唯一一个 IPlatf
 
 ## FileManager
 
-FileManager 是业务层与外部文件系统之间的边界：持有平台环境，提供文件（夹）选择对话框、外部文件夹导入导出、应用路径解析与文件句柄读写方法；内部的 FileHandleService 负责文件复制与句柄生命周期，并在每次游戏会话开始时清除上次运行残留且未被多开占用的应用临时数据。
+FileManager 是业务层与外部文件系统之间的边界：持有平台环境，提供文件（夹）选择对话框、普通文本读写、外部文件夹导入导出、应用路径解析与会话暂存句柄；内部的 FileContentService 负责普通文本读取，FileHandleService 负责文件复制与句柄生命周期，并在每次游戏会话开始时清除上次运行残留且未被多开占用的应用临时数据。
 
 文件对话框的过滤器使用框架自有的 FileTypeFilter（显示名 + 后缀），业务侧不引用文件对话框插件的类型。对话框展示与快捷入口由内部的 FileDialogService 负责；已有对话框打开时，打开方法返回 false 并触发 onCancel。
 
@@ -59,11 +59,19 @@ FileManager 是业务层与外部文件系统之间的边界：持有平台环�
 
 `GameRoot.File.GetAppPath(kind)` 返回应用自有目录，保证为本地绝对路径；业务侧取得路径后可以直接使用 `System.IO` 读写，不需要创建文件句柄。
 
-外部路径可能为普通绝对路径或安卓 `content://` 路径，不得交给 `System.IO`。需要在外部位置与应用自有目录之间复制文件夹时，使用 `GameRoot.File.TryImportFolder` 或 `GameRoot.File.TryExportFolder`。
+外部路径可以是普通绝对路径或安卓 `content://` 路径，其中 `content://` 路径不能直接交给 `System.IO`。普通文本内容可通过 `GameRoot.File.TryReadTextFromPath` 读取；需要在外部位置与应用自有目录之间复制文件夹时，使用 `GameRoot.File.TryImportFolder` 或 `GameRoot.File.TryExportFolder`。
 
 导入要求来源位于应用自有目录之外、目标位于其中；导出相反。业务侧可先调用 `GameRoot.File.TryValidateFolderTransfer` 获取失败原因。
 
-## 文件句柄
+## 普通文本读取
+
+`GameRoot.File.TryReadTextFromPath` 用于一次性读取文本，不创建 FileHandle 或会话暂存副本。普通本地路径（包括安卓应用持久化数据目录中的路径）直接读取；`content://` 路径由 Simple File Browser 通过 SAF 处理。
+
+- public bool TryReadTextFromPath(string sourcePath, out string text)    # 读取成功时通过 text 返回内容，失败时 text 为空字符串
+
+仅需读取内容，且不需要固定副本、编辑隔离或延迟保存时，不应调用 `TryStageFile`。需要这些暂存语义时，即使来源是普通本地路径，也应显式创建暂存副本。
+
+## 会话暂存句柄
 
 FileHandle 的可读写路径始终指向会话缓存里的一份副本。暂存外部文件（夹）时，先复制到缓存，再创建句柄，不直接引用来源文件。
 
@@ -75,9 +83,9 @@ FileHandle 字段：
 - public string? 保存时目标路径 {get; internal set;}
 - public FileHandleState 句柄生命周期状态 {get; internal set;}
 
-## 文件读写
+## 会话暂存与句柄操作
 
-FileManager 将每个处理的外部文件（夹）封装为 FileHandle，业务侧统一经 `GameRoot.File` 调用：
+只有显式暂存外部文件（夹）时才创建 FileHandle，普通只读加载不经过此流程。暂存与句柄操作统一经 `GameRoot.File` 调用：
 
 - public FileHandle? TryStageFile(string pathUri, string cacheScope)                        # 内容复制进缓存；来源路径不能位于会话缓存下
 - public bool 修改句柄保存位置(FileHandle fileHandle, string? targetPath)              # 保存路径不能位于会话缓存下，也不能等于或位于可读写路径之内
@@ -99,11 +107,17 @@ FolderUtil 是框架内部的整目录复制工具，由 FileManager 与 FileHan
 
 ## 跨平台外部文件读写流程
 
-### 文件读取
+### 普通文本读取
 
-- Simple File Browser 路径选择器
-- FileManager 读取
-- CatAsset 反序列化文件到实例
+- 按需通过 Simple File Browser 选择文件，或直接使用已知路径
+- 通过 `GameRoot.File.TryReadTextFromPath` 读取文本，不创建暂存句柄
+- 使用 JsonSerializer 或其他反序列化器将文本转换为数据实例
+
+### 暂存资源读取
+
+- 按需通过 Simple File Browser 选择文件（夹）
+- 通过 `GameRoot.File.TryStageFile` 创建会话副本和句柄
+- 通过 `System.IO` 或 CatAsset 读取句柄的 `ReadablePath`
 
 ### 文件写入
 
