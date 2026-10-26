@@ -1,8 +1,9 @@
 #nullable enable
 
 using System.Collections.Generic;
+using CyanStars.Framework.File.Staging;
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Platform
 {
     /// <summary>
     /// 平台环境：向框架和业务提供当前平台的存储路径与文件能力

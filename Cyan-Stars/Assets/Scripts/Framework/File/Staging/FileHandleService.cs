@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using CyanStars.Framework.File.Platform;
+using CyanStars.Framework.File.Transfer;
 using CyanStars.Utils;
 using SimpleFileBrowser;
 using UnityEngine;
 using IOFile = System.IO.File;
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Staging
 {
     /// <summary>
     /// 文件句柄服务：将外部文件（夹）暂存为会话副本，并管理句柄的保存与释放

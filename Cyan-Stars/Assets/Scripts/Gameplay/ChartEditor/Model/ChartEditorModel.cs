@@ -8,6 +8,7 @@ using CyanStars.Chart;
 using CyanStars.Chart.Loading;
 using CyanStars.Framework;
 using CyanStars.Framework.File;
+using CyanStars.Framework.File.Staging;
 using CyanStars.Utils;
 using R3;
 using UnityEngine;

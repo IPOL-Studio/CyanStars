@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CatAsset.Runtime;
 using CyanStars.Framework;
 using CyanStars.Framework.File;
+using CyanStars.Framework.File.Staging;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Gameplay.ChartEditor.View;

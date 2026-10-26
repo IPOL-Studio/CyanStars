@@ -4,7 +4,7 @@
 using SimpleFileBrowser;
 #endif
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Platform
 {
     /// <summary>
     /// 创建当前运行环境对应的平台环境

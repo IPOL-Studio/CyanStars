@@ -3,6 +3,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using CyanStars.Framework.File;
+using CyanStars.Framework.File.Transfer;
 using CyanStars.Utils;
 using NUnit.Framework;
 using UnityEngine;

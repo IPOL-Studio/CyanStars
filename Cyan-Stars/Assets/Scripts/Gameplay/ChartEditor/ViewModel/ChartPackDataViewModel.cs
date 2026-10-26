@@ -3,6 +3,7 @@
 using CyanStars.Chart;
 using CyanStars.Framework;
 using CyanStars.Framework.File;
+using CyanStars.Framework.File.Transfer;
 using CyanStars.Gameplay.ChartEditor.Command;
 using CyanStars.Gameplay.ChartEditor.Management;
 using CyanStars.Gameplay.ChartEditor.Model;

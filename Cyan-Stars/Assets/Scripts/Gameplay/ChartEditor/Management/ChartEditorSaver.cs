@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using CyanStars.Chart;
 using CyanStars.Chart.Loading;
 using CyanStars.Framework.File;
+using CyanStars.Framework.File.Serialization;
 using CyanStars.Gameplay.ChartEditor.Model;
 using CyanStars.Utils;
 using UnityEngine;

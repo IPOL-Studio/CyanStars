@@ -2,7 +2,7 @@
 
 using System;
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Platform
 {
     /// <summary>
     /// 当前平台可用的常用文件夹

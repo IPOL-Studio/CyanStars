@@ -2,6 +2,7 @@
 
 using System.IO;
 using CyanStars.Framework.File;
+using CyanStars.Framework.File.Dialog;
 using NUnit.Framework;
 
 namespace CyanStars.Test.EditMode

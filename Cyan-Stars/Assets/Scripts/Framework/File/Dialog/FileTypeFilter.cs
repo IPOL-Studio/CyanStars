@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Dialog
 {
     /// <summary>
     /// 文件类型过滤器：按显示名和后缀筛选文件对话框里的可选文件

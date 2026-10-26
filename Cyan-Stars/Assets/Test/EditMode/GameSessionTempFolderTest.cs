@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using CyanStars.Framework.File;
+using CyanStars.Framework.File.Staging;
 using CyanStars.Utils;
 using NUnit.Framework;
 

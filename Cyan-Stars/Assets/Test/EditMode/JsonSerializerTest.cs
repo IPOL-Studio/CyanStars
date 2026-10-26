@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using CyanStarsJsonSerializer = CyanStars.Framework.File.JsonSerializer;
+using CyanStarsJsonSerializer = CyanStars.Framework.File.Serialization.JsonSerializer;
 
 namespace CyanStars.Test.EditMode
 {

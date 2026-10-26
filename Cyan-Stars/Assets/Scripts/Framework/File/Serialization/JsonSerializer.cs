@@ -6,7 +6,7 @@ using CyanStars.Utils.JsonSerialization;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Serialization
 {
     /// <summary>
     /// Json 序列化工具

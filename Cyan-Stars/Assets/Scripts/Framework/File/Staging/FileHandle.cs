@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Staging
 {
     /// <summary>
     /// 文件句柄：记录文件来源、当前可读写、将保存的路径地址

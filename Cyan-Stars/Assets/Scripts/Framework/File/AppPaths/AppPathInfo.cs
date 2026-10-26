@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.AppPaths
 {
     /// <summary>
     /// 一次应用路径修改的结果

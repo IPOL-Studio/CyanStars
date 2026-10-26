@@ -2,12 +2,13 @@
 
 using System;
 using System.IO;
+using CyanStars.Framework.File.Platform;
 using CyanStars.Utils;
 using SimpleFileBrowser;
 using UnityEngine;
 using IOFile = System.IO.File;
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Transfer
 {
     /// <summary>
     /// 整目录复制工具

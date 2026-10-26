@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.IO;
 using CyanStars.Framework.File;
+using CyanStars.Framework.File.Platform;
 using CyanStars.Utils;
 using NUnit.Framework;
 

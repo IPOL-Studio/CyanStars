@@ -6,6 +6,8 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using CyanStars.Framework.File;
+using CyanStars.Framework.File.Platform;
+using CyanStars.Framework.File.Staging;
 using CyanStars.Utils;
 using NUnit.Framework;
 using UnityEngine;

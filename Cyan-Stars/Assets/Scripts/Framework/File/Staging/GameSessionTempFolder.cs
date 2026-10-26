@@ -6,7 +6,7 @@ using CyanStars.Utils;
 using Debug = UnityEngine.Debug;
 using IOFile = System.IO.File;
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Staging
 {
     /// <summary>
     /// 游戏会话的临时目录：应用临时数据目录下、归本次游戏进程独占的一层文件夹

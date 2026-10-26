@@ -7,7 +7,7 @@ using CyanStars.Utils;
 using UnityEngine;
 using IOFile = System.IO.File;
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.AppPaths
 {
     /// <summary>
     /// 应用路径校验器：检查路径能否作为指定用途的目录

@@ -1,4 +1,4 @@
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Staging
 {
     /// <summary>
     /// 文件句柄的生命周期状态

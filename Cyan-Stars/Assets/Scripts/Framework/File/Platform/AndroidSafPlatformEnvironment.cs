@@ -3,13 +3,12 @@
 using System.Collections.Generic;
 using CyanStars.Utils;
 using UnityEngine;
-
 #if !UNITY_EDITOR && UNITY_ANDROID
 using SimpleFileBrowser;
 #endif
 
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Platform
 {
     /// <summary>
     /// 安卓启用 Storage Access Framework 时的平台环境

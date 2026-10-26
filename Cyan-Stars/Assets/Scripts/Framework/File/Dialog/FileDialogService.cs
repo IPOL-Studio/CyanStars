@@ -2,11 +2,12 @@
 
 using System;
 using System.Linq;
+using CyanStars.Framework.File.Platform;
 using CyanStars.Utils;
 using SimpleFileBrowser;
 using UnityEngine;
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Dialog
 {
     /// <summary>
     /// 文件对话框服务：负责文件（夹）选择对话框的展示与筛选器转换

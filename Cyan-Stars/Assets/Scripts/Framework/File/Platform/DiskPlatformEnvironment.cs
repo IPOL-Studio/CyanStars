@@ -6,7 +6,7 @@ using System.IO;
 using CyanStars.Utils;
 using UnityEngine;
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Platform
 {
     /// <summary>
     /// 直接使用磁盘路径的平台环境

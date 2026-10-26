@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.AppPaths
 {
     [Serializable]
     internal sealed class AppPathSettings

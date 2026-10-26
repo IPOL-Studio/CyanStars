@@ -1,8 +1,9 @@
 #nullable enable
 
 using System;
+using CyanStars.Framework.File.Platform;
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.AppPaths
 {
     /// <summary>
     /// 应用自己管理、允许玩家重新指定的目录

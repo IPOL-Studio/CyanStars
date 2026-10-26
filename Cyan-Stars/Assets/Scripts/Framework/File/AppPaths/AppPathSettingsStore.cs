@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using IOFile = System.IO.File;
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.AppPaths
 {
     /// <summary>
     /// 应用路径配置文件的读写，配置文件固定在默认持久化数据目录下

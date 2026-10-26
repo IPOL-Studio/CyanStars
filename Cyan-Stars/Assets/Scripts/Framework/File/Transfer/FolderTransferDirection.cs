@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Transfer
 {
     /// <summary>
     /// 文件夹传输方向

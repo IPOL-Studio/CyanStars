@@ -3,10 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CyanStars.Framework.File.Platform;
 using CyanStars.Utils;
 using UnityEngine;
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.AppPaths
 {
     /// <summary>
     /// 应用路径管理器：解析并持有各类 <see cref="AppPathKind"/> 的默认路径、本次生效路径与玩家保存的覆盖配置

@@ -3,7 +3,7 @@
 using System;
 using CyanStars.Utils;
 
-namespace CyanStars.Framework.File
+namespace CyanStars.Framework.File.Transfer
 {
     /// <summary>
     /// 文件夹导入导出的路径策略
