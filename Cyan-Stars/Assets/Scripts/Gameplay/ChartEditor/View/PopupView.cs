@@ -82,6 +82,17 @@ namespace CyanStars.Gameplay.ChartEditor.View
             instance.canvas.enabled = true;
         }
 
+        /// <summary>
+        /// 弹出一个只有确定按钮的提示弹窗
+        /// </summary>
+        public static void ShowError(string title, string message)
+        {
+            Show(title, message, true, new Dictionary<string, Action?>
+            {
+                ["确定"] = null
+            });
+        }
+
         public static void Close()
         {
             if (!instance.canvas.enabled)

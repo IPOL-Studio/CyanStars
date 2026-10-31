@@ -114,7 +114,7 @@
 //
 //             importCoverButton.onClick.AddListener(() =>
 //             {
-//                 GameRoot.File.OpenLoadFilePathBrowser(async path => { await Model.ImportCoverFile(path); },
+//                 GameRoot.File.TryOpenLoadFilePathBrowser(async path => { await Model.ImportCoverFile(path); },
 //                     filters: new[] { GameRoot.File.SpriteFilter }
 //                 );
 //             });

@@ -1,7 +1,15 @@
 #nullable enable
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using CatAsset.Runtime;
 using CyanStars.Chart;
+using CyanStars.Chart.Loading;
+using CyanStars.Framework;
+using CyanStars.Framework.File;
+using CyanStars.Framework.File.Staging;
+using CyanStars.Utils;
 using R3;
 using UnityEngine;
 
@@ -10,8 +18,22 @@ namespace CyanStars.Gameplay.ChartEditor.Model
     /// <summary>
     /// 制谱器主 Model 层
     /// </summary>
-    public class ChartEditorModel
+    public class ChartEditorModel : IDisposable
     {
+        /// <summary>
+        /// 制谱器资源缓存的缓存作用域标识
+        /// </summary>
+        /// <remarks>本次编辑会话导入的文件都复制到这个作用域下，生命周期为每次进入和退出制谱器期间</remarks>
+        private const string AssetCacheScope = "ChartEditor";
+
+
+        /// <summary>
+        /// 本次编辑会话是否已结束
+        /// </summary>
+        /// <remarks>文件对话框等异步回调可能晚于会话结束才到达，回调应先检查本属性</remarks>
+        public bool IsDisposed { get; private set; }
+
+
         // == == 事件触发器 == ==
         /// <summary>
         /// BpmGroup 中既有元素的 StartBeat 或 Bpm 发生了变化时手动触发
@@ -37,6 +59,19 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         // 当前正在编辑的谱包和谱面内容
         public readonly ReadOnlyReactiveProperty<ChartPackDataEditorModel> ChartPackData;
         public readonly ReadOnlyReactiveProperty<ChartDataEditorModel> ChartData;
+
+        /// <summary>
+        /// 本次编辑会话导入的资源句柄：目标绝对路径 → 句柄
+        /// </summary>
+        /// <remarks>句柄的生命周期与本次编辑会话相同：历史上引用过的句柄也会一直保留到会话结束，
+        /// 这样撤销、重做时还能取回它们的缓存副本；<see cref="Dispose"/> 时统一释放</remarks>
+        private readonly Dictionary<string, FileHandle> AssetHandles = new Dictionary<string, FileHandle>(PathUtil.PathComparer);
+
+        /// <summary>
+        /// 当前没有被谱包引用、但历史上引用过因而暂时保留的句柄
+        /// </summary>
+        /// <remarks>删除音乐版本等操作会解绑句柄，撤销时需要把它们取回来</remarks>
+        private readonly List<FileHandle> DetachedAssetHandles = new List<FileHandle>();
 
 
         // == == 编辑器运行时数据 == ==
@@ -106,6 +141,242 @@ namespace CyanStars.Gameplay.ChartEditor.Model
 
             ChartPackData = new ReactiveProperty<ChartPackDataEditorModel>(new ChartPackDataEditorModel(chartPackData));
             ChartData = new ReactiveProperty<ChartDataEditorModel>(new ChartDataEditorModel(chartData));
+        }
+
+        /// <summary>
+        /// 工作区里的某个绝对路径是否仍被当前谱包数据引用（曲绘、任一音乐版本的音频）
+        /// </summary>
+        [Pure]
+        public bool IsAssetReferenced(string targetAbsolutePath)
+        {
+            if (string.IsNullOrEmpty(targetAbsolutePath))
+                return false;
+
+            foreach (string relativePath in ChartPackData.CurrentValue.GetAssetRelativePaths())
+            {
+                if (PathUtil.PathEquals(PathUtil.Combine(WorkspacePath, relativePath), targetAbsolutePath))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 取工作区里的资源绝对路径
+        /// </summary>
+        /// <returns>绝对路径；相对路径为空时返回空字符串</returns>
+        [Pure]
+        public string GetAssetAbsolutePath(string relativePath)
+        {
+            return string.IsNullOrEmpty(relativePath)
+                ? ""
+                : PathUtil.Combine(WorkspacePath, relativePath);
+        }
+
+        /// <summary>
+        /// 取某个资源当前可读取的路径：本会话导入过就用句柄里的缓存副本，否则用工作区里的文件
+        /// </summary>
+        /// <returns>可读路径；句柄失效时退化为工作区里的路径</returns>
+        [Pure]
+        public string ResolveAssetReadablePath(string relativePath)
+        {
+            string absolutePath = GetAssetAbsolutePath(relativePath);
+            if (string.IsNullOrEmpty(absolutePath))
+                return "";
+
+            FileHandle? assetHandle = FindAssetHandle(absolutePath);
+
+            return assetHandle != null && GameRoot.File.IsHandleReadable(assetHandle)
+                ? assetHandle.ReadablePath
+                : absolutePath;
+        }
+
+        /// <summary>
+        /// 按目标绝对路径找本次会话导入的资源句柄
+        /// </summary>
+        /// <returns>句柄，本会话没有导入过时返回 null</returns>
+        [Pure]
+        public FileHandle? FindAssetHandle(string targetAbsolutePath)
+        {
+            return string.IsNullOrEmpty(targetAbsolutePath)
+                ? null
+                : AssetHandles.GetValueOrDefault(targetAbsolutePath);
+        }
+
+        /// <summary>
+        /// 导入一个外部文件为谱包资源：复制进会话缓存，并绑定工作区内的保存目标
+        /// </summary>
+        /// <param name="sourcePath">外部文件路径</param>
+        /// <param name="targetFileName">保存到工作区资源文件夹下的文件名；为 null 时沿用来源文件名</param>
+        /// <param name="assetHandle">导入成功的句柄；失败时为 null</param>
+        /// <param name="targetRelativePath">资源在工作区里的目标相对路径；失败时为空字符串</param>
+        /// <returns>是否导入成功</returns>
+        /// <remarks>任一步失败都会释放已创建的句柄，不会留下游离句柄；会话已结束时直接失败</remarks>
+        public bool TryImportAsset(
+            string sourcePath,
+            string? targetFileName,
+            out FileHandle? assetHandle,
+            out string targetRelativePath)
+        {
+            assetHandle = null;
+            targetRelativePath = "";
+
+            if (IsDisposed)
+                return false;
+
+            FileManager fileManager = GameRoot.File;
+
+            FileHandle? handle = fileManager.TryStageFile(sourcePath, AssetCacheScope);
+            if (handle == null)
+                return false;
+
+            string relativePath = PathUtil.Combine(
+                ChartPackDataLoader.ChartPackAssetsFolder,
+                targetFileName ?? handle.EntryName
+            );
+
+            if (!fileManager.TrySetSaveTarget(handle, GetAssetAbsolutePath(relativePath)))
+            {
+                fileManager.TryReleaseFile(handle);
+                return false;
+            }
+
+            assetHandle = handle;
+            targetRelativePath = relativePath;
+            return true;
+        }
+
+        /// <summary>
+        /// 放弃一个尚未登记的导入句柄，一并释放它的缓存副本
+        /// </summary>
+        public void DiscardAsset(FileHandle assetHandle)
+        {
+            GameRoot.File.TryReleaseFile(assetHandle);
+        }
+
+        /// <summary>
+        /// 登记一个导入的资源句柄
+        /// </summary>
+        /// <remarks>
+        /// <para>同一句柄至多登记在一个目标路径下：传入已在其它路径登记过的句柄时，先解除旧路径上的登记</para>
+        /// <para>目标路径已被其它句柄占用时，被顶替的句柄转入解绑状态</para>
+        /// </remarks>
+        public void AddAssetHandle(string targetAbsolutePath, FileHandle assetHandle)
+        {
+            if (string.IsNullOrEmpty(targetAbsolutePath))
+                throw new ArgumentException("目标路径为空", nameof(targetAbsolutePath));
+
+            if (assetHandle == null)
+                throw new ArgumentNullException(nameof(assetHandle));
+
+            DetachedAssetHandles.Remove(assetHandle);
+            RemovePreviousRegistration(assetHandle);
+
+            if (AssetHandles.Remove(targetAbsolutePath, out FileHandle? replacedHandle) &&
+                !ReferenceEquals(replacedHandle, assetHandle))
+            {
+                DetachedAssetHandles.Add(replacedHandle);
+            }
+
+            AssetHandles[targetAbsolutePath] = assetHandle;
+        }
+
+        /// <summary>
+        /// 解除句柄在旧目标路径上的登记，保证一个句柄至多对应一个目标路径
+        /// </summary>
+        private void RemovePreviousRegistration(FileHandle assetHandle)
+        {
+            string? previousPath = null;
+
+            foreach (var pair in AssetHandles)
+            {
+                if (!ReferenceEquals(pair.Value, assetHandle))
+                    continue;
+
+                previousPath = pair.Key;
+                break;
+            }
+
+            if (previousPath != null)
+                AssetHandles.Remove(previousPath);
+        }
+
+        /// <summary>
+        /// 解绑某个资源句柄，句柄本身和它的缓存副本会保留到会话结束
+        /// </summary>
+        /// <returns>被解绑的句柄；本会话没有导入过时返回 null</returns>
+        public FileHandle? DetachAssetHandle(string targetAbsolutePath)
+        {
+            if (string.IsNullOrEmpty(targetAbsolutePath))
+                return null;
+
+            if (!AssetHandles.Remove(targetAbsolutePath, out FileHandle? assetHandle))
+                return null;
+
+            DetachedAssetHandles.Add(assetHandle);
+            return assetHandle;
+        }
+
+        /// <summary>
+        /// 把之前解绑的句柄重新登记回目标路径
+        /// </summary>
+        /// <returns>是否登记成功；句柄已释放时返回 false</returns>
+        public bool ReattachAssetHandle(string targetAbsolutePath, FileHandle assetHandle)
+        {
+            DetachedAssetHandles.Remove(assetHandle);
+
+            if (assetHandle.State == FileHandleState.Released)
+                return false;
+
+            AddAssetHandle(targetAbsolutePath, assetHandle);
+            return true;
+        }
+
+        /// <summary>
+        /// 取本次会话登记过的全部资源句柄
+        /// </summary>
+        [Pure]
+        public List<FileHandle> GetAllAssetHandles()
+        {
+            return new List<FileHandle>(AssetHandles.Values);
+        }
+
+        /// <summary>
+        /// 结束本次编辑会话：卸载资源句柄、释放全部缓存副本，未保存到工作区的导入文件一并删掉
+        /// </summary>
+        public void Dispose()
+        {
+            IsDisposed = true;
+
+            // 曲绘由 ChartPackDataCoverViewModel 自己卸载
+            UnloadAudioAssetHandlers();
+
+            ReleaseAssetHandles();
+        }
+
+        /// <summary>
+        /// 释放本次会话的全部句柄，并在缓存文件夹空了之后收尾
+        /// </summary>
+        private void ReleaseAssetHandles()
+        {
+            FileManager fileManager = GameRoot.File;
+
+            fileManager.TryReleaseAll(DetachedAssetHandles);
+            fileManager.TryReleaseAll(AssetHandles.Values);
+
+            DetachedAssetHandles.Clear();
+            AssetHandles.Clear();
+
+            fileManager.ClearCacheScopeIfEmpty(AssetCacheScope);
+        }
+
+        /// <summary>
+        /// 卸载本次会话加载的音乐资源
+        /// </summary>
+        private void UnloadAudioAssetHandlers()
+        {
+            AudioClipHandler.CurrentValue?.Unload();
+            AudioClipHandler.Value = null;
         }
     }
 }

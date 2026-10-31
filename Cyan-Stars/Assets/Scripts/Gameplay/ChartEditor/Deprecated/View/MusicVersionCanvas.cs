@@ -95,7 +95,7 @@
 //             {
 //                 if (Model.SelectedMusicVersionItemIndex != null)
 //                 {
-//                     GameRoot.File.OpenLoadFilePathBrowser(
+//                     GameRoot.File.TryOpenLoadFilePathBrowser(
 //                         (musicFilePath) => { Model.ImportMusicFile(musicFilePath); },
 //                         title: "导入音频",
 //                         filters: new[] { GameRoot.File.AudioFilter });
