@@ -13,19 +13,13 @@ FileManager 初始化时经 PlatformEnvironmentFactory 创建唯一一个 IPlatf
 
 ## 应用路径设置
 
-应用自己管理的、允许玩家重新指定的目录使用 `AppPathKind` 标识，目前包括玩家谱包目录和临时文件目录。FileManager 持有的内部 AppPathManager 负责解析配置并维护以下三态，业务侧经 `GameRoot.File` 访问：
+应用自己管理的、允许玩家重新指定的目录使用 `AppPathKind` 标识，目前包括玩家谱包目录和临时文件目录。FileManager 持有的内部 AppPathManager 负责解析配置，维护平台默认路径、保存的覆盖、本次生效路径与回退原因。业务侧当前只能通过 `GameRoot.File.GetAppPath(kind)` 获取本次运行实际使用的路径。
 
-- `GetDefaultAppPath(kind)`：平台默认路径
-- `GetAppPath(kind)`：本次运行实际使用的路径
-- `GetAppPathInfo(kind)`：以上信息、保存的覆盖与回退原因的完整状态
+配置保存在默认持久化数据目录下的 `Settings/AppPaths.json`，不会跟随谱包目录或临时目录迁移。当前只在 Windows 上读取路径覆盖；其它平台仍使用平台默认路径。
 
-配置保存在默认持久化数据目录下的 `Settings/AppPaths.json`，不会跟随谱包目录或临时目录迁移。当前只在 Windows 上开放修改；其它平台仍使用平台默认路径。
+启动时，如果保存的路径不可用（例如移动硬盘未连接、目录没有权限），本次运行会回退到默认路径并记录警告日志。回退状态查询接口尚未公开。
 
-启动时，如果保存的路径不可用（例如移动硬盘未连接、目录没有权限），本次运行会回退到默认路径，并通过 `HasUnavailableAppPaths` / `GetUnavailableAppPaths()` 暴露原因。
-
-修改路径只写配置，不改变本次运行已经打开的路径和文件句柄，需要重启游戏后生效。`GameRoot.File.TrySetAppPath` 返回 `AppPathChangeResult.RequiresRestart`；`ApplicationRestart.Restart(GameRoot.File.Environment)` 用于拉起新进程并退出当前进程。切换目录时不会自动移动旧目录中的内容，需要玩家自行迁移。
-
-设置界面尚未开放，目前配置只能手动编辑 `Settings/AppPaths.json`。
+设置界面和运行时修改接口尚未开放，目前只能手动编辑 `Settings/AppPaths.json`，修改在下次启动时生效。切换目录时不会自动移动旧目录中的内容，需要玩家自行迁移。支持自动重启的平台可调用 `ApplicationRestart.Restart(GameRoot.File.Environment)`；编辑器下调用该方法只会退出播放模式。
 
 ## 会话暂存的设计目的
 
@@ -47,7 +41,7 @@ FileManager 初始化时经 PlatformEnvironmentFactory 创建唯一一个 IPlatf
         - 各缓存作用域子目录        # 作用域标识由业务侧自定义并作为子目录名，框架不枚举业务场景
     - 预留用于其他目的的临时文件
 
-会话目录用于隔离不同游戏实例的暂存内容。`.session_lock` 由持有该目录的进程独占打开，避免启动清理误删仍在运行的其他实例；进程异常退出后，下一次启动可以清理其残留目录。
+会话目录用于隔离不同游戏实例的暂存内容。`.session_lock` 由持有该目录的进程独占打开，用于避免启动清理误删仍在运行的其他实例；进程异常退出后，下一次启动可以清理其残留目录。当前实现仍存在启动竞态：一个实例已创建会话目录但尚未获取锁时，另一个实例可能将该目录误判为残留并清理，因此多实例同时启动尚不完全安全。
 
 ## FileManager
 
@@ -75,23 +69,23 @@ FileManager 是业务层与外部文件系统之间的边界：持有平台环�
 
 FileHandle 的可读写路径始终指向会话缓存里的一份副本。暂存外部文件（夹）时，先复制到缓存，再创建句柄，不直接引用来源文件。
 
-FileHandle 字段：
+FileHandle 字段与属性：
 
-- public string 来源路径
-- public string 来源文件（夹）名，业务侧用作目标路径命名依据
-- public string 文件的可读写路径（缓存副本）
-- public string? 保存时目标路径 {get; internal set;}
-- public FileHandleState 句柄生命周期状态 {get; internal set;}
+- `public readonly string SourcePath`：来源路径
+- `public readonly string EntryName`：来源文件（夹）名，业务侧用作目标路径命名依据
+- `public readonly string ReadablePath`：文件（夹）的可读写路径，指向缓存副本
+- `public string? TargetPath { get; private set; }`：保存时的目标路径
+- `public FileHandleState State { get; private set; }`：句柄生命周期状态
 
 ## 会话暂存与句柄操作
 
 只有显式暂存外部文件（夹）时才创建 FileHandle，普通只读加载不经过此流程。暂存与句柄操作统一经 `GameRoot.File` 调用：
 
-- public FileHandle? TryStageFile(string pathUri, string cacheScope)                        # 内容复制进缓存；来源路径不能位于会话缓存下
-- public bool 修改句柄保存位置(FileHandle fileHandle, string? targetPath)              # 保存路径不能位于会话缓存下，也不能等于或位于可读写路径之内
-- public bool 保存文件到句柄指定位置(FileHandle fileHandle, bool overwrite = false)     # 目标为已存在的目录时按替换语义先删除再复制
-- public bool 释放句柄并删除缓存副本(FileHandle fileHandle)
-- public void 清理空的缓存作用域(string cacheScope)                                     # 业务侧用完一个缓存作用域后收尾
+- `public FileHandle? TryStageFile(string pathUri, string cacheScope)`：内容复制进缓存；来源路径不能位于会话缓存下
+- `public bool TrySetSaveTarget(FileHandle fileHandle, string? targetPath)`：设置或解绑保存路径；保存路径不能位于会话缓存下，也不能等于或位于可读写路径之内
+- `public bool TrySaveToTarget(FileHandle fileHandle, bool overwrite = false)`：保存到句柄指定位置；`overwrite` 为 `false` 时拒绝已存在的目标，为 `true` 时允许覆盖文件，目录目标则先删除再复制
+- `public bool TryReleaseFile(FileHandle fileHandle)`：释放句柄并删除缓存副本
+- `public void ClearCacheScopeIfEmpty(string cacheScope)`：缓存作用域已为空时删除其目录，供业务侧收尾
 
 FileHandleService 是 FileManager 的内部实现，不面向业务逻辑。
 
@@ -100,7 +94,7 @@ FileHandleService 是 FileManager 的内部实现，不面向业务逻辑。
 FolderUtil 是框架内部的整目录复制工具，由 FileManager 与 FileHandleService 使用，不面向业务逻辑。本地路径使用 `System.IO`，SAF 路径由 `FileBrowserHelpers` 处理。
 
 - `UniqueName`：目标已存在时依次追加 (1)、(2) 等后缀
-- `ReplaceExisting`：目标已存在时先删除再复制；复制失败时旧内容不会恢复
+- `ReplaceExisting`：目标已存在时先删除再复制；复制失败时旧内容不会恢复；目标包含源目录时拒绝
 - `FailIfExists`：目标已存在时拒绝
 - 目标等于或位于源之内时拒绝
 - 失败时清理未复制完成的目录
