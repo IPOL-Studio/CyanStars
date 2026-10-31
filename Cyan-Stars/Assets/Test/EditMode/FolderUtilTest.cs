@@ -125,6 +125,32 @@ namespace CyanStars.Test.EditMode
         }
 
         [Test]
+        public void TryCopyFolderReplaceExistingRejectsTargetContainingSource()
+        {
+            string targetPath = Path.Combine(rootPath, "target");
+            string sourcePath = Path.Combine(targetPath, "nested", "source");
+            Directory.CreateDirectory(sourcePath);
+            string sourceFilePath = Path.Combine(sourcePath, "fresh.txt");
+            File.WriteAllText(sourceFilePath, "fresh");
+
+            string siblingFilePath = Path.Combine(targetPath, "sibling.txt");
+            File.WriteAllText(siblingFilePath, "sibling");
+
+            LogAssert.Expect(LogType.Error, $"覆盖复制文件夹的目标不能包含源目录：{targetPath}");
+            Assert.IsFalse(FolderUtil.TryCopyFolder(
+                null,
+                sourcePath,
+                targetPath,
+                FolderCopyMode.ReplaceExisting,
+                out string copiedFolderPath));
+            Assert.AreEqual("", copiedFolderPath);
+            Assert.IsTrue(File.Exists(sourceFilePath));
+            Assert.AreEqual("fresh", File.ReadAllText(sourceFilePath));
+            Assert.IsTrue(File.Exists(siblingFilePath));
+            Assert.AreEqual("sibling", File.ReadAllText(siblingFilePath));
+        }
+
+        [Test]
         public void FolderTransferPolicyValidatesDirectionAndManagedArea()
         {
             string managedRoot = Path.Combine(rootPath, "managed");

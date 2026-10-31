@@ -45,7 +45,7 @@ namespace CyanStars.Framework.File.Transfer
         /// <param name="mode">目标已存在时的处理方式</param>
         /// <param name="copiedFolderPath">实际复制到的路径；失败时为空字符串</param>
         /// <returns>是否复制成功</returns>
-        /// <remarks><see cref="FolderCopyMode.ReplaceExisting"/> 会先删除已有目标；复制失败时旧内容不会恢复</remarks>
+        /// <remarks><see cref="FolderCopyMode.ReplaceExisting"/> 会先删除已有目标；复制失败时旧内容不会恢复。目标包含源目录时拒绝</remarks>
         public static bool TryCopyFolder(
             IPlatformEnvironment? environment,
             string sourceFolderPath,
@@ -70,6 +70,13 @@ namespace CyanStars.Framework.File.Transfer
             if (PathUtil.IsSubPathOf(targetFolderPath, sourceFolderPath))
             {
                 Debug.LogError($"复制文件夹的目标不能等于或位于源之内：{targetFolderPath}");
+                return false;
+            }
+
+            if (mode == FolderCopyMode.ReplaceExisting &&
+                PathUtil.IsSubPathOf(sourceFolderPath, targetFolderPath))
+            {
+                Debug.LogError($"覆盖复制文件夹的目标不能包含源目录：{targetFolderPath}");
                 return false;
             }
 
