@@ -17,6 +17,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
     public class ChartPackDataEditorModel
     {
         public readonly ReactiveProperty<int> DataVersion;
+        public readonly ReactiveProperty<string> Uid;
         public readonly ReactiveProperty<string> Title;
         public readonly ReactiveProperty<string> ChartPackInfo;
         public readonly ObservableList<MusicVersionDataEditorModel> MusicVersions;
@@ -31,6 +32,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public ChartPackDataEditorModel(ChartPackData chartPackData)
         {
             DataVersion = new ReactiveProperty<int>(chartPackData.DataVersion);
+            Uid = new ReactiveProperty<string>(chartPackData.Uid);
             Title = new ReactiveProperty<string>(chartPackData.Title);
             ChartPackInfo = new ReactiveProperty<string>(chartPackData.ChartPackInfo);
             MusicVersions = new ObservableList<MusicVersionDataEditorModel>(
@@ -81,6 +83,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public ChartPackData ToChartPackData()
         {
             var title = Title.CurrentValue;
+            var uid =  Uid.CurrentValue;
             var chartPackInfo = ChartPackInfo.CurrentValue;
             var musicVersionDatas =
                 MusicVersions.Select(musicVersionEditorDatas => musicVersionEditorDatas.ToMusicVersionData()).ToList();
@@ -94,6 +97,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
                 ChartMetaDatas.Select(chartMetaEditorData => chartMetaEditorData.ToChartMetaData()).ToList();
             return new ChartPackData(
                 title,
+                uid,
                 chartPackInfo,
                 musicVersionDatas,
                 bpmGroup,
