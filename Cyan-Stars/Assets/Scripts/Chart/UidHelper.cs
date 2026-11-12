@@ -90,8 +90,10 @@ namespace CyanStars.Chart
             passItems.Clear();
             failItems.Clear();
 
-            var firstItemByUid = new Dictionary<string, T>();
-            var conflictedUids = new HashSet<string>();
+            if (items.Count == 0)
+                return;
+
+            var tracker = new Dictionary<string, (T FirstItem, bool HasConflict)>(items.Count);
 
             foreach (T item in items)
             {
@@ -102,19 +104,23 @@ namespace CyanStars.Chart
                     continue;
                 }
 
-                if (!firstItemByUid.TryGetValue(uid, out T firstItem))
+                // 首次出现
+                if (!tracker.TryGetValue(uid, out var entry))
                 {
-                    firstItemByUid.Add(uid, item);
+                    tracker.Add(uid, (item, false));
                     passItems.Add(item);
                     continue;
                 }
 
-                if (conflictedUids.Add(uid))
+                // 第二次出现（冲突）：需要将首次加入 passItems 的元素回退转移到 failItems
+                if (!entry.HasConflict)
                 {
-                    passItems.Remove(firstItem);
-                    failItems.Add(firstItem);
+                    tracker[uid] = (entry.FirstItem, true);
+                    passItems.Remove(entry.FirstItem);
+                    failItems.Add(entry.FirstItem);
                 }
 
+                // 当前冲突元素加入 failItems
                 failItems.Add(item);
             }
         }
