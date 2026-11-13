@@ -20,6 +20,14 @@ namespace CyanStars.Chart
         public int DataVersion;
 
         /// <summary>
+        /// 谱包唯一标识
+        /// </summary>
+        /// <remarks>
+        /// 全局唯一。字段本身允许任意字符串，为空白时视为错误。
+        /// </remarks>
+        public string Uid;
+
+        /// <summary>
         /// 谱包标题（音乐名）
         /// </summary>
         public string Title;
@@ -87,6 +95,7 @@ namespace CyanStars.Chart
         [JsonConstructor]
         private ChartPackData()
         {
+            Uid = "";
             Title = "";
             ChartPackInfo = "";
             MusicVersionDatas = new List<MusicVersionData>();
@@ -99,6 +108,7 @@ namespace CyanStars.Chart
         /// </summary>
         public ChartPackData(ChartPackData oldChartPackData)
         {
+            Uid = oldChartPackData.Uid;
             Title = oldChartPackData.Title;
             MusicVersionDatas = oldChartPackData.MusicVersionDatas;
             ChartPackInfo = oldChartPackData.ChartPackInfo;
@@ -114,18 +124,22 @@ namespace CyanStars.Chart
         /// <summary>
         /// 构造函数
         /// </summary>
-        public ChartPackData(string title,
-                             string chartPackInfo = "",
-                             List<MusicVersionData>? musicVersionDatas = null,
-                             List<BpmGroupItem>? bpmGroup = null,
-                             Beat? musicPreviewStartBeat = null,
-                             Beat? musicPreviewEndBeat = null,
-                             string? coverFilePath = null,
-                             Vector2? cropStartPositionPercent = null,
-                             float? cropHeightPercent = null,
-                             List<ChartMetaData>? chartMetaDatas = null)
+        public ChartPackData(
+            string title,
+            string uid = "",
+            string chartPackInfo = "",
+            List<MusicVersionData>? musicVersionDatas = null,
+            List<BpmGroupItem>? bpmGroup = null,
+            Beat? musicPreviewStartBeat = null,
+            Beat? musicPreviewEndBeat = null,
+            string? coverFilePath = null,
+            Vector2? cropStartPositionPercent = null,
+            float? cropHeightPercent = null,
+            List<ChartMetaData>? chartMetaDatas = null
+        )
         {
             DataVersion = 1;
+            Uid = uid;
             Title = title;
             ChartPackInfo = chartPackInfo;
             MusicVersionDatas = musicVersionDatas ?? new List<MusicVersionData>();

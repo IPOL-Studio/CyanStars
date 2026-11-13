@@ -15,7 +15,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public readonly ReactiveProperty<string> OverrideDifficultyText;
         public readonly ReactiveProperty<ChartDifficulty?> Difficulty;
         public readonly ReactiveProperty<float> Level;
-        public readonly ReactiveProperty<string> ChartHash;
+        public readonly ReactiveProperty<string> Uid;
 
         public ChartMetaDataEditorModel(ChartMetaData chartMetaData)
         {
@@ -23,7 +23,7 @@ namespace CyanStars.Gameplay.ChartEditor.Model
             OverrideDifficultyText = new ReactiveProperty<string>(chartMetaData.OverrideDifficultyText);
             Level = new ReactiveProperty<float>(chartMetaData.Level);
             Difficulty = new ReactiveProperty<ChartDifficulty?>(chartMetaData.Difficulty);
-            ChartHash = new ReactiveProperty<string>(chartMetaData.ChartHash);
+            Uid = new ReactiveProperty<string>(chartMetaData.Uid);
         }
 
         /// <summary>
@@ -33,9 +33,11 @@ namespace CyanStars.Gameplay.ChartEditor.Model
         public ChartMetaData ToChartMetaData()
         {
             var filePath = FilePath.CurrentValue;
+            var overrideDifficultyText = OverrideDifficultyText.CurrentValue;
             var difficulty = Difficulty.CurrentValue;
-            var chartHash = ChartHash.CurrentValue;
-            return new ChartMetaData(filePath, difficulty, chartHash);
+            var level = Level.CurrentValue;
+            var uid = Uid.CurrentValue;
+            return new ChartMetaData(filePath, overrideDifficultyText, difficulty, level, uid);
         }
     }
 }
